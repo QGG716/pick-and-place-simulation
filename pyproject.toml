@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "unloading-layer1-sim"
+version = "0.1.0"
+description = "Fast geometric simulation and motion planning for industrial-arm trailer unloading"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "PyYAML>=6.0",
+  "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+viz = ["pybullet>=3.2"]
+
+[project.scripts]
+unloading-layer1-demo = "unloading_sim.demo:main"
+unloading-layer1-pybullet = "unloading_sim.pybullet_sim:main"
+unloading-layer1-pybullet-rm65 = "unloading_sim.pybullet_rm65:main"
+unloading-layer1-pybullet-kuka-kr50 = "unloading_sim.pybullet_kuka_kr50:main"
+unloading-layer1-online = "unloading_sim.online_unload:main"
+unloading-layer1-pybullet-online-kuka = "unloading_sim.pybullet_online_kuka:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

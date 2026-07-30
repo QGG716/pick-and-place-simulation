@@ -1,0 +1,65 @@
+robot:
+  model: ur5e_like
+  base_position: [-0.55, 0.0, 0.62]
+  # Rotate the standard-DH arm so its forward workspace points into +X trailer.
+  base_rpy: [0.0, 0.0, 3.141592653589793]
+  tool_length: 0.18
+  home_joints: [0.0, -1.57, 1.57, -1.57, -1.57, 0.0]
+
+scene:
+  trailer:
+    length: 4.0
+    width: 2.35
+    height: 2.35
+    wall_thickness: 0.05
+    floor_thickness: 0.08
+
+  # A low conveyor deck outside the trailer.  It is included as a collision body
+  # so later work can add a place trajectory without changing the scene API.
+  static_obstacles:
+    - name: conveyor_deck
+      center: [-0.45, -0.72, 0.44]
+      size: [1.10, 0.45, 0.12]
+      rpy: [0.0, 0.0, 0.0]
+
+  cartons:
+    - name: carton_target
+      center: [0.46, 0.00, 0.98]
+      size: [0.42, 0.48, 0.38]
+      rpy: [0.0, 0.0, 0.0]
+    - name: carton_left
+      center: [0.48, 0.50, 0.96]
+      size: [0.44, 0.46, 0.42]
+      rpy: [0.0, 0.0, 0.02]
+    - name: carton_right
+      center: [0.48, -0.51, 0.95]
+      size: [0.44, 0.46, 0.40]
+      rpy: [0.0, 0.0, -0.03]
+    - name: carton_bottom
+      center: [0.48, 0.00, 0.38]
+      size: [0.46, 0.52, 0.68]
+      rpy: [0.0, 0.0, 0.0]
+    - name: carton_back
+      center: [0.92, 0.02, 0.98]
+      size: [0.42, 0.50, 0.42]
+      rpy: [0.0, 0.0, 0.01]
+
+planning:
+  target_carton: carton_target
+  seed: 7
+  ik_random_restarts: 20
+  ik_position_tolerance: 0.012
+  ik_orientation_tolerance: 0.10
+  rrt_step_size: 0.22
+  rrt_edge_resolution: 0.060
+  rrt_max_iterations: 5000
+  rrt_goal_bias: 0.16
+  shortcut_attempts: 220
+  output_resolution: 0.035
+  approach_resolution: 0.020
+
+outputs:
+  directory: outputs/demo
+  save_plot: true
+  save_trajectory_csv: true
+  save_metrics_json: true

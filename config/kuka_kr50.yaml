@@ -1,0 +1,129 @@
+robot:
+  model: kuka_kr50_r2500
+  urdf_path: assets/robots/kuka_kr50_r2500/kr_50_r2500.urdf
+  # AMR conveyor/vehicle front is 0.80 m inside the trailer opening.
+  base_position: [0.60, 0.15, 0.30]
+  base_rpy: [0.0, 0.0, 0.0]
+  tool_length: 0.20
+  home_joints: [-0.2266, -2.6381, 0.8952, -0.3257, 0.1211, 0.3615]
+
+scene:
+  trailer:
+    length: 4.0
+    width: 2.35
+    height: 2.35
+    wall_thickness: 0.05
+    floor_thickness: 0.08
+
+  static_obstacles:
+    - name: conveyor_deck
+      # Replaced at planning time by the AMR-mounted conveyor world pose.
+      # 1.20 x 0.80 m support area fits the carton on any of its six faces.
+      # Its front edge remains 0.20 m ahead of the robot mount.
+      center: [-2.90, -1.70, 0.37]
+      size: [1.20, 0.80, 0.12]
+      rpy: [0.0, 0.0, 0.0]
+
+  cartons:
+    - {name: carton_front_l0_c0, center: [1.21, -0.825, 0.35], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l0_c1, center: [1.21, -0.275, 0.35], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l0_c2, center: [1.21, 0.275, 0.35], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l0_c3, center: [1.21, 0.825, 0.35], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l1_c0, center: [1.21, -0.825, 1.05], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l1_c1, center: [1.21, -0.275, 1.05], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_target, center: [1.21, 0.275, 1.05], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l1_c3, center: [1.21, 0.825, 1.05], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l2_c0, center: [1.21, -0.825, 1.75], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l2_c1, center: [1.21, -0.275, 1.75], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l2_c2, center: [1.21, 0.275, 1.75], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_front_l2_c3, center: [1.21, 0.825, 1.75], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l0_c0, center: [1.63, -0.825, 0.35], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l0_c1, center: [1.63, -0.275, 0.35], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l0_c2, center: [1.63, 0.275, 0.35], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l0_c3, center: [1.63, 0.825, 0.35], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l1_c0, center: [1.63, -0.825, 1.05], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l1_c1, center: [1.63, -0.275, 1.05], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l1_c2, center: [1.63, 0.275, 1.05], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l1_c3, center: [1.63, 0.825, 1.05], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l2_c0, center: [1.63, -0.825, 1.75], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l2_c1, center: [1.63, -0.275, 1.75], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l2_c2, center: [1.63, 0.275, 1.75], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+    - {name: carton_back_l2_c3, center: [1.63, 0.825, 1.75], size: [0.42, 0.55, 0.70], rpy: [0.0, 0.0, 0.0]}
+
+planning:
+  target_carton: carton_target
+  seed: 11
+  verbose: true
+  enable_place: true
+  # Fast mode: evaluate two representative points on each front, side, and top face.
+  grasp_candidates_per_face: 1
+  # Defer blocked cartons until the scene changes instead of exhausting every
+  # candidate in the same cluttered state.
+  target_planning_time_limit_seconds: 12.0
+  carried_box_clearance: 0.01
+  carton_contact_tolerance_m: 0.001
+  # While any part of the carton remains inside the trailer, limit tilt to
+  # prevent an upward sweep into the roof. Outside, reorientation is allowed.
+  max_in_trailer_carton_tilt_deg: 25.0
+  conveyor_edge_clearance: 0.01
+  conveyor_allow_all_carton_faces: true
+  # Full belt support determines valid releases; the end effector may approach
+  # from any reachable side instead of being forced into the 0.20 m front zone.
+  conveyor_require_front_release_zone: false
+  ik_random_restarts: 10
+  # Score each AMR/target pair by multi-face IK yield, then by shortest
+  # estimated end-effector travel before running full IK/RRT planning.
+  dock_ik_probe_random_restarts: 1
+  ik_max_iterations: 140
+  ik_position_tolerance: 0.018
+  ik_orientation_tolerance: 0.16
+  rrt_step_size: 0.25
+  rrt_edge_resolution: 0.070
+  rrt_max_iterations: 6000
+  rrt_goal_bias: 0.18
+  shortcut_attempts: 240
+  output_resolution: 0.040
+  approach_resolution: 0.025
+  grasp_face_modes: [front, side, top]
+  place_obstacle: conveyor_deck
+  # A placement target may instead be an internal staging surface:
+  # place_target: trailer_staging_deck
+  # place_requires_release_zone: false
+  carry_exit_standoff: 0.68
+  # Optimize for feasible IK/RRT paths. Enable the directional Cartesian
+  # insertion only after it has been validated for the deployed geometry.
+  use_cartesian_carry: false
+  use_cartesian_final_approach: false
+  conveyor_preplace_clearance: 0.30
+  conveyor_approach_directions: [front, top, left, right]
+  # Continue from the empty-tool retreat after release instead of resetting to
+  # the global home configuration between cartons.
+  return_home_after_place: false
+  use_wrist_first_carry: true
+  place_ik_random_restarts: 4
+  place_ik_max_iterations: 140
+  place_position_tolerance: 0.030
+  place_orientation_tolerance: 0.25
+
+amr:
+  # Ground-contacting rigid platform: the robot and conveyor never move
+  # relative to each other, and the AMR locks before arm motion begins.
+  footprint_size: [1.80, 1.30, 0.30]
+  # Compact side-by-side layout based on the reference mobile manipulator:
+  # arm slightly right/rear, short conveyor immediately to its left.
+  platform_center_offset: [-0.70, -0.10, 0.15]
+  robot_mount_position: [0.0, 0.15, 0.30]
+  conveyor_name: conveyor_deck
+  # The 1.20 m deck center at x=-0.40 puts its front 0.20 m ahead of the
+  # robot base; that same front plane is the AMR front.
+  conveyor_front_overhang: 0.20
+  conveyor_mount_center: [-0.40, -0.50, 0.37]
+  # dock.x + 0.20 m is the aligned AMR/conveyor front plane at x=0.80 m.
+  dock_positions:
+    - [0.60, 0.0, 0.0]
+
+outputs:
+  directory: outputs/kuka_kr50
+  save_plot: true
+  save_trajectory_csv: true
+  save_metrics_json: true
