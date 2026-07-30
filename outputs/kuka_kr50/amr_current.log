@@ -1,0 +1,298 @@
+[online] start: robot=kuka_kr50_r2500, cartons=24, max_picks=24
+[online] pick 0: detected 24 OBBs; exposed reachable candidates=['carton_front_l2_c1', 'carton_front_l2_c2', 'carton_front_l2_c0', 'carton_front_l2_c3']
+[online] pick 0: planning target=carton_front_l2_c1; amr_dock=[-1.3, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c1
+[plan_pick] candidate 0/5: face=front, score=1.003, contact=[0.05, -0.275, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: checking straight approach
+[plan_pick] candidate 0: solving carry-exit IK
+[plan_pick] candidate 0: solving fixed conveyor place IK
+[plan_pick] candidate 0: planning transit RRT
+[plan_pick] candidate 0: transit RRT failed after 10.6s
+[plan_pick] target=carton_front_l2_c1: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c1; amr_dock=[-1.1, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c1
+[plan_pick] candidate 0/5: face=front, score=0.990, contact=[0.05, -0.275, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: grasp IK failed after 1.8s
+[plan_pick] candidate 1/5: face=front, score=0.966, contact=[0.05, -0.275, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: pregrasp IK failed after 1.4s
+[plan_pick] candidate 2/5: face=side, score=0.793, contact=[0.26, 0.0, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 1.7s
+[plan_pick] candidate 3/5: face=side, score=0.770, contact=[0.26, 0.0, 1.75]
+[plan_pick] candidate 3: solving pregrasp IK
+[plan_pick] candidate 3: pregrasp IK failed after 2.3s
+[plan_pick] target=carton_front_l2_c1: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c1; amr_dock=[-0.9, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c1
+[plan_pick] candidate 0/5: face=front, score=0.975, contact=[0.05, -0.275, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: pregrasp IK failed after 1.2s
+[plan_pick] candidate 1/5: face=front, score=0.951, contact=[0.05, -0.275, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: pregrasp IK failed after 1.5s
+[plan_pick] candidate 2/5: face=side, score=0.795, contact=[0.26, 0.0, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 1.7s
+[plan_pick] candidate 3/5: face=side, score=0.771, contact=[0.26, 0.0, 1.75]
+[plan_pick] candidate 3: solving pregrasp IK
+[plan_pick] candidate 3: pregrasp IK failed after 1.8s
+[plan_pick] target=carton_front_l2_c1: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c1; amr_dock=[-0.7, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c1
+[plan_pick] candidate 0/5: face=front, score=0.958, contact=[0.05, -0.275, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: pregrasp IK failed after 1.4s
+[plan_pick] candidate 1/5: face=front, score=0.934, contact=[0.05, -0.275, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: pregrasp IK failed after 1.7s
+[plan_pick] candidate 2/5: face=side, score=0.797, contact=[0.26, 0.0, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 2.1s
+[plan_pick] candidate 3/5: face=side, score=0.773, contact=[0.26, 0.0, 1.75]
+[plan_pick] candidate 3: solving pregrasp IK
+[plan_pick] candidate 3: pregrasp IK failed after 2.8s
+[plan_pick] target=carton_front_l2_c1: time budget exceeded
+[online] pick 0: target=carton_front_l2_c1 failed: candidate 0: pregrasp IK failed; candidate 1: pregrasp IK failed; candidate 2: pregrasp IK failed; candidate 3: pregrasp IK failed; target planning time budget (6.0s) exceeded
+[online] pick 0: planning target=carton_front_l2_c2; amr_dock=[-1.3, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c2
+[plan_pick] candidate 0/5: face=front, score=1.003, contact=[0.05, 0.275, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: checking straight approach
+[plan_pick] candidate 0: solving carry-exit IK
+[plan_pick] candidate 0: solving fixed conveyor place IK
+[plan_pick] candidate 0: planning transit RRT
+[plan_pick] candidate 0: transit RRT failed after 10.9s
+[plan_pick] target=carton_front_l2_c2: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c2; amr_dock=[-1.1, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c2
+[plan_pick] candidate 0/5: face=front, score=0.990, contact=[0.05, 0.275, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: pregrasp IK failed after 1.5s
+[plan_pick] candidate 1/5: face=front, score=0.966, contact=[0.05, 0.275, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: pregrasp IK failed after 1.0s
+[plan_pick] candidate 2/5: face=side, score=0.793, contact=[0.26, 0.0, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 1.9s
+[plan_pick] candidate 3/5: face=side, score=0.770, contact=[0.26, 0.0, 1.75]
+[plan_pick] candidate 3: solving pregrasp IK
+[plan_pick] candidate 3: pregrasp IK failed after 1.4s
+[plan_pick] candidate 4/5: face=top, score=0.700, contact=[0.26, 0.275, 2.1]
+[plan_pick] candidate 4: solving pregrasp IK
+[plan_pick] candidate 4: pregrasp IK failed after 0.8s
+[plan_pick] target=carton_front_l2_c2: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c2; amr_dock=[-0.9, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c2
+[plan_pick] candidate 0/5: face=front, score=0.975, contact=[0.05, 0.275, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: pregrasp IK failed after 1.1s
+[plan_pick] candidate 1/5: face=front, score=0.951, contact=[0.05, 0.275, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: pregrasp IK failed after 1.2s
+[plan_pick] candidate 2/5: face=side, score=0.795, contact=[0.26, 0.0, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 2.3s
+[plan_pick] candidate 3/5: face=side, score=0.771, contact=[0.26, 0.0, 1.75]
+[plan_pick] candidate 3: solving pregrasp IK
+[plan_pick] candidate 3: pregrasp IK failed after 2.1s
+[plan_pick] target=carton_front_l2_c2: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c2; amr_dock=[-0.7, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c2
+[plan_pick] candidate 0/5: face=front, score=0.958, contact=[0.05, 0.275, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: grasp IK failed after 2.4s
+[plan_pick] candidate 1/5: face=front, score=0.934, contact=[0.05, 0.275, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: solving grasp IK
+[plan_pick] candidate 1: grasp IK failed after 1.3s
+[plan_pick] candidate 2/5: face=side, score=0.797, contact=[0.26, 0.0, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 2.5s
+[plan_pick] target=carton_front_l2_c2: time budget exceeded
+[online] pick 0: target=carton_front_l2_c2 failed: candidate 0: grasp IK failed; candidate 1: grasp IK failed; candidate 2: pregrasp IK failed; target planning time budget (6.0s) exceeded
+[online] pick 0: planning target=carton_front_l2_c0; amr_dock=[-1.3, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c0
+[plan_pick] candidate 0/5: face=front, score=0.995, contact=[0.05, -0.825, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: checking straight approach
+[plan_pick] candidate 0: solving carry-exit IK
+[plan_pick] candidate 0: solving fixed conveyor place IK
+[plan_pick] candidate 0: planning transit RRT
+[plan_pick] candidate 0: planning place RRT
+[plan_pick] candidate 0: place RRT failed after 4.3s
+[plan_pick] candidate 1/5: face=front, score=0.971, contact=[0.05, -0.825, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: solving grasp IK
+[plan_pick] candidate 1: checking straight approach
+[plan_pick] candidate 1: solving carry-exit IK
+[plan_pick] candidate 1: solving fixed conveyor place IK
+[plan_pick] candidate 1: planning transit RRT
+[plan_pick] candidate 1: planning place RRT
+[plan_pick] candidate 1: place RRT failed after 2.7s
+[plan_pick] target=carton_front_l2_c0: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c0; amr_dock=[-1.1, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c0
+[plan_pick] candidate 0/5: face=front, score=0.982, contact=[0.05, -0.825, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: checking straight approach
+[plan_pick] candidate 0: solving carry-exit IK
+[plan_pick] candidate 0: solving fixed conveyor place IK
+[plan_pick] candidate 0: planning transit RRT
+[plan_pick] candidate 0: transit RRT failed after 0.3s
+[plan_pick] candidate 1/5: face=front, score=0.958, contact=[0.05, -0.825, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: solving grasp IK
+[plan_pick] candidate 1: checking straight approach
+[plan_pick] candidate 1: solving carry-exit IK
+[plan_pick] candidate 1: solving fixed conveyor place IK
+[plan_pick] candidate 1: planning transit RRT
+[plan_pick] candidate 1: transit RRT failed after 0.8s
+[plan_pick] candidate 2/5: face=side, score=0.848, contact=[0.26, -0.55, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 2.1s
+[plan_pick] candidate 3/5: face=side, score=0.824, contact=[0.26, -0.55, 1.75]
+[plan_pick] candidate 3: solving pregrasp IK
+[plan_pick] candidate 3: pregrasp IK failed after 1.8s
+[plan_pick] candidate 4/5: face=top, score=0.700, contact=[0.26, -0.825, 2.1]
+[plan_pick] candidate 4: solving pregrasp IK
+[plan_pick] candidate 4: pregrasp IK failed after 0.7s
+[plan_pick] candidate 5/5: face=top, score=0.548, contact=[0.172, -0.825, 2.1]
+[plan_pick] candidate 5: solving pregrasp IK
+[plan_pick] candidate 5: pregrasp IK failed after 0.7s
+[online] pick 0: planning target=carton_front_l2_c0; amr_dock=[-0.9, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c0
+[plan_pick] candidate 0/5: face=front, score=0.967, contact=[0.05, -0.825, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: pregrasp IK failed after 2.3s
+[plan_pick] candidate 1/5: face=front, score=0.943, contact=[0.05, -0.825, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: solving grasp IK
+[plan_pick] candidate 1: grasp IK failed after 1.7s
+[plan_pick] candidate 2/5: face=side, score=0.852, contact=[0.26, -0.55, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 1.9s
+[plan_pick] candidate 3/5: face=side, score=0.828, contact=[0.26, -0.55, 1.75]
+[plan_pick] candidate 3: solving pregrasp IK
+[plan_pick] candidate 3: pregrasp IK failed after 2.1s
+[plan_pick] target=carton_front_l2_c0: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c0; amr_dock=[-0.7, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c0
+[plan_pick] candidate 0/5: face=front, score=0.951, contact=[0.05, -0.825, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: checking straight approach
+[plan_pick] candidate 0: solving carry-exit IK
+[plan_pick] candidate 0: solving fixed conveyor place IK
+[plan_pick] candidate 0: planning transit RRT
+[plan_pick] candidate 0: transit RRT failed after 2.9s
+[plan_pick] candidate 1/5: face=front, score=0.927, contact=[0.05, -0.825, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: solving grasp IK
+[plan_pick] candidate 1: checking straight approach
+[plan_pick] candidate 1: solving carry-exit IK
+[plan_pick] candidate 1: solving fixed conveyor place IK
+[plan_pick] candidate 1: planning transit RRT
+[plan_pick] candidate 1: transit RRT failed after 2.9s
+[plan_pick] candidate 2/5: face=side, score=0.856, contact=[0.26, -0.55, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 2.3s
+[plan_pick] target=carton_front_l2_c0: time budget exceeded
+[online] pick 0: target=carton_front_l2_c0 failed: candidate 0: transit RRT failed; candidate 1: transit RRT failed; candidate 2: pregrasp IK failed; target planning time budget (6.0s) exceeded
+[online] pick 0: planning target=carton_front_l2_c3; amr_dock=[-1.3, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c3
+[plan_pick] candidate 0/5: face=front, score=0.995, contact=[0.05, 0.825, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: checking straight approach
+[plan_pick] candidate 0: solving carry-exit IK
+[plan_pick] candidate 0: solving fixed conveyor place IK
+[plan_pick] candidate 0: planning transit RRT
+[plan_pick] candidate 0: transit RRT failed after 21.7s
+[plan_pick] target=carton_front_l2_c3: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c3; amr_dock=[-1.1, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c3
+[plan_pick] candidate 0/5: face=front, score=0.982, contact=[0.05, 0.825, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: checking straight approach
+[plan_pick] candidate 0: solving carry-exit IK
+[plan_pick] candidate 0: solving fixed conveyor place IK
+[plan_pick] candidate 0: planning transit RRT
+[plan_pick] candidate 0: transit RRT failed after 1.8s
+[plan_pick] candidate 1/5: face=front, score=0.958, contact=[0.05, 0.825, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: solving grasp IK
+[plan_pick] candidate 1: checking straight approach
+[plan_pick] candidate 1: solving carry-exit IK
+[plan_pick] candidate 1: solving fixed conveyor place IK
+[plan_pick] candidate 1: planning transit RRT
+[plan_pick] candidate 1: transit RRT failed after 2.1s
+[plan_pick] candidate 2/5: face=side, score=0.848, contact=[0.26, 0.55, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 1.8s
+[plan_pick] candidate 3/5: face=side, score=0.824, contact=[0.26, 0.55, 1.75]
+[plan_pick] candidate 3: solving pregrasp IK
+[plan_pick] candidate 3: pregrasp IK failed after 1.7s
+[plan_pick] target=carton_front_l2_c3: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c3; amr_dock=[-0.9, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c3
+[plan_pick] candidate 0/5: face=front, score=0.967, contact=[0.05, 0.825, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: grasp IK failed after 2.1s
+[plan_pick] candidate 1/5: face=front, score=0.943, contact=[0.05, 0.825, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: solving grasp IK
+[plan_pick] candidate 1: grasp IK failed after 1.7s
+[plan_pick] candidate 2/5: face=side, score=0.852, contact=[0.26, 0.55, 1.897]
+[plan_pick] candidate 2: solving pregrasp IK
+[plan_pick] candidate 2: pregrasp IK failed after 1.9s
+[plan_pick] candidate 3/5: face=side, score=0.828, contact=[0.26, 0.55, 1.75]
+[plan_pick] candidate 3: solving pregrasp IK
+[plan_pick] candidate 3: pregrasp IK failed after 2.2s
+[plan_pick] target=carton_front_l2_c3: time budget exceeded
+[online] pick 0: planning target=carton_front_l2_c3; amr_dock=[-0.7, 0.0, 0.0]
+[plan_pick] detected 24 carton OBBs
+[plan_pick] generated 6 suction candidates for carton_front_l2_c3
+[plan_pick] candidate 0/5: face=front, score=0.951, contact=[0.05, 0.825, 1.897]
+[plan_pick] candidate 0: solving pregrasp IK
+[plan_pick] candidate 0: solving grasp IK
+[plan_pick] candidate 0: grasp IK failed after 2.8s
+[plan_pick] candidate 1/5: face=front, score=0.927, contact=[0.05, 0.825, 1.75]
+[plan_pick] candidate 1: solving pregrasp IK
+[plan_pick] candidate 1: solving grasp IK
+[plan_pick] candidate 1: grasp IK failed after 3.5s
+[plan_pick] target=carton_front_l2_c3: time budget exceeded
+[online] pick 0: target=carton_front_l2_c3 failed: candidate 0: grasp IK failed; candidate 1: grasp IK failed; target planning time budget (6.0s) exceeded
+[online] pick 0: no feasible fixed-base target remains
+[online] wrote /home/zy0004-lr/下载/code/00/unloading_layer1_sim/outputs/kuka_kr50/amr_current/online_plan.json
+{
+  "success": false,
+  "moved_boxes": 0,
+  "manifest": "/home/zy0004-lr/下载/code/00/unloading_layer1_sim/outputs/kuka_kr50/amr_current/online_plan.json"
+}
+
