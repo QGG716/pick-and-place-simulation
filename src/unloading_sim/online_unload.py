@@ -135,8 +135,8 @@ def validate_amr_conveyor_alignment(cfg: dict) -> None:
     amr_front_x = float(platform_offset[0] + 0.5 * size[0])
     if not np.isclose(conveyor_front_x, robot_front_x + overhang, atol=1e-9):
         raise ValueError("AMR conveyor front must extend 0.20 m beyond the robot base front")
-    if not np.isclose(amr_front_x, conveyor_front_x, atol=1e-9):
-        raise ValueError("AMR front must align with the conveyor front")
+    if conveyor_front_x < amr_front_x - 1e-9:
+        raise ValueError("AMR conveyor front must not sit behind the AMR platform front")
 
 
 def amr_dock_is_clear(scene: TrailerScene, cfg: dict, dock_position: np.ndarray) -> bool:
@@ -251,7 +251,8 @@ def run_online(config_path: str | Path, max_picks: int | None, output_dir: str |
     robot = build_robot(cfg)
     planning_cfg = dict(cfg.get("planning", {}))
     planning_cfg["verbose"] = True
-    rng = np.random.default_rng(int(planning_cfg.get("seed", 11)))
+    planning_seed = int(planning_cfg.get("seed", 11))
+    scoring_rng = np.random.default_rng(planning_seed)
     current_q = np.asarray(cfg["robot"]["home_joints"], dtype=float)
 
     outputs = cfg.get("outputs", {})
@@ -296,7 +297,7 @@ def run_online(config_path: str | Path, max_picks: int | None, output_dir: str |
             for target_name in reachable_names:
                 if carton_is_outside_fixed_base_reach(dock_robot, dock_scene.carton(target_name)):
                     continue
-                score = score_target_dock_ik(dock_robot, dock_scene, current_q, target_name, planning_cfg, rng)
+                score = score_target_dock_ik(dock_robot, dock_scene, current_q, target_name, planning_cfg, scoring_rng)
                 ee_motion = score["estimated_ee_motion_m"]
                 dock_motion = 0.0 if current_dock is None else float(np.linalg.norm(dock_position - current_dock))
                 rank = (-score["ik_success_rate"], float("inf") if ee_motion is None else ee_motion, dock_motion)
@@ -312,7 +313,8 @@ def run_online(config_path: str | Path, max_picks: int | None, output_dir: str |
                     f"ee_motion={dock_score['estimated_ee_motion_m']}",
                     flush=True,
                 )
-                result = plan_pick(dock_robot, dock_scene, dock_start, target_name, planner_options=planning_cfg, rng=rng)
+                target_rng = np.random.default_rng(planning_seed + pick_index)
+                result = plan_pick(dock_robot, dock_scene, dock_start, target_name, planner_options=planning_cfg, rng=target_rng)
                 if result.success:
                     chosen_result = result
                     chosen_name = target_name

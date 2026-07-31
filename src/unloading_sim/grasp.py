@@ -457,6 +457,27 @@ def _plan_cartesian_carry(
     return PlanResult(True, path, steps, "Cartesian carry")
 
 
+def _plan_via_joint_hints(
+    planner: RRTConnectPlanner,
+    start_q: np.ndarray,
+    goal_q: np.ndarray,
+    hints: Sequence[np.ndarray],
+    time_limit_seconds: float | None = None,
+) -> PlanResult:
+    deadline = None if time_limit_seconds is None else perf_counter() + max(0.0, float(time_limit_seconds))
+    waypoints = [np.asarray(start_q, dtype=float), *[np.asarray(hint, dtype=float) for hint in hints], np.asarray(goal_q, dtype=float)]
+    path = [waypoints[0].copy()]
+    iterations = 0
+    for segment_index, (source, target) in enumerate(zip(waypoints[:-1], waypoints[1:]), start=1):
+        remaining = None if deadline is None else max(0.0, deadline - perf_counter())
+        segment = planner.plan(source, target, time_limit_seconds=remaining)
+        iterations += segment.iterations
+        if not segment.success:
+            return PlanResult(False, path, iterations, f"transit segment {segment_index} failed: {segment.message}")
+        path.extend(segment.path[1:])
+    return PlanResult(True, path, iterations, "connected via joint hints" if hints else "connected")
+
+
 def plan_pick(
     robot: RobotKinematics6,
     scene: TrailerScene,
@@ -541,7 +562,9 @@ def plan_pick(
     max_in_trailer_tilt = planner_options.get("max_in_trailer_carton_tilt_deg")
     carton_contact_tolerance = float(planner_options.get("carton_contact_tolerance_m", 0.001))
     use_cartesian_carry = bool(planner_options.get("use_cartesian_carry", False))
-    use_cartesian_final_approach = bool(planner_options.get("use_cartesian_final_approach", False))
+    # Online unloading now plans directly to release. Keep the legacy option
+    # from reintroducing a pre-place insertion or its matching empty retreat.
+    use_cartesian_final_approach = False
     use_wrist_first_carry = bool(planner_options.get("use_wrist_first_carry", False))
     conveyor_preplace_clearance = float(planner_options.get("conveyor_preplace_clearance", 0.30))
 
@@ -564,8 +587,10 @@ def plan_pick(
         if candidate_index > 0:
             seeds.append(rng.uniform(robot.joint_limits[:, 0] * 0.55, robot.joint_limits[:, 1] * 0.55))
 
-        log(f"candidate {candidate_index}: solving pregrasp IK")
-        pre = solve_ik_multistart(
+        # This pose is a collision-free RRT connector only. It is not exposed
+        # as a pre-grasp phase: the emitted trajectory passes through it
+        # continuously into contact.
+        approach_guide = solve_ik_multistart(
             robot,
             candidate.pregrasp_pose,
             seeds=seeds,
@@ -577,16 +602,15 @@ def plan_pick(
             orientation_tolerance=planner_options.get("ik_orientation_tolerance", 0.10),
             extra_state_valid=posture_valid,
         )
-        if not pre.success:
-            failure_messages.append(f"candidate {candidate_index}: pregrasp IK failed")
-            log(f"candidate {candidate_index}: pregrasp IK failed after {perf_counter() - candidate_t0:.1f}s")
+        if not approach_guide.success:
+            failure_messages.append(f"candidate {candidate_index}: contact approach guide IK failed")
             continue
 
         log(f"candidate {candidate_index}: solving grasp IK")
         grasp = solve_ik_multistart(
             robot,
             candidate.grasp_pose,
-            seeds=[pre.q, start_q],
+            seeds=[approach_guide.q, start_q],
             obstacles=all_obstacles,
             ignored_obstacle_names={carton.name},
             random_restarts=4,
@@ -606,6 +630,18 @@ def plan_pick(
             if place_enabled
             else []
         )
+        place_hint_joints = [np.asarray(q, dtype=float) for q in planner_options.get("place_hint_joints", [])]
+        if place_poses and place_hint_joints:
+            hint_poses = [robot.fk(q) for q in place_hint_joints]
+
+            def place_hint_cost(pose: np.ndarray) -> float:
+                return min(
+                    float(np.linalg.norm(pose[:3, 3] - hint_pose[:3, 3]))
+                    + 0.25 * float(np.linalg.norm(rotation_vector_from_matrix(pose[:3, :3] @ hint_pose[:3, :3].T)))
+                    for hint_pose in hint_poses
+                )
+
+            place_poses.sort(key=place_hint_cost)
         if place_enabled and not place_poses:
             failure_messages.append(f"candidate {candidate_index}: carton does not fit conveyor")
             log(f"candidate {candidate_index}: carton does not fit conveyor")
@@ -633,10 +669,9 @@ def plan_pick(
                 orientation_valid=carried_orientation_valid,
             )
 
-        log(f"candidate {candidate_index}: checking straight approach")
-        approach_ok, approach_path = _edge_collision_free(
+        approach_ok, contact_approach = _edge_collision_free(
             robot,
-            pre.q,
+            approach_guide.q,
             grasp.q,
             all_obstacles,
             ignored={carton.name},
@@ -644,15 +679,45 @@ def plan_pick(
             extra_state_valid=posture_valid,
         )
         if not approach_ok:
-            failure_messages.append(f"candidate {candidate_index}: approach edge blocked")
-            log(f"candidate {candidate_index}: approach blocked after {perf_counter() - candidate_t0:.1f}s")
+            failure_messages.append(f"candidate {candidate_index}: contact approach is blocked")
             continue
+
+        log(f"candidate {candidate_index}: planning transit")
+        state_valid = lambda q: posture_valid(q) and robot.is_collision_free(q, all_obstacles)
+        planner = RRTConnectPlanner(
+            robot.joint_limits[:, 0],
+            robot.joint_limits[:, 1],
+            state_valid,
+            step_size=planner_options.get("rrt_step_size", 0.22),
+            edge_resolution=planner_options.get("rrt_edge_resolution", 0.065),
+            max_iterations=planner_options.get("rrt_max_iterations", 4500),
+            goal_bias=planner_options.get("rrt_goal_bias", 0.15),
+            rng=rng,
+        )
+        transit_hints = [np.asarray(q, dtype=float) for q in planner_options.get("transit_hint_joints", [])]
+        remaining_budget = None
+        if candidate_time_budget > 0.0:
+            remaining_budget = max(0.0, candidate_time_budget - (perf_counter() - plan_t0))
+        transit_limit = planner_options.get("transit_time_limit_seconds")
+        if transit_limit is not None:
+            remaining_budget = float(transit_limit) if remaining_budget is None else min(remaining_budget, float(transit_limit))
+        transit = _plan_via_joint_hints(
+            planner,
+            start_q,
+            approach_guide.q,
+            transit_hints,
+            time_limit_seconds=remaining_budget,
+        )
+        if not transit.success:
+            failure_messages.append(f"candidate {candidate_index}: {transit.message}")
+            log(f"candidate {candidate_index}: {transit.message} after {perf_counter() - candidate_t0:.1f}s")
+            continue
+        smooth = planner.shortcut(transit.path, attempts=planner_options.get("shortcut_attempts", 180))
+        dense_transit = planner.densify(smooth, resolution=planner_options.get("output_resolution", 0.035))
 
         place = None
         place_transit = None
         selected_place_pose = None
-        preplace_pose = None
-        preplace = None
         carry_exit = None
         dense_place: list[np.ndarray] = []
         retreat_path: list[np.ndarray] = []
@@ -662,11 +727,10 @@ def plan_pick(
                 candidate.pregrasp_pose[:3, :3],
                 candidate.contact_point + candidate.outward_normal * planner_options.get("carry_exit_standoff", 0.68),
             )
-            log(f"candidate {candidate_index}: solving carry-exit IK")
             carry_exit = solve_ik_multistart(
                 robot,
                 carry_exit_pose,
-                seeds=[pre.q, grasp.q, start_q],
+                seeds=[approach_guide.q, grasp.q, start_q],
                 obstacles=scene.obstacles_without({carton.name}),
                 random_restarts=planner_options.get("place_ik_random_restarts", 10),
                 rng=rng,
@@ -677,30 +741,29 @@ def plan_pick(
             )
             if not carry_exit.success:
                 failure_messages.append(f"candidate {candidate_index}: carry-exit IK failed")
-                log(f"candidate {candidate_index}: carry-exit IK failed after {perf_counter() - candidate_t0:.1f}s")
                 continue
-
             if mobile_place_position is None:
                 log(f"candidate {candidate_index}: evaluating {len(place_poses)} supported conveyor poses")
-                place_results = [
-                    (
+                feasible_places = []
+                max_place_candidates = int(planner_options.get("max_place_pose_candidates", len(place_poses)))
+                max_feasible_places = int(planner_options.get("max_feasible_place_iks", max_place_candidates))
+                for pose in place_poses[:max_place_candidates]:
+                    result = solve_ik_multistart(
+                        robot,
                         pose,
-                        solve_ik_multistart(
-                            robot,
-                            pose,
-                            seeds=[carry_exit.q, grasp.q, pre.q, start_q],
-                            obstacles=scene.obstacles_without({carton.name}),
-                            random_restarts=planner_options.get("place_ik_random_restarts", 10),
-                            rng=rng,
-                            max_iterations=planner_options.get("place_ik_max_iterations", planner_options.get("ik_max_iterations", 250)),
-                            position_tolerance=planner_options.get("place_position_tolerance", 0.025),
-                            orientation_tolerance=planner_options.get("place_orientation_tolerance", 0.22),
-                            extra_state_valid=carried_goal_valid,
-                        ),
+                        seeds=[*place_hint_joints, carry_exit.q, grasp.q, approach_guide.q, start_q],
+                        obstacles=scene.obstacles_without({carton.name}),
+                        random_restarts=planner_options.get("place_ik_random_restarts", 10),
+                        rng=rng,
+                        max_iterations=planner_options.get("place_ik_max_iterations", planner_options.get("ik_max_iterations", 250)),
+                        position_tolerance=planner_options.get("place_position_tolerance", 0.025),
+                        orientation_tolerance=planner_options.get("place_orientation_tolerance", 0.22),
+                        extra_state_valid=carried_goal_valid,
                     )
-                    for pose in place_poses
-                ]
-                feasible_places = [(pose, result) for pose, result in place_results if result.success]
+                    if result.success:
+                        feasible_places.append((pose, result))
+                        if len(feasible_places) >= max_feasible_places:
+                            break
                 if not feasible_places:
                     failure_messages.append(f"candidate {candidate_index}: place IK failed")
                     log(f"candidate {candidate_index}: place IK failed after {perf_counter() - candidate_t0:.1f}s")
@@ -718,7 +781,7 @@ def plan_pick(
                             preplace_ik = solve_ik_multistart(
                                 robot,
                                 candidate_preplace_pose,
-                                seeds=[release_ik.q, carry_exit.q, grasp.q, pre.q, start_q],
+                                seeds=[release_ik.q, carry_exit.q, grasp.q, start_q],
                                 obstacles=scene.obstacles_without({carton.name}),
                                 random_restarts=planner_options.get("place_ik_random_restarts", 10),
                                 rng=rng,
@@ -744,25 +807,6 @@ def plan_pick(
                         key=lambda item: float(np.linalg.norm(item[1].q - carry_exit.q)),
                     )
 
-        log(f"candidate {candidate_index}: planning transit RRT")
-        state_valid = lambda q: posture_valid(q) and robot.is_collision_free(q, all_obstacles)
-        planner = RRTConnectPlanner(
-            robot.joint_limits[:, 0],
-            robot.joint_limits[:, 1],
-            state_valid,
-            step_size=planner_options.get("rrt_step_size", 0.22),
-            edge_resolution=planner_options.get("rrt_edge_resolution", 0.065),
-            max_iterations=planner_options.get("rrt_max_iterations", 4500),
-            goal_bias=planner_options.get("rrt_goal_bias", 0.15),
-            rng=rng,
-        )
-        transit = planner.plan(start_q, pre.q)
-        if not transit.success:
-            failure_messages.append(f"candidate {candidate_index}: transit RRT failed")
-            log(f"candidate {candidate_index}: transit RRT failed after {perf_counter() - candidate_t0:.1f}s")
-            continue
-        smooth = planner.shortcut(transit.path, attempts=planner_options.get("shortcut_attempts", 180))
-        dense_transit = planner.densify(smooth, resolution=planner_options.get("output_resolution", 0.035))
         mobile_base_path: list[np.ndarray] = []
         if place_enabled:
             log(f"candidate {candidate_index}: planning place RRT")
@@ -787,67 +831,47 @@ def plan_pick(
                 goal_bias=planner_options.get("rrt_goal_bias", 0.15),
                 rng=rng,
             )
-            retreat_ok, retreat_path = _edge_collision_free(
-                robot,
-                grasp.q,
-                pre.q,
-                place_robot_obstacles,
-                ignored={carton.name},
-                resolution=planner_options.get("approach_resolution", 0.02),
-                extra_state_valid=posture_valid,
-            )
-            if not retreat_ok or not _carried_box_collision_free(
+            retreat = _plan_cartesian_carry(
                 robot,
                 carton,
                 grasp.q,
-                retreat_path,
+                grasp.q,
+                candidate.pregrasp_pose,
+                place_robot_obstacles,
                 carried_obstacles,
-                box_margin=carried_box_clearance,
+                carton_from_tool,
+                carried_orientation_valid,
+                rng,
                 extra_state_valid=posture_valid,
-                carton_contact_tolerance=carton_contact_tolerance,
-                orientation_valid=carried_orientation_valid,
-            ):
-                failure_messages.append(f"candidate {candidate_index}: retreat with carton blocked")
-                log(f"candidate {candidate_index}: retreat with carton blocked after {perf_counter() - candidate_t0:.1f}s")
+                position_step=float(planner_options.get("destack_position_step", 0.04)),
+                orientation_step=float(planner_options.get("cartesian_carry_orientation_step", 0.16)),
+                joint_resolution=float(planner_options.get("output_resolution", 0.035)),
+                ik_iterations=int(planner_options.get("place_ik_max_iterations", planner_options.get("ik_max_iterations", 250))),
+                position_tolerance=float(planner_options.get("place_position_tolerance", 0.025)),
+                orientation_tolerance=float(planner_options.get("place_orientation_tolerance", 0.22)),
+            )
+            if not retreat.success:
+                failure_messages.append(f"candidate {candidate_index}: {retreat.message}")
                 continue
-            if use_cartesian_carry:
-                exit_transit = _plan_cartesian_carry(
-                    robot,
-                    carton,
-                    grasp.q,
-                    pre.q,
-                    carry_exit_pose,
-                    place_robot_obstacles,
-                    carried_obstacles,
-                    carton_from_tool,
-                    carried_orientation_valid,
-                    rng,
-                    position_step=float(planner_options.get("cartesian_carry_position_step", 0.10)),
-                    orientation_step=float(planner_options.get("cartesian_carry_orientation_step", 0.16)),
-                    joint_resolution=float(planner_options.get("output_resolution", 0.035)),
-                )
-            elif use_wrist_first_carry:
+            retreat_path = retreat.path
+            withdrawal_q = retreat_path[-1]
+            if use_wrist_first_carry:
                 exit_transit = _plan_wrist_first_carry(
-                    pre.q,
-                    carry_exit.q,
-                    place_valid,
+                    withdrawal_q, carry_exit.q, place_valid,
                     resolution=float(planner_options.get("approach_resolution", 0.02)),
                 )
                 if not exit_transit.success:
-                    exit_transit = place_planner.plan(pre.q, carry_exit.q)
+                    exit_transit = place_planner.plan(withdrawal_q, carry_exit.q)
             else:
-                exit_transit = place_planner.plan(pre.q, carry_exit.q)
+                exit_transit = place_planner.plan(withdrawal_q, carry_exit.q)
             if not exit_transit.success:
                 failure_messages.append(f"candidate {candidate_index}: {exit_transit.message}")
                 log(f"candidate {candidate_index}: {exit_transit.message} after {perf_counter() - candidate_t0:.1f}s")
                 continue
-            if use_cartesian_carry:
-                dense_exit = exit_transit.path
-            else:
-                dense_exit = place_planner.densify(
-                    place_planner.shortcut(exit_transit.path, attempts=planner_options.get("shortcut_attempts", 180)),
-                    resolution=planner_options.get("output_resolution", 0.035),
-                )
+            dense_exit = place_planner.densify(
+                place_planner.shortcut(exit_transit.path, attempts=planner_options.get("shortcut_attempts", 180)),
+                resolution=planner_options.get("output_resolution", 0.035),
+            )
             if mobile_place_position is not None:
                 carton_from_tool = np.linalg.inv(robot.fk(grasp.q)) @ carton.world_from_local
                 mobile_base_path = _mobile_base_translation_safe(
@@ -870,7 +894,7 @@ def plan_pick(
                 place = solve_ik_multistart(
                     robot,
                     place_poses[0],
-                    seeds=[carry_exit.q, grasp.q, pre.q],
+                    seeds=[carry_exit.q, grasp.q, approach_guide.q],
                     obstacles=place_robot_obstacles,
                     random_restarts=planner_options.get("place_ik_random_restarts", 10),
                     rng=rng,
@@ -965,15 +989,10 @@ def plan_pick(
                 failure_messages.append(f"candidate {candidate_index}: carried carton path collides")
                 log(f"candidate {candidate_index}: carried carton path collides after {perf_counter() - candidate_t0:.1f}s")
                 continue
+        approach_path = contact_approach
         full = dense_transit + approach_path[1:] + dense_place[1:]
         grasp_index = len(dense_transit) + len(approach_path) - 2
         release_index = len(full) - 1
-        release_retreat_path: list[np.ndarray] = []
-        if place_enabled and use_cartesian_final_approach and mobile_place_position is None:
-            # Retrace the direct preplace-to-release segment after releasing.
-            # The carton is no longer attached, so this is an empty-tool exit.
-            release_retreat_path = list(reversed(place_transit.path))
-            full.extend(release_retreat_path[1:])
         release_retreat_index = len(full) - 1
         return_path: list[np.ndarray] = []
         if place_enabled and bool(planner_options.get("return_home_after_place", True)):
@@ -1008,7 +1027,7 @@ def plan_pick(
         return PickPlan(
             True,
             candidate,
-            pre,
+            None,
             grasp,
             place,
             transit,

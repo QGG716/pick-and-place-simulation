@@ -141,7 +141,7 @@ def test_amr_and_conveyor_front_alignment():
     amr_front = amr["platform_center_offset"][0] + 0.5 * amr["footprint_size"][0]
 
     assert np.isclose(conveyor_front - robot_front, 0.20)
-    assert np.isclose(amr_front, conveyor_front)
+    assert conveyor_front > amr_front
 
 
 def test_carton_stack_and_amr_front_are_inside_the_requested_door_clearances():
@@ -153,7 +153,8 @@ def test_carton_stack_and_amr_front_are_inside_the_requested_door_clearances():
 
     assert np.isclose(min(carton.center[0] - carton.half_extents[0] for carton in front_row), 1.0)
     amr_front = dock[0] + amr["platform_center_offset"][0] + 0.5 * amr["footprint_size"][0]
-    assert np.isclose(amr_front, 0.8)
+    assert np.isclose(amr_front, 0.5)
+    assert np.isclose(min(carton.center[0] - carton.half_extents[0] for carton in front_row) - amr_front, 0.5)
 
 
 def test_conveyor_place_candidates_use_release_zone_and_full_support():

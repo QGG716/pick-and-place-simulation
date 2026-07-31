@@ -1,6 +1,6 @@
 import numpy as np
 
-from unloading_sim.grasp import _conveyor_preplace_poses, _plan_wrist_first_carry
+from unloading_sim.grasp import _conveyor_preplace_poses, _plan_via_joint_hints, _plan_wrist_first_carry
 from unloading_sim.planner import RRTConnectPlanner
 from unloading_sim.robot import URDFRobot6
 
@@ -22,6 +22,45 @@ def test_rrt_connect_around_joint_space_obstacle():
     result = planner.plan(np.array([-0.8, 0.0]), np.array([0.8, 0.0]))
     assert result.success
     assert all(valid(q) for q in planner.densify(result.path, 0.02))
+
+
+def test_rrt_connect_honors_hard_time_limit():
+    planner = RRTConnectPlanner(
+        lower_limits=np.array([-1.0, -1.0]),
+        upper_limits=np.array([1.0, 1.0]),
+        is_state_valid=lambda q: True,
+        rng=np.random.default_rng(3),
+    )
+
+    result = planner.plan(np.array([-0.8, 0.0]), np.array([0.8, 0.0]), time_limit_seconds=0.0)
+
+    assert not result.success
+    assert result.message == "time limit reached"
+
+
+def test_joint_transit_uses_safe_hint_between_blocked_endpoints():
+    def valid(q):
+        return np.linalg.norm(q) > 0.35
+
+    planner = RRTConnectPlanner(
+        lower_limits=np.array([-1.0, -1.0]),
+        upper_limits=np.array([1.0, 1.0]),
+        is_state_valid=valid,
+        max_iterations=1,
+        rng=np.random.default_rng(3),
+    )
+    hint = np.array([0.0, 0.8])
+
+    result = _plan_via_joint_hints(
+        planner,
+        np.array([-0.8, 0.0]),
+        np.array([0.8, 0.0]),
+        [hint],
+        time_limit_seconds=0.1,
+    )
+
+    assert result.success
+    assert any(np.allclose(q, hint) for q in result.path)
 
 
 def test_rrt_connect_with_kuka_urdf_limits():

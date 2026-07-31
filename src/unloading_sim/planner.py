@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from time import perf_counter
 from typing import Callable, Sequence
 
 import numpy as np
@@ -60,10 +61,16 @@ class RRTConnectPlanner:
         self.goal_bias = float(goal_bias)
         self.rng = rng or np.random.default_rng(0)
 
-    def _edge_valid(self, a: np.ndarray, b: np.ndarray) -> bool:
+    @staticmethod
+    def _deadline_reached(deadline: float | None) -> bool:
+        return deadline is not None and perf_counter() >= deadline
+
+    def _edge_valid(self, a: np.ndarray, b: np.ndarray, deadline: float | None = None) -> bool:
         delta = b - a
         n = max(1, int(np.ceil(np.max(np.abs(delta)) / self.edge_resolution)))
         for i in range(1, n + 1):
+            if self._deadline_reached(deadline):
+                return False
             q = a + (i / n) * delta
             if not self.is_state_valid(q):
                 return False
@@ -76,51 +83,68 @@ class RRTConnectPlanner:
             return target.copy()
         return source + delta * (self.step_size / distance)
 
-    def _extend(self, tree: _Tree, target: np.ndarray) -> tuple[str, int | None]:
+    def _extend(self, tree: _Tree, target: np.ndarray, deadline: float | None = None) -> tuple[str, int | None]:
+        if self._deadline_reached(deadline):
+            return "timeout", None
         nearest_idx = tree.nearest_index(target)
         nearest = tree.nodes[nearest_idx]
         new_q = self._steer(nearest, target)
-        if not self._edge_valid(nearest, new_q):
+        if not self._edge_valid(nearest, new_q, deadline):
+            if self._deadline_reached(deadline):
+                return "timeout", None
             return "trapped", None
         new_idx = tree.add(new_q, nearest_idx)
         if np.linalg.norm(new_q - target) < 1e-8:
             return "reached", new_idx
         return "advanced", new_idx
 
-    def _connect(self, tree: _Tree, target: np.ndarray) -> tuple[str, int | None]:
+    def _connect(self, tree: _Tree, target: np.ndarray, deadline: float | None = None) -> tuple[str, int | None]:
         last_idx: int | None = None
         while True:
-            status, idx = self._extend(tree, target)
+            status, idx = self._extend(tree, target, deadline)
+            if status == "timeout":
+                return "timeout", last_idx
             if status == "trapped":
                 return "trapped", last_idx
             last_idx = idx
             if status == "reached":
                 return "reached", idx
 
-    def plan(self, start: np.ndarray, goal: np.ndarray) -> PlanResult:
+    def plan(self, start: np.ndarray, goal: np.ndarray, time_limit_seconds: float | None = None) -> PlanResult:
+        deadline = None if time_limit_seconds is None else perf_counter() + max(0.0, float(time_limit_seconds))
         start = np.asarray(start, dtype=float)
         goal = np.asarray(goal, dtype=float)
         if not self.is_state_valid(start):
             return PlanResult(False, [], 0, "start state is invalid")
         if not self.is_state_valid(goal):
             return PlanResult(False, [], 0, "goal state is invalid")
-        if self._edge_valid(start, goal):
+        if self._deadline_reached(deadline):
+            return PlanResult(False, [], 0, "time limit reached")
+        if self._edge_valid(start, goal, deadline):
             return PlanResult(True, [start, goal], 0, "direct edge")
+        if self._deadline_reached(deadline):
+            return PlanResult(False, [], 0, "time limit reached")
 
         tree_a = _Tree(start)
         tree_b = _Tree(goal)
         a_is_start = True
 
         for iteration in range(1, self.max_iterations + 1):
+            if self._deadline_reached(deadline):
+                return PlanResult(False, [], iteration - 1, "time limit reached")
             if self.rng.random() < self.goal_bias:
                 sample = tree_b.nodes[0]
             else:
                 sample = self.rng.uniform(self.lower, self.upper)
 
-            status_a, idx_a = self._extend(tree_a, sample)
+            status_a, idx_a = self._extend(tree_a, sample, deadline)
+            if status_a == "timeout":
+                return PlanResult(False, [], iteration - 1, "time limit reached")
             if status_a != "trapped" and idx_a is not None:
                 q_new = tree_a.nodes[idx_a]
-                status_b, idx_b = self._connect(tree_b, q_new)
+                status_b, idx_b = self._connect(tree_b, q_new, deadline)
+                if status_b == "timeout":
+                    return PlanResult(False, [], iteration, "time limit reached")
                 if status_b == "reached" and idx_b is not None:
                     path_a = tree_a.path_to_root(idx_a)
                     path_b = tree_b.path_to_root(idx_b)
