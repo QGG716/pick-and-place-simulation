@@ -44,6 +44,24 @@ def test_kuka_urdf_fk_jacobian_and_ik():
     assert result.orientation_error < 0.10
 
 
+def test_fanuc_m20id35_urdf_fk_jacobian_and_ik():
+    robot = URDFRobot6.fanuc_m20id35(tool_length=0.0)
+    q = np.array([-0.25, -0.65, -0.75, 0.45, -1.10, 0.20])
+    assert robot.name == "fanuc_m20id35"
+    assert robot.fk(q).shape == (4, 4)
+    assert robot.geometric_jacobian(q).shape == (6, 6)
+    assert robot.within_limits(q)
+
+    result = solve_ik_multistart(
+        robot,
+        robot.fk(q),
+        seeds=[q + 0.05],
+        random_restarts=4,
+        rng=np.random.default_rng(14),
+    )
+    assert result.success
+
+
 def test_link_elevation_uses_physical_link_direction():
     robot = URDFRobot6.kuka_kr50_r2500()
     home = np.array([0.6964, -0.3128, 1.8886, -0.4056, -0.5357, -0.2895])

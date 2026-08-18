@@ -139,6 +139,8 @@ def materialize_urdf(urdf_path: Path, package_map: dict[str, Path]) -> tuple[Pat
         filename = elem.attrib.get("filename")
         if filename and filename.startswith("package://"):
             elem.set("filename", str(resolve_package_uri(filename, package_map)))
+        elif filename and not Path(filename).is_absolute():
+            elem.set("filename", str((urdf_path.parent / filename).resolve()))
 
     temp_dir = tempfile.TemporaryDirectory(prefix="unloading_pybullet_urdf_")
     out_path = Path(temp_dir.name) / urdf_path.name
@@ -376,17 +378,31 @@ def update_simple_tool(p, robot: LoadedModel, ee_link: int, tool: SimpleTool) ->
         p.resetBasePositionAndOrientation(body_id, pos, quat)
 
 
-def add_tool_trace(p, robot: LoadedModel, ee_link: int, trajectory: Sequence[np.ndarray]) -> None:
+def add_tool_trace(
+    p,
+    robot: LoadedModel,
+    ee_link: int,
+    trajectory: Sequence[np.ndarray],
+    tool_offset: float = 0.0,
+    sample_count: int = 80,
+) -> list[int]:
     if not trajectory:
-        return
-    sample_count = min(80, len(trajectory))
+        return []
+    sample_count = min(int(sample_count), len(trajectory))
     sample_indices = np.linspace(0, len(trajectory) - 1, sample_count, dtype=int)
     visual = p.createVisualShape(p.GEOM_SPHERE, radius=0.012, rgbaColor=(0.95, 0.12, 0.08, 0.82))
+    body_ids: list[int] = []
     for index in sample_indices:
         set_robot_joints(p, robot, trajectory[int(index)])
         p.stepSimulation()
         state = p.getLinkState(robot.body_id, ee_link, computeForwardKinematics=True)
-        p.createMultiBody(baseMass=0.0, baseVisualShapeIndex=visual, basePosition=state[4])
+        position = state[4]
+        if tool_offset:
+            position, _ = p.multiplyTransforms(
+                state[4], state[5], (0.0, 0.0, float(tool_offset)), (0.0, 0.0, 0.0, 1.0)
+            )
+        body_ids.append(p.createMultiBody(baseMass=0.0, baseVisualShapeIndex=visual, basePosition=position))
+    return body_ids
 
 
 def replay_with_carried_carton(

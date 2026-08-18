@@ -21,8 +21,6 @@ def main(argv: Sequence[str] | None = None) -> None:
         "--robot-urdf", str(DEFAULT_KUKA_KR50_URDF),
         "--package-root", str(DEFAULT_KUKA_KR50_PACKAGE_ROOT),
         "--end-effector-link", "flange",
-        "--base-position", "-1.15", "0.0", "0.0",
-        "--base-rpy", "0.0", "0.0", "0.0",
         "--gripper-xyz", "0.0", "0.0", "0.055",
         "--suction-radius", "0.065",
     ]

@@ -394,6 +394,31 @@ class URDFRobot6:
         robot.self_collision_exclusions.add((2, 4))
         return robot
 
+    @classmethod
+    def fanuc_m20id35(
+        cls,
+        urdf_path: str | Path = "assets/robots/fanuc_m20id35/m20_35_18d.urdf",
+        base_position: Iterable[float] = (-0.70, 0.0, 0.30),
+        base_rpy: Iterable[float] = (0.0, 0.0, 0.0),
+        tool_length: float = 0.20,
+    ) -> "URDFRobot6":
+        """Build the FANUC M-20iD/35 from FANUC's M-20/35-18D URDF."""
+        robot = cls.from_urdf(
+            urdf_path=urdf_path,
+            active_joint_names=["J1", "J2", "J3", "J4", "J5", "J6"],
+            base_link="base_link",
+            tip_link="tool0",
+            base_position=base_position,
+            base_rpy=base_rpy,
+            tool_length=tool_length,
+            link_radii=[0.24, 0.20, 0.18, 0.13, 0.10, 0.08],
+            name="fanuc_m20id35",
+        )
+        # J5 rotates at the end of the long J4 forearm. Their conservative
+        # centerline capsules overlap at valid wrist configurations.
+        robot.self_collision_exclusions.add((2, 4))
+        return robot
+
     @staticmethod
     def _chain_joints(joints: Sequence[URDFJoint], base_link: str, tip_link: str) -> list[URDFJoint]:
         by_parent: dict[str, list[URDFJoint]] = {}

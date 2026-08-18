@@ -40,10 +40,36 @@ def build_robot(cfg: dict) -> RobotKinematics6:
             base_rpy=robot_cfg.get("base_rpy", [0.0, 0.0, 0.0]),
             tool_length=float(robot_cfg.get("tool_length", 0.20)),
         )
+    if model == "fanuc_m20id35":
+        return URDFRobot6.fanuc_m20id35(
+            urdf_path=robot_cfg.get(
+                "urdf_path", "assets/robots/fanuc_m20id35/m20_35_18d.urdf"
+            ),
+            base_position=robot_cfg.get("base_position", [-0.70, 0.0, 0.30]),
+            base_rpy=robot_cfg.get("base_rpy", [0.0, 0.0, 0.0]),
+            tool_length=float(robot_cfg.get("tool_length", 0.20)),
+        )
     raise ValueError(f"Unsupported built-in model: {model}")
 
 
-def run(config_path: str | Path) -> dict:
+def validate_start_configuration(
+    robot: RobotKinematics6,
+    q: np.ndarray,
+    obstacles,
+    context: str = "configured home pose",
+) -> None:
+    q = np.asarray(q, dtype=float)
+    if q.shape != (6,):
+        raise ValueError(f"{context} must contain exactly six joint values")
+    collision = robot.collision_result(q, obstacles)
+    if collision.in_collision:
+        raise RuntimeError(
+            f"{context} is invalid: {collision.reason}, "
+            f"{collision.first_link}, {collision.first_obstacle}"
+        )
+
+
+def run(config_path: str | Path, output_dir: str | Path | None = None) -> dict:
     print(f"[demo] loading config: {config_path}", flush=True)
     scene, cfg = load_scene_config(config_path)
     robot = build_robot(cfg)
@@ -56,12 +82,7 @@ def run(config_path: str | Path) -> dict:
         flush=True,
     )
 
-    collision = robot.collision_result(start_q, scene.all_obstacles)
-    if collision.in_collision:
-        raise RuntimeError(
-            f"Configured home pose is in collision: {collision.reason}, "
-            f"{collision.first_link}, {collision.first_obstacle}"
-        )
+    validate_start_configuration(robot, start_q, scene.all_obstacles)
 
     t0 = perf_counter()
     print("[demo] planning pick/place path...", flush=True)
@@ -76,7 +97,7 @@ def run(config_path: str | Path) -> dict:
     elapsed = perf_counter() - t0
 
     outputs = cfg.get("outputs", {})
-    out_dir = Path(outputs.get("directory", "outputs/demo"))
+    out_dir = Path(output_dir) if output_dir is not None else Path(outputs.get("directory", "outputs/demo"))
     if not out_dir.is_absolute():
         out_dir = Path(config_path).resolve().parent.parent / out_dir
     out_dir.mkdir(parents=True, exist_ok=True)

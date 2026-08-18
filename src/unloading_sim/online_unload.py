@@ -17,14 +17,28 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     from unloading_sim.demo import build_robot
     from unloading_sim.geometry import OBB
-    from unloading_sim.grasp import generate_suction_candidates, plan_pick, select_fast_suction_candidates
+    from unloading_sim.grasp import (
+        _carried_box_state_valid,
+        _edge_collision_free,
+        _in_trailer_orientation_valid,
+        generate_suction_candidates,
+        plan_pick,
+        select_fast_suction_candidates,
+    )
     from unloading_sim.ik import solve_ik_multistart
     from unloading_sim.perception import detect_carton_obbs, fixed_conveyor_place_pose
     from unloading_sim.scene import TrailerScene, load_scene_config
 else:
     from .demo import build_robot
     from .geometry import OBB
-    from .grasp import generate_suction_candidates, plan_pick, select_fast_suction_candidates
+    from .grasp import (
+        _carried_box_state_valid,
+        _edge_collision_free,
+        _in_trailer_orientation_valid,
+        generate_suction_candidates,
+        plan_pick,
+        select_fast_suction_candidates,
+    )
     from .ik import solve_ik_multistart
     from .perception import detect_carton_obbs, fixed_conveyor_place_pose
     from .scene import TrailerScene, load_scene_config
@@ -48,13 +62,18 @@ def _overlaps_interval(a_min: float, a_max: float, b_min: float, b_max: float, c
     return min(a_max, b_max) > max(a_min, b_min) + clearance
 
 
-def exposed_carton_order(scene: TrailerScene) -> list[str]:
-    """Return cartons exposed from above and from the trailer door.
+def exposed_carton_order(
+    scene: TrailerScene,
+    face_modes: Sequence[str] = ("front", "side", "top"),
+) -> list[str]:
+    """Return stable cartons with at least one requested face exposed.
 
-    Planning a box that has another box directly above it, or directly between
-    it and the door, cannot produce a valid suction withdrawal.  This cheap
-    O(n^2) OBB-axis check avoids expensive IK/RRT calls for those boxes.
+    Cartons supporting another carton are deferred. Among the remaining top
+    layer, a carton may be reached from above, the trailer door, or either
+    side. This cheap O(n^2) OBB-axis check avoids discarding valid top and side
+    grasps before collision-aware planning evaluates them.
     """
+    allowed_faces = set(face_modes)
     cartons = scene.cartons
     exposed: list[str] = []
     for carton in cartons:
@@ -62,6 +81,8 @@ def exposed_carton_order(scene: TrailerScene) -> list[str]:
         x_max, y_max, z_max = carton.center + carton.half_extents
         blocked_above = False
         blocked_at_door = False
+        blocked_at_left = False
+        blocked_at_right = False
         for other in cartons:
             if other.name == carton.name:
                 continue
@@ -79,7 +100,24 @@ def exposed_carton_order(scene: TrailerScene) -> list[str]:
                 and _overlaps_interval(z_min, z_max, other_z_min, other_z_max)
             ):
                 blocked_at_door = True
-        if not blocked_above and not blocked_at_door:
+            if (
+                other_y_min >= y_max - 1e-6
+                and _overlaps_interval(x_min, x_max, other_x_min, other_x_max)
+                and _overlaps_interval(z_min, z_max, other_z_min, other_z_max)
+            ):
+                blocked_at_left = True
+            if (
+                other_y_max <= y_min + 1e-6
+                and _overlaps_interval(x_min, x_max, other_x_min, other_x_max)
+                and _overlaps_interval(z_min, z_max, other_z_min, other_z_max)
+            ):
+                blocked_at_right = True
+        requested_face_exposed = (
+            ("top" in allowed_faces and not blocked_above)
+            or ("front" in allowed_faces and not blocked_at_door)
+            or ("side" in allowed_faces and (not blocked_at_left or not blocked_at_right))
+        )
+        if not blocked_above and requested_face_exposed:
             exposed.append(carton.name)
 
     rank = {name: index for index, name in enumerate(top_down_carton_order(scene))}
@@ -150,8 +188,10 @@ def amr_dock_is_clear(scene: TrailerScene, cfg: dict, dock_position: np.ndarray)
         name="amr_base",
         category="amr",
     )
+    mounted_names = set(amr_cfg.get("mounted_surface_centers", {}))
+    mounted_names.add(amr_cfg.get("conveyor_name", "conveyor_deck"))
     for obstacle in scene.obstacles:
-        if obstacle.name == "trailer_floor" or obstacle.name == amr_cfg.get("conveyor_name", "conveyor_deck"):
+        if obstacle.name == "trailer_floor" or obstacle.name in mounted_names:
             continue
         if base.intersects_obb(obstacle, margin=0.02):
             return False
@@ -165,13 +205,14 @@ def docked_robot_and_scene(scene: TrailerScene, cfg: dict, dock_position: np.nda
     robot_mount = np.asarray(amr_cfg.get("robot_mount_position", [0.0, 0.0, 0.0]), dtype=float)
     local_cfg["robot"]["base_position"] = (np.asarray(dock_position, dtype=float) + robot_mount).tolist()
     conveyor_name = amr_cfg.get("conveyor_name", "conveyor_deck")
-    conveyor_center = np.asarray(amr_cfg.get("conveyor_mount_center", [-1.45, -1.70, 0.37]), dtype=float)
+    mounted_centers = dict(amr_cfg.get("mounted_surface_centers", {}))
+    mounted_centers.setdefault(conveyor_name, amr_cfg.get("conveyor_mount_center", [-1.45, -1.70, 0.37]))
     obstacles: list[OBB] = []
     for obstacle in scene.obstacles:
-        if obstacle.name == conveyor_name:
+        if obstacle.name in mounted_centers:
             obstacles.append(
                 OBB(
-                    center=np.asarray(dock_position, dtype=float) + conveyor_center,
+                    center=np.asarray(dock_position, dtype=float) + np.asarray(mounted_centers[obstacle.name], dtype=float),
                     half_extents=obstacle.half_extents,
                     rotation=obstacle.rotation,
                     name=obstacle.name,
@@ -196,16 +237,25 @@ def score_target_dock_ik(
     candidates = select_fast_suction_candidates(
         generate_suction_candidates(carton, robot.base_transform[:3, 3], face_modes=planning_cfg.get("grasp_face_modes", ["front", "side", "top"])),
         planning_cfg.get("grasp_face_modes", ["front", "side", "top"]),
-        int(planning_cfg.get("grasp_candidates_per_face", 1)),
+        int(planning_cfg.get("dock_grasp_candidates_per_face", 1)),
     )
     start_position = robot.fk(start_q)[:3, 3]
     successful = 0
     shortest_motion = float("inf")
     for candidate in candidates:
+        seeds = [start_q]
+        pregrasp_cache = planning_cfg.get("pregrasp_seed_cache")
+        if pregrasp_cache is not None:
+            cached_seed = pregrasp_cache.nearest_seed(
+                candidate.pregrasp_pose[:3, 3],
+                robot.base_transform[:3, 3],
+            )
+            if cached_seed is not None:
+                seeds.append(cached_seed)
         pre = solve_ik_multistart(
             robot,
             candidate.pregrasp_pose,
-            seeds=[start_q],
+            seeds=seeds,
             obstacles=scene.all_obstacles,
             random_restarts=int(planning_cfg.get("dock_ik_probe_random_restarts", 1)),
             rng=rng,
@@ -229,6 +279,37 @@ def score_target_dock_ik(
         )
         if not grasp.success:
             continue
+        carton_from_tool = np.linalg.inv(robot.fk(grasp.q)) @ carton.world_from_local
+        carried_obstacles = scene.obstacles_without({carton.name})
+
+        def retreat_state_valid(q: np.ndarray) -> bool:
+            return _carried_box_state_valid(
+                robot,
+                carton,
+                grasp.q,
+                q,
+                carried_obstacles,
+                box_margin=float(planning_cfg.get("carried_box_clearance", 0.01)),
+                carton_from_tool=carton_from_tool,
+                carton_contact_tolerance=float(planning_cfg.get("carton_contact_tolerance_m", 0.001)),
+                orientation_valid=lambda box: _in_trailer_orientation_valid(
+                    carton,
+                    box,
+                    scene,
+                    planning_cfg.get("max_in_trailer_carton_tilt_deg"),
+                ),
+            )
+
+        retreat_ok, _ = _edge_collision_free(
+            robot,
+            grasp.q,
+            pre.q,
+            carried_obstacles,
+            resolution=float(planning_cfg.get("dock_retreat_probe_resolution", 0.08)),
+            extra_state_valid=retreat_state_valid,
+        )
+        if not retreat_ok:
+            continue
         successful += 1
         shortest_motion = min(
             shortest_motion,
@@ -244,7 +325,12 @@ def score_target_dock_ik(
     }
 
 
-def run_online(config_path: str | Path, max_picks: int | None, output_dir: str | Path | None = None) -> dict:
+def run_online(
+    config_path: str | Path,
+    max_picks: int | None,
+    output_dir: str | Path | None = None,
+    top_layer_only: bool = False,
+) -> dict:
     config_path = Path(config_path)
     scene, cfg = load_scene_config(config_path)
     validate_amr_conveyor_alignment(cfg)
@@ -261,20 +347,45 @@ def run_online(config_path: str | Path, max_picks: int | None, output_dir: str |
         out_dir = config_path.resolve().parent.parent / out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    cache_path = planning_cfg.get("pregrasp_heatmap_cache")
+    if cache_path:
+        from .reachability import load_pregrasp_heatmap
+
+        resolved_cache = Path(cache_path)
+        if not resolved_cache.is_absolute():
+            resolved_cache = config_path.resolve().parent.parent / resolved_cache
+        if resolved_cache.exists():
+            planning_cfg["pregrasp_seed_cache"] = load_pregrasp_heatmap(resolved_cache)
+            print(f"[online] loaded pregrasp seed cache: {resolved_cache}", flush=True)
+
     conveyor_name = planning_cfg.get("place_obstacle", "conveyor_deck")
     conveyor = next((obstacle for obstacle in scene.obstacles if obstacle.name == conveyor_name), None)
 
     segments: list[dict] = []
     trajectory_rows: list[tuple[int, str, int, np.ndarray]] = []
     unmoved_boxes: dict[str, str] = {}
+    initial_top_height = max(carton.center[2] + carton.half_extents[2] for carton in scene.cartons)
     start_time = perf_counter()
     max_pick_count = len(scene.cartons) if max_picks is None or max_picks <= 0 else max_picks
     print(f"[online] start: robot={robot.name}, cartons={len(scene.cartons)}, max_picks={max_pick_count}", flush=True)
 
     pick_index = 0
-    current_dock: np.ndarray | None = None
+    configured_initial_dock = planning_cfg.get("initial_dock_position")
+    current_dock: np.ndarray | None = (
+        None
+        if configured_initial_dock is None
+        else np.asarray(configured_initial_dock, dtype=float)
+    )
     while scene.cartons and len(segments) < max_pick_count:
-        ordered_names = exposed_carton_order(scene)
+        ordered_names = exposed_carton_order(scene, planning_cfg.get("grasp_face_modes", ["front", "side", "top"]))
+        if top_layer_only:
+            ordered_names = [
+                name
+                for name in ordered_names
+                if np.isclose(scene.carton(name).center[2] + scene.carton(name).half_extents[2], initial_top_height)
+            ]
+            if not ordered_names:
+                break
         detections = detect_carton_obbs(scene)
         reachable_names = ordered_names
         print(
@@ -289,8 +400,11 @@ def run_online(config_path: str | Path, max_picks: int | None, output_dir: str |
         chosen_scene = None
         chosen_cfg = None
         failed_this_round: dict[str, str] = {}
-        scored_pairs: list[tuple[tuple[float, float, float], np.ndarray, str, dict]] = []
-        for dock_position in prioritized_amr_dock_positions(cfg, current_dock):
+        scored_pairs: list[tuple[tuple[float, ...], np.ndarray, str, dict]] = []
+        dock_candidates = prioritized_amr_dock_positions(cfg, current_dock)
+        if current_dock is not None and bool(planning_cfg.get("hold_current_dock", False)):
+            dock_candidates = [current_dock.copy()]
+        for dock_position in dock_candidates:
             if not amr_dock_is_clear(scene, cfg, dock_position):
                 continue
             dock_robot, dock_scene, _ = docked_robot_and_scene(scene, cfg, dock_position)
@@ -300,7 +414,23 @@ def run_online(config_path: str | Path, max_picks: int | None, output_dir: str |
                 score = score_target_dock_ik(dock_robot, dock_scene, current_q, target_name, planning_cfg, scoring_rng)
                 ee_motion = score["estimated_ee_motion_m"]
                 dock_motion = 0.0 if current_dock is None else float(np.linalg.norm(dock_position - current_dock))
-                rank = (-score["ik_success_rate"], float("inf") if ee_motion is None else ee_motion, dock_motion)
+                # Once docked, exhaust useful work at that pose before moving
+                # the AMR.  For an online cell, a reachable target's current
+                # end-effector distance is a better sequencing signal than a
+                # tiny difference in sampled IK yield: it avoids skipping the
+                # adjacent carton merely to reuse an easier IK branch.
+                dock_switch = 0 if current_dock is None or np.allclose(dock_position, current_dock) else 1
+                motion = float("inf") if ee_motion is None else ee_motion
+                if bool(planning_cfg.get("target_motion_first", False)):
+                    rank = (
+                        dock_switch,
+                        dock_motion,
+                        0 if score["ik_success_count"] else 1,
+                        motion,
+                        -score["ik_success_rate"],
+                    )
+                else:
+                    rank = (dock_switch, dock_motion, -score["ik_success_rate"], motion)
                 scored_pairs.append((rank, dock_position, target_name, score))
 
         for _, dock_position, target_name, dock_score in sorted(scored_pairs, key=lambda item: item[0]):
@@ -314,7 +444,25 @@ def run_online(config_path: str | Path, max_picks: int | None, output_dir: str |
                     flush=True,
                 )
                 target_rng = np.random.default_rng(planning_seed + pick_index)
-                result = plan_pick(dock_robot, dock_scene, dock_start, target_name, planner_options=planning_cfg, rng=target_rng)
+                target_planning_cfg = dict(planning_cfg)
+                balance_weight = float(planning_cfg.get("conveyor_load_balance_weight", 0.0))
+                if balance_weight > 0.0:
+                    target_planning_cfg["place_surface_penalties"] = {
+                        surface_name: balance_weight
+                        * sum(segment.get("place_surface") == surface_name for segment in segments)
+                        for surface_name in planning_cfg.get(
+                            "place_obstacles",
+                            [planning_cfg.get("place_obstacle", "conveyor_deck")],
+                        )
+                    }
+                result = plan_pick(
+                    dock_robot,
+                    dock_scene,
+                    dock_start,
+                    target_name,
+                    planner_options=target_planning_cfg,
+                    rng=target_rng,
+                )
                 if result.success:
                     chosen_result = result
                     chosen_name = target_name
@@ -335,12 +483,20 @@ def run_online(config_path: str | Path, max_picks: int | None, output_dir: str |
         assert chosen_scene is not None and chosen_cfg is not None and chosen_dock is not None
         target_carton = scene.carton(chosen_name)
         place_center = None
+        release_center = None
         place_rotation = None
         max_carried_tilt = None
         if chosen_result.grasp_ik is not None and chosen_result.place_ik is not None:
             carton_from_tool = np.linalg.inv(robot.fk(chosen_result.grasp_ik.q)) @ target_carton.world_from_local
             placed_carton = robot.fk(chosen_result.place_ik.q) @ carton_from_tool
-            place_center = placed_carton[:3, 3].copy()
+            release_center = placed_carton[:3, 3].copy()
+            release_height = float(planning_cfg.get("conveyor_release_height", 0.0))
+            place_surface = next(
+                (obstacle for obstacle in chosen_scene.obstacles if obstacle.name == chosen_result.place_surface_name),
+                None,
+            )
+            drop_axis = np.array([0.0, 0.0, 1.0]) if place_surface is None else place_surface.rotation[:, 2]
+            place_center = release_center - release_height * drop_axis
             place_rotation = placed_carton[:3, :3].copy()
             carried_tilts = []
             for q in chosen_result.place_path:
@@ -359,6 +515,9 @@ def run_online(config_path: str | Path, max_picks: int | None, output_dir: str |
                 "face_mode": chosen_result.candidate.face_mode if chosen_result.candidate else None,
                 "contact_point": chosen_result.candidate.contact_point.tolist() if chosen_result.candidate else None,
                 "place_center": place_center.tolist() if place_center is not None else None,
+                "release_center": release_center.tolist() if release_center is not None else None,
+                "place_surface": chosen_result.place_surface_name,
+                "free_fall_height_m": float(planning_cfg.get("conveyor_release_height", 0.0)),
                 "place_rotation": place_rotation.tolist() if place_rotation is not None else None,
                 "max_carried_carton_tilt_deg": max_carried_tilt,
                 "grasp_index": chosen_result.grasp_index,
@@ -419,8 +578,9 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--config", default="config/kuka_kr50.yaml")
     parser.add_argument("--max-picks", type=int, default=0, help="0 means unload all detected cartons")
     parser.add_argument("--output-dir", default=None)
+    parser.add_argument("--top-layer-only", action="store_true", help="Only unload cartons from the initial highest layer")
     args = parser.parse_args(argv)
-    run_online(args.config, args.max_picks, args.output_dir)
+    run_online(args.config, args.max_picks, args.output_dir, args.top_layer_only)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,89 @@
+extends: common_unloading.yaml
+
+robot:
+  model: fanuc_m20id35
+  urdf_path: assets/robots/fanuc_m20id35/m20_35_18d.urdf
+  base_position: [0.60, 0.15, 0.30]
+  base_rpy: [0.0, 0.0, 0.0]
+  tool_length: 0.20
+  tip_link: tool0
+  home_joints: [-0.3766, -0.7955, -0.8172, 0.8419, -1.3000, -0.3599]
+
+planning:
+  # Generate task-space alternatives instead of imposing one Stretch motion:
+  # prefer the door face, but retain side/top contacts and circular-cup roll
+  # redundancy so IK can choose a nearby wrist branch.
+  grasp_face_modes: [front, side, top]
+  grasp_candidates_per_face: 2
+  dock_grasp_candidates_per_face: 1
+  wrist_roll_angles_deg: [0.0, 90.0, -90.0, 180.0]
+  carry_exit_standoff: 0.18
+  clearance_zone_max_x: 0.85
+  carry_exit_standoff_by_face:
+    front: 0.18
+    side: 0.55
+    top: 0.25
+  use_cartesian_destack_to_clearance: false
+  prefer_direct_clearance_to_place: true
+  # Sequence adjacent reachable cartons by current end-effector travel; IK
+  # yield is only a tie-breaker, not a reason to skip the neighbour.
+  target_motion_first: true
+  initial_dock_position: [0.80, -0.30, 0.0]
+  hold_current_dock: true
+  # FANUC reaches the long deck reliably; retain the cross deck as fallback.
+  place_obstacle: conveyor_deck
+  place_obstacles: [conveyor_deck, conveyor_cross_deck]
+  # Treat conveyor occupancy as part of cycle cost.  This keeps near-equal
+  # arm paths from overloading one belt while never making an infeasible belt
+  # mandatory.
+  conveyor_load_balance_weight: 0.75
+  positive_y_place_obstacle: conveyor_deck
+  floor_interior_place_obstacle: conveyor_deck
+  prefer_outer_columns: false
+  transit_hint_joints: []
+  interior_transit_hint_joints: []
+  interior_return_hint_joints: []
+  positive_y_transit_hint_joints: []
+  place_hint_joints: []
+  # Keep FANUC feasibility probes bounded; full RRT budgets remain unchanged.
+  dock_ik_probe_random_restarts: 1
+  dock_front_ik_probe_random_restarts: 1
+  dock_side_ik_probe_random_restarts: 1
+  dock_ik_probe_max_iterations: 60
+  # Cold geometric validation may explore a later face/roll candidate. The
+  # production path is served from the validated primitive cache; this bound
+  # is for cache misses and regression generation only.
+  target_planning_time_limit_seconds: 120.0
+  candidate_planning_time_limit_seconds: 30.0
+  max_feasible_place_iks: 3
+  place_attempt_time_limit_seconds: 12.0
+  # Let the shortest collision-free clearance-to-place path turn the shoulder
+  # and wrist together; the former wrist-first preset caused air-twisting.
+  use_wrist_first_carry: false
+  conveyor_allow_all_carton_faces: true
+  conveyor_release_height: 0.12
+  # Warm-start online IK from the deterministic batch heatmap. The cache is
+  # accepted only when the robot base exactly matches its generation pose.
+  pregrasp_heatmap_cache: outputs/fanuc_m20id35/pregrasp_heatmap.npz
+  # Strongly penalize large equivalent wrist branches at placement.
+  place_joint_motion_weight: 1.0
+  # Keep online shortcutting bounded; a separate offline optimizer may spend
+  # more attempts for presentation-quality trajectories.
+  shortcut_attempts: 80
+  # 50 Hz command stream; 0.04 rad output spacing remains below 2 rad/s.
+  trajectory_waypoint_period_seconds: 0.02
+  max_place_pose_candidates: 4
+  place_ik_budget_seconds: 12.0
+  place_ik_random_restarts: 0
+  place_ik_max_iterations: 90
+
+amr:
+  conveyor_front_overhang: 0.75
+  # Behind and to the right of the cross conveyor, with access to both belts.
+  robot_mount_position: [-0.85, 0.30, 0.30]
+
+outputs:
+  directory: outputs/fanuc_m20id35
+  save_plot: true
+  save_trajectory_csv: true
+  save_metrics_json: true

@@ -43,6 +43,7 @@ class PickPlan:
     release_index: int
     release_retreat_index: int
     message: str
+    place_surface_name: str | None = None
 
 
 def generate_suction_candidates(
@@ -126,6 +127,42 @@ def select_fast_suction_candidates(
     return selected
 
 
+def _expand_candidate_wrist_rolls(
+    candidates: Sequence[SuctionGraspCandidate],
+    roll_angles_degrees: Sequence[float],
+) -> list[SuctionGraspCandidate]:
+    """Exploit circular-cup roll freedom without changing the contact normal.
+
+    Rolling around tool Z leaves the suction face square to the selected box
+    face.  It gives IK several nearby J4/J6 branches while keeping the grasp
+    point and carton pose identical, which is much cheaper than asking a
+    six-dimensional RRT to discover that redundancy later.
+    """
+    expanded: list[SuctionGraspCandidate] = []
+    angles = list(roll_angles_degrees) or [0.0]
+    for candidate in candidates:
+        for angle_degrees in angles:
+            angle = np.radians(float(angle_degrees))
+            c, s = np.cos(angle), np.sin(angle)
+            local_roll = np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]])
+            pregrasp = candidate.pregrasp_pose.copy()
+            grasp = candidate.grasp_pose.copy()
+            pregrasp[:3, :3] = pregrasp[:3, :3] @ local_roll
+            grasp[:3, :3] = grasp[:3, :3] @ local_roll
+            expanded.append(
+                SuctionGraspCandidate(
+                    carton_name=candidate.carton_name,
+                    contact_point=candidate.contact_point.copy(),
+                    outward_normal=candidate.outward_normal.copy(),
+                    face_mode=candidate.face_mode,
+                    pregrasp_pose=pregrasp,
+                    grasp_pose=grasp,
+                    score=candidate.score,
+                )
+            )
+    return expanded
+
+
 def _edge_collision_free(
     robot: RobotKinematics6,
     q0: np.ndarray,
@@ -145,6 +182,31 @@ def _edge_collision_free(
         if extra_state_valid is not None and not extra_state_valid(q):
             return False, path
     return True, path
+
+
+def _nearest_equivalent_joint_vector(
+    robot: RobotKinematics6,
+    q: np.ndarray,
+    reference: np.ndarray,
+) -> np.ndarray:
+    """Choose the closest 2*pi-equivalent revolute representation.
+
+    Industrial wrists commonly expose more than one revolution of J4/J6.
+    IK may therefore return the same physical tool pose on a distant numeric
+    wrap.  Interpolating to that value creates a visually pointless full wrist
+    turn.  Keep every joint within its declared limits while selecting the
+    equivalent value nearest the preceding phase.
+    """
+    result = np.asarray(q, dtype=float).copy()
+    reference = np.asarray(reference, dtype=float)
+    two_pi = 2.0 * np.pi
+    for index, value in enumerate(result):
+        lower, upper = robot.joint_limits[index]
+        equivalents = value + two_pi * np.arange(-3, 4, dtype=float)
+        feasible = equivalents[(equivalents >= lower) & (equivalents <= upper)]
+        if feasible.size:
+            result[index] = feasible[np.argmin(np.abs(feasible - reference[index]))]
+    return result
 
 
 def _plan_wrist_first_carry(
@@ -352,6 +414,18 @@ def _rotation_from_vector(rotation_vector: np.ndarray) -> np.ndarray:
     return np.eye(3) + np.sin(angle) * skew + (1.0 - np.cos(angle)) * (skew @ skew)
 
 
+def _pose_transfer_cost(
+    source_pose: np.ndarray,
+    target_pose: np.ndarray,
+    orientation_weight: float = 0.35,
+) -> float:
+    position_cost = float(np.linalg.norm(target_pose[:3, 3] - source_pose[:3, 3]))
+    orientation_cost = float(
+        np.linalg.norm(rotation_vector_from_matrix(target_pose[:3, :3] @ source_pose[:3, :3].T))
+    )
+    return position_cost + orientation_weight * orientation_cost
+
+
 def _conveyor_preplace_poses(
     release_pose: np.ndarray,
     clearance: float,
@@ -509,39 +583,63 @@ def plan_pick(
     robot_ref = robot.base_transform[:3, 3]
     face_modes = planner_options.get("grasp_face_modes", ["front", "side", "top"])
     enable_place = bool(planner_options.get("enable_place", False))
-    place_target_name = str(planner_options.get("place_target", planner_options.get("place_obstacle", "conveyor_deck")))
-    place_surface = next(
-        (obstacle for obstacle in scene.obstacles if obstacle.name == place_target_name),
-        None,
-    )
-    place_enabled = enable_place and place_surface is not None
-    placement_requires_release_zone = bool(
-        planner_options.get("place_requires_release_zone", place_target_name == planner_options.get("place_obstacle", "conveyor_deck"))
-    )
-
-    def placement_poses(grasp_tool_pose: np.ndarray) -> list[np.ndarray]:
-        assert place_surface is not None
-        edge_clearance = float(planner_options.get("conveyor_edge_clearance", 0.01))
-        if placement_requires_release_zone:
-            return conveyor_place_pose_candidates(
-                place_surface,
-                carton,
-                grasp_tool_pose,
-                robot.base_transform[:3, 3],
-                edge_clearance=edge_clearance,
-                allow_all_carton_faces=bool(planner_options.get("conveyor_allow_all_carton_faces", False)),
-                require_front_release_zone=bool(planner_options.get("conveyor_require_front_release_zone", True)),
+    if "place_target" in planner_options:
+        place_target_names = [str(planner_options["place_target"])]
+    else:
+        place_target_names = [
+            str(name)
+            for name in planner_options.get(
+                "place_obstacles",
+                [planner_options.get("place_obstacle", "conveyor_deck")],
             )
-        return surface_place_pose_candidates(
-            place_surface,
-            carton,
-            grasp_tool_pose,
-            edge_clearance=edge_clearance,
-        )
+        ]
+    place_surfaces = {
+        obstacle.name: obstacle
+        for obstacle in scene.obstacles
+        if obstacle.name in place_target_names
+    }
+    place_enabled = enable_place and bool(place_surfaces)
+    place_target_name: str | None = None
+    place_surface: OBB | None = None
+
+    def placement_poses(grasp_tool_pose: np.ndarray) -> list[tuple[str, OBB, np.ndarray]]:
+        edge_clearance = float(planner_options.get("conveyor_edge_clearance", 0.01))
+        entries: list[tuple[str, OBB, np.ndarray]] = []
+        for surface_name in place_target_names:
+            surface = place_surfaces.get(surface_name)
+            if surface is None:
+                continue
+            requires_release_zone = bool(
+                planner_options.get("place_requires_release_zone", "place_target" not in planner_options)
+            )
+            if requires_release_zone:
+                poses = conveyor_place_pose_candidates(
+                    surface,
+                    carton,
+                    grasp_tool_pose,
+                    robot.base_transform[:3, 3],
+                    edge_clearance=edge_clearance,
+                    allow_all_carton_faces=bool(planner_options.get("conveyor_allow_all_carton_faces", False)),
+                    require_front_release_zone=bool(planner_options.get("conveyor_require_front_release_zone", True)),
+                    release_height=float(planner_options.get("conveyor_release_height", 0.0)),
+                )
+            else:
+                poses = surface_place_pose_candidates(
+                    surface,
+                    carton,
+                    grasp_tool_pose,
+                    edge_clearance=edge_clearance,
+                )
+            entries.extend((surface_name, surface, pose) for pose in poses)
+        return entries
     candidates = generate_suction_candidates(
         carton,
         robot_ref,
         face_modes=face_modes,
+    )
+    candidates = _expand_candidate_wrist_rolls(
+        candidates,
+        planner_options.get("wrist_roll_angles_deg", [0.0]),
     )
     if place_enabled:
         candidates = [
@@ -569,6 +667,8 @@ def plan_pick(
     conveyor_preplace_clearance = float(planner_options.get("conveyor_preplace_clearance", 0.30))
 
     failure_messages: list[str] = []
+    best_pick_plan: PickPlan | None = None
+    best_pick_cost = float("inf")
     plan_t0 = perf_counter()
     candidate_time_budget = float(planner_options.get("target_planning_time_limit_seconds", 0.0))
     for candidate_index, candidate in enumerate(candidates):
@@ -584,6 +684,17 @@ def plan_pick(
             f"contact={np.round(candidate.contact_point, 3).tolist()}"
         )
         seeds = [start_q]
+        pregrasp_cache = planner_options.get("pregrasp_seed_cache")
+        if pregrasp_cache is not None:
+            cached_seed = pregrasp_cache.nearest_seed(
+                candidate.pregrasp_pose[:3, 3],
+                robot.base_transform[:3, 3],
+            )
+            if cached_seed is not None:
+                # Preserve trajectory continuity: the current arm state is
+                # the primary seed.  The heatmap seed is a reachability
+                # fallback, not permission to jump to a distant IK branch.
+                seeds.append(cached_seed)
         if candidate_index > 0:
             seeds.append(rng.uniform(robot.joint_limits[:, 0] * 0.55, robot.joint_limits[:, 1] * 0.55))
 
@@ -634,7 +745,8 @@ def plan_pick(
         if place_poses and place_hint_joints:
             hint_poses = [robot.fk(q) for q in place_hint_joints]
 
-            def place_hint_cost(pose: np.ndarray) -> float:
+            def place_hint_cost(entry: tuple[str, OBB, np.ndarray]) -> float:
+                pose = entry[2]
                 return min(
                     float(np.linalg.norm(pose[:3, 3] - hint_pose[:3, 3]))
                     + 0.25 * float(np.linalg.norm(rotation_vector_from_matrix(pose[:3, :3] @ hint_pose[:3, :3].T)))
@@ -648,12 +760,19 @@ def plan_pick(
             continue
 
         carton_from_tool = np.linalg.inv(robot.fk(grasp.q)) @ carton.world_from_local
-        carried_obstacles = scene.obstacles_without(
-            {carton.name, place_target_name}
-        )
+        # Carry-exit must avoid both belts. The selected release surface is
+        # ignored only after a concrete placement candidate has been chosen.
+        carried_obstacles = scene.obstacles_without({carton.name})
         place_robot_obstacles = scene.obstacles_without({carton.name})
 
         def carried_orientation_valid(carried_box: OBB) -> bool:
+            clearance_zone_max_x = planner_options.get("clearance_zone_max_x")
+            if clearance_zone_max_x is not None and carried_box.center[0] <= float(clearance_zone_max_x):
+                # Once the carton center has left the stack envelope, exact
+                # OBB checks against cartons, robot links, floor, roof and
+                # trailer walls remain active; only the conservative upright
+                # rule is released so the wrist can reorient in free space.
+                return True
             return _in_trailer_orientation_valid(carton, carried_box, scene, max_in_trailer_tilt)
 
         def carried_goal_valid(q: np.ndarray) -> bool:
@@ -723,9 +842,16 @@ def plan_pick(
         retreat_path: list[np.ndarray] = []
         dense_exit: list[np.ndarray] = []
         if place_enabled:
+            standoff_by_face = planner_options.get("carry_exit_standoff_by_face", {})
+            carry_exit_standoff = float(
+                standoff_by_face.get(
+                    candidate.face_mode,
+                    planner_options.get("carry_exit_standoff", 0.68),
+                )
+            )
             carry_exit_pose = make_transform(
                 candidate.pregrasp_pose[:3, :3],
-                candidate.contact_point + candidate.outward_normal * planner_options.get("carry_exit_standoff", 0.68),
+                candidate.contact_point + candidate.outward_normal * carry_exit_standoff,
             )
             carry_exit = solve_ik_multistart(
                 robot,
@@ -742,26 +868,83 @@ def plan_pick(
             if not carry_exit.success:
                 failure_messages.append(f"candidate {candidate_index}: carry-exit IK failed")
                 continue
+            carry_exit.q = _nearest_equivalent_joint_vector(robot, carry_exit.q, approach_guide.q)
             if mobile_place_position is None:
-                log(f"candidate {candidate_index}: evaluating {len(place_poses)} supported conveyor poses")
+                carry_exit_tool_pose = robot.fk(carry_exit.q)
+
+                def transfer_pose_cost(pose: np.ndarray) -> float:
+                    return _pose_transfer_cost(carry_exit_tool_pose, pose)
+
+                place_poses.sort(key=lambda entry: transfer_pose_cost(entry[2]))
+                surface_counts = {
+                    name: sum(entry[0] == name for entry in place_poses)
+                    for name in place_target_names
+                }
+                log(f"candidate {candidate_index}: evaluating supported conveyor poses {surface_counts}")
                 feasible_places = []
                 max_place_candidates = int(planner_options.get("max_place_pose_candidates", len(place_poses)))
                 max_feasible_places = int(planner_options.get("max_feasible_place_iks", max_place_candidates))
-                for pose in place_poses[:max_place_candidates]:
+                # Preserve the global transfer-cost order while reserving an
+                # equal share of the bounded IK budget for each conveyor.
+                # Otherwise the first surface can consume every online probe
+                # even when the cross conveyor gives the shorter final path.
+                surface_buckets = {
+                    name: [entry for entry in place_poses if entry[0] == name]
+                    for name in place_target_names
+                }
+                balanced_place_poses: list[tuple[str, OBB, np.ndarray]] = []
+                bucket_index = 0
+                while len(balanced_place_poses) < max_place_candidates:
+                    added = False
+                    for name in place_target_names:
+                        bucket = surface_buckets.get(name, [])
+                        if bucket_index < len(bucket):
+                            balanced_place_poses.append(bucket[bucket_index])
+                            added = True
+                            if len(balanced_place_poses) >= max_place_candidates:
+                                break
+                    if not added:
+                        break
+                    bucket_index += 1
+                place_ik_deadline = perf_counter() + float(
+                    planner_options.get("place_ik_budget_seconds", 0.0)
+                )
+                for surface_name, surface, pose in balanced_place_poses:
+                    if (
+                        float(planner_options.get("place_ik_budget_seconds", 0.0)) > 0.0
+                        and perf_counter() >= place_ik_deadline
+                    ):
+                        break
+                    surface_carried_obstacles = scene.obstacles_without({carton.name, surface_name})
+
+                    def placement_goal_valid(q: np.ndarray) -> bool:
+                        return posture_valid(q) and _carried_box_state_valid(
+                            robot,
+                            carton,
+                            grasp.q,
+                            q,
+                            surface_carried_obstacles,
+                            box_margin=carried_box_clearance,
+                            carton_from_tool=carton_from_tool,
+                            carton_contact_tolerance=carton_contact_tolerance,
+                            orientation_valid=carried_orientation_valid,
+                        )
+
                     result = solve_ik_multistart(
                         robot,
                         pose,
-                        seeds=[*place_hint_joints, carry_exit.q, grasp.q, approach_guide.q, start_q],
+                        seeds=[*place_hint_joints, carry_exit.q, grasp.q],
                         obstacles=scene.obstacles_without({carton.name}),
                         random_restarts=planner_options.get("place_ik_random_restarts", 10),
                         rng=rng,
                         max_iterations=planner_options.get("place_ik_max_iterations", planner_options.get("ik_max_iterations", 250)),
                         position_tolerance=planner_options.get("place_position_tolerance", 0.025),
                         orientation_tolerance=planner_options.get("place_orientation_tolerance", 0.22),
-                        extra_state_valid=carried_goal_valid,
+                        extra_state_valid=placement_goal_valid,
                     )
                     if result.success:
-                        feasible_places.append((pose, result))
+                        result.q = _nearest_equivalent_joint_vector(robot, result.q, carry_exit.q)
+                        feasible_places.append((surface_name, surface, pose, result))
                         if len(feasible_places) >= max_feasible_places:
                             break
                 if not feasible_places:
@@ -771,12 +954,12 @@ def plan_pick(
                 if use_cartesian_final_approach:
                     approach_directions = tuple(planner_options.get("conveyor_approach_directions", ("front", "top", "left", "right")))
                     preplace_results = []
-                    for release_pose, release_ik in feasible_places:
+                    for surface_name, surface, release_pose, release_ik in feasible_places:
                         for approach_direction, candidate_preplace_pose in _conveyor_preplace_poses(
                             release_pose,
                             conveyor_preplace_clearance,
                             approach_directions,
-                            place_surface.rotation,
+                            surface.rotation,
                         ):
                             preplace_ik = solve_ik_multistart(
                                 robot,
@@ -788,28 +971,37 @@ def plan_pick(
                                 max_iterations=planner_options.get("place_ik_max_iterations", planner_options.get("ik_max_iterations", 250)),
                                 position_tolerance=planner_options.get("place_position_tolerance", 0.025),
                                 orientation_tolerance=planner_options.get("place_orientation_tolerance", 0.22),
-                                extra_state_valid=carried_goal_valid,
+                                extra_state_valid=placement_goal_valid,
                             )
                             if preplace_ik.success:
-                                preplace_results.append((release_pose, release_ik, approach_direction, candidate_preplace_pose, preplace_ik))
+                                preplace_results.append((surface_name, surface, release_pose, release_ik, approach_direction, candidate_preplace_pose, preplace_ik))
                     if not preplace_results:
                         failure_messages.append(f"candidate {candidate_index}: conveyor preplace IK failed")
                         log(f"candidate {candidate_index}: conveyor preplace IK failed after {perf_counter() - candidate_t0:.1f}s")
                         continue
-                    selected_place_pose, place, approach_direction, preplace_pose, preplace = min(
+                    place_target_name, place_surface, selected_place_pose, place, approach_direction, preplace_pose, preplace = min(
                         preplace_results,
-                        key=lambda item: float(np.linalg.norm(item[1].q - carry_exit.q) + np.linalg.norm(item[4].q - item[1].q)),
+                        key=lambda item: float(np.linalg.norm(item[3].q - carry_exit.q) + np.linalg.norm(item[6].q - item[3].q)),
                     )
                     log(f"candidate {candidate_index}: selected conveyor approach={approach_direction}")
                 else:
-                    selected_place_pose, place = min(
+                    joint_weight = float(planner_options.get("place_joint_motion_weight", 0.10))
+                    surface_penalties = planner_options.get("place_surface_penalties", {})
+                    place_target_name, place_surface, selected_place_pose, place = min(
                         feasible_places,
-                        key=lambda item: float(np.linalg.norm(item[1].q - carry_exit.q)),
+                        key=lambda item: (
+                            transfer_pose_cost(item[2])
+                            + joint_weight * float(np.linalg.norm(item[3].q - carry_exit.q))
+                            + float(surface_penalties.get(item[0], 0.0))
+                        ),
                     )
+                carried_obstacles = scene.obstacles_without({carton.name, place_target_name})
+                log(f"candidate {candidate_index}: selected placement surface={place_target_name}")
 
         mobile_base_path: list[np.ndarray] = []
         if place_enabled:
             log(f"candidate {candidate_index}: planning place RRT")
+            place_attempt_limit = planner_options.get("place_attempt_time_limit_seconds")
             place_valid = lambda q: robot.is_collision_free(q, place_robot_obstacles) and _carried_box_state_valid(
                 robot,
                 carton,
@@ -851,25 +1043,102 @@ def plan_pick(
                 orientation_tolerance=float(planner_options.get("place_orientation_tolerance", 0.22)),
             )
             if not retreat.success:
-                failure_messages.append(f"candidate {candidate_index}: {retreat.message}")
-                continue
+                direct_retreat_ok, direct_retreat_path = _edge_collision_free(
+                    robot,
+                    grasp.q,
+                    approach_guide.q,
+                    place_robot_obstacles,
+                    resolution=float(planner_options.get("output_resolution", 0.035)),
+                    extra_state_valid=place_valid,
+                )
+                if direct_retreat_ok:
+                    retreat = PlanResult(
+                        True,
+                        direct_retreat_path,
+                        0,
+                        "direct collision-checked destack fallback",
+                    )
+                else:
+                    failure_messages.append(f"candidate {candidate_index}: {retreat.message}")
+                    log(f"candidate {candidate_index}: {retreat.message} after {perf_counter() - candidate_t0:.1f}s")
+                    continue
             retreat_path = retreat.path
             withdrawal_q = retreat_path[-1]
-            if use_wrist_first_carry:
+            if bool(planner_options.get("use_cartesian_destack_to_clearance", False)):
+                # Stretch-style phase 1: keep the front-grasp orientation and
+                # withdraw in a straight line until the carton reaches the
+                # clearance zone.  Wrist reorientation is forbidden during
+                # this phase, eliminating RRT wrist excursions near the stack.
+                exit_transit = _plan_cartesian_carry(
+                    robot,
+                    carton,
+                    grasp.q,
+                    withdrawal_q,
+                    robot.fk(carry_exit.q),
+                    place_robot_obstacles,
+                    carried_obstacles,
+                    carton_from_tool,
+                    carried_orientation_valid,
+                    rng,
+                    extra_state_valid=posture_valid,
+                    position_step=float(planner_options.get("destack_position_step", 0.04)),
+                    orientation_step=float(planner_options.get("cartesian_carry_orientation_step", 0.16)),
+                    joint_resolution=float(planner_options.get("output_resolution", 0.035)),
+                    ik_iterations=int(planner_options.get("place_ik_max_iterations", planner_options.get("ik_max_iterations", 250))),
+                    position_tolerance=float(planner_options.get("place_position_tolerance", 0.025)),
+                    orientation_tolerance=float(planner_options.get("place_orientation_tolerance", 0.22)),
+                )
+            elif use_wrist_first_carry:
                 exit_transit = _plan_wrist_first_carry(
                     withdrawal_q, carry_exit.q, place_valid,
                     resolution=float(planner_options.get("approach_resolution", 0.02)),
                 )
                 if not exit_transit.success:
-                    exit_transit = place_planner.plan(withdrawal_q, carry_exit.q)
+                    exit_transit = place_planner.plan(
+                        withdrawal_q, carry_exit.q, time_limit_seconds=place_attempt_limit
+                    )
             else:
-                exit_transit = place_planner.plan(withdrawal_q, carry_exit.q)
+                exit_transit = place_planner.plan(
+                    withdrawal_q, carry_exit.q, time_limit_seconds=place_attempt_limit
+                )
+            if (
+                not exit_transit.success
+                and bool(planner_options.get("use_cartesian_destack_to_clearance", False))
+            ):
+                # Numerical IK can miss an intermediate Cartesian sample even
+                # when both endpoints share the same tool orientation.  A
+                # direct, densely collision-checked joint connector is the
+                # bounded fallback; unlike RRT it cannot add wrist wandering.
+                direct_exit_ok, direct_exit_path = _edge_collision_free(
+                    robot,
+                    withdrawal_q,
+                    carry_exit.q,
+                    place_robot_obstacles,
+                    resolution=float(planner_options.get("output_resolution", 0.035)),
+                    extra_state_valid=place_valid,
+                )
+                if direct_exit_ok:
+                    exit_transit = PlanResult(True, direct_exit_path, 0, "direct destack-to-clearance phase")
+                else:
+                    # Inner cartons sometimes need a small shoulder/elbow arc
+                    # to clear their neighbours. Keep the same fixed tool
+                    # orientation at both ends and use RRT only for that
+                    # geometrically necessary connector.
+                    exit_transit = place_planner.plan(
+                        withdrawal_q, carry_exit.q, time_limit_seconds=place_attempt_limit
+                    )
             if not exit_transit.success:
                 failure_messages.append(f"candidate {candidate_index}: {exit_transit.message}")
                 log(f"candidate {candidate_index}: {exit_transit.message} after {perf_counter() - candidate_t0:.1f}s")
                 continue
+            preserve_exit_phase = use_wrist_first_carry or bool(
+                planner_options.get("use_cartesian_destack_to_clearance", False)
+            )
             dense_exit = place_planner.densify(
-                place_planner.shortcut(exit_transit.path, attempts=planner_options.get("shortcut_attempts", 180)),
+                exit_transit.path if preserve_exit_phase else place_planner.shortcut(
+                    exit_transit.path,
+                    attempts=planner_options.get("shortcut_attempts", 180),
+                ),
                 resolution=planner_options.get("output_resolution", 0.035),
             )
             if mobile_place_position is not None:
@@ -921,7 +1190,9 @@ def plan_pick(
             if use_cartesian_final_approach and mobile_place_position is None:
                 assert selected_place_pose is not None
                 assert preplace_pose is not None and preplace is not None
-                reconfigure_transit = place_planner.plan(carry_exit.q, preplace.q)
+                reconfigure_transit = place_planner.plan(
+                    carry_exit.q, preplace.q, time_limit_seconds=place_attempt_limit
+                )
                 if not reconfigure_transit.success:
                     failure_messages.append(f"candidate {candidate_index}: {reconfigure_transit.message}")
                     log(f"candidate {candidate_index}: {reconfigure_transit.message} after {perf_counter() - candidate_t0:.1f}s")
@@ -954,9 +1225,28 @@ def plan_pick(
                     resolution=float(planner_options.get("approach_resolution", 0.02)),
                 )
                 if not place_transit.success:
-                    place_transit = place_planner.plan(carry_exit.q, place.q)
+                    place_transit = place_planner.plan(
+                        carry_exit.q, place.q, time_limit_seconds=place_attempt_limit
+                    )
             else:
-                place_transit = place_planner.plan(carry_exit.q, place.q)
+                direct_ok = False
+                direct_path: list[np.ndarray] = []
+                if bool(planner_options.get("prefer_direct_clearance_to_place", False)):
+                    direct_ok, direct_path = _edge_collision_free(
+                        robot,
+                        carry_exit.q,
+                        place.q,
+                        place_robot_obstacles,
+                        resolution=float(planner_options.get("output_resolution", 0.035)),
+                        extra_state_valid=place_valid,
+                    )
+                place_transit = (
+                    PlanResult(True, direct_path, 0, "direct clearance-to-place phase")
+                    if direct_ok
+                    else place_planner.plan(
+                        carry_exit.q, place.q, time_limit_seconds=place_attempt_limit
+                    )
+                )
             if not place_transit.success:
                 failure_messages.append(f"candidate {candidate_index}: {place_transit.message}")
                 log(f"candidate {candidate_index}: {place_transit.message} after {perf_counter() - candidate_t0:.1f}s")
@@ -964,8 +1254,12 @@ def plan_pick(
             if use_cartesian_final_approach and mobile_place_position is None:
                 dense_place = retreat_path + dense_exit[1:] + dense_reconfigure[1:] + place_transit.path[1:]
             else:
+                carry_path = place_transit.path if use_wrist_first_carry else place_planner.shortcut(
+                    place_transit.path,
+                    attempts=planner_options.get("shortcut_attempts", 180),
+                )
                 dense_place = place_planner.densify(
-                    place_planner.shortcut(place_transit.path, attempts=planner_options.get("shortcut_attempts", 180)),
+                    carry_path,
                     resolution=planner_options.get("output_resolution", 0.035),
                 )
             if not (use_cartesian_final_approach and mobile_place_position is None):
@@ -1024,7 +1318,7 @@ def plan_pick(
             base_path = [pick_base[:3, 3].copy() for _ in full]
         transit.path = smooth
         log(f"candidate {candidate_index}: success after {perf_counter() - candidate_t0:.1f}s")
-        return PickPlan(
+        pick_plan = PickPlan(
             True,
             candidate,
             None,
@@ -1040,7 +1334,28 @@ def plan_pick(
             release_index,
             release_retreat_index,
             f"planned with candidate {candidate_index}",
+            place_target_name if place_enabled else None,
         )
+        if not bool(planner_options.get("optimize_across_grasp_candidates", False)):
+            return pick_plan
+        path_cost = float(
+            np.linalg.norm(np.diff(np.asarray(full, dtype=float), axis=0), axis=1).sum()
+        )
+        surface_penalties = planner_options.get("place_surface_penalties", {})
+        path_cost += float(surface_penalties.get(place_target_name, 0.0))
+        if path_cost < best_pick_cost:
+            best_pick_plan = pick_plan
+            best_pick_cost = path_cost
+        if surface_penalties and float(surface_penalties.get(place_target_name, 0.0)) <= min(
+            float(value) for value in surface_penalties.values()
+        ):
+            # The first collision-free plan using a least-loaded conveyor is
+            # sufficient for online load balancing; do not enumerate the
+            # remaining grasp/wrist alternatives unnecessarily.
+            return pick_plan
+
+    if best_pick_plan is not None:
+        return best_pick_plan
 
     return PickPlan(
         False,

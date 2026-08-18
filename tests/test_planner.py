@@ -1,8 +1,9 @@
 import numpy as np
 
-from unloading_sim.grasp import _conveyor_preplace_poses, _plan_via_joint_hints, _plan_wrist_first_carry
+from unloading_sim.grasp import _conveyor_preplace_poses, _plan_via_joint_hints, _plan_wrist_first_carry, _pose_transfer_cost
 from unloading_sim.planner import RRTConnectPlanner
 from unloading_sim.robot import URDFRobot6
+from unloading_sim.trajectory_cache import joint_path_length
 
 
 def test_rrt_connect_around_joint_space_obstacle():
@@ -114,3 +115,20 @@ def test_conveyor_preplace_directions_follow_conveyor_frame():
 
     assert np.allclose(poses["front"][:3, 3], [0.0, 0.3, 0.0])
     assert np.allclose(poses["left"][:3, 3], [-0.3, 0.0, 0.0])
+
+
+def test_pose_transfer_cost_penalizes_unnecessary_rotation():
+    source = np.eye(4)
+    direct = np.eye(4)
+    direct[:3, 3] = [1.0, 0.0, 0.0]
+    twisted = direct.copy()
+    twisted[:3, :3] = np.diag([-1.0, -1.0, 1.0])
+
+    assert _pose_transfer_cost(source, direct) < _pose_transfer_cost(source, twisted)
+
+
+def test_joint_path_length_rejects_wandering_route():
+    direct = [np.zeros(2), np.ones(2)]
+    wandering = [np.zeros(2), np.array([-1.0, 1.0]), np.ones(2)]
+
+    assert joint_path_length(direct) < joint_path_length(wandering)

@@ -1,13 +1,3 @@
-robot:
-  model: kuka_kr50_r2500
-  urdf_path: assets/robots/kuka_kr50_r2500/kr_50_r2500.urdf
-  # AMR conveyor/vehicle front is 0.50 m inside the trailer opening.
-  base_position: [0.60, 0.15, 0.30]
-  base_rpy: [0.0, 0.0, 0.0]
-  tool_length: 0.20
-  # Folded working posture: the flange faces forward/down instead of skyward.
-  home_joints: [-0.8605, -2.3374, -1.9499, -0.8876, -1.6696, -1.7180]
-
 scene:
   trailer:
     length: 4.0
@@ -19,10 +9,16 @@ scene:
   static_obstacles:
     - name: conveyor_deck
       # Replaced at planning time by the AMR-mounted conveyor world pose.
-      # 1.20 x 0.80 m support area fits the carton on any of its six faces.
+      # 1.20 x 0.80 m support area for upright carton release.
       # Its front edge remains 0.20 m ahead of the robot mount.
       center: [-2.90, -1.70, 0.37]
-      size: [1.20, 0.80, 0.12]
+      size: [1.20, 0.75, 0.12]
+      rpy: [0.0, 0.0, 0.0]
+    - name: conveyor_cross_deck
+      # Replaced at planning time by the AMR-mounted cross conveyor. It sits
+      # directly in front of the arm and joins conveyor_deck into an L shape.
+      center: [-2.90, -0.70, 0.37]
+      size: [0.45, 0.75, 0.12]
       rpy: [0.0, 0.0, 0.0]
 
   cartons:
@@ -60,89 +56,139 @@ planning:
   grasp_candidates_per_face: 1
   # Defer blocked cartons until the scene changes instead of exhausting every
   # candidate in the same cluttered state.
-  target_planning_time_limit_seconds: 45.0
+  target_planning_time_limit_seconds: 150.0
+  candidate_planning_time_limit_seconds: 75.0
   carried_box_clearance: 0.01
-  carton_contact_tolerance_m: 0.001
+  carton_contact_tolerance_m: 0.005
   # While any part of the carton remains inside the trailer, limit tilt to
   # prevent an upward sweep into the roof. Outside, reorientation is allowed.
   max_in_trailer_carton_tilt_deg: 25.0
   conveyor_edge_clearance: 0.01
-  # Any carton face may be supported; rank candidates by minimum transfer
-  # motion instead of forcing the carton upright or onto a specific face.
-  conveyor_allow_all_carton_faces: true
+  # Keep cartons upright during transfer and release them on their bottom
+  # face. This matches the in-trailer tilt limit and avoids unsafe reorientation
+  # in the narrow doorway.
+  conveyor_allow_all_carton_faces: false
   # Full belt support determines valid releases; the end effector may approach
   # from any reachable side instead of being forced into the 0.20 m front zone.
   conveyor_require_front_release_zone: false
   ik_random_restarts: 10
   # Score each AMR/target pair by multi-face IK yield, then by shortest
   # estimated end-effector travel before running full IK/RRT planning.
-  dock_ik_probe_random_restarts: 1
+  dock_ik_probe_random_restarts: 5
+  dock_front_ik_probe_random_restarts: 3
+  dock_side_ik_probe_random_restarts: 3
+  dock_ik_probe_max_iterations: 90
+  # A failed target is retried after nearby cartons have been removed rather
+  # than consuming the full budget again in an almost identical scene.
+  retry_cooldown_picks: 0
   ik_max_iterations: 140
   ik_position_tolerance: 0.018
   ik_orientation_tolerance: 0.16
   rrt_step_size: 0.25
-  rrt_edge_resolution: 0.070
+  rrt_edge_resolution: 0.040
   rrt_max_iterations: 6000
   rrt_goal_bias: 0.18
-  shortcut_attempts: 240
+  shortcut_attempts: 80
   output_resolution: 0.040
   # The 3.00 m trailer gives RRT enough roof clearance to route directly to
   # each approach pose without a fixed intermediate posture.
   transit_hint_joints: []
-  transit_time_limit_seconds: 45.0
+  # Deterministic aisle postures extracted from a validated RRT witness path.
+  # They are used only for the two interior carton columns.
+  interior_transit_half_width: 0.50
+  interior_transit_hint_joints: []
+  interior_return_hint_joints: []
+  # Validated aisle route to the positive-Y outer column.
+  positive_y_transit_threshold: 0.50
+  positive_y_transit_hint_joints: []
+  transit_time_limit_seconds: 20.0
   approach_resolution: 0.025
   destack_position_step: 0.04
   # Try exposed top and side faces before falling back to the door-facing face.
-  grasp_face_modes: [top, side, front]
-  place_obstacle: conveyor_deck
+  grasp_face_modes: [top, front, side]
+  # The arm always releases onto the cross conveyor directly in front of it;
+  # evaluate it first, but retain the long deck as an equally valid fallback.
+  place_obstacle: conveyor_cross_deck
+  place_obstacles: [conveyor_cross_deck, conveyor_deck]
+  positive_y_place_obstacle: conveyor_cross_deck
+  # A side-grasped floor carton exits into the +Y aisle. Keep that short,
+  # collision-free direction instead of carrying it back across the robot.
+  floor_interior_place_obstacle: conveyor_cross_deck
   # A placement target may instead be an internal staging surface:
   # place_target: trailer_staging_deck
   # place_requires_release_zone: false
   # The collision-checked pregrasp retreat is already outside the stack.
   # Plan directly from there to the nearest supported conveyor pose.
   carry_exit_standoff: 0.18
+  carry_exit_standoff_by_face:
+    side: 0.55
+    top: 0.25
   # Optimize for feasible IK/RRT paths. Enable the directional Cartesian
   # insertion only after it has been validated for the deployed geometry.
   use_cartesian_carry: false
+  # The L-shaped belt requires a shoulder/elbow branch change; use the
+  # collision-checked joint-space planner and shortcut its result instead of
+  # forcing a three-segment Cartesian sweep tied to the old deck geometry.
+  cartesian_carry_min_carton_height: 99.0
+  cartesian_carry_when_upper_layers_clear: false
+  cartesian_layer_height_tolerance: 0.01
+  cartesian_carry_overhead_clearance: 0.30
+  cartesian_high_lift_threshold: 1.50
+  cartesian_low_lift_clearance: 0.15
+  cartesian_cleared_layer_lift_clearance: 0.30
+  # A front-face contact below this height places the wrist too close to the
+  # trailer floor; use the exposed top face for floor-level cartons instead.
+  cartesian_front_grasp_min_height: 0.50
+  # Floor-level carries need a change of IK branch that a straight Cartesian
+  # sweep cannot provide; retain deterministic joint-space planning there.
+  cartesian_floor_carton_max_height: 0.30
+  floor_transit_time_limit_seconds: 40.0
+  floor_candidate_planning_time_limit_seconds: 180.0
+  floor_rrt_max_iterations: 18000
+  floor_max_feasible_place_iks: 6
+  floor_place_attempt_time_limit_seconds: 25.0
+  cartesian_carry_position_step: 0.03
   use_cartesian_final_approach: false
   conveyor_preplace_clearance: 0.30
   conveyor_approach_directions: [front, top, left, right]
   # Continue from the empty-tool retreat after release instead of resetting to
   # the global home configuration between cartons.
-  return_home_after_place: true
+  # Release, make only a short empty-tool retreat, then plan the next pick
+  # directly from that shoulder/elbow posture (as in the Stretch reference).
+  return_home_after_place: false
+  post_release_retreat_distance_m: 0.30
+  return_via_reverse_path: false
   use_wrist_first_carry: false
-  place_ik_random_restarts: 4
+  carry_exit_ik_random_restarts: 4
+  place_ik_random_restarts: 1
   place_ik_max_iterations: 140
   place_position_tolerance: 0.030
   place_orientation_tolerance: 0.25
-  # Validated release branch used to rank the 216 supported conveyor poses.
-  place_hint_joints:
-    - [-0.651907, -2.309465, -1.787871, -0.752595, -2.027780, -1.953292]
-  max_place_pose_candidates: 64
-  max_feasible_place_iks: 4
+  # Upright release branches captured from collision-checked regression plans.
+  place_hint_joints: []
+  max_place_pose_candidates: 12
+  max_feasible_place_iks: 6
+  place_attempt_time_limit_seconds: 25.0
 
 amr:
   # Ground-contacting rigid platform: the robot and conveyor never move
   # relative to each other, and the AMR locks before arm motion begins.
-  footprint_size: [1.80, 1.30, 0.30]
+  footprint_size: [1.80, 1.50, 0.30]
   # The platform front is 0.30 m from the nearest carton face. The arm and belt
   # extend forward from it to preserve the established unloading workspace.
-  platform_center_offset: [-1.00, -0.10, 0.15]
+  platform_center_offset: [-1.00, -0.075, 0.15]
   conveyor_name: conveyor_deck
-  # The arm base is 0.30 m behind the platform front so the 0.30 m dock
-  # clearance still leaves a reachable 0.50 m gap to the carton face.
-  conveyor_front_overhang: 0.20
-  robot_mount_position: [-0.30, 0.15, 0.30]
-  conveyor_mount_center: [-0.70, -0.50, 0.37]
+  conveyor_mount_center: [-0.70, -0.45, 0.37]
+  # Every listed surface is rigidly mounted on the AMR chassis. The primary
+  # deck runs along X; the cross deck runs along Y at its front edge.
+  mounted_surface_centers:
+    conveyor_deck: [-0.70, -0.45, 0.37]
+    conveyor_cross_deck: [-0.325, 0.30, 0.37]
   # dock.x - 0.10 m is the AMR platform front plane at x=0.70 m,
   # leaving 0.30 m to the nearest carton front at x=1.00 m.
   dock_positions:
-    - [0.80, -0.40, 0.0]
+    - [0.80, -0.30, 0.0]
     - [0.80, 0.0, 0.0]
-    - [0.80, 0.40, 0.0]
+    - [0.80, 0.30, 0.0]
+    - [0.80, 0.60, 0.0]
 
-outputs:
-  directory: outputs/kuka_kr50
-  save_plot: true
-  save_trajectory_csv: true
-  save_metrics_json: true

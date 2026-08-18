@@ -96,10 +96,34 @@ def build_trailer_walls(
     ]
 
 
+def _merge_config(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
+    merged = dict(base)
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = _merge_config(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def _load_config_dict(path: Path, ancestors: tuple[Path, ...] = ()) -> dict[str, Any]:
+    resolved = path.resolve()
+    if resolved in ancestors:
+        chain = " -> ".join(str(item) for item in (*ancestors, resolved))
+        raise ValueError(f"cyclic config inheritance: {chain}")
+    with path.open("r", encoding="utf-8") as f:
+        cfg = yaml.safe_load(f) or {}
+    parent_config = cfg.pop("extends", None)
+    if parent_config is None:
+        return cfg
+    parent_path = path.parent / str(parent_config)
+    parent_cfg = _load_config_dict(parent_path, (*ancestors, resolved))
+    return _merge_config(parent_cfg, cfg)
+
+
 def load_scene_config(path: str | Path) -> tuple[TrailerScene, dict[str, Any]]:
     path = Path(path)
-    with path.open("r", encoding="utf-8") as f:
-        cfg = yaml.safe_load(f)
+    cfg = _load_config_dict(path)
 
     trailer = cfg["scene"]["trailer"]
     obstacles = build_trailer_walls(

@@ -17,6 +17,7 @@ from unloading_sim.online_unload import (
     validate_amr_conveyor_alignment,
 )
 from unloading_sim.perception import conveyor_place_pose_candidates, detect_carton_obbs, fixed_conveyor_place_pose, select_detection, surface_place_pose_candidates
+from unloading_sim.reachability import COLLISION_FREE, PregraspHeatmap
 from unloading_sim.robot import DHRobot6
 from unloading_sim.scene import TrailerScene, load_scene_config
 
@@ -59,6 +60,29 @@ def test_kuka_scene_layout_detection_and_grasp_modes():
     assert np.isclose(place_pose[0, 3], expected_x)
 
 
+def test_kuka_home_is_folded_and_does_not_point_skyward():
+    root = Path(__file__).resolve().parents[1]
+    scene, cfg = load_scene_config(root / "config" / "kuka_kr50.yaml")
+    home = np.asarray(cfg["robot"]["home_joints"], dtype=float)
+
+    for dock in amr_dock_positions(cfg):
+        robot, dock_scene, _ = docked_robot_and_scene(scene, cfg, dock)
+        assert robot.is_collision_free(home, dock_scene.all_obstacles)
+        assert robot.fk(home)[2, 2] < 0.5
+        assert abs(np.degrees(home[2])) > 45.0
+        assert robot.link_elevation_degrees(home, 3) < 55.0
+
+
+def test_kuka_carry_uses_direct_any_face_transfer():
+    root = Path(__file__).resolve().parents[1]
+    _, cfg = load_scene_config(root / "config" / "kuka_kr50.yaml")
+    planning = cfg["planning"]
+
+    assert planning["conveyor_allow_all_carton_faces"]
+    assert not planning["use_wrist_first_carry"]
+    assert np.isclose(planning["carry_exit_standoff"], 0.18)
+
+
 def test_fast_grasp_selection_keeps_each_face_mode():
     root = Path(__file__).resolve().parents[1]
     scene, cfg = load_scene_config(root / "config" / "kuka_kr50.yaml")
@@ -82,18 +106,15 @@ def test_fixed_base_reach_filter_skips_only_distant_cartons():
     assert carton_is_outside_fixed_base_reach(robot, far_carton)
 
 
-def test_exposed_carton_order_excludes_covered_and_rear_cartons():
+def test_exposed_carton_order_includes_stable_top_grasps():
     root = Path(__file__).resolve().parents[1]
     scene, _ = load_scene_config(root / "config" / "kuka_kr50.yaml")
 
     exposed = exposed_carton_order(scene)
 
-    assert set(exposed) == {
-        "carton_front_l2_c0",
-        "carton_front_l2_c1",
-        "carton_front_l2_c2",
-        "carton_front_l2_c3",
-    }
+    assert len(exposed) == 8
+    assert all("_l2_" in name for name in exposed)
+    assert "carton_back_l2_c2" in exposed
     assert carton_blocked_by_scene(scene, "carton_target")
     assert not carton_blocked_by_scene(scene, "carton_front_l2_c1")
 
@@ -128,6 +149,40 @@ def test_amr_docking_moves_robot_and_conveyor_together():
     assert np.allclose(robot.base_transform[:3, 3], expected_robot_base)
     assert np.allclose(conveyor.center, expected_conveyor_center)
     assert docked_cfg["robot"]["base_position"] == expected_robot_base.tolist()
+
+    cross_conveyor = next(obstacle for obstacle in docked_scene.obstacles if obstacle.name == "conveyor_cross_deck")
+    expected_cross_center = dock + np.asarray(cfg["amr"]["mounted_surface_centers"]["conveyor_cross_deck"], dtype=float)
+    assert np.allclose(cross_conveyor.center, expected_cross_center)
+
+
+def test_fanuc_docking_moves_both_conveyors_with_the_amr():
+    root = Path(__file__).resolve().parents[1]
+    scene, cfg = load_scene_config(root / "config" / "fanuc_m20id35.yaml")
+    dock = amr_dock_positions(cfg)[0]
+
+    _, docked_scene, _ = docked_robot_and_scene(scene, cfg, dock)
+
+    for surface_name, mounted_center in cfg["amr"]["mounted_surface_centers"].items():
+        surface = next(obstacle for obstacle in docked_scene.obstacles if obstacle.name == surface_name)
+        assert np.allclose(surface.center, dock + np.asarray(mounted_center, dtype=float))
+
+
+def test_pregrasp_heatmap_returns_only_matching_free_seed():
+    solutions = np.full((2, 2, 6), np.nan)
+    solutions[1, 0] = np.arange(6, dtype=float)
+    heatmap = PregraspHeatmap(
+        y_values=np.array([-0.5, 0.5]),
+        z_values=np.array([0.5, 1.5]),
+        status=np.array([[0, 1], [COLLISION_FREE, 0]], dtype=np.uint8),
+        joint_solutions=solutions,
+        position_error=np.zeros((2, 2)),
+        robot_base_position=np.array([0.0, 0.0, 0.3]),
+        pregrasp_x=0.82,
+    )
+
+    assert np.allclose(heatmap.nearest_seed([0.82, -0.45, 1.45], [0.0, 0.0, 0.3]), np.arange(6))
+    assert heatmap.nearest_seed([0.82, 0.45, 0.55], [0.0, 0.0, 0.3]) is None
+    assert heatmap.nearest_seed([0.82, -0.45, 1.45], [0.0, 0.1, 0.3]) is None
 
 
 def test_amr_and_conveyor_front_alignment():
@@ -198,6 +253,41 @@ def test_conveyor_place_candidates_use_release_zone_and_full_support():
         for pose in poses
     }
     assert supported_face_axes == {0, 1, 2}
+
+
+def test_conveyor_release_height_preserves_stable_faces_and_drop_clearance():
+    root = Path(__file__).resolve().parents[1]
+    scene, cfg = load_scene_config(root / "config" / "fanuc_m20id35.yaml")
+    robot, docked_scene, _ = docked_robot_and_scene(scene, cfg, amr_dock_positions(cfg)[0])
+    carton = scene.carton("carton_front_l2_c2")
+    conveyor = next(obstacle for obstacle in docked_scene.obstacles if obstacle.name == "conveyor_deck")
+    grasp = generate_suction_candidates(carton, robot.base_transform[:3, 3])[0]
+    release_height = 0.12
+
+    poses = conveyor_place_pose_candidates(
+        conveyor,
+        carton,
+        grasp.grasp_pose,
+        robot.base_transform[:3, 3],
+        allow_all_carton_faces=True,
+        require_front_release_zone=False,
+        release_height=release_height,
+    )
+
+    carton_from_tool = np.linalg.inv(grasp.grasp_pose) @ carton.world_from_local
+    assert len(poses) >= 3
+    support_axes = set()
+    for pose in poses[:24]:
+        released = pose @ carton_from_tool
+        relative_rotation = conveyor.rotation.T @ released[:3, :3]
+        projected = np.abs(relative_rotation) @ carton.half_extents
+        local_center = conveyor.to_local(released[:3, 3])
+        assert np.isclose(
+            local_center[2] - projected[2] - conveyor.half_extents[2],
+            release_height + 0.01,
+        )
+        support_axes.add(int(np.argmax(np.abs(carton.rotation.T @ released[:3, :3][:, 2]))))
+    assert support_axes == {0, 1, 2}
 
 
 def test_carried_carton_matches_scene_pose_at_grasp():

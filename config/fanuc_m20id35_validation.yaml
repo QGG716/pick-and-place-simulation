@@ -1,0 +1,17 @@
+extends: fanuc_m20id35.yaml
+
+# Offline regression/cache-generation budget.  The production configuration
+# keeps its 12 s local-repair bound; this profile may search longer to create a
+# collision-validated primitive when no warm-cache entry exists yet.
+planning:
+  target_planning_time_limit_seconds: 300.0
+  candidate_planning_time_limit_seconds: 180.0
+  place_attempt_time_limit_seconds: 90.0
+  place_ik_budget_seconds: 60.0
+  max_place_pose_candidates: 12
+  max_feasible_place_iks: 6
+  shortcut_attempts: 180
+  optimize_across_grasp_candidates: true
+
+outputs:
+  directory: outputs/fanuc_m20id35

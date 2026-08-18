@@ -22,6 +22,7 @@ if __package__ in (None, ""):
         add_obb,
         add_debug_axes,
         add_perception_markers,
+        add_tool_trace,
         add_scene_boxes,
         create_simple_suction_tool,
         load_robot,
@@ -41,6 +42,7 @@ else:
         add_obb,
         add_debug_axes,
         add_perception_markers,
+        add_tool_trace,
         add_scene_boxes,
         create_simple_suction_tool,
         load_robot,
@@ -52,6 +54,13 @@ else:
     )
     from .geometry import OBB
     from .scene import load_scene_config
+
+
+def suction_replay_mount(robot_cfg: dict, link_names: dict[str, int]) -> tuple[str, float]:
+    """Return the replay link and Z offset whose cup face matches the tool tip."""
+    configured_tip = str(robot_cfg.get("tip_link", "flange"))
+    ee_link_name = configured_tip if configured_tip in link_names else "flange"
+    return ee_link_name, float(robot_cfg.get("tool_length", 0.20)) - 0.166
 
 
 def replay_online(args: argparse.Namespace) -> None:
@@ -72,17 +81,18 @@ def replay_online(args: argparse.Namespace) -> None:
         amr_cfg = cfg.get("amr", {})
         default_dock = amr_cfg.get("dock_positions", [robot_cfg.get("base_position", [-1.15, 0.0, 0.0])])[0]
         conveyor_name = amr_cfg.get("conveyor_name", "conveyor_deck")
+        mounted_centers = dict(amr_cfg.get("mounted_surface_centers", {}))
+        mounted_centers.setdefault(conveyor_name, amr_cfg.get("conveyor_mount_center", [0.0, 0.0, 0.0]))
         for obstacle_index, obstacle in enumerate(scene.obstacles):
-            if obstacle.name == conveyor_name:
+            if obstacle.name in mounted_centers:
                 scene.obstacles[obstacle_index] = OBB(
                     center=np.asarray(default_dock, dtype=float)
-                    + np.asarray(amr_cfg.get("conveyor_mount_center", obstacle.center), dtype=float),
+                    + np.asarray(mounted_centers[obstacle.name], dtype=float),
                     half_extents=obstacle.half_extents,
                     rotation=obstacle.rotation,
                     name=obstacle.name,
                     category=obstacle.category,
                 )
-                break
         p.resetSimulation()
         p.setGravity(0, 0, -9.81)
         scene_bodies = add_scene_boxes(p, scene, target_name=planning_cfg.get("target_carton"))
@@ -103,15 +113,21 @@ def replay_online(args: argparse.Namespace) -> None:
         default_robot_base = np.asarray(default_dock, dtype=float) + robot_mount
 
         def load_robot_at(base_position: np.ndarray):
+            robot_urdf = Path(robot_cfg.get("urdf_path", DEFAULT_KUKA_KR50_URDF))
+            package_roots = [robot_urdf.parent, Path(DEFAULT_KUKA_KR50_PACKAGE_ROOT)]
             model = load_robot(
                 p,
-                Path(DEFAULT_KUKA_KR50_URDF),
-                [Path(DEFAULT_KUKA_KR50_PACKAGE_ROOT)],
+                robot_urdf,
+                package_roots,
                 base_position.tolist(),
                 robot_cfg.get("base_rpy", [0.0, 0.0, 0.0]),
             )
-            return model, model.link_names["flange"], create_simple_suction_tool(
-                p, [0.0, 0.0, 0.055], [0.0, 0.0, 0.0], 0.065
+            ee_link_name, suction_mount_z = suction_replay_mount(robot_cfg, model.link_names)
+            # The last suction-disc face coincides with the kinematic tool tip.
+            # Mounting it on FANUC's flange used the flange X axis and made the
+            # cylinder side appear to contact the carton.
+            return model, model.link_names[ee_link_name], create_simple_suction_tool(
+                p, [0.0, 0.0, suction_mount_z], [0.0, 0.0, 0.0], 0.065
             )
 
         robot, ee_link, tool = load_robot_at(default_robot_base)
@@ -119,19 +135,55 @@ def replay_online(args: argparse.Namespace) -> None:
         display_q = robot_cfg.get("home_joints", [0.0] * len(robot.joint_indices))
         set_robot_joints(p, robot, display_q)
         update_simple_tool(p, robot, ee_link, tool)
-        if conveyor_name in scene_bodies:
-            conveyor = next(obstacle for obstacle in scene.obstacles if obstacle.name == conveyor_name)
-            mounted_center = np.asarray(default_dock, dtype=float) + np.asarray(
-                amr_cfg.get("conveyor_mount_center", conveyor.center), dtype=float
-            )
-            set_obb_body_pose(p, scene_bodies[conveyor_name], conveyor, center=mounted_center)
+        for surface_name, mount_center in mounted_centers.items():
+            if surface_name in scene_bodies:
+                surface = next(obstacle for obstacle in scene.obstacles if obstacle.name == surface_name)
+                mounted_center = np.asarray(default_dock, dtype=float) + np.asarray(mount_center, dtype=float)
+                set_obb_body_pose(p, scene_bodies[surface_name], surface, center=mounted_center)
 
-        p.resetDebugVisualizerCamera(4.0, -48.0, -20.0, (1.10, 0.0, 1.25))
-        replay_camera_target = (1.10, 0.0, 1.25)
-        replay_camera_distance = 4.0
-        replay_camera_eye = None
+        replay_camera_target = tuple(args.camera_target)
+        replay_camera_distance = float(np.linalg.norm(np.asarray(args.camera_eye) - np.asarray(args.camera_target)))
+        replay_camera_eye = tuple(args.camera_eye)
+        p.resetDebugVisualizerCamera(replay_camera_distance, 35.0, -32.0, replay_camera_target)
         gif_frames = []
         frame_index = 0
+
+        def capture_frame() -> None:
+            nonlocal frame_index
+            if args.frames_dir and frame_index % args.frame_stride == 0:
+                save_camera_snapshot(
+                    p,
+                    Path(args.frames_dir) / f"frame_{frame_index:05d}.png",
+                    args.width,
+                    args.height,
+                    replay_camera_target,
+                    replay_camera_distance,
+                    replay_camera_eye,
+                )
+            if args.gif and frame_index % args.frame_stride == 0:
+                from PIL import Image
+
+                view = p.computeViewMatrix(
+                    cameraEyePosition=replay_camera_eye,
+                    cameraTargetPosition=replay_camera_target,
+                    cameraUpVector=(0.0, 0.0, 1.0),
+                )
+                projection = p.computeProjectionMatrixFOV(
+                    fov=52.0,
+                    aspect=float(args.width) / float(args.height),
+                    nearVal=0.03,
+                    farVal=8.0,
+                )
+                _, _, rgba, _, _ = p.getCameraImage(
+                    width=args.width,
+                    height=args.height,
+                    viewMatrix=view,
+                    projectionMatrix=projection,
+                    renderer=p.ER_TINY_RENDERER,
+                )
+                image = np.asarray(rgba, dtype=np.uint8).reshape((args.height, args.width, 4))
+                gif_frames.append(Image.fromarray(image, mode="RGBA").convert("P", palette=Image.ADAPTIVE))
+            frame_index += 1
         for segment in plan["segments"]:
             target = segment["target"]
             carton = scene.carton(target)
@@ -149,12 +201,11 @@ def replay_online(args: argparse.Namespace) -> None:
                         temp_dir.cleanup()
                     robot, ee_link, tool = load_robot_at(desired_robot_base)
                     loaded_robot_base = desired_robot_base.copy()
-                if conveyor_name in scene_bodies:
-                    conveyor = next(obstacle for obstacle in scene.obstacles if obstacle.name == conveyor_name)
-                    mounted_center = np.asarray(dock_position, dtype=float) + np.asarray(
-                        amr_cfg.get("conveyor_mount_center", conveyor.center), dtype=float
-                    )
-                    set_obb_body_pose(p, scene_bodies[conveyor_name], conveyor, center=mounted_center)
+                for surface_name, mount_center in mounted_centers.items():
+                    if surface_name in scene_bodies:
+                        surface = next(obstacle for obstacle in scene.obstacles if obstacle.name == surface_name)
+                        mounted_center = np.asarray(dock_position, dtype=float) + np.asarray(mount_center, dtype=float)
+                        set_obb_body_pose(p, scene_bodies[surface_name], surface, center=mounted_center)
                 set_obb_body_pose(
                     p,
                     amr_body,
@@ -162,10 +213,19 @@ def replay_online(args: argparse.Namespace) -> None:
                     center=np.asarray(dock_position, dtype=float) + platform_offset,
                 )
             path = [np.asarray(q, dtype=float) for q in segment["path"]]
+            trace_ids = add_tool_trace(
+                p,
+                robot,
+                ee_link,
+                path,
+                tool_offset=float(robot_cfg.get("tool_length", 0.20)),
+                sample_count=args.trace_samples,
+            ) if args.show_trajectory else []
             grasp_index = int(segment.get("grasp_index", max(0, int(len(path) * 0.58))))
             release_index = int(segment.get("release_index", max(grasp_index + 1, int(len(path) * 0.94))))
             ee_from_carton = None
             place_center = segment.get("place_center")
+            release_center = segment.get("release_center", place_center)
             place_rotation = segment.get("place_rotation")
             for local_index, q in enumerate(path):
                 set_robot_joints(p, robot, q)
@@ -184,68 +244,56 @@ def replay_online(args: argparse.Namespace) -> None:
                 if ee_from_carton is not None and local_index < release_index:
                     pos, quat = p.multiplyTransforms(ee_pos, ee_quat, ee_from_carton[0], ee_from_carton[1])
                     p.resetBasePositionAndOrientation(body_id, pos, quat)
-                elif place_center is not None and local_index >= release_index:
+                elif release_center is not None and local_index >= release_index:
                     if place_rotation is None:
-                        set_obb_body_pose(p, body_id, carton, center=place_center)
+                        set_obb_body_pose(p, body_id, carton, center=release_center)
                     else:
                         p.resetBasePositionAndOrientation(
                             body_id,
-                            place_center,
+                            release_center,
                             quaternion_from_matrix(np.asarray(place_rotation, dtype=float)),
                         )
-                if args.frames_dir and frame_index % args.frame_stride == 0:
-                    save_camera_snapshot(
-                        p,
-                        Path(args.frames_dir) / f"frame_{frame_index:05d}.png",
-                        args.width,
-                        args.height,
-                        replay_camera_target,
-                        replay_camera_distance,
-                        replay_camera_eye,
-                    )
-                if args.gif and frame_index % args.frame_stride == 0:
-                    from PIL import Image
-
-                    view = p.computeViewMatrixFromYawPitchRoll(
-                        cameraTargetPosition=replay_camera_target,
-                        distance=replay_camera_distance,
-                        yaw=-48.0,
-                        pitch=-20.0,
-                        roll=0.0,
-                        upAxisIndex=2,
-                    )
-                    projection = p.computeProjectionMatrixFOV(
-                        fov=52.0,
-                        aspect=float(args.width) / float(args.height),
-                        nearVal=0.03,
-                        farVal=8.0,
-                    )
-                    _, _, rgba, _, _ = p.getCameraImage(
-                        width=args.width,
-                        height=args.height,
-                        viewMatrix=view,
-                        projectionMatrix=projection,
-                        renderer=p.ER_TINY_RENDERER,
-                    )
-                    image = np.asarray(rgba, dtype=np.uint8).reshape((args.height, args.width, 4))
-                    gif_frames.append(Image.fromarray(image, mode="RGBA").convert("P", palette=Image.ADAPTIVE))
-                frame_index += 1
+                capture_frame()
                 if not args.direct:
                     time.sleep(args.dt)
+            if place_center is not None and release_center is not None:
+                release = np.asarray(release_center, dtype=float)
+                settled = np.asarray(place_center, dtype=float)
+                drop_distance = float(np.linalg.norm(release - settled))
+                drop_duration = np.sqrt(2.0 * drop_distance / 9.81) if drop_distance > 0.0 else 0.0
+                drop_steps = max(1, int(np.ceil(drop_duration / max(args.dt, 1e-6))))
+                for drop_index in range(1, drop_steps + 1):
+                    elapsed = min(drop_duration, drop_index * drop_duration / drop_steps)
+                    fraction = 1.0 if drop_duration == 0.0 else min(1.0, 0.5 * 9.81 * elapsed * elapsed / drop_distance)
+                    center = (1.0 - fraction) * release + fraction * settled
+                    p.resetBasePositionAndOrientation(
+                        body_id,
+                        center.tolist(),
+                        quaternion_from_matrix(np.asarray(place_rotation, dtype=float)) if place_rotation is not None else quaternion_from_matrix(carton.rotation),
+                    )
+                    p.stepSimulation()
+                    capture_frame()
             if target in [carton.name for carton in scene.cartons]:
                 scene.cartons = [carton for carton in scene.cartons if carton.name != target]
+            for trace_id in trace_ids:
+                p.removeBody(trace_id)
         if args.snapshot:
-            save_camera_snapshot(p, args.snapshot, args.width, args.height, replay_camera_target, replay_camera_distance)
+            save_camera_snapshot(
+                p,
+                args.snapshot,
+                args.width,
+                args.height,
+                replay_camera_target,
+                replay_camera_distance,
+                replay_camera_eye,
+            )
         if args.gif and not gif_frames:
             from PIL import Image
 
-            view = p.computeViewMatrixFromYawPitchRoll(
+            view = p.computeViewMatrix(
+                cameraEyePosition=replay_camera_eye,
                 cameraTargetPosition=replay_camera_target,
-                distance=replay_camera_distance,
-                yaw=-48.0,
-                pitch=-20.0,
-                roll=0.0,
-                upAxisIndex=2,
+                cameraUpVector=(0.0, 0.0, 1.0),
             )
             projection = p.computeProjectionMatrixFOV(
                 fov=52.0,
@@ -287,9 +335,13 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--snapshot", default=None)
     parser.add_argument("--gif", default=None)
     parser.add_argument("--frames-dir", default=None)
-    parser.add_argument("--frame-stride", type=int, default=8)
-    parser.add_argument("--width", type=int, default=1280)
-    parser.add_argument("--height", type=int, default=800)
+    parser.add_argument("--frame-stride", type=int, default=10)
+    parser.add_argument("--width", type=int, default=800)
+    parser.add_argument("--height", type=int, default=500)
+    parser.add_argument("--camera-eye", nargs=3, type=float, default=[-3.0, -0.55, 3.5])
+    parser.add_argument("--camera-target", nargs=3, type=float, default=[1.15, 0.05, 1.0])
+    parser.add_argument("--trace-samples", type=int, default=24)
+    parser.add_argument("--show-trajectory", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--dt", type=float, default=1.0 / 60.0)
     parser.add_argument("--hold", action="store_true")
     parser.add_argument("--native-gl", dest="software_gl", action="store_false")

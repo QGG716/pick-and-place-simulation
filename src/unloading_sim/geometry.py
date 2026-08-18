@@ -131,35 +131,52 @@ class OBB:
         return True
 
     def segment_distance_squared(self, p0_world: np.ndarray, p1_world: np.ndarray, iterations: int = 24) -> float:
-        """Distance from a segment to the OBB using convex 1-D minimization.
+        """Return the exact squared distance from a segment to this OBB.
 
-        The squared point-to-box distance along a segment is convex.  A fixed
-        golden-section search is deterministic and sufficiently fast for the
-        small obstacle sets used in the first-layer simulator.
+        In the box frame, point-to-box squared distance along the segment is a
+        convex piecewise quadratic.  Its active coordinates can only change
+        where the segment crosses one of the six box planes, so evaluating the
+        quadratic minimum on each resulting interval is exact and avoids an
+        iterative optimizer in the collision hot path. ``iterations`` remains
+        accepted for backward compatibility and is intentionally unused.
         """
-        if self.segment_intersects(p0_world, p1_world):
-            return 0.0
-        p0 = np.asarray(p0_world, dtype=float)
-        d = np.asarray(p1_world, dtype=float) - p0
-        a, b = 0.0, 1.0
-        inv_phi = (np.sqrt(5.0) - 1.0) / 2.0
-        c = b - inv_phi * (b - a)
-        e = a + inv_phi * (b - a)
+        del iterations
+        p0 = self.to_local(p0_world)
+        p1 = self.to_local(p1_world)
+        d = p1 - p0
+        half = self.half_extents
 
-        def f(t: float) -> float:
-            return self.point_distance_squared(p0 + t * d)
+        breakpoints = [0.0, 1.0]
+        for axis in range(3):
+            if abs(d[axis]) < _EPS:
+                continue
+            for plane in (-half[axis], half[axis]):
+                t = float((plane - p0[axis]) / d[axis])
+                if 0.0 < t < 1.0:
+                    breakpoints.append(t)
+        breakpoints = sorted(set(breakpoints))
 
-        fc, fe = f(c), f(e)
-        for _ in range(iterations):
-            if fc < fe:
-                b, e, fe = e, c, fc
-                c = b - inv_phi * (b - a)
-                fc = f(c)
-            else:
-                a, c, fc = c, e, fe
-                e = a + inv_phi * (b - a)
-                fe = f(e)
-        return min(fc, fe, f(0.0), f(1.0))
+        def local_distance_squared(t: float) -> float:
+            excess = np.maximum(np.abs(p0 + t * d) - half, 0.0)
+            return float(excess @ excess)
+
+        best = min(local_distance_squared(t) for t in breakpoints)
+        for lo, hi in zip(breakpoints[:-1], breakpoints[1:]):
+            mid = 0.5 * (lo + hi)
+            point = p0 + mid * d
+            active = np.abs(point) > half
+            if not np.any(active):
+                return 0.0
+            bounds = np.where(point < -half, -half, half)
+            active_d = d[active]
+            offset = p0[active] - bounds[active]
+            quadratic = float(active_d @ active_d)
+            if quadratic <= _EPS:
+                continue
+            stationary = -float(active_d @ offset) / quadratic
+            t = float(np.clip(stationary, lo, hi))
+            best = min(best, local_distance_squared(t))
+        return best
 
     def transformed(self, transform: np.ndarray, name: str | None = None, category: str | None = None) -> "OBB":
         transform = np.asarray(transform, dtype=float)

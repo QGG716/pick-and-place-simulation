@@ -24,6 +24,8 @@ unloading-layer1-pybullet = "unloading_sim.pybullet_sim:main"
 unloading-layer1-pybullet-rm65 = "unloading_sim.pybullet_rm65:main"
 unloading-layer1-pybullet-kuka-kr50 = "unloading_sim.pybullet_kuka_kr50:main"
 unloading-layer1-online = "unloading_sim.online_unload:main"
+unloading-layer1-reachability = "unloading_sim.reachability:main"
+unloading-layer1-optimize-cache = "unloading_sim.trajectory_cache:main"
 unloading-layer1-pybullet-online-kuka = "unloading_sim.pybullet_online_kuka:main"
 
 [tool.setuptools]

@@ -62,14 +62,22 @@ def surface_place_pose_candidates(
     edge_clearance: float = 0.01,
     release_x_range: tuple[float, float] | None = None,
     allow_all_carton_faces: bool = False,
+    release_height: float = 0.0,
 ) -> list[np.ndarray]:
-    """Return stable tool poses with a fully supported attached carton."""
+    """Return stable tool poses above a fully supporting surface.
+
+    ``release_height`` leaves the carton above its settled pose so a replay or
+    downstream dynamics backend can model the short free-fall after release.
+    Orientations are returned round-robin across the stable carton rotations;
+    a bounded planner therefore explores different support faces and wrist
+    directions instead of exhausting one rotation first.
+    """
     carton_from_tool = np.linalg.inv(grasp_tool_pose) @ carton.world_from_local
     tool_from_carton = np.linalg.inv(carton_from_tool)
     if release_x_range is None and robot_base_position is not None:
         robot_front_x = float(surface.to_local(np.asarray(robot_base_position, dtype=float))[0])
         release_x_range = (robot_front_x, float(surface.half_extents[0]))
-    candidates: list[tuple[float, np.ndarray]] = []
+    candidate_groups: list[list[tuple[float, np.ndarray]]] = []
     if allow_all_carton_faces:
         # All proper signed-permutation rotations. Each carton face can then
         # become the downward support face while preserving a right-handed tool pose.
@@ -113,13 +121,14 @@ def surface_place_pose_candidates(
         y_offsets = [0.0]
         if available[1] > 0.04:
             y_offsets.extend([float(available[1]), float(-available[1])])
+        rotation_candidates: list[tuple[float, np.ndarray]] = []
         for x_offset in x_offsets:
             for y_offset in y_offsets:
                 local_center = np.array(
                     [
                         x_offset,
                         y_offset,
-                        surface.half_extents[2] + carton.half_extents[2] + edge_clearance,
+                        surface.half_extents[2] + projected_half_extents[2] + edge_clearance + float(release_height),
                     ]
                 )
                 desired_carton = make_transform(carton_rotation, surface.to_world(local_center))
@@ -128,8 +137,16 @@ def surface_place_pose_candidates(
                 if release_x_range is not None and not (release_x_range[0] - 1e-9 <= release_x <= release_x_range[1] + 1e-9):
                     continue
                 score = (release_x - release_x_range[0] if release_x_range is not None else abs(x_offset)) + 0.2 * abs(y_offset)
-                candidates.append((score, tool_pose))
-    return [pose for _, pose in sorted(candidates, key=lambda item: item[0])]
+                rotation_candidates.append((score, tool_pose))
+        if rotation_candidates:
+            candidate_groups.append(sorted(rotation_candidates, key=lambda item: item[0]))
+
+    candidates: list[np.ndarray] = []
+    for offset_index in range(max((len(group) for group in candidate_groups), default=0)):
+        for group in candidate_groups:
+            if offset_index < len(group):
+                candidates.append(group[offset_index][1])
+    return candidates
 
 
 def conveyor_place_pose_candidates(
@@ -140,6 +157,7 @@ def conveyor_place_pose_candidates(
     edge_clearance: float = 0.01,
     allow_all_carton_faces: bool = False,
     require_front_release_zone: bool = True,
+    release_height: float = 0.0,
 ) -> list[np.ndarray]:
     release_x_range = None
     if require_front_release_zone:
@@ -152,4 +170,5 @@ def conveyor_place_pose_candidates(
         edge_clearance=edge_clearance,
         release_x_range=release_x_range,
         allow_all_carton_faces=allow_all_carton_faces,
+        release_height=release_height,
     )

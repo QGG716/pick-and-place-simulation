@@ -1,0 +1,19 @@
+{
+  "pregrasp_x_m": 0.8200000000000001,
+  "robot_base_position_m": [
+    -0.04999999999999993,
+    0.0,
+    0.3
+  ],
+  "grid_shape": [
+    17,
+    21
+  ],
+  "status_counts": {
+    "unreachable": 0,
+    "collision_blocked": 45,
+    "collision_free": 312
+  },
+  "npz_cache": "outputs\\fanuc_m20id35\\pregrasp_heatmap.npz",
+  "png": "outputs\\fanuc_m20id35\\pregrasp_heatmap.png"
+}

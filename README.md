@@ -1,235 +1,201 @@
-# 物流车辆卸货：第一层快速几何仿真
+# Trailer Unloading Geometric Simulator v0.1
 
-这是一个可直接交给 Codex 继续开发的最小可运行仓库。它实现的是卸货仿真体系的**第一层**：不追求纸箱变形、吸盘密封和箱墙坍塌等高保真物理，而是用轻量几何模型快速完成机械臂构型评估、可达性分析、碰撞检测、抓取候选生成和路径规划。
+面向厢式货车卸垛的轻量级六轴工业机器人几何仿真与运动规划原型。v0.1 以 FANUC M-20iD/35 为主要验证机型，覆盖纸箱抓取点生成、逆运动学、碰撞检测、在线卸垛顺序、双输送带放置、轨迹缓存和 PyBullet 回放。
 
-## 已实现
+核心规划器只依赖 CPU，不依赖 ROS 2、Isaac Sim 或 GPU，适合快速算法迭代、回归测试和生产方案前期验证。
 
-- UR5e尺度的六轴工业机械臂标准DH模型
-- 正运动学与6×6几何雅可比矩阵
-- 阻尼最小二乘数值逆运动学，多初值重启
-- 机械臂连杆胶囊体近似
-- 车厢、纸箱、输送机OBB模型
-- 胶囊体—OBB碰撞检测和机械臂自碰撞检测
-- 面向纸箱正面的3×3解析式吸盘抓取候选
-- 预抓取位姿、接触位姿和直线接近检查
-- 双向RRT-Connect关节空间规划
-- 路径快捷平滑、加密采样和CSV输出
-- 3D场景及末端轨迹绘图
-- YAML参数化场景
+![FANUC 最上层卸垛演示](outputs/fanuc_m20id35/fanuc_m20id35_top_layer_v11.gif)
 
-## 不在第一层解决
+## v0.1 功能
 
-- 纸箱柔性、破损、挤压和连锁坍塌
-- 真空流量、吸盘密封、漏气和脱落
-- 关节动力学、柔顺控制和力控
-- RGB-D渲染、域随机化和神经网络感知
-- 实际机器人标定误差
+- FANUC M-20iD/35 与 KUKA KR 50 R2500 URDF 运动学适配。
+- 世界坐标约定：`+X` 向车厢内部、`+Y` 向左、`+Z` 向上。
+- 车厢、纸箱和输送带使用 OBB；机器人连杆使用胶囊体近似。
+- 机器人—环境、自碰撞、所抓箱体—机器人及箱体—车厢/其他箱体检测。
+- 正面、侧面和顶面吸取候选；吸盘正面始终与被吸箱面法向对齐。
+- 圆形吸盘绕法向的腕部滚转候选，用 J4–J6 冗余降低 IK 和路径搜索难度。
+- 预抓取、接触、脱垛、净空调整、转身和放置阶段约束。
+- 双向 RRT-Connect、直接边优先、碰撞复核捷径优化和轨迹加密。
+- 纵向与横向输送带联合规划，并按当前输送带负载进行滚动分流。
+- 纸箱在输送带上方释放并模拟自由落体。
+- 固定底座优先：同一停靠位可用时不会频繁移动 AMR。
+- 确定性预抓取可达性/碰撞热图与 IK 热启动缓存。
+- 轨迹缓存重新验证和局部优化，支持与机器人执行流水线并行。
+- PyBullet 无窗口 GIF、PNG 回放以及交互式查看。
 
-这些内容应分别放到 Isaac Sim、高保真实体测试台和实机闭环中。
+## v0.1 验证结果
+
+最上层 8 箱回归使用同一个 AMR 停靠位 `[0.80, -0.30, 0.0]`：
+
+- 6 箱进入纵向输送带，2 箱进入横向输送带。
+- 横向带方案分别使用顶面抓取和侧面抓取。
+- `carton_front_l2_c2` 在 `carton_front_l2_c3` 之前被移除。
+- 8/8 段通过逐轨迹点机器人、箱体和车厢碰撞复核。
+- 优化轨迹的碰撞复核总耗时约 6.8 秒，平均约 0.85 秒/箱。
+- 50 Hz 离散轨迹的模拟执行估算为 1.96–3.58 秒/箱，平均约 2.59 秒/箱。
+
+这些数据说明缓存验证可以放入 6 秒/箱的计算预算，但不等同于真机已经达到 600 箱/小时。真机还必须计入传感器、真空建立与确认、关节速度/加速度/加加速度、PLC 握手、输送带节拍和故障恢复。
+
+完整冷启动回归规划仍需要数分钟，仅用于离线生成和验证动作原语；生产在线流程应使用：
+
+```text
+场景签名/热图查表
+  -> 当前姿态优先的最近 IK 分支
+  -> 整条缓存轨迹批量碰撞复核
+  -> 仅对失效局部进行限时 RRT 修补
+```
+
+下一箱规划应与当前箱执行并行。
 
 ## 安装
 
+需要 Python 3.10 或更高版本。
+
 ```bash
 python -m venv .venv
+
+# Linux/macOS
 source .venv/bin/activate
-pip install -e ".[dev]"
+
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+
+python -m pip install -e ".[dev,viz]"
 ```
 
-## 运行
+核心算法不需要 PyBullet：
 
 ```bash
-unloading-layer1-demo --config config/demo.yaml
+python -m pip install -e ".[dev]"
 ```
 
-也可以不安装包：
+## 快速开始
+
+### 1. 生成 FANUC 最上层卸垛方案
+
+在线限时配置：
 
 ```bash
-PYTHONPATH=src python -m unloading_sim.demo --config config/demo.yaml
+python -m unloading_sim.online_unload \
+  --config config/fanuc_m20id35.yaml \
+  --max-picks 8 \
+  --top-layer-only \
+  --output-dir outputs/fanuc_m20id35/top_layer
 ```
 
-默认输出：
+离线回归和缓存生成配置允许更长搜索时间：
+
+```bash
+python -m unloading_sim.online_unload \
+  --config config/fanuc_m20id35_validation.yaml \
+  --max-picks 8 \
+  --top-layer-only \
+  --output-dir outputs/fanuc_m20id35/top_layer_validation
+```
+
+### 2. 优化并复核轨迹缓存
+
+```bash
+python -m unloading_sim.trajectory_cache \
+  --plan outputs/fanuc_m20id35/top_layer_validation/online_plan.json \
+  --output outputs/fanuc_m20id35/top_layer_validation/online_plan_optimized.json \
+  --attempts 800
+
+python -m unloading_sim.trajectory_cache \
+  --plan outputs/fanuc_m20id35/top_layer_validation/online_plan_optimized.json \
+  --validate-only
+```
+
+### 3. 生成 GIF
+
+```bash
+python -m unloading_sim.pybullet_online_kuka \
+  --plan outputs/fanuc_m20id35/top_layer_validation/online_plan_optimized.json \
+  --direct \
+  --gif outputs/fanuc_m20id35/top_layer.gif \
+  --snapshot outputs/fanuc_m20id35/top_layer_final.png \
+  --frame-stride 8 \
+  --width 800 \
+  --height 500 \
+  --camera-eye -3.0 -0.55 3.5 \
+  --camera-target 1.15 0.05 1.0 \
+  --show-trajectory
+```
+
+GIF 使用 PyBullet CPU TinyRenderer。分段串行渲染不会减少总计算量；只有并行渲染或降低分辨率、帧数时才会明显提速。核心规划和碰撞检测不需要 GPU。
+
+### 4. 生成预抓取点热图
+
+```bash
+python -m unloading_sim.reachability \
+  --config config/fanuc_m20id35.yaml \
+  --output-prefix outputs/fanuc_m20id35/pregrasp_heatmap \
+  --y-samples 21 \
+  --z-samples 17
+```
+
+输出包括：
 
 ```text
-outputs/demo/
-├── metrics.json
-├── trajectory.csv
-└── plan.png
+pregrasp_heatmap.npz   # 网格、状态、IK 解和误差
+pregrasp_heatmap.png   # 可视化热图
+pregrasp_heatmap.json  # 摘要统计
 ```
 
-## PyBullet交互可视化
+## 配置
 
-安装可选可视化依赖：
+- `config/common_unloading.yaml`：公共车厢、纸箱、输送带和规划参数。
+- `config/fanuc_m20id35.yaml`：FANUC 在线限时配置。
+- `config/fanuc_m20id35_validation.yaml`：离线回归/缓存生成预算。
+- `config/kuka_kr50.yaml`：KUKA KR 50 配置。
 
-```bash
-conda run -n madpro python -m pip install -e ".[viz]"
-```
-
-加载睿尔曼 RM65-B URDF、YAML 场景、单吸盘和 demo 轨迹：
-
-```bash
-conda run -n madpro python -m unloading_sim.pybullet_rm65 \
-	--config config/demo.yaml \
-	--trajectory outputs/demo/trajectory.csv \
-	--hold
-```
-
-加载 KUKA KR 50 R2500、YAML 场景、单吸盘和 demo 轨迹：
-
-```bash
-conda run -n madpro python src/unloading_sim/demo.py --config config/kuka_kr50.yaml
-
-conda run -n madpro python -m unloading_sim.pybullet_kuka_kr50 \
-	--hold
-```
-
-`demo.py` 是离线规划入口，不会打开窗口；它会输出检测 OBB、抓取候选、IK、RRT 和放置规划进度。PyBullet 入口负责可视化回放：目标箱在抓取后会跟随末端吸盘运动，并最终落到传送带固定放置点。
-
-KUKA 满载场景使用 `config/kuka_kr50.yaml`：车厢横截面由 4 列 × 3 层箱子填满，沿 +X 前后码两排；传送带靠机械臂底座的一端与底座 x 坐标平齐，目标箱统一放到传送带前端固定位置。
-
-在线从上往下卸货，并连续回放全过程：
-
-```bash
-conda run -n madpro python src/unloading_sim/online_unload.py \
-	--config config/kuka_kr50.yaml \
-	--max-picks 2
-
-conda run -n madpro python src/unloading_sim/pybullet_online_kuka.py \
-	--direct \
-	--plan outputs/kuka_kr50/online_plan.json \
-	--gif outputs/kuka_kr50/online_unload.gif \
-	--snapshot outputs/kuka_kr50/online_final.png \
-	--frame-stride 6
-```
-
-要看真实窗口，把第二条命令里的 `--direct --gif ... --snapshot ...` 去掉，改成：
-
-```bash
-conda run -n madpro python src/unloading_sim/pybullet_online_kuka.py \
-	--plan outputs/kuka_kr50/online_plan.json \
-	--hold
-```
-
-当前 `DISPLAY=:1` 的 NVIDIA GLX 有驱动/用户态库版本不一致问题，PyBullet 入口默认强制 Mesa 软件 GL：
-
-```text
-__GLX_VENDOR_LIBRARY_NAME=mesa
-LIBGL_ALWAYS_SOFTWARE=1
-```
-
-如果以后修好了 NVIDIA 驱动，可以加 `--native-gl` 使用原生 GPU GL。
-
-无窗口验证：
-
-```bash
-conda run -n madpro python -m unloading_sim.pybullet_sim --direct --loops 1 --dt 0
-```
-
-生成离屏可视化快照：
-
-```bash
-conda run -n madpro python src/unloading_sim/pybullet_sim.py \
-	--direct \
-	--loops 1 \
-	--dt 0 \
-	--config config/demo.yaml \
-	--trajectory outputs/demo/trajectory.csv \
-	--snapshot outputs/demo/pybullet_snapshot.png
-```
-
-KUKA KR 50 R2500 快照：
-
-```bash
-conda run -n madpro python src/unloading_sim/pybullet_kuka_kr50.py \
-	--direct \
-	--loops 1 \
-	--dt 0 \
-	--snapshot outputs/kuka_kr50/perception_pick_place.png
-```
-
-如果当前桌面 OpenGL 不能创建 PyBullet GUI 窗口，可以用 Xvfb 验证 GUI 后端：
-
-```bash
-xvfb-run -s "-screen 0 1280x800x24" \
-	conda run -n madpro python src/unloading_sim/pybullet_sim.py \
-	--config config/demo.yaml \
-	--trajectory outputs/demo/trajectory.csv \
-	--loops 1 \
-	--dt 0
-```
-
-默认机械臂 URDF 来自：
-
-```text
-/home/zy0004-lr/下载/code/manipulation-main/ros_ws/src/models/RM65/urdf/RM65-B/urdf/RM65-B.urdf
-```
-
-KUKA KR 50 R2500 描述来自公开仓库 `JRL-CARI-CNR-UNIBS/kr_50_r2500`，已下载到：
-
-```text
-third_party/kr_50_r2500/
-```
-
-PyBullet 使用的静态 URDF 由该仓库的 xacro 渲染得到：
-
-```text
-assets/robots/kuka_kr50_r2500/kr_50_r2500.urdf
-```
-
-末端默认挂接简化单吸盘；如需隐藏工具可加 `--tool none`。
-
-## 坐标系
-
-- 世界坐标 `+X`：从车门向车厢内部
-- `+Y`：车厢左侧
-- `+Z`：向上
-- 车厢在 `x=0` 处开口，沿 `+X` 延伸
-- 吸盘工具坐标 `+Z` 指向被吸取表面
+配置支持递归 `extends`，并在出现循环继承时明确报错。
 
 ## 代码结构
 
 ```text
 src/unloading_sim/
-├── geometry.py       # OBB、胶囊体、SO(3)工具
-├── robot.py          # 六轴DH模型、FK、雅可比、碰撞体
-├── scene.py          # 车厢和纸箱场景
-├── ik.py             # DLS逆运动学
-├── planner.py        # RRT-Connect
-├── grasp.py          # 解析式吸盘候选和抓取规划
-├── visualization.py # 3D绘图
-├── pybullet_sim.py  # PyBullet公共可视化后端
-├── pybullet_rm65.py # RM65独立PyBullet入口
-├── pybullet_kuka_kr50.py # KUKA KR50独立PyBullet入口
-└── demo.py           # 命令行入口
+├── geometry.py             # OBB、胶囊体、SO(3) 工具
+├── robot.py                # 六轴机器人、URDF FK/Jacobian/碰撞体
+├── scene.py                # 场景与递归 YAML 配置
+├── ik.py                   # 阻尼最小二乘多起点 IK
+├── planner.py              # RRT-Connect、捷径和平滑
+├── grasp.py                # 抓取/放置候选和完整抓放规划
+├── perception.py           # 确定性 OBB 感知接口
+├── online_unload.py        # 连续卸垛、排序、AMR/输送带调度
+├── reachability.py         # 预抓取可达性与碰撞热图
+├── trajectory_cache.py     # 缓存优化、碰撞复核和延迟统计
+├── pybullet_sim.py         # 公共 PyBullet 可视化工具
+└── pybullet_online_kuka.py # FANUC/KUKA 在线方案回放
 ```
 
-## 替换成真实工业机械臂
+`geometry.py`、`robot.py`、`scene.py`、`ik.py`、`planner.py` 和 `grasp.py` 保持可独立测试。所有随机规划入口均接受确定性种子。
 
-当前模型只是UR5e尺度的算法原型。选定发那科、KUKA、安川或国产机械臂后，应优先替换：
-
-1. `DHRobot6.ur5e_like()`中的DH参数和关节限位；
-2. 各连杆胶囊半径；
-3. 基座安装位姿；
-4. 末端吸盘长度；
-5. 真实碰撞模型与厂商URDF的交叉验证。
-
-建议下一步新增 `URDFRobotAdapter`，用 Pinocchio 负责运动学、hpp-fcl负责网格碰撞，同时保留当前胶囊体后端用于大批量快速筛选。
-
-## Codex建议任务
-
-仓库根目录包含 `AGENTS.md`。把仓库放入 Codex 后，可依次要求：
-
-```text
-1. 增加批量可达性扫描，输出车厢内三维热力图。
-2. 增加多个机械臂安装位姿对比和最优基座搜索。
-3. 增加纸箱支撑关系图与确定性卸货顺序评分。
-4. 增加Pinocchio/hpp-fcl可选后端，并保持现有API不变。
-5. 增加ROS 2消息导出和Isaac Sim场景参数导出。
-```
-
-## 验证
+## 测试
 
 ```bash
 pytest -q
 ```
 
-默认示例在本仓库生成时已通过运行测试，规划结果会写入 `outputs/demo`。
+v0.1 当前测试状态：40 项通过；5 项旧 KUKA 场景布局断言仍需与现配置同步。新增的腕部滚转、最近等价关节分支和递归配置继承测试均通过。
+
+## 当前边界
+
+v0.1 是几何与规划原型，不模拟：
+
+- 纸箱柔性、破损、挤压或连锁坍塌；
+- 真空流量、吸盘密封、漏气和脱落；
+- 完整刚体动力学、柔顺控制和力控；
+- 视觉噪声、遮挡下的检测误差和标定漂移；
+- 工业控制器的速度前瞻、安全 PLC 和真机认证。
+
+进入真机前，应使用厂商精确碰撞网格、关节动力学约束和实测吸盘模型重新验证全部轨迹。
+
+## 机器人资源
+
+- FANUC M-20iD/35 资源来源和许可证见 `assets/robots/fanuc_m20id35/SOURCE.md` 与 `LICENSE.txt`。
+- KUKA KR 50 R2500 资源位于 `third_party/kr_50_r2500/`。
+
+## 版本
+
+当前基线：`v0.1.0`，发布分支：`release/v0.1`。
