@@ -8,6 +8,19 @@ robot:
   # Folded working posture: the flange faces forward/down instead of skyward.
   home_joints: [-0.8605, -2.3374, -1.9499, -0.8876, -1.6696, -1.7180]
 
+execution:
+  # Velocity limits come from the bundled KUKA URDF. Acceleration and jerk
+  # remain explicit conservative assumptions pending controller/load testing.
+  limits_source: kuka_urdf_velocity_plus_conservative_engineering_assumptions
+  joint_velocity_limits_rad_s: [3.05433, 2.75762, 3.05433, 4.36332, 4.36332, 6.28319]
+  joint_acceleration_limits_rad_s2: [1.8, 1.8, 2.0, 3.5, 3.5, 4.5]
+  joint_jerk_limits_rad_s3: [9.0, 9.0, 10.0, 18.0, 18.0, 22.0]
+  motion_limit_scale: 0.35
+  perception_update_seconds: 0.25
+  vacuum_establish_seconds: 0.35
+  release_seconds: 0.15
+  minimum_segment_seconds: 0.002
+
 scene:
   trailer:
     length: 4.0
@@ -122,6 +135,7 @@ planning:
   max_feasible_place_iks: 4
 
 amr:
+  dock_clearance_m: 0.02
   # Ground-contacting rigid platform: the robot and conveyor never move
   # relative to each other, and the AMR locks before arm motion begins.
   footprint_size: [1.80, 1.30, 0.30]

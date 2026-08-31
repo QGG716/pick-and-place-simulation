@@ -123,6 +123,13 @@ def _load_config_dict(path: Path, ancestors: tuple[Path, ...] = ()) -> dict[str,
 
 def load_scene_config(path: str | Path) -> tuple[TrailerScene, dict[str, Any]]:
     path = Path(path)
+    # Plans are portable artifacts and may have been generated on Windows but
+    # certified on Linux. Resolve the alternate separator only when the path
+    # does not exist, so literal backslashes remain valid on POSIX filesystems.
+    if not path.exists() and "\\" in str(path):
+        portable_path = Path(str(path).replace("\\", "/"))
+        if portable_path.exists():
+            path = portable_path
     cfg = _load_config_dict(path)
 
     trailer = cfg["scene"]["trailer"]

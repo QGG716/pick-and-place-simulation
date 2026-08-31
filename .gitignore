@@ -6,3 +6,6 @@ __pycache__/
 build/
 dist/
 outputs/
+.tmp/
+tmp/
+.vscode/tasks.json

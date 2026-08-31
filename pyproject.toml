@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unloading-layer1-sim"
-version = "0.1.0"
+version = "0.2.0"
 description = "Fast geometric simulation and motion planning for industrial-arm trailer unloading"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
 viz = ["pybullet>=3.2"]
+pinocchio = ["pin>=3.0; platform_system != 'Windows'"]
 
 [project.scripts]
 unloading-layer1-demo = "unloading_sim.demo:main"
@@ -27,6 +28,8 @@ unloading-layer1-online = "unloading_sim.online_unload:main"
 unloading-layer1-reachability = "unloading_sim.reachability:main"
 unloading-layer1-optimize-cache = "unloading_sim.trajectory_cache:main"
 unloading-layer1-pybullet-online-kuka = "unloading_sim.pybullet_online_kuka:main"
+unloading-layer1-calibrate = "unloading_sim.calibration:main"
+unloading-layer1-realtime = "unloading_sim.realtime_planner:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

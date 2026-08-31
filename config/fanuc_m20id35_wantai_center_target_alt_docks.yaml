@@ -1,0 +1,10 @@
+extends: fanuc_m20id35_wantai_center_out_place_search.yaml
+
+# Diagnostic retry for a centre carton after the current y=-0.30 m dock was
+# exhaustively searched. Keep the target fixed and evaluate only alternate
+# audited AMR stops; the arm remains stationary during each pick trajectory.
+amr:
+  dock_positions:
+    - [0.80, 0.0, 0.0]
+    - [0.80, 0.30, 0.0]
+    - [0.80, 0.60, 0.0]

@@ -4,7 +4,7 @@ import numpy as np
 
 from unloading_sim.pybullet_sim import quaternion_from_matrix, resolve_package_uri
 import unloading_sim.pybullet_kuka_kr50 as pybullet_kuka_kr50
-from unloading_sim.pybullet_online_kuka import suction_replay_mount
+from unloading_sim.pybullet_online_kuka import remove_conveyed_carton, suction_replay_mount
 
 
 def test_resolve_package_uri():
@@ -36,3 +36,22 @@ def test_fanuc_suction_face_is_mounted_on_tool_z_at_planned_tip():
 
     assert link_name == "tool0"
     assert np.isclose(mount_z + 0.166, 0.20)
+
+
+def test_released_carton_disappears_after_conveyor_handoff():
+    class FakePyBullet:
+        def __init__(self):
+            self.removed = []
+
+        def removeBody(self, body_id):
+            self.removed.append(body_id)
+
+    backend = FakePyBullet()
+    bodies = {"carton_a": 42, "carton_b": 43}
+    groups = {"carton_a": [42, 101, 102], "carton_b": [43, 103]}
+
+    remove_conveyed_carton(backend, bodies, "carton_a", groups)
+
+    assert backend.removed == [42, 101, 102]
+    assert bodies == {"carton_b": 43}
+    assert groups == {"carton_b": [43, 103]}

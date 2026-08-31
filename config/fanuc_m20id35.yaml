@@ -5,15 +5,34 @@ robot:
   urdf_path: assets/robots/fanuc_m20id35/m20_35_18d.urdf
   base_position: [0.60, 0.15, 0.30]
   base_rpy: [0.0, 0.0, 0.0]
-  tool_length: 0.20
+  # STEP-derived flange to uncompressed FG42 working-plane distance.
+  tool_length: 0.2275
   tip_link: tool0
   home_joints: [-0.3766, -0.7955, -0.8172, 0.8419, -1.3000, -0.3599]
 
+execution:
+  # Velocity limits come from the bundled FANUC URDF. Acceleration and jerk
+  # are conservative simulation assumptions, not manufacturer-certified
+  # controller limits; replace them with measured/load-table values before HIL.
+  limits_source: fanuc_urdf_velocity_plus_conservative_engineering_assumptions
+  joint_velocity_limits_rad_s: [3.141593, 3.141593, 3.490659, 6.108652, 6.108652, 6.981317]
+  joint_acceleration_limits_rad_s2: [2.0, 2.0, 2.2, 4.0, 4.0, 5.0]
+  joint_jerk_limits_rad_s3: [10.0, 10.0, 12.0, 20.0, 20.0, 25.0]
+  # URDF effort attributes used as simulation actuator saturation. These are
+  # model limits, not certified continuous controller torques.
+  joint_effort_limits_nm: [7000.0, 9000.0, 4000.0, 600.0, 500.0, 300.0]
+  motion_limit_scale: 0.35
+
 planning:
+  # Production online mode uses a pre-certified trajectory library. A cache
+  # miss fails within this deadline instead of blocking the robot on cold RRT.
+  online_lookup_deadline_seconds: 0.05
+  blocking_cold_planning: false
   # Generate task-space alternatives instead of imposing one Stretch motion:
   # prefer the door face, but retain side/top contacts and circular-cup roll
   # redundancy so IK can choose a nearby wrist branch.
   grasp_face_modes: [front, side, top]
+  tool_collision_margin_m: 0.001
   grasp_candidates_per_face: 2
   dock_grasp_candidates_per_face: 1
   wrist_roll_angles_deg: [0.0, 90.0, -90.0, 180.0]
@@ -61,7 +80,16 @@ planning:
   # and wrist together; the former wrist-first preset caused air-twisting.
   use_wrist_first_carry: false
   conveyor_allow_all_carton_faces: true
-  conveyor_release_height: 0.12
+  # Diagnostic release policy. The 0.03 m target is clamped by both ideal
+  # impact speed and gravitational potential energy. Replace these engineering
+  # assumptions with the carton/product supplier's drop-damage limits before
+  # production qualification.
+  conveyor_release_height: 0.03
+  conveyor_release_policy:
+    desired_height_m: 0.03
+    maximum_height_m: 0.04
+    maximum_impact_velocity_m_s: 0.80
+    maximum_drop_energy_j: 2.50
   # Warm-start online IK from the deterministic batch heatmap. The cache is
   # accepted only when the robot base exactly matches its generation pose.
   pregrasp_heatmap_cache: outputs/fanuc_m20id35/pregrasp_heatmap.npz
@@ -78,9 +106,12 @@ planning:
   place_ik_max_iterations: 90
 
 amr:
-  conveyor_front_overhang: 0.75
+  conveyor_front_overhang: 0.95
   # Behind and to the right of the cross conveyor, with access to both belts.
-  robot_mount_position: [-0.85, 0.30, 0.30]
+  # The cross belt was moved 0.20 m away from the carton work face. Move the
+  # robot by the same amount so the proven J2-housing-to-belt clearance is
+  # preserved instead of forcing low carries over the shoulder casting.
+  robot_mount_position: [-1.05, 0.30, 0.30]
 
 outputs:
   directory: outputs/fanuc_m20id35

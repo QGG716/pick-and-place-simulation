@@ -8,7 +8,7 @@ from typing import Callable, Sequence
 import numpy as np
 
 from .geometry import rotation_vector_from_matrix
-from .robot import RobotKinematics6
+from .robot import RobotBackend
 from .geometry import OBB
 
 
@@ -30,7 +30,7 @@ def pose_error(current: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, flo
 
 
 def solve_ik(
-    robot: RobotKinematics6,
+    robot: RobotBackend,
     target: np.ndarray,
     seed: np.ndarray,
     obstacles: Sequence[OBB] | None = None,
@@ -89,11 +89,29 @@ def solve_ik(
                 candidate = robot.clamp(q + 0.25 * dq)
         q = candidate
 
+    # The loop checks convergence before applying each update. A solution that
+    # enters tolerance on the final permitted update must still receive the
+    # same collision and task-state validation; otherwise it is incorrectly
+    # reported as a failure and its stored errors refer to the previous q.
+    _, last_pos, last_ori = pose_error(robot.fk(q), target)
+    if last_pos <= position_tolerance and last_ori <= orientation_tolerance:
+        collision_free = not obstacles or robot.is_collision_free(
+            q, obstacles, ignored_obstacle_names=ignored_obstacle_names
+        )
+        if collision_free and (extra_state_valid is None or extra_state_valid(q)):
+            return IKResult(
+                True,
+                q,
+                max_iterations,
+                last_pos,
+                last_ori,
+                "converged on final update",
+            )
     return IKResult(False, q, max_iterations, last_pos, last_ori, "maximum iterations reached")
 
 
 def solve_ik_multistart(
-    robot: RobotKinematics6,
+    robot: RobotBackend,
     target: np.ndarray,
     seeds: Sequence[np.ndarray],
     obstacles: Sequence[OBB] | None = None,

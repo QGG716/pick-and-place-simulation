@@ -1,0 +1,9 @@
+extends: fanuc_m20id35_wantai_task_space.yaml
+
+# Deterministic single-surface diagnostic/fallback profile. The online planner
+# applies this equivalent restriction automatically only after the preferred
+# multi-surface solution has no valid carried-box connector.
+planning:
+  place_obstacle: conveyor_cross_deck
+  place_obstacles: [conveyor_cross_deck]
+  conveyor_load_balance_weight: 0.0

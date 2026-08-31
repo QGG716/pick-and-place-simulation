@@ -159,6 +159,16 @@ class RRTConnectPlanner:
 
         return PlanResult(False, [], self.max_iterations, "maximum iterations reached")
 
+    def edge_valid(self, start: np.ndarray, goal: np.ndarray) -> bool:
+        """Return whether both endpoints and their interpolated edge are valid."""
+        start = np.asarray(start, dtype=float)
+        goal = np.asarray(goal, dtype=float)
+        return bool(
+            self.is_state_valid(start)
+            and self.is_state_valid(goal)
+            and self._edge_valid(start, goal)
+        )
+
     def shortcut(self, path: Sequence[np.ndarray], attempts: int = 180) -> list[np.ndarray]:
         result = [np.asarray(q, dtype=float).copy() for q in path]
         if len(result) <= 2:

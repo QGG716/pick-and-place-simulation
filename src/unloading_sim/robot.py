@@ -64,10 +64,15 @@ class CollisionResult:
     first_obstacle: str | None = None
 
 
-class RobotKinematics6(Protocol):
+class RobotBackend(Protocol):
+    """Kinematics and collision contract for an arbitrary-DOF robot."""
+
     name: str
     joint_limits: np.ndarray
     base_transform: np.ndarray
+
+    @property
+    def dof(self) -> int: ...
 
     def clamp(self, q: np.ndarray) -> np.ndarray: ...
 
@@ -101,6 +106,10 @@ class RobotKinematics6(Protocol):
     ) -> bool: ...
 
 
+# Compatibility alias for callers that still import the original name.
+RobotKinematics6 = RobotBackend
+
+
 class DHRobot6:
     """Generic 6R robot using standard Denavit-Hartenberg parameters."""
 
@@ -129,6 +138,10 @@ class DHRobot6:
             raise ValueError("DH arrays and link radii must each have six elements")
         if self.joint_limits.shape != (6, 2):
             raise ValueError("joint_limits must have shape (6,2)")
+
+    @property
+    def dof(self) -> int:
+        return 6
 
     @classmethod
     def ur5e_like(
@@ -178,8 +191,8 @@ class DHRobot6:
     def frames(self, q: np.ndarray, include_tool: bool = True) -> list[np.ndarray]:
         """Return base frame, six post-joint frames, and optionally tool frame."""
         q = np.asarray(q, dtype=float)
-        if q.shape != (6,):
-            raise ValueError("q must be shape (6,)")
+        if q.shape != (self.dof,):
+            raise ValueError(f"q must be shape ({self.dof},)")
         result = [self.base_transform.copy()]
         t = self.base_transform.copy()
         for i in range(6):
@@ -277,8 +290,8 @@ class URDFJoint:
     limit: tuple[float, float]
 
 
-class URDFRobot6:
-    """Six-axis serial robot kinematics parsed from a URDF link/joint chain."""
+class URDFRobot:
+    """Arbitrary-DOF serial robot parsed from a URDF link/joint chain."""
 
     def __init__(
         self,
@@ -289,6 +302,9 @@ class URDFRobot6:
         base_transform: np.ndarray | None = None,
         tool_length: float = 0.16,
         link_radii: Sequence[float] | None = None,
+        tool_collision_size: Sequence[float] | None = None,
+        tool_collision_center_offset: float | None = None,
+        tool_collision_local_boxes: Sequence[Sequence[float]] | None = None,
         name: str = "urdf_6r",
         urdf_path: str | Path | None = None,
     ) -> None:
@@ -298,17 +314,60 @@ class URDFRobot6:
         self.tip_link = tip_link
         self.base_transform = np.eye(4) if base_transform is None else np.asarray(base_transform, dtype=float)
         self.tool_length = float(tool_length)
-        self.link_radii = np.asarray(link_radii or [0.16, 0.15, 0.13, 0.10, 0.085, 0.070], dtype=float)
+        default_radii = [0.12] * len(self.active_joint_names)
+        self.link_radii = np.asarray(default_radii if link_radii is None else link_radii, dtype=float)
+        self.tool_collision_size = (
+            None if tool_collision_size is None else np.asarray(tool_collision_size, dtype=float)
+        )
+        self.tool_collision_center_offset = (
+            None
+            if tool_collision_center_offset is None
+            else float(tool_collision_center_offset)
+        )
+        self.tool_collision_local_boxes = (
+            np.empty((0, 6), dtype=float)
+            if tool_collision_local_boxes is None
+            else np.asarray(tool_collision_local_boxes, dtype=float)
+        )
         self.name = name
         self.urdf_path = Path(urdf_path) if urdf_path else None
-        self.self_collision_exclusions = {(0, 2), (4, 6)}
-        if len(self.active_joint_names) != 6:
-            raise ValueError("URDFRobot6 requires exactly six active joints")
-        if self.link_radii.shape != (6,):
-            raise ValueError("link_radii must contain six radii")
+        if not self.active_joint_names:
+            raise ValueError("URDFRobot requires at least one active joint")
+        self.self_collision_exclusions = {
+            pair for pair in {(0, 2), (4, 6)} if max(pair) <= len(self.active_joint_names)
+        }
+        if self.link_radii.shape != (len(self.active_joint_names),):
+            raise ValueError("link_radii must contain one radius per active joint")
+        if self.tool_collision_size is not None and (
+            self.tool_collision_size.shape != (3,)
+            or not np.all(np.isfinite(self.tool_collision_size))
+            or np.any(self.tool_collision_size <= 0.0)
+        ):
+            raise ValueError("tool_collision_size must contain three finite positive dimensions")
+        if self.tool_collision_center_offset is not None and (
+            self.tool_collision_size is None
+            or not np.isfinite(self.tool_collision_center_offset)
+            or self.tool_collision_center_offset <= 0.0
+        ):
+            raise ValueError(
+                "tool_collision_center_offset requires a tool size and must be finite and positive"
+            )
+        if (
+            self.tool_collision_local_boxes.ndim != 2
+            or self.tool_collision_local_boxes.shape[1] != 6
+            or not np.all(np.isfinite(self.tool_collision_local_boxes))
+            or np.any(self.tool_collision_local_boxes[:, 3:] <= 0.0)
+        ):
+            raise ValueError(
+                "tool_collision_local_boxes must contain finite [center_xyz, size_xyz] rows"
+            )
         joint_by_name = {joint.name: joint for joint in self.joints}
         self.active_joints = [joint_by_name[name] for name in self.active_joint_names]
         self.joint_limits = np.asarray([joint.limit for joint in self.active_joints], dtype=float)
+
+    @property
+    def dof(self) -> int:
+        return len(self.active_joint_names)
 
     @classmethod
     def from_urdf(
@@ -321,8 +380,11 @@ class URDFRobot6:
         base_rpy: Iterable[float] = (0.0, 0.0, 0.0),
         tool_length: float = 0.18,
         link_radii: Sequence[float] | None = None,
+        tool_collision_size: Sequence[float] | None = None,
+        tool_collision_center_offset: float | None = None,
+        tool_collision_local_boxes: Sequence[Sequence[float]] | None = None,
         name: str = "urdf_6r",
-    ) -> "URDFRobot6":
+    ) -> "URDFRobot":
         urdf_path = Path(urdf_path)
         tree = ET.parse(urdf_path)
         root = tree.getroot()
@@ -367,7 +429,20 @@ class URDFRobot6:
         missing = [name for name in active_joint_names if name not in chain_names]
         if missing:
             raise ValueError(f"active joints are not on URDF chain {base_link}->{tip_link}: {missing}")
-        return cls(chain, active_joint_names, base_link, tip_link, base, tool_length, link_radii, name, urdf_path)
+        return cls(
+            chain,
+            active_joint_names,
+            base_link,
+            tip_link,
+            base,
+            tool_length,
+            link_radii,
+            tool_collision_size,
+            tool_collision_center_offset,
+            tool_collision_local_boxes,
+            name,
+            urdf_path,
+        )
 
     @classmethod
     def kuka_kr50_r2500(
@@ -376,7 +451,7 @@ class URDFRobot6:
         base_position: Iterable[float] = (-1.15, 0.0, 0.0),
         base_rpy: Iterable[float] = (0.0, 0.0, 0.0),
         tool_length: float = 0.20,
-    ) -> "URDFRobot6":
+    ) -> "URDFRobot":
         robot = cls.from_urdf(
             urdf_path=urdf_path,
             active_joint_names=["joint1", "joint2", "joint3", "joint4", "joint5", "joint6"],
@@ -401,7 +476,10 @@ class URDFRobot6:
         base_position: Iterable[float] = (-0.70, 0.0, 0.30),
         base_rpy: Iterable[float] = (0.0, 0.0, 0.0),
         tool_length: float = 0.20,
-    ) -> "URDFRobot6":
+        tool_collision_size: Sequence[float] | None = None,
+        tool_collision_center_offset: float | None = None,
+        tool_collision_local_boxes: Sequence[Sequence[float]] | None = None,
+    ) -> "URDFRobot":
         """Build the FANUC M-20iD/35 from FANUC's M-20/35-18D URDF."""
         robot = cls.from_urdf(
             urdf_path=urdf_path,
@@ -412,6 +490,9 @@ class URDFRobot6:
             base_rpy=base_rpy,
             tool_length=tool_length,
             link_radii=[0.24, 0.20, 0.18, 0.13, 0.10, 0.08],
+            tool_collision_size=tool_collision_size,
+            tool_collision_center_offset=tool_collision_center_offset,
+            tool_collision_local_boxes=tool_collision_local_boxes,
             name="fanuc_m20id35",
         )
         # J5 rotates at the end of the long J4 forearm. Their conservative
@@ -452,8 +533,8 @@ class URDFRobot6:
 
     def _frames_and_axes(self, q: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray], list[np.ndarray]]:
         q = np.asarray(q, dtype=float)
-        if q.shape != (6,):
-            raise ValueError("q must be shape (6,)")
+        if q.shape != (self.dof,):
+            raise ValueError(f"q must be shape ({self.dof},)")
         q_by_name = {name: float(value) for name, value in zip(self.active_joint_names, q)}
         frames = [self.base_transform.copy()]
         axes: list[np.ndarray] = []
@@ -482,13 +563,30 @@ class URDFRobot6:
             return frames
         return frames[:-1]
 
+    def named_link_frames(self, q: np.ndarray) -> dict[str, np.ndarray]:
+        """Return world transforms for every link on the parsed URDF chain."""
+        q = np.asarray(q, dtype=float)
+        if q.shape != (self.dof,):
+            raise ValueError(f"q must be shape ({self.dof},)")
+        q_by_name = {name: float(value) for name, value in zip(self.active_joint_names, q)}
+        transform = self.base_transform.copy()
+        result = {self.base_link: transform.copy()}
+        for joint in self.joints:
+            transform = transform @ joint.origin
+            if joint.name in q_by_name:
+                transform = transform @ _axis_angle_transform(
+                    joint.axis, q_by_name[joint.name], joint.joint_type
+                )
+            result[joint.child] = transform.copy()
+        return result
+
     def fk(self, q: np.ndarray) -> np.ndarray:
         return self.frames(q, include_tool=True)[-1]
 
     def geometric_jacobian(self, q: np.ndarray) -> np.ndarray:
         frames, origins, axes = self._frames_and_axes(q)
         p_end = frames[-1][:3, 3]
-        jacobian = np.zeros((6, 6), dtype=float)
+        jacobian = np.zeros((6, self.dof), dtype=float)
         for idx, (origin, axis) in enumerate(zip(origins, axes)):
             jacobian[:3, idx] = np.cross(axis, p_end - origin)
             jacobian[3:, idx] = axis
@@ -505,10 +603,46 @@ class URDFRobot6:
         frames = self.frames(q, include_tool=True)
         points = [f[:3, 3] for f in frames]
         capsules: list[Capsule] = []
-        for i in range(6):
+        for i in range(self.dof):
             capsules.append(Capsule(points[i], points[i + 1], float(self.link_radii[i]), f"link_{i + 1}"))
-        capsules.append(Capsule(points[6], points[7], 0.045, "tool"))
+        capsules.append(Capsule(points[self.dof], points[self.dof + 1], 0.045, "tool"))
         return capsules
+
+    def tool_collision_obb(self, q: np.ndarray) -> OBB | None:
+        """Return the configured rigid-head envelope in the planner tool frame."""
+        if self.tool_collision_size is None:
+            return None
+        tool = self.fk(q)
+        size = self.tool_collision_size
+        # FK is located at the suction working plane; the flange and rigid
+        # head occupy the negative local-Z interval behind that plane.
+        center_offset = (
+            0.5 * size[2]
+            if self.tool_collision_center_offset is None
+            else self.tool_collision_center_offset
+        )
+        local_center = np.asarray([0.0, 0.0, -center_offset], dtype=float)
+        return OBB(
+            center=tool[:3, :3] @ local_center + tool[:3, 3],
+            half_extents=0.5 * size,
+            rotation=tool[:3, :3],
+            name="tool_envelope",
+            category="robot",
+        )
+
+    def tool_collision_obbs(self, q: np.ndarray) -> list[OBB]:
+        """Return audited rigid-tool subcomponents in the planner tool frame."""
+        tool = self.fk(q)
+        return [
+            OBB(
+                center=tool[:3, :3] @ row[:3] + tool[:3, 3],
+                half_extents=0.5 * row[3:],
+                rotation=tool[:3, :3],
+                name=f"tool_rigid_{index}",
+                category="robot",
+            )
+            for index, row in enumerate(self.tool_collision_local_boxes)
+        ]
 
     def collision_result(
         self,
@@ -522,6 +656,18 @@ class URDFRobot6:
             return CollisionResult(True, "joint_limit")
         ignored = ignored_obstacle_names or set()
         capsules = self.link_capsules(q)
+        tool_envelopes = self.tool_collision_obbs(q)
+        if not tool_envelopes:
+            legacy_envelope = self.tool_collision_obb(q)
+            tool_envelopes = [] if legacy_envelope is None else [legacy_envelope]
+        for tool_envelope in tool_envelopes:
+            for obstacle in obstacles:
+                if obstacle.name in ignored:
+                    continue
+                if tool_envelope.intersects_obb(obstacle, margin=margin):
+                    return CollisionResult(
+                        True, "robot_obstacle", tool_envelope.name, obstacle.name
+                    )
         for capsule in capsules:
             for obstacle in obstacles:
                 if obstacle.name in ignored:
@@ -550,3 +696,7 @@ class URDFRobot6:
     def max_reach(self) -> float:
         points = [frame[:3, 3] for frame in self.frames(np.mean(self.joint_limits, axis=1), include_tool=True)]
         return float(sum(np.linalg.norm(b - a) for a, b in zip(points[:-1], points[1:])))
+
+
+# Backward-compatible concrete name for existing six-axis configurations.
+URDFRobot6 = URDFRobot

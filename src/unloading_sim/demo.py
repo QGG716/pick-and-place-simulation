@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import itertools
 import json
 import sys
 from pathlib import Path
@@ -14,17 +15,19 @@ import numpy as np
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     from unloading_sim.grasp import plan_pick
-    from unloading_sim.robot import DHRobot6, RobotKinematics6, URDFRobot6
+    from unloading_sim.robot import DHRobot6, RobotBackend, URDFRobot6
     from unloading_sim.scene import load_scene_config
+    from unloading_sim.timing import motion_limits_from_config, time_parameterize_joint_path
     from unloading_sim.visualization import save_plan_figure
 else:
     from .grasp import plan_pick
-    from .robot import DHRobot6, RobotKinematics6, URDFRobot6
+    from .robot import DHRobot6, RobotBackend, URDFRobot6
     from .scene import load_scene_config
+    from .timing import motion_limits_from_config, time_parameterize_joint_path
     from .visualization import save_plan_figure
 
 
-def build_robot(cfg: dict) -> RobotKinematics6:
+def build_robot(cfg: dict) -> RobotBackend:
     robot_cfg = cfg["robot"]
     model = robot_cfg.get("model", "ur5e_like")
     if model == "ur5e_like":
@@ -41,6 +44,49 @@ def build_robot(cfg: dict) -> RobotKinematics6:
             tool_length=float(robot_cfg.get("tool_length", 0.20)),
         )
     if model == "fanuc_m20id35":
+        validation_cfg = cfg.get("simulation_validation", {})
+        tool_collision_size = validation_cfg.get("vacuum_rigid_plate_collision_size_m")
+        tool_collision_center_offset = validation_cfg.get(
+            "vacuum_rigid_plate_center_behind_working_plane_m"
+        )
+        tool_collision_local_boxes = None
+        mass_properties_path = validation_cfg.get("vacuum_mass_properties_path")
+        if mass_properties_path:
+            mass_properties = json.loads(
+                Path(mass_properties_path).read_text(encoding="utf-8")
+            )
+            rigid_bounds = mass_properties.get(
+                "rigid_collision_bounding_boxes_step_mm"
+            )
+            if rigid_bounds:
+                flange_step = np.asarray(
+                    validation_cfg["vacuum_flange_origin_step_mm"], dtype=float
+                )
+                step_from_tool = np.asarray(
+                    validation_cfg["vacuum_step_from_tool_rotation_matrix"],
+                    dtype=float,
+                )
+                tool_length = float(robot_cfg.get("tool_length", 0.20))
+                tool_collision_local_boxes = []
+                for bounds in rigid_bounds:
+                    lower = np.asarray(bounds[:3], dtype=float)
+                    upper = np.asarray(bounds[3:], dtype=float)
+                    step_corners = np.asarray(
+                        list(itertools.product(*zip(lower, upper))), dtype=float
+                    )
+                    isaac_tool = (
+                        (step_corners - flange_step) @ step_from_tool * 1e-3
+                    )
+                    # STEP/Isaac tool axes are [normal, length, width]; the
+                    # geometric planner uses [width, length, normal] with FK
+                    # located at the suction working plane.
+                    planner_tool = isaac_tool[:, [2, 1, 0]]
+                    planner_tool[:, 2] -= tool_length
+                    box_min = np.min(planner_tool, axis=0)
+                    box_max = np.max(planner_tool, axis=0)
+                    tool_collision_local_boxes.append(
+                        np.concatenate((0.5 * (box_min + box_max), box_max - box_min))
+                    )
         return URDFRobot6.fanuc_m20id35(
             urdf_path=robot_cfg.get(
                 "urdf_path", "assets/robots/fanuc_m20id35/m20_35_18d.urdf"
@@ -48,19 +94,22 @@ def build_robot(cfg: dict) -> RobotKinematics6:
             base_position=robot_cfg.get("base_position", [-0.70, 0.0, 0.30]),
             base_rpy=robot_cfg.get("base_rpy", [0.0, 0.0, 0.0]),
             tool_length=float(robot_cfg.get("tool_length", 0.20)),
+            tool_collision_size=tool_collision_size,
+            tool_collision_center_offset=tool_collision_center_offset,
+            tool_collision_local_boxes=tool_collision_local_boxes,
         )
     raise ValueError(f"Unsupported built-in model: {model}")
 
 
 def validate_start_configuration(
-    robot: RobotKinematics6,
+    robot: RobotBackend,
     q: np.ndarray,
     obstacles,
     context: str = "configured home pose",
 ) -> None:
     q = np.asarray(q, dtype=float)
-    if q.shape != (6,):
-        raise ValueError(f"{context} must contain exactly six joint values")
+    if q.shape != (robot.dof,):
+        raise ValueError(f"{context} must contain exactly {robot.dof} joint values")
     collision = robot.collision_result(q, obstacles)
     if collision.in_collision:
         raise RuntimeError(
@@ -95,6 +144,12 @@ def run(config_path: str | Path, output_dir: str | Path | None = None) -> dict:
         rng=rng,
     )
     elapsed = perf_counter() - t0
+    timed = None
+    timing_audit = None
+    if result.full_path:
+        motion_limits = motion_limits_from_config(cfg, len(start_q))
+        timed = time_parameterize_joint_path(result.full_path, motion_limits)
+        timing_audit = timed.audit(motion_limits)
 
     outputs = cfg.get("outputs", {})
     out_dir = Path(output_dir) if output_dir is not None else Path(outputs.get("directory", "outputs/demo"))
@@ -120,16 +175,24 @@ def run(config_path: str | Path, output_dir: str | Path | None = None) -> dict:
         "contact_point_m": result.candidate.contact_point.tolist() if result.candidate else None,
         "outward_normal": result.candidate.outward_normal.tolist() if result.candidate else None,
         "place_tool_position_m": robot.fk(result.place_ik.q)[:3, 3].tolist() if result.place_ik else None,
+        "execution_timing": timing_audit,
     }
 
     if outputs.get("save_trajectory_csv", True) and result.full_path:
         csv_path = out_dir / "trajectory.csv"
         with csv_path.open("w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow(["index", "q1", "q2", "q3", "q4", "q5", "q6", "tool_x", "tool_y", "tool_z"])
+            writer.writerow(["index", *[f"q{i + 1}" for i in range(robot.dof)], "tool_x", "tool_y", "tool_z"])
             for idx, q in enumerate(result.full_path):
                 tool = robot.fk(np.asarray(q))[:3, 3]
                 writer.writerow([idx, *[float(v) for v in q], *[float(v) for v in tool]])
+        timed_csv_path = out_dir / "trajectory_timed.csv"
+        with timed_csv_path.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["index", "time_from_start_s", *[f"q{i + 1}" for i in range(robot.dof)]])
+            for idx, q in enumerate(result.full_path):
+                timestamp = timed.time_from_start[idx] if timed is not None else 0.0
+                writer.writerow([idx, float(timestamp), *[float(v) for v in q]])
 
     if outputs.get("save_metrics_json", True):
         with (out_dir / "metrics.json").open("w", encoding="utf-8") as f:

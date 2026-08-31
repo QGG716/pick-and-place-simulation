@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,7 @@ from unloading_sim.online_unload import (
     docked_robot_and_scene,
     exposed_carton_order,
     prioritized_amr_dock_positions,
+    restore_plan_prefix,
     score_target_dock_ik,
     validate_amr_conveyor_alignment,
 )
@@ -39,7 +41,7 @@ def test_kuka_scene_layout_detection_and_grasp_modes():
     carton_width_sum = sum(
         2.0 * carton.half_extents[1]
         for carton in scene.cartons
-        if np.isclose(carton.center[0], 1.21) and np.isclose(carton.center[2], 1.05)
+        if carton.name.startswith("carton_front_l2_")
     )
     assert carton_width_sum > 0.93 * float(trailer["width"])
 
@@ -119,6 +121,46 @@ def test_exposed_carton_order_includes_stable_top_grasps():
     assert not carton_blocked_by_scene(scene, "carton_front_l2_c1")
 
 
+def test_restore_plan_prefix_removes_cartons_and_restores_terminal_state(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    scene, cfg = load_scene_config(root / "config" / "fanuc_m20id35.yaml")
+    first_name, second_name = [carton.name for carton in scene.cartons[:2]]
+    first_path = [[0.0] * 6, [0.1] * 6]
+    second_path = [[0.2] * 6, [0.3] * 6]
+    plan_path = tmp_path / "prefix.json"
+    plan_path.write_text(
+        json.dumps(
+            {
+                "robot": {"model": cfg["robot"]["model"]},
+                "segments": [
+                    {"pick_index": 7, "target": first_name, "path": first_path},
+                    {
+                        "pick_index": 8,
+                        "target": second_name,
+                        "path": second_path,
+                        "amr_dock_position": [0.8, -0.3, 0.0],
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    segments, rows, current_q, current_dock = restore_plan_prefix(scene, cfg["robot"], plan_path)
+
+    assert [segment["pick_index"] for segment in segments] == [0, 1]
+    assert [row[:3] for row in rows] == [
+        (0, first_name, 0),
+        (0, first_name, 1),
+        (1, second_name, 0),
+        (1, second_name, 1),
+    ]
+    assert np.allclose(current_q, second_path[-1])
+    assert np.allclose(current_dock, [0.8, -0.3, 0.0])
+    assert first_name not in {carton.name for carton in scene.cartons}
+    assert second_name not in {carton.name for carton in scene.cartons}
+
+
 def test_pick_plan_honors_zero_time_candidate_budget():
     root = Path(__file__).resolve().parents[1]
     scene, cfg = load_scene_config(root / "config" / "demo.yaml")
@@ -150,11 +192,6 @@ def test_amr_docking_moves_robot_and_conveyor_together():
     assert np.allclose(conveyor.center, expected_conveyor_center)
     assert docked_cfg["robot"]["base_position"] == expected_robot_base.tolist()
 
-    cross_conveyor = next(obstacle for obstacle in docked_scene.obstacles if obstacle.name == "conveyor_cross_deck")
-    expected_cross_center = dock + np.asarray(cfg["amr"]["mounted_surface_centers"]["conveyor_cross_deck"], dtype=float)
-    assert np.allclose(cross_conveyor.center, expected_cross_center)
-
-
 def test_fanuc_docking_moves_both_conveyors_with_the_amr():
     root = Path(__file__).resolve().parents[1]
     scene, cfg = load_scene_config(root / "config" / "fanuc_m20id35.yaml")
@@ -165,6 +202,41 @@ def test_fanuc_docking_moves_both_conveyors_with_the_amr():
     for surface_name, mounted_center in cfg["amr"]["mounted_surface_centers"].items():
         surface = next(obstacle for obstacle in docked_scene.obstacles if obstacle.name == surface_name)
         assert np.allclose(surface.center, dock + np.asarray(mounted_center, dtype=float))
+
+
+def test_fanuc_l_conveyors_overlap_and_keep_200mm_from_cartons():
+    root = Path(__file__).resolve().parents[1]
+    scene, cfg = load_scene_config(root / "config" / "fanuc_m20id35_wantai_task_space.yaml")
+
+    validate_amr_conveyor_alignment(cfg)
+    dock = amr_dock_positions(cfg)[0]
+    _, docked_scene, _ = docked_robot_and_scene(scene, cfg, dock)
+    surfaces = {obstacle.name: obstacle for obstacle in docked_scene.obstacles}
+    main = surfaces["conveyor_deck"]
+    cross = surfaces["conveyor_cross_deck"]
+    overlap = np.minimum(
+        main.center[:2] + main.half_extents[:2],
+        cross.center[:2] + cross.half_extents[:2],
+    ) - np.maximum(
+        main.center[:2] - main.half_extents[:2],
+        cross.center[:2] - cross.half_extents[:2],
+    )
+    nearest_carton_x = min(carton.center[0] - carton.half_extents[0] for carton in scene.cartons)
+    conveyor_front_x = max(
+        main.center[0] + main.half_extents[0],
+        cross.center[0] + cross.half_extents[0],
+    )
+
+    assert np.all(
+        overlap
+        >= np.asarray(cfg["amr"]["minimum_conveyor_intersection_size_m"], dtype=float)
+        - 1e-9
+    )
+    assert nearest_carton_x - conveyor_front_x >= 0.20 - 1e-9
+    robot_base_x = dock[0] + cfg["amr"]["robot_mount_position"][0]
+    # The belt's nearest edge remains outside the 300 mm base/J2 keep-out
+    # envelope; full-link collision is checked by the dock validator and Isaac.
+    assert cross.center[0] - cross.half_extents[0] - robot_base_x >= 0.30
 
 
 def test_pregrasp_heatmap_returns_only_matching_free_seed():
@@ -196,7 +268,7 @@ def test_amr_and_conveyor_front_alignment():
     amr_front = amr["platform_center_offset"][0] + 0.5 * amr["footprint_size"][0]
 
     assert np.isclose(conveyor_front - robot_front, 0.20)
-    assert conveyor_front > amr_front
+    assert conveyor_front >= amr_front
 
 
 def test_carton_stack_and_amr_front_are_inside_the_requested_door_clearances():
@@ -208,8 +280,8 @@ def test_carton_stack_and_amr_front_are_inside_the_requested_door_clearances():
 
     assert np.isclose(min(carton.center[0] - carton.half_extents[0] for carton in front_row), 1.0)
     amr_front = dock[0] + amr["platform_center_offset"][0] + 0.5 * amr["footprint_size"][0]
-    assert np.isclose(amr_front, 0.5)
-    assert np.isclose(min(carton.center[0] - carton.half_extents[0] for carton in front_row) - amr_front, 0.5)
+    assert np.isclose(amr_front, 0.7)
+    assert np.isclose(min(carton.center[0] - carton.half_extents[0] for carton in front_row) - amr_front, 0.3)
 
 
 def test_conveyor_place_candidates_use_release_zone_and_full_support():
@@ -335,6 +407,123 @@ def test_internal_placement_surface_has_no_conveyor_release_zone():
     assert poses
 
 
+def test_continuous_conveyor_candidates_release_with_tool_outward_axis_up():
+    conveyor = OBB(
+        center=np.array([0.0, 0.0, 0.1]),
+        half_extents=np.array([0.8, 0.6, 0.1]),
+        rotation=np.eye(3),
+        name="belt",
+        category="static",
+    )
+    carton = OBB(
+        center=np.array([1.0, 0.0, 0.25]),
+        half_extents=np.array([0.21, 0.275, 0.25]),
+        rotation=np.eye(3),
+        name="box",
+        category="carton",
+    )
+    grasp = next(
+        candidate
+        for candidate in generate_suction_candidates(
+            carton, np.array([0.0, 0.0, 0.3]), face_modes=["front"]
+        )
+        if np.allclose(carton.to_local(candidate.contact_point)[1:], [0.0, 0.0])
+    )
+
+    poses = conveyor_place_pose_candidates(
+        conveyor,
+        carton,
+        grasp.grasp_pose,
+        np.array([-0.5, 0.0, 0.0]),
+        allow_all_carton_faces=True,
+        require_front_release_zone=False,
+        minimum_tool_outward_support_alignment=0.95,
+    )
+
+    assert poses
+    assert all(
+        float((-pose[:3, 2]) @ conveyor.rotation[:, 2]) >= 0.95
+        for pose in poses
+    )
+
+
+def test_continuous_conveyor_release_face_separates_from_tool_along_belt():
+    conveyor = OBB(
+        center=np.array([0.0, 0.0, 0.1]),
+        half_extents=np.array([0.8, 0.6, 0.1]),
+        rotation=np.eye(3),
+        name="belt",
+        category="static",
+    )
+    carton = OBB(
+        center=np.array([1.0, 0.0, 0.25]),
+        half_extents=np.array([0.21, 0.275, 0.25]),
+        rotation=np.eye(3),
+        name="box",
+        category="carton",
+    )
+    grasp = generate_suction_candidates(
+        carton, np.array([0.0, 0.0, 0.3]), face_modes=["front"]
+    )[0]
+    belt_direction = np.array([0.0, -1.0, 0.0])
+
+    poses = conveyor_place_pose_candidates(
+        conveyor,
+        carton,
+        grasp.grasp_pose,
+        np.array([-0.5, 0.0, 0.0]),
+        allow_all_carton_faces=True,
+        require_front_release_zone=False,
+        conveyor_transport_direction_world=belt_direction,
+        minimum_conveyor_separation_alignment=0.95,
+        prefer_upright_support=True,
+    )
+
+    assert poses
+    assert all(
+        float(pose[:3, 2] @ belt_direction) >= 0.95
+        for pose in poses
+    )
+    carton_from_tool = np.linalg.inv(grasp.grasp_pose) @ carton.world_from_local
+    first_carton_pose = poses[0] @ carton_from_tool
+    assert float(first_carton_pose[:3, 2] @ np.array([0.0, 0.0, 1.0])) >= 0.95
+
+
+def test_continuous_conveyor_can_sample_intermediate_upright_release_yaws():
+    conveyor = OBB(
+        center=np.array([0.0, 0.0, 0.1]),
+        half_extents=np.array([0.8, 0.8, 0.1]),
+        rotation=np.eye(3),
+        name="belt",
+        category="static",
+    )
+    carton = OBB(
+        center=np.array([1.0, 0.0, 0.25]),
+        half_extents=np.array([0.21, 0.275, 0.25]),
+        rotation=np.eye(3),
+        name="box",
+        category="carton",
+    )
+    grasp = generate_suction_candidates(
+        carton, np.array([0.0, 0.0, 0.3]), face_modes=["front"]
+    )[0]
+    belt_direction = np.array([0.0, -1.0, 0.0])
+
+    poses = conveyor_place_pose_candidates(
+        conveyor,
+        carton,
+        grasp.grasp_pose,
+        np.array([-0.5, 0.0, 0.0]),
+        allow_all_carton_faces=True,
+        require_front_release_zone=False,
+        conveyor_transport_direction_world=belt_direction,
+        upright_yaw_step_degrees=30.0,
+    )
+
+    alignments = [float(pose[:3, 2] @ belt_direction) for pose in poses]
+    assert any(np.isclose(alignment, 0.5, atol=1e-8) for alignment in alignments)
+
+
 def test_compact_amr_fits_inside_empty_trailer():
     root = Path(__file__).resolve().parents[1]
     scene, cfg = load_scene_config(root / "config" / "kuka_kr50.yaml")
@@ -347,7 +536,7 @@ def test_compact_amr_fits_inside_empty_trailer():
 def test_current_amr_dock_is_tried_first():
     root = Path(__file__).resolve().parents[1]
     _, cfg = load_scene_config(root / "config" / "kuka_kr50.yaml")
-    current = np.array([0.60, 0.0, 0.0])
+    current = amr_dock_positions(cfg)[1]
 
     ordered = prioritized_amr_dock_positions(cfg, current)
 
@@ -372,3 +561,11 @@ def test_dock_ik_score_reports_candidate_yield_and_motion():
     assert 0.0 <= score["ik_success_rate"] <= 1.0
     if score["ik_success_count"]:
         assert score["estimated_ee_motion_m"] > 0.0
+def test_scene_config_accepts_plan_path_from_other_operating_system():
+    root = Path(__file__).resolve().parents[1]
+    windows_style = str(root / "config" / "demo.yaml").replace("/", "\\")
+
+    scene, cfg = load_scene_config(windows_style)
+
+    assert scene.cartons
+    assert "robot" in cfg

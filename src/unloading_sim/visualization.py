@@ -8,7 +8,7 @@ from typing import Sequence
 import numpy as np
 
 from .geometry import OBB
-from .robot import RobotKinematics6
+from .robot import RobotBackend
 from .scene import TrailerScene
 
 
@@ -30,7 +30,7 @@ def _plot_obb(ax, box: OBB, linewidth: float = 0.8, alpha: float = 0.6) -> None:
     ax.text(box.center[0], box.center[1], box.center[2], box.name, fontsize=6)
 
 
-def _plot_robot(ax, robot: RobotKinematics6, q: np.ndarray, linewidth: float = 2.4, alpha: float = 1.0) -> None:
+def _plot_robot(ax, robot: RobotBackend, q: np.ndarray, linewidth: float = 2.4, alpha: float = 1.0) -> None:
     frames = robot.frames(q, include_tool=True)
     points = np.array([f[:3, 3] for f in frames])
     ax.plot(points[:, 0], points[:, 1], points[:, 2], marker="o", linewidth=linewidth, alpha=alpha)
@@ -38,7 +38,7 @@ def _plot_robot(ax, robot: RobotKinematics6, q: np.ndarray, linewidth: float = 2
 
 def save_plan_figure(
     path: str | Path,
-    robot: RobotKinematics6,
+    robot: RobotBackend,
     scene: TrailerScene,
     trajectory: Sequence[np.ndarray],
     target_name: str | None = None,

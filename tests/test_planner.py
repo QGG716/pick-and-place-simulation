@@ -3,7 +3,7 @@ import numpy as np
 from unloading_sim.grasp import _conveyor_preplace_poses, _plan_via_joint_hints, _plan_wrist_first_carry, _pose_transfer_cost
 from unloading_sim.planner import RRTConnectPlanner
 from unloading_sim.robot import URDFRobot6
-from unloading_sim.trajectory_cache import joint_path_length
+from unloading_sim.trajectory_cache import joint_path_length, repair_invalid_path
 
 
 def test_rrt_connect_around_joint_space_obstacle():
@@ -23,6 +23,29 @@ def test_rrt_connect_around_joint_space_obstacle():
     result = planner.plan(np.array([-0.8, 0.0]), np.array([0.8, 0.0]))
     assert result.success
     assert all(valid(q) for q in planner.densify(result.path, 0.02))
+
+
+def test_repair_invalid_path_preserves_anchors_and_detours_around_obstacle():
+    def valid(q):
+        return np.linalg.norm(q) > 0.35
+
+    planner = RRTConnectPlanner(
+        lower_limits=np.array([-1.0, -1.0]),
+        upper_limits=np.array([1.0, 1.0]),
+        is_state_valid=valid,
+        step_size=0.12,
+        edge_resolution=0.03,
+        max_iterations=3000,
+        rng=np.random.default_rng(3),
+    )
+    source = [np.array([-0.8, 0.0]), np.array([0.0, 0.0]), np.array([0.8, 0.0])]
+
+    repaired, audit = repair_invalid_path(source, planner, time_limit_seconds_per_repair=1.0)
+
+    assert np.allclose(repaired[0], source[0])
+    assert np.allclose(repaired[-1], source[-1])
+    assert len(audit) == 1
+    assert all(valid(q) for q in planner.densify(repaired, 0.02))
 
 
 def test_rrt_connect_honors_hard_time_limit():

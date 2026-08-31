@@ -1,0 +1,9 @@
+extends: fanuc_m20id35.yaml
+
+# Experimental layout search only.  The AMR remains locked during every arm
+# trajectory, but the planner may select any audited dock before a pick.  This
+# removes the artificial commitment to the right-shifted initial dock without
+# imposing spatial channel waypoints on the arm.
+planning:
+  initial_dock_position: null
+  hold_current_dock: false

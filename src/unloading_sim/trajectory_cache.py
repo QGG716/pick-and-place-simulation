@@ -11,10 +11,12 @@ from typing import Sequence
 
 import numpy as np
 
-from .grasp import _carried_box_state_valid, _in_trailer_orientation_valid
+from .grasp import _carried_box_state_valid, _carried_orientation_policy_valid
 from .online_unload import docked_robot_and_scene, remove_carton
 from .planner import RRTConnectPlanner
 from .scene import load_scene_config
+from .timing import time_parameterize_segments
+from .trajectory import blend_joint_path, simplify_collinear_joint_path
 
 
 def joint_path_length(path: Sequence[np.ndarray]) -> float:
@@ -23,13 +25,71 @@ def joint_path_length(path: Sequence[np.ndarray]) -> float:
     return float(np.linalg.norm(np.diff(np.asarray(path, dtype=float), axis=0), axis=1).sum())
 
 
+def repair_invalid_path(
+    path: Sequence[np.ndarray],
+    planner: RRTConnectPlanner,
+    *,
+    time_limit_seconds_per_repair: float = 60.0,
+) -> tuple[list[np.ndarray], list[dict]]:
+    """Replace only invalid waypoint/edge spans with deterministic RRT detours.
+
+    Valid portions of the source trajectory remain untouched.  Each repair is
+    anchored by the last accepted state and the first later valid source
+    waypoint, so this is not a mandatory spatial channel or phase template.
+    """
+    points = [np.asarray(q, dtype=float).copy() for q in path]
+    if len(points) < 2:
+        raise ValueError("repair requires at least two waypoints")
+    if not planner.is_state_valid(points[0]) or not planner.is_state_valid(points[-1]):
+        raise ValueError("repair path endpoints must be valid")
+    if not np.isfinite(time_limit_seconds_per_repair) or time_limit_seconds_per_repair <= 0.0:
+        raise ValueError("repair time limit must be finite and positive")
+
+    output = [points[0]]
+    repairs: list[dict] = []
+    index = 1
+    while index < len(points):
+        if planner.edge_valid(output[-1], points[index]):
+            output.append(points[index])
+            index += 1
+            continue
+
+        first_replaced = index
+        anchor = index
+        while anchor < len(points) and not planner.is_state_valid(points[anchor]):
+            anchor += 1
+        if anchor >= len(points):
+            raise RuntimeError("invalid path span has no later valid anchor")
+        detour = planner.plan(
+            output[-1], points[anchor], time_limit_seconds=time_limit_seconds_per_repair
+        )
+        if not detour.success:
+            raise RuntimeError(
+                f"could not repair source path span {first_replaced}:{anchor}: {detour.message}"
+            )
+        output.extend(np.asarray(q, dtype=float).copy() for q in detour.path[1:])
+        repairs.append(
+            {
+                "first_replaced_index": first_replaced,
+                "next_valid_anchor_index": anchor,
+                "detour_nodes": len(detour.path),
+                "iterations": detour.iterations,
+                "message": detour.message,
+            }
+        )
+        index = anchor + 1
+    return output, repairs
+
+
 def optimize_cached_plan(
     manifest: dict,
     attempts: int = 1200,
     seed: int = 11,
     output_resolution: float = 0.04,
+    corner_fraction: float = 0.22,
+    corner_samples: int = 7,
 ) -> tuple[dict, list[dict]]:
-    """Shortcut carried paths while rechecking robot, carton, and tilt safety."""
+    """Shortcut and blend paths while rechecking robot, carton, and tilt safety."""
     scene, cfg = load_scene_config(manifest["config"])
     planning = cfg.get("planning", {})
     optimized = copy.deepcopy(manifest)
@@ -41,19 +101,24 @@ def optimize_cached_plan(
         carton = docked_scene.carton(segment["target"])
         path = [np.asarray(q, dtype=float) for q in segment["path"]]
         grasp_index = int(segment["grasp_index"])
-        carried_path = path[grasp_index:]
+        release_index = int(segment.get("release_index", len(path) - 1))
+        release_retreat_index = int(segment.get("release_retreat_index", release_index))
+        if not (grasp_index <= release_index <= release_retreat_index < len(path)):
+            raise ValueError("cached grasp/release indices are inconsistent with the path")
+        carried_path = path[grasp_index : release_index + 1]
+        post_release_path = path[release_index:]
         grasp_q = carried_path[0]
         carton_from_tool = np.linalg.inv(robot.fk(grasp_q)) @ carton.world_from_local
         place_surface = segment.get("place_surface")
         carried_obstacles = docked_scene.obstacles_without({carton.name, place_surface})
         robot_obstacles = docked_scene.obstacles_without({carton.name})
-        max_tilt = planning.get("max_in_trailer_carton_tilt_deg")
-
         def orientation_valid(box) -> bool:
-            clearance_zone_max_x = planning.get("clearance_zone_max_x")
-            if clearance_zone_max_x is not None and box.center[0] <= float(clearance_zone_max_x):
-                return True
-            return _in_trailer_orientation_valid(carton, box, docked_scene, max_tilt)
+            return _carried_orientation_policy_valid(
+                carton,
+                box,
+                docked_scene,
+                planning,
+            )
 
         def valid(q: np.ndarray) -> bool:
             return robot.is_collision_free(q, robot_obstacles) and _carried_box_state_valid(
@@ -76,14 +141,45 @@ def optimize_cached_plan(
             rng=np.random.default_rng(int(seed) + segment_index),
         )
         before_length = joint_path_length(carried_path)
-        shortcut_nodes = planner.shortcut(carried_path, attempts=int(attempts))
-        dense_carried = planner.densify(shortcut_nodes, resolution=float(output_resolution))
-        new_path = path[: grasp_index + 1] + dense_carried[1:]
-        after_length = joint_path_length(dense_carried)
+        repaired_nodes, repair_audit = repair_invalid_path(
+            carried_path,
+            planner,
+            time_limit_seconds_per_repair=float(
+                planning.get("trajectory_repair_time_limit_seconds", 60.0)
+            ),
+        )
+        shortcut_nodes = planner.shortcut(repaired_nodes, attempts=int(attempts))
+        pregrasp_nodes = simplify_collinear_joint_path(path[: grasp_index + 1])
+        pregrasp_blend = blend_joint_path(
+            pregrasp_nodes,
+            lambda q: robot.is_collision_free(q, robot_obstacles),
+            corner_fraction=corner_fraction,
+            samples_per_corner=corner_samples,
+            edge_resolution=float(planning.get("rrt_edge_resolution", 0.04)),
+        )
+        carried_blend = blend_joint_path(
+            shortcut_nodes,
+            valid,
+            corner_fraction=corner_fraction,
+            samples_per_corner=corner_samples,
+            edge_resolution=float(planning.get("rrt_edge_resolution", 0.04)),
+        )
+        pregrasp_path = planner.densify(pregrasp_blend.path, resolution=float(output_resolution))
+        carried_path = planner.densify(carried_blend.path, resolution=float(output_resolution))
+        new_release_index = len(pregrasp_path) + len(carried_path) - 2
+        new_path = pregrasp_path + carried_path[1:] + post_release_path[1:]
+        after_length = joint_path_length(carried_path)
         segment["path"] = [q.tolist() for q in new_path]
         segment["base_path"] = [robot.base_transform[:3, 3].tolist() for _ in new_path]
-        segment["release_index"] = len(new_path) - 1
-        segment["release_retreat_index"] = len(new_path) - 1
+        segment["grasp_index"] = len(pregrasp_path) - 1
+        segment["release_index"] = new_release_index
+        segment["release_retreat_index"] = (
+            new_release_index + release_retreat_index - release_index
+        )
+        segment["corner_blending"] = {
+            "pregrasp": pregrasp_blend.audit(),
+            "carried": carried_blend.audit(),
+        }
         statistics.append(
             {
                 "pick_index": int(segment["pick_index"]),
@@ -92,6 +188,9 @@ def optimize_cached_plan(
                 "after_joint_length_rad": after_length,
                 "reduction_fraction": 0.0 if before_length == 0.0 else 1.0 - after_length / before_length,
                 "shortcut_nodes": len(shortcut_nodes),
+                "invalid_span_repairs": repair_audit,
+                "accepted_blend_corners": pregrasp_blend.accepted_corners + carried_blend.accepted_corners,
+                "rejected_blend_corners": pregrasp_blend.rejected_corners + carried_blend.rejected_corners,
             }
         )
         remove_carton(scene, carton.name)
@@ -102,6 +201,7 @@ def optimize_cached_plan(
         "seed": int(seed),
         "statistics": statistics,
     }
+    optimized["execution_summary"] = time_parameterize_segments(optimized.get("segments", []), cfg)
     return optimized, statistics
 
 
@@ -120,24 +220,27 @@ def validate_cached_plan(manifest: dict) -> list[dict]:
         carton = docked_scene.carton(segment["target"])
         path = [np.asarray(q, dtype=float) for q in segment["path"]]
         grasp_index = int(segment["grasp_index"])
+        release_index = int(segment.get("release_index", len(path) - 1))
+        if not (grasp_index <= release_index < len(path)):
+            raise ValueError("cached grasp/release indices are inconsistent with the path")
         grasp_q = path[grasp_index]
         carton_from_tool = np.linalg.inv(robot.fk(grasp_q)) @ carton.world_from_local
         robot_obstacles = docked_scene.obstacles_without({carton.name})
-        carried_obstacles = docked_scene.obstacles_without({carton.name, segment.get("place_surface")})
-        max_tilt = planning.get("max_in_trailer_carton_tilt_deg")
-
+        # The release pose remains above the support plane. Keep every
+        # conveyor section collision-active so cached validation cannot hide
+        # a payload/belt contact that occurs before the release index.
+        carried_obstacles = docked_scene.obstacles_without({carton.name})
         def orientation_valid(box) -> bool:
-            clearance_zone_max_x = planning.get("clearance_zone_max_x")
-            if clearance_zone_max_x is not None and box.center[0] <= float(clearance_zone_max_x):
-                return True
-            return _in_trailer_orientation_valid(carton, box, docked_scene, max_tilt)
-        valid = True
-        invalid_index = None
-        for index, q in enumerate(path):
+            return _carried_orientation_policy_valid(
+                carton,
+                box,
+                docked_scene,
+                planning,
+            )
+        def state_valid(q: np.ndarray, carried: bool) -> bool:
             if not robot.is_collision_free(q, robot_obstacles):
-                valid, invalid_index = False, index
-                break
-            if index >= grasp_index and not _carried_box_state_valid(
+                return False
+            if carried and not _carried_box_state_valid(
                 robot,
                 carton,
                 grasp_q,
@@ -148,20 +251,53 @@ def validate_cached_plan(manifest: dict) -> list[dict]:
                 carton_contact_tolerance=float(planning.get("carton_contact_tolerance_m", 0.005)),
                 orientation_valid=orientation_valid,
             ):
-                valid, invalid_index = False, index
-                break
+                return False
+            return True
+
+        # Revalidate every interpolated controller edge. A waypoint-only pass
+        # is not a continuous collision certificate.
+        edge_resolution = float(planning.get("rrt_edge_resolution", 0.04))
+        if not np.isfinite(edge_resolution) or edge_resolution <= 0.0:
+            raise ValueError("rrt_edge_resolution must be finite and positive")
+        valid = state_valid(path[0], carried=grasp_index == 0)
+        invalid_index = None if valid else 0
+        invalid_edge = None
+        invalid_edge_fraction = None
+        if valid:
+            for edge_index, (start, end) in enumerate(zip(path[:-1], path[1:])):
+                sample_count = max(
+                    1, int(np.ceil(np.max(np.abs(end - start)) / edge_resolution))
+                )
+                for sample_index in range(1, sample_count + 1):
+                    fraction = sample_index / sample_count
+                    q = start + fraction * (end - start)
+                    # The payload is attached through the edge arriving at
+                    # release_index, then becomes an independently simulated
+                    # dynamic body for the release-retreat path.
+                    carried = grasp_index <= edge_index < release_index
+                    if not state_valid(q, carried=carried):
+                        valid = False
+                        invalid_index = edge_index + 1 if sample_index == sample_count else None
+                        invalid_edge = [edge_index, edge_index + 1]
+                        invalid_edge_fraction = fraction
+                        break
+                if not valid:
+                    break
+        timed_segment = copy.deepcopy(segment)
+        time_parameterize_segments([timed_segment], cfg)
         statistics.append(
             {
                 "pick_index": int(segment["pick_index"]),
                 "target": segment["target"],
                 "valid": valid,
                 "invalid_index": invalid_index,
+                "invalid_edge": invalid_edge,
+                "invalid_edge_fraction": invalid_edge_fraction,
+                "edge_resolution_rad": edge_resolution,
+                "continuous_edges_validated": True,
                 "validation_seconds": perf_counter() - started,
                 "waypoints": len(path),
-                "estimated_execution_seconds": (
-                    max(0, len(path) - 1) * float(planning.get("trajectory_waypoint_period_seconds", 0.02))
-                    + np.sqrt(2.0 * float(segment.get("free_fall_height_m", 0.0)) / 9.81)
-                ),
+                "execution_timing": timed_segment["timing"],
             }
         )
         if not valid:
@@ -175,6 +311,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--plan", required=True)
     parser.add_argument("--output")
     parser.add_argument("--attempts", type=int, default=1200)
+    parser.add_argument("--corner-fraction", type=float, default=0.22)
+    parser.add_argument("--corner-samples", type=int, default=7)
     parser.add_argument("--validate-only", action="store_true")
     args = parser.parse_args(argv)
 
@@ -186,7 +324,12 @@ def main(argv: Sequence[str] | None = None) -> None:
         return
     if not args.output:
         parser.error("--output is required unless --validate-only is used")
-    optimized, statistics = optimize_cached_plan(manifest, attempts=args.attempts)
+    optimized, statistics = optimize_cached_plan(
+        manifest,
+        attempts=args.attempts,
+        corner_fraction=args.corner_fraction,
+        corner_samples=args.corner_samples,
+    )
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(optimized, ensure_ascii=False, indent=2), encoding="utf-8")

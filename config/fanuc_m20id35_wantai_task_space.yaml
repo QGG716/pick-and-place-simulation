@@ -1,0 +1,122 @@
+extends: fanuc_m20id35.yaml
+
+# Validation profile for the supplied 576 x 288 mm Wantai head. It derives
+# near-stack withdrawal constraints from the live carton neighbourhood rather
+# than prescribing fixed channel waypoints or a model-specific exit distance.
+planning:
+  destack_mode: auto
+  hold_current_dock: false
+  allow_free_space_reorientation: true
+  # Robust near-obstacle clearance for dynamic replay. The previous inherited
+  # 10 mm geometric margin was smaller than the measured 15.8 mm CoP
+  # attachment deviation, so a nominally collision-free lateral transfer could
+  # graze the stack in PhysX. A 40 mm sensitivity case over-constrained the
+  # conveyor/AMR region; 30 mm passed the centre-carton full sweep. This remains
+  # a tunable engineering margin pending controller-log calibration, not a
+  # model-specific withdrawal distance.
+  carried_box_clearance: 0.03
+  # Preserve removal-graph priority. A locally nearer middle carton can be
+  # globally worse when both neighbours force a narrow straight withdrawal;
+  # removing an open edge carton first simplifies the following cycles.
+  target_cycle_motion_first: false
+  target_motion_first: false
+  # Work from the trailer-door-side depth plane inward. Within that plane,
+  # unload the highest supported row from its centre columns toward both
+  # sides. This prevents a deep top carton from being dragged across a lower
+  # carton that remains on the near work face.
+  enforce_nearest_active_depth: true
+  active_depth_tolerance_m: 0.008
+  enforce_highest_active_layer: true
+  active_layer_height_tolerance_m: 0.008
+  # Tight Cartesian orientation accuracy is numerical IK quality, not a global
+  # carton-angle limit. It applies only when both sides are geometrically blocked.
+  destack_orientation_tolerance_rad: 0.035
+  destack_position_tolerance_m: 0.006
+  # Bottom-layer top lifts begin in face contact with the rear row. Search
+  # more deterministic IK seeds rather than relaxing the collision envelope.
+  destack_ik_random_restarts: 6
+  destack_position_step: 0.015
+  # Floor cartons cannot tolerate centimetre-scale downward IK residuals: the
+  # carried OBB would begin embedded in the trailer floor. Keep grasp/contact
+  # position residual below the support-contact allowance.
+  ik_position_tolerance: 0.012
+  # Once the carton has cleared its neighbours, connect to a conveyor
+  # pre-place pose in task space and finish with a straight approach. This
+  # preserves the carried OBB sweep and avoids an unconstrained full-span RRT.
+  use_cartesian_carry: true
+  use_cartesian_final_approach: true
+  # Prefer a direct Cartesian lowering motion when geometry permits it, but do
+  # not reject an otherwise safe carton/face combination solely because that
+  # approach is blocked. This remains a soft task preference across layouts.
+  cartesian_final_approach_required: true
+  # Evaluate short, medium, and conservative vertical approaches. Full carried
+  # OBB sweeps select the shortest feasible one for the live neighbourhood;
+  # no carton index is tied to a fixed pre-place height.
+  conveyor_preplace_clearances: [0.05, 0.12, 0.25]
+  conveyor_allow_all_carton_faces: true
+  # Process roles for the physical L conveyor: the robot releases only onto
+  # the transverse infeed; the continuously running belt carries the carton
+  # through the overlap onto the longitudinal outfeed. The longitudinal deck
+  # remains a collision-active scene object, not a second arm release target.
+  place_obstacle: conveyor_cross_deck
+  place_obstacles: [conveyor_cross_deck]
+  positive_y_place_obstacle: conveyor_cross_deck
+  floor_interior_place_obstacle: conveyor_cross_deck
+  # Any stable carton face may land on the cross belt. In this L layout the
+  # cross-belt velocity (-Y) is orthogonal to a front-grasp tool normal (-X),
+  # so keeping a front-grasped carton upright is a safe, shorter alternative
+  # to forcing a 90-degree flip over the belt. Collision and premature-contact
+  # checks remain active for every candidate.
+  continuous_conveyor_min_tool_outward_support_alignment: null
+  # Keep release/belt alignment as a dynamic audit rather than a hard pose
+  # filter. The controlled drop and belt-aware empty-tool retreat already
+  # create separation; forcing axis alignment added a needless 90-degree
+  # loaded wrist reconstruction for otherwise clear upright placements.
+  continuous_conveyor_min_release_separation_alignment: null
+  # Sample intermediate upright yaws and score belt-assisted separation as a
+  # continuous preference. This avoids a layout-specific angular threshold:
+  # the planner may trade a modest free-space wrist turn against the predicted
+  # risk of a carton sweeping tangentially across the 576 mm gripper face.
+  conveyor_upright_yaw_step_degrees: 15.0
+  conveyor_release_separation_cost_weight_m: 0.65
+  continuous_conveyor_adaptive_release_separation: true
+  conveyor_release_transition_surfaces:
+    [conveyor_cross_deck, conveyor_transfer_deck, conveyor_deck]
+  conveyor_require_front_release_zone: true
+  # Release on the transverse infeed before the 90-degree junction. These are
+  # footprint exclusions, not fixed coordinates; they adapt to carton size,
+  # orientation, dock pose, and future conveyor dimensions.
+  conveyor_release_exclusion_surfaces: []
+  # Keep all stable support faces available, but search yaw-only upright
+  # releases first to minimize wrist moment and attachment deflection.
+  conveyor_prefer_upright_release: true
+  conveyor_approach_directions: [top]
+  # Offline qualification-plan generation may search more release orientations
+  # than the 50 ms runtime lookup path; deployed execution uses the resulting
+  # deterministic cache rather than this cold IK search.
+  # Deterministic offline qualification search: bound work by candidate and
+  # iteration counts, not wall time, so machine load cannot change which
+  # conveyor poses are considered.
+  # Nine upright offsets are searched first; three additional slots retain
+  # side-support fallbacks when every upright pose is unreachable.
+  max_place_pose_candidates: 12
+  max_feasible_place_iks: 3
+  place_ik_budget_seconds: 0.0
+  retry_alternate_place_surfaces: false
+  place_ik_random_restarts: 1
+  place_ik_max_iterations: 300
+  place_attempt_time_limit_seconds: 40.0
+  target_planning_time_limit_seconds: 240.0
+  # Offline cache generation compares complete grasp/wrist alternatives. The
+  # production online path remains the deterministic 50 ms cache lookup.
+  optimize_across_grasp_candidates: true
+  carried_task_path_length_weight: 2.0
+  wrist_roll_angles_deg: [180.0]
+
+amr:
+  # The transverse belt is lateral to the robot rather than projecting into
+  # the trailer. Its front edge stays 200 mm ahead of the base plane while the
+  # nearest carton remains more than 1 m away.
+  conveyor_front_reference: conveyor_cross_deck
+  validate_conveyor_front_overhang: false
+  require_conveyor_beyond_platform_front: false

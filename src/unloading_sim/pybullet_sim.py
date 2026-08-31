@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import math
 import os
 import re
@@ -29,10 +30,14 @@ if __package__ in (None, ""):
     from unloading_sim.perception import detect_carton_obbs, fixed_conveyor_place_pose, select_detection
     from unloading_sim.scene import load_scene_config
 else:
+    from .dynamics import CameraFrame, CameraSpec, TimedJointCommands, tracking_error_audit
     from .grasp import generate_suction_candidates
     from .geometry import OBB
     from .perception import detect_carton_obbs, fixed_conveyor_place_pose, select_detection
     from .scene import load_scene_config
+
+if __package__ in (None, ""):
+    from unloading_sim.dynamics import CameraFrame, CameraSpec, TimedJointCommands, tracking_error_audit
 
 
 ROS_WS = Path("/home/zy0004-lr/下载/code/manipulation-main/ros_ws")
@@ -175,6 +180,73 @@ def load_trajectory_csv(path: Path) -> list[np.ndarray]:
         return [np.array([float(row[name]) for name in joint_columns], dtype=float) for row in reader]
 
 
+def load_timed_joint_commands(path: Path) -> TimedJointCommands:
+    with path.open("r", newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        fields = reader.fieldnames or []
+        time_columns = [name for name in fields if name in {"time_from_start_s", "time_from_pick_start_s"}]
+        joint_columns = sorted(
+            (name for name in fields if re.fullmatch(r"q\d+", name)), key=lambda name: int(name[1:])
+        )
+        if len(time_columns) != 1 or not joint_columns:
+            raise ValueError(f"Timed trajectory CSV requires one time column and q1..qN columns: {path}")
+        rows = list(reader)
+    return TimedJointCommands(
+        np.asarray([float(row[time_columns[0]]) for row in rows], dtype=float),
+        np.asarray([[float(row[name]) for name in joint_columns] for row in rows], dtype=float),
+    )
+
+
+def replay_with_position_control(
+    p,
+    robot: LoadedModel,
+    commands: TimedJointCommands,
+    *,
+    physics_dt: float = 1.0 / 240.0,
+    max_joint_force: float = 500.0,
+    position_gain: float = 0.25,
+    velocity_gain: float = 1.0,
+    realtime: bool = True,
+    simple_tool: SimpleTool | None = None,
+    ee_link: int | None = None,
+) -> dict:
+    """Execute timed commands through PyBullet motors and audit tracking."""
+    if physics_dt <= 0.0 or max_joint_force <= 0.0:
+        raise ValueError("physics_dt and max_joint_force must be positive")
+    if commands.positions.shape[1] != len(robot.joint_indices):
+        raise ValueError("timed command DOF does not match the loaded robot")
+    p.setTimeStep(float(physics_dt))
+    set_robot_joints(p, robot, commands.positions[0])
+    commanded_samples: list[np.ndarray] = []
+    measured_samples: list[np.ndarray] = []
+    sample_times = np.arange(0.0, commands.duration_seconds + 0.5 * physics_dt, physics_dt)
+    for timestamp in sample_times:
+        target = commands.sample(float(timestamp))
+        p.setJointMotorControlArray(
+            robot.body_id,
+            robot.joint_indices,
+            p.POSITION_CONTROL,
+            targetPositions=target.tolist(),
+            forces=[float(max_joint_force)] * len(robot.joint_indices),
+            positionGains=[float(position_gain)] * len(robot.joint_indices),
+            velocityGains=[float(velocity_gain)] * len(robot.joint_indices),
+        )
+        p.stepSimulation()
+        measured = np.asarray([state[0] for state in p.getJointStates(robot.body_id, robot.joint_indices)])
+        commanded_samples.append(target)
+        measured_samples.append(measured)
+        if simple_tool is not None and ee_link is not None:
+            update_simple_tool(p, robot, ee_link, simple_tool)
+        if realtime:
+            time.sleep(float(physics_dt))
+    return {
+        "backend": "pybullet_position_control",
+        "physics_dt_seconds": float(physics_dt),
+        "max_joint_force": float(max_joint_force),
+        **tracking_error_audit(np.asarray(commanded_samples), np.asarray(measured_samples), sample_times),
+    }
+
+
 def add_obb(p, box: OBB, rgba: Sequence[float]) -> int:
     half = box.half_extents.tolist()
     visual = p.createVisualShape(p.GEOM_BOX, halfExtents=half, rgbaColor=rgba)
@@ -245,7 +317,12 @@ def add_obb_wireframe(p, box: OBB, rgba: Sequence[float], radius: float = 0.006)
     return body_ids
 
 
-def add_scene_boxes(p, scene, target_name: str | None = None) -> dict[str, int]:
+def add_scene_boxes(
+    p,
+    scene,
+    target_name: str | None = None,
+    body_groups: dict[str, list[int]] | None = None,
+) -> dict[str, int]:
     body_ids: list[int] = []
     named_bodies: dict[str, int] = {}
     colors = {
@@ -260,12 +337,19 @@ def add_scene_boxes(p, scene, target_name: str | None = None) -> dict[str, int]:
         body_id = add_obb(p, box, rgba)
         body_ids.append(body_id)
         named_bodies[box.name] = body_id
+        group = [body_id]
         if box.category == "carton":
             edge_color = (1.0, 0.86, 0.20, 1.0) if box.name == target_name else (0.28, 0.16, 0.06, 1.0)
             edge_radius = 0.008 if box.name == target_name else 0.0045
-            body_ids.extend(add_obb_wireframe(p, box, edge_color, radius=edge_radius))
+            wireframe_ids = add_obb_wireframe(p, box, edge_color, radius=edge_radius)
+            body_ids.extend(wireframe_ids)
+            group.extend(wireframe_ids)
         elif box.category == "static":
-            body_ids.extend(add_obb_wireframe(p, box, (0.05, 0.18, 0.42, 1.0), radius=0.006))
+            wireframe_ids = add_obb_wireframe(p, box, (0.05, 0.18, 0.42, 1.0), radius=0.006)
+            body_ids.extend(wireframe_ids)
+            group.extend(wireframe_ids)
+        if body_groups is not None:
+            body_groups[box.name] = group
     return named_bodies
 
 
@@ -492,6 +576,45 @@ def save_camera_snapshot(
     Image.fromarray(image, mode="RGBA").save(path)
 
 
+def capture_rgbd_frame(
+    p,
+    spec: CameraSpec,
+    *,
+    timestamp_seconds: float,
+    camera_eye: Sequence[float],
+    camera_target: Sequence[float],
+    camera_up: Sequence[float] = (0.0, 0.0, 1.0),
+) -> CameraFrame:
+    """Capture metric RGB-D and instance segmentation from a calibrated camera."""
+    view = p.computeViewMatrix(camera_eye, camera_target, camera_up)
+    aspect = float(spec.width) / float(spec.height)
+    vertical_fov = 2.0 * np.arctan(np.tan(0.5 * spec.horizontal_fov_rad) / aspect)
+    projection = p.computeProjectionMatrixFOV(
+        fov=float(np.degrees(vertical_fov)),
+        aspect=aspect,
+        nearVal=spec.near_m,
+        farVal=spec.far_m,
+    )
+    _, _, rgba, depth_buffer, segmentation = p.getCameraImage(
+        spec.width,
+        spec.height,
+        viewMatrix=view,
+        projectionMatrix=projection,
+        renderer=p.ER_TINY_RENDERER,
+    )
+    depth_buffer = np.asarray(depth_buffer, dtype=float).reshape(spec.height, spec.width)
+    depth_m = spec.far_m * spec.near_m / (
+        spec.far_m - (spec.far_m - spec.near_m) * depth_buffer
+    )
+    return CameraFrame(
+        float(timestamp_seconds),
+        np.asarray(rgba, dtype=np.uint8).reshape(spec.height, spec.width, 4),
+        depth_m,
+        np.asarray(segmentation, dtype=np.int32).reshape(spec.height, spec.width),
+        spec.intrinsic_matrix,
+    )
+
+
 def attach_gripper_urdf(
     p,
     robot: LoadedModel,
@@ -561,8 +684,13 @@ def run_viewer(args: argparse.Namespace) -> None:
         elif args.tool == "suction" and not args.no_gripper:
             simple_tool = create_simple_suction_tool(p, args.gripper_xyz, args.gripper_rpy, args.suction_radius)
 
+        timed_commands = None
         if args.trajectory and Path(args.trajectory).exists():
-            trajectory = load_trajectory_csv(Path(args.trajectory))
+            if args.dynamic:
+                timed_commands = load_timed_joint_commands(Path(args.trajectory))
+                trajectory = [row.copy() for row in timed_commands.positions]
+            else:
+                trajectory = load_trajectory_csv(Path(args.trajectory))
         else:
             trajectory = [np.asarray(robot_cfg.get("home_joints", [0.0] * len(robot.joint_indices)), dtype=float)]
 
@@ -583,19 +711,34 @@ def run_viewer(args: argparse.Namespace) -> None:
                 place_center = place_pose[:3, 3].copy()
                 place_center[2] = conveyor.center[2] + conveyor.half_extents[2] + scene.carton(target_name).half_extents[2]
         for _ in range(max(args.loops, 1)):
-            replay_with_carried_carton(
-                p,
-                robot,
-                ee_link,
-                trajectory,
-                scene,
-                target_name,
-                scene_bodies.get(target_name) if target_name else None,
-                place_center,
-                simple_tool,
-                args.dt,
-                args.direct,
-            )
+            if timed_commands is not None:
+                dynamics_audit = replay_with_position_control(
+                    p,
+                    robot,
+                    timed_commands,
+                    physics_dt=args.physics_dt,
+                    max_joint_force=args.max_joint_force,
+                    position_gain=args.position_gain,
+                    velocity_gain=args.velocity_gain,
+                    realtime=not args.direct,
+                    simple_tool=simple_tool,
+                    ee_link=ee_link,
+                )
+                print(json.dumps(dynamics_audit, ensure_ascii=False, indent=2))
+            else:
+                replay_with_carried_carton(
+                    p,
+                    robot,
+                    ee_link,
+                    trajectory,
+                    scene,
+                    target_name,
+                    scene_bodies.get(target_name) if target_name else None,
+                    place_center,
+                    simple_tool,
+                    args.dt,
+                    args.direct,
+                )
         if args.snapshot:
             save_camera_snapshot(p, args.snapshot, args.width, args.height)
         if args.hold and not args.direct:
@@ -625,6 +768,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--suction-radius", type=float, default=0.045, help="Radius of the simple suction cup")
     parser.add_argument("--loops", type=int, default=1)
     parser.add_argument("--dt", type=float, default=1.0 / 60.0)
+    parser.add_argument("--dynamic", action="store_true", help="Use timed CSV commands and motor-driven physics")
+    parser.add_argument("--physics-dt", type=float, default=1.0 / 240.0)
+    parser.add_argument("--max-joint-force", type=float, default=500.0)
+    parser.add_argument("--position-gain", type=float, default=0.25)
+    parser.add_argument("--velocity-gain", type=float, default=1.0)
     parser.add_argument("--direct", action="store_true", help="Run without opening a GUI window")
     parser.add_argument("--native-gl", dest="software_gl", action="store_false", help="Do not force Mesa software GL for GUI")
     parser.add_argument("--snapshot", default=None, help="Write an offscreen PNG snapshot and exit")

@@ -63,6 +63,19 @@ def suction_replay_mount(robot_cfg: dict, link_names: dict[str, int]) -> tuple[s
     return ee_link_name, float(robot_cfg.get("tool_length", 0.20)) - 0.166
 
 
+def remove_conveyed_carton(
+    p,
+    scene_bodies: dict[str, int],
+    target: str,
+    body_groups: dict[str, list[int]] | None = None,
+) -> None:
+    """Remove a released carton once the conveyor takes it out of the cell."""
+    body_id = scene_bodies.pop(target)
+    ids = [body_id] if body_groups is None else body_groups.pop(target, [body_id])
+    for removable_id in ids:
+        p.removeBody(removable_id)
+
+
 def replay_online(args: argparse.Namespace) -> None:
     if not args.direct and args.software_gl:
         os.environ.setdefault("__GLX_VENDOR_LIBRARY_NAME", "mesa")
@@ -95,9 +108,16 @@ def replay_online(args: argparse.Namespace) -> None:
                 )
         p.resetSimulation()
         p.setGravity(0, 0, -9.81)
-        scene_bodies = add_scene_boxes(p, scene, target_name=planning_cfg.get("target_carton"))
+        scene_body_groups: dict[str, list[int]] = {}
+        scene_bodies = add_scene_boxes(
+            p,
+            scene,
+            target_name=planning_cfg.get("target_carton"),
+            body_groups=scene_body_groups,
+        )
         add_debug_axes(p)
-        add_perception_markers(p, scene, cfg)
+        if args.show_perception:
+            add_perception_markers(p, scene, cfg)
 
         platform_size = np.asarray(amr_cfg.get("footprint_size", [1.60, 1.20, 0.30]), dtype=float)
         platform_offset = np.asarray(amr_cfg.get("platform_center_offset", [0.0, 0.0, platform_size[2] / 2.0]), dtype=float)
@@ -273,6 +293,11 @@ def replay_online(args: argparse.Namespace) -> None:
                     )
                     p.stepSimulation()
                     capture_frame()
+            # A downstream conveyor owns the carton after it lands. Removing
+            # the rigid body here models transport out of this robot cell and
+            # prevents already placed cartons accumulating on the belt.
+            remove_conveyed_carton(p, scene_bodies, target, scene_body_groups)
+            capture_frame()
             if target in [carton.name for carton in scene.cartons]:
                 scene.cartons = [carton for carton in scene.cartons if carton.name != target]
             for trace_id in trace_ids:
@@ -342,6 +367,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--camera-target", nargs=3, type=float, default=[1.15, 0.05, 1.0])
     parser.add_argument("--trace-samples", type=int, default=24)
     parser.add_argument("--show-trajectory", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--show-perception", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--dt", type=float, default=1.0 / 60.0)
     parser.add_argument("--hold", action="store_true")
     parser.add_argument("--native-gl", dest="software_gl", action="store_false")

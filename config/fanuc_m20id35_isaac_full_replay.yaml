@@ -1,0 +1,9 @@
+extends: fanuc_m20id35_validation.yaml
+
+# Isaac dynamic-replay profile.  The geometric path is unchanged; only the
+# time parameterization is slowed so the simulated position drives remain
+# below the URDF effort saturation while carrying the 7 kg carton and 10 kg
+# gripper.  Presentation speed is controlled independently by the MP4 writer.
+execution:
+  motion_limit_scale: 0.35
+  isaac_replay_time_scale: 1.60

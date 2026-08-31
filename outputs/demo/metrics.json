@@ -2,7 +2,7 @@
   "success": true,
   "message": "planned with candidate 0",
   "target_carton": "carton_target",
-  "planning_time_seconds": 0.26582780003082007,
+  "planning_time_seconds": 0.3098771999939345,
   "trajectory_waypoints": 115,
   "rrt_iterations": 0,
   "place_rrt_iterations": null,
@@ -23,5 +23,38 @@
     -0.0,
     -0.0
   ],
-  "place_tool_position_m": null
+  "place_tool_position_m": null,
+  "execution_timing": {
+    "duration_seconds": 58.81530257452094,
+    "waypoints": 115,
+    "iterations": 24,
+    "peak_velocity_rad_s": [
+      0.06231642271357723,
+      0.143569953890774,
+      0.1791281426686137,
+      0.24079753426579473,
+      0.06912901685918746,
+      0.33541676207993043
+    ],
+    "peak_acceleration_rad_s2": [
+      0.13332716446877396,
+      0.30717063049575394,
+      0.3832480476027194,
+      0.5210820141117202,
+      0.14790283843333338,
+      0.7258365102630985
+    ],
+    "peak_jerk_rad_s3": [
+      1.2176022255749541,
+      2.8052171124547187,
+      3.4999895000210013,
+      5.025323340044667,
+      1.350713682112695,
+      6.999979000041996
+    ],
+    "max_velocity_ratio": 0.16299194055378863,
+    "max_acceleration_ratio": 0.5474972108610278,
+    "max_jerk_ratio": 0.9999970000060003,
+    "within_limits": true
+  }
 }

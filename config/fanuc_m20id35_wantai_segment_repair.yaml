@@ -1,0 +1,9 @@
+extends: fanuc_m20id35_wantai_task_space.yaml
+
+# Offline-only profile for regenerating a known segment at its original dock.
+# Runtime execution still uses the resulting deterministic trajectory cache.
+planning:
+  hold_current_dock: true
+  transit_time_limit_seconds: 60.0
+  target_planning_time_limit_seconds: 600.0
+  candidate_planning_time_limit_seconds: 300.0

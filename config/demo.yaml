@@ -6,6 +6,17 @@ robot:
   tool_length: 0.18
   home_joints: [0.0, -1.57, 1.57, -1.57, -1.57, 0.0]
 
+execution:
+  limits_source: ur5e_like_conservative_engineering_assumptions
+  joint_velocity_limits_rad_s: [3.14, 3.14, 3.14, 6.28, 6.28, 6.28]
+  joint_acceleration_limits_rad_s2: [2.0, 2.0, 2.0, 4.0, 4.0, 4.0]
+  joint_jerk_limits_rad_s3: [10.0, 10.0, 10.0, 20.0, 20.0, 20.0]
+  motion_limit_scale: 0.35
+  perception_update_seconds: 0.25
+  vacuum_establish_seconds: 0.35
+  release_seconds: 0.15
+  minimum_segment_seconds: 0.002
+
 scene:
   trailer:
     length: 4.0
