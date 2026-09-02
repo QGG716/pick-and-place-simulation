@@ -1,0 +1,36 @@
+schema_version: fanuc_wrist_evidence_v1
+robot_model: FANUC M-20iD/35
+
+# Public product sheets publish the values below but do not define the exact
+# reference origin, axes, tensor convention, formula, or load-diagram boundary.
+reference:
+  origin_xyz_m: null
+  axes: null
+  source_document: FANUC Robot M-20iD/35 Product Information
+  source_url: https://www.fanucamerica.com/docs/default-source/fanuc-robot-datasheets-new/m-20id_35-product-information.pdf
+  source_page: "1"
+  source_definition: Public sheet lists J4/J5/J6 moments and inertias without a reference-frame definition.
+  evidence_status: NOT_VERIFIED
+
+moment_definition_status: NOT_VERIFIED
+inertia_definition_status: NOT_VERIFIED
+load_diagram_status: NOT_VERIFIED
+
+public_numeric_values:
+  rated_payload_kg: 35.0
+  allowable_moment_nm: {J4: 110.0, J5: 110.0, J6: 60.0}
+  allowable_inertia_kg_m2: {J4: 4.0, J5: 4.0, J6: 1.5}
+
+sources:
+  - document: FANUC Robot M-20iD/35 Product Information
+    page: "1"
+    url: https://www.fanucamerica.com/docs/default-source/fanuc-robot-datasheets-new/m-20id_35-product-information.pdf
+    finding: Numeric values only; reference point, axes, formula, and diagram are absent.
+  - document: FANUC Robot M-10iD Series Japanese Catalog RM-10iD(J)-06
+    page: "2"
+    url: https://www.fanuc.co.jp/ja/product/catalog/pdf/robot/RM-10iD(J)-06.pdf
+    finding: Confirms the Japanese labels and values; still no reference definition or boundary.
+  - document: FANUC CRX Mechanical Unit Operator's Manual (generic controller convention)
+    page: "23-24, section 4.2"
+    url: https://www.fanuc.eu/~/media/files/pdf/products/robots/educational%20cell/fanuc-crx-educational-cell-manual.pdf
+    finding: Payload CoM is entered in standard tool coordinates at the faceplate and inertia about CoM; this is not an M-20iD/35 allowable-diagram equivalence proof.

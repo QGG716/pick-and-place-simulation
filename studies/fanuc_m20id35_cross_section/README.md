@@ -14,7 +14,7 @@ Run the deterministic study from the repository root:
 ```bash
 PYTHONPATH=src python studies/fanuc_m20id35_cross_section/run_study.py \
   --config studies/fanuc_m20id35_cross_section/study_config.json \
-  --backend pybullet
+  --backend pybullet --workers 20 --audit-best
 ```
 
 `pybullet` is optional and is imported only by this study.  `--backend
@@ -24,6 +24,9 @@ model uses every rigid-solid bounding box extracted from the supplied STEP,
 plus an explicit active bottom-support rail/blade.  Cartesian extraction is
 subdivided at the configured translation and joint-motion bounds; every
 subdivision checks robot, tool, support and carried-carton collision.
+This is deterministic dense swept-path sampling, not an analytic or FCL
+continuous-collision proof; the sampling bounds and collision margin are
+recorded in `simulation_parameters.json`.
 
 The box dimensions are interpreted as cross-section width, cross-section
 height and longitudinal depth.  A cross-section cell is the carton centre.

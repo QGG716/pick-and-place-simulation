@@ -580,6 +580,21 @@ class URDFRobot:
             result[joint.child] = transform.copy()
         return result
 
+    def joint_axis_frames(self, q: np.ndarray) -> dict[str, tuple[np.ndarray, np.ndarray]]:
+        """Return each active joint's world-space origin and unit axis.
+
+        The values come from the URDF joint ``origin`` and ``axis`` after all
+        preceding joint transforms have been applied.  Keeping this public is
+        important for load calculations: wrist axes must not be inferred from
+        flange-frame X/Y/Z labels, and both origin and direction vary through
+        forward kinematics.
+        """
+        _, origins, axes = self._frames_and_axes(q)
+        return {
+            name: (origin.copy(), axis.copy())
+            for name, origin, axis in zip(self.active_joint_names, origins, axes)
+        }
+
     def fk(self, q: np.ndarray) -> np.ndarray:
         return self.frames(q, include_tool=True)[-1]
 

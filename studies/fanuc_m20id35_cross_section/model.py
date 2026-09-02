@@ -11,6 +11,8 @@ from typing import Iterable, Sequence
 
 import numpy as np
 
+from unloading_sim.robot_load import load_robot_limits
+
 
 STATE_A = 0
 STATE_B = 1
@@ -40,6 +42,19 @@ def load_config(path: str | Path) -> tuple[dict, Path]:
     cfg = json.loads(path.read_text(encoding="utf-8"))
     if cfg.get("schema_version") != "fanuc_cross_section_study_v1":
         raise ValueError("unsupported cross-section study schema")
+    wrist_config = cfg.get("wrist_limits", {}).get("limits_config")
+    if wrist_config:
+        limits = load_robot_limits(resolve_project_path(path, wrist_config))
+        cfg["wrist_limits"] = {
+            "limits_config": wrist_config,
+            "source": limits.source["title"],
+            "source_url": limits.source["url"],
+            "maximum_external_mass_kg": limits.rated_payload_kg,
+            "joint_moment_limits_nm": dict(zip(("J4", "J5", "J6"), limits.allowable_moment_nm)),
+            "joint_inertia_limits_kg_m2": dict(zip(("J4", "J5", "J6"), limits.allowable_inertia_kg_m2)),
+            "normal_utilization_limit": limits.normal_utilization_limit,
+            "payload_com_limit_status": limits.com_limit_status,
+        }
     return cfg, path
 
 

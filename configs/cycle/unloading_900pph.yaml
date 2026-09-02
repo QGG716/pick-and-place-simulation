@@ -1,0 +1,49 @@
+schema_version: unloading_cycle_monte_carlo_v1
+seed: 20260901
+sample_count: 100000
+shift_hours: 8.0
+target_boxes_per_hour: 900.0
+normal_cycle_seconds: 3.2
+normal_cycle_candidates_seconds: [3.0, 3.2, 3.4, 3.6, 4.0]
+# Exactly one normal class is sampled for every box. Durations are offsets
+# relative to normal_cycle_seconds.
+base_events:
+  - name: NORMAL_LIGHT_BOX
+    probability: 0.35
+    duration_seconds: -0.15
+  - name: NORMAL_MEDIUM_BOX
+    probability: 0.45
+    duration_seconds: 0.0
+  - name: HEAVY_BOX_SUPPORT
+    probability: 0.20
+    duration_seconds: 0.45
+# Additional events are sampled in this order. conditional_on accepts ALWAYS
+# or the name of an event that must already have occurred for the same box.
+loss_events:
+  - name: VISION_HEAVY_PATH
+    probability: 0.12
+    duration_seconds: [0.10, 0.22, 0.45]
+    conditional_on: HEAVY_BOX_SUPPORT
+  - name: GRASP_RETRY
+    probability: 0.025
+    duration_seconds: [0.8, 1.3, 2.2]
+    conditional_on: ALWAYS
+  - name: REPLAN
+    probability: 0.015
+    duration_seconds: [0.15, 0.35, 0.9]
+    conditional_on: ALWAYS
+  - name: BASE_REPOSITION
+    probability: 0.004
+    duration_seconds: [2.0, 3.5, 5.0]
+    conditional_on: ALWAYS
+  - name: CONVEYOR_WAIT
+    probability: 0.01
+    duration_seconds: [0.2, 0.7, 1.8]
+    conditional_on: ALWAYS
+  - name: RECOVERY
+    probability: 0.001
+    duration_seconds: [4.0, 8.0, 15.0]
+    conditional_on: GRASP_RETRY
+source:
+  status: ENGINEERING_ASSUMPTION
+  note: Event probabilities and durations require production log calibration.

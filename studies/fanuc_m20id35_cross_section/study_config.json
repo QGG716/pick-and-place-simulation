@@ -50,12 +50,7 @@
     "neighbor_gap_m": 0.012
   },
   "wrist_limits": {
-    "source": "FANUC M-20iD/35 official product information",
-    "source_url": "https://www.fanucamerica.com/docs/default-source/fanuc-robot-datasheets-new/m-20id_35-product-information.pdf",
-    "maximum_external_mass_kg": 35.0,
-    "joint_moment_limits_nm": {"J4": 110.0, "J5": 110.0, "J6": 60.0},
-    "joint_inertia_limits_kg_m2": {"J4": 4.0, "J5": 4.0, "J6": 1.5},
-    "normal_utilization_limit": 0.8
+    "limits_config": "configs/robots/fanuc_m20id_35.yaml"
   },
   "thresholds": {
     "surface_normal_error_deg": 5.0,

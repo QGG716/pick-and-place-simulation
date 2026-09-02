@@ -1,9 +1,0 @@
-extends: fanuc_m20id35_wantai_task_space.yaml
-
-# Dynamic-clearance sensitivity check. 30 mm remains above the measured
-# 15.8 mm CoP attachment deviation while avoiding an unqualified 40 mm margin
-# around every conveyor/AMR static primitive. Not a production calibration.
-planning:
-  carried_box_clearance: 0.03
-  target_planning_time_limit_seconds: 450.0
-  candidate_planning_time_limit_seconds: 225.0

@@ -1,0 +1,11 @@
+schema_version: truck_cross_section_v1
+name: trailer_2p3x2p7
+inside_width_m: 2.30
+inside_height_m: 2.70
+grid_spacing_m: 0.05
+base_longitudinal_x_scan_m: [-0.20, -0.10, 0.0, 0.10, 0.20]
+base_mounting_surface_height_m: 0.50
+wall_thickness_m: 0.05
+source:
+  type: project_design_input
+  note: Dimensions are task inputs, not measured as-built trailer geometry.

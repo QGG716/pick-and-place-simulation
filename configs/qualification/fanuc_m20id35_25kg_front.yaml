@@ -1,0 +1,26 @@
+schema_version: robot_load_case_v1
+robot:
+  model: fanuc_m20id_35
+  limits_config: ../robots/fanuc_m20id_35.yaml
+tool:
+  mass_kg: 10.0
+  com_xyz_m: [0.149810098, 0.000777904, 0.002622005]
+  inertia_at_com_kg_m2:
+    - [0.314892272, 0.000722989, 0.002168652]
+    - [0.000722989, 0.095635068, -0.002126969]
+    - [0.002168652, -0.002126969, 0.267681937]
+  tcp_xyz_m: [0.250, 0.0, 0.0]
+  source:
+    type: supplied_STEP_engineering_estimate
+    file: assets/grippers/shanghai_wantai_three_zone/mass_properties.json
+box:
+  # Local order is depth, width, height. The origin is the front-face centre.
+  size_xyz_m: [0.500, 0.400, 0.350]
+  mass_kg: 25.0
+  grasp_face: front_center
+  grasp_point_xyz_m: [0.0, 0.0, 0.0]
+  estimated_com_xyz_m: [0.250, 0.0, 0.0]
+motion:
+  linear_acceleration_m_s2: 1.0
+  angular_acceleration_rad_s2: 1.0
+  safety_factor: 1.0

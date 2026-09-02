@@ -401,13 +401,13 @@ amr:
   # deck runs along X; the cross deck runs along Y at its front edge.
   mounted_surface_centers:
     conveyor_deck: [-0.70, -0.70, 0.365]
-    # The two decks overlap over 0.625 x 0.55 m, so the corner is a physical
+    # The two decks overlap over 0.650 x 0.55 m, so the corner is a physical
     # intersection rather than a narrow bridge. At the nominal x=0.80 m dock,
-    # the cross-deck front edge is x=0.725 m: 275 mm from the nearest carton
+    # the cross-deck front edge is x=0.800 m: 200 mm from the nearest carton
     # face at x=1.00 m.
     # The 700 mm belt supports the current carton at intermediate release yaws.
-    # Its nearest edge remains 225 mm from the carton face at the nominal dock.
-    conveyor_cross_deck: [-0.40, -0.20, 0.37]
+    # Its rear edge stays 300 mm outside the robot base/J2 keep-out envelope.
+    conveyor_cross_deck: [-0.375, -0.20, 0.37]
     conveyor_transfer_deck: [-0.40, -0.80, 0.43]
   cross_conveyor_name: conveyor_cross_deck
   minimum_conveyor_to_carton_clearance_m: 0.20

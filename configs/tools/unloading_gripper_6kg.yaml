@@ -1,0 +1,20 @@
+schema_version: tool_load_v2
+tool_mass_properties_source: ENGINEERING_MODEL
+mass_properties_reference_frame: flange
+name: unloading_gripper_6kg_engineering_model
+mass_kg: 6.0
+com_xyz_m: [0.149810098, 0.000777904, 0.002622005]
+inertia_tensor_com_kg_m2:
+  - [0.1889353632, 0.0004337934, 0.0013009387]
+  - [0.0004337934, 0.0573810408, -0.0012761814]
+  - [0.0013009387, -0.0012761814, 0.1606091622]
+tcp_xyz_m: [0.250, 0.0, 0.0]
+source:
+  type: ENGINEERING_TOOL_MODEL
+  reference_config: unloading_gripper_8kg.yaml
+  reference_mass_kg: 8.0
+  target_mass_kg: 6.0
+  mass_scale: 0.75
+  inertia_scale: 0.75
+  scaling_assumption: unchanged geometry, CoM, and normalized mass distribution
+  cad_mass_properties_status: NOT_AVAILABLE_FOR_THIS_TARGET_MASS

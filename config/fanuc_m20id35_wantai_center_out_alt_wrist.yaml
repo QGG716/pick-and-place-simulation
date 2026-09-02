@@ -1,8 +1,0 @@
-extends: fanuc_m20id35_wantai_task_space.yaml
-
-# Bounded diagnostic for the second centre carton. A 180-degree tool roll
-# preserves the suction contact and footprint while selecting the alternate
-# spherical-wrist branch. This profile is not the final task configuration.
-planning:
-  wrist_roll_angles_deg: [180.0]
-  grasp_candidates_per_face: 2

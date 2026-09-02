@@ -1,7 +1,0 @@
-extends: fanuc_m20id35_wantai_task_space.yaml
-
-# Offline sensitivity profile for the final +Y outer carton. The AMR moves
-# empty between cycles; the robot never changes dock while carrying a payload.
-amr:
-  dock_positions:
-    - [0.80, 0.30, 0.0]

@@ -17,6 +17,7 @@ import numpy as np
 from unloading_sim.geometry import OBB
 from unloading_sim.ik import IKResult, pose_error, solve_ik
 from unloading_sim.robot import URDFRobot6
+from unloading_sim.robot_load import load_robot_limits
 
 try:
     from studies.fanuc_m20id35_cross_section.model import (
@@ -353,8 +354,24 @@ class CollisionWorld:
 
 
 class StudyRunner:
-    def __init__(self, cfg: dict, config_path: Path, backend: str, quick: bool = False) -> None:
-        self.cfg, self.config_path, self.quick = cfg, config_path, quick
+    def __init__(self, cfg: dict, config_path: Path, backend: str, quick: bool = False, branch_audit: bool = False) -> None:
+        wrist_config = cfg.get("wrist_limits", {}).get("limits_config")
+        if wrist_config:
+            limits = load_robot_limits(resolve_project_path(config_path, wrist_config))
+            cfg = {
+                **cfg,
+                "wrist_limits": {
+                    "limits_config": wrist_config,
+                    "source": limits.source["title"],
+                    "source_url": limits.source["url"],
+                    "maximum_external_mass_kg": limits.rated_payload_kg,
+                    "joint_moment_limits_nm": dict(zip(("J4", "J5", "J6"), limits.allowable_moment_nm)),
+                    "joint_inertia_limits_kg_m2": dict(zip(("J4", "J5", "J6"), limits.allowable_inertia_kg_m2)),
+                    "normal_utilization_limit": limits.normal_utilization_limit,
+                    "payload_com_limit_status": limits.com_limit_status,
+                },
+            }
+        self.cfg, self.config_path, self.quick, self.branch_audit = cfg, config_path, quick, branch_audit
         self.tool_boxes, self.mass_properties = load_gripper_model(cfg, config_path)
         urdf = resolve_project_path(config_path, cfg["robot"]["urdf"])
         self.robot = URDFRobot6.fanuc_m20id35(
@@ -391,10 +408,17 @@ class StudyRunner:
         thresholds = self.cfg["thresholds"]
         seed_value = stable_seed(int(self.cfg["seed"]), *decimals, *key_hint)
         rng = np.random.default_rng(seed_value)
-        seeds = [self.home, np.mean(self.robot.joint_limits, axis=1)]
+        is_path = key_hint[-1] == "path"
+        seeds = []
         if preferred is not None:
-            seeds.insert(0, preferred)
-        count = 5 if self.quick else 12
+            seeds.append(preferred)
+        seeds.extend([self.home, np.mean(self.robot.joint_limits, axis=1)])
+        # A grasp pose needs multiple starts so branch counts and collision
+        # alternatives are meaningful.  A densely sampled Cartesian path is
+        # locally tracked from the previous joint state; two deterministic
+        # random fallbacks protect against a local DLS failure without doing
+        # a full branch search at every 25 mm sample.
+        count = 2 if is_path else (5 if self.quick else (12 if self.branch_audit else 6))
         seeds.extend(rng.uniform(self.robot.joint_limits[:, 0], self.robot.joint_limits[:, 1]) for _ in range(count))
         solutions: list[IKResult] = []
         best_failure: IKResult | None = None
@@ -409,7 +433,7 @@ class StudyRunner:
             # the grasp pose, retain a sparse set of independent core starts
             # so the reported branch count and collision alternatives are not
             # reduced to whichever null-space branch Bullet returns first.
-            if key_hint[-1] != "path":
+            if self.branch_audit and key_hint[-1] != "path":
                 for seed in seeds[::3]:
                     candidate = solve_ik(
                         self.robot,
@@ -693,6 +717,16 @@ def _summary_grid(runner: StudyRunner, records: dict, mass: float) -> np.ndarray
     return matrix
 
 
+def _summary_state_grid(runner: StudyRunner, records: dict) -> np.ndarray:
+    """Aggregate compact per-size state records into one cross-section grid."""
+    sizes = [tuple(size) for size in runner.cfg["cartons"]["sizes_m"]]
+    matrix = np.zeros((len(runner.z_values), len(runner.x_values)), dtype=np.int8)
+    for zi, z in enumerate(runner.z_values):
+        for xi, x in enumerate(runner.x_values):
+            matrix[zi, xi] = aggregate_cell_states(records[(float(x), float(z), size)] for size in sizes)
+    return matrix
+
+
 def _write_csv(path: Path, rows: list[dict]) -> None:
     if not rows:
         raise ValueError(f"no rows for {path}")
@@ -702,22 +736,33 @@ def _write_csv(path: Path, rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
-def _scan_offset_worker(payload: tuple[str, str, bool, float, list[float]]) -> list[dict]:
-    """Process one lateral offset so its seven heights share the IK cache."""
-    config_name, backend, quick, offset, heights = payload
+def _scan_mount_worker(payload: tuple[str, str, bool, float, float]) -> list[dict]:
+    """Process one mount pose and retain its geometry cache across payloads."""
+    config_name, backend, quick, offset, height = payload
     cfg, config_path = load_config(config_name)
     runner = StudyRunner(cfg, config_path, backend, quick)
     metrics: list[dict] = []
     try:
-        for height in heights:
-            mount = (float(offset), float(height))
-            for mass in cfg["cartons"]["masses_kg"]:
-                metric, _records = runner.mount_metrics(mount, float(mass))
-                metrics.append(metric)
-                print(f"scan mount_y={mount[0]:+.2f} m height={mount[1]:.2f} m mass={mass:.0f} kg rate={metric['task_reachability_rate']:.3f}", flush=True)
+        mount = (float(offset), float(height))
+        for mass in cfg["cartons"]["masses_kg"]:
+            metric, _records = runner.mount_metrics(mount, float(mass))
+            metrics.append(metric)
+            print(f"scan mount_y={mount[0]:+.2f} m height={mount[1]:.2f} m mass={mass:.0f} kg rate={metric['task_reachability_rate']:.3f}", flush=True)
     finally:
         runner.close()
     return metrics
+
+
+def _zaxis_state_worker(payload: tuple[str, str, bool, float, float, float]) -> tuple[float, dict]:
+    """Return compact task states for one Z-axis offset."""
+    config_name, backend, quick, lateral, surface_height, delta = payload
+    cfg, config_path = load_config(config_name)
+    runner = StudyRunner(cfg, config_path, backend, quick)
+    try:
+        _metric, records = runner.mount_metrics((float(lateral), float(surface_height + delta)), 25.0)
+        return float(delta), {key: result.state for key, result in records.items()}
+    finally:
+        runner.close()
 
 
 def main(argv: Sequence[str] | None = None) -> None:
@@ -726,12 +771,14 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--backend", choices=("pybullet", "geometric"), default="pybullet")
     parser.add_argument("--quick", action="store_true", help="small deterministic smoke grid")
     parser.add_argument("--probe", action="store_true", help="evaluate one representative centre/large-carton scenario")
-    parser.add_argument("--workers", type=int, default=1, help="parallel lateral-offset workers (recommended: 9)")
+    parser.add_argument("--workers", type=int, default=1, help="parallel mount-pose workers (use the available logical CPU count)")
+    parser.add_argument("--audit-best", action="store_true", help="rerun the selected fixed mount with sparse independent core IK starts")
     args = parser.parse_args(argv)
     cfg, config_path = load_config(args.config)
     output = resolve_project_path(config_path, cfg["output_directory"])
     output.mkdir(parents=True, exist_ok=True)
     runner = StudyRunner(cfg, config_path, args.backend, args.quick)
+    audit_runner = None
     start = time.perf_counter()
     if args.probe:
         try:
@@ -764,9 +811,13 @@ def main(argv: Sequence[str] | None = None) -> None:
         if args.workers > 1:
             from concurrent.futures import ProcessPoolExecutor
 
-            payloads = [(str(config_path), args.backend, args.quick, float(offset), [float(height) for height in heights]) for offset in offsets]
+            payloads = [
+                (str(config_path), args.backend, args.quick, float(offset), float(height))
+                for height in heights
+                for offset in offsets
+            ]
             with ProcessPoolExecutor(max_workers=min(args.workers, len(payloads))) as pool:
-                for group_metrics in pool.map(_scan_offset_worker, payloads):
+                for group_metrics in pool.map(_scan_mount_worker, payloads):
                     metrics.extend(group_metrics)
         else:
             for height in heights:
@@ -782,13 +833,21 @@ def main(argv: Sequence[str] | None = None) -> None:
         best_mount = (float(best["mount_lateral_offset_m"]), float(best["mounting_surface_height_m"]))
 
         best_records: dict[float, dict] = {}
-        for mass in cfg["cartons"]["masses_kg"]:
-            key = (best_mount[0], best_mount[1], float(mass))
-            if key in scan_records:
-                best_records[float(mass)] = scan_records[key]
-            else:
-                metric, records = runner.mount_metrics(best_mount, float(mass))
+        audited_best_metrics: dict[float, dict] = {}
+        if args.audit_best:
+            audit_runner = StudyRunner(cfg, config_path, args.backend, args.quick, branch_audit=True)
+            for mass in cfg["cartons"]["masses_kg"]:
+                audit_metric, records = audit_runner.mount_metrics(best_mount, float(mass))
+                audited_best_metrics[float(mass)] = audit_metric
                 best_records[float(mass)] = records
+        else:
+            for mass in cfg["cartons"]["masses_kg"]:
+                key = (best_mount[0], best_mount[1], float(mass))
+                if key in scan_records:
+                    best_records[float(mass)] = scan_records[key]
+                else:
+                    metric, records = runner.mount_metrics(best_mount, float(mass))
+                    best_records[float(mass)] = records
 
         empty_states = np.zeros((len(runner.z_values), len(runner.x_values)), dtype=np.int8)
         empty_results: dict[tuple[float, float], ScenarioResult] = {}
@@ -813,21 +872,35 @@ def main(argv: Sequence[str] | None = None) -> None:
         # Z axis selects the best task state for each scenario; non-zero is counted only when selected.
         z_offsets = cfg["z_axis"]["offsets_m"]
         fixed_25 = best_records[25.0]
-        zaxis_25: dict = {}
+        zaxis_states: dict = {}
         zaxis_calls = 0
+        zaxis_called_cells: set[tuple[float, float]] = set()
+        nonzero_z_offsets = [float(delta) for delta in z_offsets if abs(float(delta)) >= 1e-12]
+        if args.workers > 1:
+            from concurrent.futures import ProcessPoolExecutor
+
+            payloads = [
+                (str(config_path), args.backend, args.quick, best_mount[0], best_mount[1], delta)
+                for delta in nonzero_z_offsets
+            ]
+            with ProcessPoolExecutor(max_workers=min(args.workers, len(payloads))) as pool:
+                zaxis_options = dict(pool.map(_zaxis_state_worker, payloads))
+        else:
+            zaxis_options = {}
+            for delta in nonzero_z_offsets:
+                mount = (best_mount[0], best_mount[1] + delta)
+                _metric, records = runner.mount_metrics(mount, 25.0)
+                zaxis_options[delta] = {key: result.state for key, result in records.items()}
         for key, fixed_result in fixed_25.items():
             x, z, size = key
-            options = [(0.0, fixed_result)]
-            for delta in z_offsets:
-                if abs(float(delta)) < 1e-12:
-                    continue
-                mount = (best_mount[0], best_mount[1] + float(delta))
-                options.append((float(delta), runner.scenario(mount, x, z, size, "front", 25.0)))
-            selected_delta, selected = max(options, key=lambda item: (item[1].state, -abs(item[0])))
-            zaxis_25[key] = selected
-            zaxis_calls += int(abs(selected_delta) > 1e-12 and selected.state > fixed_result.state)
+            options = [(0.0, fixed_result.state), *((delta, states[key]) for delta, states in zaxis_options.items())]
+            selected_delta, selected_state = max(options, key=lambda item: (item[1], -abs(item[0])))
+            zaxis_states[key] = selected_state
+            if abs(selected_delta) > 1e-12 and selected_state > fixed_result.state:
+                zaxis_calls += 1
+                zaxis_called_cells.add((x, z))
         fixed_matrix = _summary_grid(runner, fixed_25, 25.0)
-        zaxis_matrix = _summary_grid(runner, zaxis_25, 25.0)
+        zaxis_matrix = _summary_state_grid(runner, zaxis_states)
         from matplotlib import pyplot as plt
         from matplotlib.colors import BoundaryNorm, ListedColormap
         cmap = ListedColormap(["#4b5563", "#f59e0b", "#16a34a"])
@@ -875,33 +948,49 @@ def main(argv: Sequence[str] | None = None) -> None:
             selected = [result for (x, z, _size), result in records.items() if predicate(x, z)]
             return 0.0 if not selected else sum(result.state > STATE_A for result in selected) / len(selected)
 
+        def state_rate(records, predicate=lambda _x, _z: True) -> float:
+            selected = [state for (x, z, _size), state in records.items() if predicate(x, z)]
+            return 0.0 if not selected else sum(state > STATE_A for state in selected) / len(selected)
+
         height, width = cfg["trailer"]["inside_height_m"], cfg["trailer"]["inside_width_m"]
+        side_rates = {
+            float(mass): sum(
+                result.state > STATE_A
+                for (_x, _z, _size, record_mass), result in side_records.items()
+                if record_mass == float(mass)
+            ) / (len(runner.x_values) * len(runner.z_values) * len(cfg["cartons"]["sizes_m"]))
+            for mass in cfg["cartons"]["masses_kg"]
+        }
         z_compare = {
             "fixed_25kg_rate": rate(fixed_25),
-            "zaxis_25kg_rate": rate(zaxis_25),
-            "top_200mm_improvement": rate(zaxis_25, lambda _x, z: z >= height - 0.2) - rate(fixed_25, lambda _x, z: z >= height - 0.2),
-            "bottom_200mm_improvement": rate(zaxis_25, lambda _x, z: z <= 0.2) - rate(fixed_25, lambda _x, z: z <= 0.2),
-            "corner_improvement": rate(zaxis_25, lambda x, z: abs(x) >= 0.5 * width - 0.15 and (z <= 0.2 or z >= height - 0.2)) - rate(fixed_25, lambda x, z: abs(x) >= 0.5 * width - 0.15 and (z <= 0.2 or z >= height - 0.2)),
-            "z_axis_called_grid_scenario_ratio": zaxis_calls / len(zaxis_25),
+            "zaxis_25kg_rate": state_rate(zaxis_states),
+            "top_200mm_improvement": state_rate(zaxis_states, lambda _x, z: z >= height - 0.2) - rate(fixed_25, lambda _x, z: z >= height - 0.2),
+            "bottom_200mm_improvement": state_rate(zaxis_states, lambda _x, z: z <= 0.2) - rate(fixed_25, lambda _x, z: z <= 0.2),
+            "corner_improvement": state_rate(zaxis_states, lambda x, z: abs(x) >= 0.5 * width - 0.15 and (z <= 0.2 or z >= height - 0.2)) - rate(fixed_25, lambda x, z: abs(x) >= 0.5 * width - 0.15 and (z <= 0.2 or z >= height - 0.2)),
+            "z_axis_called_grid_scenario_ratio": zaxis_calls / len(zaxis_states),
+            "z_axis_called_cross_section_grid_ratio": len(zaxis_called_cells) / (len(runner.x_values) * len(runner.z_values)),
         }
         recommendation = z_compare["zaxis_25kg_rate"] - z_compare["fixed_25kg_rate"] >= 0.05 or z_compare["corner_improvement"] >= 0.10
         best_payload = {
             "schema_version": cfg["schema_version"],
             "backend": args.backend,
             "quick_mode": args.quick,
+            "best_mount_sparse_core_branch_audit": args.audit_best,
             "best_fixed_mount": best,
+            "best_fixed_mount_audited_metrics_by_mass_kg": audited_best_metrics,
             "best_mount_lateral_offset_m": best_mount[0],
             "best_mounting_surface_height_m": best_mount[1],
             "best_j1_center_height_m": best_mount[1] + cfg["robot"]["mounting_surface_to_j1_center_m"],
+            "side_grasp_reachability_rate_by_mass_kg": side_rates,
             "z_axis_comparison": z_compare,
             "recommend_short_z_axis": recommendation,
             "optimization_objective": "maximize 25 kg front-grasp reachable scenarios over all three required carton sizes; tie-break normal rate, worst corner, centering and lower mount",
         }
         (output / "best_mounting_parameters.json").write_text(json.dumps(_jsonable(best_payload), ensure_ascii=False, indent=2), encoding="utf-8")
-        parameters = {**cfg, "resolved": {"backend": args.backend, "quick_mode": args.quick, "grid_shape_z_x": [len(runner.z_values), len(runner.x_values)], "robot_joint_limits_rad": runner.robot.joint_limits.tolist(), "gripper_rigid_proxy_count": len(runner.tool_boxes), "run_seconds": time.perf_counter() - start}}
+        parameters = {**cfg, "resolved": {"backend": args.backend, "quick_mode": args.quick, "grid_shape_z_x": [len(runner.z_values), len(runner.x_values)], "robot_joint_limits_rad": runner.robot.joint_limits.tolist(), "gripper_rigid_proxy_count": len(runner.tool_boxes), "scan_branch_count_method": "deterministic PyBullet DLS multistart, each solution refined and validated by independent core FK", "best_mount_sparse_core_branch_audit": args.audit_best, "run_seconds": time.perf_counter() - start}}
         (output / "simulation_parameters.json").write_text(json.dumps(_jsonable(parameters), ensure_ascii=False, indent=2), encoding="utf-8")
 
-        best_mass_metrics = {metric["mass_kg"]: metric for metric in metrics if metric["mount_lateral_offset_m"] == best_mount[0] and metric["mounting_surface_height_m"] == best_mount[1]}
+        best_mass_metrics = audited_best_metrics or {metric["mass_kg"]: metric for metric in metrics if metric["mount_lateral_offset_m"] == best_mount[0] and metric["mounting_surface_height_m"] == best_mount[1]}
         if len(best_mass_metrics) < 3:
             best_mass_metrics = {mass: next(metric for metric in metrics if metric["mass_kg"] == mass and metric["mount_lateral_offset_m"] == best_mount[0] and metric["mounting_surface_height_m"] == best_mount[1]) for mass in cfg["cartons"]["masses_kg"]}
         failure_keys = ["failure_joint_limit_ratio", "failure_wrist_load_ratio", "failure_robot_collision_ratio", "failure_loaded_carton_collision_ratio", "failure_other_ratio"]
@@ -917,6 +1006,8 @@ def main(argv: Sequence[str] | None = None) -> None:
         print(f"6. 增加±200 mm Z轴后的25 kg提升: {z_compare['zaxis_25kg_rate'] - z_compare['fixed_25kg_rate']:+.1%}")
         print(f"7. 是否建议首代机器人设置升降轴: {'建议' if recommendation else '不建议'}")
     finally:
+        if audit_runner is not None:
+            audit_runner.close()
         runner.close()
 
 

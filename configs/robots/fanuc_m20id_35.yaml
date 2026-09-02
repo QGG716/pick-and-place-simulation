@@ -1,0 +1,58 @@
+schema_version: robot_load_limits_v1
+model: fanuc_m20id_35
+rated_payload_kg: 35.0
+reach_m: 1.831
+kinematics:
+  # v2 load qualification reads wrist origins and axes from this URDF and
+  # transforms them by FK.  No flange-axis-to-joint-axis mapping is assumed.
+  urdf_path: ../../assets/robots/fanuc_m20id35/m20_35_18d.urdf
+  base_link: base_link
+  flange_link: flange
+  tip_link: tool0
+  active_joint_names: [J1, J2, J3, J4, J5, J6]
+  # Deterministic pose used for the published 450-row v2 engineering screen.
+  # It is a pose-specific load estimate, not a claim that one pose represents
+  # every extraction trajectory.
+  qualification_joint_pose_q: [-0.3766, -0.7955, -0.8172, 0.8419, -1.3000, -0.3599]
+# Official values converted explicitly from deg/s to rad/s.
+joint_speed_rad_s:
+  - 3.141592653589793
+  - 3.141592653589793
+  - 3.490658503988659
+  - 6.1086523819801535
+  - 6.1086523819801535
+  - 6.981317007977318
+wrist_limits:
+  allowable_moment_nm:
+    J4: 110.0
+    J5: 110.0
+    J6: 60.0
+  allowable_inertia_kg_m2:
+    J4: 4.0
+    J5: 4.0
+    J6: 1.5
+payload_com_limits:
+  status: NOT_EVALUATED
+  reason: >-
+    The public FANUC product information gives rated payload and J4/J5/J6
+    moment/inertia limits but does not provide a digitized payload-versus-CoM
+    load diagram or define the exact reference origin, axes, and calculation
+    convention. URDF joint-axis values are therefore engineering reference
+    screens only; vendor moment, inertia, and diagram status remain
+    NOT_EVALUATED until traceable official evidence is imported.
+  curve_points: []
+normal_utilization_limit: 0.80
+source:
+  manufacturer: FANUC
+  title: FANUC M-20iD/35 Product Information
+  url: https://www.fanucamerica.com/docs/default-source/fanuc-robot-datasheets-new/m-20id_35-product-information.pdf
+  product_page: https://www.fanucamerica.com/products/robot/m-20id-35
+  document_version: public_product_information
+  document_date: "NOT_STATED"
+  accessed_date: "2026-09-01"
+  verified_fields:
+    - rated_payload_kg
+    - reach_m
+    - joint_speed_rad_s
+    - wrist_limits.allowable_moment_nm
+    - wrist_limits.allowable_inertia_kg_m2
