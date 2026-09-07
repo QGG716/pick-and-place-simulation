@@ -1,8 +1,8 @@
-# Trailer Unloading Geometric Simulator v0.5
+# Trailer Unloading Geometric Simulator v0.5.1
 
 v0.5 建立了与底层几何规划成功率解耦的在线连续规划控制平面。当前版本不以
 M-710iD/70 原始任务成功率、连续清空率或 900 boxes/h 作为验收指标，详细边界见
-[V0.5 发布说明](docs/releases/V0.5.md)和
+[V0.5.1 发布说明](docs/releases/V0.5.1.md)和
 [在线连续规划设计](docs/online_continuous_planning.md)。
 
 > 当前工作分支增加了 **M-710iD/70 V3 技术验证修复**。V3 使用完整 TCP
@@ -237,10 +237,11 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
+- v0.5.1：不可变 planning world、执行前连续性验证、STOPPING 握手和 generation 隔离。
 - v0.5：与底层成功率解耦的在线连续规划控制平面、scene revision、rolling horizon 与 speculative replan。
 - v0.4：M-710iD/70、动态 L 形传送带、拓扑脱垛与分层任务资格。
 - v0.3.1：机器人/工具身份与缓存基线清理。
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.0`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.1`。

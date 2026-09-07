@@ -15,8 +15,8 @@ waiting for a planner. `production_throughput` is deliberately `null`.
 
 `unloading_sim.online_planning` owns:
 
-- immutable `SceneRevision`, `PlanningRequest`, `PlanningResult`, and
-  `PlanEnvelope` contracts;
+- immutable `SceneRevision`, `RobotStateRevision`, `PlanningWorldSnapshot`,
+  `PlanningRequest`, `PlanningResult`, and `PlanEnvelope` contracts;
 - replaceable and deterministically seeded `PlannerBackend` instances;
 - FAST, WARM, and COLD escalation;
 - rolling-horizon and speculative-plan bookkeeping;
@@ -30,11 +30,20 @@ A stronger planner can replace `PlannerBackend` without changing the session.
 
 ## Fail-closed behavior
 
-Every executable envelope is bound to the scene fingerprint against which it
-was planned. Before execution, and whenever an executing scene changes, the
-backend validates the envelope. A changed scene pauses execution unless the
-backend explicitly revalidates it. The paused plan cannot be replaced or
-continued until the stop is acknowledged.
+Every request is bound to an immutable planning-world snapshot containing the
+actual scene, current joints, robot/tool/payload identity, base and conveyor
+state, and configuration identity. Every executable envelope also records its
+expected start/end state, predecessor, and planning generation.
+
+Before execution the control plane checks trajectory DOF and finite values,
+continuity from actual `current_q`, and scene/config/tool/payload/base/conveyor
+identity. Backend result and validation contract violations enter `RECOVERY`.
+
+If the scene changes during execution, the session enters `STOPPING`. It cannot
+start a replan until it receives both a stop acknowledgement with the real
+`stopped_q` and the latest scene snapshot. A scene change advances the planning
+generation; pending or late results from older generations cannot enter
+`READY`.
 
 For each target/candidate the control plane tries FAST, then WARM, then COLD.
 After the last path, it advances to the next candidate and then the next
@@ -46,6 +55,8 @@ Backend exceptions enter `RECOVERY`. No branch manufactures a trajectory.
 While plan k is in `EXECUTING`, a speculative request for k+1 may be advanced.
 On completion of k, an exact scene match (or explicit backend revalidation)
 promotes k+1 to `READY`; a mismatch invalidates it and queues a fresh request.
+The speculative start must equal plan k's predicted end. If execution completes
+without a new scene revision, the session remains `WAITING_FOR_SCENE`.
 
 ## Test fixtures
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import json
 import hashlib
 from pathlib import Path
@@ -16,8 +17,10 @@ from unloading_sim.online_planning import (
     PlanningPath,
     PlanningRequest,
     PlanningResult,
+    PlanningWorldSnapshot,
     PlannerBackend,
     ReplanReason,
+    RobotStateRevision,
     SceneRevision,
     SessionState,
     SynchronousPlanningExecutor,
@@ -50,14 +53,33 @@ class ScriptedBackend(PlannerBackend):
 
 
 def revision(sequence, *cartons):
-    return SceneRevision.from_scene({"cartons": list(cartons)}, sequence)
+    scene = {"cartons": list(cartons)}
+    scene_revision = SceneRevision.from_scene(scene, sequence)
+    return PlanningWorldSnapshot(
+        scene_revision,
+        scene,
+        RobotStateRevision(sequence, (0.0, 0.0), {"mode": "test"}),
+        tool_attachment={"id": "test_tool"},
+        payload_attachment=None,
+        base_state={"x": 0.0},
+        conveyor_state={"extension": 0.0},
+        config_identity={"id": "unit"},
+    )
 
 
-def request(request_id, scene_revision, candidates, *, speculative=False, start=(0.0, 0.0)):
+def request(request_id, world_snapshot, candidates, *, speculative=False, start=(0.0, 0.0)):
+    if tuple(start) != world_snapshot.current_q:
+        world_snapshot = replace(
+            world_snapshot,
+            robot_state_revision=RobotStateRevision(
+                world_snapshot.robot_state_revision.sequence,
+                start,
+                world_snapshot.robot_state_revision.robot_state,
+            ),
+        )
     return PlanningRequest(
         request_id,
-        scene_revision,
-        start,
+        world_snapshot,
         tuple(PlanningCandidate(target, candidate) for target, candidate in candidates),
         seed=17,
         horizon_index=1 if speculative else 0,
@@ -86,7 +108,8 @@ def test_synthetic_feasible_scene_preplans_k_plus_one_and_reuses_matching_revisi
     assert session.execution.state is ExecutionState.RUNNING
     assert len(session.speculative_plans) == 1
 
-    session.complete_execution(success=True, end_state=(0.01, 0.01), scene_revision=predicted_k1)
+    observed_k1 = session.speculative_plans[0].planned_snapshot
+    session.complete_execution(success=True, stopped_q=(0.01, 0.01), world_snapshot=observed_k1)
     assert session.state is SessionState.READY
     assert not session.speculative_plans
     assert session.ready_plans[0].request.request_id == "k+1"
@@ -105,7 +128,7 @@ def test_synthetic_scene_change_invalidates_ready_plan_and_replans():
     assert len(session.invalidated_plans) == 1
     assert session.invalidated_plans[0].invalidated_by is ReplanReason.SCENE_REVISION_CHANGED
     session.run_until_stable()
-    assert session.ready_plans[0].planned_revision == changed
+    assert session.ready_plans[0].planned_revision == changed.scene_revision
     assert session.ready_plans[0].request.replan_reason is ReplanReason.SCENE_REVISION_CHANGED
 
 
@@ -120,11 +143,15 @@ def test_scene_change_pauses_executing_plan_until_stop_and_validation():
 
     session.update_scene(changed)
 
-    assert session.execution.state is ExecutionState.PAUSED
+    assert session.execution.state is ExecutionState.STOPPING
     assert session.execution.active_plan.invalidated_by is ReplanReason.SCENE_REVISION_CHANGED
     with pytest.raises(RuntimeError, match="already active"):
         session.start_execution()
-    session.stop_invalidated_execution()
+    stopped = replace(
+        changed,
+        robot_state_revision=RobotStateRevision(2, (0.0, 0.0), changed.robot_state_revision.robot_state),
+    )
+    session.stop_invalidated_execution(stopped)
     session.run_until_stable()
     assert session.state is SessionState.READY
 
@@ -137,15 +164,21 @@ def test_speculative_plan_is_invalidated_when_observed_scene_differs():
     observed = revision(1, "b", "debris")
     session.submit(request("k", scene_k, [("a", "top")]))
     session.run_until_stable()
-    session.start_execution()
-    session.submit_speculative(request("k+1", predicted, [("b", "top")], speculative=True))
+    plan_k = session.start_execution()
+    session.submit_speculative(
+        request("k+1", predicted, [("b", "top")], speculative=True, start=plan_k.expected_end_state)
+    )
     session.run_until_stable()
 
-    session.complete_execution(success=True, scene_revision=observed)
+    observed = replace(
+        observed,
+        robot_state_revision=RobotStateRevision(2, plan_k.expected_end_state, observed.robot_state_revision.robot_state),
+    )
+    session.complete_execution(success=True, stopped_q=plan_k.expected_end_state, world_snapshot=observed)
 
     assert any(plan.invalidated_by is ReplanReason.SPECULATIVE_MISMATCH for plan in session.invalidated_plans)
     session.run_until_stable()
-    assert session.ready_plans[0].planned_revision == observed
+    assert session.ready_plans[0].planned_revision == observed.scene_revision
 
 
 def test_deterministic_unit_scene_uses_fast_warm_cold_and_records_latency():
@@ -303,10 +336,19 @@ def test_v3_bottom_alternative_is_real_m710_integration_fixture_not_acceptance_r
 
     revision0 = SceneRevision.from_scene(fixture["scene"], 0, source="v3_recorded_evidence")
     data = fixture["request"]
+    integration_world = PlanningWorldSnapshot(
+        revision0,
+        fixture["scene"],
+        RobotStateRevision(0, tuple(data["start_state_rad"]), {"mode": "recorded_v3"}),
+        tool_attachment={"id": "shanghai_wantai_three_zone"},
+        payload_attachment=None,
+        base_state={"source": "m710id70_v3"},
+        conveyor_state={"source": "m710id70_v3"},
+        config_identity={"evidence_archive_sha256": fixture["evidence"]["archive_sha256"]},
+    )
     planning_request = PlanningRequest(
         "v3-bottom-alternative",
-        revision0,
-        tuple(data["start_state_rad"]),
+        integration_world,
         (PlanningCandidate(data["target_id"], data["candidate_id"]),),
         seed=data["seed"],
         metadata={"evidence_archive_sha256": fixture["evidence"]["archive_sha256"]},
