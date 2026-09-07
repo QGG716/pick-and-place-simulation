@@ -40,9 +40,15 @@ def main():
     counts=Counter((row['failure_stage'],row['failure_reason']) for row in valid)
     failure_rows=[{'stage':stage,'reason':reason,'count':count} for (stage,reason),count in counts.most_common()]
     write_csv(out/'failure_stage_summary.csv',failure_rows)
-    attempts=[];distances=[];sides=[];candidate_reasons=Counter()
+    attempts=[];distances=[];sides=[];candidate_reasons=Counter();stage_rows=[]
     for path in sorted((out/'tasks').glob('grid_*_dynamic.json')):
         record=read_json(path)['result']
+        options=[option for attempt in record['attempts'] for option in attempt['conveyor_attempts']]
+        stage_rows.append({'task_id':path.stem,
+            'grasp_status':'PASS' if record['grasp_reachable'] else 'FAIL_WITHIN_RECORDED_CANDIDATES',
+            'extraction_status':'PASS' if record['extraction_feasible'] else ('FAIL_INITIAL_ATTACHED_STATE' if any(a['stage']=='attachment_clearance' for a in record['attempts']) else ('FAIL' if any('extraction' in option['paths'] for option in options) else 'NOT_EVALUATED_UPSTREAM_STAGE')),
+            'handoff_status':'PASS' if record['geometric_feasible'] else ('FAIL' if any(option['stage'] in ['handoff','carry','place','withdrawal'] for option in options) else 'NOT_EVALUATED_UPSTREAM_STAGE'),
+            'payload_status':record['load_status'],'full_robot_dynamics_status':'NOT_EVALUATED'})
         for a in record['attempts']:
             item={'task':path.stem,'face':a['face'],'roll_deg':a['roll_deg'],'stage':a['stage'],'reason':a['reason'],
                   'sealed_cups':a['coverage']['sealed_cups'],'actual_sealed_cups':a.get('actual_coverage',{}).get('sealed_cups'),
@@ -53,6 +59,8 @@ def main():
                                   'constraint_geometry':a['extraction']['constraint_boxes'],'box_size_m':a['extraction']['box_size_xyz_m']})
             if a['face'] in ('left','right'):sides.append(item)
     write_csv(out/'candidate_attempt_summary.csv',attempts);write_csv(out/'extraction_constraint_audit.csv',distances)
+    write_csv(out/'validation_stage_status.csv',stage_rows)
+    extraction_statuses=dict(Counter(row['extraction_status'] for row in stage_rows))
     bilateral=[row['distance_m'] for row in distances if row['both_sides_constrained'] and row['distance_m'] is not None]
     histogram=dict(sorted(Counter(round(float(d),6) for d in bilateral).items()))
     quantiles=None if not bilateral else np.percentile(bilateral,[50,95]).tolist()
@@ -70,6 +78,7 @@ def main():
              'implementation_commit':manifest['commit'],'grid_denominator':n,'v3_grid':v3_counts,'v2_coverage':v2['coverage'],
              'continuous':continuous,'ab':{'new_feasible':new,'lost_feasible':lost,'common_feasible':len(common),'mean_cycle_delta_s':action_mean},
              'lift':lift,'bilateral_extraction_histogram_m':histogram,'bilateral_p50_p95_m':quantiles,
+             'extraction_stage_status_counts':extraction_statuses,
              'independent_fk_jacobian_pass':jac['pass'],'tests_passed':tests,
              'bottom_support_release_alternative':{'geometric_feasible':bottom['result']['geometric_feasible'],'load_status':bottom['result']['load_status']},
              'full_robot_dynamics_status':'NOT_EVALUATED','task_success_does_not_equal_hardware_qualification':True}
@@ -114,13 +123,19 @@ def main():
 - V2 冻结源码由 `git archive` 导出并逐文件校验；包装器记录实际调用参数，
   不改变算法。`v2_instrumented/effective_calls_and_task_results.jsonl` 包含
   工具/机器人构造、候选和交接调用，补齐 V2 原日志缺少失败候选的问题。
-- V3 原网格与连续任务以 4 个独立进程运行，升降复跑使用 12 个进程及内容指纹缓存。
+- 最终 V3 全量复跑使用 12 个独立 CPU 进程，内容指纹缓存仅复用一致输入。
   `determinism_audit.json` 中 3 个代表任务单进程重算与原结果逐字段相同。
 
 | 指标 | 冻结 V2 | V3 |
 | --- | ---: | ---: |
 {compare}
 | 完整机器人动力学已验证 | NOT_EVALUATED | NOT_EVALUATED |
+
+V3 的脱垛计数表示完整有序管线中已验证通过的任务数。逐阶段状态为
+`{extraction_statuses}`；被上游覆盖/IK/传送带阶段阻止而未执行脱垛的
+任务标为 NOT_EVALUATED_UPSTREAM_STAGE，不当作已证明脱垛碰撞失败。
+完整分母仍为原始 {n}，没有通过缩小场景或重定义分母提高成功率。
+见 `validation_stage_status.csv`。
 
 | 连续场景 | 原箱数 | V2 几何卸出 | V3 几何卸出 | V3 保留箱数 |
 | --- | ---: | ---: | ---: | ---: |
@@ -262,8 +277,9 @@ NOT_EVALUATED，合并时 FAIL 优先。连杆惯量、驱动转矩/功率/热�
 
 原规则的动态传送带上限是当前最高箱底减 15 mm，最低接料面是 200 mm；
 对唯一底层箱，上限低于下限，明确记录机械/布局约束。
-固定带替代尝试首先暴露“脱垛最小距离为零，但带载搬运从地板接触出发”
-的问题。附加实现 `tools/validate_m710_bottom_alternative.py` 根据实际箱底
+固定带替代尝试暴露“脱垛最小距离为零，但带载搬运从地板接触出发”
+的问题。主规划器 `Cell.transit` 已集成支撑释放动作，独立复现入口
+`tools/validate_m710_bottom_alternative.py` 使用同一实现，根据实际箱底
 推导一个抬升动作：达到地板顶面 + 两倍 OBB margin + 两倍支撑容差，
 随后执行原检查和原规划器。没有降低余量或删除地板。
 
@@ -271,7 +287,7 @@ NOT_EVALUATED，合并时 FAIL 优先。连杆惯量、驱动转矩/功率/热�
 
 该结果只证明此独立底层动作的几何可行，完整资格仍为
 {bottom['result']['load_status']}，未改写原始连续场景统计，也没有宣称已连续
-清空 40 箱。固定带与该抬升动作值得进入下一轮完整策略集成与场景复跑。
+清空 40 箱。原动态带高度冲突和上层任务干涉仍阻止原场景连续完成。
 
 ## 7. 分机构结论与数据缺口
 

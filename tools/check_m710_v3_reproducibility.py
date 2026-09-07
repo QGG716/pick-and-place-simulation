@@ -1,6 +1,7 @@
 """Recompute representative tasks serially and compare with four-worker run."""
 from pathlib import Path
 import json
+import re
 import sys
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'src'));sys.path.insert(0,str(ROOT))
@@ -21,7 +22,9 @@ def main():
         sample_loads(cell,result)
         original=json.loads((out/f'tasks/grid_{index:03}_{mode}.json').read_text(encoding='utf-8'))['result']
         rows.append({'task':f'grid_{index:03}_{mode}','exact_result_equality':result==original})
-    write_json(out/'determinism_audit.json',{'parallel_workers':4,'replay_workers':1,'tasks':rows,'pass':all(row['exact_result_equality'] for row in rows)})
+    command=json.loads((out/'source_manifest.json').read_text(encoding='utf-8'))['command']
+    match=re.search(r'--workers\s+(\d+)',command)
+    write_json(out/'determinism_audit.json',{'parallel_workers':int(match.group(1)) if match else None,'replay_workers':1,'tasks':rows,'pass':all(row['exact_result_equality'] for row in rows)})
     if not all(row['exact_result_equality'] for row in rows):raise RuntimeError('serial/parallel task mismatch')
     print(rows)
 

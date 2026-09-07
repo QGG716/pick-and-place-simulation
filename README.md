@@ -126,11 +126,10 @@ python -m unloading_sim.demo --config config/demo.yaml
 
 默认演示保持在普通笔记本 CPU 五秒级，结果写入被 Git 忽略的 `outputs/demo/`。
 
-### M-710iD/70 v0.4 验收
+### 冻结的 M-710iD/70 v0.4 / V2 验收复现
 
 ```bash
-python tools/run_m710id70_acceptance.py \
-  --grid-step 0.30 \
+python tools/reproduce_m710_v2.py \
   --output-dir outputs/m710id70_v2
 ```
 
@@ -147,7 +146,9 @@ python tools/run_m710id70_acceptance.py \
 - `grasp_strategy_statistics.csv`；
 - grasp、extraction、conveyor handoff、full task 四层热力图。
 
-仅调试覆盖管线、不运行连续场景时可增加 `--skip-continuous`。该选项产生的结果不能替代完整验收。
+当前 `tools/run_m710id70_acceptance.py` 已转发到严格 V3 验收入口；
+V2 历史算法须通过上面的冻结提交复现命令执行，避免导入新数学实现后
+把不同版本的结果混在一起。V3 分阶段运行选项为 `--phase`，完整验收用 `all`。
 
 ### 历史 M-20iD/35 工具链
 

@@ -295,6 +295,23 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
             if failure:
                 attempt.update(stage="grasp_collision",reason=failure["reason"],failure=failure);continue
             record["grasp_reachable"]=True
+            # A robot path cannot fix a clearance violation that already
+            # exists between the attached carton and stationary geometry at
+            # t=0. Validate this invariant before spending RRT iterations on
+            # an approach that would necessarily fail at attachment. The
+            # same margin/support predicate is used later along extraction.
+            initial_supports={"floor",topology.bottom_support}
+            attachment_failure=None
+            for obstacle in [*cell.fixtures(),*others]:
+                if obstacle.name in initial_supports and contact_separated(target,obstacle,p["support_tolerance_m"]):
+                    continue
+                if target.intersects_obb(obstacle,margin=p["collision_margin_m"]):
+                    attachment_failure={"reason":"PAYLOAD_INITIAL_CLEARANCE_FAILED","pair":[target.name,obstacle.name],
+                                        "obb_margin_per_body_m":p["collision_margin_m"],"box_pose_world":target.world_from_local.tolist()}
+                    break
+            if attachment_failure:
+                attempt.update(stage="attachment_clearance",reason=attachment_failure["reason"],failure=attachment_failure)
+                continue
             if distance is None:
                 attempt.update(stage="extraction",reason="EXTRACTION_DISTANCE_EXCEEDED");continue
             if not options:
@@ -390,7 +407,7 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
     elif record["attempts"]:
         first=record["attempts"][0]
         record["first_failure"]={"stage":first["stage"],"reason":first["reason"]}
-        stages=["coverage","grasp_ik","grasp_collision","conveyor","conveyor_preposition","approach","contact","extraction","handoff","carry","place","withdrawal","complete"]
+        stages=["coverage","grasp_ik","grasp_collision","attachment_clearance","conveyor","conveyor_preposition","approach","contact","extraction","handoff","carry","place","withdrawal","complete"]
         furthest=max(record["attempts"],key=lambda a:stages.index(a["stage"]))
         record.update(failure_stage=furthest["stage"],failure_reason=furthest["reason"])
     return record

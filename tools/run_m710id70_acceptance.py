@@ -1,4 +1,8 @@
-"""Run deterministic FANUC M-710iD/70 unloading acceptance revision 2."""
+"""Canonical M-710iD/70 acceptance entry; delegates execution to revision 3.
+
+Historical V2 helpers remain available for frozen-scene regression fixtures.
+Use tools/reproduce_m710_v2.py for an immutable V2 algorithm replay.
+"""
 from __future__ import annotations
 
 import argparse
@@ -574,7 +578,7 @@ def _fmt_optional(value: float | None) -> str:
     return "NOT_EVALUATED" if value is None else f"{value:.3f}"
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def main_v2_legacy(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", default=".tmp/accept_m710id70_v2")
     parser.add_argument("--grid-step", type=float, default=0.30)
@@ -670,6 +674,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         "continuous": summaries, "payload_envelope_rows": len(payload_rows)})
     print(json.dumps({"output": str(output), "coverage": coverage,
                       "base_recommendation": recommendation, "continuous": summaries}, ensure_ascii=False))
+    return 0
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """Forward the public CLI to the strict V3 configuration/planning path."""
+    import runpy
+    entry = ROOT / "tools/run_m710id70_v3.py"
+    previous = sys.argv
+    sys.argv = [str(entry), *(previous[1:] if argv is None else argv)]
+    try:
+        runpy.run_path(str(entry), run_name="__main__")
+    except SystemExit as error:
+        return int(error.code or 0)
+    finally:
+        sys.argv = previous
     return 0
 
 
