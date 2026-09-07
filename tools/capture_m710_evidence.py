@@ -18,7 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 def capture(output: Path, command: str) -> dict:
     output.mkdir(parents=True, exist_ok=True)
     tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
-    paths = [ROOT / p for p in tracked if p and p.startswith(("src/", "tools/", "config/", "configs/", "assets/robots/fanuc_m710"))]
+    paths = [ROOT / p for p in tracked if p and (p.startswith(("src/", "tools/", "tests/", "config/", "configs/", "assets/robots/fanuc_m710"))
+              or p in {"AGENTS.md", "README.md", "pyproject.toml", "uv.lock"})]
     manifest = {
         "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT).decode().strip(),
         "branch": subprocess.check_output(["git", "branch", "--show-current"], cwd=ROOT).decode().strip(),

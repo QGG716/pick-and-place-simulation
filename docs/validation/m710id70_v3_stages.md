@@ -151,3 +151,26 @@ OBB inflations. This unchanged predicate is now checked immediately after
 the independently evaluated grasp pose, before RRT. Initial support-plane
 rules are identical to extraction. Failures retain the exact carton/obstacle
 pair and per-body margin; no candidate population or search budget is reduced.
+
+## Final verification and delivery
+
+The complete 12-worker rerun finished on implementation commit `d053452`.
+All 104 grid tasks have paired fixed/dynamic results; all 520 task/height
+entries and the original 40/27/32/30-box continuous populations are retained.
+V3 found 24/104 independent grasps, 0/104 complete geometric tasks and 0/129
+continuous removals. No load-qualified or full-robot-dynamics-qualified
+production task is claimed. Zero common feasible A/B tasks means performance
+deltas are NOT_EVALUATED, not zero benefit. Lift coverage union is 0/104,
+which cannot establish that an axis is unnecessary.
+
+The additional fixed-belt bottom-box support-release action succeeds
+geometrically; it does not change the original denominators. Side-grasp
+roll trials retain coverage and tool/arm interference failures. Known front
+payload CoM FAIL and missing manufacturer/suction evidence remain explicit.
+
+Final default regression: 243 passed, 1 deselected, 21.16 seconds. The
+excluded default CPU-demo test was explicitly run separately: 1 passed,
+2.08 seconds. Three representative task results reproduce exactly between
+12-worker evaluation and serial replay. Frozen V2 replay summaries are
+exactly equal. Machine-readable evidence and checksums accompany the V3
+technical report; no merge into the release branch is performed.

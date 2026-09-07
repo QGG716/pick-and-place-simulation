@@ -2,6 +2,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+import yaml
 
 from unloading_sim.geometry import OBB, make_transform, rotation_matrix_from_rpy, rotation_vector_from_matrix
 from unloading_sim.ik import solve_ik
@@ -108,6 +109,23 @@ def test_config_rejects_silent_unknown_override_and_preserves_source(tmp_path):
     cfg=load_validation_config(good)
     assert cfg.data['planning']['collision_margin_m']==.023
     assert Path(cfg.sources['planning.collision_margin_m'])==good
+
+
+def test_tcp_xyz_and_rotation_propagate_from_tool_yaml_through_fk_and_collision(tmp_path):
+    source=load_validation_config()
+    tool=yaml.safe_load(source.tool.config_path.read_text(encoding='utf-8'))
+    rotation=rotation_matrix_from_rpy(.25,-.15,.35)
+    tool['tcp_transform']={'translation_xyz_m':[.25,.06,-.04],'rotation_matrix':rotation.tolist()}
+    tool_path=tmp_path/'six_dof_tool.yaml';tool_path.write_text(yaml.safe_dump(tool),encoding='utf-8')
+    scene_path=tmp_path/'scene.yaml'
+    scene_path.write_text(yaml.safe_dump({'extends':DEFAULT.as_posix(),'tool':{'config':tool_path.as_posix()}}),encoding='utf-8')
+    cfg=load_validation_config(scene_path);robot=cfg.robot();q=np.asarray(cfg.data['robot']['home_joints'])
+    expected=robot.named_link_frames(q)['flange']@make_transform(rotation,[.25,.06,-.04])@make_transform(rotation_matrix_from_rpy(0,np.pi/2,0))
+    assert np.allclose(robot.fk(q),expected)
+    envelope=robot.tool_collision_obb(q)
+    assert np.allclose(envelope.rotation,expected[:3,:3])
+    assert np.allclose(envelope.center,expected[:3,3]-expected[:3,2]*.125)
+    assert np.allclose(envelope.half_extents,[.144,.288,.125])
 
 
 def test_rigid_load_com_preserves_original_front_fail_and_collision_pose():

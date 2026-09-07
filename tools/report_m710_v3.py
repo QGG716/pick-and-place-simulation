@@ -70,6 +70,11 @@ def main():
     testroot=ET.parse(out/'pytest.xml').getroot();suites=list(testroot.iter('testsuite'))
     tests=sum(int(s.get('tests',0)) for s in suites);failures=sum(int(s.get('failures',0))+int(s.get('errors',0)) for s in suites)
     if failures:raise RuntimeError('Cannot report completed regression verification with failing tests')
+    demo=ET.parse(out/'demo_pytest.xml').getroot()
+    demo_suites=list(demo.iter('testsuite'))
+    demo_tests=sum(int(s.get('tests',0)) for s in demo_suites)
+    demo_errors=sum(int(s.get('failures',0))+int(s.get('errors',0)) for s in demo_suites)
+    if demo_errors:raise RuntimeError('Default CPU demo regression failed')
     new=sum(truth(r['new_feasible']) for r in ab);lost=sum(truth(r['lost_feasible']) for r in ab);common=[r for r in ab if truth(r['common_feasible'])]
     action_mean=None if not common else float(np.mean([float(r['cycle_delta_s']) for r in common]))
     load_faces=read_json(out/'load_face_roll_audit.json')
@@ -258,7 +263,8 @@ NOT_EVALUATED，合并时 FAIL 优先。连杆惯量、驱动转矩/功率/热�
 规划器预算及检查精度。动态新增可行 {new}，失去可行 {lost}，共同可行
 {len(common)}。共同集合为空时，带载路径/周期差值为 NOT_EVALUATED，
 不填 0 或使用直线下界冒充真实规划路径。`conveyor_ab.csv` 分开记录
-伸缩和升降动作时间成本。当前证据尚不能证明动态带缩短周期。
+伸缩和升降动作时间成本。这些外部轴成本按配置匀速估算，缺少加减速、
+驱动和同步证据，不属于已验证动态周期。当前证据尚不能证明动态带缩短周期。
 
 **升降轴。** 相对固定安装位的高度分别为 0/0.15/0.30/0.45/0.60 m。
 每个高度都保留相同 {n} 个任务；沿整个升降过程检查机构和障碍，
@@ -306,6 +312,8 @@ NOT_EVALUATED，合并时 FAIL 优先。连杆惯量、驱动转矩/功率/热�
 
 默认完整回归：{tests} 项通过，0 失败（仓库默认排除的 simulation 标记测试
 仍按 AGENTS.md 的 `pytest -q` 配置处理）。测试结果见 `pytest.xml`。
+另显式运行默认 CPU demo 的 simulation 回归：{demo_tests} 项通过，
+见 `demo_pytest.xml`；该次 pytest 执行约 2.08 s，满足五秒级默认演示目标。
 
 ```powershell
 .venv\\Scripts\\python.exe tools/reproduce_m710_v2.py
@@ -316,6 +324,7 @@ NOT_EVALUATED，合并时 FAIL 优先。连杆惯量、驱动转矩/功率/热�
 .venv\\Scripts\\python.exe tools/validate_m710_bottom_alternative.py
 .venv\\Scripts\\python.exe tools/check_m710_v3_reproducibility.py
 .venv\\Scripts\\python.exe -m pytest -q --junitxml outputs/m710id70_v3/v3/pytest.xml
+.venv\\Scripts\\python.exe -m pytest -q -o addopts= tests/test_demo.py::test_default_demo_succeeds --junitxml outputs/m710id70_v3/v3/demo_pytest.xml
 .venv\\Scripts\\python.exe tools/report_m710_v3.py
 ```
 

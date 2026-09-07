@@ -3,7 +3,7 @@ import pytest
 
 from unloading_sim.geometry import OBB
 from unloading_sim.validation_config import load_validation_config
-from unloading_sim.validation_motion import Cell
+from unloading_sim.validation_motion import Cell, evaluate_task
 from unloading_sim.validation_physics import world_link_boxes, contact_separated
 from unloading_sim.validation_scenes import grid_tasks, regular_scene, random_scene
 from tools.run_m710id70_acceptance import _scene_regular, _scene_random
@@ -67,3 +67,18 @@ def test_support_contact_exception_does_not_allow_penetration():
     deck=OBB([0,0,.1],[.5,.4,.1],np.eye(3))
     assert contact_separated(OBB([0,0,.35],[.3,.2,.15],np.eye(3)),deck,.0002)
     assert not contact_separated(OBB([0,0,.349],[.3,.2,.15],np.eye(3)),deck,.0002)
+
+
+def test_invariant_attached_neighbor_clearance_fails_before_path_search(monkeypatch):
+    cfg=load_validation_config();cell=Cell(cfg)
+    _,target,neighbors,valid=list(grid_tasks(cfg.data['scene']))[20]
+    assert valid
+    def unexpected_search(*args,**kwargs):
+        raise AssertionError('A path cannot repair this invalid attached initial state')
+    monkeypatch.setattr(cell,'transit',unexpected_search)
+    result=evaluate_task(cell,target,[target,*neighbors],np.asarray(cfg.data['robot']['home_joints']),
+        (0,.2),seed=cfg.data['planning']['seed']+20,only_face='top')
+    assert result['grasp_reachable']
+    assert not result['geometric_feasible']
+    assert result['failure_reason']=='PAYLOAD_INITIAL_CLEARANCE_FAILED'
+    assert any(a.get('failure',{}).get('pair')==[target.name,'left_neighbor'] for a in result['attempts'])
