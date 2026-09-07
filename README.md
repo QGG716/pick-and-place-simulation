@@ -1,50 +1,63 @@
-# Trailer Unloading Geometric Simulator v0.3
+# Trailer Unloading Geometric Simulator v0.4
 
-面向厢式货车卸垛的六轴工业机器人第一层几何仿真与工程评估工具。工程以 FANUC M-20iD/35 为主要验证机型，同时保留 KUKA KR 50 R2500 适配；核心算法只依赖 CPU，不要求 ROS 2、Isaac Sim 或 GPU。
+面向厢式货车自动卸货的六轴工业机器人第一层几何仿真与工程资格评估工具。项目重点是确定性、可测试、可审计的 CPU 几何/运动学主链路，不依赖 ROS 2、Isaac Sim 或 GPU；PyBullet、Pinocchio 和 Isaac Sim 均位于可选适配层。
 
-v0.3 的定位是“确定、可测试、可审计的数字样机”，用于方案筛选、算法回归和风险暴露，不代表真机安全认证或厂商负载认证已经通过。
+v0.4 的主评估对象是 **FANUC M-710iD/70 + 20 kg 三分区吸具 + 42.5 kg 箱体**。历史 FANUC M-20iD/35 与 KUKA KR 50 R2500 配置继续保留，但不能混用不同机器人的报告结论。
 
-![FANUC 最上层卸垛演示](docs/images/fanuc_m20id35_top_layer.gif)
+世界坐标固定为：`+X` 指向车厢内部、`+Y` 向左、`+Z` 向上。全部配置与计算使用 SI 单位：米、弧度、秒、千克。
 
-## 这个工程解决什么问题
+## v0.4 重点
 
-工程把一次机器人卸箱任务拆成可独立验证的几层：
+- 新增可追溯的 FANUC M-710iD/70 URDF/SRDF、关节限制、厂商负载证据和独立工具配置。
+- 建立 `BoxNeighborhoodState`：使用箱体 OBB 投影重叠和表面间隙识别左、右、上方邻箱、底部支撑与暴露抓取面。
+- 删除固定 250 mm 直退判据；按箱体尺寸、抓取面和当前邻接状态实时求解 `minimum_clearance_extraction_distance`。
+- 同时生成 front、left、right、top 抓取/脱垛候选，并按带载路径、脱垛距离、关节运动、碰撞风险、奇异性和关节裕量综合评分。
+- 将 L 形传送带建模为独立外部机构，而不是底盘刚性 link 或机器人负载；支持 `conveyor_extension` 和 `conveyor_z` 联合预定位及碰撞拒绝。
+- 将几何运动能力与 FANUC 负载—质心资格分开输出：`GEOMETRICALLY_REACHABLE`、`PAYLOAD_QUALIFIED`、`QUALIFIED_TASK`。
+- 新增动态连续卸货选箱、四层任务热力图、失败原因空间统计、负载包络和 `base_x × base_z` 安装位扫描。
+
+完整变更与已知边界见 [`docs/releases/V0.4.md`](docs/releases/V0.4.md)。
+
+## 当前工程结论
+
+以下数字来自 v0.4 验收脚本的 0.30 m 离散横截面扫描，不是连续空间证明，也不替代 FANUC 官方负载软件或真机安全认证：
+
+| 指标 | v0.4 结果 |
+| --- | ---: |
+| 抓取覆盖率 | 78.846% |
+| 几何脱垛覆盖率 | 63.462% |
+| 传送带交接覆盖率 | 50.000% |
+| 完整几何任务覆盖率 | 50.000% |
+| 负载资格覆盖率 | 0.000% |
+| 双侧受限箱正面脱垛距离 P50 / P95 | 0.620 / 0.620 m |
+
+旧版固定直退下的完整任务覆盖率为 25.609%；v0.4 新定义下为 50.000%，增加 24.391 个百分点。两版任务模型不同，旧的不可达面积和连续场景结论不再作为 v0.4 结论。
+
+四组动态连续场景的几何卸出箱数为：
+
+- `regular`: 0 / 40；
+- `random_seed_71071`: 2 / 27；
+- `random_seed_71072`: 0 / 32；
+- `random_seed_71073`: 0 / 30。
+
+当前第一项独立硬失败是 `PAYLOAD_CG_FAILED`。20 kg 工具与 42.5 kg 箱体总质量为 62.5 kg，但组合质心约 0.422 m，超出当前保守 FANUC 70 kg 曲线。即使 TCP 缩短到 0.10 m，当前 600 mm 深箱仍未通过；按现有假设反算 TCP 上限约 0.037 m。因此应优先调整整体有效负载中心或机器人负载包络，而不是只减轻吸具。
+
+运动规划中的主要失败为 `NO_IK`。完整腕部动力学因缺少连杆质量、质心、惯量和驱动允许转矩继续标记 `NOT_EVALUATED`，项目没有填入虚构数据。
+
+## 任务管线
 
 ```text
-车厢、纸箱、机器人、吸具配置
-  -> 抓取面与吸盘覆盖候选
-  -> 多起点 IK 与碰撞检查
-  -> 脱垛、搬运、放置路径规划
-  -> 轨迹复核、时间参数化与缓存
-  -> 负载 / 可达性 / 周期评估
-  -> PyBullet 或 Isaac Sim 可选回放与审计证据
+车厢、箱堆、机器人、吸具和独立传送带配置
+  -> OBB 邻接图与当前可移除箱识别
+  -> 多抓取面候选与吸附面积检查
+  -> 确定性多起点 IK、限位、奇异性和碰撞检查
+  -> 几何最小脱垛距离与笛卡尔扫掠验证
+  -> 传送带伸缩/升降联合预定位
+  -> 带载清堆、交接支撑和真空释放门控
+  -> 几何任务结果与负载资格分层统计
 ```
 
-主要能力包括：
-
-- 使用 OBB、胶囊体和 URDF 网格描述车厢、纸箱、输送带、机器人与吸具；
-- 检查机器人自碰撞、机器人—环境、所抓箱体—机器人、箱体—车厢/其他箱体碰撞；
-- 生成正面、侧面、顶面吸取候选，并检查吸盘覆盖和抓取法向；
-- 使用确定性多起点 IK、双向 RRT-Connect、笛卡尔脱垛段和碰撞复核捷径规划完整抓放动作；
-- 根据箱体支撑/遮挡关系决定可移除顺序，并协调固定底座或 AMR 停靠位与 L 形输送带；
-- 对轨迹做速度、加速度、jerk 时间参数化和缓存重验证；
-- 生成批量可达性/碰撞筛查、机器人底座覆盖优化和卸箱周期统计；
-- 通过 PyBullet 做轻量动力学/传感器回放，通过独立适配器导出 Isaac Sim 验收任务。
-
-世界坐标固定为：`+X` 指向车厢内部，`+Y` 向左，`+Z` 向上。配置和计算统一使用 SI 单位：米、弧度、秒、千克。
-
-## v0.3 新增与调整
-
-- 新增 `unloading_sim.robot_load`：使用 URDF/FK 给出的 J4–J6 实际轴线，计算工具和纸箱的空间惯量、重力矩与轴向惯量参考值；旧的“法兰 XYZ 等同腕部轴”模型只保留为可复现的历史接口。
-- 新增负载感知任务姿态筛选：确定性搜索腕部滚转、表面法向和 IK 种子，保留最佳/次佳姿态及逐轴失败原因。
-- 新增 FANUC 厂商证据适配层。公开资料缺少可追溯的完整负载—质心图时，结果保持 `NOT_EVALUATED`，不会把工程参考值内的姿态升级为厂商认证通过。
-- 新增确定性 Monte Carlo 周期模型，使用共同随机数比较不同 NORMAL 周期，并计算目标吞吐量所需的正常周期上限。
-- 新增轻量批量筛查与一键资格评估套件；完整 PyBullet 横截面研究同步接入统一腕部限制配置。
-- 横向输送带与机器人基座/J2 保护包络的净空由 275 mm 修正为 300 mm，同时保留距最近纸箱 200 mm 的门槛。
-- 清除历史渲染、调试报告、搜索配置和一次性迁移脚本；生成结果统一写入被 Git 忽略的 `outputs/` 或 `results/`。
-- 补全 KUKA KR 50 R2500 子模块声明，新的递归克隆可直接还原依赖资源。
-
-详细发布说明见 [`docs/releases/V0.3.md`](docs/releases/V0.3.md)。
+核心包使用 OBB、胶囊体、URDF 运动链和确定性随机种子。解析球面工作空间只可作为快速排除条件，不能作为任务覆盖结论。
 
 ## 安装
 
@@ -56,7 +69,7 @@ cd pick-and-place-simulation
 python -m venv .venv
 ```
 
-激活虚拟环境：
+激活环境并安装核心/测试依赖：
 
 ```bash
 # Linux / macOS
@@ -64,11 +77,7 @@ source .venv/bin/activate
 
 # Windows PowerShell
 .venv\Scripts\Activate.ps1
-```
 
-安装核心与测试依赖：
-
-```bash
 python -m pip install -e ".[dev]"
 ```
 
@@ -78,71 +87,50 @@ python -m pip install -e ".[dev]"
 python -m pip install -e ".[dev,viz]"
 ```
 
-如果已经克隆但子模块为空，可执行：
+也可以使用项目锁文件：
 
 ```bash
-git submodule update --init --recursive
+uv sync --extra dev
 ```
 
 ## 快速开始
 
-### 1. 运行五秒内的核心演示
+### CPU 核心演示
 
 ```bash
 python -m unloading_sim.demo --config config/demo.yaml
 ```
 
-输出写入 `outputs/demo/`，包含轨迹、指标和规划图；该目录不会提交到 Git。
+默认演示保持在普通笔记本 CPU 五秒级，结果写入被 Git 忽略的 `outputs/demo/`。
 
-### 2. 运行 v0.3 工程资格评估
+### M-710iD/70 v0.4 验收
+
+```bash
+python tools/run_m710id70_acceptance.py \
+  --grid-step 0.30 \
+  --output-dir outputs/m710id70_v2
+```
+
+该命令会运行安装位扫描、两种箱体朝向的 2.3 m × 2.7 m 横截面任务扫描、负载包络以及四组连续卸货场景。运行时间取决于 CPU；缩小网格步长会显著增加 IK 与碰撞查询数量。
+
+主要输出包括：
+
+- `technical_qualification_report_m710id70_v2.md`；
+- `task_reachability.csv`；
+- `failure_reason_statistics.csv`；
+- `payload_envelope.csv`；
+- `base_x_z_scan.csv` 与二维热力图；
+- `continuous_unloading_results.csv`；
+- `grasp_strategy_statistics.csv`；
+- grasp、extraction、conveyor handoff、full task 四层热力图。
+
+仅调试覆盖管线、不运行连续场景时可增加 `--skip-continuous`。该选项产生的结果不能替代完整验收。
+
+### 历史 M-20iD/35 工具链
 
 ```bash
 python tools/run_qualification_suite.py
-```
 
-该命令把三类结果写入一个带时间戳的 `results/<timestamp>/` 目录：
-
-- 负载、腕部力矩和惯量工程包络；
-- 车厢横截面的轻量 fail-closed 排除筛查；
-- 目标 900 箱/小时的周期 Monte Carlo 模型。
-
-产物包括 CSV、PNG、摘要 JSON、输入哈希、命令记录和技术报告。默认结论可能是 `NOT_QUALIFIED` 或 `NOT_EVALUATED`；这是缺少证据或已知约束失败的真实表达，不应手工改成通过。
-
-也可以分别运行：
-
-```bash
-python tools/analyze_payload_envelope.py \
-  --robot fanuc_m20id_35 \
-  --tool configs/tools/unloading_gripper.yaml
-
-python tools/run_reachability_study.py \
-  --robot fanuc_m20id_35 \
-  --truck configs/trucks/2p3x2p7.yaml \
-  --payloads 5 15 25
-
-python tools/run_cycle_simulation.py \
-  --config configs/cycle/unloading_900pph.yaml
-```
-
-轻量可达性命令只证明“可排除”，不证明“任务可达”：未执行的姿态 IK、关节/奇异性裕量、扫掠碰撞、脱垛、退避和轨迹动力学检查都保留为 `NOT_EVALUATED`。
-
-### 3. 运行完整横截面研究
-
-完整研究使用真实 URDF、工具碰撞体、纸箱邻域和离散扫掠路径检查。安装 PyBullet 后运行：
-
-```bash
-python studies/fanuc_m20id35_cross_section/run_study.py \
-  --config studies/fanuc_m20id35_cross_section/study_config.json \
-  --backend pybullet \
-  --workers 8 \
-  --audit-best
-```
-
-`--workers` 可按本机逻辑 CPU 数调整。该研究是确定性的密集离散路径采样，不是解析连续碰撞证明；采样步长和安全余量会写入输出参数。
-
-### 4. 生成 FANUC 卸垛方案
-
-```bash
 python -m unloading_sim.online_unload \
   --config config/fanuc_m20id35.yaml \
   --max-picks 8 \
@@ -150,50 +138,46 @@ python -m unloading_sim.online_unload \
   --output-dir outputs/fanuc_m20id35/top_layer
 ```
 
-冷启动 IK/RRT 用于离线生成和回归，不应直接作为生产在线主链路。生产方向是：场景签名/热图查表、最近 IK 分支、整条缓存轨迹碰撞复核，只对失效局部做限时修补。
+M-20iD/35 的 v0.3 报告仅是历史基线，不能外推到 M-710iD/70。
 
-### 5. 可选回放后端
+## 配置入口
 
-PyBullet 使用示例：
+| 文件 | 用途 |
+| --- | --- |
+| `config/fanuc_m710id_70.yaml` | v0.4 运行、规划、传送带和确定性种子 |
+| `configs/robots/fanuc_m710id_70.yaml` | 机器人身份、限制与证据状态 |
+| `configs/tools/unloading_gripper_20kg.yaml` | 20 kg 工具质量属性、TCP 和碰撞尺寸 |
+| `configs/trucks/2p3x2p7_m710id70.yaml` | 2.3 m × 2.7 m 车厢配置 |
+| `configs/qualification/fanuc_m710id_70_42p5kg.yaml` | 42.5 kg 箱体资格案例 |
+| `configs/vendor/fanuc_m710id_70_load_evidence.yaml` | FANUC 负载/腕部限制证据映射 |
 
-```bash
-python -m unloading_sim.pybullet_online_kuka \
-  --plan outputs/fanuc_m20id35/top_layer/online_plan.json \
-  --direct \
-  --gif outputs/fanuc_m20id35/top_layer.gif
-```
+传送带与底盘的相对几何、行程和净空均位于配置中，不写死在碰撞查询内。传送带质量不计入底盘或机械臂负载，但其所有构件都作为外部碰撞体参与规划。
 
-Isaac Sim 不进入核心依赖。服务器安装、USD 导出、回放和证据文件说明见 [`docs/isaacsim_server.md`](docs/isaacsim_server.md)，后端边界与验收策略见 [`docs/digital_twin_backend.md`](docs/digital_twin_backend.md)。
-
-## 目录结构
+## 项目结构
 
 ```text
-src/unloading_sim/            核心 Python 包
-  geometry.py                 OBB、胶囊体、SO(3) 工具
-  robot.py                    DH/URDF 机器人、FK、Jacobian、碰撞体
-  scene.py                    场景模型与递归 YAML 配置
-  ik.py                       阻尼最小二乘多起点 IK
-  planner.py                  RRT-Connect、捷径和平滑
-  grasp.py                    抓取/放置候选与完整抓放规划
-  support.py                  支撑/遮挡关系和移除顺序
-  reachability.py             批量可达性与碰撞热图
-  base_optimization.py        底座位姿覆盖优化
-  timing.py / trajectory.py   时间参数化、审计与拐角融合
-  robot_load/                 v0.3 负载、空间惯量与任务姿态评估
-  cycle.py                    v0.3 周期 Monte Carlo 模型
+src/unloading_sim/
+  geometry.py             OBB、胶囊体、SO(3) 几何工具
+  robot.py                DH/URDF 机器人、FK、Jacobian 和碰撞体
+  scene.py                场景模型与递归 YAML 配置
+  ik.py                   阻尼最小二乘多起点 IK
+  planner.py              RRT-Connect、捷径和平滑
+  grasp.py                通用抓取与放置规划
+  depalletizing.py        v0.4 邻接拓扑、动态脱垛、传送带和候选评分
+  fanuc_m710id70.py       M-710iD/70 运动学、扫掠碰撞和负载接口
+  robot_load/             负载、空间惯量与厂商证据适配
 
-config/                       运行时场景、规划与回放配置
-configs/                      资格评估输入、工具/机器人/厂商证据配置
-tools/                        可复现的资格评估命令
-studies/                      较重、较慢的专项研究
-scripts/                      PyBullet/Isaac Sim 适配与资源分析脚本
-assets/                       机器人、吸具、材质及来源说明
-third_party/                  外部机器人资源子模块
-tests/                        单元与回归测试
-docs/                         架构、后端和发布文档
+config/                   运行时配置
+configs/                  机器人、工具、车厢、资格和证据配置
+tools/                    可复现分析与验收命令
+studies/                  较重的专项研究
+scripts/                  PyBullet / Isaac Sim 导出与回放适配器
+assets/                   机器人、吸具和材质资源及来源说明
+tests/                    单元、回归和后端边界测试
+docs/                     架构、服务器与发布说明
 ```
 
-`geometry.py`、`robot.py`、`scene.py`、`ik.py`、`planner.py` 和 `grasp.py` 保持可独立测试；重型后端只能通过适配器和可选依赖接入。所有新增规划或评估入口必须提供确定性随机种子。
+`geometry.py`、`robot.py`、`scene.py`、`ik.py`、`planner.py`、`grasp.py` 和 `depalletizing.py` 保持独立可测试。ROS 2、Isaac Sim、PyBullet 或 GPU 功能不得进入核心依赖。
 
 ## 测试
 
@@ -201,30 +185,32 @@ docs/                         架构、后端和发布文档
 pytest -q
 ```
 
-测试覆盖几何原语、FK/IK、碰撞、抓放规划、支撑关系、底座优化、轨迹约束、PyBullet/Pinocchio 可选后端、数字样机接口，以及 v0.3 的负载和周期模型。
+v0.4 发布检查结果为 `189 passed, 1 deselected`。默认配置排除标记为 `simulation`、`slow`、`pybullet` 和 `isaac` 的重型测试。
 
-## 证据语义与当前边界
+Windows 受限环境若无法访问用户临时目录，可显式指定工程内临时目录：
 
-以下概念必须区分：
+```powershell
+python -m pytest -q --basetemp .tmp/pytest-v0.4
+```
 
-- `PASS`：该项检查在已声明的模型和输入下通过；
-- `NOT_EVALUATED`：缺少数据或本次流程没有执行该检查；
-- `NOT_QUALIFIED`：当前证据不足以给出完整工程/厂商资格结论；
-- `FAIL_*`：已知硬约束失败。
+新增回归覆盖双侧受限最小直抽、左右单侧开放的对称侧吸、四面候选评分、不同箱体尺寸的不同脱垛距离、传送带 20 mm 表面净空、动态 Z 上下限、传送带碰撞拒绝以及交接完成后的真空释放。
 
-当前仍未完整模拟或标定：
+## 证据语义与安全边界
 
-- 纸箱柔性、破损、挤压和连锁坍塌；
-- 真空流量、密封、漏气、剥离力矩和脱落；
-- 真实控制器插补、完整关节动力学、柔顺控制与力控；
-- 视觉噪声、遮挡误差和长期标定漂移；
-- FANUC 完整负载—质心图、ROBOGUIDE 验证或等价厂商证据；
-- 安全 PLC、工业现场节拍和真机认证。
+- `PASS`：在明确声明的输入、模型和离散检查下通过。
+- `FAIL_*`：已发现具体硬约束失败。
+- `NOT_EVALUATED`：缺少数据或本流程未执行，不能解释为通过。
+- `NOT_QUALIFIED`：当前证据不足以形成完整工程或厂商资格结论。
 
-进入真机前，必须使用厂商精确碰撞模型、真实工具质量/质心/惯量、负载图、控制器日志和吸具试验重新验证全部轨迹。Isaac Sim 或 PyBullet 的通过结果都不能替代工业安全评估。
+当前没有完整模拟或认证纸箱柔性/坍塌、真空密封与剥离、真实控制器插补、完整关节动力学、安全 PLC、工业节拍和现场风险。进入真机前必须使用厂商精确模型、实测工具质量属性、FANUC 负载设定软件或 ROBOGUIDE、控制器日志及吸具试验重新验证全部轨迹。
 
-## 资源与版本
+机器人模型证据边界见 [`assets/robots/fanuc_m710id_70/SOURCE.md`](assets/robots/fanuc_m710id_70/SOURCE.md)。Isaac Sim 服务器和导出说明见 [`docs/isaacsim_server.md`](docs/isaacsim_server.md)，后端边界见 [`docs/digital_twin_backend.md`](docs/digital_twin_backend.md)。
 
-- FANUC M-20iD/35 资源来源和许可证见 [`assets/robots/fanuc_m20id35/SOURCE.md`](assets/robots/fanuc_m20id35/SOURCE.md) 与同目录 `LICENSE.txt`。
-- KUKA KR 50 R2500 来自声明在 `.gitmodules` 中的第三方仓库。
-- 当前版本：`v0.3`；Python 包版本：`0.3.0`；发布分支：`release/v0.3`。
+## 版本历史
+
+- v0.4：M-710iD/70、动态 L 形传送带、拓扑脱垛与分层任务资格。
+- v0.3.1：机器人/工具身份与缓存基线清理。
+- v0.3：FANUC M-20iD/35 负载感知资格评估。
+- v0.2：可审计数字孪生与回放链路。
+
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.4.0`。

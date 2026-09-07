@@ -15,6 +15,7 @@ from typing import Any
 import numpy as np
 
 from .geometry import OBB, rotation_matrix_from_rpy
+from .identity import normalize_robot_model_id
 from .scene import build_trailer_walls
 from .timing import (
     motion_limits_from_config,
@@ -243,7 +244,13 @@ def build_fanuc_isaac_replay_bundle(
 ) -> IsaacReplayBundle:
     """Build a limit-audited FANUC command stream from one planned segment."""
     robot = plan.get("robot")
-    if not isinstance(robot, dict) or robot.get("model") != "fanuc_m20id35":
+    if not isinstance(robot, dict):
+        raise ValueError("Isaac replay currently accepts FANUC M-20iD/35 plans only")
+    try:
+        robot_model_id = normalize_robot_model_id(robot.get("model"))
+    except ValueError as exc:
+        raise ValueError("Isaac replay currently accepts FANUC M-20iD/35 plans only") from exc
+    if robot_model_id != "fanuc_m20id_35":
         raise ValueError("Isaac replay currently accepts FANUC M-20iD/35 plans only")
     segments = plan.get("segments")
     if not isinstance(segments, list) or not segments:
@@ -506,18 +513,20 @@ def build_fanuc_isaac_replay_bundle(
         raise ValueError("vacuum total force and grip distance must be finite and positive")
     if not np.isclose(max_grip_distance, cup_compression + capture_tolerance):
         raise ValueError("surface gripper distance must equal cup compression plus solver tolerance")
-    gripper_mass = float(validation_cfg.get("vacuum_gripper_mass_kg", 0.0))
+    tool_cfg = cfg.get("tool", {})
+    geometry_cfg = tool_cfg.get("geometry", {}) if isinstance(tool_cfg, dict) else {}
+    gripper_mass = float(tool_cfg.get("mass_kg", validation_cfg.get("vacuum_gripper_mass_kg", 0.0)))
     gripper_com = np.asarray(
-        validation_cfg.get("vacuum_center_of_mass_from_flange_m", []), dtype=float
+        tool_cfg.get("com_xyz_m", validation_cfg.get("vacuum_center_of_mass_from_flange_m", [])), dtype=float
     )
     gripper_inertia = np.asarray(
-        validation_cfg.get("vacuum_inertia_at_com_kg_m2", []), dtype=float
+        tool_cfg.get("inertia_tensor_com_kg_m2", validation_cfg.get("vacuum_inertia_at_com_kg_m2", [])), dtype=float
     )
     flange_origin_step = np.asarray(
-        validation_cfg.get("vacuum_flange_origin_step_mm", []), dtype=float
+        geometry_cfg.get("flange_origin_step_mm", validation_cfg.get("vacuum_flange_origin_step_mm", [])), dtype=float
     )
     step_from_tool_rotation = np.asarray(
-        validation_cfg.get("vacuum_step_from_tool_rotation_matrix", []), dtype=float
+        geometry_cfg.get("step_from_tool_rotation_matrix", validation_cfg.get("vacuum_step_from_tool_rotation_matrix", [])), dtype=float
     )
     if (
         not np.isfinite(gripper_mass)
@@ -542,14 +551,14 @@ def build_fanuc_isaac_replay_bundle(
         base_position = np.asarray(dock_value, dtype=float) + np.asarray(robot_mount, dtype=float)
 
     metadata = {
-        "robot_model": "fanuc_m20id35",
+        "robot_model": robot_model_id,
         "source_plan_sha256": _canonical_digest(plan),
         "merged_configuration_sha256": _canonical_digest(cfg),
         "joint_names": list(FANUC_JOINT_NAMES),
         "urdf_path": str(robot["urdf_path"]),
         "base_position_m": base_position.tolist(),
         "base_rpy_rad": list(robot.get("base_rpy", [0.0, 0.0, 0.0])),
-        "tool_length_m": float(robot.get("tool_length", 0.0)),
+        "tool_length_m": float(tool_cfg.get("planner_tool_length_m", robot.get("tool_length", 0.0))),
         "segment_index": int(segment_index),
         "pick_index": int(segment.get("pick_index", segment_index)),
         "target": str(segment.get("target", "unknown")),
@@ -629,13 +638,13 @@ def build_fanuc_isaac_replay_bundle(
             "inertia_at_com_kg_m2": gripper_inertia.tolist(),
             "flange_origin_step_mm": flange_origin_step.tolist(),
             "step_from_tool_rotation_matrix": step_from_tool_rotation.tolist(),
-            "outer_size_m": list(validation_cfg.get("vacuum_outer_size_m", [])),
-            "step_path": validation_cfg.get("vacuum_step_path"),
-            "visual_mesh_path": validation_cfg.get("vacuum_visual_mesh_path"),
-            "collision_mesh_path": validation_cfg.get("vacuum_collision_mesh_path"),
-            "mass_properties_path": validation_cfg.get("vacuum_mass_properties_path"),
-            "flange_transform_confidence": validation_cfg.get(
-                "vacuum_flange_transform_confidence"
+            "outer_size_m": list(geometry_cfg.get("outer_size_m", validation_cfg.get("vacuum_outer_size_m", []))),
+            "step_path": geometry_cfg.get("step_path", validation_cfg.get("vacuum_step_path")),
+            "visual_mesh_path": geometry_cfg.get("visual_mesh_path", validation_cfg.get("vacuum_visual_mesh_path")),
+            "collision_mesh_path": geometry_cfg.get("collision_mesh_path", validation_cfg.get("vacuum_collision_mesh_path")),
+            "mass_properties_path": geometry_cfg.get("mass_properties_path", validation_cfg.get("vacuum_mass_properties_path")),
+            "flange_transform_confidence": geometry_cfg.get(
+                "flange_transform_confidence", validation_cfg.get("vacuum_flange_transform_confidence")
             ),
             "zone_count": zone_count,
             "zone_assignment_confirmed": False,

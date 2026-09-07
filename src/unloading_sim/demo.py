@@ -15,12 +15,14 @@ import numpy as np
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     from unloading_sim.grasp import plan_pick
+    from unloading_sim.identity import normalize_robot_model_id
     from unloading_sim.robot import DHRobot6, RobotBackend, URDFRobot6
     from unloading_sim.scene import load_scene_config
     from unloading_sim.timing import motion_limits_from_config, time_parameterize_joint_path
     from unloading_sim.visualization import save_plan_figure
 else:
     from .grasp import plan_pick
+    from .identity import normalize_robot_model_id
     from .robot import DHRobot6, RobotBackend, URDFRobot6
     from .scene import load_scene_config
     from .timing import motion_limits_from_config, time_parameterize_joint_path
@@ -29,7 +31,7 @@ else:
 
 def build_robot(cfg: dict) -> RobotBackend:
     robot_cfg = cfg["robot"]
-    model = robot_cfg.get("model", "ur5e_like")
+    model = normalize_robot_model_id(robot_cfg.get("model", "ur5e_like"))
     if model == "ur5e_like":
         return DHRobot6.ur5e_like(
             base_position=robot_cfg["base_position"],
@@ -43,14 +45,14 @@ def build_robot(cfg: dict) -> RobotBackend:
             base_rpy=robot_cfg.get("base_rpy", [0.0, 0.0, 0.0]),
             tool_length=float(robot_cfg.get("tool_length", 0.20)),
         )
-    if model == "fanuc_m20id35":
-        validation_cfg = cfg.get("simulation_validation", {})
-        tool_collision_size = validation_cfg.get("vacuum_rigid_plate_collision_size_m")
-        tool_collision_center_offset = validation_cfg.get(
-            "vacuum_rigid_plate_center_behind_working_plane_m"
-        )
+    if model == "fanuc_m20id_35":
+        tool_cfg = cfg.get("tool", {})
+        geometry_cfg = tool_cfg.get("geometry", {})
+        tool_length = float(tool_cfg.get("planner_tool_length_m", robot_cfg.get("tool_length", 0.20)))
+        tool_collision_size = geometry_cfg.get("rigid_plate_collision_size_m")
+        tool_collision_center_offset = geometry_cfg.get("rigid_plate_center_behind_working_plane_m")
         tool_collision_local_boxes = None
-        mass_properties_path = validation_cfg.get("vacuum_mass_properties_path")
+        mass_properties_path = geometry_cfg.get("mass_properties_path")
         if mass_properties_path:
             mass_properties = json.loads(
                 Path(mass_properties_path).read_text(encoding="utf-8")
@@ -60,13 +62,12 @@ def build_robot(cfg: dict) -> RobotBackend:
             )
             if rigid_bounds:
                 flange_step = np.asarray(
-                    validation_cfg["vacuum_flange_origin_step_mm"], dtype=float
+                    geometry_cfg["flange_origin_step_mm"], dtype=float
                 )
                 step_from_tool = np.asarray(
-                    validation_cfg["vacuum_step_from_tool_rotation_matrix"],
+                    geometry_cfg["step_from_tool_rotation_matrix"],
                     dtype=float,
                 )
-                tool_length = float(robot_cfg.get("tool_length", 0.20))
                 tool_collision_local_boxes = []
                 for bounds in rigid_bounds:
                     lower = np.asarray(bounds[:3], dtype=float)
@@ -93,10 +94,27 @@ def build_robot(cfg: dict) -> RobotBackend:
             ),
             base_position=robot_cfg.get("base_position", [-0.70, 0.0, 0.30]),
             base_rpy=robot_cfg.get("base_rpy", [0.0, 0.0, 0.0]),
-            tool_length=float(robot_cfg.get("tool_length", 0.20)),
+            tool_length=tool_length,
             tool_collision_size=tool_collision_size,
             tool_collision_center_offset=tool_collision_center_offset,
             tool_collision_local_boxes=tool_collision_local_boxes,
+        )
+    if model == "fanuc_m710id_70":
+        tool_cfg = cfg.get("tool", {})
+        geometry_cfg = tool_cfg.get("geometry", {})
+        tool_length = float(
+            tool_cfg.get("planner_tool_length_m", robot_cfg.get("tool_length", 0.25))
+        )
+        outer_size = geometry_cfg.get("outer_size_m", [0.576, 0.288, tool_length])
+        return URDFRobot6.fanuc_m710id_70(
+            urdf_path=robot_cfg.get(
+                "urdf_path", "assets/robots/fanuc_m710id_70/m710id_70.urdf"
+            ),
+            base_position=robot_cfg.get("base_position", [-0.70, 0.0, 0.60]),
+            base_rpy=robot_cfg.get("base_rpy", [0.0, 0.0, 0.0]),
+            tool_length=tool_length,
+            tool_collision_size=outer_size,
+            tool_collision_center_offset=0.5 * float(outer_size[2]),
         )
     raise ValueError(f"Unsupported built-in model: {model}")
 

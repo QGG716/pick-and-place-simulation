@@ -30,6 +30,7 @@ if str(ROOT / "src") not in sys.path:
     sys.path.insert(0, str(ROOT / "src"))
 
 from unloading_sim.robot_load import BoxLoad, LoadCase, MotionLoad, load_robot_limits, load_tool, qualify_load  # noqa: E402
+from unloading_sim.reporting import build_report_context  # noqa: E402
 
 
 BOX_SIZES_M = ((0.150, 0.150, 0.150), (0.500, 0.400, 0.350), (0.800, 0.800, 0.800))
@@ -44,13 +45,6 @@ STATES = (
     "UNREACHABLE_LOAD", "UNREACHABLE_MOMENT", "UNREACHABLE_INERTIA", "UNREACHABLE_TRAJECTORY", "NOT_EVALUATED",
 )
 COLORS = ("#16a34a", "#f59e0b", "#64748b", "#7f1d1d", "#dc2626", "#ea580c", "#be123c", "#7e22ce", "#d1d5db")
-
-
-def _robot_path(value: str) -> Path:
-    path = Path(value)
-    if path.exists():
-        return path.resolve()
-    return (ROOT / "configs" / "robots" / f"{value}.yaml").resolve()
 
 
 def _output_dir(value: str | None) -> Path:
@@ -133,9 +127,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--payloads", nargs="+", type=float, default=(5.0, 15.0, 25.0))
     parser.add_argument("--output-dir")
     args = parser.parse_args(argv)
-    robot_path = _robot_path(args.robot)
+    context = build_report_context(
+        robot=args.robot,
+        tool=args.tool,
+        root=ROOT,
+        extra_inputs={"truck_config": args.truck},
+    )
+    robot_path = Path(context["resolved_paths"]["robot_config"])
     truck_path = (ROOT / args.truck).resolve() if not Path(args.truck).is_absolute() else Path(args.truck).resolve()
-    tool_path = (ROOT / args.tool).resolve() if not Path(args.tool).is_absolute() else Path(args.tool).resolve()
+    tool_path = Path(context["resolved_paths"]["tool_resolved_config"])
     robot, tool = load_robot_limits(robot_path), load_tool(tool_path)
     truck = yaml.safe_load(truck_path.read_text(encoding="utf-8"))
     output = _output_dir(args.output_dir)
@@ -193,9 +193,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             "region_state_counts": region_counts,
         }
     _write_map(output / "reachability_geometry.png", "Geometric screen (not task reachability)", y_values, z_values, geometry_grid)
-    config_record = {"command": "run_reachability_study", "arguments": vars(args), "robot_config": str(robot_path), "truck_config": str(truck_path), "tool_config": str(tool_path), "grid_shape_z_y": [len(z_values), len(y_values)], "full_study_command": "python studies/fanuc_m20id35_cross_section/run_study.py --backend pybullet --workers <N> --audit-best"}
+    config_record = {"command": "run_reachability_study", "arguments": vars(args), "context": context, "grid_shape_z_y": [len(z_values), len(y_values)], "full_study_command": "python studies/fanuc_m20id35_cross_section/run_study.py --backend pybullet --workers <N> --audit-best"}
     (output / "config.json").write_text(json.dumps(config_record, indent=2, ensure_ascii=False), encoding="utf-8")
     summary = {
+        "context": context,
         "qualification_scope": "LIGHTWEIGHT_FAIL_CLOSED_SCREEN", "payloads": payload_summaries,
         "task_reachable_rate": 0.0,
         "z_axis_used_ratio": "NOT_EVALUATED",
@@ -203,11 +204,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         "not_evaluated_checks": [name for name in CHECK_NAMES if name not in {"IK_FOUND", "GRASP_NORMAL_OK", "PAYLOAD_OK", "COM_OK", "WRIST_MOMENT_OK", "WRIST_INERTIA_OK", "BOX_COLLISION_FREE"}],
     }
     (output / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
-    report = """# M-20iD/35 task reachability qualification
+    report = f"""# {context['robot_model_id']} task reachability qualification
 
 ## Decision
 
-No cross-section cell is reported as `NORMAL_REACHABLE` or `LOW_SPEED_REACHABLE` by this lightweight run. It is a full-resolution, fail-closed screen: trailer/box fit, published reach, and configured load limits are screened, while pose-specific IK, joint/singularity margins, robot/tool/carried-box swept collisions, 80/100/150 mm extraction, retreat, and timed dynamic limits remain `NOT_EVALUATED`.
+No cross-section cell is reported as `NORMAL_REACHABLE` or `LOW_SPEED_REACHABLE` by this lightweight run for `{context['robot_model_id']}` with `{context['tool_name']}` ({context['tool_mass_kg']:.3f} kg). It is a full-resolution, fail-closed screen: trailer/box fit, published reach, and configured load limits are screened, while pose-specific IK, joint/singularity margins, robot/tool/carried-box swept collisions, 80/100/150 mm extraction, retreat, and timed dynamic limits remain `NOT_EVALUATED`.
 
 The output therefore must not be used as evidence that the arm can extract a box. Run the existing PyBullet cross-section study and integrate pose-specific dynamic qualification before promoting any cell to task-reachable. A known screen failure remains a real exclusion and is not softened.
 """

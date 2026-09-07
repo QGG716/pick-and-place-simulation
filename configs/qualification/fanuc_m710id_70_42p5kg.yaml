@@ -1,0 +1,17 @@
+schema_version: robot_load_case_v1
+robot:
+  model: fanuc_m710id_70
+  limits_config: ../robots/fanuc_m710id_70.yaml
+tool:
+  config: ../tools/unloading_gripper_20kg.yaml
+box:
+  size_xyz_m: [0.600, 0.400, 0.300]
+  mass_kg: 42.5
+  grasp_face: front_center
+  grasp_point_xyz_m: [0.0, 0.0, 0.0]
+  estimated_com_xyz_m: [0.300, 0.0, 0.0]
+  mass_properties_evidence: ENGINEERING_ASSUMPTION_UNIFORM_CUBOID
+motion:
+  linear_acceleration_m_s2: 1.5
+  angular_acceleration_rad_s2: 1.5
+  safety_factor: 1.0

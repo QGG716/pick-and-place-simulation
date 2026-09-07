@@ -1,14 +1,16 @@
 extends: common_unloading.yaml
 
 robot:
-  model: fanuc_m20id35
+  model: fanuc_m20id_35
+  model_config: ../configs/robots/fanuc_m20id_35.yaml
   urdf_path: assets/robots/fanuc_m20id35/m20_35_18d.urdf
   base_position: [0.60, 0.15, 0.30]
   base_rpy: [0.0, 0.0, 0.0]
-  # STEP-derived flange to uncompressed FG42 working-plane distance.
-  tool_length: 0.2275
   tip_link: tool0
   home_joints: [-0.3766, -0.7955, -0.8172, 0.8419, -1.3000, -0.3599]
+
+tool:
+  config: ../configs/tools/unloading_gripper_10kg.yaml
 
 execution:
   # Velocity limits come from the bundled FANUC URDF. Acceleration and jerk

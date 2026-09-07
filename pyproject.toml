@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unloading-layer1-sim"
-version = "0.3.0"
+version = "0.4.0"
 description = "Fast geometric simulation and motion planning for industrial-arm trailer unloading"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -38,5 +38,12 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 testpaths = ["tests"]
+addopts = "-m 'not simulation and not slow and not pybullet and not isaac'"
+markers = [
+  "simulation: starts or executes a simulation/planning workflow",
+  "slow: long-running test excluded from the default baseline suite",
+  "pybullet: requires or starts the PyBullet backend",
+  "isaac: requires or starts the Isaac Sim backend",
+]

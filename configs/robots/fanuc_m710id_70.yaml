@@ -1,0 +1,69 @@
+schema_version: robot_load_limits_v1
+model: fanuc_m710id_70
+model_id: fanuc_m710id_70
+model_revision: supplied_robocad_v01_engineering_urdf_v1
+rated_payload_kg: 70.0
+reach_m: 2.104
+kinematics:
+  urdf_path: ../../assets/robots/fanuc_m710id_70/m710id_70.urdf
+  srdf_path: ../../assets/robots/fanuc_m710id_70/m710id_70.srdf
+  base_link: base_link
+  flange_link: flange
+  tip_link: tool0
+  active_joint_names: [J1, J2, J3, J4, J5, J6]
+  qualification_joint_pose_q: [0.0, -0.523598776, 0.872664626, 0.0, 0.349065850, 0.0]
+  zero_pose_flange_xyz_m: [1.370, 0.0, 1.630]
+  mounting_reference: base_link_origin_is_mounting_flange_plane
+joint_position_limits_rad:
+  J1: [-3.228859116, 3.228859116]
+  J2: [-1.308996939, 2.617993878]
+  J3: [-1.404990048, 3.577924967]
+  J4: [-6.981317008, 6.981317008]
+  J5: [-2.181661565, 2.181661565]
+  J6: [-6.981317008, 6.981317008]
+joint_speed_rad_s: [3.141592654, 3.141592654, 3.141592654, 4.537856055, 4.537856055, 6.457718232]
+joint_velocity_limits_rad_s: [3.141592654, 3.141592654, 3.141592654, 4.537856055, 4.537856055, 6.457718232]
+joint_acceleration_limits_rad_s2:
+  values: [1.5, 1.5, 1.5, 3.0, 3.0, 4.0]
+  evidence: ENGINEERING_ASSUMPTION
+joint_jerk_limits_rad_s3:
+  values: [7.5, 7.5, 7.5, 15.0, 15.0, 20.0]
+  evidence: ENGINEERING_ASSUMPTION
+joint_effort_limits_nm:
+  values: null
+  evidence: NOT_AVAILABLE
+  reason: Supplied documents contain no certified joint drive torque limits.
+wrist_limits:
+  allowable_moment_nm: {J4: 300.0, J5: 300.0, J6: 150.0}
+  allowable_inertia_kg_m2: {J4: 30.0, J5: 30.0, J6: 15.0}
+payload_com_limits:
+  status: OFFICIAL_DIAGRAM_AVAILABLE
+  reason: Supplied FANUC presentation slide 13 contains the payload-versus-CoM boundary; coordinates are X/Y radial and Z axial from the faceplate diagram origin.
+  conservative_70kg_axis_intercepts_m: {radial_xy: 0.225, axial_z: 0.277}
+  curve_points: [[0.0, 0.277], [0.10, 0.268], [0.20, 0.235], [0.225, 0.215]]
+normal_utilization_limit: 0.80
+wrist_moment_limits: {J4: 300.0, J5: 300.0, J6: 150.0}
+wrist_inertia_limits: {J4: 30.0, J5: 30.0, J6: 15.0}
+collision_meshes: []
+collision_geometry_status: CAD_DERIVED_PRIMITIVE_ENVELOPE
+self_collision_exclusions:
+  - [base_link, J1_link]
+  - [J1_link, J2_link]
+  - [J2_link, J3_link]
+  - [J3_link, J4_link]
+  - [J4_link, J5_link]
+  - [J5_link, J6_link]
+payload_com_evidence: configs/vendor/fanuc_m710id_70_load_evidence.yaml
+source_metadata:
+  manufacturer: FANUC
+  local_only: true
+  dynamics_inertial_status: BLOCKED_BY_MISSING_INERTIAL_DATA
+source:
+  manufacturer: FANUC
+  title: Supplied FANUC M-710iD/70 v1 presentation and ROBCAD v01
+  url: LOCAL_SUPPLIED_EVIDENCE
+  product_page: NOT_USED
+  document_version: presentation_v1_and_robocad_model_1p0
+  document_date: "2024-11-29"
+  accessed_date: "2026-09-02"
+  verified_fields: [rated_payload_kg, reach_m, joint_speed_rad_s, wrist_limits, joint_axes, joint_limits, zero_pose_flange_xyz_m]

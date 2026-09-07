@@ -1,0 +1,28 @@
+schema_version: fanuc_wrist_evidence_v1
+robot_model: FANUC M-710iD/70
+reference:
+  origin_xyz_m: [0.0, 0.0, 0.0]
+  axes: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+  source_document: Supplied FANUC M-710iD/70 v1 presentation
+  source_url: LOCAL_SUPPLIED_EVIDENCE
+  source_page: "slide 13"
+  source_definition: Diagram labels X,Y radial distance and Z axial distance from the wrist faceplate reference drawing.
+  evidence_status: VERIFIED
+moment_definition_status: VERIFIED
+inertia_definition_status: VERIFIED
+load_diagram_status: VERIFIED
+public_numeric_values:
+  rated_payload_kg: 70.0
+  allowable_moment_nm: {J4: 300.0, J5: 300.0, J6: 150.0}
+  allowable_inertia_kg_m2: {J4: 30.0, J5: 30.0, J6: 15.0}
+  diagram_axis_intercepts_m:
+    30kg: {radial_xy: 0.520, axial_z: 0.825}
+    40kg: {radial_xy: 0.396, axial_z: 0.615}
+    50kg: {radial_xy: 0.317, axial_z: 0.457}
+    60kg: {radial_xy: 0.264, axial_z: 0.352}
+    70kg: {radial_xy: 0.225, axial_z: 0.277}
+sources:
+  - document: Supplied FANUC M-710iD/70 v1 presentation
+    page: "slides 5, 6 and 13"
+    sha256: 2410b105e3a09ebc927eaa85e8800067cde8b734c5b5b56f872fb18539d901a5
+    finding: Rated mass, wrist moments/inertias and complete payload-versus-CoM diagram.

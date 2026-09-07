@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime
-import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -14,14 +13,11 @@ from typing import Sequence
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "src"))
 
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+from unloading_sim.identity import sha256_file  # noqa: E402
+from unloading_sim.reporting import build_report_context, qualification_decision, qualification_decision_reason  # noqa: E402
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -33,6 +29,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--payloads", nargs="+", type=float, default=(5.0, 15.0, 25.0))
     parser.add_argument("--output-dir")
     args = parser.parse_args(argv)
+    context = build_report_context(
+        robot=args.robot,
+        tool=args.tool,
+        root=ROOT,
+        extra_inputs={"truck_config": args.truck, "cycle_config": args.cycle},
+    )
     output = Path(args.output_dir).resolve() if args.output_dir else ROOT / "results" / datetime.now().strftime("%Y%m%dT%H%M%S")
     output.mkdir(parents=True, exist_ok=False)
     parts = output / "components"
@@ -74,8 +76,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "load": load_summary,
         "reachability": reach_summary,
         "cycle": cycle_summary,
-        "decision": "NOT_QUALIFIED",
-        "decision_reason": "25 kg required load cases have known wrist failures and full 15-condition task reachability remains incomplete",
+        "decision": qualification_decision(load_summary, reach_summary),
+        "decision_reason": qualification_decision_reason(load_summary, reach_summary, cycle_summary),
+        "context": context,
     }
     (output / "summary.json").write_text(json.dumps(aggregate, indent=2, ensure_ascii=False), encoding="utf-8")
     config = {
@@ -83,17 +86,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         "arguments": vars(args),
         "python": sys.version,
         "component_commands": command_records,
-        "input_sha256": {
-            value: _sha256((ROOT / value).resolve())
-            for value in (args.tool, args.truck, args.cycle, "configs/robots/fanuc_m20id_35.yaml")
-        },
+        "resolved_paths": context["resolved_paths"],
+        "input_sha256": context["input_hashes"],
     }
     (output / "config.json").write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding="utf-8")
     report = f"""# Technical qualification report
 
-## 1. 25 kg box plus current tool
+## 1. 25 kg box plus {context['tool_name']}
 
-**NOT QUALIFIED.** The configured tool is {load_summary['payload_plus_tool_kg'] - 25.0:.3f} kg. All {load_summary['required_25kg_cases']} required 25 kg size/grasp cases fail a known published payload, moment, or inertia check in the Phase 1 envelope. The official payload/CoM curve is also `{load_summary['official_com_curve_status']}`.
+**{aggregate['decision']}.** Robot `{context['robot_model_id']}` was evaluated with the configured {context['tool_mass_kg']:.3f} kg tool. Known failures occurred in {load_summary['required_25kg_known_failures']} of {load_summary['required_25kg_cases']} required 25 kg size/grasp cases. The official payload/CoM curve is `{load_summary['official_com_curve_status']}`.
 
 ## 2. Limiting factors
 
@@ -115,10 +116,10 @@ The configured Monte Carlo model requires at most **{cycle_summary['required_nor
 
 ## Evidence status
 
-The bundle is deterministic for the recorded inputs and seeds. `config.json` records commands and SHA-256 input hashes. Unknown evidence remains `NOT_EVALUATED`; no collision tolerance, mass, inertia, gravity, or manufacturer limit was relaxed to create a pass.
+The bundle is deterministic for the recorded inputs and seeds. `config.json` records resolved input paths and SHA-256 hashes. Tool mass properties are `{context['tool_mass_properties_source']}`, measurement status is `{context['tool_measured_status']}`, and manufacturer qualification is `{context['tool_manufacturer_qualification_status']}`. Unknown evidence remains `NOT_EVALUATED`; no collision tolerance, mass, inertia, gravity, or manufacturer limit was relaxed to create a pass.
 """
     (output / "technical_qualification_report.md").write_text(report, encoding="utf-8")
-    manifest = {path.name: _sha256(path) for path in output.iterdir() if path.is_file()}
+    manifest = {path.name: sha256_file(path) for path in output.iterdir() if path.is_file()}
     (output / "manifest_sha256.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(output)
     print(json.dumps({"decision": aggregate["decision"], "required_normal_cycle_seconds": cycle_summary["required_normal_cycle_seconds_for_target"]}, ensure_ascii=False))

@@ -2,6 +2,7 @@ schema_version: tool_load_v2
 tool_mass_properties_source: ENGINEERING_MODEL
 mass_properties_reference_frame: flange
 name: shanghai_wantai_three_zone_unloading_gripper_8kg
+lifecycle_status: HISTORICAL_ENGINEERING_VARIANT
 mass_kg: 8.0
 # Both physical mass-property fields are expressed in flange frame F.
 # TCP frame T is a separate, massless task reference and is not Tool CoM.

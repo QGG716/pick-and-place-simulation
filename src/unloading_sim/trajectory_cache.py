@@ -12,6 +12,7 @@ from typing import Sequence
 import numpy as np
 
 from .grasp import _carried_box_state_valid, _carried_orientation_policy_valid
+from .identity import build_scene_cache_identity, validate_cache_identity
 from .online_unload import docked_robot_and_scene, remove_carton
 from .planner import RRTConnectPlanner
 from .scene import load_scene_config
@@ -91,6 +92,7 @@ def optimize_cached_plan(
 ) -> tuple[dict, list[dict]]:
     """Shortcut and blend paths while rechecking robot, carton, and tilt safety."""
     scene, cfg = load_scene_config(manifest["config"])
+    validate_cache_identity(manifest.get("cache_identity", {}), build_scene_cache_identity(cfg))
     planning = cfg.get("planning", {})
     optimized = copy.deepcopy(manifest)
     statistics: list[dict] = []
@@ -208,6 +210,7 @@ def optimize_cached_plan(
 def validate_cached_plan(manifest: dict) -> list[dict]:
     """Validate cached segments in scene order and report online latency."""
     scene, cfg = load_scene_config(manifest["config"])
+    validate_cache_identity(manifest.get("cache_identity", {}), build_scene_cache_identity(cfg))
     planning = cfg.get("planning", {})
     statistics: list[dict] = []
     for segment in manifest.get("segments", []):

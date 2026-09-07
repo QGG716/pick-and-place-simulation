@@ -29,6 +29,7 @@ if __package__ in (None, ""):
         select_fast_suction_candidates,
     )
     from unloading_sim.ik import solve_ik_multistart
+    from unloading_sim.identity import build_scene_cache_identity, normalize_robot_model_id, validate_cache_identity
     from unloading_sim.perception import detect_carton_obbs, fixed_conveyor_place_pose
     from unloading_sim.scene import TrailerScene, load_scene_config
     from unloading_sim.support import SupportRelationGraph
@@ -48,6 +49,7 @@ else:
         select_fast_suction_candidates,
     )
     from .ik import solve_ik_multistart
+    from .identity import build_scene_cache_identity, normalize_robot_model_id, validate_cache_identity
     from .perception import detect_carton_obbs, fixed_conveyor_place_pose
     from .scene import TrailerScene, load_scene_config
     from .support import SupportRelationGraph
@@ -137,6 +139,7 @@ def restore_plan_prefix(
     scene: TrailerScene,
     robot_cfg: dict,
     resume_plan_path: str | Path,
+    current_cache_identity: dict | None = None,
 ) -> tuple[list[dict], list[tuple[int, str, int, np.ndarray]], np.ndarray, np.ndarray | None]:
     """Restore a collision-validated prefix so planning can continue online.
 
@@ -150,8 +153,10 @@ def restore_plan_prefix(
         manifest = json.load(f)
 
     resume_robot = manifest.get("robot", {})
-    if resume_robot.get("model") != robot_cfg.get("model"):
+    if normalize_robot_model_id(resume_robot.get("model")) != normalize_robot_model_id(robot_cfg.get("model")):
         raise ValueError("resume plan robot model does not match current config")
+    if current_cache_identity is not None and manifest.get("cache_identity") is not None:
+        validate_cache_identity(manifest["cache_identity"], current_cache_identity)
 
     available_names = {carton.name for carton in scene.cartons}
     restored_segments: list[dict] = []
@@ -539,6 +544,7 @@ def run_online(
 ) -> dict:
     config_path = Path(config_path)
     scene, cfg = load_scene_config(config_path)
+    cache_identity = build_scene_cache_identity(cfg)
     validate_amr_conveyor_alignment(cfg)
     robot = build_robot(cfg)
     planning_cfg = dict(cfg.get("planning", {}))
@@ -613,6 +619,7 @@ def run_online(
         certified_planner = CertifiedRuntimePlanner(
             library_data,
             deadline_seconds=float(planning_cfg.get("online_lookup_deadline_seconds", 0.05)),
+            expected_identity=cache_identity,
         )
         print(f"[online] certified FANUC runtime library: {library_path}", flush=True)
     resume_source = None
@@ -624,6 +631,7 @@ def run_online(
             scene,
             cfg["robot"],
             resume_source,
+            cache_identity,
         )
         if restored_dock is not None:
             current_dock = restored_dock
@@ -950,6 +958,7 @@ def run_online(
                 {
                     "config": str(config_path),
                     "robot": cfg["robot"],
+                    "cache_identity": cache_identity,
                     "segments": segments,
                     "moved_boxes": [segment["target"] for segment in segments],
                 },
@@ -989,6 +998,7 @@ def run_online(
     manifest = {
         "config": str(config_path),
         "robot": cfg["robot"],
+        "cache_identity": cache_identity,
         "planning_time_seconds": perf_counter() - start_time,
         "execution_summary": execution_summary,
         "support_graph": support_graph_audit,

@@ -260,13 +260,13 @@ planning: {seed: 1, nested: {a: 1}}
         encoding="utf-8",
     )
     leaf.write_text(
-        "extends: middle.yaml\nrobot: {model: fanuc}\n",
+        "extends: middle.yaml\nrobot: {model: fanuc_m20id35}\n",
         encoding="utf-8",
     )
 
     _, config = load_scene_config(leaf)
 
-    assert config["robot"]["model"] == "fanuc"
+    assert config["robot"]["model"] == "fanuc_m20id_35"
     assert config["planning"]["nested"] == {"a": 1, "b": 2}
 
 

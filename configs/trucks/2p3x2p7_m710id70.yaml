@@ -1,0 +1,12 @@
+schema_version: truck_cross_section_v1
+name: trailer_2p3x2p7_m710id70
+inside_width_m: 2.30
+inside_height_m: 2.70
+grid_spacing_m: 0.05
+refined_grid_spacing_m: 0.025
+base_longitudinal_x_scan_m: [-1.20, -1.10, -1.00, -0.90, -0.80, -0.70, -0.60, -0.50, -0.40, -0.30, -0.20]
+base_mounting_surface_height_m: 0.60
+target_carton_front_face_x_m: 1.00
+wall_thickness_m: 0.05
+world_convention: {x: into_trailer, y: left, z: up}
+source: {type: project_design_input, note: Dimensions and mounting height are task inputs.}

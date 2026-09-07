@@ -1,0 +1,24 @@
+schema_version: tool_load_v2
+tool_mass_properties_source: ENGINEERING_MODEL
+mass_properties_reference_frame: flange
+name: shanghai_wantai_three_zone_unloading_gripper_20kg
+mass_kg: 20.0
+com_xyz_m: [0.149810098, 0.000777904, 0.002622005]
+inertia_tensor_com_kg_m2:
+  - [0.629784544, 0.001445978, 0.004337304]
+  - [0.001445978, 0.191270136, -0.004253938]
+  - [0.004337304, -0.004253938, 0.535363874]
+tcp_transform:
+  translation_xyz_m: [0.250, 0.0, 0.0]
+  rotation_matrix: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+planner_tool_length_m: 0.250
+geometry:
+  outer_size_m: [0.576, 0.288, 0.250]
+  rigid_plate_collision_size_m: [0.288, 0.576, 0.024]
+  rigid_plate_center_behind_working_plane_m: 0.0655
+source:
+  type: project_mass_input_plus_scaled_supplied_STEP_distribution
+  mass_basis: project input fixes total tool mass at 20 kg; 10 kg STEP-derived COM and inertia were linearly mass-scaled
+  measured_status: NOT_MEASURED
+  flange_adapter_valves_hoses_cables_included_status: NOT_CONFIRMED
+  manufacturer_load_certificate_status: NOT_EVALUATED

@@ -20,6 +20,7 @@ from typing import Any, Sequence
 import numpy as np
 
 from .benchmark import BenchmarkRecorder
+from .identity import build_scene_cache_identity, normalize_robot_model_id, validate_cache_identity
 from .online_unload import remove_carton
 from .scene import TrailerScene, load_scene_config
 from .support import SupportRelationGraph
@@ -140,7 +141,8 @@ def compile_runtime_library(
     source_payload = {key: manifest.get(key) for key in ("config", "robot", "segments")}
     return {
         "format": "fanuc_certified_runtime_library_v1",
-        "robot_model": manifest.get("robot", {}).get("model"),
+        "robot_model": normalize_robot_model_id(manifest.get("robot", {}).get("model")),
+        "cache_identity": copy.deepcopy(manifest["cache_identity"]),
         "config": manifest["config"],
         "source_plan_sha256": _digest(source_payload),
         "certificate": {
@@ -169,11 +171,19 @@ class RealtimePlanResult:
 
 
 class CertifiedRuntimePlanner:
-    def __init__(self, library: dict[str, Any], *, deadline_seconds: float = 0.05) -> None:
+    def __init__(
+        self,
+        library: dict[str, Any],
+        *,
+        deadline_seconds: float = 0.05,
+        expected_identity: dict[str, Any] | None = None,
+    ) -> None:
         if library.get("format") != "fanuc_certified_runtime_library_v1":
             raise ValueError("unsupported or uncertified runtime library")
-        if library.get("robot_model") != "fanuc_m20id35":
+        if normalize_robot_model_id(library.get("robot_model")) != "fanuc_m20id_35":
             raise ValueError("runtime planner currently supports FANUC M-20iD/35 only")
+        stored_identity = library.get("cache_identity", {})
+        validate_cache_identity(stored_identity, stored_identity if expected_identity is None else expected_identity)
         if not np.isfinite(deadline_seconds) or deadline_seconds <= 0.0:
             raise ValueError("deadline_seconds must be finite and positive")
         self.library = library
@@ -268,7 +278,7 @@ def benchmark_runtime_library(
     if repetitions <= 0:
         raise ValueError("benchmark repetitions must be positive")
     _, cfg = load_scene_config(library["config"])
-    planner = CertifiedRuntimePlanner(library)
+    planner = CertifiedRuntimePlanner(library, expected_identity=build_scene_cache_identity(cfg))
     configured_dock = cfg.get("planning", {}).get("initial_dock_position")
     latencies = []
     reference_targets = None

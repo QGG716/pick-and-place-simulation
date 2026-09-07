@@ -152,6 +152,14 @@ def test_certified_runtime_lookup_is_bounded_and_respects_support_order():
     library = {
         "format": "fanuc_certified_runtime_library_v1",
         "robot_model": "fanuc_m20id35",
+        "cache_identity": {
+            "robot_model_id": "fanuc_m20id35",
+            "robot_kinematic_hash": "test-robot",
+            "tool_name": "test-tool",
+            "tool_mass_kg": 10.0,
+            "tool_config_hash": "test-tool-config",
+            "tcp_transform": {"translation_xyz_m": [0.25, 0.0, 0.0], "rotation_matrix": np.eye(3).tolist()},
+        },
         "certificate": {
             "translation_tolerance_m": 0.0,
             "size_tolerance_m": 0.0,
@@ -184,6 +192,14 @@ def test_certified_runtime_lookup_rejects_perception_drift_without_robust_certif
     library = {
         "format": "fanuc_certified_runtime_library_v1",
         "robot_model": "fanuc_m20id35",
+        "cache_identity": {
+            "robot_model_id": "fanuc_m20id35",
+            "robot_kinematic_hash": "test-robot",
+            "tool_name": "test-tool",
+            "tool_mass_kg": 10.0,
+            "tool_config_hash": "test-tool-config",
+            "tcp_transform": {"translation_xyz_m": [0.25, 0.0, 0.0], "rotation_matrix": np.eye(3).tolist()},
+        },
         "certificate": {
             "translation_tolerance_m": 0.0,
             "size_tolerance_m": 0.0,

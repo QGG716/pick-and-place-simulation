@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from unloading_sim.demo import run
 from unloading_sim.geometry import OBB, make_transform
@@ -24,6 +25,7 @@ from unloading_sim.robot import DHRobot6
 from unloading_sim.scene import TrailerScene, load_scene_config
 
 
+@pytest.mark.simulation
 def test_default_demo_succeeds(tmp_path):
     root = Path(__file__).resolve().parents[1]
     metrics = run(root / "config" / "demo.yaml")

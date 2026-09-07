@@ -84,7 +84,7 @@ def test_kuka_urdf_fk_jacobian_and_ik():
 def test_fanuc_m20id35_urdf_fk_jacobian_and_ik():
     robot = URDFRobot6.fanuc_m20id35(tool_length=0.0)
     q = np.array([-0.25, -0.65, -0.75, 0.45, -1.10, 0.20])
-    assert robot.name == "fanuc_m20id35"
+    assert robot.name == "fanuc_m20id_35"
     assert robot.fk(q).shape == (4, 4)
     assert robot.geometric_jacobian(q).shape == (6, 6)
     assert robot.within_limits(q)

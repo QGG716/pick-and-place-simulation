@@ -245,7 +245,6 @@ simulation_validation:
   vacuum_cup_radius_m: 0.0215
   vacuum_zone_count: 3
   carton_mass_kg: 7.0
-  vacuum_gripper_mass_kg: 10.0
   vacuum_pull_off_force_per_cup_n: 59.0
   vacuum_shear_force_per_cup_n: 43.0
   vacuum_cup_compression_m: 0.015
@@ -253,12 +252,6 @@ simulation_validation:
   # peel/bending moment and pneumatic zone leakage behaviour remain unknown.
   vacuum_holding_torque_nm: null
   vacuum_footprint_size_m: [0.288, 0.576]  # width, length
-  vacuum_outer_size_m: [0.576, 0.288, 0.2275]
-  # The planner collision proxy represents the STEP-derived 576 x 288 x 24 mm
-  # rigid backing plate. Its centre is 65.5 mm behind the uncompressed cup
-  # working plane; the compliant cup solids are handled by the seal model.
-  vacuum_rigid_plate_collision_size_m: [0.288, 0.576, 0.024]
-  vacuum_rigid_plate_center_behind_working_plane_m: 0.0655
   vacuum_effective_seal_area_m2: null
   vacuum_limits_calibrated: false
   # The physical cup compression is 15 mm. SurfaceGripper ray capture adds a
@@ -279,26 +272,6 @@ simulation_validation:
   # convergence only and do not change any hardware force or torque limit.
   vacuum_solver_position_iterations: 4
   vacuum_solver_velocity_iterations: 1
-  vacuum_step_path: res/上海皖泰真空吸盘三分区.STEP
-  vacuum_visual_mesh_path: assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb
-  vacuum_collision_mesh_path: assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl
-  vacuum_mass_properties_path: assets/grippers/shanghai_wantai_three_zone/mass_properties.json
-  vacuum_tool_length_m: 0.2275
-  # STEP coordinates are +X along the 12-cup direction, +Y from flange toward
-  # the cups, and +Z along the 6-cup direction. Isaac J6 +X is the tool normal;
-  # +Y follows the 12-cup direction and +Z the negative 6-cup direction. This
-  # clocking matches the planner pose observed in the Isaac raycast audit.
-  vacuum_flange_origin_step_mm: [-48.561731506404, -162.659188413158, 0.0]
-  vacuum_step_from_tool_rotation_matrix:
-    - [0.0, 1.0, 0.0]
-    - [1.0, 0.0, 0.0]
-    - [0.0, 0.0, -1.0]
-  vacuum_center_of_mass_from_flange_m: [0.149810098, 0.000777904, 0.002622005]
-  vacuum_inertia_at_com_kg_m2:
-    - [0.314892272, 0.000722989, 0.002168652]
-    - [0.000722989, 0.095635068, -0.002126969]
-    - [0.002168652, -0.002126969, 0.267681937]
-  vacuum_flange_transform_confidence: provisional_from_step_and_installation_image
   position_gain: 0.25
   velocity_gain: 1.0
   conveyor:

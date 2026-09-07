@@ -43,6 +43,7 @@ def solve_ik(
     position_weight: float = 1.0,
     orientation_weight: float = 0.45,
     collision_check_stride: int = 8,
+    collision_margin: float = 0.015,
     extra_state_valid: Callable[[np.ndarray], bool] | None = None,
 ) -> IKResult:
     q = robot.clamp(np.asarray(seed, dtype=float).copy())
@@ -56,7 +57,12 @@ def solve_ik(
         err, pos_err, ori_err = pose_error(current, target)
         last_pos, last_ori = pos_err, ori_err
         if pos_err <= position_tolerance and ori_err <= orientation_tolerance:
-            collision_free = not obstacles or robot.is_collision_free(q, obstacles, ignored_obstacle_names=ignored_obstacle_names)
+            collision_free = not obstacles or robot.is_collision_free(
+                q,
+                obstacles,
+                margin=collision_margin,
+                ignored_obstacle_names=ignored_obstacle_names,
+            )
             if collision_free and (extra_state_valid is None or extra_state_valid(q)):
                 return IKResult(True, q, iteration, pos_err, ori_err, "converged")
 
@@ -83,7 +89,12 @@ def solve_ik(
         # During IK, reject gross collision excursions periodically.  This is
         # not a full constrained optimizer, but greatly improves restart quality.
         if iteration % collision_check_stride == 0:
-            collision_free = not obstacles or robot.is_collision_free(candidate, obstacles, ignored_obstacle_names=ignored_obstacle_names)
+            collision_free = not obstacles or robot.is_collision_free(
+                candidate,
+                obstacles,
+                margin=collision_margin,
+                ignored_obstacle_names=ignored_obstacle_names,
+            )
             posture_valid = extra_state_valid is None or extra_state_valid(candidate)
             if not collision_free or not posture_valid:
                 candidate = robot.clamp(q + 0.25 * dq)
@@ -96,7 +107,10 @@ def solve_ik(
     _, last_pos, last_ori = pose_error(robot.fk(q), target)
     if last_pos <= position_tolerance and last_ori <= orientation_tolerance:
         collision_free = not obstacles or robot.is_collision_free(
-            q, obstacles, ignored_obstacle_names=ignored_obstacle_names
+            q,
+            obstacles,
+            margin=collision_margin,
+            ignored_obstacle_names=ignored_obstacle_names,
         )
         if collision_free and (extra_state_valid is None or extra_state_valid(q)):
             return IKResult(

@@ -30,6 +30,7 @@ from unloading_sim.robot_load import (  # noqa: E402
     load_tool,
     qualify_load,
 )
+from unloading_sim.reporting import build_report_context  # noqa: E402
 
 
 DEFAULT_BOX_SIZES_M = (
@@ -53,16 +54,6 @@ def _inclusive(start: float, stop: float, step: float) -> np.ndarray:
     if values[-1] < stop - 1e-10:
         values = np.append(values, stop)
     return values
-
-
-def _resolve_robot(value: str) -> Path:
-    supplied = Path(value)
-    if supplied.exists():
-        return supplied.resolve()
-    candidate = ROOT / "configs" / "robots" / f"{value}.yaml"
-    if not candidate.exists():
-        raise FileNotFoundError(f"robot config not found: {candidate}")
-    return candidate
 
 
 def _output_dir(value: str | None) -> Path:
@@ -165,8 +156,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--safety-factor", type=float, default=1.0)
     args = parser.parse_args(argv)
 
-    robot_path = _resolve_robot(args.robot)
-    tool_path = (ROOT / args.tool).resolve() if not Path(args.tool).is_absolute() else Path(args.tool).resolve()
+    context = build_report_context(robot=args.robot, tool=args.tool, root=ROOT)
+    robot_path = Path(context["resolved_paths"]["robot_config"])
+    tool_path = Path(context["resolved_paths"]["tool_resolved_config"])
     robot, tool = load_robot_limits(robot_path), load_tool(tool_path)
     output = _output_dir(args.output_dir)
     masses = _inclusive(*args.mass_range)
@@ -238,8 +230,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     config_record = {
         "command": "analyze_payload_envelope",
-        "robot_config": str(robot_path),
-        "tool_config": str(tool_path),
+        "context": context,
         "arguments": vars(args),
         "units": "SI; CLI range suffixes marked mm are explicitly converted by 1e-3",
     }
@@ -277,8 +268,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     highest_formal_pass = max(formal_pass_masses, default=None)
     required = [result for row, result in zip(rows, results) if float(row["box_mass_kg"]) == 25.0]
     required_failures = sum(result.qualification.startswith("FAIL_") for result in required)
+    decision = (
+        "QUALIFIED"
+        if required and required_failures == 0 and all(result.qualification in {"PASS", "PASS_DERATED"} for result in required)
+        else "NOT_QUALIFIED"
+    )
     summary = {
         "model": robot.model,
+        "context": context,
+        "decision": decision,
         "rows": len(rows),
         "qualification_counts": counts,
         "required_25kg_cases": len(required),
@@ -292,11 +290,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         "conclusion": "FAIL or NOT_EVALUATED; not vendor-qualified" if required_failures or robot.com_limit_status != "PASS" else "see row-level results",
     }
     (output / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
-    report = f"""# M-20iD/35 technical load qualification
+    report = f"""# {context['robot_model_id']} technical load qualification
 
 ## Decision
 
-The 25 kg box plus the configured {tool.mass_kg:.3f} kg tool is **not qualified as a blanket PASS**. {required_failures} of {len(required)} required 25 kg size/grasp cases fail a known published payload, moment, or inertia limit. Cases without a known-limit failure remain `{robot.com_limit_status}` because the public product sheet does not contain a digitized payload/CoM curve.
+The 25 kg box plus `{context['tool_name']}` ({tool.mass_kg:.3f} kg) has the fail-closed decision **{decision}**. {required_failures} of {len(required)} required 25 kg size/grasp cases fail a known published payload, moment, or inertia limit. Cases without a known-limit failure remain `{robot.com_limit_status}` because the configured robot evidence does not contain a digitized payload/CoM curve.
 
 In the configured 1 kg scan, the highest box mass for which all {len(DEFAULT_BOX_SIZES_M) * len(GRASPS)} size/grasp cases pass every available published hard limit is **{highest_hard_limit_pass} kg**. The highest mass for which every known-limit case remains in the NORMAL region is **{highest_all_normal} kg**. The highest formally all-criteria-qualified mass is **{highest_formal_pass}**, because the official CoM curve is still unavailable.
 
@@ -305,7 +303,7 @@ In the configured 1 kg scan, the highest box mass for which all {len(DEFAULT_BOX
 - Total tool and box mass, both CoMs, solid-cuboid box inertia, the tool tensor, the parallel-axis theorem, gravity, configured linear/angular acceleration, and safety factor are included.
 - Dynamic wrist moment is an `ENGINEERING_ESTIMATE`, not a FANUC controller certification.
 - Published source: {robot.source['title']} ({robot.source['url']}).
-- Tool mass properties: `{tool.source.get('file', tool.source.get('base_file', 'configured source'))}`; flange clocking is `{tool.source.get('flange_clocking_status', 'unknown')}`.
+- Tool config: `{context['resolved_paths']['tool_resolved_config']}` ({context['input_hashes']['tool_resolved_config_sha256']}); mass properties are `{context['tool_mass_properties_source']}`, measurement status is `{context['tool_measured_status']}`, and manufacturer qualification is `{context['tool_manufacturer_qualification_status']}`.
 
 ## Review boundary
 

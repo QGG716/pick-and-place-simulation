@@ -1,0 +1,54 @@
+extends: common_unloading.yaml
+robot:
+  model: fanuc_m710id_70
+  model_config: ../configs/robots/fanuc_m710id_70.yaml
+  urdf_path: assets/robots/fanuc_m710id_70/m710id_70.urdf
+  base_position: [-0.70, 0.0, 0.60]
+  base_rpy: [0.0, 0.0, 0.0]
+  base_link: base_link
+  flange_link: flange
+  tip_link: tool0
+  home_joints: [-0.17301878, -1.13655578, -0.74874837, 0.63151726, -2.12393931, -2.83276516]
+tool:
+  config: ../configs/tools/unloading_gripper_20kg.yaml
+execution:
+  seed: 71070
+  profiles:
+    CONSERVATIVE: {velocity_scale: 0.25, acceleration_scale: 0.25, jerk_scale: 0.25}
+    NORMAL: {velocity_scale: 0.50, acceleration_scale: 0.50, jerk_scale: 0.50}
+    AGGRESSIVE_ENGINEERING_ONLY: {velocity_scale: 0.75, acceleration_scale: 0.75, jerk_scale: 0.75}
+  joint_velocity_limits_rad_s: [3.141592654, 3.141592654, 3.141592654, 4.537856055, 4.537856055, 6.457718232]
+  joint_acceleration_limits_rad_s2: [1.5, 1.5, 1.5, 3.0, 3.0, 4.0]
+  joint_jerk_limits_rad_s3: [7.5, 7.5, 7.5, 15.0, 15.0, 20.0]
+  acceleration_and_jerk_evidence: ENGINEERING_ASSUMPTION
+planning:
+  seed: 71070
+  pregrasp_standoff_m: 0.15
+  extraction_scan_step_m: 0.01
+  extraction_free_clearance_m: 0.02
+  maximum_extraction_m: 1.50
+  collision_margin_m: 0.01
+  candidate_cost_weights:
+    loaded_path_length: 4.0
+    extraction_distance: 2.0
+    joint_motion: 1.0
+    collision_risk: 8.0
+    singularity_penalty: 5.0
+    joint_limit_penalty: 5.0
+    conveyor_handoff_distance: 2.0
+    wrist_margin_penalty: 4.0
+conveyor:
+  topology: independent_l_shape
+  world_axes: {forward: "+X", left: "+Y", up: "+Z"}
+  chassis_size_xyz_m: [1.80, 2.00, 0.30]
+  chassis_center_from_robot_base_xyz_m: [-1.00, -0.075, -0.45]
+  cross_leg_size_xy_m: [0.45, 2.00]
+  longitudinal_leg_nominal_length_m: 0.65
+  longitudinal_leg_width_m: 0.70
+  deck_thickness_m: 0.12
+  maximum_extension_m: 1.50
+  minimum_stack_surface_clearance_m: 0.02
+  minimum_receiving_surface_z_m: 0.20
+  upper_stack_bottom_clearance_m: 0.015
+outputs:
+  directory: .tmp/accept_m710id70_v2

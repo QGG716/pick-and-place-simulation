@@ -32,6 +32,8 @@ from typing import Any, Mapping, Sequence
 import numpy as np
 import yaml
 
+from unloading_sim.identity import load_tool_config, normalize_robot_model_id
+
 
 GRAVITY_M_S2 = 9.80665
 AXIS_NAMES = ("J4", "J5", "J6")
@@ -370,7 +372,7 @@ def load_robot_limits(path: str | Path) -> RobotLoadLimits:
         if not urdf_path.is_absolute():
             urdf_path = (resolved.parent / urdf_path).resolve()
     return RobotLoadLimits(
-        model=str(data["model"]),
+        model=normalize_robot_model_id(data["model"]),
         rated_payload_kg=float(data["rated_payload_kg"]),
         reach_m=float(data["reach_m"]),
         joint_speed_rad_s=tuple(float(v) for v in data["joint_speed_rad_s"]),  # type: ignore[arg-type]
@@ -393,22 +395,21 @@ def load_robot_limits(path: str | Path) -> RobotLoadLimits:
 
 
 def load_tool(path: str | Path) -> ToolLoad:
-    data, _ = _read_yaml(path)
-    inertia_value = data.get("inertia_tensor_com_kg_m2", data.get("inertia_at_com_kg_m2"))
-    if inertia_value is None:
-        raise ValueError("tool config requires inertia_tensor_com_kg_m2")
+    config = load_tool_config(path)
     return ToolLoad(
-        mass_kg=float(data["mass_kg"]),
-        com_xyz_m=np.asarray(data["com_xyz_m"], dtype=float),
-        inertia_at_com_kg_m2=np.asarray(inertia_value, dtype=float),
-        tcp_xyz_m=np.asarray(data["tcp_xyz_m"], dtype=float),
-        source=dict(data["source"]),
-        mass_properties_source=ToolMassPropertiesSource(
-            data.get("tool_mass_properties_source", "ENGINEERING_MODEL")
-        ),
-        mass_properties_reference_frame=str(
-            data.get("mass_properties_reference_frame", "flange")
-        ),
+        mass_kg=config.mass_kg,
+        com_xyz_m=np.asarray(config.com_xyz_m, dtype=float),
+        inertia_at_com_kg_m2=np.asarray(config.inertia_tensor_com_kg_m2, dtype=float),
+        tcp_xyz_m=np.asarray(config.tcp_translation_xyz_m, dtype=float),
+        source={
+            **dict(config.source),
+            "tool_name": config.name,
+            "resolved_config_path": str(config.config_path),
+            "config_sha256": config.config_hash,
+            "tcp_transform": config.tcp_transform,
+        },
+        mass_properties_source=ToolMassPropertiesSource(config.mass_properties_source),
+        mass_properties_reference_frame=config.mass_properties_reference_frame,
     )
 
 
@@ -443,14 +444,11 @@ def load_qualification_case(path: str | Path) -> LoadCase:
     if not robot_config.is_absolute():
         robot_config = (resolved.parent / robot_config).resolve()
     robot = load_robot_limits(robot_config)
-    if str(robot_data["model"]) != robot.model:
+    if normalize_robot_model_id(robot_data["model"]) != robot.model:
         raise ValueError("load-case robot model does not match the limits config")
     tool_data = data["tool"]
-    tool = ToolLoad(
-        mass_kg=float(tool_data["mass_kg"]),
-        com_xyz_m=np.asarray(tool_data["com_xyz_m"], dtype=float),
-        inertia_at_com_kg_m2=np.asarray(tool_data["inertia_at_com_kg_m2"], dtype=float),
-        tcp_xyz_m=np.asarray(tool_data["tcp_xyz_m"], dtype=float),
-        source=dict(tool_data["source"]),
-    )
+    tool_config = Path(str(tool_data["config"]))
+    if not tool_config.is_absolute():
+        tool_config = (resolved.parent / tool_config).resolve()
+    tool = load_tool(tool_config)
     return load_case_from_mapping(data, robot, tool)

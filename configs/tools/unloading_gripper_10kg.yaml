@@ -1,0 +1,43 @@
+schema_version: tool_load_v2
+tool_mass_properties_source: ENGINEERING_MODEL
+mass_properties_reference_frame: flange
+name: shanghai_wantai_three_zone_unloading_gripper_10kg
+mass_kg: 10.0
+# STEP-derived uniform-density engineering estimate. These values are neither
+# measured nor manufacturer-qualified and must remain fail-closed in reports.
+com_xyz_m: [0.149810098, 0.000777904, 0.002622005]
+inertia_tensor_com_kg_m2:
+  - [0.314892272, 0.000722989, 0.002168652]
+  - [0.000722989, 0.095635068, -0.002126969]
+  - [0.002168652, -0.002126969, 0.267681937]
+tcp_transform:
+  translation_xyz_m: [0.250, 0.0, 0.0]
+  rotation_matrix:
+    - [1.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0]
+    - [0.0, 0.0, 1.0]
+# Historical planner proxy measured along its internal tool-axis convention.
+# It is not an independent mass property or an alternative flange-to-TCP claim.
+planner_tool_length_m: 0.2275
+geometry:
+  step_path: res/上海皖泰真空吸盘三分区.STEP
+  visual_mesh_path: assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb
+  collision_mesh_path: assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl
+  mass_properties_path: assets/grippers/shanghai_wantai_three_zone/mass_properties.json
+  outer_size_m: [0.576, 0.288, 0.2275]
+  rigid_plate_collision_size_m: [0.288, 0.576, 0.024]
+  rigid_plate_center_behind_working_plane_m: 0.0655
+  flange_origin_step_mm: [-48.561731506404, -162.659188413158, 0.0]
+  step_from_tool_rotation_matrix:
+    - [0.0, 1.0, 0.0]
+    - [1.0, 0.0, 0.0]
+    - [0.0, 0.0, -1.0]
+  flange_transform_confidence: provisional_from_step_and_installation_image
+source:
+  type: supplied_STEP_engineering_estimate
+  file: assets/grippers/shanghai_wantai_three_zone/mass_properties.json
+  mass_basis: supplied_total_mass_with_uniform_density_over_STEP_solids
+  measured_status: NOT_MEASURED
+  flange_clocking_status: PROVISIONAL
+  manufacturer_load_certificate_status: NOT_EVALUATED
+  generated_date: "2026-08-27"

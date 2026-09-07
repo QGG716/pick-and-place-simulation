@@ -10,6 +10,7 @@ import numpy as np
 import yaml
 
 from .geometry import OBB, rotation_matrix_from_rpy
+from .identity import load_tool_config, normalize_robot_model_id
 
 
 @dataclass
@@ -131,6 +132,16 @@ def load_scene_config(path: str | Path) -> tuple[TrailerScene, dict[str, Any]]:
         if portable_path.exists():
             path = portable_path
     cfg = _load_config_dict(path)
+    robot_cfg = cfg.get("robot")
+    if isinstance(robot_cfg, dict):
+        robot_cfg["model"] = normalize_robot_model_id(robot_cfg.get("model", "ur5e_like"))
+    tool_cfg = cfg.get("tool")
+    if isinstance(tool_cfg, dict) and "config" in tool_cfg:
+        tool_path = Path(str(tool_cfg["config"]))
+        if not tool_path.is_absolute():
+            tool_path = path.resolve().parent / tool_path
+        cfg["tool"] = load_tool_config(tool_path).to_mapping()
+    cfg["_resolved_config_path"] = str(path.resolve())
 
     trailer = cfg["scene"]["trailer"]
     obstacles = build_trailer_walls(

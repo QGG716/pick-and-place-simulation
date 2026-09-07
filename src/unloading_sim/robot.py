@@ -493,11 +493,49 @@ class URDFRobot:
             tool_collision_size=tool_collision_size,
             tool_collision_center_offset=tool_collision_center_offset,
             tool_collision_local_boxes=tool_collision_local_boxes,
-            name="fanuc_m20id35",
+            name="fanuc_m20id_35",
         )
         # J5 rotates at the end of the long J4 forearm. Their conservative
         # centerline capsules overlap at valid wrist configurations.
         robot.self_collision_exclusions.add((2, 4))
+        return robot
+
+    @classmethod
+    def fanuc_m710id_70(
+        cls,
+        urdf_path: str | Path = "assets/robots/fanuc_m710id_70/m710id_70.urdf",
+        base_position: Iterable[float] = (-0.70, 0.0, 0.60),
+        base_rpy: Iterable[float] = (0.0, 0.0, 0.0),
+        tool_length: float = 0.25,
+        tool_collision_size: Sequence[float] | None = None,
+        tool_collision_center_offset: float | None = None,
+        tool_collision_local_boxes: Sequence[Sequence[float]] | None = None,
+    ) -> "URDFRobot":
+        """Build the traceable first-layer FANUC M-710iD/70 model.
+
+        Joint origins, axes, limits and velocities are transcribed from the
+        supplied FANUC ROBCAD model.  Link radii are conservative CAD-envelope
+        proxies; they are not manufacturer collision meshes or inertial data.
+        ``base_position[2]`` is the mounting-flange plane height.
+        """
+        robot = cls.from_urdf(
+            urdf_path=urdf_path,
+            active_joint_names=["J1", "J2", "J3", "J4", "J5", "J6"],
+            base_link="base_link",
+            tip_link="tool0",
+            base_position=base_position,
+            base_rpy=base_rpy,
+            tool_length=tool_length,
+            link_radii=[0.31, 0.28, 0.24, 0.18, 0.15, 0.12],
+            tool_collision_size=tool_collision_size,
+            tool_collision_center_offset=tool_collision_center_offset,
+            tool_collision_local_boxes=tool_collision_local_boxes,
+            name="fanuc_m710id_70",
+        )
+        # The wrist axes intersect by design. Conservative centre-line
+        # capsules overlap there, so adjacent wrist pairs are excluded while
+        # non-adjacent links remain checked.
+        robot.self_collision_exclusions.update({(2, 4), (3, 5)})
         return robot
 
     @staticmethod

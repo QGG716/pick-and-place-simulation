@@ -1,20 +1,3 @@
-schema_version: tool_load_v1
-tool_mass_properties_source: ENGINEERING_MODEL
-mass_properties_reference_frame: flange
-name: shanghai_wantai_three_zone_unloading_gripper
-mass_kg: 10.0
-com_xyz_m: [0.149810098, 0.000777904, 0.002622005]
-inertia_at_com_kg_m2:
-  - [0.314892272, 0.000722989, 0.002168652]
-  - [0.000722989, 0.095635068, -0.002126969]
-  - [0.002168652, -0.002126969, 0.267681937]
-# Flange +X points toward the suction plane. The requested study offset is
-# 250 mm; it is deliberately distinct from the CAD uncompressed extreme.
-tcp_xyz_m: [0.250, 0.0, 0.0]
-source:
-  type: supplied_STEP_engineering_estimate
-  file: assets/grippers/shanghai_wantai_three_zone/mass_properties.json
-  mass_basis: supplied_total_mass_with_uniform_density_over_STEP_solids
-  flange_clocking_status: PROVISIONAL
-  manufacturer_load_certificate_status: NOT_EVALUATED
-  generated_date: "2026-08-27"
+schema_version: tool_load_alias_v1
+extends: unloading_gripper_10kg.yaml
+description: Current default unloading tool; physical values live only in the 10 kg config.
