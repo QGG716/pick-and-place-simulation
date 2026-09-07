@@ -96,6 +96,22 @@ class TimedTrajectory:
     peak_jerk: np.ndarray
     iterations: int
 
+    def sample(self, timestamp: float) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Evaluate the actual C2, rest-to-rest quintic interpolation."""
+        if len(self.positions) == 1:
+            zeros = np.zeros(self.positions.shape[1])
+            return self.positions[0].copy(), zeros.copy(), zeros.copy(), zeros.copy()
+        t = float(np.clip(timestamp, 0.0, self.duration_seconds))
+        i = min(int(np.searchsorted(self.time_from_start, t, side="right")) - 1, len(self.positions) - 2)
+        duration = self.time_from_start[i + 1] - self.time_from_start[i]
+        u = (t - self.time_from_start[i]) / duration
+        delta = self.positions[i + 1] - self.positions[i]
+        s = 10*u**3 - 15*u**4 + 6*u**5
+        v = (30*u**2 - 60*u**3 + 30*u**4) / duration
+        a = (60*u - 180*u**2 + 120*u**3) / duration**2
+        j = (60 - 360*u + 360*u**2) / duration**3
+        return self.positions[i] + s * delta, v * delta, a * delta, j * delta
+
     @property
     def duration_seconds(self) -> float:
         return float(self.time_from_start[-1]) if self.time_from_start.size else 0.0
@@ -105,6 +121,8 @@ class TimedTrajectory:
         acceleration_ratio = self.peak_acceleration / limits.effective_acceleration
         jerk_ratio = self.peak_jerk / limits.effective_jerk
         return {
+            "interpolation": "C2_piecewise_quintic_rest_to_rest",
+            "peak_method": "analytic_extrema_not_finite_differences",
             "duration_seconds": self.duration_seconds,
             "waypoints": int(len(self.positions)),
             "iterations": int(self.iterations),
@@ -168,13 +186,11 @@ def time_parameterize_joint_path(
     max_iterations: int = 200,
     tolerance: float = 1e-8,
 ) -> TimedTrajectory:
-    """Assign timestamps and iteratively enforce discrete joint motion limits.
+    """Time the unchanged joint edges with executable C2 quintic polynomials.
 
-    The returned positions are unchanged, so the geometric collision proof is
-    preserved.  Acceleration is estimated at path knots from adjacent segment
-    velocities, including zero start/end velocity; jerk is the corresponding
-    acceleration change across each segment.  This is a deterministic command
-    schedule audit, not a replacement for controller-specific interpolation.
+    Every knot is at rest (conservative, not time optimal). Exact maxima of
+    s'(u), s''(u), s'''(u) are 15/8, 10/sqrt(3), 60. Thus even a single
+    segment respects acceleration and jerk, unlike finite-difference audits.
     """
     positions = np.asarray(path, dtype=float)
     if positions.size == 0:
@@ -190,65 +206,30 @@ def time_parameterize_joint_path(
             np.zeros((0, limits.dof)), zeros.copy(), zeros.copy(), zeros.copy(), 0
         )
 
+    del max_iterations, tolerance
     displacement = np.abs(np.diff(positions, axis=0))
-    durations = np.maximum(
-        np.max(displacement / limits.effective_velocity[None, :], axis=1),
-        limits.minimum_segment_seconds,
-    )
-
-    iterations = 0
-    for iterations in range(1, max_iterations + 1):
-        velocities, accelerations, jerks = _discrete_derivatives(positions, durations)
-        segment_scale = np.ones_like(durations)
-
-        velocity_ratio = np.max(np.abs(velocities) / limits.effective_velocity[None, :], axis=1)
-        segment_scale = np.maximum(segment_scale, velocity_ratio)
-
-        acceleration_ratio = np.max(
-            np.abs(accelerations) / limits.effective_acceleration[None, :], axis=1
-        )
-        for waypoint_index, ratio in enumerate(acceleration_ratio):
-            if ratio <= 1.0 + tolerance:
-                continue
-            scale = np.sqrt(ratio) * 1.000001
-            if waypoint_index > 0:
-                segment_scale[waypoint_index - 1] = max(segment_scale[waypoint_index - 1], scale)
-            if waypoint_index < len(durations):
-                segment_scale[waypoint_index] = max(segment_scale[waypoint_index], scale)
-
-        jerk_ratio = np.max(np.abs(jerks) / limits.effective_jerk[None, :], axis=1)
-        for segment_index, ratio in enumerate(jerk_ratio):
-            if ratio <= 1.0 + tolerance:
-                continue
-            scale = np.cbrt(ratio) * 1.000001
-            first = max(0, segment_index - 1)
-            last = min(len(durations), segment_index + 2)
-            segment_scale[first:last] = np.maximum(segment_scale[first:last], scale)
-
-        if np.max(segment_scale) <= 1.0 + tolerance:
-            break
-        durations *= segment_scale
-    else:
-        raise RuntimeError(f"trajectory timing did not converge after {max_iterations} iterations")
-
-    velocities, accelerations, jerks = _discrete_derivatives(positions, durations)
-    peak_velocity = np.max(np.abs(velocities), axis=0, initial=0.0)
-    peak_acceleration = np.max(np.abs(accelerations), axis=0, initial=0.0)
-    peak_jerk = np.max(np.abs(jerks), axis=0, initial=0.0)
-    result = TimedTrajectory(
-        positions.copy(),
-        np.concatenate(([0.0], np.cumsum(durations))),
-        velocities,
-        accelerations,
-        jerks,
-        peak_velocity,
-        peak_acceleration,
-        peak_jerk,
-        iterations,
-    )
+    durations = np.maximum.reduce([
+        np.max(1.875 * displacement / limits.effective_velocity, axis=1),
+        np.max(np.sqrt((10 / np.sqrt(3)) * displacement / limits.effective_acceleration), axis=1),
+        np.max(np.cbrt(60 * displacement / limits.effective_jerk), axis=1),
+        np.full(len(displacement), limits.minimum_segment_seconds),
+    ])
+    result = _quintic_from_durations(positions, durations, 1)
     if not result.audit(limits)["within_limits"]:
         raise RuntimeError("trajectory timing converged without satisfying motion limits")
     return result
+
+
+def _quintic_from_durations(positions: np.ndarray, durations: np.ndarray, iterations: int) -> TimedTrajectory:
+    delta = np.diff(positions, axis=0)
+    velocities = 1.875 * delta / durations[:, None]
+    acceleration_peaks = (10 / np.sqrt(3)) * np.abs(delta) / durations[:, None]**2
+    jerks = 60 * delta / durations[:, None]**3
+    return TimedTrajectory(positions.copy(), np.r_[0.0, np.cumsum(durations)],
+                           velocities, np.zeros_like(positions), jerks,
+                           np.max(np.abs(velocities), axis=0, initial=0),
+                           np.max(acceleration_peaks, axis=0, initial=0),
+                           np.max(np.abs(jerks), axis=0, initial=0), iterations)
 
 
 def _waypoint_velocities(segment_velocity: np.ndarray, waypoint_count: int, dof: int) -> np.ndarray:
@@ -274,20 +255,7 @@ def scale_timed_trajectory_window(
         return trajectory
     durations = np.diff(trajectory.time_from_start)
     durations[start_waypoint:end_waypoint] *= scale
-    velocities, accelerations, jerks = _discrete_derivatives(
-        trajectory.positions, durations
-    )
-    return TimedTrajectory(
-        trajectory.positions.copy(),
-        np.concatenate(([0.0], np.cumsum(durations))),
-        velocities,
-        accelerations,
-        jerks,
-        np.max(np.abs(velocities), axis=0, initial=0.0),
-        np.max(np.abs(accelerations), axis=0, initial=0.0),
-        np.max(np.abs(jerks), axis=0, initial=0.0),
-        trajectory.iterations,
-    )
+    return _quintic_from_durations(trajectory.positions, durations, trajectory.iterations)
 
 
 def audit_driver_limits(
@@ -305,19 +273,21 @@ def audit_driver_limits(
         raise ValueError(
             f"payload {payload_kg:.3f} kg exceeds driver certificate {limits.maximum_payload_kg:.3f} kg"
         )
-    velocities = _waypoint_velocities(
-        trajectory.segment_velocity, len(trajectory.positions), trajectory.positions.shape[1]
-    )
+    # Include segment interiors and analytic acceleration extrema; all q/qd/qdd
+    # come from the same polynomial, never unrelated finite differences.
+    fractions = sorted({*np.linspace(0, 1, 17), (3-np.sqrt(3))/6, (3+np.sqrt(3))/6})
+    times = [0.0] if len(trajectory.positions) == 1 else [
+        a + u*(b-a) for a, b in zip(trajectory.time_from_start[:-1], trajectory.time_from_start[1:]) for u in fractions]
+    samples = [trajectory.sample(t) for t in times]
+    velocities = np.asarray([sample[1] for sample in samples])
     efforts = np.asarray(
         [
             inverse_dynamics(q, velocity, acceleration, float(payload_kg))
-            for q, velocity, acceleration in zip(
-                trajectory.positions, velocities, trajectory.waypoint_acceleration
-            )
+            for q, velocity, acceleration, _jerk in samples
         ],
         dtype=float,
     )
-    if efforts.shape != trajectory.positions.shape or not np.all(np.isfinite(efforts)):
+    if efforts.shape != velocities.shape or not np.all(np.isfinite(efforts)):
         raise ValueError("inverse_dynamics must return one finite effort vector per waypoint")
     power = np.abs(efforts * velocities)
     peak_effort = np.max(np.abs(efforts), axis=0)
@@ -333,6 +303,7 @@ def audit_driver_limits(
         "max_torque_ratio": float(np.max(torque_ratio, initial=0.0)),
         "max_power_ratio": float(np.max(power_ratio, initial=0.0)),
         "within_limits": bool(np.all(torque_ratio <= 1.0 + 1e-8) and np.all(power_ratio <= 1.0 + 1e-8)),
+        "validation_scope": "sampled_inverse_dynamics_not_continuous_torque_certificate",
     }
 
 
@@ -366,18 +337,7 @@ def time_parameterize_joint_path_with_dynamics(
             float(audit["max_power_ratio"]),
         )
         durations *= scale * 1.000001
-        velocities, accelerations, jerks = _discrete_derivatives(trajectory.positions, durations)
-        trajectory = TimedTrajectory(
-            trajectory.positions.copy(),
-            np.concatenate(([0.0], np.cumsum(durations))),
-            velocities,
-            accelerations,
-            jerks,
-            np.max(np.abs(velocities), axis=0, initial=0.0),
-            np.max(np.abs(accelerations), axis=0, initial=0.0),
-            np.max(np.abs(jerks), axis=0, initial=0.0),
-            trajectory.iterations,
-        )
+        trajectory = _quintic_from_durations(trajectory.positions, durations, trajectory.iterations)
         audit = audit_driver_limits(
             trajectory, driver_limits, inverse_dynamics, payload_kg=payload_kg
         )

@@ -166,12 +166,15 @@ def external_load(robot, tool, q, attachment: RigidAttachment | None, box_mass: 
         moments.append(moment); static.append(grav); inertias.append(inertia_axis)
     # Only axis intercepts are transcribed. Outside is a definite failure;
     # inside their rectangle does not establish membership in the full curve.
-    boundary = model["payload_com_limits"]["conservative_70kg_axis_intercepts_m"]
+    curves = model["resolved_payload_evidence"]["public_numeric_values"]["diagram_axis_intercepts_m"]
+    lower = sorted((float(key.removesuffix("kg")), value) for key,value in curves.items() if float(key.removesuffix("kg")) <= mass)
     radial = float(np.linalg.norm(com_flange[1:]))
     axial = abs(float(com_flange[0]))
-    # For lower masses the 70 kg curve alone cannot prove a failure. The V3
-    # baseline is 62.5 kg and uses the next-higher published curve, as V2 did.
-    cg = "FAIL" if mass > 60 and (axial > boundary["axial_z"] or radial > boundary["radial_xy"]) else "NOT_EVALUATED"
+    # Exceeding even the next-LOWER mass curve's intercept proves failure
+    # under the documented monotone payload envelope. Exceeding only the
+    # next-higher conservative screen must not fabricate a physical failure.
+    boundary = None if not lower else lower[-1][1]
+    cg = "FAIL" if boundary and (axial > boundary["axial_z"] or radial > boundary["radial_xy"]) else "NOT_EVALUATED"
     allow_m = np.array([model["wrist_limits"]["allowable_moment_nm"][k] for k in ("J4","J5","J6")])
     allow_i = np.array([model["wrist_limits"]["allowable_inertia_kg_m2"][k] for k in ("J4","J5","J6")])
     statuses = {"rated_payload": "PASS" if mass <= model["rated_payload_kg"] else "FAIL",
@@ -188,4 +191,5 @@ def external_load(robot, tool, q, attachment: RigidAttachment | None, box_mass: 
             "moment_utilization": (np.abs(moments)/allow_m).tolist(),
             "inertia_utilization": (np.asarray(inertias)/allow_i).tolist(),
             "method": "same_rigid_attachment_Newton_Euler_external_load_only",
+            "cg_failure_reference": None if not lower else {"payload_kg":lower[-1][0],"axis_intercepts_m":boundary},
             "evidence_scope": "engineering_screen_missing_certified_drive_and_complete_curve_data"}

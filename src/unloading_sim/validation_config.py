@@ -107,6 +107,10 @@ def load_validation_config(path: str | Path = DEFAULT) -> ValidationConfig:
         return (Path(sources[key]).parent / value).resolve()
     model_path = resource("robot.model_config", data["robot"]["model_config"])
     model = yaml.safe_load(model_path.read_text(encoding="utf-8"))
+    evidence_path = DEFAULT.parents[2] / model["payload_com_evidence"]
+    evidence = yaml.safe_load(evidence_path.read_text(encoding="utf-8"))
+    model["resolved_payload_evidence"] = evidence
+    model["resolved_payload_evidence_path"] = str(evidence_path)
     tool = load_tool_config(resource("tool.config", data["tool"]["config"]))
     if tool.mass_properties_reference_frame != "flange":
         raise ValueError("tool mass properties must be expressed in flange coordinates")
