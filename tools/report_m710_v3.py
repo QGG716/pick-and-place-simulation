@@ -167,7 +167,7 @@ V3 用独立、严格校验且支持带来源继承的 `configs/validation/m710i
 四个面×四个滚转角的回归确保初始箱体不会因滚转而凭空转动。
 
 原 home 在新增工具自碰撞检查下命中 tool_envelope/J4_link。
-V3 显式采用 seed=71070、3000 次离线初始化搜索中第 1507 个有效姿态；
+V3 显式采用 seed=71070、3000 次离线初始化搜索中抽样序号 1507 的有效姿态；
 `home_probe.json` 保存候选和原 home 失败。没有接受从碰撞 home 开始的运动。
 质量、TCP 长度和箱体尺寸没有为提高通过率而改写。
 
@@ -305,7 +305,7 @@ NOT_EVALUATED，合并时 FAIL 优先。连杆惯量、驱动转矩/功率/热�
 | 升降轴及底盘 | 世界位姿与安装位解耦、全任务高度矩阵、升降扫掠 | 不能从零覆盖/离散最佳高度推出零行程；需安装连接、立柱刚度、载荷稳定性及驱动/制动数据 |
 
 原始 regular/random 行间存在 10 mm 几何间隔，属于原始第一层测试场景，
-本轮保留以保证人口与口径可比；货垛在真实重力下的支撑/沉降稳定性
+本轮保留以保证样本集合与口径可比；货垛在真实重力下的支撑/沉降稳定性
 尚未验证。厂家数据缺失未阻止 CPU 几何与数值部分实施和复跑。
 
 ## 8. 测试、复现与交付证据
@@ -316,6 +316,8 @@ NOT_EVALUATED，合并时 FAIL 优先。连杆惯量、驱动转矩/功率/热�
 见 `demo_pytest.xml`；该次 pytest 执行约 2.08 s，满足五秒级默认演示目标。
 
 ```powershell
+# 全新检出先生成独立基线，再重放并比较两次结果
+.venv\\Scripts\\python.exe tools/reproduce_m710_v2.py --output-dir outputs/m710id70_v3/v2_baseline
 .venv\\Scripts\\python.exe tools/reproduce_m710_v2.py
 .venv\\Scripts\\python.exe tools/run_m710id70_v3.py --phase all --workers 4
 # 可对未完成的升降部分使用更多独立 CPU 进程；缓存必须匹配代码/参数指纹
