@@ -1,0 +1,45 @@
+{
+  "schema": "online_planning_integration_fixture_v1",
+  "name": "m710id70_v3_bottom_support_release_alternative",
+  "scope": "independently validated bottom-alternative action only; not a continuous-unload or throughput claim",
+  "evidence": {
+    "archive": "docs/validation/evidence/m710id70_v3_evidence.zip",
+    "archive_sha256": "647dee798e7dbffc621fc9ec6ec4f094d375770f70dcb03cd6577908aba7868f",
+    "member": "v3/bottom_support_release_alternative.json"
+  },
+  "robot_model": "fanuc_m710id_70",
+  "scene": {
+    "target": {
+      "name": "last_bottom",
+      "center_m": [1.3, 0.0, 0.15],
+      "size_m": [0.6, 0.4, 0.3]
+    },
+    "cartons": ["last_bottom"]
+  },
+  "request": {
+    "seed": 71070,
+    "start_state_rad": [
+      -1.2535046523103328,
+      -0.9321730956021104,
+      -1.186652413419966,
+      -0.21179524367224456,
+      -0.2394417658165151,
+      -1.6893308052919531
+    ],
+    "target_id": "last_bottom",
+    "candidate_id": "top_roll_270"
+  },
+  "recorded_result": {
+    "status": "SUCCESS",
+    "geometric_feasible": true,
+    "failure_stage": "complete",
+    "failure_reason": "OK",
+    "face": "top",
+    "roll_deg": 270,
+    "loaded_tcp_path_m": 2.209370,
+    "conservative_cpu_cycle_seconds_not_for_throughput": 58.891767,
+    "payload_qualification": "NOT_EVALUATED",
+    "placement_penetration_m": 0.000030229,
+    "explicit_contact_tolerance_m": 0.0002
+  }
+}

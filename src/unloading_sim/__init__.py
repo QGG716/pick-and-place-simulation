@@ -20,6 +20,23 @@ from .stability import PointMass, StabilityResult, SupportFootprint
 from .trajectory import BlendResult, blend_joint_path
 from .support import SupportEdge, SupportRelationGraph
 from .qualification import ReplayQualificationPolicy, evaluate_replay_qualification
+from .online_planning import (
+    ContinuousPlanningSession,
+    DeterministicAsyncPlanningExecutor,
+    ExecutionMonitor,
+    FailureAction,
+    PlanEnvelope,
+    PlanningCandidate,
+    PlanningPath,
+    PlanningRequest,
+    PlanningResult,
+    PlannerBackend,
+    PlanStatus,
+    ReplanReason,
+    SceneRevision,
+    SessionState,
+    SynchronousPlanningExecutor,
+)
 
 __all__ = [
     "Capsule",
@@ -58,4 +75,19 @@ __all__ = [
     "PointMass",
     "StabilityResult",
     "SupportFootprint",
+    "ContinuousPlanningSession",
+    "DeterministicAsyncPlanningExecutor",
+    "ExecutionMonitor",
+    "FailureAction",
+    "PlanEnvelope",
+    "PlanningCandidate",
+    "PlanningPath",
+    "PlanningRequest",
+    "PlanningResult",
+    "PlannerBackend",
+    "PlanStatus",
+    "ReplanReason",
+    "SceneRevision",
+    "SessionState",
+    "SynchronousPlanningExecutor",
 ]
