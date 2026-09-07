@@ -29,6 +29,8 @@ class Cell:
         self.p = self.d["planning"]
         self.robot = config.robot(height)
         self.shapes = urdf_collision_shapes(self.robot)
+        self._bounds_cache = {}
+        self.support_release_events = []
         s, c = self.d["scene"], self.d["conveyor"]
         self.walls = trailer_obstacles(s["trailer_width_m"], s["trailer_height_m"], s["trailer_x_limits_m"], s["wall_thickness_m"])
         self.chassis_pose = config.world_from_chassis()
@@ -54,6 +56,29 @@ class Cell:
             np.r_[np.asarray(self.d["lift"]["column_size_xy_m"])/2,height/2], self.chassis.rotation, "lift_column", "mount")]
         return [*self.walls,self.chassis,*column]
 
+    def broadphase(self, moving, obstacles, margin):
+        """Conservative world-AABB rejection before the unchanged OBB SAT.
+
+        Both boxes retain the same local-axis inflation as intersects_obb.
+        The extra 1e-7 m numerical slack is larger than SAT's 1e-9 axis
+        padding at this cell's metre scale; touching cases always reach SAT.
+        Cache holds object references, so reused Python ids cannot alias data.
+        """
+        if not obstacles:
+            return []
+        key=(tuple(id(box) for box in obstacles),float(margin))
+        cached=self._bounds_cache.get(key)
+        if cached is None:
+            centers=np.asarray([box.center for box in obstacles])
+            radii=np.asarray([np.abs(box.rotation)@np.maximum(box.half_extents+margin,0) for box in obstacles])
+            cached=(tuple(obstacles),centers-radii,centers+radii)
+            if len(self._bounds_cache)>=32:self._bounds_cache.clear()
+            self._bounds_cache[key]=cached
+        refs,lower,upper=cached
+        radius=np.abs(moving.rotation)@np.maximum(moving.half_extents+margin,0)
+        overlap=np.all(lower<=moving.center+radius+1e-7,axis=1)&np.all(upper>=moving.center-radius-1e-7,axis=1)
+        return [refs[i] for i in np.flatnonzero(overlap)]
+
     def state_failure(self, q, obstacles, attachment=None, support_names=(), target_contact=None):
         r,p = self.robot,self.p
         q = np.asarray(q,float)
@@ -75,13 +100,13 @@ class Cell:
         links = world_link_boxes(r,q,self.shapes)
         tool = r.tool_collision_obb(q)
         for a in links:
-            for b in obstacles:
+            for b in self.broadphase(a,obstacles,p["collision_margin_m"]):
                 if a.name in {"base_link", "J1_link"} and b.name == "lift_column" and contact_separated(a,b,p["contact_tolerance_m"]):
                     continue  # nonpenetrating mounting-plane contact only
                 if a.intersects_obb(b, margin=p["collision_margin_m"]):
                     return {"reason":"ROBOT_COLLISION","pair":[a.name,b.name]}
         if tool is not None:
-            for b in obstacles:
+            for b in self.broadphase(tool,obstacles,p["collision_margin_m"]):
                 if target_contact is not None and b.name == target_contact.name:
                     # Only the suction working plane is permitted to touch.
                     # Rigid tool remains on the negative TCP-Z side.
@@ -90,17 +115,17 @@ class Cell:
                         continue
                 if tool.intersects_obb(b,margin=p["collision_margin_m"]):
                     return {"reason":"TOOL_COLLISION","pair":[tool.name,b.name]}
-            for a in links:
+            for a in self.broadphase(tool,links,p["collision_margin_m"]):
                 if a.name != "J6_link" and tool.intersects_obb(a,margin=p["collision_margin_m"]):
                     return {"reason":"TOOL_SELF_COLLISION","pair":[tool.name,a.name]}
         if attachment is not None:
             box = attachment.box_at(r.fk(q))
-            for b in obstacles:
+            for b in self.broadphase(box,obstacles,p["collision_margin_m"]):
                 if b.name in support_names and contact_separated(box,b,p["support_tolerance_m"]):
                     continue
                 if box.intersects_obb(b,margin=p["collision_margin_m"]):
                     return {"reason":"PAYLOAD_COLLISION","pair":[box.name,b.name]}
-            for a in links:
+            for a in self.broadphase(box,links,p["collision_margin_m"]):
                 if box.intersects_obb(a,margin=p["collision_margin_m"]):
                     return {"reason":"PAYLOAD_ROBOT_COLLISION","pair":[box.name,a.name]}
         return None
@@ -129,6 +154,24 @@ class Cell:
             collision_check_stride=p["ik_iterations"]+1)
 
     def transit(self,start,goal,obstacles,seed,attachment=None,support_names=(),target_contact=None):
+        prefix=[]
+        if attachment is not None:
+            # A zero geometric destacking distance does not imply that free
+            # joint-space carry can start at floor contact. Lift clear while
+            # preserving the designated support contact, then restore the
+            # unchanged full collision margin for the subsequent carry.
+            floor=next((b for b in obstacles if b.name=="floor"),None)
+            if floor is not None:
+                actual=attachment.box_at(self.robot.fk(start))
+                clearance=2*self.p["collision_margin_m"]+2*self.p["support_tolerance_m"]
+                lift=floor.center[2]+floor.half_extents[2]+clearance-float(actual.corners()[:,2].min())
+                if lift>0:
+                    destination=self.robot.fk(start).copy();destination[2,3]+=lift
+                    prefix,failure=self.cartesian(start,destination,obstacles,seed,attachment,[*support_names,"floor"])
+                    self.support_release_events.append({"lift_m":lift,"q_path":[q.tolist() for q in prefix],"failure":failure,
+                        "derivation":"floor top + 2*OBB margin + 2*support tolerance - actual box bottom"})
+                    if failure:return prefix,failure
+                    start=prefix[-1]
         state = lambda q: self.state_failure(q,obstacles,attachment,support_names,target_contact) is None
         planner = RRTConnectPlanner(self.robot.joint_limits[:,0],self.robot.joint_limits[:,1],state,
             step_size=self.p["rrt_step_rad"],edge_resolution=self.p["edge_resolution_rad"]/2,
@@ -136,9 +179,9 @@ class Cell:
         result = planner.plan(start,goal)
         if not result.success:
             failure = self.state_failure(start,obstacles,attachment,support_names,target_contact) or self.state_failure(goal,obstacles,attachment,support_names,target_contact)
-            return [], failure or {"reason":"PATH_SEARCH_EXHAUSTED","detail":result.message,"iterations":result.iterations}
+            return prefix, failure or {"reason":"PATH_SEARCH_EXHAUSTED","detail":result.message,"iterations":result.iterations}
         failure = self.path_failure(result.path,obstacles,attachment,support_names,target_contact)
-        return result.path, failure
+        return ([*prefix,*result.path[1:]] if prefix else result.path), failure
 
     def cartesian(self,start,destination,obstacles,seed,attachment=None,support_names=(),target_contact=None):
         origin = self.robot.fk(start)
@@ -293,7 +336,9 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 handoff=cell.solve(desired_tcp,[extraction[-1],ik.q,current_q],seed+600+oi)
                 if not handoff.success:
                     sub.update(stage="handoff",reason="HANDOFF_NO_IK");continue
+                lift_begin=len(cell.support_release_events)
                 carry,failure=cell.transit(extraction[-1],handoff.q,obstacles,seed+700+oi,attached,[deck.name])
+                sub["support_release_lifts"]=cell.support_release_events[lift_begin:]
                 sub["paths"]["carry"]=[q.tolist() for q in carry]
                 if failure:
                     sub.update(stage="carry",reason=failure["reason"],failure=failure);continue

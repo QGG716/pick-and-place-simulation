@@ -119,3 +119,26 @@ Independent task processes use deterministic per-task seeds and return in
 input order. Evidence caching is keyed by source content, complete effective
 config, box poses/sizes, current joints, belt state, task seed and mode. A
 source/config change invalidates prior task results.
+
+## Stage 6 — continuous state, bottom support release and full rerun
+
+All exposed cartons are attempted, and each candidate and conveyor option
+retains its own failure record. Released boxes remain in a receiver list;
+transport validates support over the union of conveyor decks and rejects L
+corner support gaps. A scheduler regression proves the third candidate is
+tried after two failures and a failed belt transfer cannot delete its box.
+
+An additional fixed-conveyor bottom-box experiment established a complete
+geometric witness by lifting from floor contact to the unchanged collision
+margin before free carry. This support-release action is now integrated into
+`Cell.transit`; its derived lift, path and failure are logged per candidate.
+It changes motion generation, not the baseline mass, scene population or
+collision predicate. Dynamic minimum/upper belt-height conflict remains
+explicit. Original production statistics are rerun independently.
+
+To reduce exhaustive height-study runtime, a cached world-AABB broad phase
+precedes the original SAT narrow phase. A 3000-pair rotated-box test and
+150 complete robot-state comparisons verify no SAT hit or failure reason is
+lost. Search budgets, task populations and precision remain unchanged.
+After these source changes, prior V3 cache keys are invalidated and the full
+study is rerun with 12 deterministic CPU processes.

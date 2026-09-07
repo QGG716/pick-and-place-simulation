@@ -1,5 +1,28 @@
 # Trailer Unloading Geometric Simulator v0.4
 
+> 当前工作分支增加了 **M-710iD/70 V3 技术验证修复**。V3 使用完整 TCP
+> 变换、实际刚体附着、完整路径检查和解析时间参数化，验收入口为
+> `tools/run_m710id70_v3.py`。下方 v0.4 数字属于冻结的 V2 历史结果，
+> 不代表修复后通过新的判据。详见
+> [V3 技术验证报告](docs/validation/technical_qualification_report_m710id70_v3.md)
+> 和[分阶段记录](docs/validation/m710id70_v3_stages.md)。
+
+```powershell
+# 复现不可变 V2，并输出实际调用参数及逐任务追踪
+.venv\Scripts\python.exe tools/reproduce_m710_v2.py
+# V3 全部原始场景、同任务传送带 A/B、五个高度的完整任务与升降路径
+.venv\Scripts\python.exe tools/run_m710id70_v3.py --phase all --workers 4
+# 独立 FK/Jacobian、负载、惯量与可执行轨迹数值证据
+.venv\Scripts\python.exe tools/audit_m710_v3.py
+.venv\Scripts\python.exe -m pytest -q
+```
+
+V3 配置为 `configs/validation/m710id70_v3.yaml`，允许 `extends` 覆盖并
+记录每个参数来源，拼错或未定义的字段会报错。证据写入
+`outputs/m710id70_v3/`；其中 `v3/effective_config.json` 是完整生效参数，
+`v3/tasks/*.json` 保留每次候选、碰撞失败点、实际姿态及路径。
+`--workers 1` 可串行复现，任务种子不随并行度改变。
+
 面向厢式货车自动卸货的六轴工业机器人第一层几何仿真与工程资格评估工具。项目重点是确定性、可测试、可审计的 CPU 几何/运动学主链路，不依赖 ROS 2、Isaac Sim 或 GPU；PyBullet、Pinocchio 和 Isaac Sim 均位于可选适配层。
 
 v0.4 的主评估对象是 **FANUC M-710iD/70 + 20 kg 三分区吸具 + 42.5 kg 箱体**。历史 FANUC M-20iD/35 与 KUKA KR 50 R2500 配置继续保留，但不能混用不同机器人的报告结论。
@@ -18,7 +41,7 @@ v0.4 的主评估对象是 **FANUC M-710iD/70 + 20 kg 三分区吸具 + 42.5 kg 
 
 完整变更与已知边界见 [`docs/releases/V0.4.md`](docs/releases/V0.4.md)。
 
-## 当前工程结论
+## 冻结的 v0.4 / V2 历史结论
 
 以下数字来自 v0.4 验收脚本的 0.30 m 离散横截面扫描，不是连续空间证明，也不替代 FANUC 官方负载软件或真机安全认证：
 
