@@ -1,0 +1,108 @@
+schema: m710_validation_v3
+# Standalone acceptance contract: no unrelated common_unloading scene defaults.
+robot:
+  model_config: ../robots/fanuc_m710id_70.yaml
+  urdf_path: ../../assets/robots/fanuc_m710id_70/m710id_70.urdf
+  # V2 home fails tool-vs-J4 collision. Seeded offline initialization witness
+  # from tools/probe_m710_v3_home.py, draw 1507 / 3000, seed 71070.
+  home_joints: [-1.2535046523103328, -0.9321730956021104, -1.186652413419966, -0.21179524367224456, -0.2394417658165151, -1.6893308052919531]
+  installation_xyz_m: [1.0, 0.075, 0.45]
+  installation_rpy_rad: [0.0, 0.0, 0.0]
+chassis:
+  world_xyz_m: [-1.5, -0.075, 0.25]
+  world_rpy_rad: [0.0, 0.0, 0.0]
+  size_xyz_m: [1.8, 2.0, 0.3]
+lift:
+  height_m: 0.0
+  scan_heights_m: [0.0, 0.15, 0.30, 0.45, 0.60]
+  step_m: 0.01
+  speed_m_s: 0.05
+  column_size_xy_m: [0.22, 0.22]
+tool:
+  config: ../tools/unloading_gripper_20kg.yaml
+  # Mechanical tool frame: +X normal, +Y long, +Z short.
+  # Suction task frame: +Z normal, +Y long, +X short (negative mechanical Z).
+  cup_rows: 6
+  cup_columns: 12
+  cup_pitch_m: [0.048, 0.048]
+  cup_radius_m: 0.0215
+  minimum_sealed_cups: 60
+  suction_edge_margin_m: 0.0
+scene:
+  trailer_width_m: 2.30
+  trailer_height_m: 2.70
+  trailer_x_limits_m: [-1.50, 2.20]
+  wall_thickness_m: 0.05
+  box_sizes_m: {A_600x400x300: [0.6, 0.4, 0.3], B_400x600x300: [0.4, 0.6, 0.3]}
+  box_mass_kg: 42.5
+  box_com_fraction: [0.0, 0.0, 0.0]
+  front_x_m: 1.0
+  grid_step_m: 0.30
+  neighbor_gap_m: 0.01
+  regular_rows: 8
+  regular_columns: 5
+  regular_y_limits_m: [-0.82, 0.82]
+  row_pitch_m: 0.31
+  random_seeds: [71071, 71072, 71073]
+  random_start_y_m: -1.13
+  random_stop_y_m: 1.05
+  random_max_edge_y_m: 1.14
+  random_type_a_probability: 0.55
+  random_skip_probability: 0.10
+  random_front_offset_limits_m: [-0.025, 0.035]
+  random_gap_limits_m: [0.005, 0.02]
+planning:
+  seed: 71070
+  continuous_seed: 74000
+  pregrasp_standoff_m: 0.15
+  extraction_scan_step_m: 0.01
+  extraction_free_clearance_m: 0.02
+  maximum_extraction_m: 1.50
+  collision_margin_m: 0.01
+  contact_tolerance_m: 0.0002
+  support_tolerance_m: 0.0002
+  support_edge_clearance_m: 0.01
+  ik_position_tolerance_m: 0.0001
+  ik_orientation_tolerance_rad: 0.0002
+  ik_iterations: 180
+  ik_restarts: 2
+  ik_damping: 0.015
+  ik_max_step_rad: 0.20
+  ik_orientation_weight: 0.55
+  cartesian_max_branch_step_rad: 0.6
+  cartesian_orientation_tolerance_rad: 0.001
+  radial_guard_tolerance_m: 0.002
+  joint_margin_rad: 0.0174532925199433
+  maximum_jacobian_condition: 10000.0
+  edge_resolution_rad: 0.02
+  cartesian_step_m: 0.025
+  rrt_step_rad: 0.18
+  rrt_iterations: 800
+  rrt_goal_bias: 0.12
+  roll_candidates_deg: [0, 90, 180, 270]
+conveyor:
+  cross_leg_size_xy_m: [0.45, 2.0]
+  longitudinal_leg_nominal_length_m: 0.65
+  longitudinal_leg_width_m: 0.70
+  deck_thickness_m: 0.12
+  maximum_extension_m: 1.50
+  minimum_stack_surface_clearance_m: 0.02
+  minimum_receiving_surface_z_m: 0.20
+  maximum_receiving_surface_z_m: 2.40
+  upper_stack_bottom_clearance_m: 0.015
+  fixed_extension_m: 0.0
+  fixed_z_m: 0.20
+  movement_step_m: 0.01
+  extension_speed_m_s: 0.10
+  lift_speed_m_s: 0.05
+  belt_speed_m_s: 0.20
+execution:
+  profile: NORMAL
+  profiles:
+    CONSERVATIVE: {velocity_scale: 0.25, acceleration_scale: 0.25, jerk_scale: 0.25}
+    NORMAL: {velocity_scale: 0.50, acceleration_scale: 0.50, jerk_scale: 0.50}
+    AGGRESSIVE_ENGINEERING_ONLY: {velocity_scale: 0.75, acceleration_scale: 0.75, jerk_scale: 0.75}
+  minimum_segment_seconds: 0.002
+  sample_period_s: 0.02
+  vacuum_establish_s: 0.3
+  release_s: 0.1

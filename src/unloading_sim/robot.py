@@ -315,6 +315,7 @@ class URDFRobot:
         self.base_transform = np.eye(4) if base_transform is None else np.asarray(base_transform, dtype=float)
         self.tool_length = float(tool_length)
         default_radii = [0.12] * len(self.active_joint_names)
+        self.tip_from_tcp = make_transform(translation=[0.0, 0.0, self.tool_length])
         self.link_radii = np.asarray(default_radii if link_radii is None else link_radii, dtype=float)
         self.tool_collision_size = (
             None if tool_collision_size is None else np.asarray(tool_collision_size, dtype=float)
@@ -590,8 +591,7 @@ class URDFRobot:
             else:
                 transform = joint_frame
         frames.extend(active_child_frames)
-        tool = transform.copy()
-        tool[:3, 3] += tool[:3, 2] * self.tool_length
+        tool = transform @ self.tip_from_tcp
         frames.append(tool)
         return frames, origins, axes
 
