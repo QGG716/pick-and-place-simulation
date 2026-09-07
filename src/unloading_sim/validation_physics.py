@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import copy
 import xml.etree.ElementTree as ET
 
 import numpy as np
@@ -75,6 +76,178 @@ def contact_separated(box: OBB, support: OBB, tolerance: float) -> bool:
     """
     points = (box.corners() - support.center) @ support.rotation
     return bool(np.min(points[:, 2]) >= support.half_extents[2] - tolerance)
+
+
+@dataclass
+class InitialProximityPair:
+    """Path-dependent state for one pre-existing payload-neighbor proximity."""
+
+    obstacle_name: str
+    obstacle_pose_world: np.ndarray
+    obstacle_half_extents_m: np.ndarray
+    initial_signed_distance_m: float
+    last_signed_distance_m: float
+    minimum_signed_distance_m: float
+    maximum_signed_distance_m: float
+    worst_step_change_m: float = 0.0
+    samples: int = 0
+    released: bool = False
+    release_sample: int | None = None
+
+
+@dataclass
+class InitialProximityTracker:
+    """Allow only non-worsening separation from explicitly registered neighbors.
+
+    This contract is deliberately scoped to payload-vs-stationary-neighbor
+    checks.  Obstacles not captured here retain the ordinary two-body OBB
+    margin, and robot/tool collision checks never consult this object.
+    """
+
+    payload_name: str
+    collision_margin_m: float
+    penetration_tolerance_m: float
+    monotonic_tolerance_m: float
+    pairs: dict[str, InitialProximityPair]
+
+    @classmethod
+    def capture(
+        cls,
+        payload: OBB,
+        eligible_neighbors: list[OBB],
+        collision_margin_m: float,
+        penetration_tolerance_m: float,
+        monotonic_tolerance_m: float,
+    ) -> tuple["InitialProximityTracker", dict | None]:
+        """Register close, non-penetrating pairs from the actual initial pose."""
+        names = [box.name for box in eligible_neighbors]
+        if len(names) != len(set(names)):
+            raise ValueError("initial-proximity obstacle names must be unique")
+        pairs: dict[str, InitialProximityPair] = {}
+        tracker = cls(
+            payload.name,
+            float(collision_margin_m),
+            float(penetration_tolerance_m),
+            float(monotonic_tolerance_m),
+            pairs,
+        )
+        for obstacle in eligible_neighbors:
+            if not payload.intersects_obb(obstacle, margin=collision_margin_m):
+                continue
+            distance = payload.signed_distance_obb(obstacle)
+            if distance < -penetration_tolerance_m:
+                return tracker, {
+                    "reason": "PAYLOAD_INITIAL_PENETRATION",
+                    "pair": [payload.name, obstacle.name],
+                    "initial_signed_distance_m": distance,
+                    "penetration_tolerance_m": float(penetration_tolerance_m),
+                }
+            pairs[obstacle.name] = InitialProximityPair(
+                obstacle.name,
+                obstacle.world_from_local.copy(),
+                obstacle.half_extents.copy(),
+                distance,
+                distance,
+                distance,
+                distance,
+            )
+        return tracker, None
+
+    def clone(self) -> "InitialProximityTracker":
+        """Return independent path history for another deterministic attempt."""
+        return copy.deepcopy(self)
+
+    @property
+    def fully_released(self) -> bool:
+        return all(pair.released for pair in self.pairs.values())
+
+    def state_failure(self, payload: OBB, obstacles: list[OBB], support_names=()) -> dict | None:
+        """Validate and advance one ordered payload-path sample."""
+        if payload.name != self.payload_name:
+            raise ValueError("initial-proximity tracker used with a different payload")
+        by_name = {box.name: box for box in obstacles}
+        if len(by_name) != len(obstacles):
+            raise ValueError("payload obstacle names must be unique")
+        missing = sorted(set(self.pairs) - set(by_name))
+        if missing:
+            return {"reason": "INITIAL_PROXIMITY_OBSTACLE_MISSING", "obstacles": missing}
+
+        support_names = set(support_names)
+        for obstacle in obstacles:
+            if obstacle.name in support_names and contact_separated(
+                payload, obstacle, self.penetration_tolerance_m
+            ):
+                continue
+            pair = self.pairs.get(obstacle.name)
+            if pair is None:
+                if payload.intersects_obb(obstacle, margin=self.collision_margin_m):
+                    return {
+                        "reason": "PAYLOAD_COLLISION",
+                        "pair": [payload.name, obstacle.name],
+                        "initial_proximity_registered": False,
+                    }
+                continue
+
+            if not np.allclose(obstacle.world_from_local, pair.obstacle_pose_world, atol=1e-12, rtol=0) \
+                    or not np.array_equal(obstacle.half_extents, pair.obstacle_half_extents_m):
+                return {
+                    "reason": "INITIAL_PROXIMITY_OBSTACLE_MOVED",
+                    "pair": [payload.name, obstacle.name],
+                }
+
+            distance = payload.signed_distance_obb(obstacle)
+            common = {
+                "pair": [payload.name, obstacle.name],
+                "initial_signed_distance_m": pair.initial_signed_distance_m,
+                "previous_signed_distance_m": pair.last_signed_distance_m,
+                "current_signed_distance_m": distance,
+                "penetration_tolerance_m": self.penetration_tolerance_m,
+                "monotonic_tolerance_m": self.monotonic_tolerance_m,
+            }
+            if distance < -self.penetration_tolerance_m:
+                return {"reason": "PAYLOAD_PROXIMITY_PENETRATION", **common}
+            if pair.released:
+                if payload.intersects_obb(obstacle, margin=self.collision_margin_m):
+                    return {"reason": "PAYLOAD_PROXIMITY_REENTRY", **common}
+            elif (distance < pair.initial_signed_distance_m - self.monotonic_tolerance_m
+                  or distance < pair.last_signed_distance_m - self.monotonic_tolerance_m):
+                return {"reason": "PAYLOAD_PROXIMITY_WORSENED", **common}
+
+            change = distance - pair.last_signed_distance_m
+            pair.samples += 1
+            pair.last_signed_distance_m = distance
+            pair.minimum_signed_distance_m = min(pair.minimum_signed_distance_m, distance)
+            pair.maximum_signed_distance_m = max(pair.maximum_signed_distance_m, distance)
+            pair.worst_step_change_m = min(pair.worst_step_change_m, change)
+            if not pair.released and not payload.intersects_obb(
+                obstacle, margin=self.collision_margin_m
+            ):
+                pair.released = True
+                pair.release_sample = pair.samples
+        return None
+
+    def evidence(self) -> dict:
+        return {
+            "payload": self.payload_name,
+            "collision_margin_per_body_m": self.collision_margin_m,
+            "penetration_tolerance_m": self.penetration_tolerance_m,
+            "monotonic_tolerance_m": self.monotonic_tolerance_m,
+            "fully_released": self.fully_released,
+            "pairs": [
+                {
+                    "obstacle": pair.obstacle_name,
+                    "initial_signed_distance_m": pair.initial_signed_distance_m,
+                    "last_signed_distance_m": pair.last_signed_distance_m,
+                    "minimum_signed_distance_m": pair.minimum_signed_distance_m,
+                    "maximum_signed_distance_m": pair.maximum_signed_distance_m,
+                    "worst_step_change_m": pair.worst_step_change_m,
+                    "samples": pair.samples,
+                    "released": pair.released,
+                    "release_sample": pair.release_sample,
+                }
+                for pair in self.pairs.values()
+            ],
+        }
 
 
 def urdf_collision_shapes(robot) -> list[tuple[str, np.ndarray, np.ndarray]]:

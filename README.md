@@ -1,16 +1,19 @@
-# Trailer Unloading Geometric Simulator v0.4
+# Trailer Unloading Geometric Simulator v0.5 feasibility core
 
-> 当前工作分支增加了 **M-710iD/70 V3 技术验证修复**。V3 使用完整 TCP
-> 变换、实际刚体附着、完整路径检查和解析时间参数化，验收入口为
-> `tools/run_m710id70_v3.py`。下方 v0.4 数字属于冻结的 V2 历史结果，
-> 不代表修复后通过新的判据。详见
+> 当前分支以 **M-710iD/70 V3 单箱完整几何可行性恢复**为核心目标。V3 已修正
+> 坐标、SO(3)、严格 IK/FK 残差、刚体附着、完整碰撞路径、负载和时间参数化；
+> 原始 104 个任务完整几何成功为 **0/104**，连续场景为 **0/129**。
+> 冻结 V2 的 50% 完整覆盖率只保留为历史证据，不再作为有效 baseline。
+> 当前实施顺序见
+> [V3 可行性恢复开发优先级](docs/development_priorities_m710id70_v3_recovery.md)，
+> 已完成验证证据见
 > [V3 技术验证报告](docs/validation/technical_qualification_report_m710id70_v3.md)
 > 和[分阶段记录](docs/validation/m710id70_v3_stages.md)。
 
 ```powershell
 # 复现不可变 V2，并输出实际调用参数及逐任务追踪
 .venv\Scripts\python.exe tools/reproduce_m710_v2.py
-# V3 全部原始场景、同任务传送带 A/B、五个高度的完整任务与升降路径
+# 当前 V3 P0：grasp-only 与固定传送带原始 104 任务
 .venv\Scripts\python.exe tools/run_m710id70_v3.py --phase all --workers 4
 # 独立 FK/Jacobian、负载、惯量与可执行轨迹数值证据
 .venv\Scripts\python.exe tools/audit_m710_v3.py
@@ -23,13 +26,44 @@ V3 配置为 `configs/validation/m710id70_v3.yaml`，允许 `extends` 覆盖并
 `v3/tasks/*.json` 保留每次候选、碰撞失败点、实际姿态及路径。
 `--workers 1` 可串行复现，任务种子不随并行度改变。
 
+## 当前开发优先级
+
+当前工作先恢复可解释的单箱完整几何可行性，不以旧成功路径、路径长度或周期为
+优化目标：
+
+1. **P0-1 contact-aware separation**：只对已登记的目标箱—邻箱初始近接建立
+   不恶化、趋向分离的临时语义；真实穿透、其他碰撞对及全局安全 margin 不放宽。
+2. **P0-2 task-set grasp IK**：在有效箱面上搜索面内位置、法向 roll、小范围姿态、
+   多确定性种子及合法腕部构型；每个结果仍执行 V3 全部严格验证。
+3. **P0-3 escape-path extraction**：保留 620 mm 纯直退基线，但在受限分离的每个
+   小步寻找安全斜移、抬升或转向路径，并区分四种脱垛/释放距离指标。
+4. **P0-4 support release**：由 `SupportRelationGraph` 决定是否插入标准
+   `GRASP -> SUPPORT_RELEASE -> EXTRACTION -> TRANSIT -> PLACE` 阶段。
+5. **P1 暂缓**：原始任务产生稳定非零完整成功集合之前，不继续 dynamic
+   conveyor A/B、base Z 或 lift range 优化。
+
+不得通过关闭碰撞、降低安全余量、降低 IK/FK 数值标准、缩小场景、修改分母或
+改写 FANUC 负载曲线来提高成功率。负载资格继续独立记录，不能短路几何探索。
+
+当前开发实现已产生一个**尚未替换冻结全量基线**的原始任务 witness：
+`grid_022` 在固定传送带、top/90°、面内偏移 25 mm 下完成严格完整几何链路。
+其 pure straight clearance 为 0.320 m，局部侧向 escape 在约 0.010002 m 后恢复
+普通 collision margin。P0-1 探针中的原 24 个初始净空失败均通过新的初始门，
+但该门通过本身不计作任务成功。P0-2 grasp-only 全 104 扫描把严格有效 grasp
+从固定 TCP 的 24 个提高到 52 个：原 44 个 `GRASP_CONSTRAINT_FAILED` 恢复
+27 个，原 36 个 `NO_IK` 恢复 1 个；这同样不等于完整任务成功。当前固定传送带
+的原始 104-task P0 复跑已得到
+**10/104** 完整几何成功（grasp 52、extraction 26）；10 个均为 top grasp，
+其中 5 个执行正式 `SUPPORT_RELEASE`。该开发结果不改写冻结 V3 历史报告，连续
+129 场景仍待复跑，且不代表负载或动力学资格通过。
+
 面向厢式货车自动卸货的六轴工业机器人第一层几何仿真与工程资格评估工具。项目重点是确定性、可测试、可审计的 CPU 几何/运动学主链路，不依赖 ROS 2、Isaac Sim 或 GPU；PyBullet、Pinocchio 和 Isaac Sim 均位于可选适配层。
 
 v0.4 的主评估对象是 **FANUC M-710iD/70 + 20 kg 三分区吸具 + 42.5 kg 箱体**。历史 FANUC M-20iD/35 与 KUKA KR 50 R2500 配置继续保留，但不能混用不同机器人的报告结论。
 
 世界坐标固定为：`+X` 指向车厢内部、`+Y` 向左、`+Z` 向上。全部配置与计算使用 SI 单位：米、弧度、秒、千克。
 
-## v0.4 重点
+## 冻结的 v0.4 / V2 功能摘要
 
 - 新增可追溯的 FANUC M-710iD/70 URDF/SRDF、关节限制、厂商负载证据和独立工具配置。
 - 建立 `BoxNeighborhoodState`：使用箱体 OBB 投影重叠和表面间隙识别左、右、上方邻箱、底部支撑与暴露抓取面。
@@ -148,7 +182,9 @@ python tools/reproduce_m710_v2.py \
 
 当前 `tools/run_m710id70_acceptance.py` 已转发到严格 V3 验收入口；
 V2 历史算法须通过上面的冻结提交复现命令执行，避免导入新数学实现后
-把不同版本的结果混在一起。V3 分阶段运行选项为 `--phase`，完整验收用 `all`。
+把不同版本的结果混在一起。V3 分阶段运行选项为 `--phase`；当前 `all` 只运行
+P0 grasp-only 与固定传送带 104 任务。`small`、`grid`、`continuous` 和 `lift`
+保留为显式阶段，不会由 `all` 启动动态传送带 A/B 或升降轴工作。
 
 ### 历史 M-20iD/35 工具链
 

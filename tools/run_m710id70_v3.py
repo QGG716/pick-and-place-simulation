@@ -6,9 +6,11 @@ from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 import csv
 import hashlib
+from io import TextIOWrapper
 import json
 from pathlib import Path
 import sys
+from zipfile import ZipFile
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'src'))
@@ -44,7 +46,8 @@ def sample_loads(cell,result):
     if best is None:return
     trajectory=time_parameterize_joint_path(best['trajectory']['q_knots'],cell.config.motion_limits())
     stages=best['trajectory']['stages']
-    attach_t=trajectory.time_from_start[stages['extraction'][0]]
+    attach_stage='support_release' if 'support_release' in stages else 'extraction'
+    attach_t=trajectory.time_from_start[stages[attach_stage][0]]
     release_t=trajectory.time_from_start[stages['carry'][1]]
     attachment=RigidAttachment(np.asarray(best['tcp_from_box']),
         np.asarray(next(a for a in result['attempts'] if a['face']==best['face'] and a['roll_deg']==best['roll_deg'])['extraction']['box_size_xyz_m'])/2,result['box'])
@@ -65,14 +68,97 @@ def sample_loads(cell,result):
 def compact(task_id,result,**extra):
     best=result['selected'] or {}
     reasons=Counter(a['reason'] for a in result['attempts'])
+    details=Counter(a['failure_taxonomy']['detail'] for a in result['attempts'] if 'failure_taxonomy' in a)
     return {'task_id':task_id,**extra,'box':result['box'],'seed':result['seed'],'mode':result['mode'],
             'GRASP_REACHABLE':result['grasp_reachable'],'EXTRACTION_FEASIBLE':result['extraction_feasible'],
             'GEOMETRICALLY_REACHABLE':result['geometric_feasible'],'PAYLOAD_QUALIFIED':result['payload_qualified'],
             'DYNAMICS_VERIFIED':result['dynamics_verified'],'load_status':result['load_status'],
             'failure_stage':result['failure_stage'],'failure_reason':result['failure_reason'],
-            'candidate_failure_counts':dict(reasons),'face':best.get('face'),'roll_deg':best.get('roll_deg'),
+            'candidate_failure_counts':dict(reasons),'grasp_failure_detail_counts':dict(details),
+            'face':best.get('face'),'roll_deg':best.get('roll_deg'),
             'loaded_tcp_path_m':best.get('loaded_tcp_path_m'),'cycle_s':best.get('cycle_s'),
             'conveyor_action_s':best.get('conveyor_action_s')}
+
+
+def initial_proximity_recovery_row(task_id,result):
+    """Summarize the task-level outcome without counting gate passage as success."""
+    attempts=[a for a in result['attempts'] if a.get('initial_proximity',{}).get('pairs')]
+    pair_names=sorted({pair['obstacle'] for attempt in attempts
+                       for pair in attempt['initial_proximity']['pairs']})
+    path_evidence=[sub['initial_proximity'] for attempt in attempts
+                   for sub in attempt.get('conveyor_attempts',[])
+                   if 'initial_proximity' in sub]
+    gate_failures={'PAYLOAD_INITIAL_CLEARANCE_FAILED','PAYLOAD_INITIAL_PENETRATION'}
+    passed_initial_gate=any(attempt.get('reason') not in gate_failures for attempt in attempts)
+    fully_released=any(evidence['fully_released'] for evidence in path_evidence)
+    if result['geometric_feasible']:
+        classification='COMPLETE_GEOMETRIC_SUCCESS'
+    elif fully_released:
+        classification='FULL_MARGIN_RESTORED_DOWNSTREAM_FAILED'
+    elif path_evidence:
+        classification='SEPARATION_ATTEMPTED_NOT_RELEASED'
+    elif passed_initial_gate:
+        classification='INITIAL_GATE_PASSED_FAILED_BEFORE_SEPARATION'
+    elif attempts:
+        classification='INITIAL_PROXIMITY_REJECTED'
+    else:
+        classification='NO_REGISTERED_INITIAL_PROXIMITY'
+    return {'task_id':task_id,'registered_initial_proximity':bool(attempts),
+            'registered_neighbors':pair_names,'passed_initial_gate':passed_initial_gate,
+            'separation_attempted':bool(path_evidence),'normal_margin_restored':fully_released,
+            'complete_geometric_success':result['geometric_feasible'],
+            'classification':classification,'final_failure_stage':result['failure_stage'],
+            'final_failure_reason':result['failure_reason']}
+
+
+def grasp_task_set_recovery_row(task_id,result):
+    attempts=result['attempts']
+    nominal=[a for a in attempts if a.get('task_set',{}).get('variant')=='nominal']
+    expanded=[a for a in attempts if a.get('task_set',{}).get('variant')!='nominal']
+    # The marker is written only after strict IK/FK, actual-FK suction
+    # coverage, robot/tool collision and initial attachment clearance pass.
+    nominal_valid=any(a.get('strict_grasp_valid',False) for a in nominal)
+    non_nominal_valid=any(a.get('strict_grasp_valid',False) for a in expanded)
+    task_set_valid=nominal_valid or non_nominal_valid
+    details=Counter(a['failure_taxonomy']['detail'] for a in attempts if 'failure_taxonomy' in a)
+    return {'task_id':task_id,'nominal_strict_grasp_valid':nominal_valid,
+            'non_nominal_strict_grasp_valid':non_nominal_valid,
+            'expanded_task_set_strict_grasp_valid':task_set_valid,
+            'task_set_recovered_grasp':task_set_valid and not nominal_valid,
+            'grasp_reachable':result['grasp_reachable'],
+            'complete_geometric_success':result['geometric_feasible'],
+            'final_failure_stage':result['failure_stage'],'final_failure_reason':result['failure_reason'],
+            'failure_detail_counts':dict(details)}
+
+
+def frozen_v3_task_failures():
+    """Load task-level V3 classifications from the immutable evidence bundle."""
+    archive=ROOT/'docs/validation/evidence/m710id70_v3_evidence.zip'
+    with ZipFile(archive) as bundle, bundle.open('v3/task_reachability.csv') as raw:
+        rows=csv.DictReader(TextIOWrapper(raw,encoding='utf-8-sig',newline=''))
+        return {row['task_id'].removesuffix('_dynamic'):row['failure_reason']
+                for row in rows if row['task_id'].endswith('_dynamic')}
+
+
+def frozen_recovery_summary(rows):
+    """Compare task-set results to task identities in the frozen V3 run."""
+    baseline=frozen_v3_task_failures()
+    groups={}
+    for reason in ('GRASP_CONSTRAINT_FAILED','NO_IK','PAYLOAD_INITIAL_CLEARANCE_FAILED'):
+        selected=[row for row in rows if baseline.get(row['task_id'])==reason]
+        recovered=[row for row in selected if row['expanded_task_set_strict_grasp_valid']]
+        task_details=Counter(detail for row in selected for detail in row['failure_detail_counts'])
+        candidate_details=sum((Counter(row['failure_detail_counts']) for row in selected),Counter())
+        groups[reason]={
+            'baseline_tasks':len(selected),
+            'task_set_strict_grasp_valid_tasks':sum(row['expanded_task_set_strict_grasp_valid'] for row in selected),
+            'task_set_recovered_tasks':len(recovered),
+            'recovered_task_ids':[row['task_id'] for row in recovered],
+            'final_task_status_counts':dict(Counter(row['final_failure_reason'] for row in selected)),
+            'task_failure_detail_presence_counts':dict(task_details),
+            'candidate_failure_detail_counts':dict(candidate_details),
+        }
+    return groups
 
 
 class Run:
@@ -83,17 +169,19 @@ class Run:
         source_paths=sorted([*ROOT.joinpath('src/unloading_sim').rglob('*.py'),Path(__file__)])
         self.code_digest=hashlib.sha256(b''.join(p.read_bytes() for p in source_paths)).hexdigest()
 
-    def task(self,task_id,cell,target,remaining,q,belt,seed,mode='dynamic',only_face=None):
+    def task(self,task_id,cell,target,remaining,q,belt,seed,mode='dynamic',only_face=None,grasp_only=False):
         key={'code':self.code_digest,'config':self.configuration_digest,'height':cell.robot.base_transform.tolist(),
              'target':target.name,'boxes':[{'name':b.name,'pose':b.world_from_local.tolist(),'half':b.half_extents.tolist()} for b in remaining],
-             'q':np.asarray(q).tolist(),'belt':list(belt),'seed':int(seed),'mode':mode,'only_face':only_face}
+             'q':np.asarray(q).tolist(),'belt':list(belt),'seed':int(seed),'mode':mode,
+             'only_face':only_face,'grasp_only':grasp_only}
         digest=hashlib.sha256(json.dumps(key,sort_keys=True).encode()).hexdigest()
         path=self.output/'tasks'/f'{task_id}.json'
         if path.exists():
             saved=json.loads(path.read_text(encoding='utf-8'))
             if saved.get('input_digest')==digest:return saved['result']
-        result=evaluate_task(cell,target,remaining,q,belt,seed=seed,mode=mode,only_face=only_face)
-        sample_loads(cell,result)
+        result=evaluate_task(cell,target,remaining,q,belt,seed=seed,mode=mode,only_face=only_face,
+                             grasp_only=grasp_only)
+        if not grasp_only:sample_loads(cell,result)
         write_json(path,{'input_digest':digest,'inputs':key,'result':result})
         self.count+=1
         if self.count%5==0:
@@ -113,8 +201,9 @@ class Run:
 
 def _task_job(payload):
     cfg,output,job=payload
-    identifier,height,target,remaining,q,belt,seed,mode=job
-    return Run(cfg,output).task(identifier,Cell(cfg,height),target,remaining,q,belt,seed,mode)
+    identifier,height,target,remaining,q,belt,seed,mode,*extra=job
+    return Run(cfg,output).task(identifier,Cell(cfg,height),target,remaining,q,belt,seed,mode,
+                                grasp_only=bool(extra and extra[0]))
 
 
 def small_scenes(cfg):
@@ -179,7 +268,7 @@ def continuous(run,name,original,scenario_index):
 
 
 def grid(run):
-    cell=Cell(run.cfg);s=cell.d['scene'];rows=[];paired=[];q=np.asarray(cell.d['robot']['home_joints']);c=cell.d['conveyor'];belt=(c['fixed_extension_m'],c['fixed_z_m'])
+    cell=Cell(run.cfg);s=cell.d['scene'];rows=[];paired=[];proximity=[];grasp_recovery=[];recovery=[];extraction_metrics=[];q=np.asarray(cell.d['robot']['home_joints']);c=cell.d['conveyor'];belt=(c['fixed_extension_m'],c['fixed_z_m'])
     tasks=list(grid_tasks(s))
     jobs=[(f'grid_{index:03}_{mode}',None,target,[target,*neighbors],q,belt,cell.p['seed']+index,mode)
           for index,(_,target,neighbors,valid) in enumerate(tasks) if valid for mode in ('dynamic','fixed')]
@@ -195,6 +284,19 @@ def grid(run):
             result=completed[f'grid_{index:03}_{mode}']
             results[mode]=result
         rows.append(compact(f'grid_{index:03}_dynamic',results['dynamic'],**extra))
+        proximity.append(initial_proximity_recovery_row(f'grid_{index:03}',results['dynamic']))
+        grasp_recovery.append(grasp_task_set_recovery_row(f'grid_{index:03}',results['dynamic']))
+        recovery.append({'task_id':f'grid_{index:03}','fixed_feasible':results['fixed']['geometric_feasible'],
+                         'dynamic_feasible':results['dynamic']['geometric_feasible'],
+                         'any_mode_feasible':results['fixed']['geometric_feasible'] or results['dynamic']['geometric_feasible']})
+        for mode,result in results.items():
+            for attempt_index,attempt in enumerate(result['attempts']):
+                for option_index,option in enumerate(attempt.get('conveyor_attempts',[])):
+                    if 'extraction_metrics' not in option:continue
+                    extraction_metrics.append({'task_id':f'grid_{index:03}','mode':mode,
+                        'attempt_index':attempt_index,'option_index':option_index,'face':attempt['face'],
+                        'roll_deg':attempt['roll_deg'],'task_set_variant':attempt['task_set']['variant'],
+                        'result':option['reason'],**option['extraction_metrics']})
         a,b=results['fixed'],results['dynamic'];common=a['geometric_feasible'] and b['geometric_feasible']
         paired.append({'task_id':f'grid_{index:03}','fixed_feasible':a['geometric_feasible'],'dynamic_feasible':b['geometric_feasible'],
                        'new_feasible':b['geometric_feasible'] and not a['geometric_feasible'],'lost_feasible':a['geometric_feasible'] and not b['geometric_feasible'],
@@ -202,8 +304,145 @@ def grid(run):
                        'cycle_delta_s':None if not common else b['selected']['cycle_s']-a['selected']['cycle_s'],
                        'dynamic_action_s':None if not b['selected'] else b['selected']['conveyor_action_s'],
                        'fixed_action_s':None if not a['selected'] else a['selected']['conveyor_action_s']})
+    affected=[row for row in proximity if row['registered_initial_proximity']]
+    proximity_summary={
+        'denominator':len(proximity),
+        'frozen_v3_reference':{'failure_reason':'PAYLOAD_INITIAL_CLEARANCE_FAILED','task_count':24,
+            'source':'docs/validation/technical_qualification_report_m710id70_v3.md'},
+        'registered_initial_proximity_tasks':len(affected),
+        'passed_initial_gate_tasks':sum(row['passed_initial_gate'] for row in affected),
+        'separation_attempted_tasks':sum(row['separation_attempted'] for row in affected),
+        'normal_margin_restored_tasks':sum(row['normal_margin_restored'] for row in affected),
+        'complete_geometric_success_tasks':sum(row['complete_geometric_success'] for row in affected),
+        'classification_counts':dict(Counter(row['classification'] for row in affected)),
+        'downstream_failure_counts':dict(Counter(row['final_failure_reason'] for row in affected
+                                                  if not row['complete_geometric_success'])),
+        'interpretation':'Passing the initial-proximity gate is not a complete geometric success.',
+    }
+    grasp_summary={
+        'denominator':len(grasp_recovery),
+        'frozen_v3_reference':{'GRASP_CONSTRAINT_FAILED':44,'NO_IK':36,
+            'source':'docs/validation/technical_qualification_report_m710id70_v3.md'},
+        'nominal_strict_grasp_valid_tasks':sum(row['nominal_strict_grasp_valid'] for row in grasp_recovery),
+        'expanded_task_set_strict_grasp_valid_tasks':sum(row['expanded_task_set_strict_grasp_valid'] for row in grasp_recovery),
+        'task_set_recovered_grasp_tasks':sum(row['task_set_recovered_grasp'] for row in grasp_recovery),
+        'grasp_reachable_tasks':sum(row['grasp_reachable'] for row in grasp_recovery),
+        'complete_geometric_success_tasks':sum(row['complete_geometric_success'] for row in grasp_recovery),
+        'candidate_failure_detail_counts':dict(sum((Counter(row['failure_detail_counts']) for row in grasp_recovery),Counter())),
+        'final_task_failure_counts':dict(Counter(row['final_failure_reason'] for row in grasp_recovery)),
+        'interpretation':'Search exhaustion is not proof of task-space infeasibility; every recovered grasp passed strict FK and constraints.',
+    }
+    recovery_summary={'denominator':len(recovery),
+        'fixed_complete_geometric_successes':sum(row['fixed_feasible'] for row in recovery),
+        'dynamic_complete_geometric_successes':sum(row['dynamic_feasible'] for row in recovery),
+        'any_mode_complete_geometric_successes':sum(row['any_mode_feasible'] for row in recovery),
+        'fixed_success_task_ids':[row['task_id'] for row in recovery if row['fixed_feasible']],
+        'dynamic_success_task_ids':[row['task_id'] for row in recovery if row['dynamic_feasible']],
+        'denominator_and_scenes_unchanged':True,
+        'performance_optimization_status':'DEFERRED_UNTIL_STABLE_NONZERO_COMMON_SET'}
     write_csv(run.output/'task_reachability.csv',rows);write_csv(run.output/'conveyor_ab.csv',paired)
+    write_csv(run.output/'initial_proximity_recovery.csv',proximity)
+    write_json(run.output/'initial_proximity_recovery.json',proximity_summary)
+    write_csv(run.output/'grasp_task_set_recovery.csv',grasp_recovery)
+    write_json(run.output/'grasp_task_set_recovery.json',grasp_summary)
+    write_csv(run.output/'extraction_path_metrics.csv',extraction_metrics)
+    write_csv(run.output/'geometric_recovery.csv',recovery)
+    write_json(run.output/'geometric_recovery.json',recovery_summary)
     return rows,paired
+
+
+def grasp_scan(run):
+    """Evaluate each original task's complete grasp task set exactly once."""
+    cell=Cell(run.cfg);s=cell.d['scene'];q=np.asarray(cell.d['robot']['home_joints'])
+    c=cell.d['conveyor'];belt=(c['fixed_extension_m'],c['fixed_z_m']);tasks=list(grid_tasks(s))
+    jobs=[(f'grasp_{index:03}',None,target,[target,*neighbors],q,belt,cell.p['seed']+index,
+           'grasp_only',True)
+          for index,(_,target,neighbors,valid) in enumerate(tasks) if valid]
+    completed=dict(zip((job[0] for job in jobs),run.batch(jobs)))
+    rows=[];baseline=frozen_v3_task_failures()
+    for index,(_,target,neighbors,valid) in enumerate(tasks):
+        if not valid:continue
+        row=grasp_task_set_recovery_row(f'grid_{index:03}',completed[f'grasp_{index:03}'])
+        row['frozen_v3_failure_reason']=baseline.get(row['task_id'])
+        row['recovered_from_frozen_v3']=row['expanded_task_set_strict_grasp_valid'] and \
+            row['frozen_v3_failure_reason'] in {'GRASP_CONSTRAINT_FAILED','NO_IK'}
+        rows.append(row)
+    summary={
+        'denominator':len(rows),
+        'frozen_v3_reference':{'strict_grasp_valid':24,'GRASP_CONSTRAINT_FAILED':44,'NO_IK':36,
+            'source':'docs/validation/technical_qualification_report_m710id70_v3.md'},
+        'nominal_strict_grasp_valid_tasks':sum(row['nominal_strict_grasp_valid'] for row in rows),
+        'expanded_task_set_strict_grasp_valid_tasks':sum(row['expanded_task_set_strict_grasp_valid'] for row in rows),
+        'task_set_recovered_grasp_tasks':sum(row['task_set_recovered_grasp'] for row in rows),
+        'grasp_reachable_tasks':sum(row['grasp_reachable'] for row in rows),
+        'final_task_status_counts':dict(Counter(row['final_failure_reason'] for row in rows)),
+        'candidate_failure_detail_counts':dict(sum((Counter(row['failure_detail_counts']) for row in rows),Counter())),
+        'recovery_by_frozen_v3_failure':frozen_recovery_summary(rows),
+        'search_scope':'strict grasp qualification only; no extraction/transit/place success is inferred',
+    }
+    write_csv(run.output/'grasp_task_set_recovery.csv',rows)
+    write_json(run.output/'grasp_task_set_recovery.json',summary)
+    return rows,summary
+
+
+def fixed_geometry_scan(run):
+    """Run the frozen 104-task population without reactivating P1 A/B work."""
+    cell=Cell(run.cfg);s=cell.d['scene'];q=np.asarray(cell.d['robot']['home_joints'])
+    c=cell.d['conveyor'];belt=(c['fixed_extension_m'],c['fixed_z_m']);tasks=list(grid_tasks(s))
+    jobs=[(f'grid_{index:03}_fixed',None,target,[target,*neighbors],q,belt,cell.p['seed']+index,'fixed')
+          for index,(_,target,neighbors,valid) in enumerate(tasks) if valid]
+    completed=dict(zip((job[0] for job in jobs),run.batch(jobs)))
+    rows=[];proximity=[];grasp=[];metrics=[]
+    for index,(orientation,target,neighbors,valid) in enumerate(tasks):
+        if not valid:continue
+        task_id=f'grid_{index:03}';result=completed[f'{task_id}_fixed']
+        rows.append(compact(task_id,result,y_m=float(target.center[1]),z_m=float(target.center[2]),
+                            orientation=orientation,inside_cross_section=True))
+        proximity.append(initial_proximity_recovery_row(task_id,result))
+        grasp.append(grasp_task_set_recovery_row(task_id,result))
+        for attempt_index,attempt in enumerate(result['attempts']):
+            for option_index,option in enumerate(attempt.get('conveyor_attempts',[])):
+                if 'extraction_metrics' in option:
+                    metrics.append({'task_id':task_id,'mode':'fixed','attempt_index':attempt_index,
+                        'option_index':option_index,'face':attempt['face'],'roll_deg':attempt['roll_deg'],
+                        'task_set_variant':attempt['task_set']['variant'],'result':option['reason'],
+                        **option['extraction_metrics']})
+    successful=[row['task_id'] for row in rows if row['GEOMETRICALLY_REACHABLE']]
+    frozen=frozen_v3_task_failures()
+    frozen_clearance=[row for row in proximity
+                      if frozen.get(row['task_id'])=='PAYLOAD_INITIAL_CLEARANCE_FAILED']
+    selected=[completed[f'{task_id}_fixed']['selected'] for task_id in successful]
+    summary={'denominator':len(rows),'complete_geometric_successes':len(successful),
+        'complete_geometric_success_task_ids':successful,
+        'failure_reason_counts':dict(Counter(row['failure_reason'] for row in rows)),
+        'grasp_reachable_tasks':sum(row['GRASP_REACHABLE'] for row in rows),
+        'extraction_feasible_tasks':sum(row['EXTRACTION_FEASIBLE'] for row in rows),
+        'success_grasp_face_counts':dict(Counter(option['face'] for option in selected)),
+        'successes_requiring_support_release':sum(option['support_release']['required'] for option in selected),
+        'p1_dynamic_conveyor_optimization':'NOT_RUN_DEFERRED',
+        'denominator_and_scenes_unchanged':True}
+    proximity_summary={'frozen_v3_baseline_tasks':len(frozen_clearance),
+        'passed_initial_gate_tasks':sum(row['passed_initial_gate'] for row in frozen_clearance),
+        'separation_attempted_tasks':sum(row['separation_attempted'] for row in frozen_clearance),
+        'normal_margin_restored_tasks':sum(row['normal_margin_restored'] for row in frozen_clearance),
+        'complete_geometric_success_tasks':sum(row['complete_geometric_success'] for row in frozen_clearance),
+        'classification_counts':dict(Counter(row['classification'] for row in frozen_clearance)),
+        'downstream_failure_counts':dict(Counter(row['final_failure_reason'] for row in frozen_clearance
+                                                  if not row['complete_geometric_success'])),
+        'interpretation':'Initial gate passage and margin restoration are not counted as complete success.'}
+    grasp_summary={'denominator':len(grasp),
+        'nominal_strict_grasp_valid_tasks':sum(row['nominal_strict_grasp_valid'] for row in grasp),
+        'expanded_task_set_strict_grasp_valid_tasks':sum(row['expanded_task_set_strict_grasp_valid'] for row in grasp),
+        'complete_geometric_success_tasks':sum(row['complete_geometric_success'] for row in grasp),
+        'recovery_by_frozen_v3_failure':frozen_recovery_summary(grasp)}
+    write_csv(run.output/'fixed_task_reachability.csv',rows)
+    write_csv(run.output/'fixed_initial_proximity_recovery.csv',proximity)
+    write_json(run.output/'fixed_initial_proximity_recovery.json',proximity_summary)
+    write_csv(run.output/'fixed_grasp_task_set_recovery.csv',grasp)
+    write_json(run.output/'fixed_grasp_task_set_recovery.json',grasp_summary)
+    write_csv(run.output/'fixed_extraction_path_metrics.csv',metrics)
+    write_json(run.output/'fixed_geometric_recovery.json',summary)
+    return rows,summary
 
 
 def lift_scan(run):
@@ -252,12 +491,12 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config',type=Path,default=DEFAULT)
     parser.add_argument('--output-dir',type=Path,default=ROOT/'outputs/m710id70_v3/v3')
-    parser.add_argument('--phase',choices=['small','grid','continuous','lift','all'],default='all')
+    parser.add_argument('--phase',choices=['small','grasp','grid-fixed','grid','continuous','lift','all'],default='all')
     parser.add_argument('--workers',type=int,default=4,help='Independent CPU processes; task seeds and outputs are unchanged')
     args=parser.parse_args();cfg=load_validation_config(args.config);out=args.output_dir;out.mkdir(parents=True,exist_ok=True)
     capture(out,'python tools/run_m710id70_v3.py '+' '.join(sys.argv[1:]));write_json(out/'effective_config.json',cfg.evidence())
     run=Run(cfg,out,args.workers)
-    if args.phase in ('small','all'):
+    if args.phase=='small':
         summaries=[];rows=[]
         for i,(name,scene) in enumerate(small_scenes(cfg)):
             summary,log=continuous(run,name,scene,10+i);summaries.append(summary);rows+=log
@@ -272,15 +511,17 @@ def main():
                         (c['fixed_extension_m'],c['fixed_z_m']),cfg.data['planning']['seed'],mode='fixed')
         rows.append(compact('controlled_bottom_fixed',result,scenario='bottom_fixed_belt_alternative'))
         write_csv(out/'small_scenes.csv',rows);write_json(out/'small_summary.json',summaries)
-    if args.phase in ('grid','all'):grid(run)
-    if args.phase in ('continuous','all'):
+    if args.phase in ('grasp','all'):grasp_scan(run)
+    if args.phase in ('grid-fixed','all'):fixed_geometry_scan(run)
+    if args.phase=='grid':grid(run)
+    if args.phase=='continuous':
         summaries=[];rows=[];s=cfg.data['scene']
         scenes=[('regular',regular_scene(s)),*[(f'random_seed_{seed}',random_scene(s,seed)) for seed in s['random_seeds']]]
         for i,(name,scene) in enumerate(scenes):
             summary,log=continuous(run,name,scene,i);summaries.append(summary);rows+=log
             print(json.dumps(summary),flush=True)
         write_csv(out/'continuous_unloading_results.csv',rows);write_json(out/'continuous_summary.json',summaries)
-    if args.phase in ('lift','all'):lift_scan(run)
+    if args.phase=='lift':lift_scan(run)
     print(json.dumps({'completed_phase':args.phase,'output':str(out)}),flush=True)
 
 

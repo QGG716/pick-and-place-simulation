@@ -9,17 +9,124 @@ import numpy as np
 from .depalletizing import (LConveyorGeometry, analyze_box_neighborhood,
                            generate_extraction_candidates, minimum_clearance_extraction_distance)
 from .fanuc_m710id70 import target_pose, trailer_obstacles
-from .geometry import OBB, make_transform
+from .geometry import (OBB, make_transform, rotation_matrix_from_rotation_vector,
+                       rotation_matrix_from_rpy, rotation_vector_from_matrix)
 from .ik import solve_ik_multistart, pose_error
 from .planner import RRTConnectPlanner
+from .support import SupportRelationGraph
 from .timing import time_parameterize_joint_path
-from .validation_physics import (RigidAttachment, contact_separated, external_load,
-                                 suction_coverage, support_audit, urdf_collision_shapes, world_link_boxes)
+from .validation_physics import (InitialProximityTracker, RigidAttachment,
+                                 contact_separated, external_load, suction_coverage,
+                                 support_audit, urdf_collision_shapes, world_link_boxes)
 
 
 def transformed(box: OBB, pose: np.ndarray) -> OBB:
     world = pose @ box.world_from_local
     return OBB(world[:3,3], box.half_extents, world[:3,:3], box.name, box.category)
+
+
+def grasp_task_set(nominal_pose, face_offsets_m, tilt_candidates_rad):
+    """Return an ordered, deterministic local task set around one face pose.
+
+    Face translations and small tilts are deliberately sparse (a cross, not a
+    Cartesian product).  Every returned target still has to pass complete-cup
+    coverage and strict actual-FK validation in ``evaluate_task``.
+    """
+    nominal=np.asarray(nominal_pose,float)
+    variants=[('nominal',0.0,0.0,0.0,0.0)]
+    # Interleave the two face axes at each radius so a bounded downstream
+    # budget does not privilege one direction.
+    variants.extend(item for value in face_offsets_m if value for item in (
+        (f'offset_local_x_{value:+g}',value,0.0,0.0,0.0),
+        (f'offset_local_y_{value:+g}',0.0,value,0.0,0.0)))
+    variants.extend((f'tilt_local_x_{value:+g}',0.0,0.0,value,0.0)
+                    for value in tilt_candidates_rad if value)
+    variants.extend((f'tilt_local_y_{value:+g}',0.0,0.0,0.0,value)
+                    for value in tilt_candidates_rad if value)
+    result=[]
+    for name,x,y,rx,ry in variants:
+        pose=nominal.copy()
+        pose[:3,3]+=nominal[:3,:2]@np.array([x,y])
+        pose[:3,:3]=nominal[:3,:3]@rotation_matrix_from_rpy(rx,ry,0.0)
+        result.append((pose,{'variant':name,'face_offset_local_xy_m':[x,y],
+                            'orientation_offset_local_xy_rad':[rx,ry]}))
+    return result
+
+
+def grasp_seed_configurations(robot, seeds):
+    """Add valid spherical-wrist flip seeds without accepting them as solutions."""
+    result=[]
+    for original in seeds:
+        q=np.asarray(original,float)
+        result.append(q)
+        if robot.dof != 6:
+            continue
+        for shift in (-np.pi,np.pi):
+            flipped=q.copy()
+            flipped[3]+=shift
+            flipped[4]*=-1
+            flipped[5]+=shift
+            if robot.within_limits(flipped):
+                result.append(flipped)
+    return list({tuple(q):q for q in result}.values())
+
+
+def residual_failure_detail(ik, planning):
+    position=ik.position_error>planning['ik_position_tolerance_m']
+    orientation=ik.orientation_error>planning['ik_orientation_tolerance_rad']
+    if position and orientation:return 'POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED'
+    if position:return 'POSITION_RESIDUAL_NOT_CONVERGED'
+    if orientation:return 'ORIENTATION_RESIDUAL_NOT_CONVERGED'
+    return 'STRICT_POSE_REACHED_BUT_VALIDITY_UNRESOLVED'
+
+
+def escape_path_proposals(target, pure_direction, constraints, pure_distance, planning):
+    """Find the first straight-distance station with a shorter geometric escape.
+
+    This is only a deterministic geometric prefilter.  The returned local
+    motions are not accepted until robot IK, full edge collision, rigid
+    attachment and initial-proximity history all pass.
+    """
+    pure=np.asarray(pure_direction,float);pure/=np.linalg.norm(pure)
+    directions=[('lift',np.array([0.,0.,1.])),('left',np.array([0.,1.,0.])),
+                ('right',np.array([0.,-1.,0.])),
+                ('diagonal_lift',pure+np.array([0.,0.,1.])),
+                ('diagonal_left',pure+np.array([0.,1.,0.])),
+                ('diagonal_right',pure+np.array([0.,-1.,0.]))]
+    directions=[(name,direction/np.linalg.norm(direction)) for name,direction in directions
+                if abs(float(direction@pure))/np.linalg.norm(direction)<1-1e-9]
+    step=planning['extraction_scan_step_m']
+    for constrained in np.arange(0.0,pure_distance+step/2,step):
+        moved=OBB(target.center+pure*constrained,target.half_extents,target.rotation,
+                  target.name,target.category)
+        station=[]
+        for name,direction in directions:
+            local=minimum_clearance_extraction_distance(moved,direction,constraints,
+                free_space_clearance_m=planning['extraction_free_clearance_m'],
+                scan_step_m=step,maximum_distance_m=planning['maximum_extraction_m'])
+            if local is None or constrained+local>=pure_distance-1e-9:
+                continue
+            for rotation in planning['escape_rotation_candidates_rad']:
+                station.append({'constrained_straight_distance_m':float(constrained),
+                    'escape_direction':name,'escape_direction_world':direction.tolist(),
+                    'escape_translation_m':float(local),'escape_rotation_world_z_rad':float(rotation)})
+        if station:
+            return station
+    return []
+
+
+def support_relations(target, cartons, fixtures, planning):
+    """Return explicit graph/floor supporters for the target carton."""
+    graph=SupportRelationGraph.build(cartons,
+        contact_tolerance_m=planning['support_relation_tolerance_m'],
+        minimum_overlap_ratio=planning['support_relation_minimum_overlap_ratio'])
+    names=sorted(graph.supported_by[target.name])
+    floor=next((box for box in fixtures if box.name=='floor'),None)
+    if floor is not None:
+        gap=float(target.corners()[:,2].min()-(floor.center[2]+floor.half_extents[2]))
+        if -planning['support_tolerance_m']<=gap<=planning['support_relation_tolerance_m']:
+            names.append('floor')
+    return list(dict.fromkeys(names)),graph.audit()
 
 
 class Cell:
@@ -79,7 +186,8 @@ class Cell:
         overlap=np.all(lower<=moving.center+radius+1e-7,axis=1)&np.all(upper>=moving.center-radius-1e-7,axis=1)
         return [refs[i] for i in np.flatnonzero(overlap)]
 
-    def state_failure(self, q, obstacles, attachment=None, support_names=(), target_contact=None):
+    def state_failure(self, q, obstacles, attachment=None, support_names=(), target_contact=None,
+                      initial_proximity=None):
         r,p = self.robot,self.p
         q = np.asarray(q,float)
         if q.shape != (r.dof,) or not np.all(np.isfinite(q)) or not r.within_limits(q):
@@ -120,28 +228,36 @@ class Cell:
                     return {"reason":"TOOL_SELF_COLLISION","pair":[tool.name,a.name]}
         if attachment is not None:
             box = attachment.box_at(r.fk(q))
-            for b in self.broadphase(box,obstacles,p["collision_margin_m"]):
-                if b.name in support_names and contact_separated(box,b,p["support_tolerance_m"]):
-                    continue
-                if box.intersects_obb(b,margin=p["collision_margin_m"]):
-                    return {"reason":"PAYLOAD_COLLISION","pair":[box.name,b.name]}
+            if initial_proximity is not None:
+                failure = initial_proximity.state_failure(box, obstacles, support_names)
+                if failure:
+                    return failure
+            else:
+                for b in self.broadphase(box,obstacles,p["collision_margin_m"]):
+                    if b.name in support_names and contact_separated(box,b,p["support_tolerance_m"]):
+                        continue
+                    if box.intersects_obb(b,margin=p["collision_margin_m"]):
+                        return {"reason":"PAYLOAD_COLLISION","pair":[box.name,b.name]}
             for a in self.broadphase(box,links,p["collision_margin_m"]):
                 if box.intersects_obb(a,margin=p["collision_margin_m"]):
                     return {"reason":"PAYLOAD_ROBOT_COLLISION","pair":[box.name,a.name]}
         return None
 
-    def path_failure(self, path, obstacles, attachment=None, support_names=(), target_contact=None):
+    def path_failure(self, path, obstacles, attachment=None, support_names=(), target_contact=None,
+                     initial_proximity=None):
         count = 0
         for index,(a,b) in enumerate(zip(path[:-1],path[1:])):
             n = max(1,int(np.ceil(np.max(np.abs(b-a))/self.p["edge_resolution_rad"])))
             # Midpoints supplement all endpoint samples, including the start.
             for u in np.linspace(0,1,2*n+1):
                 count += 1
-                failure = self.state_failure(a+u*(b-a),obstacles,attachment,support_names,target_contact)
+                failure = self.state_failure(a+u*(b-a),obstacles,attachment,support_names,
+                                             target_contact,initial_proximity)
                 if failure:
                     return {**failure,"edge":index,"fraction":float(u),"q_rad":(a+u*(b-a)).tolist()}
         if len(path)==1:
-            return self.state_failure(path[0],obstacles,attachment,support_names,target_contact)
+            return self.state_failure(path[0],obstacles,attachment,support_names,
+                                      target_contact,initial_proximity)
         return None
 
     def solve(self, pose, seeds, rng_seed, valid=None):
@@ -154,24 +270,6 @@ class Cell:
             collision_check_stride=p["ik_iterations"]+1)
 
     def transit(self,start,goal,obstacles,seed,attachment=None,support_names=(),target_contact=None):
-        prefix=[]
-        if attachment is not None:
-            # A zero geometric destacking distance does not imply that free
-            # joint-space carry can start at floor contact. Lift clear while
-            # preserving the designated support contact, then restore the
-            # unchanged full collision margin for the subsequent carry.
-            floor=next((b for b in obstacles if b.name=="floor"),None)
-            if floor is not None:
-                actual=attachment.box_at(self.robot.fk(start))
-                clearance=2*self.p["collision_margin_m"]+2*self.p["support_tolerance_m"]
-                lift=floor.center[2]+floor.half_extents[2]+clearance-float(actual.corners()[:,2].min())
-                if lift>0:
-                    destination=self.robot.fk(start).copy();destination[2,3]+=lift
-                    prefix,failure=self.cartesian(start,destination,obstacles,seed,attachment,[*support_names,"floor"])
-                    self.support_release_events.append({"lift_m":lift,"q_path":[q.tolist() for q in prefix],"failure":failure,
-                        "derivation":"floor top + 2*OBB margin + 2*support tolerance - actual box bottom"})
-                    if failure:return prefix,failure
-                    start=prefix[-1]
         state = lambda q: self.state_failure(q,obstacles,attachment,support_names,target_contact) is None
         planner = RRTConnectPlanner(self.robot.joint_limits[:,0],self.robot.joint_limits[:,1],state,
             step_size=self.p["rrt_step_rad"],edge_resolution=self.p["edge_resolution_rad"]/2,
@@ -179,25 +277,75 @@ class Cell:
         result = planner.plan(start,goal)
         if not result.success:
             failure = self.state_failure(start,obstacles,attachment,support_names,target_contact) or self.state_failure(goal,obstacles,attachment,support_names,target_contact)
-            return prefix, failure or {"reason":"PATH_SEARCH_EXHAUSTED","detail":result.message,"iterations":result.iterations}
+            return [], failure or {"reason":"PATH_SEARCH_EXHAUSTED","detail":result.message,"iterations":result.iterations}
         failure = self.path_failure(result.path,obstacles,attachment,support_names,target_contact)
-        return ([*prefix,*result.path[1:]] if prefix else result.path), failure
+        return result.path, failure
 
-    def cartesian(self,start,destination,obstacles,seed,attachment=None,support_names=(),target_contact=None):
+    def support_release(self,start,attachment,obstacles,support_names,seed,initial_proximity=None):
+        """Lift until every declared support pair satisfies the normal margin."""
+        names=list(dict.fromkeys(name for name in support_names if name))
+        event={"stage":"SUPPORT_RELEASE","required":bool(names),"support_names":names,
+               "collision_margin_per_body_m":self.p["collision_margin_m"]}
+        if not names:
+            event.update(lift_m=0.0,released=True,q_path=[np.asarray(start).tolist()])
+            self.support_release_events.append(event)
+            return [np.asarray(start)],None,event
+        by_name={box.name:box for box in obstacles}
+        missing=sorted(set(names)-set(by_name))
+        if missing:
+            failure={"reason":"SUPPORT_RELEASE_OBSTACLE_MISSING","support_names":missing}
+            event.update(released=False,failure=failure,q_path=[]);self.support_release_events.append(event)
+            return [],failure,event
+        actual=attachment.box_at(self.robot.fk(start))
+        clearance=2*self.p["collision_margin_m"]+2*self.p["support_tolerance_m"]
+        bottom=float(actual.corners()[:,2].min())
+        lifts={name:max(0.0,by_name[name].center[2]+by_name[name].half_extents[2]+clearance-bottom)
+               for name in names}
+        lift=max(lifts.values(),default=0.0)
+        destination=self.robot.fk(start).copy();destination[2,3]+=lift
+        path,failure=self.cartesian(start,destination,obstacles,seed,attachment,names,
+                                    initial_proximity=initial_proximity)
+        if failure is None:
+            released_box=attachment.box_at(self.robot.fk(path[-1]))
+            blocked=[name for name in names if released_box.intersects_obb(
+                by_name[name],margin=self.p["collision_margin_m"])]
+            if blocked:
+                failure={"reason":"SUPPORT_RELEASE_MARGIN_NOT_RESTORED","support_names":blocked}
+        event.update(lift_m=lift,lift_by_support_m=lifts,released=failure is None,
+            q_path=[q.tolist() for q in path],failure=failure,
+            derivation="support top + 2*OBB margin + 2*support tolerance - actual box bottom")
+        self.support_release_events.append(event)
+        return path,failure,event
+
+    def cartesian(self,start,destination,obstacles,seed,attachment=None,support_names=(),
+                  target_contact=None,initial_proximity=None):
         origin = self.robot.fk(start)
         _,dist,angle = pose_error(origin,destination)
         if angle > self.p["cartesian_orientation_tolerance_rad"]:
             return [],{"reason":"CARTESIAN_ORIENTATION_CHANGE_UNSUPPORTED"}
-        n = max(1,int(np.ceil(dist/self.p["cartesian_step_m"])))
+        return self.cartesian_se3(start,destination,obstacles,seed,attachment,support_names,
+                                  target_contact,initial_proximity)
+
+    def cartesian_se3(self,start,destination,obstacles,seed,attachment=None,support_names=(),
+                      target_contact=None,initial_proximity=None):
+        """Interpolate translation and SO(3), validating every strict IK edge."""
+        origin = self.robot.fk(start)
+        _,dist,angle = pose_error(origin,destination)
+        rotation_vector=rotation_vector_from_matrix(destination[:3,:3]@origin[:3,:3].T)
+        n = max(1,int(np.ceil(dist/self.p["cartesian_step_m"])),
+                int(np.ceil(angle/self.p["cartesian_orientation_step_rad"])))
         path = [np.asarray(start)]
         for i in range(1,n+1):
-            pose = origin.copy(); pose[:3,3] = origin[:3,3]+(destination[:3,3]-origin[:3,3])*i/n
+            pose = origin.copy()
+            pose[:3,3] = origin[:3,3]+(destination[:3,3]-origin[:3,3])*i/n
+            pose[:3,:3]=rotation_matrix_from_rotation_vector(rotation_vector*i/n)@origin[:3,:3]
             ik = self.solve(pose,[path[-1]],seed+i)
             if not ik.success:
                 return path,{"reason":"NO_IK","sample":i,"position_error_m":ik.position_error,"orientation_error_rad":ik.orientation_error}
             if np.max(np.abs(ik.q-path[-1])) > self.p["cartesian_max_branch_step_rad"]:
                 return path,{"reason":"IK_BRANCH_JUMP","sample":i}
-            failure = self.path_failure([path[-1],ik.q],obstacles,attachment,support_names,target_contact)
+            failure = self.path_failure([path[-1],ik.q],obstacles,attachment,support_names,
+                                        target_contact,initial_proximity)
             if failure:
                 return path,failure
             path.append(ik.q)
@@ -238,27 +386,35 @@ class Cell:
         return None
 
 
-def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mode="dynamic",only_face=None):
+def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mode="dynamic",only_face=None,
+                  grasp_only=False):
     p,r = cell.p,cell.robot
     others = [b for b in remaining if b.name!=target.name]
     topology = analyze_box_neighborhood(target,others)
+    support_names,support_graph_audit=support_relations(target,remaining,cell.fixtures(),p)
     record = {"box":target.name,"seed":int(seed),"mode":mode,"initial_box_pose":target.world_from_local.tolist(),
               "initial_q":np.asarray(current_q).tolist(),"grasp_reachable":False,"extraction_feasible":False,
               "geometric_feasible":False,"payload_qualified":False,"dynamics_verified":False,
               "load_status":"NOT_EVALUATED","failure_stage":"candidate_generation","failure_reason":"NO_EXPOSED_FACE",
-              "attempts":[],"selected":None,"conveyor_initial":list(conveyor_state)}
+              "attempts":[],"selected":None,"conveyor_initial":list(conveyor_state),
+              "support_relations":{"support_names":support_names,"graph":support_graph_audit}}
     candidates = generate_extraction_candidates(topology)
     options = cell.conveyor_options(target,remaining,mode,conveyor_state)
-    successes=[]
+    successes=[];downstream_counts={};grasp_task_set_valid=False
     for ci,candidate in enumerate(candidates):
         face=candidate.grasp_face
         if only_face and face!=only_face:
             continue
+        targets=[]
         for roll in p["roll_candidates_deg"]:
-            attempt={"face":face,"roll_deg":roll,"seed":seed+ci*100+roll,"strategy":candidate.strategy,
+            nominal,_=target_pose(target.center[0]-target.half_extents[0],target.center[1],target.center[2],2*target.half_extents,face,roll)
+            targets.extend((roll,pose,task_set) for pose,task_set in grasp_task_set(
+                nominal,p["grasp_face_offset_candidates_m"],p["grasp_tilt_candidates_rad"]))
+        for gi,(roll,contact,task_set) in enumerate(targets):
+            attempt={"face":face,"roll_deg":roll,"seed":seed+ci*10000+gi*100,"strategy":candidate.strategy,
+                     "task_set":task_set,
                      "stage":"coverage","reason":"PENDING","paths":{},"conveyor_attempts":[]}
             record["attempts"].append(attempt)
-            contact,_=target_pose(target.center[0]-target.half_extents[0],target.center[1],target.center[2],2*target.half_extents,face,roll)
             coverage=suction_coverage(contact,target,face,cell.d["tool"],p["contact_tolerance_m"])
             attempt["coverage"]=coverage
             # Record extraction constraints even if coverage/IK fails.
@@ -274,14 +430,35 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
             if not coverage["geometric_coverage"]:
                 attempt["reason"]="INSUFFICIENT_SEALED_CUPS";continue
             attempt["stage"]="grasp_ik"
-            ik=cell.solve(contact,[current_q,cell.d["robot"]["home_joints"]],attempt["seed"],
+            ik_seeds=grasp_seed_configurations(r,[current_q,cell.d["robot"]["home_joints"]])
+            attempt["ik_seed_configuration_count"]=len(ik_seeds)
+            ik=cell.solve(contact,ik_seeds,attempt["seed"],
                           lambda q: cell.state_failure(q,[*cell.fixtures(),*remaining],target_contact=target) is None)
-            attempt["ik"]={"success":ik.success,"q":ik.q.tolist(),"position_error_m":ik.position_error,"orientation_error_rad":ik.orientation_error}
+            attempt["ik"]={"success":ik.success,"q":ik.q.tolist(),"position_error_m":ik.position_error,
+                           "orientation_error_rad":ik.orientation_error,"message":ik.message,"source":"constrained"}
             if not ik.success:
-                failure=cell.state_failure(ik.q,[*cell.fixtures(),*remaining],target_contact=target)
-                attempt["reason"]="NO_IK" if ik.position_error>p["ik_position_tolerance_m"] or ik.orientation_error>p["ik_orientation_tolerance_rad"] else "GRASP_CONSTRAINT_FAILED"
-                attempt["failure"]=failure
-                continue
+                diagnostic=cell.solve(contact,ik_seeds,attempt["seed"]+1)
+                attempt["ik"]["unconstrained_diagnostic"]={"success":diagnostic.success,"q":diagnostic.q.tolist(),
+                    "position_error_m":diagnostic.position_error,"orientation_error_rad":diagnostic.orientation_error,
+                    "message":diagnostic.message}
+                if diagnostic.success:
+                    failure=cell.state_failure(diagnostic.q,[*cell.fixtures(),*remaining],target_contact=target)
+                    if failure is None:
+                        ik=diagnostic
+                        attempt["ik"].update(success=True,q=ik.q.tolist(),position_error_m=ik.position_error,
+                            orientation_error_rad=ik.orientation_error,message=ik.message,source="diagnostic_seed_stream")
+                    else:
+                        attempt["reason"]="GRASP_CONSTRAINT_FAILED"
+                        attempt["failure"]=failure
+                        attempt["failure_taxonomy"]={"category":"GRASP_CONSTRAINT_FAILED",
+                            "detail":failure["reason"],"strict_fk_pose_reached":True}
+                        continue
+                else:
+                    detail=residual_failure_detail(diagnostic,p)
+                    attempt["reason"]="NO_IK"
+                    attempt["failure_taxonomy"]={"category":"NO_IK","detail":detail,
+                        "strict_fk_pose_reached":False,"search_status":"BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF"}
+                    continue
             actual=r.fk(ik.q)
             attachment=RigidAttachment.capture(actual,target)
             attempt["tcp_from_box"]=attachment.tcp_from_box.tolist()
@@ -294,24 +471,40 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
             failure=cell.state_failure(ik.q,[*cell.fixtures(),*remaining],target_contact=target)
             if failure:
                 attempt.update(stage="grasp_collision",reason=failure["reason"],failure=failure);continue
-            record["grasp_reachable"]=True
-            # A robot path cannot fix a clearance violation that already
-            # exists between the attached carton and stationary geometry at
-            # t=0. Validate this invariant before spending RRT iterations on
-            # an approach that would necessarily fail at attachment. The
-            # same margin/support predicate is used later along extraction.
+            # Register only pre-existing target-neighbor proximity. Fixtures,
+            # supports and all unregistered pairs retain their original rules.
             initial_supports={"floor",topology.bottom_support}
-            attachment_failure=None
+            eligible_neighbors=[obstacle for obstacle in others if obstacle.name not in initial_supports]
+            initial_proximity,attachment_failure=InitialProximityTracker.capture(
+                target,eligible_neighbors,p["collision_margin_m"],p["contact_tolerance_m"],
+                p["initial_proximity_monotonic_tolerance_m"])
+            registered=set(initial_proximity.pairs)
             for obstacle in [*cell.fixtures(),*others]:
+                if attachment_failure:
+                    break
                 if obstacle.name in initial_supports and contact_separated(target,obstacle,p["support_tolerance_m"]):
+                    continue
+                if obstacle.name in registered:
                     continue
                 if target.intersects_obb(obstacle,margin=p["collision_margin_m"]):
                     attachment_failure={"reason":"PAYLOAD_INITIAL_CLEARANCE_FAILED","pair":[target.name,obstacle.name],
                                         "obb_margin_per_body_m":p["collision_margin_m"],"box_pose_world":target.world_from_local.tolist()}
                     break
+            attempt["initial_proximity"]=initial_proximity.evidence()
             if attachment_failure:
                 attempt.update(stage="attachment_clearance",reason=attachment_failure["reason"],failure=attachment_failure)
                 continue
+            attempt["strict_grasp_valid"]=True
+            record["grasp_reachable"]=True
+            if grasp_only:
+                attempt.update(stage="grasp_task_set_complete",reason="GRASP_TASK_SET_VALID")
+                grasp_task_set_valid=True
+                continue
+            if downstream_counts.get(ci,0)>=p["grasp_downstream_candidate_limit_per_strategy"]:
+                attempt.update(stage="grasp_task_set",reason="DOWNSTREAM_TASK_SET_BUDGET",
+                    downstream_budget_per_strategy=p["grasp_downstream_candidate_limit_per_strategy"])
+                continue
+            downstream_counts[ci]=downstream_counts.get(ci,0)+1
             if distance is None:
                 attempt.update(stage="extraction",reason="EXTRACTION_DISTANCE_EXCEEDED");continue
             if not options:
@@ -339,11 +532,64 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 # Capture at the endpoint actually reached by the approach.
                 attached=RigidAttachment.capture(r.fk(contact_path[-1]),target)
                 sub["tcp_from_box"]=attached.tcp_from_box.tolist()
-                supports=["floor"]+([topology.bottom_support] if topology.bottom_support else [])
-                endpoint=r.fk(contact_path[-1]).copy();endpoint[:3,3]+=candidate.outward_direction_world*distance
-                extraction,failure=cell.cartesian(contact_path[-1],endpoint,obstacles,seed+500+oi,attached,supports)
-                sub["paths"]["extraction"]=[q.tolist() for q in extraction]
+                proximity_path=initial_proximity.clone()
+                support_path,failure,support_event=cell.support_release(contact_path[-1],attached,obstacles,
+                    support_names,attempt["seed"]+4500+oi,proximity_path)
+                sub["paths"]["support_release"]=[q.tolist() for q in support_path]
+                sub["support_release"]=support_event
                 if failure:
+                    sub.update(stage="support_release",reason=failure["reason"],failure=failure);continue
+                extraction_start=support_path[-1]
+                support_proximity=proximity_path
+                released_start_box=attached.box_at(r.fk(extraction_start))
+                pure_endpoint=r.fk(extraction_start).copy();pure_endpoint[:3,3]+=candidate.outward_direction_world*distance
+                extraction=[];failure=None;proximity_path=None;escape_selected=None
+                proposals=escape_path_proposals(released_start_box,candidate.outward_direction_world,constraints,distance,p)
+                sub["escape_attempts"]=[]
+                for pi,proposal in enumerate(proposals[:p["escape_path_attempt_limit"]]):
+                    tracker=support_proximity.clone()
+                    start_q=extraction_start;prefix=[]
+                    if proposal["constrained_straight_distance_m"]>0:
+                        station=r.fk(start_q).copy();station[:3,3]+=candidate.outward_direction_world*proposal["constrained_straight_distance_m"]
+                        prefix,failure=cell.cartesian(start_q,station,obstacles,attempt["seed"]+5000+pi*100,
+                            attached,initial_proximity=tracker)
+                        if failure:
+                            sub["escape_attempts"].append({**proposal,"failure":failure});continue
+                        start_q=prefix[-1]
+                    endpoint=r.fk(start_q).copy()
+                    endpoint[:3,3]+=np.asarray(proposal["escape_direction_world"])*proposal["escape_translation_m"]
+                    endpoint[:3,:3]=rotation_matrix_from_rpy(0,0,proposal["escape_rotation_world_z_rad"])@endpoint[:3,:3]
+                    escaped,failure=cell.cartesian_se3(start_q,endpoint,obstacles,attempt["seed"]+5050+pi*100,
+                        attached,initial_proximity=tracker)
+                    evidence={**proposal,"failure":failure,"normal_margin_restored":tracker.fully_released}
+                    sub["escape_attempts"].append(evidence)
+                    if failure is None and tracker.fully_released:
+                        extraction=[*prefix,*escaped[1:]] if prefix else escaped
+                        proximity_path=tracker;escape_selected=evidence;break
+                if escape_selected is None:
+                    proximity_path=support_proximity.clone()
+                    extraction,failure=cell.cartesian(extraction_start,pure_endpoint,obstacles,seed+500+oi,
+                        attached,initial_proximity=proximity_path)
+                else:
+                    failure=None
+                sub["paths"]["extraction"]=[q.tolist() for q in extraction]
+                sub["initial_proximity"]=proximity_path.evidence()
+                tcp=[r.fk(q)[:3,3] for q in extraction]
+                release_path_length=float(sum(np.linalg.norm(b-a) for a,b in zip(tcp[:-1],tcp[1:])))
+                support_tcp=[r.fk(q)[:3,3] for q in support_path]
+                support_path_length=float(sum(np.linalg.norm(b-a) for a,b in zip(support_tcp[:-1],support_tcp[1:])))
+                sub["extraction_metrics"]={
+                    "pure_straight_clearance_distance":distance,
+                    "actual_constrained_extraction_distance":release_path_length if failure is None else None,
+                    "distance_until_first_escape_path":None if escape_selected is None else escape_selected["constrained_straight_distance_m"],
+                    "total_stack_release_distance":support_path_length+release_path_length if failure is None and proximity_path.fully_released else None,
+                    "escape_path_used":escape_selected is not None,
+                }
+                if failure:
+                    sub.update(stage="extraction",reason=failure["reason"],failure=failure);continue
+                if not proximity_path.fully_released:
+                    failure={"reason":"PAYLOAD_PROXIMITY_NOT_RELEASED",
+                             "initial_proximity":proximity_path.evidence()}
                     sub.update(stage="extraction",reason=failure["reason"],failure=failure);continue
                 record["extraction_feasible"]=True
                 deck=decks[1]
@@ -353,9 +599,7 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 handoff=cell.solve(desired_tcp,[extraction[-1],ik.q,current_q],seed+600+oi)
                 if not handoff.success:
                     sub.update(stage="handoff",reason="HANDOFF_NO_IK");continue
-                lift_begin=len(cell.support_release_events)
                 carry,failure=cell.transit(extraction[-1],handoff.q,obstacles,seed+700+oi,attached,[deck.name])
-                sub["support_release_lifts"]=cell.support_release_events[lift_begin:]
                 sub["paths"]["carry"]=[q.tolist() for q in carry]
                 if failure:
                     sub.update(stage="carry",reason=failure["reason"],failure=failure);continue
@@ -375,14 +619,14 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                            placed_box_pose=placed.world_from_local.tolist(),vacuum_release=True,
                            receiver_state="OCCUPIED",load_status=attempt["load_contact"]["qualification"])
                 full=[];stage_indices={}
-                for name in ("approach","contact","extraction","carry","withdrawal"):
+                for name in ("approach","contact","support_release","extraction","carry","withdrawal"):
                     path=sub["paths"][name]
                     begin=max(0,len(full)-1)
                     full.extend(path if not full else path[1:])
                     stage_indices[name]=[begin,len(full)-1]
                 timed=time_parameterize_joint_path(full,cell.config.motion_limits())
                 sub["trajectory"]={"q_knots":full,"t_knots_s":timed.time_from_start.tolist(),"stages":stage_indices,"audit":timed.audit(cell.config.motion_limits())}
-                loaded=[*extraction,*carry[1:]]
+                loaded=[*support_path,*extraction[1:],*carry[1:]]
                 # Integrate the actual FK curve of each interpolated joint
                 # edge, not the chord between Cartesian waypoint endpoints.
                 tcp_points=[r.fk(loaded[0])[:3,3]]
@@ -400,14 +644,19 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 attempt.update(stage=first["stage"],reason=first["reason"])
             else:
                 attempt.update(stage="complete",reason="OK")
-    if successes:
+    if grasp_only and grasp_task_set_valid:
+        record.update(failure_stage="grasp_task_set_complete",failure_reason="GRASP_TASK_SET_VALID")
+    elif successes:
         _,_,roll,best,attempt=min(successes,key=lambda s:(s[0],s[1],s[2]))
         record.update(geometric_feasible=True,failure_stage="complete",failure_reason="OK",
-            selected={**best,"face":attempt["face"],"roll_deg":roll},load_status=best["load_status"])
+            selected={**best,"face":attempt["face"],"roll_deg":roll,
+                      "task_set":attempt["task_set"]},load_status=best["load_status"])
     elif record["attempts"]:
         first=record["attempts"][0]
         record["first_failure"]={"stage":first["stage"],"reason":first["reason"]}
-        stages=["coverage","grasp_ik","grasp_collision","attachment_clearance","conveyor","conveyor_preposition","approach","contact","extraction","handoff","carry","place","withdrawal","complete"]
+        stages=["coverage","grasp_ik","grasp_collision","attachment_clearance","grasp_task_set",
+                "grasp_task_set_complete","conveyor","conveyor_preposition","approach","contact",
+                "support_release","extraction","handoff","carry","place","withdrawal","complete"]
         furthest=max(record["attempts"],key=lambda a:stages.index(a["stage"]))
         record.update(failure_stage=furthest["stage"],failure_reason=furthest["reason"])
     return record

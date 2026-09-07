@@ -60,8 +60,13 @@ planning:
   maximum_extraction_m: 1.50
   collision_margin_m: 0.01
   contact_tolerance_m: 0.0002
+  # Equal to the strict final FK position tolerance: ignore only numerical
+  # sample jitter, while a cumulative move below the initial gap still fails.
+  initial_proximity_monotonic_tolerance_m: 0.0001
   support_tolerance_m: 0.0002
   support_edge_clearance_m: 0.01
+  support_relation_tolerance_m: 0.03
+  support_relation_minimum_overlap_ratio: 0.20
   ik_position_tolerance_m: 0.0001
   ik_orientation_tolerance_rad: 0.0002
   ik_iterations: 180
@@ -69,8 +74,18 @@ planning:
   ik_damping: 0.015
   ik_max_step_rad: 0.20
   ik_orientation_weight: 0.55
+  # Ordered task-set fallback around the nominal face center. Values are
+  # validated again by complete-cup coverage at the requested and actual FK.
+  grasp_face_offset_candidates_m: [0.0, -0.025, 0.025, -0.05, 0.05]
+  grasp_tilt_candidates_rad: [0.0, -0.0005, 0.0005]
+  # All task-set poses receive strict grasp validation. Only this many per
+  # extraction strategy proceed to expensive path search, in declared order.
+  grasp_downstream_candidate_limit_per_strategy: 5
   cartesian_max_branch_step_rad: 0.6
   cartesian_orientation_tolerance_rad: 0.001
+  cartesian_orientation_step_rad: 0.02
+  escape_rotation_candidates_rad: [0.0, 0.08726646259971647, -0.08726646259971647]
+  escape_path_attempt_limit: 4
   radial_guard_tolerance_m: 0.002
   joint_margin_rad: 0.0174532925199433
   maximum_jacobian_condition: 10000.0

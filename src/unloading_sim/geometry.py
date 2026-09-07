@@ -35,6 +35,19 @@ def rotation_matrix_from_rpy(roll: float, pitch: float, yaw: float) -> np.ndarra
     return rz @ ry @ rx
 
 
+def rotation_matrix_from_rotation_vector(rotation_vector: np.ndarray) -> np.ndarray:
+    """Return the SO(3) exponential of an axis-angle rotation vector."""
+    vector = np.asarray(rotation_vector, dtype=float)
+    if vector.shape != (3,):
+        raise ValueError("rotation_vector must be shape (3,)")
+    angle = float(np.linalg.norm(vector))
+    if angle < _EPS:
+        return np.eye(3)
+    x, y, z = vector / angle
+    skew = np.array([[0.0, -z, y], [z, 0.0, -x], [-y, x, 0.0]])
+    return np.eye(3) + np.sin(angle) * skew + (1.0 - np.cos(angle)) * (skew @ skew)
+
+
 def make_transform(rotation: np.ndarray | None = None, translation: Iterable[float] = (0, 0, 0)) -> np.ndarray:
     t = np.eye(4)
     if rotation is not None:
@@ -187,6 +200,42 @@ class OBB:
             name=self.name if name is None else name,
             category=self.category if category is None else category,
         )
+
+    def signed_distance_obb(self, other: "OBB") -> float:
+        """Return a signed SAT separation distance to another OBB.
+
+        Positive values certify separation, zero is contact, and negative
+        values mean overlap.  The value is the largest normalized gap over
+        the 15 separating-axis candidates.  It is the exact face-normal gap
+        for the parallel cartons used by the depalletizing scenes; for general
+        skew boxes its sign is exact while its magnitude is a conservative
+        separating-axis distance rather than the Euclidean closest distance.
+
+        Unlike :meth:`intersects_obb`, this query never applies an engineering
+        collision margin or hidden axis padding.  It is therefore suitable
+        for auditing whether an already-close pair is separating or worsening.
+        """
+        delta = other.center - self.center
+        axes = [self.rotation[:, i] for i in range(3)]
+        axes.extend(other.rotation[:, i] for i in range(3))
+        for i in range(3):
+            for j in range(3):
+                axis = np.cross(self.rotation[:, i], other.rotation[:, j])
+                norm = float(np.linalg.norm(axis))
+                if norm > _EPS:
+                    axes.append(axis / norm)
+
+        best = -np.inf
+        for axis in axes:
+            # Rotation columns are expected to be orthonormal, but normalize
+            # every candidate so the result remains expressed in metres.
+            axis = np.asarray(axis, dtype=float)
+            axis /= np.linalg.norm(axis)
+            radius_self = float(self.half_extents @ np.abs(self.rotation.T @ axis))
+            radius_other = float(other.half_extents @ np.abs(other.rotation.T @ axis))
+            gap = abs(float(delta @ axis)) - radius_self - radius_other
+            best = max(best, gap)
+        return float(best)
 
     def intersects_obb(self, other: "OBB", margin: float = 0.0) -> bool:
         a_axes = self.rotation

@@ -3,10 +3,15 @@ import pytest
 
 from unloading_sim.geometry import OBB
 from unloading_sim.validation_config import load_validation_config
-from unloading_sim.validation_motion import Cell, evaluate_task
-from unloading_sim.validation_physics import world_link_boxes, contact_separated
+from unloading_sim.validation_motion import (Cell, evaluate_task, grasp_seed_configurations,
+                                               grasp_task_set, escape_path_proposals,
+                                               support_relations)
+from unloading_sim.validation_physics import (InitialProximityTracker,
+                                               contact_separated, world_link_boxes)
 from unloading_sim.validation_scenes import grid_tasks, regular_scene, random_scene
 from tools.run_m710id70_acceptance import _scene_regular, _scene_random
+from tools.run_m710id70_v3 import (grasp_task_set_recovery_row,
+                                   initial_proximity_recovery_row)
 
 
 def test_original_populations_and_grid_denominator_are_unchanged():
@@ -69,16 +74,217 @@ def test_support_contact_exception_does_not_allow_penetration():
     assert not contact_separated(OBB([0,0,.349],[.3,.2,.15],np.eye(3)),deck,.0002)
 
 
-def test_invariant_attached_neighbor_clearance_fails_before_path_search(monkeypatch):
+def _proximity_boxes(gap=0.01):
+    target=OBB([0,0,0],[.5,.5,.5],np.eye(3),'target')
+    neighbor=OBB([1+gap,0,0],[.5,.5,.5],np.eye(3),'neighbor')
+    return target,neighbor
+
+
+def _moved(box,dx):
+    return OBB(box.center+np.asarray(dx),box.half_extents,box.rotation,box.name,box.category)
+
+
+def test_ten_mm_initial_neighbor_gap_is_registered_and_may_separate():
+    target,neighbor=_proximity_boxes()
+    tracker,failure=InitialProximityTracker.capture(target,[neighbor],.01,.0002,1e-6)
+
+    assert failure is None
+    assert set(tracker.pairs)=={'neighbor'}
+    assert tracker.state_failure(target,[neighbor]) is None
+    assert tracker.state_failure(_moved(target,[-.005,0,0]),[neighbor]) is None
+    assert not tracker.fully_released
+
+
+def test_motion_toward_initial_neighbor_fails_immediately():
+    target,neighbor=_proximity_boxes()
+    tracker,failure=InitialProximityTracker.capture(target,[neighbor],.01,.0002,1e-6)
+    assert failure is None
+
+    failure=tracker.state_failure(_moved(target,[.002,0,0]),[neighbor])
+
+    assert failure['reason']=='PAYLOAD_PROXIMITY_WORSENED'
+    assert failure['current_signed_distance_m'] < failure['initial_signed_distance_m']
+
+
+def test_small_numeric_jitter_cannot_accumulate_into_motion_toward_neighbor():
+    target,neighbor=_proximity_boxes()
+    tracker,failure=InitialProximityTracker.capture(target,[neighbor],.01,.0002,.0001)
+    assert failure is None
+    assert tracker.state_failure(_moved(target,[.00005,0,0]),[neighbor]) is None
+
+    failure=tracker.state_failure(_moved(target,[.00015,0,0]),[neighbor])
+
+    assert failure['reason']=='PAYLOAD_PROXIMITY_WORSENED'
+    assert failure['current_signed_distance_m'] < .01-.0001
+
+
+def test_normal_collision_margin_is_restored_after_free_space():
+    target,neighbor=_proximity_boxes()
+    tracker,failure=InitialProximityTracker.capture(target,[neighbor],.01,.0002,1e-6)
+    assert failure is None
+    assert tracker.state_failure(_moved(target,[-.011,0,0]),[neighbor]) is None
+    assert tracker.fully_released
+
+    failure=tracker.state_failure(_moved(target,[-.005,0,0]),[neighbor])
+
+    assert failure['reason']=='PAYLOAD_PROXIMITY_REENTRY'
+
+
+def test_initial_proximity_never_waives_unregistered_pair_or_real_penetration():
+    target,neighbor=_proximity_boxes()
+    tracker,failure=InitialProximityTracker.capture(target,[],.01,.0002,1e-6)
+    assert failure is None
+    assert tracker.state_failure(target,[neighbor])['reason']=='PAYLOAD_COLLISION'
+
+    penetrating,neighbor=_proximity_boxes(gap=-.001)
+    _,failure=InitialProximityTracker.capture(penetrating,[neighbor],.01,.0002,1e-6)
+    assert failure['reason']=='PAYLOAD_INITIAL_PENETRATION'
+
+
+def test_grid_neighbor_clearance_registers_proximity_instead_of_failing_initial_gate(monkeypatch):
     cfg=load_validation_config();cell=Cell(cfg)
     _,target,neighbors,valid=list(grid_tasks(cfg.data['scene']))[20]
     assert valid
-    def unexpected_search(*args,**kwargs):
-        raise AssertionError('A path cannot repair this invalid attached initial state')
-    monkeypatch.setattr(cell,'transit',unexpected_search)
+    monkeypatch.setattr(cell,'conveyor_options',lambda *args: [])
     result=evaluate_task(cell,target,[target,*neighbors],np.asarray(cfg.data['robot']['home_joints']),
         (0,.2),seed=cfg.data['planning']['seed']+20,only_face='top')
     assert result['grasp_reachable']
     assert not result['geometric_feasible']
-    assert result['failure_reason']=='PAYLOAD_INITIAL_CLEARANCE_FAILED'
-    assert any(a.get('failure',{}).get('pair')==[target.name,'left_neighbor'] for a in result['attempts'])
+    assert result['failure_reason']=='MINIMUM_BELT_HEIGHT_EXCEEDS_UPPER_STACK_BOUND'
+    assert all(a.get('reason')!='PAYLOAD_INITIAL_CLEARANCE_FAILED' for a in result['attempts'])
+    assert any('left_neighbor' in
+               {p['obstacle'] for p in a.get('initial_proximity',{}).get('pairs',[])}
+               for a in result['attempts'])
+
+
+def test_initial_proximity_reporting_does_not_count_gate_passage_as_success():
+    result={'attempts':[{'reason':'CONVEYOR_SWEEP_COLLISION','initial_proximity':{
+                'pairs':[{'obstacle':'neighbor'}]},'conveyor_attempts':[]}],
+            'geometric_feasible':False,'failure_stage':'conveyor_preposition',
+            'failure_reason':'CONVEYOR_SWEEP_COLLISION'}
+
+    row=initial_proximity_recovery_row('grid_020',result)
+
+    assert row['registered_initial_proximity']
+    assert row['passed_initial_gate']
+    assert not row['complete_geometric_success']
+    assert row['classification']=='INITIAL_GATE_PASSED_FAILED_BEFORE_SEPARATION'
+
+
+def test_grasp_task_set_is_ordered_sparse_and_deterministic():
+    nominal=np.eye(4);nominal[:3,3]=[1,2,3]
+    args=(nominal,[0,-.025,.025,-.05,.05],[0,-.0005,.0005])
+
+    first=grasp_task_set(*args);second=grasp_task_set(*args)
+
+    assert len(first)==13
+    assert first[0][1]['variant']=='nominal'
+    assert all(np.array_equal(a[0],b[0]) and a[1]==b[1] for a,b in zip(first,second))
+    assert all(np.isclose(pose[2,3],3) for pose,meta in first if meta['face_offset_local_xy_m'] != [0,0])
+
+
+def test_grasp_wrist_flip_seeds_are_valid_and_do_not_replace_strict_ik():
+    cfg=load_validation_config();robot=cfg.robot();home=np.asarray(cfg.data['robot']['home_joints'])
+
+    seeds=grasp_seed_configurations(robot,[home,home.copy()])
+
+    assert len(seeds)==3
+    assert np.array_equal(seeds[0],home)
+    assert all(robot.within_limits(q) for q in seeds)
+
+
+def test_grasp_task_set_reporting_counts_only_strict_actual_grasps_as_recovered():
+    result={'attempts':[{'task_set':{'variant':'nominal'},'reason':'NO_IK',
+                         'failure_taxonomy':{'detail':'POSITION_RESIDUAL_NOT_CONVERGED'}},
+                        {'task_set':{'variant':'offset_local_x_+0.025'},'reason':'PATH_SEARCH_EXHAUSTED',
+                         'tcp_from_box':np.eye(4).tolist(),'strict_grasp_valid':True}],
+            'grasp_reachable':True,'geometric_feasible':False,
+            'failure_stage':'extraction','failure_reason':'ROBOT_COLLISION'}
+
+    row=grasp_task_set_recovery_row('grid_032',result)
+
+    assert not row['nominal_strict_grasp_valid']
+    assert row['expanded_task_set_strict_grasp_valid']
+    assert row['task_set_recovered_grasp']
+
+
+def test_grasp_task_set_reporting_does_not_count_pre_clearance_tcp_capture():
+    result={'attempts':[{'task_set':{'variant':'nominal'},'reason':'PAYLOAD_INITIAL_CLEARANCE_FAILED',
+                         'tcp_from_box':np.eye(4).tolist()}],
+            'grasp_reachable':False,'geometric_feasible':False,
+            'failure_stage':'attachment_clearance','failure_reason':'PAYLOAD_INITIAL_CLEARANCE_FAILED'}
+
+    row=grasp_task_set_recovery_row('grid_020',result)
+
+    assert not row['nominal_strict_grasp_valid']
+    assert not row['expanded_task_set_strict_grasp_valid']
+
+
+def test_grasp_only_stops_before_conveyor_or_path_search(monkeypatch):
+    cfg=load_validation_config();cell=Cell(cfg)
+    _,target,neighbors,valid=list(grid_tasks(cfg.data['scene']))[20]
+    monkeypatch.setattr(cell,'conveyor_sweep',lambda *args: (_ for _ in ()).throw(
+        AssertionError('grasp-only qualification must not enter conveyor planning')))
+
+    result=evaluate_task(cell,target,[target,*neighbors],np.asarray(cfg.data['robot']['home_joints']),
+        (0,.2),seed=cfg.data['planning']['seed']+20,only_face='top',grasp_only=True)
+
+    assert valid and result['grasp_reachable']
+    assert result['failure_stage']=='grasp_task_set_complete'
+    assert result['failure_reason']=='GRASP_TASK_SET_VALID'
+    assert result['selected'] is None
+
+
+def test_escape_proposals_find_lift_before_620mm_pure_front_extraction():
+    cfg=load_validation_config();p=cfg.data['planning']
+    target=OBB([1.3,0,.8],[.3,.2,.15],np.eye(3),'target')
+    left=OBB([1.3,.41,.8],[.3,.2,.15],np.eye(3),'left')
+    right=OBB([1.3,-.41,.8],[.3,.2,.15],np.eye(3),'right')
+
+    proposals=escape_path_proposals(target,[-1,0,0],[left,right],.62,p)
+
+    lift=next(item for item in proposals if item['escape_direction']=='lift' and
+              item['escape_rotation_world_z_rad']==0)
+    assert np.isclose(lift['constrained_straight_distance_m'],0)
+    assert np.isclose(lift['escape_translation_m'],.32,atol=1e-8)
+    assert lift['escape_translation_m'] < .62
+
+
+def test_support_relation_graph_drives_carton_and_floor_release_names():
+    cfg=load_validation_config();cell=Cell(cfg);p=cfg.data['planning']
+    lower=OBB([1.3,0,.15],[.3,.2,.15],np.eye(3),'lower')
+    upper=OBB([1.3,0,.46],[.3,.2,.15],np.eye(3),'upper')
+
+    upper_names,audit=support_relations(upper,[lower,upper],cell.fixtures(),p)
+    lower_names,_=support_relations(lower,[lower,upper],cell.fixtures(),p)
+
+    assert upper_names==['lower']
+    assert lower_names==['floor']
+    assert audit['support_edges'][0]['supporter']=='lower'
+
+
+@pytest.mark.slow
+def test_original_grid_022_top_escape_is_a_reproducible_full_geometry_witness():
+    cfg=load_validation_config();p=cfg.data['planning']
+    # Keep the witness focused on the nominal task-set member. This does not
+    # alter its scene, strict tolerances, collision margin or original index.
+    p['grasp_face_offset_candidates_m']=[0.0,0.025]
+    p['grasp_tilt_candidates_rad']=[0.0]
+    p['grasp_downstream_candidate_limit_per_strategy']=3
+    p['escape_rotation_candidates_rad']=[0.0]
+    cell=Cell(cfg);_,target,neighbors,valid=list(grid_tasks(cfg.data['scene']))[22]
+    conveyor=cfg.data['conveyor'];belt=(conveyor['fixed_extension_m'],conveyor['fixed_z_m'])
+
+    result=evaluate_task(cell,target,[target,*neighbors],np.asarray(cfg.data['robot']['home_joints']),
+        belt,seed=p['seed']+22,mode='fixed',only_face='top')
+
+    assert valid and result['geometric_feasible']
+    assert result['selected']['face']=='top'
+    assert result['selected']['roll_deg']==90
+    assert result['selected']['task_set']['variant']=='offset_local_y_+0.025'
+    metrics=result['selected']['extraction_metrics']
+    assert np.isclose(metrics['pure_straight_clearance_distance'],.32,atol=1e-8)
+    assert metrics['escape_path_used']
+    assert metrics['distance_until_first_escape_path']==0
+    assert metrics['total_stack_release_distance'] < .02
+    assert p['collision_margin_m']==.01
