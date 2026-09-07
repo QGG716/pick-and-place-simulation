@@ -298,16 +298,19 @@ def rotation_vector_from_matrix(rotation: np.ndarray) -> np.ndarray:
     """SO(3) logarithm mapped to a 3-vector."""
     r = np.asarray(rotation, dtype=float)
     cos_theta = np.clip((np.trace(r) - 1.0) / 2.0, -1.0, 1.0)
-    theta = float(np.arccos(cos_theta))
+    skew = np.array([r[2, 1] - r[1, 2], r[0, 2] - r[2, 0], r[1, 0] - r[0, 1]])
+    theta = float(np.arctan2(0.5*np.linalg.norm(skew), cos_theta))
     if theta < 1e-8:
         return 0.5 * np.array([r[2, 1] - r[1, 2], r[0, 2] - r[2, 0], r[1, 0] - r[0, 1]])
-    if abs(np.pi - theta) < 1e-5:
-        # Robust axis extraction around pi.
-        diag = np.maximum((np.diag(r) + 1.0) / 2.0, 0.0)
-        axis = np.sqrt(diag)
-        axis[0] = np.copysign(axis[0], r[2, 1] - r[1, 2])
-        axis[1] = np.copysign(axis[1], r[0, 2] - r[2, 0])
-        axis[2] = np.copysign(axis[2], r[1, 0] - r[0, 1])
+    if abs(np.pi - theta) < 1e-4:
+        # At pi the skew part vanishes: independent copysigns lose mixed
+        # axis signs. Recover relative signs from the symmetric outer product.
+        symmetric = (r + r.T + 2.0 * np.eye(3)) / 4.0
+        pivot = int(np.argmax(np.diag(symmetric)))
+        axis = symmetric[:, pivot] / np.sqrt(max(symmetric[pivot, pivot], _EPS))
+        skew = np.array([r[2, 1] - r[1, 2], r[0, 2] - r[2, 0], r[1, 0] - r[0, 1]])
+        if np.dot(axis, skew) < 0.0:
+            axis = -axis
         return normalize(axis) * theta
     axis = np.array([r[2, 1] - r[1, 2], r[0, 2] - r[2, 0], r[1, 0] - r[0, 1]])
     axis /= 2.0 * np.sin(theta)

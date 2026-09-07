@@ -54,3 +54,23 @@ OBB SAT expands both shapes by this margin, so it requires 0.02 m separation
 on a shared face axis. This existing primitive meaning is preserved, not
 silently changed to improve results. Only designated nonpenetrating contact
 planes can waive the clearance margin; penetration beyond 0.0002 m fails.
+
+## Stage 3 — rotation, IK and complete motion checks
+
+SO(3) near-pi reconstruction uses a symmetric pivot to recover mixed axis
+signs and atan2 for the angle. Joint centering is projected into the true
+null space; convergence is decided by actual FK residual. Invalid converged
+branches immediately yield to the next deterministic IK seed.
+
+The V3 planner validates current state, pregrasp transit, contact, extraction,
+carry, actual-FK support and empty withdrawal. It checks interpolated edge
+interiors at at most 0.01 rad joint spacing, reads all URDF primitives and
+adds tool/arm and payload/arm checks. It retains primitive approximation and
+sampling limitations explicitly; it is not a mesh/continuous collision
+certificate. Original capsule self-pair exclusions remain engineering
+approximations requiring CAD review.
+
+Targeted numerical/timing regression: 54 passed. Additional motion-contract
+and numeric-contract run: 46 passed, including independent angular and linear
+Jacobian differences, frozen scene population equality, missing capsule
+corners, interior collision and invalid-home detection.

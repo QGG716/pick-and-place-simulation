@@ -65,6 +65,10 @@ def solve_ik(
             )
             if collision_free and (extra_state_valid is None or extra_state_valid(q)):
                 return IKResult(True, q, iteration, pos_err, ori_err, "converged")
+            # This optimizer has no obstacle gradient. Once the primary
+            # residual is zero, repeating identical updates cannot leave a
+            # colliding branch; let multistart try its next seeded branch.
+            return IKResult(False, q, iteration, pos_err, ori_err, "converged pose violates collision or task constraint")
 
         j = robot.geometric_jacobian(q)
         jw = weights @ j
@@ -80,10 +84,17 @@ def solve_ik(
         if norm > max_step:
             dq *= max_step / norm
 
-        # Weak joint-centering term to avoid drifting toward large wraps.
+        # Center only in the true numerical null space. A damped projector
+        # leaks into the primary task and leaves a nonzero FK residual on a
+        # nonredundant six-axis robot.
         center = np.mean(robot.joint_limits, axis=1)
         span = np.maximum(robot.joint_limits[:, 1] - robot.joint_limits[:, 0], 1e-6)
-        dq += 0.015 * (center - q) / span
+        if len(q) > np.linalg.matrix_rank(jw):
+            null = np.eye(len(q)) - np.linalg.pinv(jw, rcond=1e-10) @ jw
+            dq += null @ (0.015 * (center - q) / span)
+        norm = float(np.linalg.norm(dq))
+        if norm > max_step:
+            dq *= max_step / norm
         candidate = robot.clamp(q + dq)
 
         # During IK, reject gross collision excursions periodically.  This is
