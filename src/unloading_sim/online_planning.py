@@ -2035,7 +2035,7 @@ class ContinuousPlanningSession:
             backend.logical_cancel(progress.request.request_id)
             self._event(
                 "planning_cancel_requested",
-                OperationalOutcome.CANCELLED.value,
+                PlanningCancellationResult.CANCELLATION_REQUESTED.value,
                 progress.request.request_id,
                 backend=backend.identity.backend_name,
                 task_id=task_id,

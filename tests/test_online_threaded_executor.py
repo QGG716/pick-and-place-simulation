@@ -179,6 +179,11 @@ def test_scene_change_discards_late_old_generation_result_after_logical_cancel()
         session.update_scene(observed)
         assert session.state is SessionState.STOPPING
         assert backend.cancelled == ["k+1"]
+        assert any(
+            event.kind == "planning_cancel_requested"
+            and event.reason == PlanningCancellationResult.CANCELLATION_REQUESTED.value
+            for event in session.events
+        )
 
         backend.release.set()
         assert executor.wait_for_completion(WAIT_SECONDS)
