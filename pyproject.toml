@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unloading-layer1-sim"
-version = "0.4.0"
+version = "0.5.0.dev0"
 description = "Fast geometric simulation and motion planning for industrial-arm trailer unloading"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,10 +35,10 @@ unloading-layer1-realtime = "unloading_sim.realtime_planner:main"
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["src", "packages/unloading_contracts/src"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src", "."]
+pythonpath = ["src", "packages/unloading_contracts/src", "."]
 testpaths = ["tests"]
 addopts = "-m 'not simulation and not slow and not pybullet and not isaac'"
 markers = [
