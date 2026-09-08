@@ -245,7 +245,7 @@ def test_all_candidates_fail_explicitly_blocked_after_candidate_and_target_switc
     assert decisions[-1] == "BLOCK"
 
 
-def test_not_evaluated_waits_for_new_scene_and_backend_exception_enters_recovery():
+def test_not_evaluated_waits_for_scene_and_backend_exception_can_fallback():
     scene = revision(0, "a")
     waiting_backend = ScriptedBackend(default=PlanStatus.NOT_EVALUATED)
     waiting = ContinuousPlanningSession(waiting_backend)
@@ -261,7 +261,8 @@ def test_not_evaluated_waits_for_new_scene_and_backend_exception_enters_recovery
     recovery = ContinuousPlanningSession(crashing)
     recovery.submit(request("crash", scene, [("a", "top")]))
     recovery.run_until_stable()
-    assert recovery.state is SessionState.RECOVERY
+    assert recovery.state is SessionState.READY
+    assert any(event.kind == "backend_error" for event in recovery.events)
 
 
 def test_sync_and_async_execution_have_identical_planning_trace():

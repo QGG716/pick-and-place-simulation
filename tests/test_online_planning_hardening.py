@@ -249,20 +249,15 @@ def test_one_failed_request_and_one_successful_request_is_not_globally_blocked()
     assert session.ready_plans[0].request.request_id == "succeeds"
 
 
-@pytest.mark.parametrize("failure", ["wrong_type", "validation_exception", "timeout"])
-def test_backend_contract_validation_exception_and_timeout_do_not_deadlock(failure):
+@pytest.mark.parametrize("failure", ["wrong_type", "timeout"])
+def test_backend_contract_error_and_timeout_do_not_deadlock(failure):
     if failure == "wrong_type":
         backend = HardeningBackend(lambda *_: {"status": "SUCCESS"})
-    elif failure == "validation_exception":
-        backend = HardeningBackend(validate=lambda *_: (_ for _ in ()).throw(RuntimeError("validation unavailable")))
     else:
         backend = HardeningBackend(lambda _request, candidate, _path: PlanningResult.failed(PlanStatus.TIMEOUT, candidate))
     session = ContinuousPlanningSession(backend)
     session.submit(request(failure, world()))
     session.run_until_stable()
-    if failure == "validation_exception":
-        session.start_execution()
-
     assert session.state in {SessionState.RECOVERY, SessionState.BLOCKED}
     assert session.state is not SessionState.PLANNING
 

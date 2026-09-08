@@ -44,6 +44,53 @@ class PlanningPath(str, Enum):
     COLD = "COLD"
 
 
+class BoundaryMode(str, Enum):
+    STOP_BOUNDARY = "STOP_BOUNDARY"
+    CONTINUOUS_BOUNDARY = "CONTINUOUS_BOUNDARY"
+
+
+class ArtifactKind(str, Enum):
+    GEOMETRIC_PATH = "GEOMETRIC_PATH"
+    TIME_PARAMETERIZED_TRAJECTORY = "TIME_PARAMETERIZED_TRAJECTORY"
+
+
+class BackendHealth(str, Enum):
+    NEW = "NEW"
+    INITIALIZING = "INITIALIZING"
+    WARMING = "WARMING"
+    READY = "READY"
+    DEGRADED = "DEGRADED"
+    UNAVAILABLE = "UNAVAILABLE"
+    SHUTDOWN = "SHUTDOWN"
+
+
+class OperationalOutcome(str, Enum):
+    PATH_UNSUPPORTED = "PATH_UNSUPPORTED"
+    BACKEND_UNAVAILABLE = "BACKEND_UNAVAILABLE"
+    DEADLINE_EXCEEDED = "DEADLINE_EXCEEDED"
+    CANCELLED = "CANCELLED"
+    BACKEND_ERROR = "BACKEND_ERROR"
+    CACHE_MISS = "CACHE_MISS"
+
+
+class OutcomeCategory(str, Enum):
+    DOMAIN = "DOMAIN"
+    OPERATIONAL = "OPERATIONAL"
+
+
+class FailureScope(str, Enum):
+    CANDIDATE_LOCAL = "CANDIDATE_LOCAL"
+    TARGET_LOCAL = "TARGET_LOCAL"
+    SCENE_LOCAL = "SCENE_LOCAL"
+    BACKEND_LOCAL = "BACKEND_LOCAL"
+
+
+class ValidationStatus(str, Enum):
+    VALID = "VALID"
+    INVALID = "INVALID"
+    ERROR = "ERROR"
+
+
 class ReplanReason(str, Enum):
     INITIAL_REQUEST = "INITIAL_REQUEST"
     ROLLING_HORIZON = "ROLLING_HORIZON"
@@ -240,6 +287,29 @@ class PlanningWorldSnapshot:
     def current_q(self) -> tuple[float, ...]:
         return self.robot_state_revision.current_q
 
+    @property
+    def robot_model_fingerprint(self) -> str:
+        if isinstance(self.config_identity, Mapping):
+            value = self.config_identity.get("robot_model_fingerprint")
+            if value:
+                return str(value)
+        return scene_fingerprint({"robot_state": self.robot_state_revision.robot_state, "config": self.config_identity})
+
+    @property
+    def world_model_fingerprint(self) -> str:
+        if isinstance(self.config_identity, Mapping):
+            value = self.config_identity.get("world_model_fingerprint")
+            if value:
+                return str(value)
+        return scene_fingerprint(
+            {
+                "scene_schema": tuple(sorted(self.scene_snapshot.keys())) if isinstance(self.scene_snapshot, Mapping) else type(self.scene_snapshot).__name__,
+                "base_state": self.base_state,
+                "conveyor_state": self.conveyor_state,
+                "config": self.config_identity,
+            }
+        )
+
     def planning_context_matches(self, other: PlanningWorldSnapshot) -> bool:
         return bool(
             self.scene_revision.same_scene(other.scene_revision)
@@ -251,6 +321,130 @@ class PlanningWorldSnapshot:
             and self.conveyor_state == other.conveyor_state
             and self.config_identity == other.config_identity
         )
+
+
+@dataclass(frozen=True)
+class MotionBoundaryState:
+    mode: BoundaryMode
+    current_q: tuple[float, ...]
+    current_velocity: tuple[float, ...] | None = None
+    current_acceleration: tuple[float, ...] | None = None
+    predecessor_plan_id: str | None = None
+
+    def __post_init__(self) -> None:
+        mode = BoundaryMode(self.mode)
+        q = tuple(float(value) for value in self.current_q)
+        velocity = None if self.current_velocity is None else tuple(float(value) for value in self.current_velocity)
+        acceleration = None if self.current_acceleration is None else tuple(float(value) for value in self.current_acceleration)
+        if not q or not all(isfinite(value) for value in q):
+            raise ValueError("motion boundary current_q must be finite and non-empty")
+        for name, values in (("velocity", velocity), ("acceleration", acceleration)):
+            if values is not None and (len(values) != len(q) or not all(isfinite(value) for value in values)):
+                raise ValueError(f"motion boundary {name} must be finite and match current_q DOF")
+        if mode is BoundaryMode.STOP_BOUNDARY and velocity is not None and any(value != 0.0 for value in velocity):
+            raise ValueError("a stop boundary cannot have non-zero velocity")
+        if mode is BoundaryMode.CONTINUOUS_BOUNDARY and velocity is None:
+            raise ValueError("a continuous boundary requires current velocity")
+        object.__setattr__(self, "mode", mode)
+        object.__setattr__(self, "current_q", q)
+        object.__setattr__(self, "current_velocity", velocity)
+        object.__setattr__(self, "current_acceleration", acceleration)
+
+
+@dataclass(frozen=True)
+class BackendIdentity:
+    backend_name: str
+    backend_version: str
+    adapter_version: str
+    robot_model_fingerprint: str
+    world_model_fingerprint: str
+
+    def __post_init__(self) -> None:
+        for name in (
+            "backend_name",
+            "backend_version",
+            "adapter_version",
+            "robot_model_fingerprint",
+            "world_model_fingerprint",
+        ):
+            if not getattr(self, name):
+                raise ValueError(f"{name} must be non-empty")
+
+
+@dataclass(frozen=True)
+class BackendProvenance:
+    identity: BackendIdentity
+    deterministic_seed: int | None = None
+    compute_device: str | None = None
+    compute_category: str | None = None
+
+    @property
+    def backend_name(self) -> str:
+        return self.identity.backend_name
+
+    @property
+    def backend_version(self) -> str:
+        return self.identity.backend_version
+
+    @property
+    def adapter_version(self) -> str:
+        return self.identity.adapter_version
+
+    @property
+    def robot_model_fingerprint(self) -> str:
+        return self.identity.robot_model_fingerprint
+
+    @property
+    def world_model_fingerprint(self) -> str:
+        return self.identity.world_model_fingerprint
+
+
+@dataclass(frozen=True)
+class BackendCapabilities:
+    supported_planning_paths: frozenset[PlanningPath]
+    supported_boundary_modes: frozenset[BoundaryMode]
+    output_artifact_kinds: frozenset[ArtifactKind]
+    warm_start_support: bool = False
+    deterministic_seed_support: bool = False
+    attached_object_support: bool = False
+    incremental_world_update_support: bool = False
+    logical_cancellation_support: bool = False
+    hard_deadline_support: bool = False
+    revalidation_support: bool = False
+    initialization_required: bool = False
+    prewarm_required: bool = False
+
+    def __post_init__(self) -> None:
+        paths = frozenset(PlanningPath(value) for value in self.supported_planning_paths)
+        boundaries = frozenset(BoundaryMode(value) for value in self.supported_boundary_modes)
+        artifacts = frozenset(ArtifactKind(value) for value in self.output_artifact_kinds)
+        if not paths or not boundaries or not artifacts:
+            raise ValueError("backend capability sets must be non-empty")
+        object.__setattr__(self, "supported_planning_paths", paths)
+        object.__setattr__(self, "supported_boundary_modes", boundaries)
+        object.__setattr__(self, "output_artifact_kinds", artifacts)
+
+    def supports(self, path: PlanningPath, boundary: MotionBoundaryState) -> bool:
+        if path not in self.supported_planning_paths or boundary.mode not in self.supported_boundary_modes:
+            return False
+        if boundary.mode is BoundaryMode.CONTINUOUS_BOUNDARY:
+            return ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY in self.output_artifact_kinds
+        return True
+
+
+@dataclass(frozen=True)
+class FailureDetails:
+    retryable: bool
+    scope: FailureScope
+    native_code: str = ""
+    native_message: str = ""
+    allow_path_fallback: bool = False
+    allow_backend_fallback: bool = False
+    metadata: Mapping[str, Any] = field(default_factory=dict, compare=False)
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "scope", FailureScope(self.scope))
+        object.__setattr__(self, "metadata", _freeze(self.metadata))
 
 
 @dataclass(frozen=True)
@@ -274,6 +468,7 @@ class PlanningRequest:
     speculative: bool = False
     replan_reason: ReplanReason = ReplanReason.INITIAL_REQUEST
     metadata: Mapping[str, Any] = field(default_factory=dict, compare=False)
+    motion_boundary: MotionBoundaryState | None = None
 
     def __post_init__(self) -> None:
         if not self.request_id:
@@ -285,7 +480,16 @@ class PlanningRequest:
             raise ValueError("planning request must contain at least one candidate")
         if self.horizon_index < 0:
             raise ValueError("planning horizon index must be non-negative")
+        boundary = self.motion_boundary
+        if boundary is None:
+            boundary = MotionBoundaryState(BoundaryMode.STOP_BOUNDARY, self.world_snapshot.current_q)
+        if not isinstance(boundary, MotionBoundaryState):
+            raise TypeError("planning request motion_boundary must be a MotionBoundaryState")
+        if boundary.current_q != self.world_snapshot.current_q:
+            raise ValueError("motion boundary current_q must match the bound world snapshot")
         object.__setattr__(self, "candidates", candidates)
+        object.__setattr__(self, "motion_boundary", boundary)
+        object.__setattr__(self, "metadata", _freeze(self.metadata))
 
     @property
     def scene_revision(self) -> SceneRevision:
@@ -293,7 +497,8 @@ class PlanningRequest:
 
     @property
     def start_state(self) -> tuple[float, ...]:
-        return self.world_snapshot.current_q
+        assert self.motion_boundary is not None
+        return self.motion_boundary.current_q
 
 
 @dataclass(frozen=True)
@@ -305,15 +510,22 @@ class PlanningResult:
     message: str = ""
     latency_seconds: float | None = None
     metadata: Mapping[str, Any] = field(default_factory=dict, compare=False)
+    artifact_kind: ArtifactKind = ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY
+    operational_outcome: OperationalOutcome | None = None
+    failure: FailureDetails | None = None
 
     def __post_init__(self) -> None:
         status = PlanStatus(self.status)
+        artifact_kind = ArtifactKind(self.artifact_kind)
+        operational = None if self.operational_outcome is None else OperationalOutcome(self.operational_outcome)
         trajectory = tuple(tuple(float(value) for value in point) for point in self.trajectory)
         if self.latency_seconds is not None and (
             not isfinite(self.latency_seconds) or self.latency_seconds < 0.0
         ):
             raise ValueError("planning latency must be finite and non-negative")
         if status is PlanStatus.SUCCESS:
+            if operational is not None or self.failure is not None:
+                raise ValueError("a successful result cannot carry failure outcome details")
             if not trajectory:
                 raise ValueError("a successful planning result must contain a trajectory")
             dof = len(trajectory[0])
@@ -325,12 +537,44 @@ class PlanningResult:
                 raise ValueError("a successful result must identify its target and candidate")
         elif trajectory:
             raise ValueError("a failed planning result cannot carry an executable trajectory")
+        failure = self.failure
+        if status is not PlanStatus.SUCCESS and failure is None:
+            scope = {
+                PlanStatus.NO_IK: FailureScope.CANDIDATE_LOCAL,
+                PlanStatus.GRASP_CONSTRAINT_FAILED: FailureScope.CANDIDATE_LOCAL,
+                PlanStatus.INITIAL_CLEARANCE_FAILED: FailureScope.TARGET_LOCAL,
+                PlanStatus.COLLISION: FailureScope.CANDIDATE_LOCAL,
+                PlanStatus.NOT_EVALUATED: FailureScope.SCENE_LOCAL,
+                PlanStatus.TIMEOUT: FailureScope.BACKEND_LOCAL,
+            }[status]
+            failure = FailureDetails(
+                retryable=status in {PlanStatus.NOT_EVALUATED, PlanStatus.TIMEOUT},
+                scope=scope,
+                native_code=status.value,
+                native_message=self.message,
+                allow_path_fallback=True,
+                allow_backend_fallback=True,
+            )
+        if operational is not None and failure is None:
+            raise ValueError("an operational failure requires FailureDetails")
         object.__setattr__(self, "status", status)
         object.__setattr__(self, "trajectory", trajectory)
+        object.__setattr__(self, "artifact_kind", artifact_kind)
+        object.__setattr__(self, "operational_outcome", operational)
+        object.__setattr__(self, "failure", failure)
+        object.__setattr__(self, "metadata", _freeze(self.metadata))
 
     @property
     def success(self) -> bool:
         return self.status is PlanStatus.SUCCESS
+
+    @property
+    def outcome_category(self) -> OutcomeCategory:
+        return OutcomeCategory.OPERATIONAL if self.operational_outcome is not None else OutcomeCategory.DOMAIN
+
+    @property
+    def outcome_code(self) -> str:
+        return self.operational_outcome.value if self.operational_outcome is not None else self.status.value
 
     @classmethod
     def succeeded(
@@ -341,6 +585,7 @@ class PlanningResult:
         latency_seconds: float | None = None,
         message: str = "",
         metadata: Mapping[str, Any] | None = None,
+        artifact_kind: ArtifactKind = ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY,
     ) -> PlanningResult:
         return cls(
             PlanStatus.SUCCESS,
@@ -350,6 +595,7 @@ class PlanningResult:
             message,
             latency_seconds,
             {} if metadata is None else metadata,
+            artifact_kind,
         )
 
     @classmethod
@@ -361,6 +607,7 @@ class PlanningResult:
         latency_seconds: float | None = None,
         message: str = "",
         metadata: Mapping[str, Any] | None = None,
+        failure: FailureDetails | None = None,
     ) -> PlanningResult:
         if PlanStatus(status) is PlanStatus.SUCCESS:
             raise ValueError("use PlanningResult.succeeded for success")
@@ -372,19 +619,60 @@ class PlanningResult:
             message,
             latency_seconds,
             {} if metadata is None else metadata,
+            ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY,
+            None,
+            failure,
+        )
+
+    @classmethod
+    def operational_failure(
+        cls,
+        outcome: OperationalOutcome,
+        candidate: PlanningCandidate,
+        *,
+        failure: FailureDetails,
+        latency_seconds: float | None = None,
+        message: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> PlanningResult:
+        return cls(
+            PlanStatus.NOT_EVALUATED,
+            (),
+            candidate.target_id,
+            candidate.candidate_id,
+            message or failure.native_message,
+            latency_seconds,
+            {} if metadata is None else metadata,
+            ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY,
+            OperationalOutcome(outcome),
+            failure,
         )
 
 
 @dataclass(frozen=True)
-class PlanValidation:
-    valid: bool
+class PlanValidationResult:
+    status: ValidationStatus
     world_snapshot: PlanningWorldSnapshot
+    motion_boundary: MotionBoundaryState
     message: str
+    validator_name: str
+    validator_version: str
     reused: bool = False
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "status", ValidationStatus(self.status))
+
+    @property
+    def valid(self) -> bool:
+        return self.status is ValidationStatus.VALID
 
     @property
     def revision(self) -> SceneRevision:
         return self.world_snapshot.scene_revision
+
+
+# Source-compatible public name retained for existing callers.
+PlanValidation = PlanValidationResult
 
 
 @dataclass(frozen=True)
@@ -395,11 +683,18 @@ class PlanEnvelope:
     planning_path: PlanningPath
     result: PlanningResult
     planned_snapshot: PlanningWorldSnapshot
-    validated_snapshot: PlanningWorldSnapshot
+    validated_snapshot: PlanningWorldSnapshot | None
     expected_start_state: tuple[float, ...]
     expected_end_state: tuple[float, ...]
     predecessor_plan_id: str | None
     planning_generation: int
+    proposed_by: BackendProvenance
+    artifact_kind: ArtifactKind
+    robot_model_fingerprint: str
+    world_model_fingerprint: str
+    validated_by: str | None = None
+    validation_timestamp_seconds: float | None = None
+    validation_generation: int | None = None
     speculative: bool = False
     invalidated_by: ReplanReason | None = None
     validation_message: str = "planned against exact revision"
@@ -420,23 +715,64 @@ class PlanEnvelope:
             raise ValueError("expected plan end does not match trajectory")
         if self.planning_generation < 0:
             raise ValueError("planning generation must be non-negative")
+        if self.artifact_kind is not self.result.artifact_kind:
+            raise ValueError("envelope artifact kind does not match proposal")
+        if self.robot_model_fingerprint != self.proposed_by.robot_model_fingerprint:
+            raise ValueError("envelope robot model fingerprint does not match provenance")
+        if self.world_model_fingerprint != self.proposed_by.world_model_fingerprint:
+            raise ValueError("envelope world model fingerprint does not match provenance")
+        validation_fields = (
+            self.validated_snapshot,
+            self.validated_by,
+            self.validation_timestamp_seconds,
+            self.validation_generation,
+        )
+        if any(value is not None for value in validation_fields) and not all(
+            value is not None for value in validation_fields
+        ):
+            raise ValueError("validated envelope fields must be populated atomically")
+        if self.validation_timestamp_seconds is not None and (
+            not isfinite(self.validation_timestamp_seconds) or self.validation_timestamp_seconds < 0.0
+        ):
+            raise ValueError("validation timestamp must be finite and non-negative")
 
     @property
     def planned_revision(self) -> SceneRevision:
         return self.planned_snapshot.scene_revision
 
     @property
-    def validated_revision(self) -> SceneRevision:
-        return self.validated_snapshot.scene_revision
+    def validated_revision(self) -> SceneRevision | None:
+        return None if self.validated_snapshot is None else self.validated_snapshot.scene_revision
+
+    @property
+    def planned_scene_revision(self) -> SceneRevision:
+        return self.planned_revision
+
+    @property
+    def validated_scene_revision(self) -> SceneRevision | None:
+        return self.validated_revision
 
     @property
     def executable(self) -> bool:
-        return self.invalidated_by is None and self.result.success
+        return (
+            self.invalidated_by is None
+            and self.result.success
+            and self.validated_snapshot is not None
+            and self.validated_by is not None
+            and self.validation_timestamp_seconds is not None
+            and self.validation_generation is not None
+        )
 
     def invalidate(self, reason: ReplanReason, message: str = "") -> PlanEnvelope:
         return replace(self, invalidated_by=reason, validation_message=message or reason.value)
 
-    def revalidated(self, validation: PlanValidation) -> PlanEnvelope:
+    def revalidated(
+        self,
+        validation: PlanValidationResult,
+        *,
+        timestamp_seconds: float,
+        generation: int,
+    ) -> PlanEnvelope:
         if not validation.valid:
             raise ValueError("cannot mark a failed validation as valid")
         return replace(
@@ -444,17 +780,126 @@ class PlanEnvelope:
             validated_snapshot=validation.world_snapshot,
             invalidated_by=None,
             validation_message=validation.message,
+            validated_by=f"{validation.validator_name}@{validation.validator_version}",
+            validation_timestamp_seconds=float(timestamp_seconds),
+            validation_generation=int(generation),
+        )
+
+
+class PlanValidator(ABC):
+    """Authoritative, provider-neutral gate between proposals and READY."""
+
+    def __init__(self, name: str, version: str) -> None:
+        if not name or not version:
+            raise ValueError("validator name and version must be non-empty")
+        self.name = name
+        self.version = version
+
+    @abstractmethod
+    def validate(
+        self,
+        plan_envelope: PlanEnvelope,
+        current_world_snapshot: PlanningWorldSnapshot,
+        current_motion_boundary: MotionBoundaryState,
+    ) -> PlanValidationResult: ...
+
+
+class ProviderNeutralPlanValidator(PlanValidator):
+    def __init__(self, *, start_tolerance_rad: float = 1e-6) -> None:
+        super().__init__("provider-neutral-control-plane", "1")
+        self.start_tolerance_rad = float(start_tolerance_rad)
+
+    def validate(
+        self,
+        plan_envelope: PlanEnvelope,
+        current_world_snapshot: PlanningWorldSnapshot,
+        current_motion_boundary: MotionBoundaryState,
+    ) -> PlanValidationResult:
+        valid = True
+        message = "provider-neutral contract valid"
+        if plan_envelope.planning_generation < 0:
+            valid, message = False, "invalid planning generation"
+        elif not plan_envelope.planned_snapshot.planning_context_matches(current_world_snapshot):
+            valid, message = False, "planning world snapshot or revision changed"
+        elif current_motion_boundary != plan_envelope.request.motion_boundary:
+            valid, message = False, "start MotionBoundaryState changed"
+        elif current_motion_boundary.predecessor_plan_id != plan_envelope.predecessor_plan_id:
+            valid, message = False, "predecessor contract changed"
+        elif plan_envelope.robot_model_fingerprint != current_world_snapshot.robot_model_fingerprint:
+            valid, message = False, "robot model fingerprint mismatch"
+        elif plan_envelope.world_model_fingerprint != current_world_snapshot.world_model_fingerprint:
+            valid, message = False, "world model fingerprint mismatch"
+        elif (
+            current_motion_boundary.mode is BoundaryMode.CONTINUOUS_BOUNDARY
+            and plan_envelope.artifact_kind is not ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY
+        ):
+            valid, message = False, "geometric path cannot satisfy a continuous boundary"
+        elif not np.allclose(
+            plan_envelope.expected_start_state,
+            current_motion_boundary.current_q,
+            atol=self.start_tolerance_rad,
+            rtol=0.0,
+        ):
+            valid, message = False, "proposal start does not match motion boundary"
+        return PlanValidationResult(
+            ValidationStatus.VALID if valid else ValidationStatus.INVALID,
+            current_world_snapshot,
+            current_motion_boundary,
+            message,
+            self.name,
+            self.version,
         )
 
 
 class PlannerBackend(ABC):
     """Replaceable bottom-layer planner contract with deterministic seeding."""
 
-    def __init__(self, seed: int = 0) -> None:
+    def __init__(
+        self,
+        seed: int = 0,
+        *,
+        identity: BackendIdentity | None = None,
+        capabilities: BackendCapabilities | None = None,
+        compute_device: str | None = None,
+        compute_category: str | None = None,
+    ) -> None:
         self.seed = int(seed)
+        self.identity = identity or BackendIdentity("legacy-backend", "unspecified", "1", "*", "*")
+        self.capabilities = capabilities or BackendCapabilities(
+            frozenset(PlanningPath),
+            frozenset({BoundaryMode.STOP_BOUNDARY}),
+            frozenset({ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY}),
+            warm_start_support=True,
+            deterministic_seed_support=True,
+            attached_object_support=True,
+            revalidation_support=True,
+        )
+        self.compute_device = compute_device
+        self.compute_category = compute_category
+
+    @property
+    def health(self) -> BackendHealth:
+        return BackendHealth.READY
+
+    @property
+    def provenance(self) -> BackendProvenance:
+        return BackendProvenance(
+            self.identity,
+            self.seed if self.capabilities.deterministic_seed_support else None,
+            self.compute_device,
+            self.compute_category,
+        )
 
     def set_seed(self, seed: int) -> None:
         self.seed = int(seed)
+
+    def initialize(self) -> None: ...
+
+    def prewarm(self) -> None: ...
+
+    def logical_cancel(self, request_id: str) -> None: ...
+
+    def shutdown(self) -> None: ...
 
     @abstractmethod
     def plan(
@@ -465,14 +910,18 @@ class PlannerBackend(ABC):
     ) -> PlanningResult:
         """Return SUCCESS or an explicit fail-closed status."""
 
-    def validate_plan(
-        self, envelope: PlanEnvelope, snapshot: PlanningWorldSnapshot
-    ) -> PlanValidation:
+    def validate_plan(self, envelope: PlanEnvelope, snapshot: PlanningWorldSnapshot) -> PlanValidationResult:
+        """Legacy hook retained for adapters; it is never the authoritative gate."""
+        boundary = envelope.request.motion_boundary
+        assert boundary is not None
         valid = envelope.planned_snapshot.planning_context_matches(snapshot)
-        return PlanValidation(
-            valid,
+        return PlanValidationResult(
+            ValidationStatus.VALID if valid else ValidationStatus.INVALID,
             snapshot,
+            boundary,
             "planning world identity matches" if valid else "planning world identity changed",
+            self.identity.backend_name,
+            self.identity.adapter_version,
             reused=valid and snapshot != envelope.planned_snapshot,
         )
 
@@ -527,6 +976,12 @@ class PlanningLatencySample:
     status: PlanStatus
     seconds: float
     speculative: bool
+    backend_name: str = "unspecified"
+    outcome_category: OutcomeCategory = OutcomeCategory.DOMAIN
+    outcome_code: str = "NOT_EVALUATED"
+    queue_seconds: float = 0.0
+    validation_seconds: float = 0.0
+    end_to_end_seconds: float | None = None
 
 
 class PlanningLatencyStatistics:
@@ -535,6 +990,11 @@ class PlanningLatencyStatistics:
     def __init__(self, clock: Callable[[], float] = perf_counter) -> None:
         self._clock = clock
         self.samples: list[PlanningLatencySample] = []
+        self.backend_init_samples: dict[str, list[float]] = {}
+        self.backend_warmup_samples: dict[str, list[float]] = {}
+        self.fallback_count_by_path: Counter[str] = Counter()
+        self.outcome_count_by_backend_category: dict[str, Counter[str]] = {}
+        self.unsupported_route_skip_count = 0
         self._idle_started: float | None = None
         self.robot_idle_waiting_seconds = 0.0
 
@@ -542,6 +1002,20 @@ class PlanningLatencyStatistics:
         if not isfinite(sample.seconds) or sample.seconds < 0.0:
             raise ValueError("planning latency must be finite and non-negative")
         self.samples.append(sample)
+        key = f"{sample.outcome_category.value}:{sample.outcome_code}"
+        self.outcome_count_by_backend_category.setdefault(sample.backend_name, Counter())[key] += 1
+
+    def record_lifecycle(self, backend_name: str, phase: str, seconds: float) -> None:
+        if not isfinite(seconds) or seconds < 0.0:
+            raise ValueError("backend lifecycle latency must be finite and non-negative")
+        target = self.backend_init_samples if phase == "initialize" else self.backend_warmup_samples
+        target.setdefault(backend_name, []).append(float(seconds))
+
+    def record_fallback(self, path: PlanningPath) -> None:
+        self.fallback_count_by_path[path.value] += 1
+
+    def record_unsupported_route(self) -> None:
+        self.unsupported_route_skip_count += 1
 
     def begin_robot_idle(self) -> None:
         if self._idle_started is None:
@@ -577,11 +1051,35 @@ class PlanningLatencyStatistics:
             path.value: self._summary([sample.seconds for sample in self.samples if sample.planning_path is path])
             for path in PlanningPath
         }
+        queue = [sample.queue_seconds for sample in self.samples]
+        validation = [sample.validation_seconds for sample in self.samples if sample.status is PlanStatus.SUCCESS]
+        end_to_end = [
+            sample.end_to_end_seconds if sample.end_to_end_seconds is not None else sample.queue_seconds + sample.seconds + sample.validation_seconds
+            for sample in self.samples
+        ]
         return {
-            "model": "online_control_plane_latency_v1",
+            "model": "online_control_plane_latency_v2",
             "planning_latency": self._summary([sample.seconds for sample in self.samples]),
             "planning_latency_by_path": by_path,
+            "backend_init_latency": {
+                name: self._summary(values) for name, values in sorted(self.backend_init_samples.items())
+            },
+            "backend_warmup_latency": {
+                name: self._summary(values) for name, values in sorted(self.backend_warmup_samples.items())
+            },
+            "queue_latency": self._summary(queue),
+            "planning_compute_latency": self._summary([sample.seconds for sample in self.samples]),
+            "validation_latency": self._summary(validation),
+            "end_to_end_planning_latency": self._summary(end_to_end),
             "planning_status_counts": dict(sorted(Counter(sample.status.value for sample in self.samples).items())),
+            "fallback_count_by_path": {
+                path.value: self.fallback_count_by_path[path.value] for path in PlanningPath
+            },
+            "outcome_count_by_backend_category": {
+                name: dict(sorted(counts.items()))
+                for name, counts in sorted(self.outcome_count_by_backend_category.items())
+            },
+            "unsupported_route_skip_count": self.unsupported_route_skip_count,
             "speculative_planning_count": sum(sample.speculative for sample in self.samples),
             "robot_idle_waiting_for_planner_seconds": float(idle),
             "production_throughput": None,
@@ -593,6 +1091,7 @@ class PlanningLatencyStatistics:
 class _ExecutorTask:
     task_id: str
     operation: Callable[[], PlanningResult]
+    submitted_at: float
 
 
 @dataclass
@@ -600,6 +1099,7 @@ class _ExecutorCompletion:
     task_id: str
     result: PlanningResult | None
     elapsed_seconds: float
+    queue_seconds: float = 0.0
     error: Exception | None = None
 
 
@@ -631,7 +1131,7 @@ class DeterministicAsyncPlanningExecutor(PlanningExecutor):
         if task_id in self._ids:
             raise ValueError(f"duplicate planning task id: {task_id}")
         self._ids.add(task_id)
-        self._pending.append(_ExecutorTask(task_id, operation))
+        self._pending.append(_ExecutorTask(task_id, operation, self._clock()))
 
     def advance(self, max_tasks: int = 1) -> int:
         if max_tasks < 0:
@@ -640,11 +1140,14 @@ class DeterministicAsyncPlanningExecutor(PlanningExecutor):
         while self._pending and completed < max_tasks:
             task = self._pending.popleft()
             started = self._clock()
+            queue_seconds = started - task.submitted_at
+            if queue_seconds < 0.0:
+                raise RuntimeError("executor clock moved backwards")
             try:
                 result = task.operation()
-                item = _ExecutorCompletion(task.task_id, result, self._clock() - started)
+                item = _ExecutorCompletion(task.task_id, result, self._clock() - started, queue_seconds)
             except Exception as exc:  # Backend failure is a recovery event, not a deadlock.
-                item = _ExecutorCompletion(task.task_id, None, self._clock() - started, exc)
+                item = _ExecutorCompletion(task.task_id, None, self._clock() - started, queue_seconds, exc)
             self._completed.append(item)
             completed += 1
         return completed
@@ -734,12 +1237,19 @@ class ExecutionMonitor:
 
 
 @dataclass
+class _PlanningRoute:
+    planning_path: PlanningPath
+    backend_index: int
+
+
+@dataclass
 class _RequestProgress:
     request: PlanningRequest
     generation: int
     predecessor_plan_id: str | None = None
     candidate_index: int = 0
-    path_index: int = 0
+    route_index: int = 0
+    routes: tuple[_PlanningRoute, ...] = ()
     attempts: list[PlanningResult] = field(default_factory=list)
 
 
@@ -757,8 +1267,9 @@ class ContinuousPlanningSession:
 
     def __init__(
         self,
-        backend: PlannerBackend,
+        backend: PlannerBackend | Sequence[PlannerBackend],
         *,
+        validator: PlanValidator | None = None,
         executor: PlanningExecutor | None = None,
         rolling_horizon: int = 2,
         planning_paths: Sequence[PlanningPath] = (
@@ -777,7 +1288,20 @@ class ContinuousPlanningSession:
             raise ValueError("planning paths must be non-empty and unique")
         if not isfinite(start_tolerance_rad) or start_tolerance_rad < 0.0:
             raise ValueError("start tolerance must be finite and non-negative")
-        self.backend = backend
+        if isinstance(backend, PlannerBackend):
+            backends = (backend,)
+        else:
+            backends = tuple(backend)
+        if not backends or not all(isinstance(item, PlannerBackend) for item in backends):
+            raise TypeError("backend must be a PlannerBackend or a non-empty sequence of them")
+        names = [item.identity.backend_name for item in backends]
+        if len(names) != len(set(names)):
+            raise ValueError("backend names must be unique within a session")
+        self.backends = backends
+        self.backend = backends[0]
+        self.validator = validator or ProviderNeutralPlanValidator(start_tolerance_rad=start_tolerance_rad)
+        if not isinstance(self.validator, PlanValidator):
+            raise TypeError("validator must implement PlanValidator")
         self.executor = SynchronousPlanningExecutor(clock) if executor is None else executor
         self.rolling_horizon = int(rolling_horizon)
         self.planning_paths = paths
@@ -800,10 +1324,91 @@ class ContinuousPlanningSession:
         self._planning_generation = 0
         self._request_ids: set[str] = set()
         self._terminal_failures: list[tuple[PlanningRequest, bool]] = []
+        self._exhausted_progress: list[_RequestProgress] = []
         self._waiting_for_scene = False
         self._stopping_request: PlanningRequest | None = None
         self._discard_without_replan_ids: set[str] = set()
         self._start_tolerance_rad = float(start_tolerance_rad)
+
+    @property
+    def terminal_results(self) -> tuple[PlanningResult, ...]:
+        return tuple(
+            attempt
+            for progress in getattr(self, "_exhausted_progress", ())
+            for attempt in progress.attempts
+        )
+
+    def initialize_backends(self) -> None:
+        for backend in self.backends:
+            name = backend.identity.backend_name
+            if backend.capabilities.initialization_required:
+                started = self.statistics._clock()
+                try:
+                    backend.initialize()
+                except Exception as exc:
+                    self._event("backend_initialize_error", OperationalOutcome.BACKEND_UNAVAILABLE.value, error=repr(exc), backend=name)
+                    continue
+                self.statistics.record_lifecycle(name, "initialize", self.statistics._clock() - started)
+            if backend.capabilities.prewarm_required and backend.health is BackendHealth.READY:
+                started = self.statistics._clock()
+                try:
+                    backend.prewarm()
+                except Exception as exc:
+                    self._event("backend_prewarm_error", OperationalOutcome.BACKEND_UNAVAILABLE.value, error=repr(exc), backend=name)
+                    continue
+                self.statistics.record_lifecycle(name, "prewarm", self.statistics._clock() - started)
+
+    def shutdown_backends(self) -> None:
+        for backend in self.backends:
+            backend.shutdown()
+
+    def _logical_cancel_active(self) -> None:
+        progress = self._active_progress
+        if progress is None or self._submitted_task is None or not progress.routes:
+            return
+        route = progress.routes[progress.route_index]
+        backend = self.backends[route.backend_index]
+        if not backend.capabilities.logical_cancellation_support:
+            return
+        try:
+            backend.logical_cancel(progress.request.request_id)
+            self._event(
+                "planning_cancel_requested",
+                OperationalOutcome.CANCELLED.value,
+                progress.request.request_id,
+                backend=backend.identity.backend_name,
+            )
+        except Exception as exc:
+            self._event(
+                "planning_cancel_error",
+                OperationalOutcome.BACKEND_ERROR.value,
+                progress.request.request_id,
+                backend=backend.identity.backend_name,
+                error=repr(exc),
+            )
+
+    def _routes_for(self, request: PlanningRequest) -> tuple[_PlanningRoute, ...]:
+        routes: list[_PlanningRoute] = []
+        boundary = request.motion_boundary
+        assert boundary is not None
+        for path in self.planning_paths:
+            for index, backend in enumerate(self.backends):
+                supported = backend.capabilities.supports(path, boundary)
+                if request.world_snapshot.payload_attachment is not None and not backend.capabilities.attached_object_support:
+                    supported = False
+                if supported:
+                    routes.append(_PlanningRoute(path, index))
+                else:
+                    self.statistics.record_unsupported_route()
+                    self._event(
+                        "unsupported_route_skipped",
+                        OperationalOutcome.PATH_UNSUPPORTED.value,
+                        request.request_id,
+                        backend=backend.identity.backend_name,
+                        path=path.value,
+                        boundary=boundary.mode.value,
+                    )
+        return tuple(routes)
 
     def _event(self, kind: str, reason: str, request_id: str | None = None, **details: Any) -> None:
         self._event_sequence += 1
@@ -846,7 +1451,14 @@ class ContinuousPlanningSession:
         elif request.scene_revision.sequence <= self.current_world.scene_revision.sequence:
             raise ValueError("speculative request must bind a future scene revision")
         self._request_ids.add(request.request_id)
-        self._requests.append(_RequestProgress(request, self._planning_generation, predecessor_plan_id))
+        self._requests.append(
+            _RequestProgress(
+                request,
+                self._planning_generation,
+                predecessor_plan_id,
+                routes=self._routes_for(request),
+            )
+        )
         self._terminal_failures.clear()
         self._waiting_for_scene = False
         self._event("request_submitted", request.replan_reason.value, request.request_id, speculative=request.speculative)
@@ -869,6 +1481,12 @@ class ContinuousPlanningSession:
             rtol=0.0,
         ):
             raise ValueError("speculative request start must equal plan k predicted end")
+        boundary = request.motion_boundary
+        assert boundary is not None
+        request = replace(
+            request,
+            motion_boundary=replace(boundary, predecessor_plan_id=active.plan_id),
+        )
         self._submit(request, predecessor_plan_id=active.plan_id)
 
     def _schedule_if_possible(self) -> None:
@@ -881,19 +1499,48 @@ class ContinuousPlanningSession:
                 return
             self._active_progress = self._requests.popleft()
         progress = self._active_progress
+        if not progress.routes:
+            self._event(
+                "request_exhausted",
+                "BLOCKED",
+                progress.request.request_id,
+                attempts=0,
+                operational_reason=OperationalOutcome.PATH_UNSUPPORTED.value,
+            )
+            self._terminal_failures.append((progress.request, False))
+            self._exhausted_progress.append(progress)
+            self._active_progress = None
+            self._schedule_if_possible()
+            return
         candidate = progress.request.candidates[progress.candidate_index]
-        path = self.planning_paths[progress.path_index]
+        route = progress.routes[progress.route_index]
+        path = route.planning_path
+        backend = self.backends[route.backend_index]
         self._task_sequence += 1
-        task_id = f"{progress.request.request_id}:{candidate.candidate_id}:{path.value}:{self._task_sequence}"
+        task_id = f"{progress.request.request_id}:{candidate.candidate_id}:{path.value}:{backend.identity.backend_name}:{self._task_sequence}"
         self._submitted_task = task_id
         request = progress.request
 
         def operation() -> PlanningResult:
-            self.backend.set_seed(request.seed)
-            return self.backend.plan(request, candidate, path)
+            if backend.health not in {BackendHealth.READY, BackendHealth.DEGRADED}:
+                return PlanningResult.operational_failure(
+                    OperationalOutcome.BACKEND_UNAVAILABLE,
+                    candidate,
+                    failure=FailureDetails(
+                        True,
+                        FailureScope.BACKEND_LOCAL,
+                        native_code=backend.health.value,
+                        native_message="backend is not ready",
+                        allow_path_fallback=True,
+                        allow_backend_fallback=True,
+                    ),
+                )
+            if backend.capabilities.deterministic_seed_support:
+                backend.set_seed(request.seed)
+            return backend.plan(request, candidate, path)
 
         self.executor.submit(task_id, operation)
-        self._event("planning_started", path.value, request.request_id, target=candidate.target_id, candidate=candidate.candidate_id)
+        self._event("planning_started", path.value, request.request_id, target=candidate.target_id, candidate=candidate.candidate_id, backend=backend.identity.backend_name)
 
     def advance(self, max_tasks: int = 1) -> SessionState:
         if max_tasks < 0:
@@ -930,7 +1577,9 @@ class ContinuousPlanningSession:
         progress = self._active_progress
         request = progress.request
         candidate = request.candidates[progress.candidate_index]
-        path = self.planning_paths[progress.path_index]
+        route = progress.routes[progress.route_index]
+        path = route.planning_path
+        backend = self.backends[route.backend_index]
         if progress.generation != self._planning_generation:
             self._event(
                 "stale_result_discarded",
@@ -955,12 +1604,27 @@ class ContinuousPlanningSession:
             self._schedule_if_possible()
             return
         if completion.error is not None:
-            self._event("backend_error", ReplanReason.PLANNER_FAILURE.value, request.request_id, error=repr(completion.error))
-            self._active_progress = None
-            self.state = SessionState.RECOVERY
-            self.statistics.end_robot_idle()
-            return
-        if not isinstance(completion.result, PlanningResult):
+            result = PlanningResult.operational_failure(
+                OperationalOutcome.BACKEND_ERROR,
+                candidate,
+                failure=FailureDetails(
+                    True,
+                    FailureScope.BACKEND_LOCAL,
+                    native_code=type(completion.error).__name__,
+                    native_message=str(completion.error),
+                    allow_path_fallback=True,
+                    allow_backend_fallback=True,
+                    metadata={"exception_repr": repr(completion.error)},
+                ),
+            )
+            self._event(
+                "backend_error",
+                OperationalOutcome.BACKEND_ERROR.value,
+                request.request_id,
+                error=repr(completion.error),
+                backend=backend.identity.backend_name,
+            )
+        elif not isinstance(completion.result, PlanningResult):
             self._event(
                 "backend_contract_error",
                 ReplanReason.PLANNER_FAILURE.value,
@@ -971,7 +1635,10 @@ class ContinuousPlanningSession:
             self.state = SessionState.RECOVERY
             self.statistics.end_robot_idle()
             return
-        result = completion.result
+        else:
+            result = completion.result
+        if result.status is PlanStatus.TIMEOUT and result.operational_outcome is None:
+            result = replace(result, operational_outcome=OperationalOutcome.DEADLINE_EXCEEDED)
         if (result.target_id, result.candidate_id) != (candidate.target_id, candidate.candidate_id):
             self._event("backend_contract_error", ReplanReason.PLANNER_FAILURE.value, request.request_id)
             self._active_progress = None
@@ -996,54 +1663,148 @@ class ContinuousPlanningSession:
                 self.state = SessionState.RECOVERY
                 self.statistics.end_robot_idle()
                 return
+            if result.artifact_kind not in backend.capabilities.output_artifact_kinds:
+                self._event(
+                    "backend_contract_error",
+                    ReplanReason.PLANNER_FAILURE.value,
+                    request.request_id,
+                    error="proposal artifact kind was not declared by backend capabilities",
+                )
+                self._active_progress = None
+                self.state = SessionState.RECOVERY
+                self.statistics.end_robot_idle()
+                return
         latency = completion.elapsed_seconds if result.latency_seconds is None else result.latency_seconds
         result = replace(result, latency_seconds=latency)
         progress.attempts.append(result)
-        self.statistics.record(PlanningLatencySample(request.request_id, path, result.status, latency, request.speculative))
-        self._event("planning_finished", result.status.value, request.request_id, path=path.value, latency_seconds=latency)
+        validation_seconds = 0.0
         if result.success:
-            envelope = self._envelope(request, candidate, path, result)
-            (self.speculative_plans if request.speculative else self.ready_plans).append(envelope)
-            self._active_progress = None
-            self._event("plan_ready", path.value, request.request_id, plan_id=envelope.plan_id, speculative=request.speculative)
+            envelope = self._envelope(request, candidate, path, result, backend)
+            validation_started = self.statistics._clock()
+            try:
+                envelope, validation = self._validate(
+                    envelope,
+                    request.world_snapshot,
+                    request.motion_boundary,
+                )
+            except Exception as exc:
+                self.invalidated_plans.append(
+                    envelope.invalidate(ReplanReason.PLAN_VALIDATION_FAILED, repr(exc))
+                )
+                self._event(
+                    "validation_error",
+                    ReplanReason.PLAN_VALIDATION_FAILED.value,
+                    request.request_id,
+                    error=repr(exc),
+                )
+                self._active_progress = None
+                self.state = SessionState.RECOVERY
+                self.statistics.end_robot_idle()
+                return
+            validation_seconds = self.statistics._clock() - validation_started
+            if not validation.valid:
+                self.invalidated_plans.append(
+                    envelope.invalidate(ReplanReason.PLAN_VALIDATION_FAILED, validation.message)
+                )
+                self._event(
+                    "proposal_rejected",
+                    ReplanReason.PLAN_VALIDATION_FAILED.value,
+                    request.request_id,
+                    message=validation.message,
+                    backend=backend.identity.backend_name,
+                )
+            else:
+                sample = PlanningLatencySample(
+                    request.request_id,
+                    path,
+                    result.status,
+                    latency,
+                    request.speculative,
+                    backend.identity.backend_name,
+                    result.outcome_category,
+                    result.outcome_code,
+                    completion.queue_seconds,
+                    validation_seconds,
+                    completion.queue_seconds + latency + validation_seconds,
+                )
+                self.statistics.record(sample)
+                self._event("planning_finished", result.outcome_code, request.request_id, path=path.value, latency_seconds=latency, backend=backend.identity.backend_name)
+                (self.speculative_plans if request.speculative else self.ready_plans).append(envelope)
+                self._active_progress = None
+                self._event("plan_ready", path.value, request.request_id, plan_id=envelope.plan_id, speculative=request.speculative)
+                self._schedule_if_possible()
+                return
+
+        sample = PlanningLatencySample(
+            request.request_id,
+            path,
+            result.status,
+            latency,
+            request.speculative,
+            backend.identity.backend_name,
+            result.outcome_category,
+            result.outcome_code,
+            completion.queue_seconds,
+            validation_seconds,
+            completion.queue_seconds + latency + validation_seconds,
+        )
+        self.statistics.record(sample)
+        self._event("planning_finished", result.outcome_code, request.request_id, path=path.value, latency_seconds=latency, backend=backend.identity.backend_name)
+
+        next_route_index: int | None = None
+        for index in range(progress.route_index + 1, len(progress.routes)):
+            next_route = progress.routes[index]
+            same_path = next_route.planning_path is path
+            failure = result.failure
+            if failure is not None:
+                if same_path and not failure.allow_backend_fallback:
+                    continue
+                if not same_path and not failure.allow_path_fallback:
+                    continue
+            next_route_index = index
+            break
+        if next_route_index is not None:
+            self.statistics.record_fallback(path)
+            progress.route_index = next_route_index
+            self._event(
+                "failure_decision",
+                FailureAction.ESCALATE_PATH.value,
+                request.request_id,
+                status=result.outcome_code,
+            )
             self._schedule_if_possible()
             return
 
-        next_path = progress.path_index + 1 < len(self.planning_paths)
         next_candidate_index = progress.candidate_index + 1
-        has_next_candidate = False
-        has_next_target = False
         if next_candidate_index < len(request.candidates):
             next_candidate = request.candidates[next_candidate_index]
-            has_next_candidate = next_candidate.target_id == candidate.target_id
-            has_next_target = next_candidate.target_id != candidate.target_id
-        action = self.failure_policy.decide(
-            result.status,
-            has_next_path=next_path,
-            has_next_candidate=has_next_candidate,
-            has_next_target=has_next_target,
+            action = (
+                FailureAction.TRY_NEXT_CANDIDATE
+                if next_candidate.target_id == candidate.target_id
+                else FailureAction.TRY_NEXT_TARGET
+            )
+            progress.candidate_index = next_candidate_index
+            progress.route_index = 0
+            self._event("failure_decision", action.value, request.request_id, status=result.outcome_code)
+            self._schedule_if_possible()
+            return
+
+        self._active_progress = None
+        all_not_evaluated = bool(progress.attempts) and all(
+            attempt.operational_outcome is None and attempt.status is PlanStatus.NOT_EVALUATED
+            for attempt in progress.attempts
         )
-        self._event("failure_decision", action.value, request.request_id, status=result.status.value)
-        if action is FailureAction.ESCALATE_PATH:
-            progress.path_index += 1
-        elif action in {FailureAction.TRY_NEXT_CANDIDATE, FailureAction.TRY_NEXT_TARGET}:
-            progress.candidate_index += 1
-            progress.path_index = 0
-        else:
-            self._active_progress = None
-            all_not_evaluated = all(
-                attempt.status is PlanStatus.NOT_EVALUATED for attempt in progress.attempts
-            )
-            self._last_exhausted_request = request if all_not_evaluated else None
-            self._terminal_failures.append((request, all_not_evaluated))
-            if action is FailureAction.ENTER_RECOVERY:
-                self.state = SessionState.RECOVERY
-            self._event(
-                "request_exhausted",
-                "WAITING_FOR_SCENE" if all_not_evaluated else "BLOCKED",
-                request.request_id,
-                attempts=len(progress.attempts),
-            )
+        self._last_exhausted_request = request if all_not_evaluated else None
+        self._terminal_failures.append((request, all_not_evaluated))
+        self._exhausted_progress.append(progress)
+        self._event(
+            "request_exhausted",
+            "WAITING_FOR_SCENE" if all_not_evaluated else "BLOCKED",
+            request.request_id,
+            attempts=len(progress.attempts),
+        )
+        if not all_not_evaluated:
+            self._event("failure_decision", FailureAction.BLOCK.value, request.request_id, status=result.outcome_code)
         self._schedule_if_possible()
 
     def _envelope(
@@ -1052,6 +1813,7 @@ class ContinuousPlanningSession:
         candidate: PlanningCandidate,
         path: PlanningPath,
         result: PlanningResult,
+        backend: PlannerBackend,
     ) -> PlanEnvelope:
         identity = {
             "request": request.request_id,
@@ -1064,6 +1826,20 @@ class ContinuousPlanningSession:
         plan_id = hashlib.sha256(
             json.dumps(identity, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hexdigest()[:20]
+        provenance = backend.provenance
+        if provenance.robot_model_fingerprint == "*" or provenance.world_model_fingerprint == "*":
+            provenance = BackendProvenance(
+                BackendIdentity(
+                    provenance.backend_name,
+                    provenance.backend_version,
+                    provenance.adapter_version,
+                    request.world_snapshot.robot_model_fingerprint,
+                    request.world_snapshot.world_model_fingerprint,
+                ),
+                provenance.deterministic_seed,
+                provenance.compute_device,
+                provenance.compute_category,
+            )
         return PlanEnvelope(
             plan_id=plan_id,
             request=request,
@@ -1071,11 +1847,15 @@ class ContinuousPlanningSession:
             planning_path=path,
             result=result,
             planned_snapshot=request.world_snapshot,
-            validated_snapshot=request.world_snapshot,
+            validated_snapshot=None,
             expected_start_state=result.trajectory[0],
             expected_end_state=result.trajectory[-1],
             predecessor_plan_id=self._active_progress.predecessor_plan_id if self._active_progress else None,
             planning_generation=self._active_progress.generation if self._active_progress else self._planning_generation,
+            proposed_by=provenance,
+            artifact_kind=result.artifact_kind,
+            robot_model_fingerprint=provenance.robot_model_fingerprint,
+            world_model_fingerprint=provenance.world_model_fingerprint,
             speculative=request.speculative,
         )
 
@@ -1107,43 +1887,102 @@ class ContinuousPlanningSession:
             self.statistics.end_robot_idle()
 
     def _validate(
-        self, envelope: PlanEnvelope, snapshot: PlanningWorldSnapshot
-    ) -> tuple[PlanEnvelope, PlanValidation]:
+        self,
+        envelope: PlanEnvelope,
+        snapshot: PlanningWorldSnapshot,
+        motion_boundary: MotionBoundaryState | None = None,
+    ) -> tuple[PlanEnvelope, PlanValidationResult]:
+        boundary = motion_boundary or MotionBoundaryState(
+            envelope.request.motion_boundary.mode,
+            snapshot.current_q,
+            envelope.request.motion_boundary.current_velocity,
+            envelope.request.motion_boundary.current_acceleration,
+            envelope.predecessor_plan_id,
+        )
         trajectory = envelope.result.trajectory
         dof = len(snapshot.current_q)
         if not trajectory or any(len(point) != dof for point in trajectory):
-            validation = PlanValidation(False, snapshot, "trajectory DOF does not match actual robot state")
+            validation = PlanValidationResult(ValidationStatus.INVALID, snapshot, boundary, "trajectory DOF does not match actual robot state", self.validator.name, self.validator.version)
         elif not all(isfinite(value) for point in trajectory for value in point):
-            validation = PlanValidation(False, snapshot, "trajectory contains non-finite values")
+            validation = PlanValidationResult(ValidationStatus.INVALID, snapshot, boundary, "trajectory contains non-finite values", self.validator.name, self.validator.version)
         elif tuple(trajectory[0]) != tuple(envelope.expected_start_state) or tuple(trajectory[-1]) != tuple(envelope.expected_end_state):
-            validation = PlanValidation(False, snapshot, "trajectory endpoints do not match envelope contract")
+            validation = PlanValidationResult(ValidationStatus.INVALID, snapshot, boundary, "trajectory endpoints do not match envelope contract", self.validator.name, self.validator.version)
         elif not np.allclose(
             trajectory[0], snapshot.current_q, atol=self._start_tolerance_rad, rtol=0.0
         ):
             error = float(np.max(np.abs(np.asarray(trajectory[0]) - np.asarray(snapshot.current_q))))
-            validation = PlanValidation(False, snapshot, f"trajectory start differs from actual current_q by {error:.9f} rad")
+            validation = PlanValidationResult(ValidationStatus.INVALID, snapshot, boundary, f"trajectory start differs from actual current_q by {error:.9f} rad", self.validator.name, self.validator.version)
+        elif envelope.robot_model_fingerprint != snapshot.robot_model_fingerprint:
+            validation = PlanValidationResult(ValidationStatus.INVALID, snapshot, boundary, "robot model fingerprint mismatch", self.validator.name, self.validator.version)
+        elif envelope.world_model_fingerprint != snapshot.world_model_fingerprint:
+            validation = PlanValidationResult(ValidationStatus.INVALID, snapshot, boundary, "world model fingerprint mismatch", self.validator.name, self.validator.version)
         elif not envelope.planned_snapshot.planning_context_matches(snapshot):
-            validation = PlanValidation(False, snapshot, "scene/config/tool/payload/base/conveyor context changed")
+            validation = PlanValidationResult(ValidationStatus.INVALID, snapshot, boundary, "scene/config/tool/payload/base/conveyor context changed", self.validator.name, self.validator.version)
+        elif boundary.predecessor_plan_id != envelope.predecessor_plan_id:
+            validation = PlanValidationResult(ValidationStatus.INVALID, snapshot, boundary, "predecessor contract mismatch", self.validator.name, self.validator.version)
+        elif boundary.mode is BoundaryMode.CONTINUOUS_BOUNDARY and envelope.artifact_kind is not ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY:
+            validation = PlanValidationResult(ValidationStatus.INVALID, snapshot, boundary, "geometric path cannot satisfy continuous boundary", self.validator.name, self.validator.version)
         else:
             try:
-                validation = self.backend.validate_plan(envelope, snapshot)
+                validation = self.validator.validate(envelope, snapshot, boundary)
             except Exception as exc:
-                raise RuntimeError(f"backend plan validation failed: {exc}") from exc
-            if not isinstance(validation, PlanValidation):
-                raise TypeError("backend validate_plan must return PlanValidation")
-            if validation.world_snapshot != snapshot:
-                raise ValueError("backend validation result is bound to the wrong world snapshot")
-        return (envelope.revalidated(validation) if validation.valid else envelope, validation)
+                raise RuntimeError(f"authoritative plan validation failed: {exc}") from exc
+            if not isinstance(validation, PlanValidationResult):
+                raise TypeError("PlanValidator.validate must return PlanValidationResult")
+            if validation.world_snapshot != snapshot or validation.motion_boundary != boundary:
+                raise ValueError("validation result is bound to the wrong world or motion boundary")
+        return (
+            envelope.revalidated(
+                validation,
+                timestamp_seconds=self.statistics._clock(),
+                generation=self._planning_generation,
+            )
+            if validation.valid
+            else envelope,
+            validation,
+        )
 
-    def start_execution(self) -> PlanEnvelope | None:
+    def start_execution(
+        self,
+        current_motion_boundary: MotionBoundaryState | None = None,
+    ) -> PlanEnvelope | None:
         if self.execution.state in {ExecutionState.RUNNING, ExecutionState.STOPPING}:
             raise RuntimeError("an execution is already active")
         if self._waiting_for_scene or not self.ready_plans or self.current_world is None:
             self._refresh_state()
             return None
         envelope = self.ready_plans.popleft()
+        if current_motion_boundary is None:
+            requested_boundary = envelope.request.motion_boundary
+            assert requested_boundary is not None
+            if requested_boundary.mode is BoundaryMode.CONTINUOUS_BOUNDARY:
+                self.invalidated_plans.append(
+                    envelope.invalidate(
+                        ReplanReason.PLAN_VALIDATION_FAILED,
+                        "actual continuous MotionBoundaryState is required before execution",
+                    )
+                )
+                self._event(
+                    "plan_invalidated",
+                    ReplanReason.PLAN_VALIDATION_FAILED.value,
+                    envelope.request.request_id,
+                )
+                self.state = SessionState.RECOVERY
+                self.statistics.end_robot_idle()
+                return None
+            current_motion_boundary = MotionBoundaryState(
+                BoundaryMode.STOP_BOUNDARY,
+                self.current_world.current_q,
+                predecessor_plan_id=envelope.predecessor_plan_id,
+            )
+        elif current_motion_boundary.current_q != self.current_world.current_q:
+            raise ValueError("actual motion boundary current_q must match the current world snapshot")
         try:
-            envelope, validation = self._validate(envelope, self.current_world)
+            envelope, validation = self._validate(
+                envelope,
+                self.current_world,
+                current_motion_boundary,
+            )
         except Exception as exc:
             self.invalidated_plans.append(
                 envelope.invalidate(ReplanReason.PLAN_VALIDATION_FAILED, repr(exc))
@@ -1205,11 +2044,21 @@ class ContinuousPlanningSession:
             request,
             request_id=request_id,
             world_snapshot=snapshot,
+            motion_boundary=replace(
+                request.motion_boundary,
+                current_q=snapshot.current_q,
+                predecessor_plan_id=predecessor_plan_id,
+            ),
             speculative=False,
             replan_reason=reason,
         )
         self._request_ids.add(request_id)
-        return _RequestProgress(replanned, self._planning_generation, predecessor_plan_id)
+        return _RequestProgress(
+            replanned,
+            self._planning_generation,
+            predecessor_plan_id,
+            routes=self._routes_for(replanned),
+        )
 
     def update_scene(self, snapshot: PlanningWorldSnapshot) -> None:
         self._check_world_monotonic(snapshot)
@@ -1227,6 +2076,7 @@ class ContinuousPlanningSession:
             return
 
         self._planning_generation += 1
+        self._logical_cancel_active()
         self._terminal_failures.clear()
         was_waiting = self._waiting_for_scene
         self._waiting_for_scene = False
@@ -1357,6 +2207,7 @@ class ContinuousPlanningSession:
             self.statistics.end_robot_idle()
             return completed
         self._planning_generation += 1
+        self._logical_cancel_active()
         self._waiting_for_scene = False
         while self.ready_plans:
             stale = self.ready_plans.popleft()
@@ -1496,13 +2347,26 @@ class ContinuousPlanningSession:
 
 
 __all__ = [
+    "ArtifactKind",
+    "BackendCapabilities",
+    "BackendHealth",
+    "BackendIdentity",
+    "BackendProvenance",
+    "BoundaryMode",
     "ContinuousPlanningSession",
     "DeterministicAsyncPlanningExecutor",
     "ExecutionMonitor",
     "ExecutionState",
     "FailureAction",
+    "FailureDetails",
     "FailurePolicy",
+    "FailureScope",
+    "MotionBoundaryState",
+    "OperationalOutcome",
+    "OutcomeCategory",
     "PlanEnvelope",
+    "PlanValidationResult",
+    "PlanValidator",
     "PlanningCandidate",
     "PlanningExecutor",
     "PlanningLatencySample",
@@ -1514,12 +2378,14 @@ __all__ = [
     "PlannerBackend",
     "PlanStatus",
     "PlanValidation",
+    "ProviderNeutralPlanValidator",
     "ReplanReason",
     "RobotStateRevision",
     "SceneRevision",
     "SessionEvent",
     "SessionState",
     "SynchronousPlanningExecutor",
+    "ValidationStatus",
     "normalize_plan_status",
     "scene_fingerprint",
 ]
