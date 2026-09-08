@@ -1,0 +1,20 @@
+{
+  "frozen_v3_baseline_tasks": 24,
+  "passed_initial_gate_tasks": 24,
+  "separation_attempted_tasks": 20,
+  "normal_margin_restored_tasks": 11,
+  "complete_geometric_success_tasks": 10,
+  "classification_counts": {
+    "SEPARATION_ATTEMPTED_NOT_RELEASED": 9,
+    "COMPLETE_GEOMETRIC_SUCCESS": 10,
+    "FULL_MARGIN_RESTORED_DOWNSTREAM_FAILED": 1,
+    "INITIAL_GATE_PASSED_FAILED_BEFORE_SEPARATION": 4
+  },
+  "downstream_failure_counts": {
+    "TOOL_SELF_COLLISION": 4,
+    "PAYLOAD_PROXIMITY_NOT_RELEASED": 5,
+    "PATH_SEARCH_EXHAUSTED": 3,
+    "PREGRASP_NO_IK": 2
+  },
+  "interpretation": "Initial gate passage and margin restoration are not counted as complete success."
+}

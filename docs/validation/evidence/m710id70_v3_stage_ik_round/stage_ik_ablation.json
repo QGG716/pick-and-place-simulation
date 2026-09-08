@@ -1,0 +1,424 @@
+{
+  "schema_version": "m710_stage_ik_ablation_v1",
+  "task_indices": [
+    22,
+    45
+  ],
+  "modes": {
+    "A": "legacy_single",
+    "B": "filtered_single",
+    "C": "multi_solution"
+  },
+  "budget_interpretation": {
+    "A_and_B": "one stage connection receives the legacy rrt_iterations per-call budget",
+    "C": "all alternate candidates within one stage connection share stage_connection_iteration_budget",
+    "comparison": "configuration numbers alone are not treated as equal total compute; observed work is recorded per task"
+  },
+  "outcome_counts": {
+    "legacy_single": {
+      "success:OK": 1,
+      "failure:PATH_SEARCH_EXHAUSTED": 1
+    },
+    "filtered_single": {
+      "success:OK": 1,
+      "failure:PATH_SEARCH_EXHAUSTED": 1
+    },
+    "multi_solution": {
+      "success:OK": 1,
+      "failure:PATH_SEARCH_EXHAUSTED": 1
+    }
+  },
+  "attribution": [
+    {
+      "task_id": "grid_022",
+      "a_to_b_outcome_changed": false,
+      "a_to_b_attribution": "no task-level outcome change",
+      "b_to_c_outcome_changed": false,
+      "b_to_c_attribution": "no task-level outcome change",
+      "multi_solution_used_nonfirst_candidate": false,
+      "rrt_iterations_a_b_c": [
+        363,
+        363,
+        363
+      ],
+      "ik_seeds_attempted_a_b_c": [
+        415,
+        415,
+        415
+      ],
+      "wall_time_s_a_b_c": [
+        104.65277020004578,
+        90.98641420004424,
+        90.16702729999088
+      ]
+    },
+    {
+      "task_id": "grid_045",
+      "a_to_b_outcome_changed": false,
+      "a_to_b_attribution": "no task-level outcome change",
+      "b_to_c_outcome_changed": false,
+      "b_to_c_attribution": "no task-level outcome change",
+      "multi_solution_used_nonfirst_candidate": false,
+      "rrt_iterations_a_b_c": [
+        2400,
+        2400,
+        801
+      ],
+      "ik_seeds_attempted_a_b_c": [
+        359,
+        359,
+        371
+      ],
+      "wall_time_s_a_b_c": [
+        85.38807019998785,
+        84.42096160002984,
+        44.820826500072144
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "task_id": "grid_022",
+      "orientation": "A_600x400x300",
+      "box": "target_A_600x400x300",
+      "seed": 71092,
+      "mode": "fixed",
+      "stage_ik_search_mode": "legacy_single",
+      "GRASP_REACHABLE": true,
+      "EXTRACTION_FEASIBLE": true,
+      "GEOMETRICALLY_REACHABLE": true,
+      "PAYLOAD_QUALIFIED": false,
+      "DYNAMICS_VERIFIED": false,
+      "load_status": "NOT_EVALUATED",
+      "failure_stage": "complete",
+      "failure_reason": "OK",
+      "candidate_failure_counts": {
+        "INSUFFICIENT_SEALED_CUPS": 104,
+        "NO_IK": 26,
+        "PAYLOAD_PROXIMITY_NOT_RELEASED": 3,
+        "OK": 2,
+        "GRASP_CONSTRAINT_FAILED": 2,
+        "DOWNSTREAM_TASK_SET_BUDGET": 19
+      },
+      "grasp_failure_detail_counts": {
+        "POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED": 26,
+        "TOOL_COLLISION": 2
+      },
+      "face": "top",
+      "roll_deg": 90,
+      "escape_search_termination": "SUCCESS",
+      "escape_robot_validations": 3,
+      "escape_robot_validations_semantics": "selected_solution_only",
+      "escape_robot_validations_task_total": 18,
+      "ik_calls_task_total": 199,
+      "ik_seeds_attempted_task_total": 415,
+      "ik_iterations_consumed_task_total": 48960,
+      "ik_iteration_capacity_task_total": 137880,
+      "ik_valid_solutions_task_total": 145,
+      "ik_deduplicated_candidates_task_total": 145,
+      "connection_attempts_task_total": 7,
+      "stage_connections_using_nonfirst_candidate_task_total": 0,
+      "rrt_iterations_consumed_task_total": 363,
+      "rrt_iteration_capacity_task_total": 5600,
+      "rrt_state_validations_task_total": 7259,
+      "rrt_edge_validations_task_total": 714,
+      "budget_terminations": {
+        "ik:grasp_constrained:SEED_STREAM_EXHAUSTED": 28,
+        "ik:grasp_diagnostic:SEED_STREAM_EXHAUSTED": 26,
+        "escape:SEARCH_BUDGET_EXHAUSTED": 3
+      },
+      "loaded_tcp_path_m": 1.8615776641937005,
+      "cycle_s": 74.72549321748146,
+      "conveyor_action_s": 0.0,
+      "ablation_mode": "legacy_single",
+      "wall_time_s": 104.65277020004578,
+      "stage_connection_searches": 7
+    },
+    {
+      "task_id": "grid_045",
+      "orientation": "B_400x600x300",
+      "box": "target_B_400x600x300",
+      "seed": 71115,
+      "mode": "fixed",
+      "stage_ik_search_mode": "legacy_single",
+      "GRASP_REACHABLE": true,
+      "EXTRACTION_FEASIBLE": true,
+      "GEOMETRICALLY_REACHABLE": false,
+      "PAYLOAD_QUALIFIED": false,
+      "DYNAMICS_VERIFIED": false,
+      "load_status": "NOT_EVALUATED",
+      "failure_stage": "carry",
+      "failure_reason": "PATH_SEARCH_EXHAUSTED",
+      "candidate_failure_counts": {
+        "INSUFFICIENT_SEALED_CUPS": 52,
+        "GRASP_CONSTRAINT_FAILED": 34,
+        "PATH_SEARCH_EXHAUSTED": 3,
+        "TOOL_SELF_COLLISION": 2,
+        "DOWNSTREAM_TASK_SET_BUDGET": 13
+      },
+      "grasp_failure_detail_counts": {
+        "TOOL_COLLISION": 30,
+        "TOOL_SELF_COLLISION": 4
+      },
+      "face": null,
+      "roll_deg": null,
+      "escape_search_termination": null,
+      "escape_robot_validations": 0,
+      "escape_robot_validations_semantics": "selected_solution_only",
+      "escape_robot_validations_task_total": 20,
+      "ik_calls_task_total": 223,
+      "ik_seeds_attempted_task_total": 359,
+      "ik_iterations_consumed_task_total": 10641,
+      "ik_iteration_capacity_task_total": 153360,
+      "ik_valid_solutions_task_total": 189,
+      "ik_deduplicated_candidates_task_total": 189,
+      "connection_attempts_task_total": 8,
+      "stage_connections_using_nonfirst_candidate_task_total": 0,
+      "rrt_iterations_consumed_task_total": 2400,
+      "rrt_iteration_capacity_task_total": 6400,
+      "rrt_state_validations_task_total": 22421,
+      "rrt_edge_validations_task_total": 3274,
+      "budget_terminations": {
+        "ik:grasp_constrained:SEED_STREAM_EXHAUSTED": 34,
+        "connection:carry:MAXIMUM_ITERATIONS_REACHED": 3,
+        "escape:SEARCH_BUDGET_EXHAUSTED": 5,
+        "stage_connection:handoff_search:STAGE_CONNECTION_ITERATION_BUDGET_EXHAUSTED": 3
+      },
+      "loaded_tcp_path_m": null,
+      "cycle_s": null,
+      "conveyor_action_s": null,
+      "ablation_mode": "legacy_single",
+      "wall_time_s": 85.38807019998785,
+      "stage_connection_searches": 8
+    },
+    {
+      "task_id": "grid_022",
+      "orientation": "A_600x400x300",
+      "box": "target_A_600x400x300",
+      "seed": 71092,
+      "mode": "fixed",
+      "stage_ik_search_mode": "filtered_single",
+      "GRASP_REACHABLE": true,
+      "EXTRACTION_FEASIBLE": true,
+      "GEOMETRICALLY_REACHABLE": true,
+      "PAYLOAD_QUALIFIED": false,
+      "DYNAMICS_VERIFIED": false,
+      "load_status": "NOT_EVALUATED",
+      "failure_stage": "complete",
+      "failure_reason": "OK",
+      "candidate_failure_counts": {
+        "INSUFFICIENT_SEALED_CUPS": 104,
+        "NO_IK": 26,
+        "PAYLOAD_PROXIMITY_NOT_RELEASED": 3,
+        "OK": 2,
+        "GRASP_CONSTRAINT_FAILED": 2,
+        "DOWNSTREAM_TASK_SET_BUDGET": 19
+      },
+      "grasp_failure_detail_counts": {
+        "POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED": 26,
+        "TOOL_COLLISION": 2
+      },
+      "face": "top",
+      "roll_deg": 90,
+      "escape_search_termination": "SUCCESS",
+      "escape_robot_validations": 3,
+      "escape_robot_validations_semantics": "selected_solution_only",
+      "escape_robot_validations_task_total": 18,
+      "ik_calls_task_total": 199,
+      "ik_seeds_attempted_task_total": 415,
+      "ik_iterations_consumed_task_total": 48960,
+      "ik_iteration_capacity_task_total": 137880,
+      "ik_valid_solutions_task_total": 145,
+      "ik_deduplicated_candidates_task_total": 145,
+      "connection_attempts_task_total": 7,
+      "stage_connections_using_nonfirst_candidate_task_total": 0,
+      "rrt_iterations_consumed_task_total": 363,
+      "rrt_iteration_capacity_task_total": 5600,
+      "rrt_state_validations_task_total": 7259,
+      "rrt_edge_validations_task_total": 714,
+      "budget_terminations": {
+        "ik:grasp_constrained:SEED_STREAM_EXHAUSTED": 28,
+        "ik:grasp_diagnostic:SEED_STREAM_EXHAUSTED": 26,
+        "escape:SEARCH_BUDGET_EXHAUSTED": 3
+      },
+      "loaded_tcp_path_m": 1.8615776641937005,
+      "cycle_s": 74.72549321748146,
+      "conveyor_action_s": 0.0,
+      "ablation_mode": "filtered_single",
+      "wall_time_s": 90.98641420004424,
+      "stage_connection_searches": 7
+    },
+    {
+      "task_id": "grid_045",
+      "orientation": "B_400x600x300",
+      "box": "target_B_400x600x300",
+      "seed": 71115,
+      "mode": "fixed",
+      "stage_ik_search_mode": "filtered_single",
+      "GRASP_REACHABLE": true,
+      "EXTRACTION_FEASIBLE": true,
+      "GEOMETRICALLY_REACHABLE": false,
+      "PAYLOAD_QUALIFIED": false,
+      "DYNAMICS_VERIFIED": false,
+      "load_status": "NOT_EVALUATED",
+      "failure_stage": "carry",
+      "failure_reason": "PATH_SEARCH_EXHAUSTED",
+      "candidate_failure_counts": {
+        "INSUFFICIENT_SEALED_CUPS": 52,
+        "GRASP_CONSTRAINT_FAILED": 34,
+        "PATH_SEARCH_EXHAUSTED": 3,
+        "TOOL_SELF_COLLISION": 2,
+        "DOWNSTREAM_TASK_SET_BUDGET": 13
+      },
+      "grasp_failure_detail_counts": {
+        "TOOL_COLLISION": 30,
+        "TOOL_SELF_COLLISION": 4
+      },
+      "face": null,
+      "roll_deg": null,
+      "escape_search_termination": null,
+      "escape_robot_validations": 0,
+      "escape_robot_validations_semantics": "selected_solution_only",
+      "escape_robot_validations_task_total": 20,
+      "ik_calls_task_total": 223,
+      "ik_seeds_attempted_task_total": 359,
+      "ik_iterations_consumed_task_total": 10641,
+      "ik_iteration_capacity_task_total": 153360,
+      "ik_valid_solutions_task_total": 189,
+      "ik_deduplicated_candidates_task_total": 189,
+      "connection_attempts_task_total": 8,
+      "stage_connections_using_nonfirst_candidate_task_total": 0,
+      "rrt_iterations_consumed_task_total": 2400,
+      "rrt_iteration_capacity_task_total": 6400,
+      "rrt_state_validations_task_total": 22421,
+      "rrt_edge_validations_task_total": 3274,
+      "budget_terminations": {
+        "ik:grasp_constrained:SEED_STREAM_EXHAUSTED": 34,
+        "connection:carry:MAXIMUM_ITERATIONS_REACHED": 3,
+        "escape:SEARCH_BUDGET_EXHAUSTED": 5,
+        "stage_connection:handoff_search:STAGE_CONNECTION_ITERATION_BUDGET_EXHAUSTED": 3
+      },
+      "loaded_tcp_path_m": null,
+      "cycle_s": null,
+      "conveyor_action_s": null,
+      "ablation_mode": "filtered_single",
+      "wall_time_s": 84.42096160002984,
+      "stage_connection_searches": 8
+    },
+    {
+      "task_id": "grid_022",
+      "orientation": "A_600x400x300",
+      "box": "target_A_600x400x300",
+      "seed": 71092,
+      "mode": "fixed",
+      "stage_ik_search_mode": "multi_solution",
+      "GRASP_REACHABLE": true,
+      "EXTRACTION_FEASIBLE": true,
+      "GEOMETRICALLY_REACHABLE": true,
+      "PAYLOAD_QUALIFIED": false,
+      "DYNAMICS_VERIFIED": false,
+      "load_status": "NOT_EVALUATED",
+      "failure_stage": "complete",
+      "failure_reason": "OK",
+      "candidate_failure_counts": {
+        "INSUFFICIENT_SEALED_CUPS": 104,
+        "NO_IK": 26,
+        "PAYLOAD_PROXIMITY_NOT_RELEASED": 3,
+        "OK": 2,
+        "GRASP_CONSTRAINT_FAILED": 2,
+        "DOWNSTREAM_TASK_SET_BUDGET": 19
+      },
+      "grasp_failure_detail_counts": {
+        "POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED": 26,
+        "TOOL_COLLISION": 2
+      },
+      "face": "top",
+      "roll_deg": 90,
+      "escape_search_termination": "SUCCESS",
+      "escape_robot_validations": 3,
+      "escape_robot_validations_semantics": "selected_solution_only",
+      "escape_robot_validations_task_total": 18,
+      "ik_calls_task_total": 199,
+      "ik_seeds_attempted_task_total": 415,
+      "ik_iterations_consumed_task_total": 48960,
+      "ik_iteration_capacity_task_total": 137880,
+      "ik_valid_solutions_task_total": 145,
+      "ik_deduplicated_candidates_task_total": 145,
+      "connection_attempts_task_total": 7,
+      "stage_connections_using_nonfirst_candidate_task_total": 0,
+      "rrt_iterations_consumed_task_total": 363,
+      "rrt_iteration_capacity_task_total": 1869,
+      "rrt_state_validations_task_total": 7259,
+      "rrt_edge_validations_task_total": 714,
+      "budget_terminations": {
+        "ik:grasp_constrained:SEED_STREAM_EXHAUSTED": 28,
+        "ik:grasp_diagnostic:SEED_STREAM_EXHAUSTED": 26,
+        "escape:SEARCH_BUDGET_EXHAUSTED": 3
+      },
+      "loaded_tcp_path_m": 1.8615776641937005,
+      "cycle_s": 74.72549321748146,
+      "conveyor_action_s": 0.0,
+      "ablation_mode": "multi_solution",
+      "wall_time_s": 90.16702729999088,
+      "stage_connection_searches": 7
+    },
+    {
+      "task_id": "grid_045",
+      "orientation": "B_400x600x300",
+      "box": "target_B_400x600x300",
+      "seed": 71115,
+      "mode": "fixed",
+      "stage_ik_search_mode": "multi_solution",
+      "GRASP_REACHABLE": true,
+      "EXTRACTION_FEASIBLE": true,
+      "GEOMETRICALLY_REACHABLE": false,
+      "PAYLOAD_QUALIFIED": false,
+      "DYNAMICS_VERIFIED": false,
+      "load_status": "NOT_EVALUATED",
+      "failure_stage": "carry",
+      "failure_reason": "PATH_SEARCH_EXHAUSTED",
+      "candidate_failure_counts": {
+        "INSUFFICIENT_SEALED_CUPS": 52,
+        "GRASP_CONSTRAINT_FAILED": 34,
+        "PATH_SEARCH_EXHAUSTED": 3,
+        "TOOL_SELF_COLLISION": 2,
+        "DOWNSTREAM_TASK_SET_BUDGET": 13
+      },
+      "grasp_failure_detail_counts": {
+        "TOOL_COLLISION": 30,
+        "TOOL_SELF_COLLISION": 4
+      },
+      "face": null,
+      "roll_deg": null,
+      "escape_search_termination": null,
+      "escape_robot_validations": 0,
+      "escape_robot_validations_semantics": "selected_solution_only",
+      "escape_robot_validations_task_total": 20,
+      "ik_calls_task_total": 223,
+      "ik_seeds_attempted_task_total": 371,
+      "ik_iterations_consumed_task_total": 11847,
+      "ik_iteration_capacity_task_total": 153360,
+      "ik_valid_solutions_task_total": 195,
+      "ik_deduplicated_candidates_task_total": 189,
+      "connection_attempts_task_total": 8,
+      "stage_connections_using_nonfirst_candidate_task_total": 0,
+      "rrt_iterations_consumed_task_total": 801,
+      "rrt_iteration_capacity_task_total": 2136,
+      "rrt_state_validations_task_total": 9282,
+      "rrt_edge_validations_task_total": 1159,
+      "budget_terminations": {
+        "ik:grasp_constrained:SEED_STREAM_EXHAUSTED": 34,
+        "ik:carry:SEED_STREAM_EXHAUSTED": 3,
+        "connection:carry:MAXIMUM_ITERATIONS_REACHED": 3,
+        "escape:SEARCH_BUDGET_EXHAUSTED": 5,
+        "stage_connection:handoff_search:IK_SEED_STREAM_EXHAUSTED": 3
+      },
+      "loaded_tcp_path_m": null,
+      "cycle_s": null,
+      "conveyor_action_s": null,
+      "ablation_mode": "multi_solution",
+      "wall_time_s": 44.820826500072144,
+      "stage_connection_searches": 8
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "post_calculation_identity": {
+    "task_cache_schema_version": "m710_task_cache_v2_model_assets",
+    "validation_strategy_version": "strict_contact_escape_stage_ik_v3",
+    "model_asset_fingerprint_sha256": "99fb9af6519ebfa4e4f4a09e7b9e84945d6ebe6fac4bc2bf64495e3a2a9a2dff",
+    "configuration_digest": "85e26dbe28a3755211e9a09d597497f5d4a0191e10e54720c5e1c6c29c636559",
+    "code_digest": "dc5f3c725c12ace4a0d13bd0de962a456b16d8fd93cc0e3c7346aad973b1ec43",
+    "cache_validity_runtime": {
+      "python_implementation": "cpython",
+      "python_major_minor": "3.14",
+      "numpy": "2.5.2",
+      "collision_backend": "cpu_urdf_primitive_obb_capsule_v1"
+    }
+  },
+  "ablation_code_digests": [
+    "dc5f3c725c12ace4a0d13bd0de962a456b16d8fd93cc0e3c7346aad973b1ec43"
+  ],
+  "post_and_ablation_calculation_code_match": true,
+  "ablation_modes": {
+    "A": "legacy_single",
+    "B": "filtered_single",
+    "C": "multi_solution"
+  },
+  "note": "Ablation ran before the implementation commit; its captured content digest matches the committed post-scan calculation code."
+}

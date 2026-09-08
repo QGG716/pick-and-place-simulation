@@ -1,0 +1,135 @@
+{
+  "denominator": 104,
+  "nominal_strict_grasp_valid_tasks": 24,
+  "expanded_task_set_strict_grasp_valid_tasks": 52,
+  "complete_geometric_success_tasks": 10,
+  "recovery_by_frozen_v3_failure": {
+    "GRASP_CONSTRAINT_FAILED": {
+      "baseline_tasks": 44,
+      "task_set_strict_grasp_valid_tasks": 27,
+      "task_set_recovered_tasks": 27,
+      "recovered_task_ids": [
+        "grid_059",
+        "grid_062",
+        "grid_077",
+        "grid_079",
+        "grid_081",
+        "grid_083",
+        "grid_085",
+        "grid_095",
+        "grid_097",
+        "grid_099",
+        "grid_101",
+        "grid_103",
+        "grid_113",
+        "grid_115",
+        "grid_117",
+        "grid_119",
+        "grid_121",
+        "grid_131",
+        "grid_133",
+        "grid_135",
+        "grid_137",
+        "grid_139",
+        "grid_149",
+        "grid_151",
+        "grid_153",
+        "grid_155",
+        "grid_157"
+      ],
+      "final_task_status_counts": {
+        "GRASP_CONSTRAINT_FAILED": 17,
+        "PREGRASP_NO_IK": 2,
+        "PATH_SEARCH_EXHAUSTED": 5,
+        "HANDOFF_NO_IK": 15,
+        "PAYLOAD_PROXIMITY_NOT_RELEASED": 3,
+        "PAYLOAD_PROXIMITY_WORSENED": 1,
+        "ROBOT_COLLISION": 1
+      },
+      "task_failure_detail_presence_counts": {
+        "TOOL_COLLISION": 44,
+        "TOOL_SELF_COLLISION": 25,
+        "POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED": 18,
+        "ROBOT_COLLISION": 2
+      },
+      "candidate_failure_detail_counts": {
+        "TOOL_COLLISION": 1043,
+        "TOOL_SELF_COLLISION": 524,
+        "POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED": 396,
+        "ROBOT_COLLISION": 2
+      }
+    },
+    "NO_IK": {
+      "baseline_tasks": 36,
+      "task_set_strict_grasp_valid_tasks": 1,
+      "task_set_recovered_tasks": 1,
+      "recovered_task_ids": [
+        "grid_038"
+      ],
+      "final_task_status_counts": {
+        "NO_IK": 35,
+        "PREGRASP_NO_IK": 1
+      },
+      "task_failure_detail_presence_counts": {
+        "POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED": 36,
+        "ROBOT_COLLISION": 4,
+        "TOOL_COLLISION": 13,
+        "TOOL_SELF_COLLISION": 10
+      },
+      "candidate_failure_detail_counts": {
+        "POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED": 1316,
+        "ROBOT_COLLISION": 86,
+        "TOOL_COLLISION": 26,
+        "TOOL_SELF_COLLISION": 208
+      }
+    },
+    "PAYLOAD_INITIAL_CLEARANCE_FAILED": {
+      "baseline_tasks": 24,
+      "task_set_strict_grasp_valid_tasks": 24,
+      "task_set_recovered_tasks": 24,
+      "recovered_task_ids": [
+        "grid_020",
+        "grid_022",
+        "grid_023",
+        "grid_024",
+        "grid_025",
+        "grid_026",
+        "grid_027",
+        "grid_028",
+        "grid_029",
+        "grid_030",
+        "grid_031",
+        "grid_040",
+        "grid_041",
+        "grid_042",
+        "grid_043",
+        "grid_044",
+        "grid_045",
+        "grid_046",
+        "grid_047",
+        "grid_048",
+        "grid_049",
+        "grid_061",
+        "grid_063",
+        "grid_065"
+      ],
+      "final_task_status_counts": {
+        "TOOL_SELF_COLLISION": 4,
+        "OK": 10,
+        "PAYLOAD_PROXIMITY_NOT_RELEASED": 5,
+        "PATH_SEARCH_EXHAUSTED": 3,
+        "PREGRASP_NO_IK": 2
+      },
+      "task_failure_detail_presence_counts": {
+        "POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED": 5,
+        "TOOL_COLLISION": 24,
+        "TOOL_SELF_COLLISION": 15
+      },
+      "candidate_failure_detail_counts": {
+        "POSITION_AND_ORIENTATION_RESIDUAL_NOT_CONVERGED": 130,
+        "TOOL_COLLISION": 298,
+        "TOOL_SELF_COLLISION": 143
+      }
+    }
+  }
+}

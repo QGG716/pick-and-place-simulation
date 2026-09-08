@@ -1,0 +1,106 @@
+{
+  "schema_version": "m710_stage_ik_round_comparison_v1",
+  "denominator": 104,
+  "unique_task_ids": 104,
+  "success_transition_counts": {
+    "COMMON_FAILURE": 94,
+    "COMMON_SUCCESS": 10
+  },
+  "before_success_count": 10,
+  "after_success_count": 10,
+  "after_success_task_ids": [
+    "grid_022",
+    "grid_023",
+    "grid_025",
+    "grid_029",
+    "grid_031",
+    "grid_040",
+    "grid_041",
+    "grid_043",
+    "grid_047",
+    "grid_049"
+  ],
+  "new_success_task_ids": [],
+  "lost_success_task_ids": [],
+  "review_fields": [
+    "GRASP_REACHABLE",
+    "EXTRACTION_FEASIBLE",
+    "GEOMETRICALLY_REACHABLE",
+    "failure_stage",
+    "failure_reason",
+    "face",
+    "roll_deg"
+  ],
+  "changed_review_field_task_count": 21,
+  "changed_review_field_task_ids": [
+    "grid_020",
+    "grid_038",
+    "grid_048",
+    "grid_059",
+    "grid_061",
+    "grid_062",
+    "grid_095",
+    "grid_097",
+    "grid_099",
+    "grid_101",
+    "grid_103",
+    "grid_113",
+    "grid_115",
+    "grid_117",
+    "grid_119",
+    "grid_121",
+    "grid_131",
+    "grid_139",
+    "grid_149",
+    "grid_155",
+    "grid_157"
+  ],
+  "failure_stage_reason_transitions": {
+    "approach:SINGULARITY -> extraction:TOOL_SELF_COLLISION": 1,
+    "approach:TOOL_SELF_COLLISION -> approach:PREGRASP_NO_IK": 5,
+    "carry:ROBOT_COLLISION -> handoff:HANDOFF_NO_IK": 15
+  },
+  "successful_nonfirst_stage_connections": [
+    {
+      "task_id": "grid_020",
+      "attempt_index": 117,
+      "option_index": 0,
+      "stage_search": "pregrasp_search",
+      "candidate_index": 1,
+      "candidate_id": "seed_002_unique_01",
+      "connection_attempts": 2,
+      "shared_rrt_iterations_consumed": 88
+    },
+    {
+      "task_id": "grid_020",
+      "attempt_index": 118,
+      "option_index": 0,
+      "stage_search": "pregrasp_search",
+      "candidate_index": 1,
+      "candidate_id": "seed_002_unique_01",
+      "connection_attempts": 2,
+      "shared_rrt_iterations_consumed": 88
+    },
+    {
+      "task_id": "grid_020",
+      "attempt_index": 121,
+      "option_index": 0,
+      "stage_search": "pregrasp_search",
+      "candidate_index": 1,
+      "candidate_id": "seed_002_unique_01",
+      "connection_attempts": 2,
+      "shared_rrt_iterations_consumed": 88
+    },
+    {
+      "task_id": "grid_041",
+      "attempt_index": 105,
+      "option_index": 0,
+      "stage_search": "handoff_search",
+      "candidate_index": 1,
+      "candidate_id": "seed_003_unique_01",
+      "connection_attempts": 2,
+      "shared_rrt_iterations_consumed": 330
+    }
+  ],
+  "interpretation": "Task-level counts use unique original task IDs; candidate attempts are reported separately."
+}

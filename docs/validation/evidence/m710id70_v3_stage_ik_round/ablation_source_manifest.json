@@ -1,0 +1,3452 @@
+{
+  "commit": "a52760eee7ead94f651ece4ada4f0dfc9fca7e82",
+  "branch": "feat/v0.5-feasibility-core",
+  "worktree_status": " M configs/validation/m710id70_v3.yaml\n M src/unloading_sim/ik.py\n M src/unloading_sim/validation_config.py\n M src/unloading_sim/validation_motion.py\n M tests/test_v3_motion_contract.py\n M tests/test_v3_search_accounting.py\n M tools/run_m710id70_v3.py\n?? tools/run_m710id70_v3_stage_ablation.py\n",
+  "command": "python tools/run_m710id70_v3_stage_ablation.py --output-dir .tmp\\review_stage_ik_ablation --task-indices 22 45",
+  "python": "3.14.7 (main, Aug 14 2026, 15:39:58) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "numpy": "2.5.2",
+  "pyyaml": "6.0.3",
+  "file_sha256": {
+    "AGENTS.md": "3988fe80326e4d9e2f6f5f67018b228e4576b37d1501191f35124fc54caa012f",
+    "README.md": "4dba27a83513c7a4892593006ad05db922ee2630fe7d4f5e58c3a7fe5a17a861",
+    "assets/robots/fanuc_m710id_70/SOURCE.md": "d2b437c6b7b6f82bfa41a6dae1dff674bf63ef28aab63c571f81602f90def849",
+    "assets/robots/fanuc_m710id_70/m710id_70.srdf": "97d6e7091ec2fb33c07906dd81bb1e7742444af8106a2d6da2a3a8659c8c5438",
+    "assets/robots/fanuc_m710id_70/m710id_70.urdf": "7f1ec9ac66d520b5210533a6fcfaf68b5f3dd12e59972964358192459d0048b3",
+    "config/common_unloading.yaml": "3f0e30d0de5e3e1630df9ec2361fb88433f45e6479c21131a80f19d886b3d5ba",
+    "config/demo.yaml": "6c2412417e5655a025866181845124b08945fea66bb7bc2f44774639b28baa63",
+    "config/fanuc_m20id35.yaml": "0248cc3c7148b3dbb09f418e063ddbbcb7348e632332c21659e010c4579f3c9d",
+    "config/fanuc_m20id35_isaac_full_replay.yaml": "66eb5f04d17b2058edea2803a6da5568cf05da70e635caa651a4d76d95835e4b",
+    "config/fanuc_m20id35_validation.yaml": "13f21d4c267a9411c683da3f6d11b897672310278fa3ab14f4393d93c1c431ba",
+    "config/fanuc_m20id35_wantai_task_space.yaml": "5376ccbdc725fae5c04e1676b79eb6dd724d8cb0edeac8793ee26d5f713f3e48",
+    "config/fanuc_m710id_70.yaml": "54216348e42284ba719eefd84e31e9f132c62f1845fae82071218c8c11555cbb",
+    "config/kuka_kr50.yaml": "394d651b4101103489a13912b2b926a732912594b11ba965f91f6c64f8b5e472",
+    "configs/cycle/unloading_900pph.yaml": "c0a5a5df73be29375842fbe8af0adae3c6a016b074e97f2cb03141d3cba087df",
+    "configs/qualification/fanuc_m20id35_25kg_front.yaml": "f39d0cdfe3ed217ee29774caa05158d800218442fa0c3f87e8ba673309aad9a6",
+    "configs/qualification/fanuc_m710id_70_42p5kg.yaml": "a45ae1adc2897b5128ba3ed1788244e3c41897830a0e6e63c02d5e7a649bf8b9",
+    "configs/robots/fanuc_m20id_35.yaml": "4f39f99a6b00bbdecb33679b5a5e3401095ea00dae6a02ac82b15e3e09d8f08c",
+    "configs/robots/fanuc_m710id_70.yaml": "ad5c8771d5324073bb66fc5e9cf176eb0b2fb6e8c39540f7b73b7ddca387b12e",
+    "configs/tools/unloading_gripper.yaml": "29f98363259980e7546888874134b7582a481e976348bf15904d1c7767439468",
+    "configs/tools/unloading_gripper_10kg.yaml": "4a83e53d16e84d79cbd0dd15ef218d5cb2b372db9268c32b2177d2ea1338f0c3",
+    "configs/tools/unloading_gripper_20kg.yaml": "724a68677f768817465ea8391e24385d62a7523258ac2a1ec435567baf91b64a",
+    "configs/tools/unloading_gripper_5kg.yaml": "c491fd57c83db433af9fa3a33759363cc526c56b49db69266f35b76f316dd275",
+    "configs/tools/unloading_gripper_6kg.yaml": "b9a3b40670b584c50a62753c4aff9ec8552b3e3c9714b5c8adf84f755d5fc809",
+    "configs/tools/unloading_gripper_7kg.yaml": "6222dbebd5c2a1b6293d348a1628e667a45a19e183d202ce903d9af9ab0711d8",
+    "configs/tools/unloading_gripper_8kg.yaml": "e1b524b1436a69c0e72d0965c26efc6ee5a825b230ad43b9c88642b5152f697a",
+    "configs/trucks/2p3x2p7.yaml": "50968ebf48ef1f5281f716595d685b5e13739cdc45f7f2606009138a47edd947",
+    "configs/trucks/2p3x2p7_m710id70.yaml": "5da69d5fb6ea33ec5df988f10563da1c9fb6b89097d28b59beb7cc591130ab51",
+    "configs/validation/m710id70_v3.yaml": "cf49b27617398efef25f67ba997f3ba13cec22301a46644c973e7509a54291fa",
+    "configs/vendor/fanuc_m20id35_wrist_load.yaml": "ca016d94659208292cd1591ce98285b9f540dd23faa3f010ca2166cf5bc18185",
+    "configs/vendor/fanuc_m710id_70_load_evidence.yaml": "dcf9fc47063d57cc3a314039afd68d6c526e08cbba212c27314201964c26f338",
+    "pyproject.toml": "83074e476655f4c41f233d6e4a044e09a6b6423a53925b27991195fd763cdd32",
+    "src/unloading_sim/__init__.py": "5070a5dfee3d8069d55d8db7d2c28354f36b0396839bfd2de008155bf0d3c611",
+    "src/unloading_sim/base_optimization.py": "bbdae3d48448315ef2ec5cdf35c49c7236726d860fa9fb6cabff8f8970bbeb85",
+    "src/unloading_sim/benchmark.py": "66d2906059671feaaf92f21ecd51a52044750e3adf9b93014aed44702200697f",
+    "src/unloading_sim/calibration.py": "41c96d64c7a6e166fee271bca03d6ccea1bc2b00585fbfdfef3ed066a609b043",
+    "src/unloading_sim/collision_backend.py": "61c4aca87c74f42e312da3a03d22e0fec1c049278aec2d4c7ea1252950e5c782",
+    "src/unloading_sim/cycle.py": "ebf83cee9c616dabb938461904f82e68bd32c541c0f59a71280af66f842a277e",
+    "src/unloading_sim/demo.py": "a8bd3f5cc4e21a337309bef5b4519c56232e980e1dee5bf0b828d5888c184578",
+    "src/unloading_sim/depalletizing.py": "2ebfde4c2ce3bd2e831c6c5afde6422adecb9a2db504f35cc3b407a7d04854f6",
+    "src/unloading_sim/dynamics.py": "35ae11adc9ff6e9d01386d9d1027da349bb9119a77b9b4619708f7dbe0e21fa6",
+    "src/unloading_sim/fanuc_m710id70.py": "836b3dc0915a3b0a91328948d28ed368b8e2ed7d1d26838ccc918f5aa17cd8f8",
+    "src/unloading_sim/geometry.py": "5ddd9c94be8284307ccdb7ae65e8ab089721768ec83b3995ae357b6cc9f82514",
+    "src/unloading_sim/grasp.py": "2f4e1aecf848863a8c9c583b85d3636e1730231bfc06f718019b4f8b38a5b72e",
+    "src/unloading_sim/identity.py": "ec9b7e80fcd845da3aaf98f56d2b68cc4e7f5eb09ff7c929e3bfa4c752862854",
+    "src/unloading_sim/ik.py": "888e855bf71194dca2522b705f3c7e0a2359bfc553c6957112a565d095c6b2e0",
+    "src/unloading_sim/isaac_bridge.py": "c83093a28c51a36c866cde01cc41617cc586978f36b377cbe5379b1503d78379",
+    "src/unloading_sim/online_unload.py": "ccac995d532c033ff7c1a5d4f8a9e80e071226c5a06b3db0f97a47e1abfe92c2",
+    "src/unloading_sim/online_unload_fanuc.py": "c1bf9e2197df7898b01c313ad097e020a37772b03fa4fd052b5b522abdaf02ad",
+    "src/unloading_sim/perception.py": "6e1461c2703241fc666e26576ade2a70943c6062da01dbf01642e47603bf1ab7",
+    "src/unloading_sim/pinocchio_backend.py": "987206c5e3a22347df5fd28a4d566f47818d2601db7f245d1ead48539f049083",
+    "src/unloading_sim/planner.py": "e35344f8a4252aae8e0f22abc4d15e83b49c8723c59410ae028335fb95cb33e4",
+    "src/unloading_sim/pybullet_kuka_kr50.py": "38dd904fb7409e6a7e1c9f0140b34927d3f18741921deb03e5d2ef08a3748d03",
+    "src/unloading_sim/pybullet_online_fanuc.py": "9b4f6dbd16dac8d4d49beb491d4bcfcd5c37099e1f47f1975ce9b6977f6954df",
+    "src/unloading_sim/pybullet_online_kuka.py": "ef428281cdcc8d7e424d4e1564fe073a2ade5bbe83c9af085b6981a700f6bf1d",
+    "src/unloading_sim/pybullet_rm65.py": "708209659977baadee46dda5845836a5e00262539b5498648089d83e60c5e592",
+    "src/unloading_sim/pybullet_sim.py": "20f24084bcb55fcb4df189896e141f88e8fd2aff43cdd4a8d006322cdcfd4bd0",
+    "src/unloading_sim/qualification.py": "339c2f3d4a47395f2c364b636c0155b679c1ab3aec8cfe00be192238926ada87",
+    "src/unloading_sim/reachability.py": "38c5c23b18608d6769d3cff0927215276a4c50e97313d7da23bd43cd361d3a28",
+    "src/unloading_sim/realtime_planner.py": "5b6646ba7ec7c3aeea71d7e0ca5642a873bf0cdde1bb1976749661d66d8dc027",
+    "src/unloading_sim/reporting.py": "c51ea0470b711c680a08e7ae252dc7c527eaa58aa507cc184b588fa4edda7987",
+    "src/unloading_sim/robot.py": "2c04b802a2f8ed5b66292a18874bbfca25ef47b9a40f53f9b89a15c9a063deab",
+    "src/unloading_sim/robot_load/__init__.py": "024255ce7e1e79923a00c03bb35287009714cbdecda05f717ec76882cb215ce4",
+    "src/unloading_sim/robot_load/model.py": "13097486a55304b3e8517157e9de2b2ab38dbfb82f0d0d82a3ac98fc330c3d89",
+    "src/unloading_sim/robot_load/spatial.py": "616d696e2fdf9cd05b38dfe5db1ecf3a815e6db32891860217b71c22c06e3618",
+    "src/unloading_sim/robot_load/task.py": "83b61dbb5a225dd5e4ddc51b4bbc0eb8db89de2560f9be2f67544a440648d65a",
+    "src/unloading_sim/robot_load/vendor/__init__.py": "f47ed4d239b6fae354c7181e72f8f08ae7c8ac52c350a158ae0ec0080f355db9",
+    "src/unloading_sim/robot_load/vendor/fanuc_wrist_load.py": "0c63eb61a9ec95144772227e5fd3841761baef08d344c195285c27ed01f24cf1",
+    "src/unloading_sim/robustness.py": "d8ee1322221eeba27a7198f091932251db4c59df15650e070ab5a678adfba11c",
+    "src/unloading_sim/scene.py": "7849e50ce3feaf921654329ebc1391e30dc64f26565918dcb44e13832c3d272c",
+    "src/unloading_sim/stability.py": "be5bc6bda51539a103147c2fb79ffb7b5ae35a732e5026aa0e6102936a5a704f",
+    "src/unloading_sim/support.py": "6efc235227f348c3e37065e741e76fd1f6c6438729e57240bc00b55a7b32b6c1",
+    "src/unloading_sim/timing.py": "64a449ef4a021041ae0d1f40e6cb4b5ff51dcbd9ce0596819ba20e77ba7ab89d",
+    "src/unloading_sim/trajectory.py": "cc649fb1a158c65bbe1d3b05eeeeaed28cb4041005e1d32d74b0ab2f1ee9fa2a",
+    "src/unloading_sim/trajectory_cache.py": "73459864b60a12c96aedae1aff7379fd023adc82613fab7792d3e40d14663356",
+    "src/unloading_sim/validation_config.py": "416a06d2d2f7324596bac92fd9b0eb65b7977074d10071413aca5b7a9088454a",
+    "src/unloading_sim/validation_motion.py": "dc49984f2ea7b6c4f0235104ea586e2f9374ada084fc288804fd8a9253103e63",
+    "src/unloading_sim/validation_physics.py": "e902f04615392d2e252eb2348bd94fad8571b441a8ac75f2a597ce162ae9261d",
+    "src/unloading_sim/validation_receiver.py": "4b21bc483ec665b732b066ca2def793eaadcb60fdba51240461b9d23c9b76a89",
+    "src/unloading_sim/validation_scenes.py": "646eb10f52befbfa08f3658ad4f3a82cc1bf0a2f0937bc60980ab24b34bf3ecd",
+    "src/unloading_sim/visualization.py": "ed18fd3928e560bcf1ffba0c0927c3cd8a46c021dc121713fe4b7b75c6795f0c",
+    "tests/test_base_optimization.py": "b99194d6f14347f50845f55b6d230e32e3acaaf95696445a45588fdd776d510d",
+    "tests/test_benchmark.py": "8ec99aa7b111bb86c50cdf1d544117e33e6a156f864433f4c13a8d52224fc475",
+    "tests/test_cycle.py": "36ce1234235aa764f7c661f284d70f0ffe1e709c07024700a72cee08eb1e4625",
+    "tests/test_demo.py": "5a43df5fe2f55a562d0b4534fb4402975814ec8a43c2621e405427af69524132",
+    "tests/test_depalletizing_strategy.py": "c2e699e1010500abb61ec406bb24e8610d9cbd0c867778eca0b45e9c0ca4eb10",
+    "tests/test_digital_twin.py": "6b822dfb8d72ccf5f2b66ba4f3c54f7df27297810efe21c3fafbcf52a65b5ab2",
+    "tests/test_fanuc_cross_section_study.py": "31275859e0048363f7e8bc29f4c50006eab4af4f54533c463adc85b5b7f73d0b",
+    "tests/test_fanuc_m710id_70_kinematics.py": "e22a865d7466c9589f45537dfad98e7905cf328a69c64bf9ab43f8efa53bb3af",
+    "tests/test_fanuc_m710id_70_load.py": "a2a3894e35655ad5d86a1e081e2a2598c8bb7bdfbda5444ada4818207e0bdf7c",
+    "tests/test_fanuc_wrist_load.py": "55aded9a587af3b1f8b5d5bd794eadd7f9b5eb2d8a01078a24ef46e53d632be5",
+    "tests/test_geometry.py": "fe4a0f88743365deebbd70481f70980bfc3763b069a1be06b69499f2dc95a45b",
+    "tests/test_identity_and_config.py": "f487bce5c25a4e409f716bbf3bbdb3de91b6251778dc35bc88aab15ed41ebf73",
+    "tests/test_isaac_bridge.py": "f70507b16e72403dc0b107175f7eb217828fdd84606dfdc8103702f40bbd0588",
+    "tests/test_kinematics.py": "71150b62f75cbb6d2667ff716dd2acdd45398b6a1ffde4a0c7a14a44a69e1702",
+    "tests/test_pinocchio_backend.py": "8785fd36ce9db8904d9b0409470711564cf3804dd0a75807d8fad1097f641955",
+    "tests/test_planner.py": "fb822c493423168440b8fedebbcf0b8e63fe0495156d0b1f0bc5dc9994a20d6a",
+    "tests/test_planning_flexibility.py": "5748bb70a11632943fa97ac05340b0cfacea0d1807e09059c57ef36bb89fb2db",
+    "tests/test_pybullet_sim.py": "e5342d499d7cee8f36e7a7412dc4989929f31735040928c195afdadc6710f54a",
+    "tests/test_qualification.py": "862186276b717511955a528afac644ff580cef4d8f22b15298073d977d522060",
+    "tests/test_robot_load.py": "ce3cb37b27da850196fc5c83142cb39bf4ee8ec2e1939fa2e7a0d9ec99516c9d",
+    "tests/test_robustness.py": "3c709f1c7d810551c5e97b6c60f406fe09344bb30e4fb5ec7ba801f5e7f96aa4",
+    "tests/test_stability.py": "af0cf288cf17c8b8d6940c2c4f6cc0515948df586db8a64212c07cc3dcbca526",
+    "tests/test_task_load.py": "455d95c8badcc7d55c859c6297c27f1f0fb8ab8849a46f0936e8f695ebefe900",
+    "tests/test_timing.py": "a47db25fb38326b6674b7dcf922801a89f1788851449a4a766cf27fbde8cd2c5",
+    "tests/test_v3_acceptance_entry.py": "2501d8d82b00a4b74ed88af8ca7b58f0e93110d496ee43e1cfb20e0c2ce7899e",
+    "tests/test_v3_broadphase.py": "a959023bf98340d41535e53fbb0a81623828266903fbe56cd908bd2481a618fb",
+    "tests/test_v3_continuous_state.py": "28f0140782eb183e33bf54091004d9fd91be3254a258b73ff68fbc29517fae77",
+    "tests/test_v3_motion_contract.py": "2fba943fccc7a98d19e0d4ca645ba2ed6721dc1e33ece035fbba48393ac5c7ff",
+    "tests/test_v3_numeric_contract.py": "06ffabe33c18b220f86bb9397348b5ada5459395ece5bdf6b878dfc071285900",
+    "tests/test_v3_receiver_and_inertia.py": "562d559804f617422446b81be2e2a1f4d1d3c91ef8bf3fd8895a9acda1f5f3c0",
+    "tests/test_v3_search_accounting.py": "614aa986eae9e69331c2028de5d1aac71a1f72a8beff2468502821601ddea57c",
+    "tests/test_v3_validation_hardening.py": "3302445a97c7652afaec1b762d6d81fb027fb8f9aa7d226de2262aa54cd459f0",
+    "tools/analyze_payload_envelope.py": "65a5fb34eceb8b3207cd20a5191292019b19666310931c8fa48bef7ccc412160",
+    "tools/archive_m710id70_v3_baseline.py": "4bfee2455d7fff50e8e474bf68b39bb8a73983f5e257722dcc2f0dc07f300755",
+    "tools/audit_m710_v3.py": "7c8147dc89b1387df0d3c190e22446c6f8a32e3ee3df9ee6bdcff565d0b647f2",
+    "tools/capture_m710_evidence.py": "d6cb468045f34fc09f588b65717f269eba45e5d5d7a300a0cb4d49b613223c8e",
+    "tools/check_m710_v3_reproducibility.py": "24a751153fb316ac5c813a53e70aee228ecfc22f31157a169453574ab530f5df",
+    "tools/probe_m710_v3_home.py": "d3f90e55e51af3acec43d38ed68093c51d3704ab13396e670acabebb0c74bad3",
+    "tools/report_m710_v3.py": "8afcac2abf8d2994f77b7e24e452fe5745b6b993052e9154f045b78e42e23239",
+    "tools/reproduce_m710_v2.py": "f164efb852bc2d0db5ad83257b8f55645bac0d2d50c8ec297c6e9741596b4e41",
+    "tools/run_cycle_simulation.py": "9b2f789d29e03a966dd9d882150d1a7baf572217057b571a00ece0b78c8f2f56",
+    "tools/run_m710id70_acceptance.py": "8c846d91c58a8a50fd599865f34f18e9ae21c59f2fb49a1e683fc8da872b9446",
+    "tools/run_m710id70_v3.py": "d84c77cae3d59f07e5c128285e0fe8420172f69a1779b8a44da08f32f948026c",
+    "tools/run_qualification_suite.py": "2b8c81786c0bc678c01e5bdf166b0a8de2358ead5981dd3a0ce04450027f9248",
+    "tools/run_reachability_study.py": "6cbcb847ec3a81f1d94d61e2a08f31e39838d48e41d49b4de9d91a534d374e6a",
+    "tools/validate_m710_bottom_alternative.py": "6b00830c25694cd707b37e4cb7de73c4bd0e777573bb49cd6126b823218b2259",
+    "uv.lock": "2ed95e260e76dc67f60d1cfc1bc7753eae453d445dbb255bbb8ca71dd5846867"
+  },
+  "configuration_documents": {
+    "config/common_unloading.yaml": {
+      "scene": {
+        "trailer": {
+          "length": 4.0,
+          "width": 2.35,
+          "height": 3.0,
+          "wall_thickness": 0.05,
+          "floor_thickness": 0.08
+        },
+        "static_obstacles": [
+          {
+            "name": "conveyor_deck",
+            "center": [
+              -2.9,
+              -1.95,
+              0.365
+            ],
+            "size": [
+              1.2,
+              0.75,
+              0.12
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "conveyor_cross_deck",
+            "center": [
+              -3.0,
+              -0.7,
+              0.37
+            ],
+            "size": [
+              0.75,
+              1.35,
+              0.12
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "conveyor_transfer_deck",
+            "center": [
+              -3.0,
+              -1.7,
+              0.43
+            ],
+            "size": [
+              0.75,
+              0.1,
+              0.01
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "cartons": [
+          {
+            "name": "carton_front_l0_c0",
+            "center": [
+              1.21,
+              -0.825,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l0_c1",
+            "center": [
+              1.21,
+              -0.275,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l0_c2",
+            "center": [
+              1.21,
+              0.275,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l0_c3",
+            "center": [
+              1.21,
+              0.825,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l1_c0",
+            "center": [
+              1.21,
+              -0.825,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l1_c1",
+            "center": [
+              1.21,
+              -0.275,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_target",
+            "center": [
+              1.21,
+              0.275,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l1_c3",
+            "center": [
+              1.21,
+              0.825,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l2_c0",
+            "center": [
+              1.21,
+              -0.825,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l2_c1",
+            "center": [
+              1.21,
+              -0.275,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l2_c2",
+            "center": [
+              1.21,
+              0.275,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l2_c3",
+            "center": [
+              1.21,
+              0.825,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l0_c0",
+            "center": [
+              1.63,
+              -0.825,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l0_c1",
+            "center": [
+              1.63,
+              -0.275,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l0_c2",
+            "center": [
+              1.63,
+              0.275,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l0_c3",
+            "center": [
+              1.63,
+              0.825,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l1_c0",
+            "center": [
+              1.63,
+              -0.825,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l1_c1",
+            "center": [
+              1.63,
+              -0.275,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l1_c2",
+            "center": [
+              1.63,
+              0.275,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l1_c3",
+            "center": [
+              1.63,
+              0.825,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l2_c0",
+            "center": [
+              1.63,
+              -0.825,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l2_c1",
+            "center": [
+              1.63,
+              -0.275,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l2_c2",
+            "center": [
+              1.63,
+              0.275,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l2_c3",
+            "center": [
+              1.63,
+              0.825,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ]
+      },
+      "planning": {
+        "vacuum_grasp_clearance_m": 0.008,
+        "target_carton": "carton_target",
+        "seed": 11,
+        "verbose": true,
+        "enable_place": true,
+        "grasp_candidates_per_face": 1,
+        "target_planning_time_limit_seconds": 150.0,
+        "candidate_planning_time_limit_seconds": 75.0,
+        "carried_box_clearance": 0.01,
+        "carton_contact_tolerance_m": 0.005,
+        "max_in_trailer_carton_tilt_deg": 25.0,
+        "conveyor_edge_clearance": 0.01,
+        "conveyor_allow_all_carton_faces": false,
+        "conveyor_require_front_release_zone": false,
+        "ik_random_restarts": 10,
+        "dock_ik_probe_random_restarts": 5,
+        "dock_front_ik_probe_random_restarts": 3,
+        "dock_side_ik_probe_random_restarts": 3,
+        "dock_ik_probe_max_iterations": 90,
+        "retry_cooldown_picks": 0,
+        "ik_max_iterations": 140,
+        "ik_position_tolerance": 0.018,
+        "ik_orientation_tolerance": 0.16,
+        "rrt_step_size": 0.25,
+        "rrt_edge_resolution": 0.04,
+        "rrt_max_iterations": 6000,
+        "rrt_goal_bias": 0.18,
+        "shortcut_attempts": 80,
+        "output_resolution": 0.04,
+        "transit_hint_joints": [],
+        "interior_transit_half_width": 0.5,
+        "interior_transit_hint_joints": [],
+        "interior_return_hint_joints": [],
+        "positive_y_transit_threshold": 0.5,
+        "positive_y_transit_hint_joints": [],
+        "transit_time_limit_seconds": 20.0,
+        "approach_resolution": 0.025,
+        "destack_position_step": 0.04,
+        "grasp_face_modes": [
+          "top",
+          "front",
+          "side"
+        ],
+        "suction_cup_layout": {
+          "rows": 6,
+          "columns": 12,
+          "pitch_m": [
+            0.048,
+            0.048
+          ],
+          "cup_radius_m": 0.0215,
+          "zone_count": 3,
+          "minimum_sealed_cups": 60
+        },
+        "suction_edge_margin_m": 0.0,
+        "place_obstacle": "conveyor_cross_deck",
+        "place_obstacles": [
+          "conveyor_cross_deck",
+          "conveyor_deck"
+        ],
+        "positive_y_place_obstacle": "conveyor_cross_deck",
+        "floor_interior_place_obstacle": "conveyor_cross_deck",
+        "carry_exit_standoff": 0.18,
+        "carry_exit_standoff_by_face": {
+          "side": 0.55,
+          "top": 0.25
+        },
+        "use_cartesian_carry": false,
+        "cartesian_carry_min_carton_height": 99.0,
+        "cartesian_carry_when_upper_layers_clear": false,
+        "cartesian_layer_height_tolerance": 0.01,
+        "cartesian_carry_overhead_clearance": 0.3,
+        "cartesian_high_lift_threshold": 1.5,
+        "cartesian_low_lift_clearance": 0.15,
+        "cartesian_cleared_layer_lift_clearance": 0.3,
+        "cartesian_front_grasp_min_height": 0.5,
+        "cartesian_floor_carton_max_height": 0.3,
+        "floor_transit_time_limit_seconds": 40.0,
+        "floor_candidate_planning_time_limit_seconds": 180.0,
+        "floor_rrt_max_iterations": 18000,
+        "floor_max_feasible_place_iks": 6,
+        "floor_place_attempt_time_limit_seconds": 25.0,
+        "cartesian_carry_position_step": 0.03,
+        "use_cartesian_final_approach": false,
+        "conveyor_preplace_clearance": 0.3,
+        "conveyor_approach_directions": [
+          "front",
+          "top",
+          "left",
+          "right"
+        ],
+        "return_home_after_place": false,
+        "post_release_retreat_distance_m": 0.3,
+        "post_release_normal_disengage_distance_m": 0.05,
+        "post_release_normal_tracking_allowance_m": 0.02,
+        "post_release_normal_position_step_m": 0.06,
+        "return_via_reverse_path": false,
+        "use_wrist_first_carry": false,
+        "carry_exit_ik_random_restarts": 4,
+        "place_ik_random_restarts": 1,
+        "place_ik_max_iterations": 140,
+        "place_position_tolerance": 0.03,
+        "place_orientation_tolerance": 0.25,
+        "place_hint_joints": [],
+        "max_place_pose_candidates": 12,
+        "max_feasible_place_iks": 6,
+        "place_attempt_time_limit_seconds": 25.0
+      },
+      "execution": {
+        "perception_update_seconds": 0.25,
+        "pre_grasp_controller_settle_seconds": 0.25,
+        "vacuum_establish_seconds": 0.35,
+        "release_seconds": 0.15,
+        "minimum_segment_seconds": 0.002,
+        "loaded_motion_time_scale": 1.0,
+        "post_release_motion_limit_scale": 1.0
+      },
+      "simulation_validation": {
+        "fast_backend": "pybullet",
+        "qualification_backend": "isaac_sim",
+        "physics_dt_seconds": 0.004166666666666667,
+        "realtime": true,
+        "max_joint_force_nm": 500.0,
+        "vacuum_product_model": "上海皖泰真空吸盘三分区",
+        "vacuum_cup_model": "FG42",
+        "vacuum_cup_count": 72,
+        "vacuum_cup_rows": 6,
+        "vacuum_cup_columns": 12,
+        "vacuum_cup_pitch_m": [
+          0.048,
+          0.048
+        ],
+        "vacuum_cup_radius_m": 0.0215,
+        "vacuum_zone_count": 3,
+        "carton_mass_kg": 7.0,
+        "vacuum_pull_off_force_per_cup_n": 59.0,
+        "vacuum_shear_force_per_cup_n": 43.0,
+        "vacuum_cup_compression_m": 0.015,
+        "vacuum_holding_torque_nm": null,
+        "vacuum_footprint_size_m": [
+          0.288,
+          0.576
+        ],
+        "vacuum_effective_seal_area_m2": null,
+        "vacuum_limits_calibrated": false,
+        "vacuum_max_grip_distance_m": 0.02,
+        "vacuum_surface_gripper_capture_tolerance_m": 0.005,
+        "vacuum_attachment_model": "per_sealed_cup",
+        "vacuum_solver_attachment_model": "equivalent_center_of_pressure",
+        "vacuum_solver_position_iterations": 4,
+        "vacuum_solver_velocity_iterations": 1,
+        "position_gain": 0.25,
+        "velocity_gain": 1.0,
+        "conveyor": {
+          "enabled": true,
+          "speed_m_s": 0.5,
+          "start_policy": "immediate",
+          "surface_directions_world": {
+            "conveyor_cross_deck": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "conveyor_transfer_deck": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "conveyor_deck": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "conveyor_outfeed": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "outfeed_name": "conveyor_outfeed",
+          "outfeed_mount_center": [
+            -6.3,
+            -0.7,
+            0.365
+          ],
+          "outfeed_size_m": [
+            10.0,
+            0.75,
+            0.12
+          ],
+          "landing_capture_delay_s": 0.08,
+          "landing_height_tolerance_m": 0.04,
+          "transport_minimum_distance_m": 0.1,
+          "transport_speed_tolerance_m_s": 0.15,
+          "transport_audit_window_seconds": 1.0
+        },
+        "camera": {
+          "name": "trailer_rgbd",
+          "width": 1280,
+          "height": 720,
+          "horizontal_fov_rad": 1.3089969389957472,
+          "horizontal_aperture_mm": 20.955,
+          "near_m": 0.03,
+          "far_m": 10.0,
+          "eye_m": [
+            -3.8,
+            -0.95,
+            2.7
+          ],
+          "target_m": [
+            0.0,
+            -0.15,
+            0.65
+          ]
+        },
+        "rendering": {
+          "distant_intensity": 700.0,
+          "door_work_light_intensity": 8000.0,
+          "trailer_work_light_intensity": 5500.0,
+          "door_work_light_position_m": [
+            -0.6,
+            -0.2,
+            2.35
+          ],
+          "trailer_work_light_position_m": [
+            1.35,
+            0.2,
+            2.3
+          ],
+          "door_work_light_color_rgb": [
+            1.0,
+            0.91,
+            0.8
+          ],
+          "trailer_work_light_color_rgb": [
+            0.78,
+            0.88,
+            1.0
+          ],
+          "material_palette": {
+            "trailer_rgb": [
+              0.2,
+              0.23,
+              0.27
+            ],
+            "static_rgb": [
+              0.08,
+              0.22,
+              0.36
+            ],
+            "amr_rgb": [
+              0.055,
+              0.065,
+              0.075
+            ],
+            "carton_rgb": [
+              0.47,
+              0.25,
+              0.095
+            ],
+            "gripper_rgb": [
+              0.43,
+              0.47,
+              0.5
+            ]
+          },
+          "visual_reference": {
+            "trailer_brand": "福田奥铃速运",
+            "trailer_reference_model": "BJ5048XXY8JEA-AB2",
+            "carton_brand": "厦门合兴包装印刷股份有限公司（HXPP）",
+            "gripper_brand": "上海皖泰",
+            "robot_brand": "FANUC"
+          },
+          "trailer_brand_decal_path": "assets/materials/industrial/decals/foton_ollin_logo.png",
+          "carton_brand_decal_path": "assets/materials/industrial/decals/hxpp_logo.jpg",
+          "pbr_materials": {
+            "trailer": {
+              "diffuse_path": "assets/materials/industrial/blue_metal_plate/blue_metal_plate_diff_1k.jpg",
+              "arm_path": "assets/materials/industrial/blue_metal_plate/blue_metal_plate_arm_1k.jpg",
+              "fallback_rgb": [
+                0.2,
+                0.23,
+                0.27
+              ],
+              "roughness": 0.48,
+              "metallic": 0.72,
+              "use_arm_metallic": true
+            },
+            "carton": {
+              "diffuse_path": "assets/materials/industrial/carton_seamless/carton_512x512.png",
+              "texture_scale_rgba": [
+                0.72,
+                0.48,
+                0.28,
+                1.0
+              ],
+              "fallback_rgb": [
+                0.47,
+                0.25,
+                0.095
+              ],
+              "roughness": 0.86,
+              "metallic": 0.0
+            },
+            "gripper_metal": {
+              "fallback_rgb": [
+                0.43,
+                0.47,
+                0.5
+              ],
+              "roughness": 0.34,
+              "metallic": 0.82
+            },
+            "gripper_rubber": {
+              "diffuse_path": "assets/materials/industrial/rubber_tiles/rubber_tiles_diff_1k.jpg",
+              "arm_path": "assets/materials/industrial/rubber_tiles/rubber_tiles_arm_1k.jpg",
+              "fallback_rgb": [
+                0.025,
+                0.028,
+                0.03
+              ],
+              "roughness": 0.78,
+              "metallic": 0.0
+            }
+          }
+        }
+      },
+      "amr": {
+        "dock_clearance_m": 0.02,
+        "footprint_size": [
+          1.8,
+          2.0,
+          0.3
+        ],
+        "platform_center_offset": [
+          -1.0,
+          -0.075,
+          0.15
+        ],
+        "conveyor_name": "conveyor_deck",
+        "conveyor_mount_center": [
+          -0.7,
+          -0.7,
+          0.365
+        ],
+        "mounted_surface_centers": {
+          "conveyor_deck": [
+            -0.7,
+            -0.7,
+            0.365
+          ],
+          "conveyor_cross_deck": [
+            -0.375,
+            -0.2,
+            0.37
+          ],
+          "conveyor_transfer_deck": [
+            -0.4,
+            -0.8,
+            0.43
+          ]
+        },
+        "cross_conveyor_name": "conveyor_cross_deck",
+        "minimum_conveyor_to_carton_clearance_m": 0.2,
+        "minimum_conveyor_intersection_size_m": [
+          0.55,
+          0.55
+        ],
+        "dock_positions": [
+          [
+            0.8,
+            -0.3,
+            0.0
+          ],
+          [
+            0.8,
+            0.0,
+            0.0
+          ],
+          [
+            0.8,
+            0.3,
+            0.0
+          ],
+          [
+            0.8,
+            0.6,
+            0.0
+          ]
+        ]
+      }
+    },
+    "config/demo.yaml": {
+      "robot": {
+        "model": "ur5e_like",
+        "base_position": [
+          -0.55,
+          0.0,
+          0.62
+        ],
+        "base_rpy": [
+          0.0,
+          0.0,
+          3.141592653589793
+        ],
+        "tool_length": 0.18,
+        "home_joints": [
+          0.0,
+          -1.57,
+          1.57,
+          -1.57,
+          -1.57,
+          0.0
+        ]
+      },
+      "execution": {
+        "limits_source": "ur5e_like_conservative_engineering_assumptions",
+        "joint_velocity_limits_rad_s": [
+          3.14,
+          3.14,
+          3.14,
+          6.28,
+          6.28,
+          6.28
+        ],
+        "joint_acceleration_limits_rad_s2": [
+          2.0,
+          2.0,
+          2.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "joint_jerk_limits_rad_s3": [
+          10.0,
+          10.0,
+          10.0,
+          20.0,
+          20.0,
+          20.0
+        ],
+        "motion_limit_scale": 0.35,
+        "perception_update_seconds": 0.25,
+        "vacuum_establish_seconds": 0.35,
+        "release_seconds": 0.15,
+        "minimum_segment_seconds": 0.002
+      },
+      "scene": {
+        "trailer": {
+          "length": 4.0,
+          "width": 2.35,
+          "height": 2.35,
+          "wall_thickness": 0.05,
+          "floor_thickness": 0.08
+        },
+        "static_obstacles": [
+          {
+            "name": "conveyor_deck",
+            "center": [
+              -0.45,
+              -0.72,
+              0.44
+            ],
+            "size": [
+              1.1,
+              0.45,
+              0.12
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "cartons": [
+          {
+            "name": "carton_target",
+            "center": [
+              0.46,
+              0.0,
+              0.98
+            ],
+            "size": [
+              0.42,
+              0.48,
+              0.38
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_left",
+            "center": [
+              0.48,
+              0.5,
+              0.96
+            ],
+            "size": [
+              0.44,
+              0.46,
+              0.42
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.02
+            ]
+          },
+          {
+            "name": "carton_right",
+            "center": [
+              0.48,
+              -0.51,
+              0.95
+            ],
+            "size": [
+              0.44,
+              0.46,
+              0.4
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              -0.03
+            ]
+          },
+          {
+            "name": "carton_bottom",
+            "center": [
+              0.48,
+              0.0,
+              0.38
+            ],
+            "size": [
+              0.46,
+              0.52,
+              0.68
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back",
+            "center": [
+              0.92,
+              0.02,
+              0.98
+            ],
+            "size": [
+              0.42,
+              0.5,
+              0.42
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.01
+            ]
+          }
+        ]
+      },
+      "planning": {
+        "target_carton": "carton_target",
+        "seed": 7,
+        "ik_random_restarts": 20,
+        "ik_position_tolerance": 0.012,
+        "ik_orientation_tolerance": 0.1,
+        "rrt_step_size": 0.22,
+        "rrt_edge_resolution": 0.06,
+        "rrt_max_iterations": 5000,
+        "rrt_goal_bias": 0.16,
+        "shortcut_attempts": 220,
+        "output_resolution": 0.035,
+        "approach_resolution": 0.02
+      },
+      "outputs": {
+        "directory": "outputs/demo",
+        "save_plot": true,
+        "save_trajectory_csv": true,
+        "save_metrics_json": true
+      }
+    },
+    "config/fanuc_m20id35.yaml": {
+      "extends": "common_unloading.yaml",
+      "robot": {
+        "model": "fanuc_m20id_35",
+        "model_config": "../configs/robots/fanuc_m20id_35.yaml",
+        "urdf_path": "assets/robots/fanuc_m20id35/m20_35_18d.urdf",
+        "base_position": [
+          0.6,
+          0.15,
+          0.3
+        ],
+        "base_rpy": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tip_link": "tool0",
+        "home_joints": [
+          -0.3766,
+          -0.7955,
+          -0.8172,
+          0.8419,
+          -1.3,
+          -0.3599
+        ]
+      },
+      "tool": {
+        "config": "../configs/tools/unloading_gripper_10kg.yaml"
+      },
+      "execution": {
+        "limits_source": "fanuc_urdf_velocity_plus_conservative_engineering_assumptions",
+        "joint_velocity_limits_rad_s": [
+          3.141593,
+          3.141593,
+          3.490659,
+          6.108652,
+          6.108652,
+          6.981317
+        ],
+        "joint_acceleration_limits_rad_s2": [
+          2.0,
+          2.0,
+          2.2,
+          4.0,
+          4.0,
+          5.0
+        ],
+        "joint_jerk_limits_rad_s3": [
+          10.0,
+          10.0,
+          12.0,
+          20.0,
+          20.0,
+          25.0
+        ],
+        "joint_effort_limits_nm": [
+          7000.0,
+          9000.0,
+          4000.0,
+          600.0,
+          500.0,
+          300.0
+        ],
+        "motion_limit_scale": 0.35
+      },
+      "planning": {
+        "online_lookup_deadline_seconds": 0.05,
+        "blocking_cold_planning": false,
+        "grasp_face_modes": [
+          "front",
+          "side",
+          "top"
+        ],
+        "tool_collision_margin_m": 0.001,
+        "grasp_candidates_per_face": 2,
+        "dock_grasp_candidates_per_face": 1,
+        "wrist_roll_angles_deg": [
+          0.0,
+          90.0,
+          -90.0,
+          180.0
+        ],
+        "carry_exit_standoff": 0.18,
+        "clearance_zone_max_x": 0.85,
+        "carry_exit_standoff_by_face": {
+          "front": 0.18,
+          "side": 0.55,
+          "top": 0.25
+        },
+        "use_cartesian_destack_to_clearance": false,
+        "prefer_direct_clearance_to_place": true,
+        "target_motion_first": true,
+        "initial_dock_position": [
+          0.8,
+          -0.3,
+          0.0
+        ],
+        "hold_current_dock": true,
+        "place_obstacle": "conveyor_deck",
+        "place_obstacles": [
+          "conveyor_deck",
+          "conveyor_cross_deck"
+        ],
+        "conveyor_load_balance_weight": 0.75,
+        "positive_y_place_obstacle": "conveyor_deck",
+        "floor_interior_place_obstacle": "conveyor_deck",
+        "prefer_outer_columns": false,
+        "transit_hint_joints": [],
+        "interior_transit_hint_joints": [],
+        "interior_return_hint_joints": [],
+        "positive_y_transit_hint_joints": [],
+        "place_hint_joints": [],
+        "dock_ik_probe_random_restarts": 1,
+        "dock_front_ik_probe_random_restarts": 1,
+        "dock_side_ik_probe_random_restarts": 1,
+        "dock_ik_probe_max_iterations": 60,
+        "target_planning_time_limit_seconds": 120.0,
+        "candidate_planning_time_limit_seconds": 30.0,
+        "max_feasible_place_iks": 3,
+        "place_attempt_time_limit_seconds": 12.0,
+        "use_wrist_first_carry": false,
+        "conveyor_allow_all_carton_faces": true,
+        "conveyor_release_height": 0.03,
+        "conveyor_release_policy": {
+          "desired_height_m": 0.03,
+          "maximum_height_m": 0.04,
+          "maximum_impact_velocity_m_s": 0.8,
+          "maximum_drop_energy_j": 2.5
+        },
+        "pregrasp_heatmap_cache": "outputs/fanuc_m20id35/pregrasp_heatmap.npz",
+        "place_joint_motion_weight": 1.0,
+        "shortcut_attempts": 80,
+        "trajectory_waypoint_period_seconds": 0.02,
+        "max_place_pose_candidates": 4,
+        "place_ik_budget_seconds": 12.0,
+        "place_ik_random_restarts": 0,
+        "place_ik_max_iterations": 90
+      },
+      "amr": {
+        "conveyor_front_overhang": 0.95,
+        "robot_mount_position": [
+          -1.05,
+          0.3,
+          0.3
+        ]
+      },
+      "outputs": {
+        "directory": "outputs/fanuc_m20id35",
+        "save_plot": true,
+        "save_trajectory_csv": true,
+        "save_metrics_json": true
+      }
+    },
+    "config/fanuc_m20id35_isaac_full_replay.yaml": {
+      "extends": "fanuc_m20id35_validation.yaml",
+      "execution": {
+        "motion_limit_scale": 0.35,
+        "isaac_replay_time_scale": 1.6
+      }
+    },
+    "config/fanuc_m20id35_validation.yaml": {
+      "extends": "fanuc_m20id35.yaml",
+      "planning": {
+        "target_planning_time_limit_seconds": 300.0,
+        "candidate_planning_time_limit_seconds": 180.0,
+        "place_attempt_time_limit_seconds": 90.0,
+        "place_ik_budget_seconds": 60.0,
+        "max_place_pose_candidates": 12,
+        "max_feasible_place_iks": 6,
+        "shortcut_attempts": 180,
+        "optimize_across_grasp_candidates": true
+      },
+      "outputs": {
+        "directory": "outputs/fanuc_m20id35"
+      }
+    },
+    "config/fanuc_m20id35_wantai_task_space.yaml": {
+      "extends": "fanuc_m20id35.yaml",
+      "planning": {
+        "destack_mode": "auto",
+        "hold_current_dock": false,
+        "allow_free_space_reorientation": true,
+        "carried_box_clearance": 0.03,
+        "target_cycle_motion_first": false,
+        "target_motion_first": false,
+        "enforce_nearest_active_depth": true,
+        "active_depth_tolerance_m": 0.008,
+        "enforce_highest_active_layer": true,
+        "active_layer_height_tolerance_m": 0.008,
+        "destack_orientation_tolerance_rad": 0.035,
+        "destack_position_tolerance_m": 0.006,
+        "destack_ik_random_restarts": 6,
+        "destack_position_step": 0.015,
+        "ik_position_tolerance": 0.012,
+        "use_cartesian_carry": true,
+        "use_cartesian_final_approach": true,
+        "cartesian_final_approach_required": true,
+        "conveyor_preplace_clearances": [
+          0.05,
+          0.12,
+          0.25
+        ],
+        "conveyor_allow_all_carton_faces": true,
+        "place_obstacle": "conveyor_cross_deck",
+        "place_obstacles": [
+          "conveyor_cross_deck"
+        ],
+        "positive_y_place_obstacle": "conveyor_cross_deck",
+        "floor_interior_place_obstacle": "conveyor_cross_deck",
+        "continuous_conveyor_min_tool_outward_support_alignment": null,
+        "continuous_conveyor_min_release_separation_alignment": null,
+        "conveyor_upright_yaw_step_degrees": 15.0,
+        "conveyor_release_separation_cost_weight_m": 0.65,
+        "continuous_conveyor_adaptive_release_separation": true,
+        "conveyor_release_transition_surfaces": [
+          "conveyor_cross_deck",
+          "conveyor_transfer_deck",
+          "conveyor_deck"
+        ],
+        "conveyor_require_front_release_zone": true,
+        "conveyor_release_exclusion_surfaces": [],
+        "conveyor_prefer_upright_release": true,
+        "conveyor_approach_directions": [
+          "top"
+        ],
+        "max_place_pose_candidates": 12,
+        "max_feasible_place_iks": 3,
+        "place_ik_budget_seconds": 0.0,
+        "retry_alternate_place_surfaces": false,
+        "place_ik_random_restarts": 1,
+        "place_ik_max_iterations": 300,
+        "place_attempt_time_limit_seconds": 40.0,
+        "target_planning_time_limit_seconds": 240.0,
+        "optimize_across_grasp_candidates": true,
+        "carried_task_path_length_weight": 2.0,
+        "wrist_roll_angles_deg": [
+          180.0
+        ]
+      },
+      "amr": {
+        "conveyor_front_reference": "conveyor_cross_deck",
+        "validate_conveyor_front_overhang": false,
+        "require_conveyor_beyond_platform_front": false
+      }
+    },
+    "config/fanuc_m710id_70.yaml": {
+      "extends": "common_unloading.yaml",
+      "robot": {
+        "model": "fanuc_m710id_70",
+        "model_config": "../configs/robots/fanuc_m710id_70.yaml",
+        "urdf_path": "assets/robots/fanuc_m710id_70/m710id_70.urdf",
+        "base_position": [
+          -0.7,
+          0.0,
+          0.6
+        ],
+        "base_rpy": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "base_link": "base_link",
+        "flange_link": "flange",
+        "tip_link": "tool0",
+        "home_joints": [
+          -0.17301878,
+          -1.13655578,
+          -0.74874837,
+          0.63151726,
+          -2.12393931,
+          -2.83276516
+        ]
+      },
+      "tool": {
+        "config": "../configs/tools/unloading_gripper_20kg.yaml"
+      },
+      "execution": {
+        "seed": 71070,
+        "profiles": {
+          "CONSERVATIVE": {
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "jerk_scale": 0.25
+          },
+          "NORMAL": {
+            "velocity_scale": 0.5,
+            "acceleration_scale": 0.5,
+            "jerk_scale": 0.5
+          },
+          "AGGRESSIVE_ENGINEERING_ONLY": {
+            "velocity_scale": 0.75,
+            "acceleration_scale": 0.75,
+            "jerk_scale": 0.75
+          }
+        },
+        "joint_velocity_limits_rad_s": [
+          3.141592654,
+          3.141592654,
+          3.141592654,
+          4.537856055,
+          4.537856055,
+          6.457718232
+        ],
+        "joint_acceleration_limits_rad_s2": [
+          1.5,
+          1.5,
+          1.5,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "joint_jerk_limits_rad_s3": [
+          7.5,
+          7.5,
+          7.5,
+          15.0,
+          15.0,
+          20.0
+        ],
+        "acceleration_and_jerk_evidence": "ENGINEERING_ASSUMPTION"
+      },
+      "planning": {
+        "seed": 71070,
+        "pregrasp_standoff_m": 0.15,
+        "extraction_scan_step_m": 0.01,
+        "extraction_free_clearance_m": 0.02,
+        "maximum_extraction_m": 1.5,
+        "collision_margin_m": 0.01,
+        "candidate_cost_weights": {
+          "loaded_path_length": 4.0,
+          "extraction_distance": 2.0,
+          "joint_motion": 1.0,
+          "collision_risk": 8.0,
+          "singularity_penalty": 5.0,
+          "joint_limit_penalty": 5.0,
+          "conveyor_handoff_distance": 2.0,
+          "wrist_margin_penalty": 4.0
+        }
+      },
+      "conveyor": {
+        "topology": "independent_l_shape",
+        "world_axes": {
+          "forward": "+X",
+          "left": "+Y",
+          "up": "+Z"
+        },
+        "chassis_size_xyz_m": [
+          1.8,
+          2.0,
+          0.3
+        ],
+        "chassis_center_from_robot_base_xyz_m": [
+          -1.0,
+          -0.075,
+          -0.45
+        ],
+        "cross_leg_size_xy_m": [
+          0.45,
+          2.0
+        ],
+        "longitudinal_leg_nominal_length_m": 0.65,
+        "longitudinal_leg_width_m": 0.7,
+        "deck_thickness_m": 0.12,
+        "maximum_extension_m": 1.5,
+        "minimum_stack_surface_clearance_m": 0.02,
+        "minimum_receiving_surface_z_m": 0.2,
+        "upper_stack_bottom_clearance_m": 0.015
+      },
+      "outputs": {
+        "directory": ".tmp/accept_m710id70_v2"
+      }
+    },
+    "config/kuka_kr50.yaml": {
+      "robot": {
+        "model": "kuka_kr50_r2500",
+        "urdf_path": "assets/robots/kuka_kr50_r2500/kr_50_r2500.urdf",
+        "base_position": [
+          0.6,
+          0.15,
+          0.3
+        ],
+        "base_rpy": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tool_length": 0.2,
+        "home_joints": [
+          -0.8605,
+          -2.3374,
+          -1.9499,
+          -0.8876,
+          -1.6696,
+          -1.718
+        ]
+      },
+      "execution": {
+        "limits_source": "kuka_urdf_velocity_plus_conservative_engineering_assumptions",
+        "joint_velocity_limits_rad_s": [
+          3.05433,
+          2.75762,
+          3.05433,
+          4.36332,
+          4.36332,
+          6.28319
+        ],
+        "joint_acceleration_limits_rad_s2": [
+          1.8,
+          1.8,
+          2.0,
+          3.5,
+          3.5,
+          4.5
+        ],
+        "joint_jerk_limits_rad_s3": [
+          9.0,
+          9.0,
+          10.0,
+          18.0,
+          18.0,
+          22.0
+        ],
+        "motion_limit_scale": 0.35,
+        "perception_update_seconds": 0.25,
+        "vacuum_establish_seconds": 0.35,
+        "release_seconds": 0.15,
+        "minimum_segment_seconds": 0.002
+      },
+      "scene": {
+        "trailer": {
+          "length": 4.0,
+          "width": 2.35,
+          "height": 3.0,
+          "wall_thickness": 0.05,
+          "floor_thickness": 0.08
+        },
+        "static_obstacles": [
+          {
+            "name": "conveyor_deck",
+            "center": [
+              -2.9,
+              -1.7,
+              0.37
+            ],
+            "size": [
+              1.2,
+              0.8,
+              0.12
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "cartons": [
+          {
+            "name": "carton_front_l0_c0",
+            "center": [
+              1.21,
+              -0.825,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l0_c1",
+            "center": [
+              1.21,
+              -0.275,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l0_c2",
+            "center": [
+              1.21,
+              0.275,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l0_c3",
+            "center": [
+              1.21,
+              0.825,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l1_c0",
+            "center": [
+              1.21,
+              -0.825,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l1_c1",
+            "center": [
+              1.21,
+              -0.275,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_target",
+            "center": [
+              1.21,
+              0.275,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l1_c3",
+            "center": [
+              1.21,
+              0.825,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l2_c0",
+            "center": [
+              1.21,
+              -0.825,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l2_c1",
+            "center": [
+              1.21,
+              -0.275,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l2_c2",
+            "center": [
+              1.21,
+              0.275,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_front_l2_c3",
+            "center": [
+              1.21,
+              0.825,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l0_c0",
+            "center": [
+              1.63,
+              -0.825,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l0_c1",
+            "center": [
+              1.63,
+              -0.275,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l0_c2",
+            "center": [
+              1.63,
+              0.275,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l0_c3",
+            "center": [
+              1.63,
+              0.825,
+              0.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l1_c0",
+            "center": [
+              1.63,
+              -0.825,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l1_c1",
+            "center": [
+              1.63,
+              -0.275,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l1_c2",
+            "center": [
+              1.63,
+              0.275,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l1_c3",
+            "center": [
+              1.63,
+              0.825,
+              0.75
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l2_c0",
+            "center": [
+              1.63,
+              -0.825,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l2_c1",
+            "center": [
+              1.63,
+              -0.275,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l2_c2",
+            "center": [
+              1.63,
+              0.275,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "carton_back_l2_c3",
+            "center": [
+              1.63,
+              0.825,
+              1.25
+            ],
+            "size": [
+              0.42,
+              0.55,
+              0.5
+            ],
+            "rpy": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ]
+      },
+      "planning": {
+        "target_carton": "carton_target",
+        "seed": 11,
+        "verbose": true,
+        "enable_place": true,
+        "grasp_candidates_per_face": 1,
+        "target_planning_time_limit_seconds": 45.0,
+        "carried_box_clearance": 0.01,
+        "carton_contact_tolerance_m": 0.001,
+        "max_in_trailer_carton_tilt_deg": 25.0,
+        "conveyor_edge_clearance": 0.01,
+        "conveyor_allow_all_carton_faces": true,
+        "conveyor_require_front_release_zone": false,
+        "ik_random_restarts": 10,
+        "dock_ik_probe_random_restarts": 1,
+        "ik_max_iterations": 140,
+        "ik_position_tolerance": 0.018,
+        "ik_orientation_tolerance": 0.16,
+        "rrt_step_size": 0.25,
+        "rrt_edge_resolution": 0.07,
+        "rrt_max_iterations": 6000,
+        "rrt_goal_bias": 0.18,
+        "shortcut_attempts": 240,
+        "output_resolution": 0.04,
+        "transit_hint_joints": [],
+        "transit_time_limit_seconds": 45.0,
+        "approach_resolution": 0.025,
+        "destack_position_step": 0.04,
+        "grasp_face_modes": [
+          "top",
+          "side",
+          "front"
+        ],
+        "place_obstacle": "conveyor_deck",
+        "carry_exit_standoff": 0.18,
+        "use_cartesian_carry": false,
+        "use_cartesian_final_approach": false,
+        "conveyor_preplace_clearance": 0.3,
+        "conveyor_approach_directions": [
+          "front",
+          "top",
+          "left",
+          "right"
+        ],
+        "return_home_after_place": true,
+        "use_wrist_first_carry": false,
+        "place_ik_random_restarts": 4,
+        "place_ik_max_iterations": 140,
+        "place_position_tolerance": 0.03,
+        "place_orientation_tolerance": 0.25,
+        "place_hint_joints": [
+          [
+            -0.651907,
+            -2.309465,
+            -1.787871,
+            -0.752595,
+            -2.02778,
+            -1.953292
+          ]
+        ],
+        "max_place_pose_candidates": 64,
+        "max_feasible_place_iks": 4
+      },
+      "amr": {
+        "dock_clearance_m": 0.02,
+        "footprint_size": [
+          1.8,
+          1.3,
+          0.3
+        ],
+        "platform_center_offset": [
+          -1.0,
+          -0.1,
+          0.15
+        ],
+        "conveyor_name": "conveyor_deck",
+        "conveyor_front_overhang": 0.2,
+        "robot_mount_position": [
+          -0.3,
+          0.15,
+          0.3
+        ],
+        "conveyor_mount_center": [
+          -0.7,
+          -0.5,
+          0.37
+        ],
+        "dock_positions": [
+          [
+            0.8,
+            -0.4,
+            0.0
+          ],
+          [
+            0.8,
+            0.0,
+            0.0
+          ],
+          [
+            0.8,
+            0.4,
+            0.0
+          ]
+        ]
+      },
+      "outputs": {
+        "directory": "outputs/kuka_kr50",
+        "save_plot": true,
+        "save_trajectory_csv": true,
+        "save_metrics_json": true
+      }
+    },
+    "configs/cycle/unloading_900pph.yaml": {
+      "schema_version": "unloading_cycle_monte_carlo_v1",
+      "seed": 20260901,
+      "sample_count": 100000,
+      "shift_hours": 8.0,
+      "target_boxes_per_hour": 900.0,
+      "normal_cycle_seconds": 3.2,
+      "normal_cycle_candidates_seconds": [
+        3.0,
+        3.2,
+        3.4,
+        3.6,
+        4.0
+      ],
+      "base_events": [
+        {
+          "name": "NORMAL_LIGHT_BOX",
+          "probability": 0.35,
+          "duration_seconds": -0.15
+        },
+        {
+          "name": "NORMAL_MEDIUM_BOX",
+          "probability": 0.45,
+          "duration_seconds": 0.0
+        },
+        {
+          "name": "HEAVY_BOX_SUPPORT",
+          "probability": 0.2,
+          "duration_seconds": 0.45
+        }
+      ],
+      "loss_events": [
+        {
+          "name": "VISION_HEAVY_PATH",
+          "probability": 0.12,
+          "duration_seconds": [
+            0.1,
+            0.22,
+            0.45
+          ],
+          "conditional_on": "HEAVY_BOX_SUPPORT"
+        },
+        {
+          "name": "GRASP_RETRY",
+          "probability": 0.025,
+          "duration_seconds": [
+            0.8,
+            1.3,
+            2.2
+          ],
+          "conditional_on": "ALWAYS"
+        },
+        {
+          "name": "REPLAN",
+          "probability": 0.015,
+          "duration_seconds": [
+            0.15,
+            0.35,
+            0.9
+          ],
+          "conditional_on": "ALWAYS"
+        },
+        {
+          "name": "BASE_REPOSITION",
+          "probability": 0.004,
+          "duration_seconds": [
+            2.0,
+            3.5,
+            5.0
+          ],
+          "conditional_on": "ALWAYS"
+        },
+        {
+          "name": "CONVEYOR_WAIT",
+          "probability": 0.01,
+          "duration_seconds": [
+            0.2,
+            0.7,
+            1.8
+          ],
+          "conditional_on": "ALWAYS"
+        },
+        {
+          "name": "RECOVERY",
+          "probability": 0.001,
+          "duration_seconds": [
+            4.0,
+            8.0,
+            15.0
+          ],
+          "conditional_on": "GRASP_RETRY"
+        }
+      ],
+      "source": {
+        "status": "ENGINEERING_ASSUMPTION",
+        "note": "Event probabilities and durations require production log calibration."
+      }
+    },
+    "configs/qualification/fanuc_m20id35_25kg_front.yaml": {
+      "schema_version": "robot_load_case_v1",
+      "robot": {
+        "model": "fanuc_m20id_35",
+        "limits_config": "../robots/fanuc_m20id_35.yaml"
+      },
+      "tool": {
+        "config": "../tools/unloading_gripper_10kg.yaml"
+      },
+      "box": {
+        "size_xyz_m": [
+          0.5,
+          0.4,
+          0.35
+        ],
+        "mass_kg": 25.0,
+        "grasp_face": "front_center",
+        "grasp_point_xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "estimated_com_xyz_m": [
+          0.25,
+          0.0,
+          0.0
+        ]
+      },
+      "motion": {
+        "linear_acceleration_m_s2": 1.0,
+        "angular_acceleration_rad_s2": 1.0,
+        "safety_factor": 1.0
+      }
+    },
+    "configs/qualification/fanuc_m710id_70_42p5kg.yaml": {
+      "schema_version": "robot_load_case_v1",
+      "robot": {
+        "model": "fanuc_m710id_70",
+        "limits_config": "../robots/fanuc_m710id_70.yaml"
+      },
+      "tool": {
+        "config": "../tools/unloading_gripper_20kg.yaml"
+      },
+      "box": {
+        "size_xyz_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "mass_kg": 42.5,
+        "grasp_face": "front_center",
+        "grasp_point_xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "estimated_com_xyz_m": [
+          0.3,
+          0.0,
+          0.0
+        ],
+        "mass_properties_evidence": "ENGINEERING_ASSUMPTION_UNIFORM_CUBOID"
+      },
+      "motion": {
+        "linear_acceleration_m_s2": 1.5,
+        "angular_acceleration_rad_s2": 1.5,
+        "safety_factor": 1.0
+      }
+    },
+    "configs/robots/fanuc_m20id_35.yaml": {
+      "schema_version": "robot_load_limits_v1",
+      "model": "fanuc_m20id_35",
+      "rated_payload_kg": 35.0,
+      "reach_m": 1.831,
+      "kinematics": {
+        "urdf_path": "../../assets/robots/fanuc_m20id35/m20_35_18d.urdf",
+        "base_link": "base_link",
+        "flange_link": "flange",
+        "tip_link": "tool0",
+        "active_joint_names": [
+          "J1",
+          "J2",
+          "J3",
+          "J4",
+          "J5",
+          "J6"
+        ],
+        "qualification_joint_pose_q": [
+          -0.3766,
+          -0.7955,
+          -0.8172,
+          0.8419,
+          -1.3,
+          -0.3599
+        ]
+      },
+      "joint_speed_rad_s": [
+        3.141592653589793,
+        3.141592653589793,
+        3.490658503988659,
+        6.1086523819801535,
+        6.1086523819801535,
+        6.981317007977318
+      ],
+      "wrist_limits": {
+        "allowable_moment_nm": {
+          "J4": 110.0,
+          "J5": 110.0,
+          "J6": 60.0
+        },
+        "allowable_inertia_kg_m2": {
+          "J4": 4.0,
+          "J5": 4.0,
+          "J6": 1.5
+        }
+      },
+      "payload_com_limits": {
+        "status": "NOT_EVALUATED",
+        "reason": "The public FANUC product information gives rated payload and J4/J5/J6 moment/inertia limits but does not provide a digitized payload-versus-CoM load diagram or define the exact reference origin, axes, and calculation convention. URDF joint-axis values are therefore engineering reference screens only; vendor moment, inertia, and diagram status remain NOT_EVALUATED until traceable official evidence is imported.",
+        "curve_points": []
+      },
+      "normal_utilization_limit": 0.8,
+      "source": {
+        "manufacturer": "FANUC",
+        "title": "FANUC M-20iD/35 Product Information",
+        "url": "https://www.fanucamerica.com/docs/default-source/fanuc-robot-datasheets-new/m-20id_35-product-information.pdf",
+        "product_page": "https://www.fanucamerica.com/products/robot/m-20id-35",
+        "document_version": "public_product_information",
+        "document_date": "NOT_STATED",
+        "accessed_date": "2026-09-01",
+        "verified_fields": [
+          "rated_payload_kg",
+          "reach_m",
+          "joint_speed_rad_s",
+          "wrist_limits.allowable_moment_nm",
+          "wrist_limits.allowable_inertia_kg_m2"
+        ]
+      }
+    },
+    "configs/robots/fanuc_m710id_70.yaml": {
+      "schema_version": "robot_load_limits_v1",
+      "model": "fanuc_m710id_70",
+      "model_id": "fanuc_m710id_70",
+      "model_revision": "supplied_robocad_v01_engineering_urdf_v1",
+      "rated_payload_kg": 70.0,
+      "reach_m": 2.104,
+      "kinematics": {
+        "urdf_path": "../../assets/robots/fanuc_m710id_70/m710id_70.urdf",
+        "srdf_path": "../../assets/robots/fanuc_m710id_70/m710id_70.srdf",
+        "base_link": "base_link",
+        "flange_link": "flange",
+        "tip_link": "tool0",
+        "active_joint_names": [
+          "J1",
+          "J2",
+          "J3",
+          "J4",
+          "J5",
+          "J6"
+        ],
+        "qualification_joint_pose_q": [
+          0.0,
+          -0.523598776,
+          0.872664626,
+          0.0,
+          0.34906585,
+          0.0
+        ],
+        "zero_pose_flange_xyz_m": [
+          1.37,
+          0.0,
+          1.63
+        ],
+        "mounting_reference": "base_link_origin_is_mounting_flange_plane"
+      },
+      "joint_position_limits_rad": {
+        "J1": [
+          -3.228859116,
+          3.228859116
+        ],
+        "J2": [
+          -1.308996939,
+          2.617993878
+        ],
+        "J3": [
+          -1.404990048,
+          3.577924967
+        ],
+        "J4": [
+          -6.981317008,
+          6.981317008
+        ],
+        "J5": [
+          -2.181661565,
+          2.181661565
+        ],
+        "J6": [
+          -6.981317008,
+          6.981317008
+        ]
+      },
+      "joint_speed_rad_s": [
+        3.141592654,
+        3.141592654,
+        3.141592654,
+        4.537856055,
+        4.537856055,
+        6.457718232
+      ],
+      "joint_velocity_limits_rad_s": [
+        3.141592654,
+        3.141592654,
+        3.141592654,
+        4.537856055,
+        4.537856055,
+        6.457718232
+      ],
+      "joint_acceleration_limits_rad_s2": {
+        "values": [
+          1.5,
+          1.5,
+          1.5,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "evidence": "ENGINEERING_ASSUMPTION"
+      },
+      "joint_jerk_limits_rad_s3": {
+        "values": [
+          7.5,
+          7.5,
+          7.5,
+          15.0,
+          15.0,
+          20.0
+        ],
+        "evidence": "ENGINEERING_ASSUMPTION"
+      },
+      "joint_effort_limits_nm": {
+        "values": null,
+        "evidence": "NOT_AVAILABLE",
+        "reason": "Supplied documents contain no certified joint drive torque limits."
+      },
+      "wrist_limits": {
+        "allowable_moment_nm": {
+          "J4": 300.0,
+          "J5": 300.0,
+          "J6": 150.0
+        },
+        "allowable_inertia_kg_m2": {
+          "J4": 30.0,
+          "J5": 30.0,
+          "J6": 15.0
+        }
+      },
+      "payload_com_limits": {
+        "status": "OFFICIAL_DIAGRAM_AVAILABLE",
+        "reason": "Supplied FANUC presentation slide 13 contains the payload-versus-CoM boundary; coordinates are X/Y radial and Z axial from the faceplate diagram origin.",
+        "conservative_70kg_axis_intercepts_m": {
+          "radial_xy": 0.225,
+          "axial_z": 0.277
+        },
+        "curve_points": [
+          [
+            0.0,
+            0.277
+          ],
+          [
+            0.1,
+            0.268
+          ],
+          [
+            0.2,
+            0.235
+          ],
+          [
+            0.225,
+            0.215
+          ]
+        ]
+      },
+      "normal_utilization_limit": 0.8,
+      "wrist_moment_limits": {
+        "J4": 300.0,
+        "J5": 300.0,
+        "J6": 150.0
+      },
+      "wrist_inertia_limits": {
+        "J4": 30.0,
+        "J5": 30.0,
+        "J6": 15.0
+      },
+      "collision_meshes": [],
+      "collision_geometry_status": "CAD_DERIVED_PRIMITIVE_ENVELOPE",
+      "self_collision_exclusions": [
+        [
+          "base_link",
+          "J1_link"
+        ],
+        [
+          "J1_link",
+          "J2_link"
+        ],
+        [
+          "J2_link",
+          "J3_link"
+        ],
+        [
+          "J3_link",
+          "J4_link"
+        ],
+        [
+          "J4_link",
+          "J5_link"
+        ],
+        [
+          "J5_link",
+          "J6_link"
+        ]
+      ],
+      "payload_com_evidence": "configs/vendor/fanuc_m710id_70_load_evidence.yaml",
+      "source_metadata": {
+        "manufacturer": "FANUC",
+        "local_only": true,
+        "dynamics_inertial_status": "BLOCKED_BY_MISSING_INERTIAL_DATA"
+      },
+      "source": {
+        "manufacturer": "FANUC",
+        "title": "Supplied FANUC M-710iD/70 v1 presentation and ROBCAD v01",
+        "url": "LOCAL_SUPPLIED_EVIDENCE",
+        "product_page": "NOT_USED",
+        "document_version": "presentation_v1_and_robocad_model_1p0",
+        "document_date": "2024-11-29",
+        "accessed_date": "2026-09-02",
+        "verified_fields": [
+          "rated_payload_kg",
+          "reach_m",
+          "joint_speed_rad_s",
+          "wrist_limits",
+          "joint_axes",
+          "joint_limits",
+          "zero_pose_flange_xyz_m"
+        ]
+      }
+    },
+    "configs/tools/unloading_gripper.yaml": {
+      "schema_version": "tool_load_alias_v1",
+      "extends": "unloading_gripper_10kg.yaml",
+      "description": "Current default unloading tool; physical values live only in the 10 kg config."
+    },
+    "configs/tools/unloading_gripper_10kg.yaml": {
+      "schema_version": "tool_load_v2",
+      "tool_mass_properties_source": "ENGINEERING_MODEL",
+      "mass_properties_reference_frame": "flange",
+      "name": "shanghai_wantai_three_zone_unloading_gripper_10kg",
+      "mass_kg": 10.0,
+      "com_xyz_m": [
+        0.149810098,
+        0.000777904,
+        0.002622005
+      ],
+      "inertia_tensor_com_kg_m2": [
+        [
+          0.314892272,
+          0.000722989,
+          0.002168652
+        ],
+        [
+          0.000722989,
+          0.095635068,
+          -0.002126969
+        ],
+        [
+          0.002168652,
+          -0.002126969,
+          0.267681937
+        ]
+      ],
+      "tcp_transform": {
+        "translation_xyz_m": [
+          0.25,
+          0.0,
+          0.0
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "planner_tool_length_m": 0.2275,
+      "geometry": {
+        "step_path": "res/上海皖泰真空吸盘三分区.STEP",
+        "visual_mesh_path": "assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb",
+        "collision_mesh_path": "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+        "mass_properties_path": "assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+        "outer_size_m": [
+          0.576,
+          0.288,
+          0.2275
+        ],
+        "rigid_plate_collision_size_m": [
+          0.288,
+          0.576,
+          0.024
+        ],
+        "rigid_plate_center_behind_working_plane_m": 0.0655,
+        "flange_origin_step_mm": [
+          -48.561731506404,
+          -162.659188413158,
+          0.0
+        ],
+        "step_from_tool_rotation_matrix": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -1.0
+          ]
+        ],
+        "flange_transform_confidence": "provisional_from_step_and_installation_image"
+      },
+      "source": {
+        "type": "supplied_STEP_engineering_estimate",
+        "file": "assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+        "mass_basis": "supplied_total_mass_with_uniform_density_over_STEP_solids",
+        "measured_status": "NOT_MEASURED",
+        "flange_clocking_status": "PROVISIONAL",
+        "manufacturer_load_certificate_status": "NOT_EVALUATED",
+        "generated_date": "2026-08-27"
+      }
+    },
+    "configs/tools/unloading_gripper_20kg.yaml": {
+      "schema_version": "tool_load_v2",
+      "tool_mass_properties_source": "ENGINEERING_MODEL",
+      "mass_properties_reference_frame": "flange",
+      "name": "shanghai_wantai_three_zone_unloading_gripper_20kg",
+      "mass_kg": 20.0,
+      "com_xyz_m": [
+        0.149810098,
+        0.000777904,
+        0.002622005
+      ],
+      "inertia_tensor_com_kg_m2": [
+        [
+          0.629784544,
+          0.001445978,
+          0.004337304
+        ],
+        [
+          0.001445978,
+          0.191270136,
+          -0.004253938
+        ],
+        [
+          0.004337304,
+          -0.004253938,
+          0.535363874
+        ]
+      ],
+      "tcp_transform": {
+        "translation_xyz_m": [
+          0.25,
+          0.0,
+          0.0
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "planner_tool_length_m": 0.25,
+      "geometry": {
+        "outer_size_m": [
+          0.576,
+          0.288,
+          0.25
+        ],
+        "rigid_plate_collision_size_m": [
+          0.288,
+          0.576,
+          0.024
+        ],
+        "rigid_plate_center_behind_working_plane_m": 0.0655
+      },
+      "source": {
+        "type": "project_mass_input_plus_scaled_supplied_STEP_distribution",
+        "mass_basis": "project input fixes total tool mass at 20 kg; 10 kg STEP-derived COM and inertia were linearly mass-scaled",
+        "measured_status": "NOT_MEASURED",
+        "flange_adapter_valves_hoses_cables_included_status": "NOT_CONFIRMED",
+        "manufacturer_load_certificate_status": "NOT_EVALUATED"
+      }
+    },
+    "configs/tools/unloading_gripper_5kg.yaml": {
+      "schema_version": "tool_load_v2",
+      "tool_mass_properties_source": "ENGINEERING_MODEL",
+      "mass_properties_reference_frame": "flange",
+      "name": "unloading_gripper_5kg_engineering_model",
+      "mass_kg": 5.0,
+      "com_xyz_m": [
+        0.149810098,
+        0.000777904,
+        0.002622005
+      ],
+      "inertia_tensor_com_kg_m2": [
+        [
+          0.157446136,
+          0.0003614945,
+          0.001084326
+        ],
+        [
+          0.0003614945,
+          0.047817534,
+          -0.0010634845
+        ],
+        [
+          0.001084326,
+          -0.0010634845,
+          0.1338409685
+        ]
+      ],
+      "tcp_xyz_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "source": {
+        "type": "ENGINEERING_TOOL_MODEL",
+        "reference_config": "unloading_gripper_8kg.yaml",
+        "reference_mass_kg": 8.0,
+        "target_mass_kg": 5.0,
+        "mass_scale": 0.625,
+        "inertia_scale": 0.625,
+        "scaling_assumption": "unchanged geometry, CoM, and normalized mass distribution",
+        "cad_mass_properties_status": "NOT_AVAILABLE_FOR_THIS_TARGET_MASS"
+      }
+    },
+    "configs/tools/unloading_gripper_6kg.yaml": {
+      "schema_version": "tool_load_v2",
+      "tool_mass_properties_source": "ENGINEERING_MODEL",
+      "mass_properties_reference_frame": "flange",
+      "name": "unloading_gripper_6kg_engineering_model",
+      "mass_kg": 6.0,
+      "com_xyz_m": [
+        0.149810098,
+        0.000777904,
+        0.002622005
+      ],
+      "inertia_tensor_com_kg_m2": [
+        [
+          0.1889353632,
+          0.0004337934,
+          0.0013009387
+        ],
+        [
+          0.0004337934,
+          0.0573810408,
+          -0.0012761814
+        ],
+        [
+          0.0013009387,
+          -0.0012761814,
+          0.1606091622
+        ]
+      ],
+      "tcp_xyz_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "source": {
+        "type": "ENGINEERING_TOOL_MODEL",
+        "reference_config": "unloading_gripper_8kg.yaml",
+        "reference_mass_kg": 8.0,
+        "target_mass_kg": 6.0,
+        "mass_scale": 0.75,
+        "inertia_scale": 0.75,
+        "scaling_assumption": "unchanged geometry, CoM, and normalized mass distribution",
+        "cad_mass_properties_status": "NOT_AVAILABLE_FOR_THIS_TARGET_MASS"
+      }
+    },
+    "configs/tools/unloading_gripper_7kg.yaml": {
+      "schema_version": "tool_load_v2",
+      "tool_mass_properties_source": "ENGINEERING_MODEL",
+      "mass_properties_reference_frame": "flange",
+      "name": "unloading_gripper_7kg_engineering_model",
+      "mass_kg": 7.0,
+      "com_xyz_m": [
+        0.149810098,
+        0.000777904,
+        0.002622005
+      ],
+      "inertia_tensor_com_kg_m2": [
+        [
+          0.2204245904,
+          0.0005060923,
+          0.0015175514
+        ],
+        [
+          0.0005060923,
+          0.0669445476,
+          -0.0014888783
+        ],
+        [
+          0.0015175514,
+          -0.0014888783,
+          0.1873773559
+        ]
+      ],
+      "tcp_xyz_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "source": {
+        "type": "ENGINEERING_TOOL_MODEL",
+        "reference_config": "unloading_gripper_8kg.yaml",
+        "reference_mass_kg": 8.0,
+        "target_mass_kg": 7.0,
+        "mass_scale": 0.875,
+        "inertia_scale": 0.875,
+        "scaling_assumption": "unchanged geometry, CoM, and normalized mass distribution",
+        "cad_mass_properties_status": "NOT_AVAILABLE_FOR_THIS_TARGET_MASS"
+      }
+    },
+    "configs/tools/unloading_gripper_8kg.yaml": {
+      "schema_version": "tool_load_v2",
+      "tool_mass_properties_source": "ENGINEERING_MODEL",
+      "mass_properties_reference_frame": "flange",
+      "name": "shanghai_wantai_three_zone_unloading_gripper_8kg",
+      "lifecycle_status": "HISTORICAL_ENGINEERING_VARIANT",
+      "mass_kg": 8.0,
+      "com_xyz_m": [
+        0.149810098,
+        0.000777904,
+        0.002622005
+      ],
+      "inertia_tensor_com_kg_m2": [
+        [
+          0.2519138176,
+          0.0005783912,
+          0.0017349216
+        ],
+        [
+          0.0005783912,
+          0.0765080544,
+          -0.0017015752
+        ],
+        [
+          0.0017349216,
+          -0.0017015752,
+          0.2141455496
+        ]
+      ],
+      "tcp_xyz_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "source": {
+        "type": "scaled_supplied_STEP_engineering_estimate",
+        "base_file": "assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+        "base_mass_kg": 10.0,
+        "target_mass_kg": 8.0,
+        "inertia_scale": 0.8,
+        "scaling_assumption": "unchanged geometry, CoM and normalized mass distribution",
+        "flange_clocking_status": "PROVISIONAL",
+        "manufacturer_load_certificate_status": "NOT_EVALUATED",
+        "generated_date": "2026-09-01"
+      }
+    },
+    "configs/trucks/2p3x2p7.yaml": {
+      "schema_version": "truck_cross_section_v1",
+      "name": "trailer_2p3x2p7",
+      "inside_width_m": 2.3,
+      "inside_height_m": 2.7,
+      "grid_spacing_m": 0.05,
+      "base_longitudinal_x_scan_m": [
+        -0.2,
+        -0.1,
+        0.0,
+        0.1,
+        0.2
+      ],
+      "base_mounting_surface_height_m": 0.5,
+      "wall_thickness_m": 0.05,
+      "source": {
+        "type": "project_design_input",
+        "note": "Dimensions are task inputs, not measured as-built trailer geometry."
+      }
+    },
+    "configs/trucks/2p3x2p7_m710id70.yaml": {
+      "schema_version": "truck_cross_section_v1",
+      "name": "trailer_2p3x2p7_m710id70",
+      "inside_width_m": 2.3,
+      "inside_height_m": 2.7,
+      "grid_spacing_m": 0.05,
+      "refined_grid_spacing_m": 0.025,
+      "base_longitudinal_x_scan_m": [
+        -1.2,
+        -1.1,
+        -1.0,
+        -0.9,
+        -0.8,
+        -0.7,
+        -0.6,
+        -0.5,
+        -0.4,
+        -0.3,
+        -0.2
+      ],
+      "base_mounting_surface_height_m": 0.6,
+      "target_carton_front_face_x_m": 1.0,
+      "wall_thickness_m": 0.05,
+      "world_convention": {
+        "x": "into_trailer",
+        "y": "left",
+        "z": "up"
+      },
+      "source": {
+        "type": "project_design_input",
+        "note": "Dimensions and mounting height are task inputs."
+      }
+    },
+    "configs/validation/m710id70_v3.yaml": {
+      "schema": "m710_validation_v3",
+      "robot": {
+        "model_config": "../robots/fanuc_m710id_70.yaml",
+        "urdf_path": "../../assets/robots/fanuc_m710id_70/m710id_70.urdf",
+        "home_joints": [
+          -1.2535046523103328,
+          -0.9321730956021104,
+          -1.186652413419966,
+          -0.21179524367224456,
+          -0.2394417658165151,
+          -1.6893308052919531
+        ],
+        "installation_xyz_m": [
+          1.0,
+          0.075,
+          0.45
+        ],
+        "installation_rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "chassis": {
+        "world_xyz_m": [
+          -1.5,
+          -0.075,
+          0.25
+        ],
+        "world_rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "size_xyz_m": [
+          1.8,
+          2.0,
+          0.3
+        ]
+      },
+      "lift": {
+        "height_m": 0.0,
+        "scan_heights_m": [
+          0.0,
+          0.15,
+          0.3,
+          0.45,
+          0.6
+        ],
+        "step_m": 0.01,
+        "speed_m_s": 0.05,
+        "column_size_xy_m": [
+          0.22,
+          0.22
+        ]
+      },
+      "tool": {
+        "config": "../tools/unloading_gripper_20kg.yaml",
+        "cup_rows": 6,
+        "cup_columns": 12,
+        "cup_pitch_m": [
+          0.048,
+          0.048
+        ],
+        "cup_radius_m": 0.0215,
+        "minimum_sealed_cups": 60,
+        "suction_edge_margin_m": 0.0
+      },
+      "scene": {
+        "trailer_width_m": 2.3,
+        "trailer_height_m": 2.7,
+        "trailer_x_limits_m": [
+          -1.5,
+          2.2
+        ],
+        "wall_thickness_m": 0.05,
+        "box_sizes_m": {
+          "A_600x400x300": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "B_400x600x300": [
+            0.4,
+            0.6,
+            0.3
+          ]
+        },
+        "box_mass_kg": 42.5,
+        "box_com_fraction": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "front_x_m": 1.0,
+        "grid_step_m": 0.3,
+        "neighbor_gap_m": 0.01,
+        "regular_rows": 8,
+        "regular_columns": 5,
+        "regular_y_limits_m": [
+          -0.82,
+          0.82
+        ],
+        "row_pitch_m": 0.31,
+        "random_seeds": [
+          71071,
+          71072,
+          71073
+        ],
+        "random_start_y_m": -1.13,
+        "random_stop_y_m": 1.05,
+        "random_max_edge_y_m": 1.14,
+        "random_type_a_probability": 0.55,
+        "random_skip_probability": 0.1,
+        "random_front_offset_limits_m": [
+          -0.025,
+          0.035
+        ],
+        "random_gap_limits_m": [
+          0.005,
+          0.02
+        ]
+      },
+      "planning": {
+        "seed": 71070,
+        "continuous_seed": 74000,
+        "pregrasp_standoff_m": 0.15,
+        "extraction_scan_step_m": 0.01,
+        "extraction_free_clearance_m": 0.02,
+        "maximum_extraction_m": 1.5,
+        "collision_margin_m": 0.01,
+        "contact_tolerance_m": 0.0002,
+        "initial_proximity_monotonic_tolerance_m": 0.0001,
+        "support_tolerance_m": 0.0002,
+        "support_edge_clearance_m": 0.01,
+        "support_relation_tolerance_m": 0.03,
+        "support_relation_minimum_overlap_ratio": 0.2,
+        "ik_position_tolerance_m": 0.0001,
+        "ik_orientation_tolerance_rad": 0.0002,
+        "ik_iterations": 180,
+        "ik_restarts": 2,
+        "ik_damping": 0.015,
+        "ik_max_step_rad": 0.2,
+        "ik_orientation_weight": 0.55,
+        "stage_ik_search_mode": "multi_solution",
+        "stage_ik_candidate_limit": 3,
+        "stage_connection_attempt_limit": 3,
+        "stage_connection_iteration_budget": 800,
+        "ik_candidate_dedup_tolerance_rad": 0.001,
+        "ik_candidate_dedup_tolerance_m": 0.0001,
+        "grasp_face_offset_candidates_m": [
+          0.0,
+          -0.025,
+          0.025,
+          -0.05,
+          0.05
+        ],
+        "grasp_tilt_candidates_rad": [
+          0.0,
+          -0.0005,
+          0.0005
+        ],
+        "grasp_downstream_candidate_limit_per_strategy": 5,
+        "cartesian_max_branch_step_rad": 0.6,
+        "cartesian_orientation_tolerance_rad": 0.001,
+        "cartesian_orientation_step_rad": 0.02,
+        "escape_rotation_candidates_rad": [
+          0.0,
+          0.08726646259971647,
+          -0.08726646259971647
+        ],
+        "escape_path_attempt_limit": 4,
+        "radial_guard_tolerance_m": 0.002,
+        "joint_margin_rad": 0.0174532925199433,
+        "maximum_jacobian_condition": 10000.0,
+        "edge_resolution_rad": 0.02,
+        "cartesian_step_m": 0.025,
+        "rrt_step_rad": 0.18,
+        "rrt_iterations": 800,
+        "rrt_goal_bias": 0.12,
+        "roll_candidates_deg": [
+          0,
+          90,
+          180,
+          270
+        ]
+      },
+      "conveyor": {
+        "cross_leg_size_xy_m": [
+          0.45,
+          2.0
+        ],
+        "longitudinal_leg_nominal_length_m": 0.65,
+        "longitudinal_leg_width_m": 0.7,
+        "deck_thickness_m": 0.12,
+        "maximum_extension_m": 1.5,
+        "minimum_stack_surface_clearance_m": 0.02,
+        "minimum_receiving_surface_z_m": 0.2,
+        "maximum_receiving_surface_z_m": 2.4,
+        "upper_stack_bottom_clearance_m": 0.015,
+        "fixed_extension_m": 0.0,
+        "fixed_z_m": 0.2,
+        "movement_step_m": 0.01,
+        "extension_speed_m_s": 0.1,
+        "lift_speed_m_s": 0.05,
+        "belt_speed_m_s": 0.2
+      },
+      "execution": {
+        "profile": "NORMAL",
+        "profiles": {
+          "CONSERVATIVE": {
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "jerk_scale": 0.25
+          },
+          "NORMAL": {
+            "velocity_scale": 0.5,
+            "acceleration_scale": 0.5,
+            "jerk_scale": 0.5
+          },
+          "AGGRESSIVE_ENGINEERING_ONLY": {
+            "velocity_scale": 0.75,
+            "acceleration_scale": 0.75,
+            "jerk_scale": 0.75
+          }
+        },
+        "minimum_segment_seconds": 0.002,
+        "sample_period_s": 0.02,
+        "vacuum_establish_s": 0.3,
+        "release_s": 0.1
+      }
+    },
+    "configs/vendor/fanuc_m20id35_wrist_load.yaml": {
+      "schema_version": "fanuc_wrist_evidence_v1",
+      "robot_model": "FANUC M-20iD/35",
+      "reference": {
+        "origin_xyz_m": null,
+        "axes": null,
+        "source_document": "FANUC Robot M-20iD/35 Product Information",
+        "source_url": "https://www.fanucamerica.com/docs/default-source/fanuc-robot-datasheets-new/m-20id_35-product-information.pdf",
+        "source_page": "1",
+        "source_definition": "Public sheet lists J4/J5/J6 moments and inertias without a reference-frame definition.",
+        "evidence_status": "NOT_VERIFIED"
+      },
+      "moment_definition_status": "NOT_VERIFIED",
+      "inertia_definition_status": "NOT_VERIFIED",
+      "load_diagram_status": "NOT_VERIFIED",
+      "public_numeric_values": {
+        "rated_payload_kg": 35.0,
+        "allowable_moment_nm": {
+          "J4": 110.0,
+          "J5": 110.0,
+          "J6": 60.0
+        },
+        "allowable_inertia_kg_m2": {
+          "J4": 4.0,
+          "J5": 4.0,
+          "J6": 1.5
+        }
+      },
+      "sources": [
+        {
+          "document": "FANUC Robot M-20iD/35 Product Information",
+          "page": "1",
+          "url": "https://www.fanucamerica.com/docs/default-source/fanuc-robot-datasheets-new/m-20id_35-product-information.pdf",
+          "finding": "Numeric values only; reference point, axes, formula, and diagram are absent."
+        },
+        {
+          "document": "FANUC Robot M-10iD Series Japanese Catalog RM-10iD(J)-06",
+          "page": "2",
+          "url": "https://www.fanuc.co.jp/ja/product/catalog/pdf/robot/RM-10iD(J)-06.pdf",
+          "finding": "Confirms the Japanese labels and values; still no reference definition or boundary."
+        },
+        {
+          "document": "FANUC CRX Mechanical Unit Operator's Manual (generic controller convention)",
+          "page": "23-24, section 4.2",
+          "url": "https://www.fanuc.eu/~/media/files/pdf/products/robots/educational%20cell/fanuc-crx-educational-cell-manual.pdf",
+          "finding": "Payload CoM is entered in standard tool coordinates at the faceplate and inertia about CoM; this is not an M-20iD/35 allowable-diagram equivalence proof."
+        }
+      ]
+    },
+    "configs/vendor/fanuc_m710id_70_load_evidence.yaml": {
+      "schema_version": "fanuc_wrist_evidence_v1",
+      "robot_model": "FANUC M-710iD/70",
+      "reference": {
+        "origin_xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axes": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "source_document": "Supplied FANUC M-710iD/70 v1 presentation",
+        "source_url": "LOCAL_SUPPLIED_EVIDENCE",
+        "source_page": "slide 13",
+        "source_definition": "Diagram labels X,Y radial distance and Z axial distance from the wrist faceplate reference drawing.",
+        "evidence_status": "VERIFIED"
+      },
+      "moment_definition_status": "VERIFIED",
+      "inertia_definition_status": "VERIFIED",
+      "load_diagram_status": "VERIFIED",
+      "public_numeric_values": {
+        "rated_payload_kg": 70.0,
+        "allowable_moment_nm": {
+          "J4": 300.0,
+          "J5": 300.0,
+          "J6": 150.0
+        },
+        "allowable_inertia_kg_m2": {
+          "J4": 30.0,
+          "J5": 30.0,
+          "J6": 15.0
+        },
+        "diagram_axis_intercepts_m": {
+          "30kg": {
+            "radial_xy": 0.52,
+            "axial_z": 0.825
+          },
+          "40kg": {
+            "radial_xy": 0.396,
+            "axial_z": 0.615
+          },
+          "50kg": {
+            "radial_xy": 0.317,
+            "axial_z": 0.457
+          },
+          "60kg": {
+            "radial_xy": 0.264,
+            "axial_z": 0.352
+          },
+          "70kg": {
+            "radial_xy": 0.225,
+            "axial_z": 0.277
+          }
+        }
+      },
+      "sources": [
+        {
+          "document": "Supplied FANUC M-710iD/70 v1 presentation",
+          "page": "slides 5, 6 and 13",
+          "sha256": "2410b105e3a09ebc927eaa85e8800067cde8b734c5b5b56f872fb18539d901a5",
+          "finding": "Rated mass, wrist moments/inertias and complete payload-versus-CoM diagram."
+        }
+      ]
+    }
+  }
+}

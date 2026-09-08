@@ -1,0 +1,87 @@
+{
+  "schema_version": "m710_stage_ik_round_archive_v1",
+  "commit_at_archive": "47a12d8e3d41dfad06f450fd7509a8ddc5a300dd",
+  "branch": "feat/v0.5-feasibility-core",
+  "baseline_source": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_v3_hardening_baseline",
+  "after_source": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\.tmp\\review_stage_ik_post",
+  "ablation_source": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\.tmp\\review_stage_ik_ablation",
+  "task_set": "fixed conveyor original 104 valid grid tasks",
+  "commands": {
+    "post": ".venv\\Scripts\\python.exe tools\\run_m710id70_v3.py --phase grid-fixed --workers 12 --output-dir .tmp\\review_stage_ik_post",
+    "ablation": ".venv\\Scripts\\python.exe tools\\run_m710id70_v3_stage_ablation.py --output-dir .tmp\\review_stage_ik_ablation --task-indices 22 45",
+    "archive": ".venv\\Scripts\\python.exe tools\\archive_m710id70_v3_stage_ik_round.py --baseline-dir docs\\validation\\evidence\\m710id70_v3_hardening_baseline --after-dir .tmp\\review_stage_ik_post --ablation-dir .tmp\\review_stage_ik_ablation --output-dir docs\\validation\\evidence\\m710id70_v3_stage_ik_round"
+  },
+  "checks": {
+    "before_rows": 104,
+    "after_rows": 104,
+    "comparison_rows": 104,
+    "unique_task_ids": 104,
+    "task_id_sets_equal": true
+  },
+  "files": {
+    "ablation_source_manifest.json": {
+      "sha256": "07b30baf7f87edd6d13f34b459316807bf9a84b6d637dfaf58378d1a01ee241c",
+      "bytes": 101040
+    },
+    "after_fixed_task_reachability.csv": {
+      "sha256": "7509ecb5bd715a7eada437498bdd0f985f008bec5d10eda48a06799f8615d7c6",
+      "bytes": 57955
+    },
+    "before_fixed_task_reachability.csv": {
+      "sha256": "60e2bb9bd18feecd0e3817dbdec0ad1b28db147cbc0442635d69fce04e6a5dac",
+      "bytes": 34741
+    },
+    "before_search_statistics.json": {
+      "sha256": "65370e1cc7acf9a16571ddc2b54ecccb82dddd0259cfd144b0969574cbbed5c3",
+      "bytes": 4844
+    },
+    "calculation_identity_reconciliation.json": {
+      "sha256": "fb687923b174dbb0d37bcacc810ff0c9c93a947210dabb55c5a6d04b05c28688",
+      "bytes": 1100
+    },
+    "comparison_summary.json": {
+      "sha256": "dbdef1771eb09a985fe1cfb115e334b459a62d328ecd914cd24e1425f2e79be1",
+      "bytes": 2741
+    },
+    "effective_config.json": {
+      "sha256": "26a8a2a9e680d887dc3e65d0982c46dd8822847b3283d3996a0379716e36655c",
+      "bytes": 37688
+    },
+    "fixed_geometric_recovery.json": {
+      "sha256": "8e63c05032ad4848a63f8e586f551096536f480d54860e6bffb606a07836d6eb",
+      "bytes": 883
+    },
+    "fixed_grasp_task_set_recovery.json": {
+      "sha256": "313f563cb27170b4e9dae620a49c28e9e04e09df0fd77b9dc02b734c22fb6cb0",
+      "bytes": 3743
+    },
+    "fixed_initial_proximity_recovery.json": {
+      "sha256": "415d6ecdc8e192693edaab5e895b2a3ec47764e75808552a60f4014c1ff50d09",
+      "bytes": 694
+    },
+    "fixed_search_statistics.json": {
+      "sha256": "3e49aece657f1321c4b2854cd0203ad31a4774c352151c7b9db931a896b9b2ad",
+      "bytes": 6705
+    },
+    "representative_success_grid_022.json": {
+      "sha256": "42dae7c8ce1eccc956871f452bcdf37ec2ed7b6371053cd528ac370d34dc7fff",
+      "bytes": 70415
+    },
+    "source_manifest.json": {
+      "sha256": "e1903dfb4005345c7a8be01eec07def57ec2f0947a0015def807e02d08c27730",
+      "bytes": 100845
+    },
+    "stage_ik_ablation.csv": {
+      "sha256": "aaeb8a7e5ff200bac996bad55bdd9eeda854666fd359f9290531de70fce6be97",
+      "bytes": 5149
+    },
+    "stage_ik_ablation.json": {
+      "sha256": "2d26ae97d8cfb6dbbdf8eac4433fd869c8b10e0ab155649ef22f734d0e0d17e2",
+      "bytes": 15356
+    },
+    "task_comparison.csv": {
+      "sha256": "871633d646e8299fcbdc8c503490a40c6f96746ec53d16211ca978c21f5ea390",
+      "bytes": 12424
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "denominator": 104,
+  "complete_geometric_successes": 10,
+  "complete_geometric_success_task_ids": [
+    "grid_022",
+    "grid_023",
+    "grid_025",
+    "grid_029",
+    "grid_031",
+    "grid_040",
+    "grid_041",
+    "grid_043",
+    "grid_047",
+    "grid_049"
+  ],
+  "failure_reason_counts": {
+    "TOOL_SELF_COLLISION": 4,
+    "GRASP_CONSTRAINT_FAILED": 17,
+    "OK": 10,
+    "PAYLOAD_PROXIMITY_NOT_RELEASED": 8,
+    "NO_IK": 35,
+    "PREGRASP_NO_IK": 5,
+    "PATH_SEARCH_EXHAUSTED": 8,
+    "HANDOFF_NO_IK": 15,
+    "PAYLOAD_PROXIMITY_WORSENED": 1,
+    "ROBOT_COLLISION": 1
+  },
+  "grasp_reachable_tasks": 52,
+  "extraction_feasible_tasks": 26,
+  "success_grasp_face_counts": {
+    "top": 10
+  },
+  "successes_requiring_support_release": 5,
+  "p1_dynamic_conveyor_optimization": "NOT_RUN_DEFERRED",
+  "denominator_and_scenes_unchanged": true
+}
