@@ -1,4 +1,4 @@
-# Online continuous planning control plane
+# Online continuous planning control plane (0.5.2.dev0)
 
 ## Acceptance scope
 
@@ -16,7 +16,8 @@ waiting for a planner. `production_throughput` is deliberately `null`.
 `unloading_sim.online_planning` owns:
 
 - immutable `SceneRevision`, `RobotStateRevision`, `PlanningWorldSnapshot`,
-  `PlanningRequest`, `PlanningResult`, and `PlanEnvelope` contracts;
+  `MotionBoundaryState`, `PlanningRequest`, `PlanningResult`, and `PlanEnvelope`
+  contracts;
 - provider-neutral `BackendIdentity`, `BackendProvenance`,
   `BackendCapabilities`, `PlannerBackend`, and `PlanValidator` contracts;
 - replaceable and deterministically seeded backend instances, including their
@@ -34,15 +35,26 @@ A stronger planner can replace `PlannerBackend` without changing the session.
 FAST, WARM, and COLD are scheduling policies, not product or algorithm names.
 The scheduler intersects each requested path and motion boundary with declared
 backend capabilities. Unsupported routes are skipped, not counted as planning
-failures. `GEOMETRIC_PATH` and `TIME_PARAMETERIZED_TRAJECTORY` remain distinct;
+failures. `PlanArtifactKind.GEOMETRIC_PATH` and
+`TIME_PARAMETERIZED_TRAJECTORY` remain distinct;
 only the latter can satisfy a `CONTINUOUS_BOUNDARY` contract.
+
+`MotionBoundaryState` contains joint position, velocity, acceleration, time,
+and boundary mode. Compatibility compares every value with explicit
+tolerances. Equal position alone is never sufficient for a continuous
+boundary. STOP boundaries require velocity and acceleration to be zero within
+the contract tolerance. Existing geometric fake/default backends produce only
+stop-to-stop geometric paths; this module adds no time-parameterization
+algorithm.
 
 ## Fail-closed behavior
 
 Every request is bound to an immutable planning-world snapshot containing the
 actual scene, current joints, robot/tool/payload identity, base and conveyor
 state, and configuration identity. Every executable envelope also records its
-expected start/end state, predecessor, and planning generation.
+expected start/end boundary, predecessor, and planning generation. The legacy
+read-only `expected_start_state` and `expected_end_state` properties expose the
+boundary positions only.
 
 Before execution the control plane checks trajectory DOF and finite values,
 continuity from actual `current_q`, and scene/config/tool/payload/base/conveyor
@@ -60,6 +72,12 @@ recorded. A backend's own collision-free claim cannot bypass this gate.
 For a continuous boundary, execution also requires an actual measured
 `MotionBoundaryState`; the control plane never substitutes the planned
 velocity as observed robot state.
+
+The default compatibility validator delegates the legacy backend validation
+hook through the separate `PlanValidator` interface, after provider-neutral
+checks. Production integrations can inject a stronger authoritative validator.
+Validator results are rejected if their snapshot, revision, complete boundary,
+or robot/world model fingerprints do not match the validation call.
 
 If the scene changes during execution, the session enters `STOPPING`. It cannot
 start a replan until it receives both a stop acknowledgement with the real
@@ -85,8 +103,19 @@ miss is not evidence that a target is geometrically infeasible.
 While plan k is in `EXECUTING`, a speculative request for k+1 may be advanced.
 On completion of k, an exact scene match (or explicit backend revalidation)
 promotes k+1 to `READY`; a mismatch invalidates it and queues a fresh request.
-The speculative start must equal plan k's predicted end. If execution completes
-without a new scene revision, the session remains `WAITING_FOR_SCENE`.
+The speculative start must match plan k's complete predicted end boundary.
+Each speculative successor records its predecessor. It can become executable
+only after that exact predecessor completes successfully and is the last
+successful plan. Failure, deviation, STOPPING, or invalidation cascades to live
+descendant plans and requests; unknown and orphan predecessors fail closed.
+
+Rolling-horizon occupancy counts plan slots, without double-counting the same
+request as both active and submitted: executing, ready, speculative, active
+planning, and queued planning work are all included. Thus horizon 2 means plan
+k plus at most one k+1, and one predecessor can have only one live successor.
+A rejected submission is checked before request IDs, queues, events, or metrics
+are mutated. If execution completes without a new scene revision, the session
+remains `WAITING_FOR_SCENE`.
 
 ## Test fixtures
 
@@ -125,3 +154,8 @@ feasibility/integration work. This branch neither implements nor claims support
 for those external planners. It proves only that the stable interfaces,
 scheduling, lifecycle, validation gate, metrics, and state machine can safely
 host such backends in the future.
+
+The deterministic cooperative executor remains the dev0 execution abstraction.
+A real threaded executor is deferred to dev1. Robot/controller execution
+backends, runtime stop acknowledgement, and production integration are deferred
+to dev2 and later integration work.
