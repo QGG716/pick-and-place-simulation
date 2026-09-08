@@ -1,6 +1,7 @@
 """Deterministic complete-cycle planner for the V3 acceptance contract."""
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
 import itertools
 
@@ -171,6 +172,7 @@ class Cell:
         self.shapes = urdf_collision_shapes(self.robot)
         self._bounds_cache = {}
         self.support_release_events = []
+        self.search_events = {"ik": [], "connection": []}
         s, c = self.d["scene"], self.d["conveyor"]
         self.walls = trailer_obstacles(s["trailer_width_m"], s["trailer_height_m"], s["trailer_x_limits_m"], s["wall_thickness_m"])
         self.chassis_pose = config.world_from_chassis()
@@ -293,14 +295,17 @@ class Cell:
                                       target_contact,initial_proximity)
         return None
 
-    def solve(self, pose, seeds, rng_seed, valid=None):
+    def solve(self, pose, seeds, rng_seed, valid=None, stage="unspecified"):
         p = self.p
         unique = list({tuple(np.asarray(q,float)): np.asarray(q,float) for q in seeds}.values())
-        return solve_ik_multistart(self.robot,pose,unique,random_restarts=p["ik_restarts"],rng=np.random.default_rng(rng_seed),
+        result=solve_ik_multistart(self.robot,pose,unique,random_restarts=p["ik_restarts"],rng=np.random.default_rng(rng_seed),
             max_iterations=p["ik_iterations"],damping=p["ik_damping"],max_step=p["ik_max_step_rad"],
             position_tolerance=p["ik_position_tolerance_m"],orientation_tolerance=p["ik_orientation_tolerance_rad"],
             orientation_weight=p["ik_orientation_weight"],extra_state_valid=valid,
             collision_check_stride=p["ik_iterations"]+1)
+        self.search_events["ik"].append({"stage":stage,"rng_seed":int(rng_seed),
+                                          **result.search_evidence})
+        return result
 
     def validate_contact_endpoint(self,q,target,face,obstacles):
         """Close the contact contract at the actual endpoint before attaching."""
@@ -323,17 +328,78 @@ class Cell:
             raise RuntimeError("validated contact attachment is not pose-continuous")
         return state,None
 
-    def transit(self,start,goal,obstacles,seed,attachment=None,support_names=(),target_contact=None):
+    def transit(self,start,goal,obstacles,seed,attachment=None,support_names=(),target_contact=None,
+                stage="transit"):
         state = lambda q: self.state_failure(q,obstacles,attachment,support_names,target_contact) is None
         planner = RRTConnectPlanner(self.robot.joint_limits[:,0],self.robot.joint_limits[:,1],state,
             step_size=self.p["rrt_step_rad"],edge_resolution=self.p["edge_resolution_rad"]/2,
             max_iterations=self.p["rrt_iterations"],goal_bias=self.p["rrt_goal_bias"],rng=np.random.default_rng(seed))
         result = planner.plan(start,goal)
+        self.search_events["connection"].append({"stage":stage,"rng_seed":int(seed),
+                                                  "success":result.success,
+                                                  **result.search_evidence})
         if not result.success:
             failure = self.state_failure(start,obstacles,attachment,support_names,target_contact) or self.state_failure(goal,obstacles,attachment,support_names,target_contact)
             return [], failure or {"reason":"PATH_SEARCH_EXHAUSTED","detail":result.message,"iterations":result.iterations}
         failure = self.path_failure(result.path,obstacles,attachment,support_names,target_contact)
         return result.path, failure
+
+    def search_statistics(self, record):
+        """Summarize all observed search work for one task, not only its winner."""
+        ik_events=list(self.search_events["ik"])
+        connection_events=list(self.search_events["connection"])
+        candidate_failures=Counter()
+        escape_validations=0
+        for attempt in record["attempts"]:
+            for option in attempt.get("conveyor_attempts",[]):
+                escape_validations+=len(option.get("escape_attempts",[]))
+                if option.get("stage") in {"approach","contact","handoff","carry","place","withdrawal"} \
+                        and option.get("reason")!="OK":
+                    candidate_failures[option["stage"]]+=1
+        terminations=Counter()
+        for event in ik_events:
+            if event.get("termination") in {"SEED_STREAM_EXHAUSTED"}:
+                terminations[f"ik:{event['stage']}:{event['termination']}"]+=1
+        for event in connection_events:
+            if event.get("termination") in {"MAXIMUM_ITERATIONS_REACHED","TIME_LIMIT_REACHED"}:
+                terminations[f"connection:{event['stage']}:{event['termination']}"]+=1
+        for attempt in record["attempts"]:
+            for option in attempt.get("conveyor_attempts",[]):
+                termination=option.get("escape_search",{}).get("termination")
+                if termination and termination!="SUCCESS":
+                    terminations[f"escape:{termination}"]+=1
+        return {
+            "schema_version":"m710_task_search_accounting_v1",
+            "task_classification":{
+                "grasp_valid_but_not_extracted":bool(record["grasp_reachable"] and not record["extraction_feasible"]),
+                "extracted_but_not_complete":bool(record["extraction_feasible"] and not record["geometric_feasible"]),
+                "final_stage":record["failure_stage"],"final_reason":record["failure_reason"]},
+            "totals":{
+                "ik_calls":len(ik_events),
+                "ik_seed_pool_available":sum(e.get("seed_pool_available",0) for e in ik_events),
+                "ik_seeds_attempted":sum(e.get("seeds_attempted",0) for e in ik_events),
+                "ik_iteration_capacity_available":sum(e.get("iteration_capacity_available",0) for e in ik_events),
+                "ik_iterations_consumed":sum(e.get("iterations_consumed",0) for e in ik_events),
+                "ik_converged_pose_results":sum(e.get("converged_pose_results",0) for e in ik_events),
+                "ik_valid_solutions":sum(e.get("valid_solutions",0) for e in ik_events),
+                "ik_deduplicated_candidates":sum(e.get("deduplicated_candidates",0) for e in ik_events),
+                "connection_attempts":len(connection_events),
+                "rrt_iteration_capacity_available":sum(e.get("planning_iteration_budget",0) for e in connection_events),
+                "rrt_iterations_consumed":sum(e.get("planning_iterations_consumed",0) for e in connection_events),
+                "rrt_extension_attempts":sum(e.get("extension_attempts",0) for e in connection_events),
+                "rrt_state_validations":sum(e.get("state_validations",0) for e in connection_events),
+                "rrt_edge_validation_calls":sum(e.get("edge_validation_calls",0) for e in connection_events),
+                "rrt_edge_state_samples":sum(e.get("edge_state_samples",0) for e in connection_events),
+                "escape_robot_validations_all_attempts":escape_validations},
+            "candidate_failure_counts_by_stage":dict(candidate_failures),
+            "budget_terminations":dict(terminations),
+            "budget_scope":{
+                "ik":"ik_iterations per seed and ik_restarts per Cell.solve call",
+                "grasp_downstream":"grasp_downstream_candidate_limit_per_strategy per extraction strategy",
+                "rrt":"rrt_iterations per Cell.transit call",
+                "escape":"escape_path_attempt_limit per conveyor option of each downstream grasp candidate; not task-global",
+                "state_and_edge_validation":"observed counts only; no separate configured cap"},
+            "ik_events":ik_events,"connection_events":connection_events}
 
     def support_release(self,start,attachment,obstacles,support_names,seed,initial_proximity=None):
         """Lift until every declared support pair satisfies the normal margin."""
@@ -358,7 +424,7 @@ class Cell:
         lift=max(lifts.values(),default=0.0)
         destination=self.robot.fk(start).copy();destination[2,3]+=lift
         path,failure=self.cartesian(start,destination,obstacles,seed,attachment,names,
-                                    initial_proximity=initial_proximity)
+                                    initial_proximity=initial_proximity,stage="support_release")
         if failure is None:
             released_box=attachment.box_at(self.robot.fk(path[-1]))
             blocked=[name for name in names if released_box.intersects_obb(
@@ -372,16 +438,16 @@ class Cell:
         return path,failure,event
 
     def cartesian(self,start,destination,obstacles,seed,attachment=None,support_names=(),
-                  target_contact=None,initial_proximity=None):
+                  target_contact=None,initial_proximity=None,stage="cartesian"):
         origin = self.robot.fk(start)
         _,dist,angle = pose_error(origin,destination)
         if angle > self.p["cartesian_orientation_tolerance_rad"]:
             return [],{"reason":"CARTESIAN_ORIENTATION_CHANGE_UNSUPPORTED"}
         return self.cartesian_se3(start,destination,obstacles,seed,attachment,support_names,
-                                  target_contact,initial_proximity)
+                                  target_contact,initial_proximity,stage)
 
     def cartesian_se3(self,start,destination,obstacles,seed,attachment=None,support_names=(),
-                      target_contact=None,initial_proximity=None):
+                      target_contact=None,initial_proximity=None,stage="cartesian_se3"):
         """Interpolate translation and SO(3), validating every strict IK edge."""
         origin = self.robot.fk(start)
         _,dist,angle = pose_error(origin,destination)
@@ -393,7 +459,7 @@ class Cell:
             pose = origin.copy()
             pose[:3,3] = origin[:3,3]+(destination[:3,3]-origin[:3,3])*i/n
             pose[:3,:3]=rotation_matrix_from_rotation_vector(rotation_vector*i/n)@origin[:3,:3]
-            ik = self.solve(pose,[path[-1]],seed+i)
+            ik = self.solve(pose,[path[-1]],seed+i,stage=f"{stage}_sample")
             if not ik.success:
                 return path,{"reason":"NO_IK","sample":i,"position_error_m":ik.position_error,"orientation_error_rad":ik.orientation_error}
             if np.max(np.abs(ik.q-path[-1])) > self.p["cartesian_max_branch_step_rad"]:
@@ -487,11 +553,12 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
             ik_seeds=grasp_seed_configurations(r,[current_q,cell.d["robot"]["home_joints"]])
             attempt["ik_seed_configuration_count"]=len(ik_seeds)
             ik=cell.solve(contact,ik_seeds,attempt["seed"],
-                          lambda q: cell.state_failure(q,[*cell.fixtures(),*remaining],target_contact=target) is None)
+                          lambda q: cell.state_failure(q,[*cell.fixtures(),*remaining],target_contact=target) is None,
+                          stage="grasp_constrained")
             attempt["ik"]={"success":ik.success,"q":ik.q.tolist(),"position_error_m":ik.position_error,
                            "orientation_error_rad":ik.orientation_error,"message":ik.message,"source":"constrained"}
             if not ik.success:
-                diagnostic=cell.solve(contact,ik_seeds,attempt["seed"]+1)
+                diagnostic=cell.solve(contact,ik_seeds,attempt["seed"]+1,stage="grasp_diagnostic")
                 attempt["ik"]["unconstrained_diagnostic"]={"success":diagnostic.success,"q":diagnostic.q.tolist(),
                     "position_error_m":diagnostic.position_error,"orientation_error_rad":diagnostic.orientation_error,
                     "message":diagnostic.message}
@@ -568,14 +635,16 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 decks=cell.decks(option)
                 obstacles=[*cell.fixtures(),*others,*decks]
                 pre=actual.copy();pre[:3,3]+=candidate.outward_direction_world*p["pregrasp_standoff_m"]
-                preik=cell.solve(pre,[ik.q,current_q],seed+200+oi)
+                preik=cell.solve(pre,[ik.q,current_q],seed+200+oi,stage="pregrasp")
                 if not preik.success:
                     sub.update(stage="approach",reason="PREGRASP_NO_IK");continue
-                approach,failure=cell.transit(current_q,preik.q,[*obstacles,target],seed+300+oi)
+                approach,failure=cell.transit(current_q,preik.q,[*obstacles,target],seed+300+oi,
+                                              stage="approach")
                 sub["paths"]["approach"]=[q.tolist() for q in approach]
                 if failure:
                     sub.update(stage="approach",reason=failure["reason"],failure=failure);continue
-                contact_path,failure=cell.cartesian(preik.q,actual,[*obstacles,target],seed+400+oi,target_contact=target)
+                contact_path,failure=cell.cartesian(preik.q,actual,[*obstacles,target],seed+400+oi,
+                                                    target_contact=target,stage="contact")
                 sub["paths"]["contact"]=[q.tolist() for q in contact_path]
                 if failure:
                     sub.update(stage="contact",reason=failure["reason"],failure=failure);continue
@@ -620,7 +689,7 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                     if proposal["constrained_straight_distance_m"]>0:
                         station=r.fk(start_q).copy();station[:3,3]+=candidate.outward_direction_world*proposal["constrained_straight_distance_m"]
                         prefix,failure=cell.cartesian(start_q,station,obstacles,attempt["seed"]+5000+pi*100,
-                            attached,initial_proximity=tracker)
+                            attached,initial_proximity=tracker,stage="escape_constrained_straight")
                         if failure:
                             sub["escape_attempts"].append({**proposal,"validation_stage":"constrained_straight",
                                 "status":"REJECTED_CONSTRAINT","failure":failure});continue
@@ -629,7 +698,7 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                     endpoint[:3,3]+=np.asarray(proposal["escape_direction_world"])*proposal["escape_translation_m"]
                     endpoint[:3,:3]=rotation_matrix_from_rpy(0,0,proposal["escape_rotation_world_z_rad"])@endpoint[:3,:3]
                     escaped,failure=cell.cartesian_se3(start_q,endpoint,obstacles,attempt["seed"]+5050+pi*100,
-                        attached,initial_proximity=tracker)
+                        attached,initial_proximity=tracker,stage="escape_se3")
                     evidence={**proposal,"validation_stage":"escape_se3",
                         "status":"ACCEPTED" if failure is None and tracker.fully_released else
                                  "REJECTED_CONSTRAINT" if failure else "REJECTED_MARGIN_NOT_RESTORED",
@@ -644,7 +713,7 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                     sub["escape_search"]["pure_straight_attempted"]=True
                     proximity_path=support_proximity.clone()
                     extraction,failure=cell.cartesian(extraction_start,pure_endpoint,obstacles,seed+500+oi,
-                        attached,initial_proximity=proximity_path)
+                        attached,initial_proximity=proximity_path,stage="pure_straight_extraction")
                     sub["pure_straight_attempt"]={"status":"ACCEPTED" if failure is None else "REJECTED_CONSTRAINT",
                                                    "failure":failure,"distance_m":distance}
                 else:
@@ -675,10 +744,11 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 desired_box=target.world_from_local.copy()
                 desired_box[:3,3]=[deck.center[0],deck.center[1],option[1]+target.half_extents[2]]
                 desired_tcp=desired_box @ np.linalg.inv(attached.tcp_from_box)
-                handoff=cell.solve(desired_tcp,[extraction[-1],ik.q,current_q],seed+600+oi)
+                handoff=cell.solve(desired_tcp,[extraction[-1],ik.q,current_q],seed+600+oi,stage="handoff")
                 if not handoff.success:
                     sub.update(stage="handoff",reason="HANDOFF_NO_IK");continue
-                carry,failure=cell.transit(extraction[-1],handoff.q,obstacles,seed+700+oi,attached,[deck.name])
+                carry,failure=cell.transit(extraction[-1],handoff.q,obstacles,seed+700+oi,attached,
+                                           [deck.name],stage="carry")
                 sub["paths"]["carry"]=[q.tolist() for q in carry]
                 if failure:
                     sub.update(stage="carry",reason=failure["reason"],failure=failure);continue
@@ -688,7 +758,8 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 if not support["supported"]:
                     sub.update(stage="place",reason="ACTUAL_FK_SUPPORT_FAILED");continue
                 retreat=r.fk(carry[-1]).copy();retreat[:3,3]-=retreat[:3,2]*p["pregrasp_standoff_m"]
-                withdrawal,failure=cell.cartesian(carry[-1],retreat,[*obstacles,placed],seed+800+oi,target_contact=placed)
+                withdrawal,failure=cell.cartesian(carry[-1],retreat,[*obstacles,placed],seed+800+oi,
+                                                  target_contact=placed,stage="withdrawal")
                 sub["paths"]["withdrawal"]=[q.tolist() for q in withdrawal]
                 if failure:
                     sub.update(stage="withdrawal",reason=failure["reason"],failure=failure);continue
@@ -738,4 +809,5 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 "support_release","extraction","handoff","carry","place","withdrawal","complete"]
         furthest=max(record["attempts"],key=lambda a:stages.index(a["stage"]))
         record.update(failure_stage=furthest["stage"],failure_reason=furthest["reason"])
+    record["search_statistics"]=cell.search_statistics(record)
     return record

@@ -1,0 +1,911 @@
+{
+  "effective_config": {
+    "schema": "m710_validation_v3",
+    "robot": {
+      "model_config": "../robots/fanuc_m710id_70.yaml",
+      "urdf_path": "../../assets/robots/fanuc_m710id_70/m710id_70.urdf",
+      "home_joints": [
+        -1.2535046523103328,
+        -0.9321730956021104,
+        -1.186652413419966,
+        -0.21179524367224456,
+        -0.2394417658165151,
+        -1.6893308052919531
+      ],
+      "installation_xyz_m": [
+        1.0,
+        0.075,
+        0.45
+      ],
+      "installation_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "chassis": {
+      "world_xyz_m": [
+        -1.5,
+        -0.075,
+        0.25
+      ],
+      "world_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_xyz_m": [
+        1.8,
+        2.0,
+        0.3
+      ]
+    },
+    "lift": {
+      "height_m": 0.0,
+      "scan_heights_m": [
+        0.0,
+        0.15,
+        0.3,
+        0.45,
+        0.6
+      ],
+      "step_m": 0.01,
+      "speed_m_s": 0.05,
+      "column_size_xy_m": [
+        0.22,
+        0.22
+      ]
+    },
+    "tool": {
+      "config": "../tools/unloading_gripper_20kg.yaml",
+      "cup_rows": 6,
+      "cup_columns": 12,
+      "cup_pitch_m": [
+        0.048,
+        0.048
+      ],
+      "cup_radius_m": 0.0215,
+      "minimum_sealed_cups": 60,
+      "suction_edge_margin_m": 0.0
+    },
+    "scene": {
+      "trailer_width_m": 2.3,
+      "trailer_height_m": 2.7,
+      "trailer_x_limits_m": [
+        -1.5,
+        2.2
+      ],
+      "wall_thickness_m": 0.05,
+      "box_sizes_m": {
+        "A_600x400x300": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "B_400x600x300": [
+          0.4,
+          0.6,
+          0.3
+        ]
+      },
+      "box_mass_kg": 42.5,
+      "box_com_fraction": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "front_x_m": 1.0,
+      "grid_step_m": 0.3,
+      "neighbor_gap_m": 0.01,
+      "regular_rows": 8,
+      "regular_columns": 5,
+      "regular_y_limits_m": [
+        -0.82,
+        0.82
+      ],
+      "row_pitch_m": 0.31,
+      "random_seeds": [
+        71071,
+        71072,
+        71073
+      ],
+      "random_start_y_m": -1.13,
+      "random_stop_y_m": 1.05,
+      "random_max_edge_y_m": 1.14,
+      "random_type_a_probability": 0.55,
+      "random_skip_probability": 0.1,
+      "random_front_offset_limits_m": [
+        -0.025,
+        0.035
+      ],
+      "random_gap_limits_m": [
+        0.005,
+        0.02
+      ]
+    },
+    "planning": {
+      "seed": 71070,
+      "continuous_seed": 74000,
+      "pregrasp_standoff_m": 0.15,
+      "extraction_scan_step_m": 0.01,
+      "extraction_free_clearance_m": 0.02,
+      "maximum_extraction_m": 1.5,
+      "collision_margin_m": 0.01,
+      "contact_tolerance_m": 0.0002,
+      "initial_proximity_monotonic_tolerance_m": 0.0001,
+      "support_tolerance_m": 0.0002,
+      "support_edge_clearance_m": 0.01,
+      "support_relation_tolerance_m": 0.03,
+      "support_relation_minimum_overlap_ratio": 0.2,
+      "ik_position_tolerance_m": 0.0001,
+      "ik_orientation_tolerance_rad": 0.0002,
+      "ik_iterations": 180,
+      "ik_restarts": 2,
+      "ik_damping": 0.015,
+      "ik_max_step_rad": 0.2,
+      "ik_orientation_weight": 0.55,
+      "grasp_face_offset_candidates_m": [
+        0.0,
+        -0.025,
+        0.025,
+        -0.05,
+        0.05
+      ],
+      "grasp_tilt_candidates_rad": [
+        0.0,
+        -0.0005,
+        0.0005
+      ],
+      "grasp_downstream_candidate_limit_per_strategy": 5,
+      "cartesian_max_branch_step_rad": 0.6,
+      "cartesian_orientation_tolerance_rad": 0.001,
+      "cartesian_orientation_step_rad": 0.02,
+      "escape_rotation_candidates_rad": [
+        0.0,
+        0.08726646259971647,
+        -0.08726646259971647
+      ],
+      "escape_path_attempt_limit": 4,
+      "radial_guard_tolerance_m": 0.002,
+      "joint_margin_rad": 0.0174532925199433,
+      "maximum_jacobian_condition": 10000.0,
+      "edge_resolution_rad": 0.02,
+      "cartesian_step_m": 0.025,
+      "rrt_step_rad": 0.18,
+      "rrt_iterations": 800,
+      "rrt_goal_bias": 0.12,
+      "roll_candidates_deg": [
+        0,
+        90,
+        180,
+        270
+      ]
+    },
+    "conveyor": {
+      "cross_leg_size_xy_m": [
+        0.45,
+        2.0
+      ],
+      "longitudinal_leg_nominal_length_m": 0.65,
+      "longitudinal_leg_width_m": 0.7,
+      "deck_thickness_m": 0.12,
+      "maximum_extension_m": 1.5,
+      "minimum_stack_surface_clearance_m": 0.02,
+      "minimum_receiving_surface_z_m": 0.2,
+      "maximum_receiving_surface_z_m": 2.4,
+      "upper_stack_bottom_clearance_m": 0.015,
+      "fixed_extension_m": 0.0,
+      "fixed_z_m": 0.2,
+      "movement_step_m": 0.01,
+      "extension_speed_m_s": 0.1,
+      "lift_speed_m_s": 0.05,
+      "belt_speed_m_s": 0.2
+    },
+    "execution": {
+      "profile": "NORMAL",
+      "profiles": {
+        "CONSERVATIVE": {
+          "velocity_scale": 0.25,
+          "acceleration_scale": 0.25,
+          "jerk_scale": 0.25
+        },
+        "NORMAL": {
+          "velocity_scale": 0.5,
+          "acceleration_scale": 0.5,
+          "jerk_scale": 0.5
+        },
+        "AGGRESSIVE_ENGINEERING_ONLY": {
+          "velocity_scale": 0.75,
+          "acceleration_scale": 0.75,
+          "jerk_scale": 0.75
+        }
+      },
+      "minimum_segment_seconds": 0.002,
+      "sample_period_s": 0.02,
+      "vacuum_establish_s": 0.3,
+      "release_s": 0.1
+    }
+  },
+  "parameter_sources": {
+    "schema": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "robot.model_config": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "robot.urdf_path": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "robot.home_joints": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "robot.installation_xyz_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "robot.installation_rpy_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "chassis.world_xyz_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "chassis.world_rpy_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "chassis.size_xyz_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "lift.height_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "lift.scan_heights_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "lift.step_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "lift.speed_m_s": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "lift.column_size_xy_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "tool.config": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "tool.cup_rows": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "tool.cup_columns": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "tool.cup_pitch_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "tool.cup_radius_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "tool.minimum_sealed_cups": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "tool.suction_edge_margin_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.trailer_width_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.trailer_height_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.trailer_x_limits_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.wall_thickness_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.box_sizes_m.A_600x400x300": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.box_sizes_m.B_400x600x300": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.box_mass_kg": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.box_com_fraction": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.front_x_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.grid_step_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.neighbor_gap_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.regular_rows": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.regular_columns": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.regular_y_limits_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.row_pitch_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.random_seeds": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.random_start_y_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.random_stop_y_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.random_max_edge_y_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.random_type_a_probability": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.random_skip_probability": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.random_front_offset_limits_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "scene.random_gap_limits_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.seed": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.continuous_seed": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.pregrasp_standoff_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.extraction_scan_step_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.extraction_free_clearance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.maximum_extraction_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.collision_margin_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.contact_tolerance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.initial_proximity_monotonic_tolerance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.support_tolerance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.support_edge_clearance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.support_relation_tolerance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.support_relation_minimum_overlap_ratio": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.ik_position_tolerance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.ik_orientation_tolerance_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.ik_iterations": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.ik_restarts": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.ik_damping": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.ik_max_step_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.ik_orientation_weight": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.grasp_face_offset_candidates_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.grasp_tilt_candidates_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.grasp_downstream_candidate_limit_per_strategy": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.cartesian_max_branch_step_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.cartesian_orientation_tolerance_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.cartesian_orientation_step_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.escape_rotation_candidates_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.escape_path_attempt_limit": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.radial_guard_tolerance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.joint_margin_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.maximum_jacobian_condition": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.edge_resolution_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.cartesian_step_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.rrt_step_rad": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.rrt_iterations": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.rrt_goal_bias": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "planning.roll_candidates_deg": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.cross_leg_size_xy_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.longitudinal_leg_nominal_length_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.longitudinal_leg_width_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.deck_thickness_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.maximum_extension_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.minimum_stack_surface_clearance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.minimum_receiving_surface_z_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.maximum_receiving_surface_z_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.upper_stack_bottom_clearance_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.fixed_extension_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.fixed_z_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.movement_step_m": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.extension_speed_m_s": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.lift_speed_m_s": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "conveyor.belt_speed_m_s": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profile": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profiles.CONSERVATIVE.velocity_scale": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profiles.CONSERVATIVE.acceleration_scale": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profiles.CONSERVATIVE.jerk_scale": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profiles.NORMAL.velocity_scale": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profiles.NORMAL.acceleration_scale": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profiles.NORMAL.jerk_scale": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profiles.AGGRESSIVE_ENGINEERING_ONLY.velocity_scale": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profiles.AGGRESSIVE_ENGINEERING_ONLY.acceleration_scale": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.profiles.AGGRESSIVE_ENGINEERING_ONLY.jerk_scale": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.minimum_segment_seconds": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.sample_period_s": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.vacuum_establish_s": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml",
+    "execution.release_s": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\validation\\m710id70_v3.yaml"
+  },
+  "robot_limits": {
+    "schema_version": "robot_load_limits_v1",
+    "model": "fanuc_m710id_70",
+    "model_id": "fanuc_m710id_70",
+    "model_revision": "supplied_robocad_v01_engineering_urdf_v1",
+    "rated_payload_kg": 70.0,
+    "reach_m": 2.104,
+    "kinematics": {
+      "urdf_path": "../../assets/robots/fanuc_m710id_70/m710id_70.urdf",
+      "srdf_path": "../../assets/robots/fanuc_m710id_70/m710id_70.srdf",
+      "base_link": "base_link",
+      "flange_link": "flange",
+      "tip_link": "tool0",
+      "active_joint_names": [
+        "J1",
+        "J2",
+        "J3",
+        "J4",
+        "J5",
+        "J6"
+      ],
+      "qualification_joint_pose_q": [
+        0.0,
+        -0.523598776,
+        0.872664626,
+        0.0,
+        0.34906585,
+        0.0
+      ],
+      "zero_pose_flange_xyz_m": [
+        1.37,
+        0.0,
+        1.63
+      ],
+      "mounting_reference": "base_link_origin_is_mounting_flange_plane"
+    },
+    "joint_position_limits_rad": {
+      "J1": [
+        -3.228859116,
+        3.228859116
+      ],
+      "J2": [
+        -1.308996939,
+        2.617993878
+      ],
+      "J3": [
+        -1.404990048,
+        3.577924967
+      ],
+      "J4": [
+        -6.981317008,
+        6.981317008
+      ],
+      "J5": [
+        -2.181661565,
+        2.181661565
+      ],
+      "J6": [
+        -6.981317008,
+        6.981317008
+      ]
+    },
+    "joint_speed_rad_s": [
+      3.141592654,
+      3.141592654,
+      3.141592654,
+      4.537856055,
+      4.537856055,
+      6.457718232
+    ],
+    "joint_velocity_limits_rad_s": [
+      3.141592654,
+      3.141592654,
+      3.141592654,
+      4.537856055,
+      4.537856055,
+      6.457718232
+    ],
+    "joint_acceleration_limits_rad_s2": {
+      "values": [
+        1.5,
+        1.5,
+        1.5,
+        3.0,
+        3.0,
+        4.0
+      ],
+      "evidence": "ENGINEERING_ASSUMPTION"
+    },
+    "joint_jerk_limits_rad_s3": {
+      "values": [
+        7.5,
+        7.5,
+        7.5,
+        15.0,
+        15.0,
+        20.0
+      ],
+      "evidence": "ENGINEERING_ASSUMPTION"
+    },
+    "joint_effort_limits_nm": {
+      "values": null,
+      "evidence": "NOT_AVAILABLE",
+      "reason": "Supplied documents contain no certified joint drive torque limits."
+    },
+    "wrist_limits": {
+      "allowable_moment_nm": {
+        "J4": 300.0,
+        "J5": 300.0,
+        "J6": 150.0
+      },
+      "allowable_inertia_kg_m2": {
+        "J4": 30.0,
+        "J5": 30.0,
+        "J6": 15.0
+      }
+    },
+    "payload_com_limits": {
+      "status": "OFFICIAL_DIAGRAM_AVAILABLE",
+      "reason": "Supplied FANUC presentation slide 13 contains the payload-versus-CoM boundary; coordinates are X/Y radial and Z axial from the faceplate diagram origin.",
+      "conservative_70kg_axis_intercepts_m": {
+        "radial_xy": 0.225,
+        "axial_z": 0.277
+      },
+      "curve_points": [
+        [
+          0.0,
+          0.277
+        ],
+        [
+          0.1,
+          0.268
+        ],
+        [
+          0.2,
+          0.235
+        ],
+        [
+          0.225,
+          0.215
+        ]
+      ]
+    },
+    "normal_utilization_limit": 0.8,
+    "wrist_moment_limits": {
+      "J4": 300.0,
+      "J5": 300.0,
+      "J6": 150.0
+    },
+    "wrist_inertia_limits": {
+      "J4": 30.0,
+      "J5": 30.0,
+      "J6": 15.0
+    },
+    "collision_meshes": [],
+    "collision_geometry_status": "CAD_DERIVED_PRIMITIVE_ENVELOPE",
+    "self_collision_exclusions": [
+      [
+        "base_link",
+        "J1_link"
+      ],
+      [
+        "J1_link",
+        "J2_link"
+      ],
+      [
+        "J2_link",
+        "J3_link"
+      ],
+      [
+        "J3_link",
+        "J4_link"
+      ],
+      [
+        "J4_link",
+        "J5_link"
+      ],
+      [
+        "J5_link",
+        "J6_link"
+      ]
+    ],
+    "payload_com_evidence": "configs/vendor/fanuc_m710id_70_load_evidence.yaml",
+    "source_metadata": {
+      "manufacturer": "FANUC",
+      "local_only": true,
+      "dynamics_inertial_status": "BLOCKED_BY_MISSING_INERTIAL_DATA"
+    },
+    "source": {
+      "manufacturer": "FANUC",
+      "title": "Supplied FANUC M-710iD/70 v1 presentation and ROBCAD v01",
+      "url": "LOCAL_SUPPLIED_EVIDENCE",
+      "product_page": "NOT_USED",
+      "document_version": "presentation_v1_and_robocad_model_1p0",
+      "document_date": "2024-11-29",
+      "accessed_date": "2026-09-02",
+      "verified_fields": [
+        "rated_payload_kg",
+        "reach_m",
+        "joint_speed_rad_s",
+        "wrist_limits",
+        "joint_axes",
+        "joint_limits",
+        "zero_pose_flange_xyz_m"
+      ]
+    },
+    "resolved_payload_evidence": {
+      "schema_version": "fanuc_wrist_evidence_v1",
+      "robot_model": "FANUC M-710iD/70",
+      "reference": {
+        "origin_xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axes": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "source_document": "Supplied FANUC M-710iD/70 v1 presentation",
+        "source_url": "LOCAL_SUPPLIED_EVIDENCE",
+        "source_page": "slide 13",
+        "source_definition": "Diagram labels X,Y radial distance and Z axial distance from the wrist faceplate reference drawing.",
+        "evidence_status": "VERIFIED"
+      },
+      "moment_definition_status": "VERIFIED",
+      "inertia_definition_status": "VERIFIED",
+      "load_diagram_status": "VERIFIED",
+      "public_numeric_values": {
+        "rated_payload_kg": 70.0,
+        "allowable_moment_nm": {
+          "J4": 300.0,
+          "J5": 300.0,
+          "J6": 150.0
+        },
+        "allowable_inertia_kg_m2": {
+          "J4": 30.0,
+          "J5": 30.0,
+          "J6": 15.0
+        },
+        "diagram_axis_intercepts_m": {
+          "30kg": {
+            "radial_xy": 0.52,
+            "axial_z": 0.825
+          },
+          "40kg": {
+            "radial_xy": 0.396,
+            "axial_z": 0.615
+          },
+          "50kg": {
+            "radial_xy": 0.317,
+            "axial_z": 0.457
+          },
+          "60kg": {
+            "radial_xy": 0.264,
+            "axial_z": 0.352
+          },
+          "70kg": {
+            "radial_xy": 0.225,
+            "axial_z": 0.277
+          }
+        }
+      },
+      "sources": [
+        {
+          "document": "Supplied FANUC M-710iD/70 v1 presentation",
+          "page": "slides 5, 6 and 13",
+          "sha256": "2410b105e3a09ebc927eaa85e8800067cde8b734c5b5b56f872fb18539d901a5",
+          "finding": "Rated mass, wrist moments/inertias and complete payload-versus-CoM diagram."
+        }
+      ]
+    },
+    "resolved_payload_evidence_path": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\vendor\\fanuc_m710id_70_load_evidence.yaml"
+  },
+  "robot_limits_source": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\robots\\fanuc_m710id_70.yaml",
+  "tool": {
+    "schema_version": "tool_load_v2",
+    "tool_mass_properties_source": "ENGINEERING_MODEL",
+    "mass_properties_reference_frame": "flange",
+    "name": "shanghai_wantai_three_zone_unloading_gripper_20kg",
+    "mass_kg": 20.0,
+    "com_xyz_m": [
+      0.149810098,
+      0.000777904,
+      0.002622005
+    ],
+    "inertia_tensor_com_kg_m2": [
+      [
+        0.629784544,
+        0.001445978,
+        0.004337304
+      ],
+      [
+        0.001445978,
+        0.191270136,
+        -0.004253938
+      ],
+      [
+        0.004337304,
+        -0.004253938,
+        0.535363874
+      ]
+    ],
+    "tcp_transform": {
+      "translation_xyz_m": [
+        0.25,
+        0.0,
+        0.0
+      ],
+      "rotation_matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "planner_tool_length_m": 0.25,
+    "geometry": {
+      "outer_size_m": [
+        0.576,
+        0.288,
+        0.25
+      ],
+      "rigid_plate_collision_size_m": [
+        0.288,
+        0.576,
+        0.024
+      ],
+      "rigid_plate_center_behind_working_plane_m": 0.0655
+    },
+    "source": {
+      "type": "project_mass_input_plus_scaled_supplied_STEP_distribution",
+      "mass_basis": "project input fixes total tool mass at 20 kg; 10 kg STEP-derived COM and inertia were linearly mass-scaled",
+      "measured_status": "NOT_MEASURED",
+      "flange_adapter_valves_hoses_cables_included_status": "NOT_CONFIRMED",
+      "manufacturer_load_certificate_status": "NOT_EVALUATED"
+    },
+    "tcp_xyz_m": [
+      0.25,
+      0.0,
+      0.0
+    ],
+    "resolved_config_path": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\tools\\unloading_gripper_20kg.yaml",
+    "config_hash": "724a68677f768817465ea8391e24385d62a7523258ac2a1ec435567baf91b64a"
+  },
+  "urdf_path": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\assets\\robots\\fanuc_m710id_70\\m710id_70.urdf",
+  "world_from_chassis": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      -1.5
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      -0.075
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.25
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "world_from_robot_mount": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      -0.5
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.7
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "tool0_from_task_tcp": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      1.5308084989341915e-17
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.25
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "collision_tool_size_task_xyz_m": [
+    0.288,
+    0.576,
+    0.25
+  ],
+  "model_asset_manifest": {
+    "schema_version": "m710_model_assets_v1",
+    "assets": {
+      "payload_evidence": "9a6c1bec631c98ee34236669624e33e19edd448e568cfcc0e98a5ac51da6db56",
+      "robot_model_config": "1acc5bad81914e64030f722cacf14670c282a96a41d209b8fc189831f1b586b8",
+      "robot_urdf": "7f1ec9ac66d520b5210533a6fcfaf68b5f3dd12e59972964358192459d0048b3",
+      "tool_config": "92704e0f40b5a2647b8a43141bdc896f7129002edaf6a4940614ad766fd8e9b4"
+    },
+    "collision_backend": "cpu_urdf_primitive_obb_capsule_v1",
+    "collision_geometry": "URDF collision primitives plus deterministic link capsules and tool OBB",
+    "self_collision_policy": {
+      "adjacent_chain_pairs_implicitly_excluded": true,
+      "extra_link_index_pairs": [
+        [
+          0,
+          2
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          6
+        ]
+      ]
+    },
+    "tool_collision": {
+      "size_task_xyz_m": [
+        0.288,
+        0.576,
+        0.25
+      ],
+      "center_offset_m": 0.125,
+      "local_boxes": []
+    },
+    "entries": [
+      {
+        "role": "payload_evidence",
+        "declared_path": "configs/vendor/fanuc_m710id_70_load_evidence.yaml",
+        "resolved_path": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\vendor\\fanuc_m710id_70_load_evidence.yaml",
+        "sha256": "dcf9fc47063d57cc3a314039afd68d6c526e08cbba212c27314201964c26f338",
+        "semantic_sha256": "9a6c1bec631c98ee34236669624e33e19edd448e568cfcc0e98a5ac51da6db56"
+      },
+      {
+        "role": "robot_model_config",
+        "declared_path": "../robots/fanuc_m710id_70.yaml",
+        "resolved_path": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\robots\\fanuc_m710id_70.yaml",
+        "sha256": "ad5c8771d5324073bb66fc5e9cf176eb0b2fb6e8c39540f7b73b7ddca387b12e",
+        "semantic_sha256": "1acc5bad81914e64030f722cacf14670c282a96a41d209b8fc189831f1b586b8"
+      },
+      {
+        "role": "robot_urdf",
+        "declared_path": "../../assets/robots/fanuc_m710id_70/m710id_70.urdf",
+        "resolved_path": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\assets\\robots\\fanuc_m710id_70\\m710id_70.urdf",
+        "sha256": "7f1ec9ac66d520b5210533a6fcfaf68b5f3dd12e59972964358192459d0048b3"
+      },
+      {
+        "role": "tool_config",
+        "declared_path": "unloading_gripper_20kg.yaml",
+        "resolved_path": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\configs\\tools\\unloading_gripper_20kg.yaml",
+        "sha256": "724a68677f768817465ea8391e24385d62a7523258ac2a1ec435567baf91b64a",
+        "semantic_sha256": "92704e0f40b5a2647b8a43141bdc896f7129002edaf6a4940614ad766fd8e9b4"
+      }
+    ],
+    "semantic_fingerprint_sha256": "99fb9af6519ebfa4e4f4a09e7b9e84945d6ebe6fac4bc2bf64495e3a2a9a2dff",
+    "declared_but_not_loaded": {
+      "srdf_path": "../../assets/robots/fanuc_m710id_70/m710id_70.srdf",
+      "collision_meshes": [],
+      "reason": "the active CPU validation backend consumes URDF primitives, capsules and tool OBB only"
+    }
+  },
+  "runtime_versions": {
+    "python": "3.14.7",
+    "python_implementation": "cpython",
+    "packages": {
+      "numpy": "2.5.2",
+      "PyYAML": "6.0.3"
+    },
+    "collision_backend": "cpu_urdf_primitive_obb_capsule_v1"
+  },
+  "cache_validity_runtime": {
+    "python_implementation": "cpython",
+    "python_major_minor": "3.14",
+    "numpy": "2.5.2",
+    "collision_backend": "cpu_urdf_primitive_obb_capsule_v1"
+  },
+  "motion_limits": {
+    "velocity": [
+      1.570796327,
+      1.570796327,
+      1.570796327,
+      2.2689280275,
+      2.2689280275,
+      3.228859116
+    ],
+    "acceleration": [
+      0.75,
+      0.75,
+      0.75,
+      1.5,
+      1.5,
+      2.0
+    ],
+    "jerk": [
+      3.75,
+      3.75,
+      3.75,
+      7.5,
+      7.5,
+      10.0
+    ]
+  }
+}

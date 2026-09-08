@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, Sequence
 
 import numpy as np
@@ -20,6 +20,7 @@ class IKResult:
     position_error: float
     orientation_error: float
     message: str = ""
+    search_evidence: dict = field(default_factory=dict)
 
 
 def pose_error(current: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, float, float]:
@@ -151,7 +152,13 @@ def solve_ik_multistart(
         candidates.append(rng.uniform(robot.joint_limits[:, 0], robot.joint_limits[:, 1]))
 
     best: IKResult | None = None
-    for seed in candidates:
+    attempted = 0
+    iterations_consumed = 0
+    converged_pose_results = 0
+    max_iterations = int(kwargs.get("max_iterations", 250))
+    position_tolerance = float(kwargs.get("position_tolerance", 0.008))
+    orientation_tolerance = float(kwargs.get("orientation_tolerance", 0.06))
+    for seed_index, seed in enumerate(candidates):
         result = solve_ik(
             robot,
             target,
@@ -160,11 +167,51 @@ def solve_ik_multistart(
             ignored_obstacle_names=ignored_obstacle_names,
             **kwargs,
         )
+        attempted += 1
+        iterations_consumed += result.iterations
+        converged_pose_results += int(
+            result.position_error <= position_tolerance
+            and result.orientation_error <= orientation_tolerance
+        )
         if result.success:
+            result.search_evidence = {
+                "policy": "legacy_first_valid_result",
+                "seed_pool_available": len(candidates),
+                "explicit_seed_count": len(candidates) - random_restarts,
+                "random_restart_count": random_restarts,
+                "seeds_attempted": attempted,
+                "last_seed_index": seed_index,
+                "iterations_per_seed_available": max_iterations,
+                "iteration_capacity_available": len(candidates) * max_iterations,
+                "iteration_capacity_for_attempted_seeds": attempted * max_iterations,
+                "iterations_consumed": iterations_consumed,
+                "converged_pose_results": converged_pose_results,
+                "valid_solutions": 1,
+                "deduplicated_candidates": 1,
+                "duplicate_candidates": 0,
+                "termination": "FIRST_VALID_SOLUTION",
+            }
             return result
         cost = result.position_error + 0.25 * result.orientation_error
         if best is None or cost < best.position_error + 0.25 * best.orientation_error:
             best = result
     assert best is not None
     best.message = "all IK restarts failed; returning closest result"
+    best.search_evidence = {
+        "policy": "legacy_first_valid_result",
+        "seed_pool_available": len(candidates),
+        "explicit_seed_count": len(candidates) - random_restarts,
+        "random_restart_count": random_restarts,
+        "seeds_attempted": attempted,
+        "last_seed_index": attempted - 1,
+        "iterations_per_seed_available": max_iterations,
+        "iteration_capacity_available": len(candidates) * max_iterations,
+        "iteration_capacity_for_attempted_seeds": attempted * max_iterations,
+        "iterations_consumed": iterations_consumed,
+        "converged_pose_results": converged_pose_results,
+        "valid_solutions": 0,
+        "deduplicated_candidates": 0,
+        "duplicate_candidates": 0,
+        "termination": "SEED_STREAM_EXHAUSTED",
+    }
     return best

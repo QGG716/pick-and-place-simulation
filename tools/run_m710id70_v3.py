@@ -75,6 +75,7 @@ def sample_loads(cell,result):
 
 def compact(task_id,result,**extra):
     best=result['selected'] or {}
+    search=result.get('search_statistics',{}).get('totals',{})
     reasons=Counter(a['reason'] for a in result['attempts'])
     details=Counter(a['failure_taxonomy']['detail'] for a in result['attempts'] if 'failure_taxonomy' in a)
     return {'task_id':task_id,**extra,'box':result['box'],'seed':result['seed'],'mode':result['mode'],
@@ -86,8 +87,54 @@ def compact(task_id,result,**extra):
             'face':best.get('face'),'roll_deg':best.get('roll_deg'),
             'escape_search_termination':best.get('escape_search',{}).get('termination'),
             'escape_robot_validations':len(best.get('escape_attempts',[])),
+            'escape_robot_validations_semantics':'selected_solution_only',
+            'escape_robot_validations_task_total':search.get('escape_robot_validations_all_attempts',0),
+            'ik_calls_task_total':search.get('ik_calls',0),
+            'ik_seeds_attempted_task_total':search.get('ik_seeds_attempted',0),
+            'ik_iterations_consumed_task_total':search.get('ik_iterations_consumed',0),
+            'ik_iteration_capacity_task_total':search.get('ik_iteration_capacity_available',0),
+            'ik_valid_solutions_task_total':search.get('ik_valid_solutions',0),
+            'ik_deduplicated_candidates_task_total':search.get('ik_deduplicated_candidates',0),
+            'connection_attempts_task_total':search.get('connection_attempts',0),
+            'rrt_iterations_consumed_task_total':search.get('rrt_iterations_consumed',0),
+            'rrt_iteration_capacity_task_total':search.get('rrt_iteration_capacity_available',0),
+            'rrt_state_validations_task_total':search.get('rrt_state_validations',0),
+            'rrt_edge_validations_task_total':search.get('rrt_edge_validation_calls',0),
+            'budget_terminations':result.get('search_statistics',{}).get('budget_terminations',{}),
             'loaded_tcp_path_m':best.get('loaded_tcp_path_m'),'cycle_s':best.get('cycle_s'),
             'conveyor_action_s':best.get('conveyor_action_s')}
+
+
+def search_statistics_summary(results):
+    """Aggregate task and candidate search evidence without double-counting tasks."""
+    totals=Counter();task_groups={'grasp_valid_but_not_extracted':[],
+                                  'extracted_but_not_complete':[]}
+    final_stage_ids={};candidate_stage_counts=Counter();candidate_stage_ids={}
+    budget_terminations=Counter()
+    for task_id,result in results.items():
+        stats=result['search_statistics'];task=stats['task_classification']
+        for name in task_groups:
+            if task[name]:task_groups[name].append(task_id.removesuffix('_fixed'))
+        if not result['geometric_feasible']:
+            final_stage_ids.setdefault(result['failure_stage'],[]).append(task_id.removesuffix('_fixed'))
+        totals.update(stats['totals'])
+        candidate_stage_counts.update(stats['candidate_failure_counts_by_stage'])
+        for attempt in result['attempts']:
+            for option in attempt.get('conveyor_attempts',[]):
+                stage=option.get('stage')
+                if stage in {'approach','contact','handoff','carry','place','withdrawal'} and option.get('reason')!='OK':
+                    candidate_stage_ids.setdefault(stage,set()).add(task_id.removesuffix('_fixed'))
+        budget_terminations.update(stats['budget_terminations'])
+    return {'schema_version':'m710_fixed_search_statistics_v1',
+            'task_count':len(results),
+            'task_level':{**{f'{name}_count':len(ids) for name,ids in task_groups.items()},
+                          **{f'{name}_task_ids':ids for name,ids in task_groups.items()},
+                          'final_failure_stage_counts':{stage:len(ids) for stage,ids in sorted(final_stage_ids.items())},
+                          'final_failure_stage_task_ids':dict(sorted(final_stage_ids.items()))},
+            'candidate_level':{'failure_counts_by_stage':dict(candidate_stage_counts),
+                               'failure_task_ids_by_stage':{stage:sorted(ids) for stage,ids in sorted(candidate_stage_ids.items())}},
+            'search_totals':dict(totals),'budget_terminations':dict(budget_terminations),
+            'budget_scope':next(iter(results.values()))['search_statistics']['budget_scope'] if results else {}}
 
 
 def initial_proximity_recovery_row(task_id,result):
@@ -488,6 +535,7 @@ def fixed_geometry_scan(run):
     write_json(run.output/'fixed_grasp_task_set_recovery.json',grasp_summary)
     write_csv(run.output/'fixed_extraction_path_metrics.csv',metrics)
     write_json(run.output/'fixed_geometric_recovery.json',summary)
+    write_json(run.output/'fixed_search_statistics.json',search_statistics_summary(completed))
     return rows,summary
 
 

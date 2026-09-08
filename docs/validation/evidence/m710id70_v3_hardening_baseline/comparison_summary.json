@@ -1,0 +1,30 @@
+{
+  "denominator": 104,
+  "success_transition_counts": {
+    "COMMON_FAILURE": 94,
+    "COMMON_SUCCESS": 10
+  },
+  "success_task_ids": [
+    "grid_022",
+    "grid_023",
+    "grid_025",
+    "grid_029",
+    "grid_031",
+    "grid_040",
+    "grid_041",
+    "grid_043",
+    "grid_047",
+    "grid_049"
+  ],
+  "review_fields": [
+    "GRASP_REACHABLE",
+    "EXTRACTION_FEASIBLE",
+    "GEOMETRICALLY_REACHABLE",
+    "failure_stage",
+    "failure_reason",
+    "face",
+    "roll_deg"
+  ],
+  "all_review_fields_equal": true,
+  "normalized_review_digest_sha256": "b603b3de505fa000f66bd691a662b1d32615538461961066d4ce5768837614e8"
+}

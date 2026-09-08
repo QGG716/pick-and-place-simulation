@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from time import perf_counter
 from typing import Callable, Sequence
 
@@ -15,6 +15,7 @@ class PlanResult:
     path: list[np.ndarray]
     iterations: int
     message: str = ""
+    search_evidence: dict = field(default_factory=dict)
 
 
 class _Tree:
@@ -60,19 +61,45 @@ class RRTConnectPlanner:
         self.max_iterations = int(max_iterations)
         self.goal_bias = float(goal_bias)
         self.rng = rng or np.random.default_rng(0)
+        self._reset_search_evidence()
+
+    def _reset_search_evidence(self) -> None:
+        self._state_validations = 0
+        self._edge_validation_calls = 0
+        self._edge_state_samples = 0
+        self._extension_attempts = 0
+
+    def _state_valid(self, q: np.ndarray) -> bool:
+        self._state_validations += 1
+        return bool(self.is_state_valid(q))
+
+    def _result(self, success: bool, path: list[np.ndarray], iterations: int, message: str) -> PlanResult:
+        return PlanResult(success, path, iterations, message, {
+            "planning_iteration_budget": self.max_iterations,
+            "planning_iterations_consumed": iterations,
+            "extension_attempts": self._extension_attempts,
+            "state_validations": self._state_validations,
+            "edge_validation_calls": self._edge_validation_calls,
+            "edge_state_samples": self._edge_state_samples,
+            "state_validation_budget": None,
+            "edge_validation_budget": None,
+            "termination": message.upper().replace(" ", "_"),
+        })
 
     @staticmethod
     def _deadline_reached(deadline: float | None) -> bool:
         return deadline is not None and perf_counter() >= deadline
 
     def _edge_valid(self, a: np.ndarray, b: np.ndarray, deadline: float | None = None) -> bool:
+        self._edge_validation_calls += 1
         delta = b - a
         n = max(1, int(np.ceil(np.max(np.abs(delta)) / self.edge_resolution)))
         for i in range(1, n + 1):
             if self._deadline_reached(deadline):
                 return False
             q = a + (i / n) * delta
-            if not self.is_state_valid(q):
+            self._edge_state_samples += 1
+            if not self._state_valid(q):
                 return False
         return True
 
@@ -84,6 +111,7 @@ class RRTConnectPlanner:
         return source + delta * (self.step_size / distance)
 
     def _extend(self, tree: _Tree, target: np.ndarray, deadline: float | None = None) -> tuple[str, int | None]:
+        self._extension_attempts += 1
         if self._deadline_reached(deadline):
             return "timeout", None
         nearest_idx = tree.nearest_index(target)
@@ -111,19 +139,20 @@ class RRTConnectPlanner:
                 return "reached", idx
 
     def plan(self, start: np.ndarray, goal: np.ndarray, time_limit_seconds: float | None = None) -> PlanResult:
+        self._reset_search_evidence()
         deadline = None if time_limit_seconds is None else perf_counter() + max(0.0, float(time_limit_seconds))
         start = np.asarray(start, dtype=float)
         goal = np.asarray(goal, dtype=float)
-        if not self.is_state_valid(start):
-            return PlanResult(False, [], 0, "start state is invalid")
-        if not self.is_state_valid(goal):
-            return PlanResult(False, [], 0, "goal state is invalid")
+        if not self._state_valid(start):
+            return self._result(False, [], 0, "start state is invalid")
+        if not self._state_valid(goal):
+            return self._result(False, [], 0, "goal state is invalid")
         if self._deadline_reached(deadline):
-            return PlanResult(False, [], 0, "time limit reached")
+            return self._result(False, [], 0, "time limit reached")
         if self._edge_valid(start, goal, deadline):
-            return PlanResult(True, [start, goal], 0, "direct edge")
+            return self._result(True, [start, goal], 0, "direct edge")
         if self._deadline_reached(deadline):
-            return PlanResult(False, [], 0, "time limit reached")
+            return self._result(False, [], 0, "time limit reached")
 
         tree_a = _Tree(start)
         tree_b = _Tree(goal)
@@ -131,7 +160,7 @@ class RRTConnectPlanner:
 
         for iteration in range(1, self.max_iterations + 1):
             if self._deadline_reached(deadline):
-                return PlanResult(False, [], iteration - 1, "time limit reached")
+                return self._result(False, [], iteration - 1, "time limit reached")
             if self.rng.random() < self.goal_bias:
                 sample = tree_b.nodes[0]
             else:
@@ -139,12 +168,12 @@ class RRTConnectPlanner:
 
             status_a, idx_a = self._extend(tree_a, sample, deadline)
             if status_a == "timeout":
-                return PlanResult(False, [], iteration - 1, "time limit reached")
+                return self._result(False, [], iteration - 1, "time limit reached")
             if status_a != "trapped" and idx_a is not None:
                 q_new = tree_a.nodes[idx_a]
                 status_b, idx_b = self._connect(tree_b, q_new, deadline)
                 if status_b == "timeout":
-                    return PlanResult(False, [], iteration, "time limit reached")
+                    return self._result(False, [], iteration, "time limit reached")
                 if status_b == "reached" and idx_b is not None:
                     path_a = tree_a.path_to_root(idx_a)
                     path_b = tree_b.path_to_root(idx_b)
@@ -152,12 +181,12 @@ class RRTConnectPlanner:
                         path = path_a + list(reversed(path_b[:-1]))
                     else:
                         path = path_b + list(reversed(path_a[:-1]))
-                    return PlanResult(True, path, iteration, "connected")
+                    return self._result(True, path, iteration, "connected")
 
             tree_a, tree_b = tree_b, tree_a
             a_is_start = not a_is_start
 
-        return PlanResult(False, [], self.max_iterations, "maximum iterations reached")
+        return self._result(False, [], self.max_iterations, "maximum iterations reached")
 
     def edge_valid(self, start: np.ndarray, goal: np.ndarray) -> bool:
         """Return whether both endpoints and their interpolated edge are valid."""
