@@ -328,6 +328,26 @@ class Cell:
             raise RuntimeError("validated contact attachment is not pose-continuous")
         return state,None
 
+    def validate_pregrasp_endpoint(self,q,obstacles,target):
+        """Validate a pregrasp as an ordinary, unloaded free-space state."""
+        failure=self.state_failure(q,[*obstacles,target])
+        return None if failure is None else {"reason":"PREGRASP_ENDPOINT_INVALID",
+                                             "stage_failure":failure,"q_rad":np.asarray(q).tolist()}
+
+    def validate_handoff_endpoint(self,q,obstacles,attachment,deck):
+        """Validate attached placement contact with exactly the carry semantics."""
+        failure=self.state_failure(q,obstacles,attachment,[deck.name])
+        actual_box=attachment.box_at(self.robot.fk(q))
+        support=support_audit(actual_box,deck,self.p["support_tolerance_m"],
+                              self.p["support_edge_clearance_m"])
+        if failure:
+            return support,{"reason":"HANDOFF_ENDPOINT_COLLISION",
+                            "stage_failure":failure,"q_rad":np.asarray(q).tolist()}
+        if not support["supported"]:
+            return support,{"reason":"ACTUAL_FK_SUPPORT_FAILED",
+                            "support":support,"q_rad":np.asarray(q).tolist()}
+        return support,None
+
     def transit(self,start,goal,obstacles,seed,attachment=None,support_names=(),target_contact=None,
                 stage="transit"):
         state = lambda q: self.state_failure(q,obstacles,attachment,support_names,target_contact) is None
@@ -635,7 +655,13 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 decks=cell.decks(option)
                 obstacles=[*cell.fixtures(),*others,*decks]
                 pre=actual.copy();pre[:3,3]+=candidate.outward_direction_world*p["pregrasp_standoff_m"]
-                preik=cell.solve(pre,[ik.q,current_q],seed+200+oi,stage="pregrasp")
+                preik=cell.solve(pre,[ik.q,current_q],seed+200+oi,
+                                 lambda q: cell.validate_pregrasp_endpoint(q,obstacles,target) is None,
+                                 stage="pregrasp")
+                sub["pregrasp_ik"]={"success":preik.success,"q_rad":preik.q.tolist(),
+                    "position_error_m":preik.position_error,"orientation_error_rad":preik.orientation_error,
+                    "message":preik.message,"stage_validity":"unattached; target remains an ordinary obstacle",
+                    "search_evidence":preik.search_evidence}
                 if not preik.success:
                     sub.update(stage="approach",reason="PREGRASP_NO_IK");continue
                 approach,failure=cell.transit(current_q,preik.q,[*obstacles,target],seed+300+oi,
@@ -744,7 +770,13 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 desired_box=target.world_from_local.copy()
                 desired_box[:3,3]=[deck.center[0],deck.center[1],option[1]+target.half_extents[2]]
                 desired_tcp=desired_box @ np.linalg.inv(attached.tcp_from_box)
-                handoff=cell.solve(desired_tcp,[extraction[-1],ik.q,current_q],seed+600+oi,stage="handoff")
+                handoff=cell.solve(desired_tcp,[extraction[-1],ik.q,current_q],seed+600+oi,
+                    lambda q: cell.validate_handoff_endpoint(q,obstacles,attached,deck)[1] is None,
+                    stage="handoff")
+                sub["handoff_ik"]={"success":handoff.success,"q_rad":handoff.q.tolist(),
+                    "position_error_m":handoff.position_error,"orientation_error_rad":handoff.orientation_error,
+                    "message":handoff.message,"stage_validity":"attached; receiving deck support contact only",
+                    "support_names":[deck.name],"search_evidence":handoff.search_evidence}
                 if not handoff.success:
                     sub.update(stage="handoff",reason="HANDOFF_NO_IK");continue
                 carry,failure=cell.transit(extraction[-1],handoff.q,obstacles,seed+700+oi,attached,
@@ -752,11 +784,11 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 sub["paths"]["carry"]=[q.tolist() for q in carry]
                 if failure:
                     sub.update(stage="carry",reason=failure["reason"],failure=failure);continue
-                placed=attached.box_at(r.fk(carry[-1]))
-                support=support_audit(placed,deck,p["support_tolerance_m"],p["support_edge_clearance_m"])
+                support,handoff_failure=cell.validate_handoff_endpoint(carry[-1],obstacles,attached,deck)
                 sub["support"]=support
-                if not support["supported"]:
-                    sub.update(stage="place",reason="ACTUAL_FK_SUPPORT_FAILED");continue
+                if handoff_failure:
+                    sub.update(stage="place",reason=handoff_failure["reason"],failure=handoff_failure);continue
+                placed=attached.box_at(r.fk(carry[-1]))
                 retreat=r.fk(carry[-1]).copy();retreat[:3,3]-=retreat[:3,2]*p["pregrasp_standoff_m"]
                 withdrawal,failure=cell.cartesian(carry[-1],retreat,[*obstacles,placed],seed+800+oi,
                                                   target_contact=placed,stage="withdrawal")
