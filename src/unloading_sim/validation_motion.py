@@ -12,7 +12,7 @@ from .depalletizing import (LConveyorGeometry, analyze_box_neighborhood,
 from .fanuc_m710id70 import target_pose, trailer_obstacles
 from .geometry import (OBB, make_transform, rotation_matrix_from_rotation_vector,
                        rotation_matrix_from_rpy, rotation_vector_from_matrix)
-from .ik import solve_ik_multistart, pose_error
+from .ik import iter_ik_solutions, solve_ik_multistart, pose_error
 from .planner import RRTConnectPlanner
 from .support import SupportRelationGraph
 from .timing import time_parameterize_joint_path
@@ -307,6 +307,91 @@ class Cell:
                                           **result.search_evidence})
         return result
 
+    def connect_pose_candidates(self,pose,seeds,ik_seed,start,obstacles,connection_seed,stage,
+                                valid,attachment=None,support_names=(),mode=None):
+        """Connect a stage using one bounded seed stream and shared RRT budget."""
+        p=self.p;mode=mode or p["stage_ik_search_mode"]
+        if mode not in {"legacy_single","filtered_single","multi_solution"}:
+            raise ValueError(f"unsupported stage IK search mode: {mode}")
+        candidate_limit=1 if mode!="multi_solution" else p["stage_ik_candidate_limit"]
+        connection_limit=1 if mode!="multi_solution" else p["stage_connection_attempt_limit"]
+        shared_iterations=p["rrt_iterations"] if mode!="multi_solution" else p["stage_connection_iteration_budget"]
+        unique=list({tuple(np.asarray(q,float)):np.asarray(q,float) for q in seeds}.values())
+        stream=None
+        if mode=="multi_solution":
+            stream=iter_ik_solutions(self.robot,pose,unique,random_restarts=p["ik_restarts"],
+                rng=np.random.default_rng(ik_seed),candidate_limit=candidate_limit,
+                dedup_tolerance_rad=p["ik_candidate_dedup_tolerance_rad"],
+                dedup_tolerance_m=p["ik_candidate_dedup_tolerance_m"],
+                max_iterations=p["ik_iterations"],damping=p["ik_damping"],max_step=p["ik_max_step_rad"],
+                position_tolerance=p["ik_position_tolerance_m"],
+                orientation_tolerance=p["ik_orientation_tolerance_rad"],
+                orientation_weight=p["ik_orientation_weight"],extra_state_valid=valid,
+                collision_check_stride=p["ik_iterations"]+1)
+            candidates=stream
+        else:
+            single=self.solve(pose,unique,ik_seed,None if mode=="legacy_single" else valid,
+                              stage=f"{stage}_{mode}")
+            candidates=iter([single] if single.success else [])
+        attempts=[];remaining_iterations=shared_iterations;selected=None;path=[];failure=None
+        while len(attempts)<connection_limit and remaining_iterations>0:
+            try:
+                candidate=next(candidates)
+            except StopIteration:
+                break
+            slots=connection_limit-len(attempts)
+            allocation=max(1,int(np.ceil(remaining_iterations/slots)))
+            candidate_path,candidate_failure=self.transit(start,candidate.q,obstacles,
+                connection_seed+len(attempts)*1009,attachment,support_names,stage=stage,
+                max_iterations=allocation)
+            connection_event=self.search_events["connection"][-1]
+            consumed=connection_event.get("planning_iterations_consumed",0)
+            remaining_iterations=max(0,remaining_iterations-consumed)
+            endpoint_error=None
+            if candidate_failure is None:
+                if not candidate_path:
+                    candidate_failure={"reason":"CONNECTION_ENDPOINT_MISSING"}
+                else:
+                    endpoint_error=float(np.max(np.abs(np.asarray(candidate_path[-1])-candidate.q)))
+                    if endpoint_error>1e-10:
+                        candidate_failure={"reason":"CONNECTION_ENDPOINT_MISMATCH",
+                            "maximum_joint_error":endpoint_error,"candidate_q_rad":candidate.q.tolist(),
+                            "actual_endpoint_q_rad":np.asarray(candidate_path[-1]).tolist()}
+            attempts.append({"candidate_index":len(attempts),"q_rad":candidate.q.tolist(),
+                "position_error_m":candidate.position_error,"orientation_error_rad":candidate.orientation_error,
+                "candidate_id":candidate.search_evidence.get("candidate_id"),
+                "ik_seed_index":candidate.search_evidence.get("last_seed_index"),
+                "connection_seed":connection_seed+(len(attempts))*1009,
+                "rrt_iteration_allocation":allocation,"rrt_iterations_consumed":consumed,
+                "connection_endpoint_max_joint_error":endpoint_error,
+                "connection_success":candidate_failure is None,"failure":candidate_failure})
+            if candidate_failure is None:
+                selected=candidate;path=candidate_path;failure=None;break
+            failure=candidate_failure
+        if stream is not None:
+            stream_evidence=stream.evidence()
+            self.search_events["ik"].append({"stage":stage,"rng_seed":int(ik_seed),**stream_evidence})
+        else:
+            stream_evidence=single.search_evidence
+        if selected is not None:
+            termination="SUCCESS"
+        elif not attempts:
+            termination="NO_VALID_IK"
+            failure={"reason":f"{stage.upper()}_NO_IK"}
+        elif remaining_iterations<=0:
+            termination="STAGE_CONNECTION_ITERATION_BUDGET_EXHAUSTED"
+        elif len(attempts)>=connection_limit:
+            termination="STAGE_CONNECTION_ATTEMPT_LIMIT_REACHED"
+        else:
+            termination="IK_SEED_STREAM_EXHAUSTED"
+        evidence={"mode":mode,"stage":stage,"candidate_limit":candidate_limit,
+            "connection_attempt_limit":connection_limit,
+            "shared_rrt_iteration_budget":shared_iterations,
+            "shared_rrt_iterations_consumed":shared_iterations-remaining_iterations,
+            "remaining_rrt_iterations":remaining_iterations,"connection_attempts":attempts,
+            "ik_stream":stream_evidence,"termination":termination}
+        return selected,path,failure,evidence
+
     def validate_contact_endpoint(self,q,target,face,obstacles):
         """Close the contact contract at the actual endpoint before attaching."""
         q=np.asarray(q,float);actual_tcp=self.robot.fk(q)
@@ -349,11 +434,12 @@ class Cell:
         return support,None
 
     def transit(self,start,goal,obstacles,seed,attachment=None,support_names=(),target_contact=None,
-                stage="transit"):
+                stage="transit",max_iterations=None):
         state = lambda q: self.state_failure(q,obstacles,attachment,support_names,target_contact) is None
         planner = RRTConnectPlanner(self.robot.joint_limits[:,0],self.robot.joint_limits[:,1],state,
             step_size=self.p["rrt_step_rad"],edge_resolution=self.p["edge_resolution_rad"]/2,
-            max_iterations=self.p["rrt_iterations"],goal_bias=self.p["rrt_goal_bias"],rng=np.random.default_rng(seed))
+            max_iterations=self.p["rrt_iterations"] if max_iterations is None else max_iterations,
+            goal_bias=self.p["rrt_goal_bias"],rng=np.random.default_rng(seed))
         result = planner.plan(start,goal)
         self.search_events["connection"].append({"stage":stage,"rng_seed":int(seed),
                                                   "success":result.success,
@@ -370,9 +456,12 @@ class Cell:
         connection_events=list(self.search_events["connection"])
         candidate_failures=Counter()
         escape_validations=0
+        stage_searches=[]
         for attempt in record["attempts"]:
             for option in attempt.get("conveyor_attempts",[]):
                 escape_validations+=len(option.get("escape_attempts",[]))
+                stage_searches.extend(option[name] for name in ("pregrasp_search","handoff_search")
+                                      if name in option)
                 if option.get("stage") in {"approach","contact","handoff","carry","place","withdrawal"} \
                         and option.get("reason")!="OK":
                     candidate_failures[option["stage"]]+=1
@@ -388,6 +477,10 @@ class Cell:
                 termination=option.get("escape_search",{}).get("termination")
                 if termination and termination!="SUCCESS":
                     terminations[f"escape:{termination}"]+=1
+                for name in ("pregrasp_search","handoff_search"):
+                    search=option.get(name)
+                    if search and search["termination"]!="SUCCESS":
+                        terminations[f"stage_connection:{name}:{search['termination']}"]+=1
         return {
             "schema_version":"m710_task_search_accounting_v1",
             "task_classification":{
@@ -404,6 +497,10 @@ class Cell:
                 "ik_valid_solutions":sum(e.get("valid_solutions",0) for e in ik_events),
                 "ik_deduplicated_candidates":sum(e.get("deduplicated_candidates",0) for e in ik_events),
                 "connection_attempts":len(connection_events),
+                "stage_connection_searches":len(stage_searches),
+                "stage_connections_using_nonfirst_candidate":sum(
+                    any(item["connection_success"] and item["candidate_index"]>0
+                        for item in search["connection_attempts"]) for search in stage_searches),
                 "rrt_iteration_capacity_available":sum(e.get("planning_iteration_budget",0) for e in connection_events),
                 "rrt_iterations_consumed":sum(e.get("planning_iterations_consumed",0) for e in connection_events),
                 "rrt_extension_attempts":sum(e.get("extension_attempts",0) for e in connection_events),
@@ -417,6 +514,8 @@ class Cell:
                 "ik":"ik_iterations per seed and ik_restarts per Cell.solve call",
                 "grasp_downstream":"grasp_downstream_candidate_limit_per_strategy per extraction strategy",
                 "rrt":"rrt_iterations per Cell.transit call",
+                "stage_ik_candidates":"stage_ik_candidate_limit distinct valid states per pregrasp or handoff subproblem",
+                "stage_connections":"stage_connection_attempt_limit attempts share stage_connection_iteration_budget within one pregrasp or handoff subproblem",
                 "escape":"escape_path_attempt_limit per conveyor option of each downstream grasp candidate; not task-global",
                 "state_and_edge_validation":"observed counts only; no separate configured cap"},
             "ik_events":ik_events,"connection_events":connection_events}
@@ -537,6 +636,7 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
               "geometric_feasible":False,"payload_qualified":False,"dynamics_verified":False,
               "load_status":"NOT_EVALUATED","failure_stage":"candidate_generation","failure_reason":"NO_EXPOSED_FACE",
               "attempts":[],"selected":None,"conveyor_initial":list(conveyor_state),
+              "stage_ik_search_mode":p["stage_ik_search_mode"],
               "support_relations":{"support_names":support_names,"graph":support_graph_audit}}
     candidates = generate_extraction_candidates(topology)
     options = cell.conveyor_options(target,remaining,mode,conveyor_state)
@@ -655,17 +755,17 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 decks=cell.decks(option)
                 obstacles=[*cell.fixtures(),*others,*decks]
                 pre=actual.copy();pre[:3,3]+=candidate.outward_direction_world*p["pregrasp_standoff_m"]
-                preik=cell.solve(pre,[ik.q,current_q],seed+200+oi,
-                                 lambda q: cell.validate_pregrasp_endpoint(q,obstacles,target) is None,
-                                 stage="pregrasp")
-                sub["pregrasp_ik"]={"success":preik.success,"q_rad":preik.q.tolist(),
-                    "position_error_m":preik.position_error,"orientation_error_rad":preik.orientation_error,
-                    "message":preik.message,"stage_validity":"unattached; target remains an ordinary obstacle",
-                    "search_evidence":preik.search_evidence}
-                if not preik.success:
-                    sub.update(stage="approach",reason="PREGRASP_NO_IK");continue
-                approach,failure=cell.transit(current_q,preik.q,[*obstacles,target],seed+300+oi,
-                                              stage="approach")
+                preik,approach,failure,pregrasp_search=cell.connect_pose_candidates(
+                    pre,[ik.q,current_q],seed+200+oi,current_q,[*obstacles,target],seed+300+oi,
+                    "approach",lambda q:cell.validate_pregrasp_endpoint(q,obstacles,target) is None,
+                    mode=p["stage_ik_search_mode"])
+                sub["pregrasp_search"]=pregrasp_search
+                if preik is None:
+                    if pregrasp_search["connection_attempts"]:
+                        sub.update(stage="approach",reason=failure["reason"],failure=failure)
+                    else:
+                        sub.update(stage="approach",reason="PREGRASP_NO_IK")
+                    continue
                 sub["paths"]["approach"]=[q.tolist() for q in approach]
                 if failure:
                     sub.update(stage="approach",reason=failure["reason"],failure=failure);continue
@@ -770,17 +870,18 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 desired_box=target.world_from_local.copy()
                 desired_box[:3,3]=[deck.center[0],deck.center[1],option[1]+target.half_extents[2]]
                 desired_tcp=desired_box @ np.linalg.inv(attached.tcp_from_box)
-                handoff=cell.solve(desired_tcp,[extraction[-1],ik.q,current_q],seed+600+oi,
-                    lambda q: cell.validate_handoff_endpoint(q,obstacles,attached,deck)[1] is None,
-                    stage="handoff")
-                sub["handoff_ik"]={"success":handoff.success,"q_rad":handoff.q.tolist(),
-                    "position_error_m":handoff.position_error,"orientation_error_rad":handoff.orientation_error,
-                    "message":handoff.message,"stage_validity":"attached; receiving deck support contact only",
-                    "support_names":[deck.name],"search_evidence":handoff.search_evidence}
-                if not handoff.success:
-                    sub.update(stage="handoff",reason="HANDOFF_NO_IK");continue
-                carry,failure=cell.transit(extraction[-1],handoff.q,obstacles,seed+700+oi,attached,
-                                           [deck.name],stage="carry")
+                handoff,carry,failure,handoff_search=cell.connect_pose_candidates(
+                    desired_tcp,[extraction[-1],ik.q,current_q],seed+600+oi,extraction[-1],obstacles,
+                    seed+700+oi,"carry",
+                    lambda q:cell.validate_handoff_endpoint(q,obstacles,attached,deck)[1] is None,
+                    attached,[deck.name],mode=p["stage_ik_search_mode"])
+                sub["handoff_search"]=handoff_search
+                if handoff is None:
+                    if handoff_search["connection_attempts"]:
+                        sub.update(stage="carry",reason=failure["reason"],failure=failure)
+                    else:
+                        sub.update(stage="handoff",reason="HANDOFF_NO_IK")
+                    continue
                 sub["paths"]["carry"]=[q.tolist() for q in carry]
                 if failure:
                     sub.update(stage="carry",reason=failure["reason"],failure=failure);continue

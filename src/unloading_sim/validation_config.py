@@ -215,6 +215,7 @@ def _validate_data(data: dict[str, Any]) -> None:
         "planning.extraction_scan_step_m", "planning.maximum_extraction_m",
         "planning.ik_position_tolerance_m", "planning.ik_orientation_tolerance_rad",
         "planning.ik_damping", "planning.ik_max_step_rad", "planning.ik_orientation_weight",
+        "planning.ik_candidate_dedup_tolerance_rad", "planning.ik_candidate_dedup_tolerance_m",
         "planning.cartesian_max_branch_step_rad", "planning.cartesian_orientation_tolerance_rad",
         "planning.cartesian_orientation_step_rad", "planning.maximum_jacobian_condition",
         "planning.edge_resolution_rad", "planning.cartesian_step_m", "planning.rrt_step_rad",
@@ -249,9 +250,15 @@ def _validate_data(data: dict[str, Any]) -> None:
                           ("scene.regular_columns", 1), ("planning.seed", 0),
                           ("planning.continuous_seed", 0),
                           ("planning.ik_iterations", 1), ("planning.ik_restarts", 0),
+                          ("planning.stage_ik_candidate_limit", 1),
+                          ("planning.stage_connection_attempt_limit", 1),
+                          ("planning.stage_connection_iteration_budget", 1),
                           ("planning.grasp_downstream_candidate_limit_per_strategy", 1),
                           ("planning.escape_path_attempt_limit", 0), ("planning.rrt_iterations", 1)):
         _integer(data, name, minimum=minimum)
+    stage_mode=_field(data,"planning.stage_ik_search_mode")
+    if stage_mode not in {"legacy_single","filtered_single","multi_solution"}:
+        raise ValueError("planning.stage_ik_search_mode: must be legacy_single, filtered_single, or multi_solution")
     random_seeds = _field(data, "scene.random_seeds")
     if isinstance(random_seeds, (str, bytes, dict)) or not random_seeds:
         raise ValueError("scene.random_seeds: must be a non-empty integer sequence")

@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -6,7 +9,7 @@ from unloading_sim.validation_config import load_validation_config
 from unloading_sim.validation_motion import (Cell, evaluate_task, grasp_seed_configurations,
                                                grasp_task_set, escape_path_proposals,
                                                support_relations)
-from unloading_sim.validation_physics import (InitialProximityTracker,
+from unloading_sim.validation_physics import (InitialProximityTracker, RigidAttachment,
                                                contact_separated, world_link_boxes)
 from unloading_sim.validation_scenes import grid_tasks, regular_scene, random_scene
 from tools.run_m710id70_acceptance import _scene_regular, _scene_random
@@ -296,3 +299,82 @@ def test_original_grid_022_top_escape_is_a_reproducible_full_geometry_witness():
     assert metrics['distance_until_first_escape_path']==0
     assert metrics['total_stack_release_distance'] < .02
     assert p['collision_margin_m']==.01
+
+
+@pytest.mark.slow
+def test_evaluate_task_rejects_actual_contact_endpoint_outside_coverage(monkeypatch):
+    cfg=load_validation_config();p=cfg.data['planning']
+    p['grasp_face_offset_candidates_m']=[0.0,0.025]
+    p['grasp_tilt_candidates_rad']=[0.0]
+    p['grasp_downstream_candidate_limit_per_strategy']=3
+    p['escape_rotation_candidates_rad']=[0.0]
+    cell=Cell(cfg);_,target,neighbors,valid=list(grid_tasks(cfg.data['scene']))[22]
+    conveyor=cfg.data['conveyor'];belt=(conveyor['fixed_extension_m'],conveyor['fixed_z_m'])
+    known_contact=np.array([-0.300479359612743,1.2937834890279378,0.4895834197945346,
+                            3.666909416623987e-06,-0.7665782546700639,-4.411918905504988])
+    outside_pose=cell.robot.fk(known_contact).copy()
+    outside_pose[:3,3]+=target.rotation[:,0]*.2
+    outside=cell.solve(outside_pose,[known_contact],99122,stage='test_outside_contact')
+    assert outside.success
+    original_cartesian=cell.cartesian
+
+    def crossed_contact(start,destination,obstacles,seed,attachment=None,support_names=(),
+                        target_contact=None,initial_proximity=None,stage='cartesian'):
+        if target_contact is target:
+            return [np.asarray(start),outside.q.copy()],None
+        return original_cartesian(start,destination,obstacles,seed,attachment,support_names,
+                                  target_contact,initial_proximity,stage)
+
+    monkeypatch.setattr(cell,'cartesian',crossed_contact)
+    result=evaluate_task(cell,target,[target,*neighbors],np.asarray(cfg.data['robot']['home_joints']),
+        belt,seed=p['seed']+22,mode='fixed',only_face='top')
+
+    rejected=[sub for attempt in result['attempts'] if attempt.get('strict_grasp_valid')
+              for sub in attempt.get('conveyor_attempts',[])
+              if sub.get('reason')=='FINAL_CONTACT_COVERAGE_FAILED']
+    assert valid and rejected and not result['geometric_feasible']
+    assert all(sub['stage']=='contact_validation' for sub in rejected)
+    assert all('contact_state' not in sub and 'tcp_from_box' not in sub for sub in rejected)
+    assert all(not sub['failure']['coverage']['geometric_coverage'] for sub in rejected)
+
+
+@pytest.mark.slow
+def test_real_handoff_uses_second_strict_valid_ik_branch_after_first_connection_fails():
+    """Exercise actual M-710 IK, collision checks and RRT branch backtracking."""
+    cfg=load_validation_config();cell=Cell(cfg)
+    _,target,neighbors,valid=list(grid_tasks(cfg.data['scene']))[22]
+    conveyor=cfg.data['conveyor'];belt=(conveyor['fixed_extension_m'],conveyor['fixed_z_m'])
+    decks=cell.decks(belt);deck=decks[1]
+    obstacles=[*cell.fixtures(),*neighbors,*decks]
+    evidence=Path('docs/validation/evidence/m710id70_v3_hardening_baseline') / \
+             'representative_success_grid_022.json'
+    selected=json.loads(evidence.read_text(encoding='utf-8'))['task']['selected']
+    start=np.asarray(selected['paths']['extraction'][-1])
+    attachment=RigidAttachment(np.asarray(selected['tcp_from_box']),target.half_extents,target.name)
+    disconnected=np.array([2.3017154929270216,-0.8216171444816843,3.271290421876069,
+        3.1417028349347134,-0.6194600865396844,-3.872611302379414])
+    connected=np.array([-0.8398753368245535,0.6932950816681044,-0.7987123516487091,
+        0.000825148069595617,-0.07877058422026448,-3.8733456706593072])
+    pose=cell.robot.fk(connected)
+    endpoint_valid=lambda q:cell.validate_handoff_endpoint(q,obstacles,attachment,deck)[1] is None
+    cell.p['ik_restarts']=0
+    cell.p['stage_ik_candidate_limit']=2
+    cell.p['stage_connection_attempt_limit']=2
+    cell.p['stage_connection_iteration_budget']=800
+
+    assert endpoint_valid(disconnected) and endpoint_valid(connected)
+    candidate,path,failure,search=cell.connect_pose_candidates(
+        pose,[disconnected,connected],9022,start,obstacles,10022,'carry_real_multisolution',
+        endpoint_valid,attachment,[deck.name],mode='multi_solution')
+
+    assert valid and failure is None
+    assert np.allclose(candidate.q,connected,atol=1e-10)
+    assert len(search['connection_attempts'])==2
+    assert search['connection_attempts'][0]['failure']['reason']=='PATH_SEARCH_EXHAUSTED'
+    assert search['connection_attempts'][1]['connection_success']
+    assert np.allclose(path[0],start,atol=1e-12)
+    assert np.allclose(path[-1],candidate.q,atol=1e-12)
+    assert cell.path_failure(path,obstacles,attachment,[deck.name]) is None
+    support,endpoint_failure=cell.validate_handoff_endpoint(path[-1],obstacles,attachment,deck)
+    assert endpoint_failure is None and support['supported']
+    assert search['shared_rrt_iterations_consumed']<=800

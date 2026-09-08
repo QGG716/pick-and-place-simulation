@@ -23,6 +23,161 @@ class IKResult:
     search_evidence: dict = field(default_factory=dict)
 
 
+class IKCandidateStream:
+    """Lazily continue one deterministic seed stream and yield distinct solutions."""
+
+    def __init__(
+        self,
+        robot: RobotBackend,
+        target: np.ndarray,
+        seeds: Sequence[np.ndarray],
+        *,
+        obstacles: Sequence[OBB] | None = None,
+        ignored_obstacle_names: set[str] | None = None,
+        random_restarts: int = 10,
+        rng: np.random.Generator | None = None,
+        candidate_limit: int | None = None,
+        dedup_tolerance_rad: float = 1e-3,
+        dedup_tolerance_m: float = 1e-4,
+        **kwargs,
+    ) -> None:
+        self.robot = robot
+        self.target = target
+        self.obstacles = obstacles
+        self.ignored_obstacle_names = ignored_obstacle_names
+        self.kwargs = kwargs
+        self.explicit_seed_count = len(seeds)
+        self.random_restart_count = int(random_restarts)
+        generator = rng or np.random.default_rng(0)
+        self.seeds = [np.asarray(seed, dtype=float) for seed in seeds]
+        self.seeds.extend(
+            generator.uniform(robot.joint_limits[:, 0], robot.joint_limits[:, 1])
+            for _ in range(self.random_restart_count)
+        )
+        self.candidate_limit = candidate_limit
+        self.dedup_tolerance_rad = float(dedup_tolerance_rad)
+        self.dedup_tolerance_m = float(dedup_tolerance_m)
+        self.seed_index = 0
+        self.iterations_consumed = 0
+        self.converged_pose_results = 0
+        self.valid_solutions = 0
+        self.duplicate_candidates = 0
+        self.solutions: list[np.ndarray] = []
+        self.best_failure: IKResult | None = None
+        self.termination = "NOT_STARTED"
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> IKResult:
+        if self.candidate_limit is not None and len(self.solutions) >= self.candidate_limit:
+            self.termination = "IK_CANDIDATE_LIMIT_REACHED"
+            raise StopIteration
+        position_tolerance = float(self.kwargs.get("position_tolerance", 0.008))
+        orientation_tolerance = float(self.kwargs.get("orientation_tolerance", 0.06))
+        while self.seed_index < len(self.seeds):
+            seed = self.seeds[self.seed_index]
+            self.seed_index += 1
+            result = solve_ik(
+                self.robot,
+                self.target,
+                seed,
+                obstacles=self.obstacles,
+                ignored_obstacle_names=self.ignored_obstacle_names,
+                **self.kwargs,
+            )
+            self.iterations_consumed += result.iterations
+            converged = (
+                result.position_error <= position_tolerance
+                and result.orientation_error <= orientation_tolerance
+            )
+            self.converged_pose_results += int(converged)
+            if not result.success:
+                cost = result.position_error + 0.25 * result.orientation_error
+                if self.best_failure is None or cost < (
+                    self.best_failure.position_error + 0.25 * self.best_failure.orientation_error
+                ):
+                    self.best_failure = result
+                continue
+            self.valid_solutions += 1
+            if any(joint_solutions_equivalent(
+                self.robot, result.q, prior,
+                revolute_tolerance_rad=self.dedup_tolerance_rad,
+                prismatic_tolerance_m=self.dedup_tolerance_m,
+            ) for prior in self.solutions):
+                self.duplicate_candidates += 1
+                continue
+            self.solutions.append(result.q.copy())
+            self.termination = "VALID_SOLUTION_YIELDED"
+            result.search_evidence = self.evidence()
+            result.search_evidence["candidate_id"] = (
+                f"seed_{self.seed_index - 1:03d}_unique_{len(self.solutions) - 1:02d}"
+            )
+            return result
+        self.termination = "SEED_STREAM_EXHAUSTED"
+        raise StopIteration
+
+    def evidence(self) -> dict:
+        max_iterations = int(self.kwargs.get("max_iterations", 250))
+        return {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": len(self.seeds),
+            "explicit_seed_count": self.explicit_seed_count,
+            "random_restart_count": self.random_restart_count,
+            "seeds_attempted": self.seed_index,
+            "last_seed_index": self.seed_index - 1,
+            "iterations_per_seed_available": max_iterations,
+            "iteration_capacity_available": len(self.seeds) * max_iterations,
+            "iteration_capacity_for_attempted_seeds": self.seed_index * max_iterations,
+            "iterations_consumed": self.iterations_consumed,
+            "converged_pose_results": self.converged_pose_results,
+            "valid_solutions": self.valid_solutions,
+            "deduplicated_candidates": len(self.solutions),
+            "duplicate_candidates": self.duplicate_candidates,
+            "candidate_limit": self.candidate_limit,
+            "dedup_tolerance_rad": self.dedup_tolerance_rad,
+            "dedup_tolerance_m": self.dedup_tolerance_m,
+            "seed_stream_exhausted": self.seed_index >= len(self.seeds),
+            "termination": self.termination,
+        }
+
+
+def iter_ik_solutions(
+    robot: RobotBackend,
+    target: np.ndarray,
+    seeds: Sequence[np.ndarray],
+    **kwargs,
+) -> IKCandidateStream:
+    return IKCandidateStream(robot, target, seeds, **kwargs)
+
+
+def joint_solutions_equivalent(
+    robot: RobotBackend,
+    first: np.ndarray,
+    second: np.ndarray,
+    *,
+    revolute_tolerance_rad: float,
+    prismatic_tolerance_m: float,
+) -> bool:
+    """Compare joints without folding bounded revolute or mixing SI units."""
+    a = np.asarray(first, dtype=float)
+    b = np.asarray(second, dtype=float)
+    if a.shape != b.shape:
+        return False
+    joints = getattr(robot, "active_joints", None)
+    joint_types = [joint.joint_type for joint in joints] if joints is not None else \
+                  ["revolute"] * len(a)
+    if len(joint_types) != len(a):
+        raise ValueError("robot joint type metadata does not match candidate dimension")
+    for delta, joint_type in zip(np.abs(a - b), joint_types):
+        if joint_type == "continuous":
+            delta = abs((float(delta) + np.pi) % (2 * np.pi) - np.pi)
+        tolerance = prismatic_tolerance_m if joint_type == "prismatic" else revolute_tolerance_rad
+        if delta > tolerance:
+            return False
+    return True
+
+
 def pose_error(current: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, float, float]:
     p_error = target[:3, 3] - current[:3, 3]
     r_error = target[:3, :3] @ current[:3, :3].T

@@ -1,10 +1,12 @@
 import json
 from pathlib import Path
+from types import MethodType, SimpleNamespace
 
 import numpy as np
 
 from unloading_sim.geometry import OBB
-from unloading_sim.ik import solve_ik_multistart
+from unloading_sim.ik import (IKResult, iter_ik_solutions, joint_solutions_equivalent,
+                              solve_ik_multistart)
 from unloading_sim.planner import RRTConnectPlanner
 from unloading_sim.validation_config import load_validation_config
 from unloading_sim.validation_motion import Cell, evaluate_task
@@ -171,3 +173,176 @@ def test_handoff_support_contact_rejects_penetration_beyond_existing_tolerance()
     assert not support["supported"]
     assert failure["reason"] == "HANDOFF_ENDPOINT_COLLISION"
     assert failure["stage_failure"]["reason"] == "PAYLOAD_COLLISION"
+
+
+def test_lazy_ik_stream_continues_after_converged_invalid_solution(monkeypatch):
+    def fake_solve(_robot, _target, seed, **_kwargs):
+        valid = bool(seed[0] > 0.5)
+        return IKResult(valid, np.asarray(seed), 2, 0.0, 0.0,
+                        "converged" if valid else "converged pose violates collision")
+
+    monkeypatch.setattr("unloading_sim.ik.solve_ik", fake_solve)
+    stream = iter_ik_solutions(
+        OneAxisRobot(), np.eye(4), [np.array([0.0]), np.array([1.0])],
+        random_restarts=0, candidate_limit=2,
+    )
+
+    result = next(stream)
+
+    assert np.array_equal(result.q, [1.0])
+    assert stream.evidence()["seeds_attempted"] == 2
+    assert stream.evidence()["converged_pose_results"] == 2
+    assert stream.evidence()["valid_solutions"] == 1
+
+
+def _connection_cell():
+    cell = object.__new__(Cell)
+    cell.robot = OneAxisRobot()
+    cell.p = {
+        "stage_ik_search_mode": "multi_solution",
+        "stage_ik_candidate_limit": 3,
+        "stage_connection_attempt_limit": 3,
+        "stage_connection_iteration_budget": 8,
+        "ik_candidate_dedup_tolerance_rad": 1e-3,
+        "ik_candidate_dedup_tolerance_m": 1e-4,
+        "ik_restarts": 0,
+        "ik_iterations": 5,
+        "ik_damping": 0.01,
+        "ik_max_step_rad": 1.0,
+        "ik_position_tolerance_m": 1e-6,
+        "ik_orientation_tolerance_rad": 1e-6,
+        "ik_orientation_weight": 1.0,
+        "rrt_iterations": 8,
+    }
+    cell.search_events = {"ik": [], "connection": []}
+    return cell
+
+
+def _successful_fake_ik(_robot, _target, seed, **_kwargs):
+    return IKResult(True, np.asarray(seed), 1, 0.0, 0.0, "converged")
+
+
+def test_second_valid_candidate_gets_real_connection_attempt_from_same_start(monkeypatch):
+    monkeypatch.setattr("unloading_sim.ik.solve_ik", _successful_fake_ik)
+    cell = _connection_cell()
+    starts = []
+    attachment = object()
+    obstacles = [object()]
+
+    def fake_transit(self, start, goal, seen_obstacles, seed, seen_attachment=None,
+                     support_names=(), target_contact=None, stage="transit", max_iterations=None):
+        starts.append(np.asarray(start).copy())
+        assert seen_obstacles is obstacles
+        assert seen_attachment is attachment
+        success = bool(goal[0] > 0.5)
+        consumed = 1 if success else max_iterations
+        self.search_events["connection"].append({
+            "stage": stage, "planning_iterations_consumed": consumed,
+            "planning_iteration_budget": max_iterations, "termination": "CONNECTED" if success else "MAXIMUM_ITERATIONS_REACHED",
+        })
+        return ([np.asarray(start), np.asarray(goal)] if success else []), \
+               (None if success else {"reason": "PATH_SEARCH_EXHAUSTED"})
+
+    cell.transit = MethodType(fake_transit, cell)
+    selected, path, failure, evidence = cell.connect_pose_candidates(
+        np.eye(4), [np.array([0.0]), np.array([1.0])], 10, np.array([-1.0]),
+        obstacles, 20, "approach", lambda _q: True, attachment=attachment,
+    )
+
+    assert failure is None and np.array_equal(selected.q, [1.0])
+    assert np.array_equal(path[-1], selected.q)
+    assert len(starts) == 2 and all(np.array_equal(start, [-1.0]) for start in starts)
+    assert evidence["connection_attempts"][0]["failure"]["reason"] == "PATH_SEARCH_EXHAUSTED"
+    assert evidence["connection_attempts"][1]["connection_success"]
+    assert evidence["shared_rrt_iterations_consumed"] <= 8
+
+
+def test_connector_rejects_actual_endpoint_that_differs_from_selected_candidate(monkeypatch):
+    monkeypatch.setattr("unloading_sim.ik.solve_ik", _successful_fake_ik)
+    cell = _connection_cell()
+
+    def mismatched_transit(self, start, goal, _obstacles, _seed, *_args,
+                           stage="transit", max_iterations=None, **_kwargs):
+        self.search_events["connection"].append({
+            "stage": stage, "planning_iterations_consumed": 0,
+            "planning_iteration_budget": max_iterations, "termination": "DIRECT_EDGE",
+        })
+        return [np.asarray(start), np.asarray(goal) + 0.1], None
+
+    cell.transit = MethodType(mismatched_transit, cell)
+    selected, _, failure, evidence = cell.connect_pose_candidates(
+        np.eye(4), [np.array([0.0])], 30, np.array([-1.0]), [], 40,
+        "approach", lambda _q: True,
+    )
+
+    assert selected is None
+    assert failure["reason"] == "CONNECTION_ENDPOINT_MISMATCH"
+    assert not evidence["connection_attempts"][0]["connection_success"]
+
+
+def test_joint_candidate_dedup_respects_bounded_continuous_and_prismatic_units():
+    bounded = SimpleNamespace(active_joints=[SimpleNamespace(joint_type="revolute")])
+    continuous = SimpleNamespace(active_joints=[SimpleNamespace(joint_type="continuous")])
+    prismatic = SimpleNamespace(active_joints=[SimpleNamespace(joint_type="prismatic")])
+
+    assert not joint_solutions_equivalent(
+        bounded, np.array([0.0]), np.array([2 * np.pi]),
+        revolute_tolerance_rad=1e-3, prismatic_tolerance_m=1e-4,
+    )
+    assert joint_solutions_equivalent(
+        continuous, np.array([0.0]), np.array([2 * np.pi]),
+        revolute_tolerance_rad=1e-3, prismatic_tolerance_m=1e-4,
+    )
+    assert not joint_solutions_equivalent(
+        prismatic, np.array([0.0]), np.array([2e-4]),
+        revolute_tolerance_rad=1e-3, prismatic_tolerance_m=1e-4,
+    )
+
+
+def test_near_duplicate_does_not_consume_lazy_candidate_limit(monkeypatch):
+    monkeypatch.setattr("unloading_sim.ik.solve_ik", _successful_fake_ik)
+    robot = SimpleNamespace(
+        active_joints=[SimpleNamespace(joint_type="revolute")],
+        joint_limits=np.array([[-2.0, 2.0]]),
+    )
+    stream = iter_ik_solutions(
+        robot, np.eye(4), [np.array([0.0]), np.array([5e-4]), np.array([1.0])],
+        random_restarts=0, candidate_limit=2, dedup_tolerance_rad=1e-3,
+        dedup_tolerance_m=1e-4,
+    )
+
+    solutions = list(stream)
+
+    assert [solution.q.tolist() for solution in solutions] == [[0.0], [1.0]]
+    assert stream.evidence()["duplicate_candidates"] == 1
+    assert stream.evidence()["deduplicated_candidates"] == 2
+
+
+def test_multi_candidate_connections_share_budget_and_are_reproducible(monkeypatch):
+    monkeypatch.setattr("unloading_sim.ik.solve_ik", _successful_fake_ik)
+
+    def run_once():
+        cell = _connection_cell()
+
+        def failed_transit(self, _start, _goal, _obstacles, _seed, *_args,
+                           stage="transit", max_iterations=None, **_kwargs):
+            self.search_events["connection"].append({
+                "stage": stage, "planning_iterations_consumed": max_iterations,
+                "planning_iteration_budget": max_iterations, "termination": "MAXIMUM_ITERATIONS_REACHED",
+            })
+            return [], {"reason": "PATH_SEARCH_EXHAUSTED"}
+
+        cell.transit = MethodType(failed_transit, cell)
+        return cell.connect_pose_candidates(
+            np.eye(4), [np.array([0.0]), np.array([0.5]), np.array([1.0])],
+            50, np.array([-1.0]), [], 60, "carry", lambda _q: True,
+        )[3]
+
+    first = run_once()
+    second = run_once()
+
+    allocations = [item["rrt_iteration_allocation"] for item in first["connection_attempts"]]
+    assert allocations == [3, 3, 2]
+    assert first == second
+    assert first["shared_rrt_iterations_consumed"] == 8
+    assert first["termination"] == "STAGE_CONNECTION_ITERATION_BUDGET_EXHAUSTED"

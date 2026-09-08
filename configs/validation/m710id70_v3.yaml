@@ -74,6 +74,14 @@ planning:
   ik_damping: 0.015
   ik_max_step_rad: 0.20
   ik_orientation_weight: 0.55
+  # Pregrasp and handoff consume one deterministic seed stream lazily. Their
+  # RRT attempts share this per-stage-subproblem iteration budget.
+  stage_ik_search_mode: multi_solution
+  stage_ik_candidate_limit: 3
+  stage_connection_attempt_limit: 3
+  stage_connection_iteration_budget: 800
+  ik_candidate_dedup_tolerance_rad: 0.001
+  ik_candidate_dedup_tolerance_m: 0.0001
   # Ordered task-set fallback around the nominal face center. Values are
   # validated again by complete-cup coverage at the requested and actual FK.
   grasp_face_offset_candidates_m: [0.0, -0.025, 0.025, -0.05, 0.05]

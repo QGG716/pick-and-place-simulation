@@ -28,7 +28,7 @@ from unloading_sim.timing import time_parameterize_joint_path
 from tools.capture_m710_evidence import capture
 
 TASK_CACHE_SCHEMA = "m710_task_cache_v2_model_assets"
-VALIDATION_STRATEGY_VERSION = "strict_contact_escape_scheduler_v2"
+VALIDATION_STRATEGY_VERSION = "strict_contact_escape_stage_ik_v3"
 
 
 def canonical_digest(value):
@@ -79,6 +79,7 @@ def compact(task_id,result,**extra):
     reasons=Counter(a['reason'] for a in result['attempts'])
     details=Counter(a['failure_taxonomy']['detail'] for a in result['attempts'] if 'failure_taxonomy' in a)
     return {'task_id':task_id,**extra,'box':result['box'],'seed':result['seed'],'mode':result['mode'],
+            'stage_ik_search_mode':result.get('stage_ik_search_mode'),
             'GRASP_REACHABLE':result['grasp_reachable'],'EXTRACTION_FEASIBLE':result['extraction_feasible'],
             'GEOMETRICALLY_REACHABLE':result['geometric_feasible'],'PAYLOAD_QUALIFIED':result['payload_qualified'],
             'DYNAMICS_VERIFIED':result['dynamics_verified'],'load_status':result['load_status'],
@@ -96,6 +97,7 @@ def compact(task_id,result,**extra):
             'ik_valid_solutions_task_total':search.get('ik_valid_solutions',0),
             'ik_deduplicated_candidates_task_total':search.get('ik_deduplicated_candidates',0),
             'connection_attempts_task_total':search.get('connection_attempts',0),
+            'stage_connections_using_nonfirst_candidate_task_total':search.get('stage_connections_using_nonfirst_candidate',0),
             'rrt_iterations_consumed_task_total':search.get('rrt_iterations_consumed',0),
             'rrt_iteration_capacity_task_total':search.get('rrt_iteration_capacity_available',0),
             'rrt_state_validations_task_total':search.get('rrt_state_validations',0),
