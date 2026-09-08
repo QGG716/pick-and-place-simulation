@@ -20,7 +20,8 @@ from enum import Enum
 import hashlib
 import json
 from math import ceil, isfinite
-from time import perf_counter
+from threading import Condition, Thread
+from time import monotonic, perf_counter
 from types import MappingProxyType
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
@@ -74,6 +75,16 @@ class OperationalOutcome(str, Enum):
     CANCELLED = "CANCELLED"
     BACKEND_ERROR = "BACKEND_ERROR"
     CACHE_MISS = "CACHE_MISS"
+
+
+class PlanningCancellationResult(str, Enum):
+    """Unambiguous executor-level cancellation state."""
+
+    CANCELLED_BEFORE_START = "CANCELLED_BEFORE_START"
+    CANCELLATION_REQUESTED = "CANCELLATION_REQUESTED"
+    NOT_RUNNING = "NOT_RUNNING"
+    NOT_SUPPORTED = "NOT_SUPPORTED"
+    ALREADY_COMPLETED = "ALREADY_COMPLETED"
 
 
 class OutcomeCategory(str, Enum):
@@ -1298,20 +1309,40 @@ class PlanningLatencyStatistics:
         }
 
 
-@dataclass
+@dataclass(frozen=True)
 class _ExecutorTask:
     task_id: str
     operation: Callable[[], PlanningResult]
     submitted_at: float
 
 
-@dataclass
-class _ExecutorCompletion:
+@dataclass(frozen=True)
+class PlanningTaskCompletion:
+    """Immutable value transferred from an executor to the session thread."""
+
     task_id: str
     result: PlanningResult | None
-    elapsed_seconds: float
+    executor_compute_seconds: float
     queue_seconds: float = 0.0
     error: Exception | None = None
+    cancellation_result: PlanningCancellationResult | None = None
+
+    def __post_init__(self) -> None:
+        for name, value in (
+            ("executor_compute_seconds", self.executor_compute_seconds),
+            ("queue_seconds", self.queue_seconds),
+        ):
+            if not isfinite(value) or value < 0.0:
+                raise ValueError(f"{name} must be finite and non-negative")
+
+    @property
+    def elapsed_seconds(self) -> float:
+        """Compatibility name for the executor-measured compute duration."""
+
+        return self.executor_compute_seconds
+
+
+_ExecutorCompletion = PlanningTaskCompletion
 
 
 class PlanningExecutor(ABC):
@@ -1321,24 +1352,64 @@ class PlanningExecutor(ABC):
     @abstractmethod
     def advance(self, max_tasks: int = 1) -> int: ...
 
+    def poll(self, max_tasks: int = 1) -> int:
+        return self.advance(max_tasks)
+
     @abstractmethod
-    def pop_completed(self) -> _ExecutorCompletion | None: ...
+    def pop_completed(self) -> PlanningTaskCompletion | None: ...
 
     @property
     @abstractmethod
     def pending_count(self) -> int: ...
 
+    @property
+    @abstractmethod
+    def running_count(self) -> int: ...
+
+    @abstractmethod
+    def cancel(self, task_id: str) -> PlanningCancellationResult: ...
+
+    @abstractmethod
+    def wait_for_completion(self, timeout_seconds: float) -> bool: ...
+
+    @abstractmethod
+    def shutdown(
+        self,
+        wait: bool = True,
+        cancel_pending: bool = False,
+        *,
+        timeout_seconds: float = 5.0,
+    ) -> None: ...
+
+    @property
+    @abstractmethod
+    def closed(self) -> bool: ...
+
+    def close(self) -> None:
+        self.shutdown(wait=True, cancel_pending=True)
+
+    def __enter__(self) -> PlanningExecutor:
+        return self
+
+    def __exit__(self, exc_type: Any, exc: Any, traceback: Any) -> None:
+        self.close()
+
 
 class CooperativePlanningExecutor(PlanningExecutor):
-    """FIFO cooperative executor with deterministic completion ordering."""
+    """FIFO caller-thread executor; :meth:`submit` only enqueues work."""
 
     def __init__(self, clock: Callable[[], float] = perf_counter) -> None:
         self._clock = clock
         self._pending: deque[_ExecutorTask] = deque()
-        self._completed: deque[_ExecutorCompletion] = deque()
+        self._completed: deque[PlanningTaskCompletion] = deque()
         self._ids: set[str] = set()
+        self._running_task_id: str | None = None
+        self._cancellation_requested: set[str] = set()
+        self._closed = False
 
     def submit(self, task_id: str, operation: Callable[[], PlanningResult]) -> None:
+        if self._closed:
+            raise RuntimeError("planning executor is closed")
         if task_id in self._ids:
             raise ValueError(f"duplicate planning task id: {task_id}")
         self._ids.add(task_id)
@@ -1350,29 +1421,101 @@ class CooperativePlanningExecutor(PlanningExecutor):
         completed = 0
         while self._pending and completed < max_tasks:
             task = self._pending.popleft()
+            self._running_task_id = task.task_id
             started = self._clock()
             queue_seconds = started - task.submitted_at
             if queue_seconds < 0.0:
                 raise RuntimeError("executor clock moved backwards")
             try:
                 result = task.operation()
-                item = _ExecutorCompletion(task.task_id, result, self._clock() - started, queue_seconds)
+                error: Exception | None = None
             except Exception as exc:  # Backend failure is a recovery event, not a deadlock.
-                item = _ExecutorCompletion(task.task_id, None, self._clock() - started, queue_seconds, exc)
-            self._completed.append(item)
+                result = None
+                error = exc
+            compute_seconds = self._clock() - started
+            if compute_seconds < 0.0:
+                raise RuntimeError("executor clock moved backwards")
+            cancellation = (
+                PlanningCancellationResult.CANCELLATION_REQUESTED
+                if task.task_id in self._cancellation_requested
+                else None
+            )
+            self._running_task_id = None
+            self._cancellation_requested.discard(task.task_id)
+            self._completed.append(
+                PlanningTaskCompletion(
+                    task.task_id,
+                    result,
+                    compute_seconds,
+                    queue_seconds,
+                    error,
+                    cancellation,
+                )
+            )
             completed += 1
         return completed
 
-    def pop_completed(self) -> _ExecutorCompletion | None:
+    def pop_completed(self) -> PlanningTaskCompletion | None:
         if not self._completed:
             return None
-        item = self._completed.popleft()
-        self._ids.remove(item.task_id)
-        return item
+        return self._completed.popleft()
 
     @property
     def pending_count(self) -> int:
-        return len(self._pending) + len(self._completed)
+        return len(self._pending)
+
+    @property
+    def running_count(self) -> int:
+        return int(self._running_task_id is not None)
+
+    def cancel(self, task_id: str) -> PlanningCancellationResult:
+        for task in self._pending:
+            if task.task_id == task_id:
+                self._pending.remove(task)
+                queue_seconds = self._clock() - task.submitted_at
+                if queue_seconds < 0.0:
+                    raise RuntimeError("executor clock moved backwards")
+                self._completed.append(
+                    PlanningTaskCompletion(
+                        task_id,
+                        None,
+                        0.0,
+                        queue_seconds,
+                        cancellation_result=PlanningCancellationResult.CANCELLED_BEFORE_START,
+                    )
+                )
+                return PlanningCancellationResult.CANCELLED_BEFORE_START
+        if self._running_task_id == task_id:
+            self._cancellation_requested.add(task_id)
+            return PlanningCancellationResult.CANCELLATION_REQUESTED
+        if task_id in self._ids:
+            return PlanningCancellationResult.ALREADY_COMPLETED
+        return PlanningCancellationResult.NOT_RUNNING
+
+    def wait_for_completion(self, timeout_seconds: float) -> bool:
+        if not isfinite(timeout_seconds) or timeout_seconds < 0.0:
+            raise ValueError("timeout_seconds must be finite and non-negative")
+        return bool(self._completed)
+
+    def shutdown(
+        self,
+        wait: bool = True,
+        cancel_pending: bool = False,
+        *,
+        timeout_seconds: float = 5.0,
+    ) -> None:
+        if not isfinite(timeout_seconds) or timeout_seconds < 0.0:
+            raise ValueError("timeout_seconds must be finite and non-negative")
+        self._closed = True
+        if cancel_pending:
+            for task_id in tuple(task.task_id for task in self._pending):
+                self.cancel(task_id)
+        elif wait:
+            self.advance(len(self._pending))
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
 
 
 class DeterministicAsyncPlanningExecutor(CooperativePlanningExecutor):
@@ -1384,11 +1527,187 @@ class DeterministicAsyncPlanningExecutor(CooperativePlanningExecutor):
 
 
 class SynchronousPlanningExecutor(CooperativePlanningExecutor):
-    """Same FIFO semantics, but submission computes the task immediately."""
+    """Submission computes immediately in the caller thread."""
 
     def submit(self, task_id: str, operation: Callable[[], PlanningResult]) -> None:
         super().submit(task_id, operation)
         self.advance(1)
+
+
+class ThreadedPlanningExecutor(PlanningExecutor):
+    """Strict-FIFO single-worker executor for real background planning."""
+
+    def __init__(
+        self,
+        clock: Callable[[], float] = perf_counter,
+        *,
+        max_workers: int = 1,
+        thread_name: str = "online-planning-worker",
+    ) -> None:
+        if max_workers != 1:
+            raise ValueError("ThreadedPlanningExecutor requires max_workers=1 for strict FIFO ordering")
+        self._clock = clock
+        self._condition = Condition()
+        self._pending: deque[_ExecutorTask] = deque()
+        self._completed: deque[PlanningTaskCompletion] = deque()
+        self._ids: set[str] = set()
+        self._running_task: _ExecutorTask | None = None
+        self._cancellation_requested: set[str] = set()
+        self._closed = False
+        self._worker = Thread(target=self._worker_loop, name=thread_name, daemon=True)
+        self._worker.start()
+
+    def submit(self, task_id: str, operation: Callable[[], PlanningResult]) -> None:
+        with self._condition:
+            if self._closed:
+                raise RuntimeError("planning executor is closed")
+            if task_id in self._ids:
+                raise ValueError(f"duplicate planning task id: {task_id}")
+            self._ids.add(task_id)
+            self._pending.append(_ExecutorTask(task_id, operation, self._clock()))
+            self._condition.notify_all()
+
+    def _worker_loop(self) -> None:
+        while True:
+            with self._condition:
+                self._condition.wait_for(lambda: bool(self._pending) or self._closed)
+                if not self._pending:
+                    if self._closed:
+                        return
+                    continue
+                task = self._pending.popleft()
+                self._running_task = task
+            started = self._clock()
+            queue_seconds = started - task.submitted_at
+            if queue_seconds < 0.0:
+                result: PlanningResult | None = None
+                error: Exception | None = RuntimeError("executor clock moved backwards")
+                compute_seconds = 0.0
+            else:
+                try:
+                    result = task.operation()
+                    error = None
+                except Exception as exc:  # One failed operation must not terminate the worker.
+                    result = None
+                    error = exc
+                compute_seconds = self._clock() - started
+                if compute_seconds < 0.0:
+                    result = None
+                    error = RuntimeError("executor clock moved backwards")
+                    compute_seconds = 0.0
+            with self._condition:
+                cancellation = (
+                    PlanningCancellationResult.CANCELLATION_REQUESTED
+                    if task.task_id in self._cancellation_requested
+                    else None
+                )
+                self._cancellation_requested.discard(task.task_id)
+                self._running_task = None
+                self._completed.append(
+                    PlanningTaskCompletion(
+                        task.task_id,
+                        result,
+                        compute_seconds,
+                        queue_seconds,
+                        error,
+                        cancellation,
+                    )
+                )
+                self._condition.notify_all()
+
+    def advance(self, max_tasks: int = 1) -> int:
+        if max_tasks < 0:
+            raise ValueError("max_tasks must be non-negative")
+        with self._condition:
+            return min(max_tasks, len(self._completed))
+
+    def pop_completed(self) -> PlanningTaskCompletion | None:
+        with self._condition:
+            if not self._completed:
+                return None
+            return self._completed.popleft()
+
+    @property
+    def pending_count(self) -> int:
+        with self._condition:
+            return len(self._pending)
+
+    @property
+    def running_count(self) -> int:
+        with self._condition:
+            return int(self._running_task is not None)
+
+    @property
+    def closed(self) -> bool:
+        with self._condition:
+            return self._closed
+
+    @property
+    def worker_alive(self) -> bool:
+        return self._worker.is_alive()
+
+    def cancel(self, task_id: str) -> PlanningCancellationResult:
+        with self._condition:
+            for task in self._pending:
+                if task.task_id == task_id:
+                    self._pending.remove(task)
+                    queue_seconds = self._clock() - task.submitted_at
+                    if queue_seconds < 0.0:
+                        raise RuntimeError("executor clock moved backwards")
+                    self._completed.append(
+                        PlanningTaskCompletion(
+                            task_id,
+                            None,
+                            0.0,
+                            queue_seconds,
+                            cancellation_result=PlanningCancellationResult.CANCELLED_BEFORE_START,
+                        )
+                    )
+                    self._condition.notify_all()
+                    return PlanningCancellationResult.CANCELLED_BEFORE_START
+            if self._running_task is not None and self._running_task.task_id == task_id:
+                self._cancellation_requested.add(task_id)
+                return PlanningCancellationResult.CANCELLATION_REQUESTED
+            if task_id in self._ids:
+                return PlanningCancellationResult.ALREADY_COMPLETED
+            return PlanningCancellationResult.NOT_RUNNING
+
+    def wait_for_completion(self, timeout_seconds: float) -> bool:
+        if not isfinite(timeout_seconds) or timeout_seconds < 0.0:
+            raise ValueError("timeout_seconds must be finite and non-negative")
+        with self._condition:
+            self._condition.wait_for(lambda: bool(self._completed), timeout=timeout_seconds)
+            return bool(self._completed)
+
+    def shutdown(
+        self,
+        wait: bool = True,
+        cancel_pending: bool = False,
+        *,
+        timeout_seconds: float = 5.0,
+    ) -> None:
+        if not isfinite(timeout_seconds) or timeout_seconds < 0.0:
+            raise ValueError("timeout_seconds must be finite and non-negative")
+        with self._condition:
+            self._closed = True
+            if cancel_pending:
+                for task in tuple(self._pending):
+                    self._pending.remove(task)
+                    queue_seconds = self._clock() - task.submitted_at
+                    self._completed.append(
+                        PlanningTaskCompletion(
+                            task.task_id,
+                            None,
+                            0.0,
+                            max(0.0, queue_seconds),
+                            cancellation_result=PlanningCancellationResult.CANCELLED_BEFORE_START,
+                        )
+                    )
+            self._condition.notify_all()
+        if wait:
+            self._worker.join(timeout_seconds)
+            if self._worker.is_alive():
+                raise TimeoutError("planning worker did not stop before shutdown timeout")
 
 
 class ExecutionMonitor:
@@ -1557,6 +1876,7 @@ class ContinuousPlanningSession:
         self.last_successful_plan_id: str | None = None
         self._plan_children: dict[str, set[str]] = {}
         self._invalid_lineage_plan_ids: set[str] = set()
+        self._cancelled_task_ids: set[str] = set()
         self._start_tolerance_rad = float(start_tolerance_rad)
 
     @property
@@ -1634,9 +1954,40 @@ class ContinuousPlanningSession:
         progress = self._active_progress
         if progress is None or self._submitted_task is None or not progress.routes:
             return
+        task_id = self._submitted_task
+        if task_id in self._cancelled_task_ids:
+            return
         route = progress.routes[progress.route_index]
         backend = self.backends[route.backend_index]
+        cancellation = self.executor.cancel(task_id)
+        if cancellation is PlanningCancellationResult.CANCELLED_BEFORE_START:
+            self._cancelled_task_ids.add(task_id)
+            self._event(
+                "planning_cancelled_before_start",
+                cancellation.value,
+                progress.request.request_id,
+                backend=backend.identity.backend_name,
+                task_id=task_id,
+            )
+            return
+        if cancellation is not PlanningCancellationResult.CANCELLATION_REQUESTED:
+            self._event(
+                "planning_cancel_not_running",
+                cancellation.value,
+                progress.request.request_id,
+                backend=backend.identity.backend_name,
+                task_id=task_id,
+            )
+            return
+        self._cancelled_task_ids.add(task_id)
         if not backend.capabilities.supports_logical_cancel:
+            self._event(
+                "planning_cancel_unsupported",
+                PlanningCancellationResult.NOT_SUPPORTED.value,
+                progress.request.request_id,
+                backend=backend.identity.backend_name,
+                task_id=task_id,
+            )
             return
         try:
             backend.logical_cancel(progress.request.request_id)
@@ -1645,6 +1996,7 @@ class ContinuousPlanningSession:
                 OperationalOutcome.CANCELLED.value,
                 progress.request.request_id,
                 backend=backend.identity.backend_name,
+                task_id=task_id,
             )
         except Exception as exc:
             self._event(
@@ -1882,7 +2234,6 @@ class ContinuousPlanningSession:
         backend = self.backends[route.backend_index]
         self._task_sequence += 1
         task_id = f"{progress.request.request_id}:{candidate.candidate_id}:{path.value}:{backend.identity.backend_name}:{self._task_sequence}"
-        self._submitted_task = task_id
         request = progress.request
 
         def operation() -> PlanningResult:
@@ -1904,6 +2255,7 @@ class ContinuousPlanningSession:
             return backend.plan(request, candidate, path)
 
         self.executor.submit(task_id, operation)
+        self._submitted_task = task_id
         self._event("planning_started", path.value, request.request_id, target=candidate.target_id, candidate=candidate.candidate_id, backend=backend.identity.backend_name)
 
     def advance(self, max_tasks: int = 1) -> SessionState:
@@ -1923,14 +2275,28 @@ class ContinuousPlanningSession:
         self._refresh_state()
         return self.state
 
-    def run_until_stable(self, max_tasks: int = 1000) -> SessionState:
+    def run_until_stable(
+        self,
+        max_tasks: int = 1000,
+        *,
+        timeout_seconds: float = 5.0,
+    ) -> SessionState:
+        if max_tasks < 1:
+            raise ValueError("max_tasks must be positive")
+        if not isfinite(timeout_seconds) or timeout_seconds < 0.0:
+            raise ValueError("timeout_seconds must be finite and non-negative")
+        deadline = monotonic() + timeout_seconds
         for _ in range(max_tasks):
             before = (self._submitted_task, len(self._requests), self.state, len(self.ready_plans), len(self.speculative_plans))
             self.advance(1)
             after = (self._submitted_task, len(self._requests), self.state, len(self.ready_plans), len(self.speculative_plans))
             if self._submitted_task is None and not self._requests and self._active_progress is None:
                 return self.state
-            if before == after and self.executor.pending_count == 0:
+            if before == after and self._submitted_task is not None:
+                remaining = deadline - monotonic()
+                if remaining <= 0.0 or not self.executor.wait_for_completion(remaining):
+                    raise TimeoutError("planning session did not receive a completion before timeout")
+            elif before == after and self.executor.pending_count == 0 and self.executor.running_count == 0:
                 return self.state
         raise RuntimeError("planning session did not stabilize within max_tasks")
 
@@ -1938,6 +2304,7 @@ class ContinuousPlanningSession:
         if completion.task_id != self._submitted_task or self._active_progress is None:
             raise RuntimeError("executor returned an out-of-order completion")
         self._submitted_task = None
+        self._cancelled_task_ids.discard(completion.task_id)
         progress = self._active_progress
         request = progress.request
         candidate = request.candidates[progress.candidate_index]
@@ -2841,12 +3208,14 @@ __all__ = [
     "PlanValidationResult",
     "PlanValidator",
     "PlanningCandidate",
+    "PlanningCancellationResult",
     "PlanningExecutor",
     "PlanningLatencySample",
     "PlanningLatencyStatistics",
     "PlanningPath",
     "PlanningRequest",
     "PlanningResult",
+    "PlanningTaskCompletion",
     "PlanningWorldSnapshot",
     "PlannerBackend",
     "PlanStatus",
@@ -2858,6 +3227,7 @@ __all__ = [
     "SessionEvent",
     "SessionState",
     "SynchronousPlanningExecutor",
+    "ThreadedPlanningExecutor",
     "ValidationStatus",
     "normalize_plan_status",
     "scene_fingerprint",
