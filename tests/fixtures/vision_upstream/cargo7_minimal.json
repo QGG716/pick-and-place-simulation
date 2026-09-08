@@ -1,0 +1,99 @@
+{
+  "_fixture_provenance": {
+    "repository": "https://github.com/QGG716/cargo-detection-and-6D-estimation",
+    "commit": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+    "source_path": "runs/current/cargo_7/06_final/final_instance_aware.json",
+    "source_sha256": "1184dcd312783251c04d7e8afeb98c7d214a1e3c36c3adb0ebcf80ccafd5390d",
+    "extraction": "Minimal field-preserving records plus explicit rejected/unknown stage variants; numeric values are from the fixed upstream output."
+  },
+  "source": "runs/experiments/14_imagegen_sam_crossvalidated/pilot/cargo_7/source.png",
+  "coordinate_space": "source_image",
+  "source_size": [1536, 1024],
+  "instances": [
+    {
+      "id": 15,
+      "label": "bag",
+      "bbox": [448, 704, 514, 749],
+      "source": "image_generation_edit",
+      "score": null,
+      "sam_iou_score": 0.77665,
+      "sam_prompt_stability": 0.94162,
+      "instance_id": 10,
+      "geometry": null,
+      "geometry_status": "not_applicable_for_bag"
+    },
+    {
+      "id": 1,
+      "label": "box",
+      "bbox": [1074, 453, 1163, 502],
+      "source": "image_generation_edit",
+      "score": null,
+      "sam_iou_score": 0.752,
+      "validation_status": "uncertain",
+      "instance_id": 1,
+      "geometry_status": "recovered",
+      "geometry_3d": {
+        "mask_id": 1,
+        "label": "box",
+        "accepted": true,
+        "method": "moge_metric_pointmap+pyransac3d_planes+shared_orthogonal_cuboid",
+        "completion_mode": "single_visible_plane_cuboid_hypothesis",
+        "visible_plane_count": 1,
+        "monocular_depth_warning": "depth_does_not_resolve_multiple_orthogonal_box_faces",
+        "plane_residual_mean": 0.003146,
+        "orthogonal_axes_3d": [
+          [-0.123413, -0.640966, -0.757583],
+          [0.0, -0.763419, 0.645904],
+          [-0.992355, 0.079713, 0.094216]
+        ],
+        "shape_dimensions": [0.01293, 0.0909, 0.1454],
+        "corners_3d": [
+          [0.9267, -0.30815, 4.05268], [0.9251, -0.31644, 4.04289],
+          [0.9251, -0.38583, 4.10159], [0.9267, -0.37754, 4.11139],
+          [0.78241, -0.29656, 4.06638], [0.78081, -0.30485, 4.05658],
+          [0.78081, -0.37424, 4.1153], [0.78241, -0.36595, 4.12509]
+        ],
+        "mask_reprojection_iou": 0.39858,
+        "certificate_status": "uncertain",
+        "camera_facing_faces": [
+          {
+            "axis_index": 0,
+            "side": "high",
+            "corners_2d": [[1162.77, 489.39], [1155.36, 453.64], [1074.32, 460.72], [1080.54, 496.45]],
+            "evidence": "monocular_depth_plane"
+          },
+          {
+            "axis_index": 1,
+            "side": "low",
+            "corners_2d": [[1162.41, 494.45], [1162.77, 489.39], [1080.54, 496.45], [1080.38, 501.48]],
+            "evidence": "cuboid_constraint_completion"
+          }
+        ]
+      }
+    },
+    {
+      "id": 38,
+      "label": "box",
+      "bbox": [100, 100, 180, 170],
+      "score": 0.51,
+      "instance_id": 38,
+      "geometry_status": "not_recovered",
+      "geometry_3d": null,
+      "geometry_3d_status": "not_recovered"
+    },
+    {
+      "id": 39,
+      "label": "unknown",
+      "bbox": [200, 120, 260, 200],
+      "score": null,
+      "instance_id": 39,
+      "geometry_status": "unknown_cargo_class",
+      "geometry_3d": {"accepted": false, "reason": "non-box cargo skipped by geometry"}
+    }
+  ],
+  "_stage_variants": {
+    "proposal": ["id", "label", "bbox", "score"],
+    "segmentation": ["instance_id", "sam_iou_score", "validation_status"],
+    "final": ["geometry_status", "geometry_3d"]
+  }
+}

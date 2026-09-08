@@ -1,0 +1,7 @@
+mode: synthetic
+data_claim: explicit_synthetic_metric_fixture
+frame_id: world
+units: SI
+pose_error_bound_m: 0.01
+enable_hardware: false
+trajectory_claim: communication_test_fixture_not_physical_plan

@@ -30,6 +30,7 @@ unloading-layer1-optimize-cache = "unloading_sim.trajectory_cache:main"
 unloading-layer1-pybullet-online-kuka = "unloading_sim.pybullet_online_kuka:main"
 unloading-layer1-calibrate = "unloading_sim.calibration:main"
 unloading-layer1-realtime = "unloading_sim.realtime_planner:main"
+unloading-perception-demo = "unloading_perception.demo:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

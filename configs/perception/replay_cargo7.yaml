@@ -1,0 +1,7 @@
+mode: replay
+upstream_commit: 1d208f2ed380a207e6e46b4a62d2ac640edfe477
+fixture: tests/fixtures/vision_upstream/cargo7_minimal.json
+clock_domain: replay
+metric_scale_policy: require_independent_validation
+extrinsics_policy: require_capture_time_tf
+absence_means_free_space: false
