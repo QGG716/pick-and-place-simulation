@@ -75,10 +75,14 @@ from .online_execution import (
 )
 from .online_runtime import (
     ContinuousPlanningRuntime,
+    ObservationAuthority,
     RuntimeEvent,
+    RuntimeIngressResult,
+    RuntimeIngressStatus,
     RuntimeMetrics,
     RuntimeState,
     SuccessorRequestFactory,
+    WorldObservation,
 )
 
 __all__ = [
@@ -168,8 +172,12 @@ __all__ = [
     "ExecutionFeedback",
     "ExecutionFeedbackStatus",
     "ContinuousPlanningRuntime",
+    "ObservationAuthority",
     "RuntimeEvent",
+    "RuntimeIngressResult",
+    "RuntimeIngressStatus",
     "RuntimeMetrics",
     "RuntimeState",
     "SuccessorRequestFactory",
+    "WorldObservation",
 ]

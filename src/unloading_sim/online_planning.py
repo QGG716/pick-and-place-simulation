@@ -3403,6 +3403,67 @@ class ContinuousPlanningSession:
         )
         return plan
 
+    def enter_recovery(
+        self,
+        message: str,
+        *,
+        reason: ReplanReason = ReplanReason.EXECUTION_FAILED,
+        plan_id: str | None = None,
+        actual_boundary: MotionBoundaryState | None = None,
+        execution_id: str | None = None,
+    ) -> PlanEnvelope | None:
+        """Fail closed through a public session transition.
+
+        Runtime and adapter layers use this entry point instead of assigning
+        ``session.state``. If execution is active, the normal execution fault
+        path preserves its identity and cascades lineage. Otherwise queued and
+        ready work is invalidated because its safety context is no longer
+        trustworthy.
+        """
+
+        if self.execution.active_plan is not None and self.execution.state in {
+            ExecutionState.RUNNING,
+            ExecutionState.STOPPING,
+        }:
+            return self.fail_execution_control_plane(
+                message,
+                reason=reason,
+                actual_boundary=actual_boundary,
+                execution_id=execution_id,
+            )
+        if actual_boundary is not None:
+            if not isinstance(actual_boundary, MotionBoundaryState):
+                raise TypeError("actual_boundary must be a MotionBoundaryState")
+            self.current_motion_boundary = actual_boundary
+            self.last_actual_execution_boundary = actual_boundary
+        self._logical_cancel_active()
+        while self._requests:
+            progress = self._requests.popleft()
+            self._event(
+                "pending_request_invalidated",
+                reason.value,
+                progress.request.request_id,
+                message=message,
+            )
+        for plans in (self.ready_plans, self.speculative_plans):
+            while plans:
+                envelope = plans.popleft()
+                self.invalidated_plans.append(envelope.invalidate(reason, message))
+        if plan_id is not None:
+            self._cascade_lineage(plan_id, reason, message)
+        self._waiting_for_scene = False
+        self.state = SessionState.RECOVERY
+        self.statistics.end_robot_idle()
+        self._event(
+            "control_plane_recovery",
+            reason.value,
+            None,
+            message=message,
+            plan_id=plan_id,
+            execution_id=execution_id,
+        )
+        return None
+
     def _queue_replan(
         self,
         request: PlanningRequest,

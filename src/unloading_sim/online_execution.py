@@ -173,6 +173,8 @@ class ExecutionFeedback:
     native_code: str | None = None
     observed_at_monotonic_seconds: float = field(default_factory=monotonic)
     metadata: Mapping[str, Any] = field(default_factory=dict, compare=False)
+    feedback_stream_id: str = "default"
+    producer_epoch: int = 0
 
     def __post_init__(self) -> None:
         status = ExecutionFeedbackStatus(self.status)
@@ -182,6 +184,10 @@ class ExecutionFeedback:
             raise ValueError("feedback sequence must be non-negative")
         if not self.execution_id or not self.plan_id:
             raise ValueError("execution feedback requires execution_id and plan_id")
+        if not self.feedback_stream_id:
+            raise ValueError("execution feedback stream id must be non-empty")
+        if self.producer_epoch < 0:
+            raise ValueError("execution feedback producer epoch must be non-negative")
         if not isfinite(progress) or not 0.0 <= progress <= 1.0:
             raise ValueError("execution progress must be finite and inside [0, 1]")
         if not isinstance(self.current_boundary, MotionBoundaryState):
@@ -271,6 +277,8 @@ class DeterministicSimExecutionBackend(ExecutionBackend):
         terminal_status: ExecutionFeedbackStatus = ExecutionFeedbackStatus.SUCCEEDED,
         reject_start: bool = False,
         clock: Callable[[], float] = monotonic,
+        feedback_stream_id: str = "deterministic-sim-feedback",
+        producer_epoch: int = 0,
     ) -> None:
         if execution_steps < 1:
             raise ValueError("execution_steps must be positive")
@@ -281,6 +289,10 @@ class DeterministicSimExecutionBackend(ExecutionBackend):
             ExecutionFeedbackStatus.DEVIATED,
         }:
             raise ValueError("sim terminal status must be SUCCEEDED, FAILED, or DEVIATED")
+        if not feedback_stream_id:
+            raise ValueError("feedback_stream_id must be non-empty")
+        if producer_epoch < 0:
+            raise ValueError("producer_epoch must be non-negative")
         self._identity = ExecutionBackendIdentity("deterministic-sim-execution", "1", "1")
         self._capabilities = ExecutionBackendCapabilities(
             frozenset({PlanArtifactKind.GEOMETRIC_PATH, PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY}),
@@ -298,13 +310,15 @@ class DeterministicSimExecutionBackend(ExecutionBackend):
         self.terminal_status = terminal
         self.reject_start = bool(reject_start)
         self._clock = clock
+        self.feedback_stream_id = feedback_stream_id
+        self.producer_epoch = int(producer_epoch)
         self._health = ExecutionBackendHealth.READY
         self._active: _SimExecution | None = None
         self._last_boundary: MotionBoundaryState | None = None
         self._feedback: deque[ExecutionFeedback] = deque()
         self._execution_sequence = 0
         self._command_sequence = 0
-        self._feedback_sequence = 0
+        self._feedback_sequence = -1
         self._started_plan_ids: set[str] = set()
 
     @property
@@ -371,6 +385,8 @@ class DeterministicSimExecutionBackend(ExecutionBackend):
                 boundary,
                 message,
                 observed_at_monotonic_seconds=self._clock(),
+                feedback_stream_id=self.feedback_stream_id,
+                producer_epoch=self.producer_epoch,
             )
         )
 
@@ -416,6 +432,7 @@ class DeterministicSimExecutionBackend(ExecutionBackend):
             )
         self._execution_sequence += 1
         execution_id = f"sim-execution-{self._execution_sequence}"
+        self._feedback_sequence = -1
         self._started_plan_ids.add(plan_envelope.plan_id)
         self._active = _SimExecution(
             execution_id,
