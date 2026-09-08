@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev1)
+# Online continuous planning control plane (0.5.2.dev2)
 
 ## Acceptance scope
 
@@ -28,6 +28,12 @@ waiting for a planner. `production_throughput` is deliberately `null`.
 - synchronous, deterministic cooperative, and single-worker threaded planning
   execution;
 - `ContinuousPlanningSession`, `ExecutionMonitor`, and latency/idle metrics.
+
+`unloading_sim.online_execution` depends only on planning contracts and owns
+execution-side identity, capabilities, commands, feedback, and the deterministic
+execution fixture. `unloading_sim.online_runtime` depends on planning and
+execution and owns their caller-thread orchestration. Planning does not depend
+back on runtime, and an execution backend cannot modify a session or its queues.
 
 It does not own or modify grasp generation, IK, depalletizing, conveyor layout,
 base optimization, collision algorithms, or trajectory time parameterization.
@@ -81,8 +87,9 @@ Validator results are rejected if their snapshot, revision, complete boundary,
 or robot/world model fingerprints do not match the validation call.
 
 If the scene changes during execution, the session enters `STOPPING`. It cannot
-start a replan until it receives both a stop acknowledgement with the real
-`stopped_q` and the latest scene snapshot. A scene change advances the planning
+start a replan until it receives both a stop acknowledgement with the complete
+actual STOP boundary and the latest scene snapshot. The world snapshot joint
+position must match that boundary. A scene change advances the planning
 generation; pending or late results from older generations cannot enter
 `READY`.
 
@@ -156,6 +163,81 @@ execution for a pure-Python CPU-bound planner because of the interpreter lock.
 They also do not provide hard deadlines or force termination. A hard deadline
 requires cooperation from the backend or future process isolation.
 
+## Execution control plane
+
+`ExecutionBackend` is a provider-neutral command and feedback port. Its frozen
+identity records backend, backend version, and adapter version. Its independent
+capabilities declare supported artifact/boundary kinds, stop and command
+acknowledgement, reported position/velocity/acceleration/progress, deterministic
+stepping, and continuous handoff. A continuous-boundary command fails closed if
+the backend cannot report every required q/qd/qdd component; absent velocity is
+never filled with zero. Start and stop return an `ExecutionCommandResult`, not a
+boolean, so rejection, unsupported operation, unavailability, and error cannot
+leave the session falsely executing or stopped.
+
+Frozen `ExecutionFeedback` distinguishes command acceptance, running, braking,
+safe stop, normal completion, start rejection, failure, deviation, and backend
+fault. The runtime requires a strictly increasing feedback sequence, nondecreasing
+finite progress in [0, 1], matching execution/plan identity, and a finite complete
+boundary with the expected DOF. A byte-for-byte equivalent terminal repeat is
+idempotently ignored; a conflicting or out-of-order terminal report fails closed.
+`MotionBoundaryState.time_seconds` is trajectory/execution logical time, while
+`observed_at_monotonic_seconds` is the feedback clock; they are not directly
+compared and calendar time never participates in boundary matching.
+
+Successful completion passes the reported actual end boundary into the session.
+It never substitutes the envelope's expected end. A mismatch in q, qd, qdd,
+logical time, or mode is an execution deviation and invalidates descendants.
+Stop acknowledgement likewise requires the reported actual STOP boundary and a
+latest world snapshot whose `current_q` matches it. The legacy `stopped_q`
+compatibility path is stop-only and explicitly constructs zero qd/qdd; it cannot
+be used for a continuous boundary.
+
+`DeterministicSimExecutionBackend` is a caller-stepped state-machine fixture. It
+uses no background thread or sleep and can deterministically emit success,
+failure, deviation, rejection, STOPPING, and STOPPED feedback. Its optional
+joint interpolation is only test data: it is not a dynamics, velocity,
+acceleration, controller, tracking, or physical execution-time model.
+
+## Continuous planning runtime
+
+`ContinuousPlanningRuntime` composes one session, one planning executor, one
+execution backend, and an optional `SuccessorRequestFactory`. Every mutation is
+owned by the thread that first operates the runtime. Each `step` has this stable
+order, which is part of the tested contract:
+
+1. accept queued initial submissions;
+2. consume execution feedback and handle terminal/stop acknowledgement;
+3. apply queued world observations;
+4. poll planning completion;
+5. attempt one READY execution start;
+6. attempt at most one speculative successor for the executing plan;
+7. issue at most one stop request for the current STOPPING process;
+8. advance a deterministic execution backend, when supported;
+9. synchronize runtime state and append audit events.
+
+Planning workers and execution backends only produce completions or feedback;
+they never mutate runtime/session state. A caller-supplied planning executor is
+not closed unless `owns_executor=True`. Execution-backend ownership is also
+explicit, and shutdown is idempotent.
+
+The successor factory generates only a `PlanningRequest`; it performs no target
+selection, grasping, IK, collision, depalletizing, or unloading order logic.
+`None` means there is currently no speculative request. Factory output must pass
+`submit_speculative`, so horizon, predecessor, predicted revision, generation,
+boundary, and authoritative validation checks remain in force. An exception is
+an explicit runtime recovery, not a stalled state.
+
+Execution feedback and world observation are separate facts. Feedback never
+carries or invents a `PlanningWorldSnapshot`, predicted scenes cannot be observed
+as actual scenes, and successful execution without an independent post-execution
+observation leaves the session `WAITING_FOR_SCENE`. If a safety-relevant world
+revision arrives while running, the session enters `STOPPING`; runtime requests
+stop once and cannot replan until STOPPED supplies an actual STOP boundary and
+the latest world is available. Rejected/unsupported stop, controller fault,
+invalid feedback, execution failure, or deviation enters explicit recovery and
+cascades lineage invalidation without pretending that the robot stopped.
+
 ## Test fixtures
 
 The tests use three layers:
@@ -179,6 +261,12 @@ only and cannot overwrite it. End-to-end latency is at least queue + executor
 compute + validation. Reports also include robot idle time waiting for a
 planner, cancellation/stale-result counts, fallback counts by scheduling path,
 and outcomes by backend and domain/operational category.
+
+Runtime metrics add command/feedback control-plane counts: execution start and
+stop requests/rejections, feedback by status, successes, failures, deviations,
+duplicate feedback ignored, invalid feedback, and speculative requests created
+or skipped. They are audit counters only, not controller tracking or robot
+execution performance measurements.
 
 For compatibility, the legacy `planning_latency` and
 `planning_latency_by_path` report fields retain the backend-reported value when
@@ -204,10 +292,12 @@ for those external planners. It proves only that the stable interfaces,
 scheduling, lifecycle, validation gate, metrics, and state machine can safely
 host such backends in the future.
 
-`ExecutionMonitor` remains a control-plane state holder, not a robot execution
-backend. Dev1 proves only that k+1 can compute in a worker while k remains
-`EXECUTING`. It does not provide nonzero-velocity seamless blending between k
-and k+1, real controller feedback, or real unloading throughput.
-`ExecutionBackend`, `ExecutionFeedback`, the continuous planning runtime,
-controller stop acknowledgement, and production integration are deferred to
-dev2 and later integration work.
+Dev2 provides the execution port, feedback contract, deterministic fixture, and
+caller-thread runtime, but no real robot adapter. It proves that k+1 can compute
+while k remains `EXECUTING`, that actual boundaries and stop acknowledgement are
+handled safely, and that failures cannot bypass lineage and validation gates. It
+does not provide controller lookahead, trajectory streaming, PLC handshake,
+nonzero-velocity seamless blending, real controller feedback, or real unloading
+throughput. Dev3 may add ROS/perception adapter ports while preserving separate
+execution-feedback and world-observation facts; production integration remains
+future work.
