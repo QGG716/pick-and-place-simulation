@@ -6,10 +6,9 @@ fail normally.  The control plane owns revision binding, FAST/WARM/COLD
 escalation, rolling-horizon bookkeeping, speculative reuse, and execution
 invalidation.
 
-The asynchronous executor is intentionally cooperative: work is queued in a
-stable order and is run only when ``advance`` is called.  It therefore exposes
-the same transition trace as the synchronous executor without scheduler races,
-while still allowing plan k+1 to be computed while plan k is marked running.
+The cooperative executor queues work in a stable order and runs it only when
+``advance`` is called.  A separate threaded executor provides real background
+control-plane concurrency without allowing worker threads to mutate a session.
 """
 
 from __future__ import annotations
@@ -1330,7 +1329,7 @@ class PlanningExecutor(ABC):
     def pending_count(self) -> int: ...
 
 
-class DeterministicAsyncPlanningExecutor(PlanningExecutor):
+class CooperativePlanningExecutor(PlanningExecutor):
     """FIFO cooperative executor with deterministic completion ordering."""
 
     def __init__(self, clock: Callable[[], float] = perf_counter) -> None:
@@ -1376,7 +1375,15 @@ class DeterministicAsyncPlanningExecutor(PlanningExecutor):
         return len(self._pending) + len(self._completed)
 
 
-class SynchronousPlanningExecutor(DeterministicAsyncPlanningExecutor):
+class DeterministicAsyncPlanningExecutor(CooperativePlanningExecutor):
+    """Deprecated compatibility name for :class:`CooperativePlanningExecutor`.
+
+    Despite its historical name, this executor never creates a background
+    thread. Operations run in the caller of :meth:`advance`.
+    """
+
+
+class SynchronousPlanningExecutor(CooperativePlanningExecutor):
     """Same FIFO semantics, but submission computes the task immediately."""
 
     def submit(self, task_id: str, operation: Callable[[], PlanningResult]) -> None:
@@ -2819,6 +2826,7 @@ __all__ = [
     "BoundaryMode",
     "ContinuousPlanningSession",
     "DeterministicAsyncPlanningExecutor",
+    "CooperativePlanningExecutor",
     "ExecutionMonitor",
     "ExecutionState",
     "FailureAction",
