@@ -1,0 +1,36 @@
+diff --git a/src/unloading_sim/shared_contracts.py b/src/unloading_sim/shared_contracts.py
+new file mode 100644
+--- /dev/null
++++ b/src/unloading_sim/shared_contracts.py
+@@ -0,0 +1,31 @@
++"""Install the contracts-1.0 type-identity migration shim.
++
++Import this module before constructing a ContinuousPlanningSession. The old
++online_planning path remains a compatibility re-export after installation.
++"""
++import unloading_contracts as _shared
++from . import online_planning as _online
++
++_shared.PlannerBackend.register(_online.PlannerBackend)
++_shared.PlanValidator.register(_online.PlanValidator)
++_NAMES = (
++    "ArtifactKind", "BackendCapabilities", "BackendHealth", "BackendIdentity",
++    "BackendProvenance", "BoundaryMode", "FailureDetails", "FailureScope",
++    "MotionBoundaryState", "OperationalOutcome", "OutcomeCategory",
++    "PlanArtifactKind", "PlanEnvelope", "PlanStatus", "PlanValidation",
++    "PlanValidationResult", "PlanValidator", "PlanningCandidate", "PlanningPath",
++    "PlanningRequest", "PlanningResult", "PlanningWorldSnapshot", "PlannerBackend",
++    "ReplanReason", "RobotStateRevision", "SceneRevision", "ValidationStatus",
++)
++for _name in _NAMES:
++    setattr(_online, _name, getattr(_shared, _name))
++
++globals().update({_name: getattr(_shared, _name) for _name in _NAMES})
++ContinuousPlanningSession = _online.ContinuousPlanningSession
++BackendPlanValidatorAdapter = _online.BackendPlanValidatorAdapter
++ProviderNeutralPlanValidator = _online.ProviderNeutralPlanValidator
++
++__all__ = list(_NAMES) + [
++    "ContinuousPlanningSession", "BackendPlanValidatorAdapter",
++    "ProviderNeutralPlanValidator",
++]

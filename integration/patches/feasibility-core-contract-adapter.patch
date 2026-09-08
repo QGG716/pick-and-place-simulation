@@ -1,0 +1,89 @@
+diff --git a/src/unloading_sim/feasibility_contract_adapter.py b/src/unloading_sim/feasibility_contract_adapter.py
+new file mode 100644
+--- /dev/null
++++ b/src/unloading_sim/feasibility_contract_adapter.py
+@@ -0,0 +1,82 @@
++"""Thin contract adapter; all feasibility mathematics stays in existing modules."""
++from __future__ import annotations
++
++from math import sqrt
++from typing import Sequence
++
++import numpy as np
++
++from unloading_contracts import PlanStatus, PlanningCandidate, PlanningResult, PlanningWorldSnapshot
++from .geometry import OBB
++from .grasp import generate_suction_candidates
++
++
++def _rotation_from_xyzw(values):
++    x, y, z, w = (float(value) for value in values)
++    norm = sqrt(x*x + y*y + z*z + w*w)
++    if abs(norm - 1.0) > 1e-6:
++        raise ValueError("snapshot quaternion must be normalized xyzw")
++    return np.asarray([
++        [1-2*(y*y+z*z), 2*(x*y-z*w), 2*(x*z+y*w)],
++        [2*(x*y+z*w), 1-2*(x*x+z*z), 2*(y*z-x*w)],
++        [2*(x*z-y*w), 2*(y*z+x*w), 1-2*(x*x+y*y)],
++    ])
++
++
++class SnapshotCandidateProvider:
++    """Call the real suction generator only for evidence-qualified objects."""
++
++    def __init__(self, robot_reference_point: Sequence[float], **generator_options):
++        self.robot_reference_point = np.asarray(robot_reference_point, dtype=float)
++        if self.robot_reference_point.shape != (3,) or not np.all(np.isfinite(self.robot_reference_point)):
++            raise ValueError("robot reference point must contain three finite SI values")
++        self.generator_options = dict(generator_options)
++
++    def candidates(self, snapshot: PlanningWorldSnapshot) -> tuple[PlanningCandidate, ...]:
++        result = []
++        for item in snapshot.scene_snapshot.get("obstacles", ()):
++            if not item.get("candidate_eligible"):
++                continue
++            pose = item.get("pose")
++            dimensions = item.get("full_dimensions_m")
++            if not pose or pose.get("frame_id") != "world" or not dimensions:
++                continue
++            carton = OBB(
++                np.asarray(pose["position_m"], dtype=float),
++                np.asarray(dimensions, dtype=float) / 2.0,
++                _rotation_from_xyzw(pose["orientation_xyzw"]),
++                str(item["object_id"]),
++                "carton",
++            )
++            generated = generate_suction_candidates(carton, self.robot_reference_point, **self.generator_options)
++            for index, candidate in enumerate(generated):
++                result.append(PlanningCandidate(
++                    target_id=str(item["object_id"]),
++                    candidate_id=f"{item['object_id']}:{candidate.face_mode}:{index}",
++                    metadata={
++                        "contact_point_m": candidate.contact_point.tolist(),
++                        "outward_normal": candidate.outward_normal.tolist(),
++                        "face_mode": candidate.face_mode,
++                        "score": float(candidate.score),
++                    },
++                ))
++        return tuple(result)
++
++
++def adapt_task_result(candidate: PlanningCandidate, result: dict) -> PlanningResult:
++    """Map the real V3 task result; never reinterpret a failed physical gate."""
++    selected = result.get("selected")
++    if not result.get("geometric_feasible") or not selected:
++        return PlanningResult.failed(
++            PlanStatus.NOT_EVALUATED, candidate,
++            message=str(result.get("failure_reason") or "physical feasibility not established"),
++            metadata={"physical_result": result},
++        )
++    knots = selected.get("trajectory", {}).get("q_knots")
++    if not knots:
++        return PlanningResult.failed(
++            PlanStatus.NOT_EVALUATED, candidate,
++            message="feasibility result has no geometric path",
++            metadata={"physical_result": result},
++        )
++    # Keep the result geometric. The existing feasibility time parameterizer
++    # must construct TimedJointTrajectory before ROS execution eligibility.
++    return PlanningResult.succeeded(candidate, knots, metadata={"physical_result": result})
