@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev2)
+# Online continuous planning control plane (0.5.2.dev3)
 
 ## Acceptance scope
 
@@ -163,6 +163,31 @@ execution for a pure-Python CPU-bound planner because of the interpreter lock.
 They also do not provide hard deadlines or force termination. A hard deadline
 requires cooperation from the backend or future process isolation.
 
+## Typed world observations and ingress backpressure
+
+External world updates use a frozen `WorldObservation` envelope. Safety meaning
+comes only from `ObservationAuthority.AUTHORITATIVE` or `PREDICTED`; diagnostic
+`source` text never selects a branch. Therefore an authoritative producer whose
+name contains “predict” is accepted, while a PREDICTED envelope with an ordinary
+camera name cannot update the actual session world. Predictions continue to
+enter only through speculative `PlanningRequest` creation.
+
+Observation ordering is scoped by producer, stream, producer epoch, and sequence.
+An identical same-sequence snapshot is idempotent, conflicting content at the
+same identity fails closed, lower sequence/epoch is stale, and a newer producer
+epoch may restart at sequence zero. Only accepted authoritative observations can
+trigger validation, invalidation, STOPPING, or replan. Scene and robot revision
+monotonicity remains independently enforced by `ContinuousPlanningSession`.
+
+Runtime ingress is bounded independently for initial requests, world observations,
+and execution feedback. Inputs report or audit ACCEPTED, DUPLICATE, STALE,
+COALESCED, BACKPRESSURED, REJECTED, or CONFLICT. A newer pending observation from
+the same stream may replace an older one, but the latest revision still passes
+session invalidation gates. Different streams are not silently dropped when the
+queue is full. Feedback polling stops at the runtime capacity, leaving further
+items—including terminal feedback—in the backend until a later bounded step.
+Every step also has explicit per-port processing limits.
+
 ## Execution control plane
 
 `ExecutionBackend` is a provider-neutral command and feedback port. Its frozen
@@ -177,10 +202,21 @@ leave the session falsely executing or stopped.
 
 Frozen `ExecutionFeedback` distinguishes command acceptance, running, braking,
 safe stop, normal completion, start rejection, failure, deviation, and backend
-fault. The runtime requires a strictly increasing feedback sequence, nondecreasing
-finite progress in [0, 1], matching execution/plan identity, and a finite complete
-boundary with the expected DOF. A byte-for-byte equivalent terminal repeat is
-idempotently ignored; a conflicting or out-of-order terminal report fails closed.
+fault. Ordering is scoped by feedback stream, producer epoch, and execution ID,
+so each new execution may restart at sequence zero. Within one domain, sequence
+must increase and RUNNING progress cannot decrease. A late prior-execution report
+is stale and cannot advance the current execution. A byte-for-byte equivalent
+terminal repeat is idempotently ignored; conflicting content at one identity or
+an illegal transition fails closed. Terminal history is capacity-bounded.
+
+Legal transitions are explicit: acknowledgement may lead to RUNNING, STOPPING or
+a terminal result; RUNNING may repeat or advance; STOPPING may repeat or become
+STOPPED/failure; terminal states cannot transition again. RUNNING to ACCEPTED,
+STOPPING back to ordinary RUNNING, and conflicting terminal outcomes are rejected.
+When `supports_command_acknowledgement` is true, the first normal feedback must be
+ACCEPTED. When false, the accepted start command is the acknowledgement and an
+extra ACCEPTED feedback is invalid. Runtime still requires matching execution/plan
+identity and a finite complete boundary with the expected DOF.
 `MotionBoundaryState.time_seconds` is trajectory/execution logical time, while
 `observed_at_monotonic_seconds` is the feedback clock; they are not directly
 compared and calendar time never participates in boundary matching.
@@ -206,15 +242,16 @@ execution backend, and an optional `SuccessorRequestFactory`. Every mutation is
 owned by the thread that first operates the runtime. Each `step` has this stable
 order, which is part of the tested contract:
 
-1. accept queued initial submissions;
-2. consume execution feedback and handle terminal/stop acknowledgement;
-3. apply queued world observations;
-4. poll planning completion;
-5. attempt one READY execution start;
-6. attempt at most one speculative successor for the executing plan;
-7. issue at most one stop request for the current STOPPING process;
-8. advance a deterministic execution backend, when supported;
-9. synchronize runtime state and append audit events.
+1. fail closed any deferred ingress conflict;
+2. accept queued initial submissions;
+3. consume a bounded number of execution feedback items;
+4. apply a bounded number of authoritative world observations;
+5. poll planning completion;
+6. attempt one READY execution start;
+7. attempt at most one speculative successor for the executing plan;
+8. issue at most one stop request for the current STOPPING process;
+9. advance a deterministic execution backend, when supported;
+10. synchronize runtime state and append audit events.
 
 Planning workers and execution backends only produce completions or feedback;
 they never mutate runtime/session state. A caller-supplied planning executor is
@@ -234,7 +271,11 @@ as actual scenes, and successful execution without an independent post-execution
 observation leaves the session `WAITING_FOR_SCENE`. If a safety-relevant world
 revision arrives while running, the session enters `STOPPING`; runtime requests
 stop once and cannot replan until STOPPED supplies an actual STOP boundary and
-the latest world is available. Rejected/unsupported stop, controller fault,
+an accepted authoritative world is available. The two facts may arrive in either
+order. If STOPPED arrives without a matching world position, runtime enters the
+explicit `WAITING_FOR_OBSERVATION` state, retains the boundary, blocks successors,
+and reconciles only after a compatible observation. DOF mismatch, observation
+identity conflict, or rejected stop fails closed. Rejected/unsupported stop, controller fault,
 invalid feedback, execution failure, or deviation enters explicit recovery and
 cascades lineage invalidation without pretending that the robot stopped.
 
@@ -265,8 +306,11 @@ and outcomes by backend and domain/operational category.
 Runtime metrics add command/feedback control-plane counts: execution start and
 stop requests/rejections, feedback by status, successes, failures, deviations,
 duplicate feedback ignored, invalid feedback, and speculative requests created
-or skipped. They are audit counters only, not controller tracking or robot
-execution performance measurements.
+or skipped. Dev3 additionally counts ingress accepted/stale/duplicate/conflict/
+coalesced/backpressured/rejected results, stale execution feedback, and deterministic
+steps/time spent waiting to reconcile STOPPED with a world observation. They are
+audit counters only, not controller tracking or robot execution performance
+measurements.
 
 For compatibility, the legacy `planning_latency` and
 `planning_latency_by_path` report fields retain the backend-reported value when
@@ -298,6 +342,7 @@ while k remains `EXECUTING`, that actual boundaries and stop acknowledgement are
 handled safely, and that failures cannot bypass lineage and validation gates. It
 does not provide controller lookahead, trajectory streaming, PLC handshake,
 nonzero-velocity seamless blending, real controller feedback, or real unloading
-throughput. Dev3 may add ROS/perception adapter ports while preserving separate
-execution-feedback and world-observation facts; production integration remains
-future work.
+throughput. Dev3 hardens the neutral event envelopes and ports that future
+ROS/perception adapters may implement while preserving separate execution-feedback
+and world-observation facts; it does not implement those adapters. Production
+integration remains future work.

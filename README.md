@@ -1,4 +1,4 @@
-# Trailer Unloading Geometric Simulator v0.5.2.dev2
+# Trailer Unloading Geometric Simulator v0.5.2.dev3
 
 v0.5 建立了与底层几何规划成功率解耦的在线连续规划控制平面。当前版本不以
 M-710iD/70 原始任务成功率、连续清空率或 900 boxes/h 作为验收指标，详细边界见
@@ -20,6 +20,13 @@ v0.5.2.dev2 新增 provider-neutral `ExecutionBackend`、不可变
 step 顺序组合 session、planner executor 和 execution backend，并在执行 k 时最多自动提交
 一个 speculative k+1。执行反馈与 world observation 是两个独立事实源；该确定性 backend
 只用于状态机测试，不是机器人动力学、控制器或真实执行周期仿真。
+
+v0.5.2.dev3 用不可变 `WorldObservation` 和 `ObservationAuthority` 明确区分
+AUTHORITATIVE/PREDICTED，不再从 source 名称推断安全语义。观测与执行反馈均按
+producer/stream/epoch/execution 序列域处理 duplicate、stale 和 conflict；STOPPED boundary
+可与先到或后到的 authoritative world observation 安全汇合。initial request、world
+observation 和 execution feedback ingress 均有容量及每 step 处理上限，并返回或记录明确
+背压结果。上述机制只属于在线控制面，不实现视觉、ROS、真实控制器或物理节拍。
 
 > 当前工作分支增加了 **M-710iD/70 V3 技术验证修复**。V3 使用完整 TCP
 > 变换、实际刚体附着、完整路径检查和解析时间参数化，验收入口为
@@ -253,6 +260,7 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
+- v0.5.2.dev3：类型化 world observation、execution-scoped feedback ordering、STOPPED/world 乱序汇合及有界 ingress 背压。
 - v0.5.2.dev2：执行后端/反馈契约、完整实际 boundary、确定性执行 fixture、自动 successor 与 STOPPED acknowledgement runtime。
 - v0.5.2.dev1：单 worker threaded planning、queued/running 取消、late-result 隔离及 queue/compute/backend/validation/end-to-end 延迟分层。
 - v0.5.2.dev0：完整 motion boundary、严格 plan lineage、真实 rolling-horizon occupancy、provider-neutral capability 与独立 validation contract。
@@ -263,4 +271,4 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev2`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev3`。
