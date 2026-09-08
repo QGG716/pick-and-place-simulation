@@ -1914,6 +1914,9 @@ class ContinuousPlanningSession:
         self._discard_without_replan_ids: set[str] = set()
         self._successful_completed_plan_ids: set[str] = set()
         self.last_successful_plan_id: str | None = None
+        self.current_motion_boundary: MotionBoundaryState | None = None
+        self.last_actual_execution_boundary: MotionBoundaryState | None = None
+        self.terminal_execution_identity: tuple[str | None, str] | None = None
         self._plan_children: dict[str, set[str]] = {}
         self._invalid_lineage_plan_ids: set[str] = set()
         self._cancelled_task_ids: set[str] = set()
@@ -2200,6 +2203,11 @@ class ContinuousPlanningSession:
             raise RuntimeError("rolling horizon is full")
         if self.current_world is None:
             self.current_world = request.world_snapshot
+            if (
+                not request.speculative
+                and request.motion_boundary.mode is BoundaryMode.STOP_BOUNDARY
+            ):
+                self.current_motion_boundary = request.motion_boundary
         elif not request.speculative:
             self._check_world_monotonic(request.world_snapshot)
             if request.world_snapshot != self.current_world:
@@ -2846,7 +2854,12 @@ class ContinuousPlanningSession:
         if current_motion_boundary is None:
             requested_boundary = envelope.request.motion_boundary
             assert requested_boundary is not None
-            if requested_boundary.mode is BoundaryMode.CONTINUOUS_BOUNDARY:
+            if (
+                self.current_motion_boundary is not None
+                and self.current_motion_boundary.q == self.current_world.current_q
+            ):
+                current_motion_boundary = self.current_motion_boundary
+            elif requested_boundary.mode is BoundaryMode.CONTINUOUS_BOUNDARY:
                 self.invalidated_plans.append(
                     envelope.invalidate(
                         ReplanReason.PLAN_VALIDATION_FAILED,
@@ -2861,10 +2874,11 @@ class ContinuousPlanningSession:
                 self.state = SessionState.RECOVERY
                 self.statistics.end_robot_idle()
                 return None
-            current_motion_boundary = MotionBoundaryState.stopped(
-                self.current_world.current_q,
-                predecessor_plan_id=envelope.predecessor_plan_id,
-            )
+            else:
+                current_motion_boundary = MotionBoundaryState.stopped(
+                    self.current_world.current_q,
+                    predecessor_plan_id=envelope.predecessor_plan_id,
+                )
         elif current_motion_boundary.current_q != self.current_world.current_q:
             raise ValueError("actual motion boundary current_q must match the current world snapshot")
         try:
@@ -2889,6 +2903,7 @@ class ContinuousPlanningSession:
             self._refresh_state()
             return None
         self.execution.start(envelope)
+        self.current_motion_boundary = current_motion_boundary
         self.statistics.end_robot_idle()
         self.state = SessionState.EXECUTING
         self._event("execution_started", "validated", envelope.request.request_id, plan_id=envelope.plan_id)
@@ -2924,21 +2939,21 @@ class ContinuousPlanningSession:
         snapshot: PlanningWorldSnapshot,
         reason: ReplanReason,
         predecessor_plan_id: str | None = None,
+        motion_boundary: MotionBoundaryState | None = None,
     ) -> _RequestProgress:
         self._replan_sequence += 1
         request_id = f"{request.request_id}:replan:{self._replan_sequence}"
         while request_id in self._request_ids:
             self._replan_sequence += 1
             request_id = f"{request.request_id}:replan:{self._replan_sequence}"
+        boundary = motion_boundary or replace(request.motion_boundary, q=snapshot.current_q)
+        if boundary.q != snapshot.current_q:
+            raise ValueError("replan motion boundary q must match the world snapshot")
         replanned = replace(
             request,
             request_id=request_id,
             world_snapshot=snapshot,
-            motion_boundary=replace(
-                request.motion_boundary,
-                q=snapshot.current_q,
-                predecessor_plan_id=predecessor_plan_id,
-            ),
+            motion_boundary=replace(boundary, predecessor_plan_id=predecessor_plan_id),
             speculative=False,
             replan_reason=reason,
         )
@@ -3045,15 +3060,38 @@ class ContinuousPlanningSession:
         self,
         *,
         success: bool,
-        stopped_q: Sequence[float],
+        actual_end_boundary: MotionBoundaryState | None = None,
+        stopped_q: Sequence[float] | None = None,
         world_snapshot: PlanningWorldSnapshot | None = None,
         message: str = "",
+        execution_id: str | None = None,
     ) -> PlanEnvelope:
+        """Record terminal execution feedback using its complete actual boundary.
+
+        ``stopped_q`` is a compatibility path for legacy STOP_BOUNDARY plans.
+        It must never be used for a continuous-boundary execution.
+        """
+
         if self.execution.state is ExecutionState.STOPPING:
             raise RuntimeError("stopping execution requires acknowledge_stop")
-        q = tuple(float(value) for value in stopped_q)
-        if not q or not all(isfinite(value) for value in q):
-            raise ValueError("actual stopped_q must be finite and non-empty")
+        active = self.execution.active_plan
+        if self.execution.state is not ExecutionState.RUNNING or active is None:
+            raise RuntimeError("no running execution to complete")
+        if actual_end_boundary is not None and stopped_q is not None:
+            raise ValueError("provide actual_end_boundary or stopped_q, not both")
+        if actual_end_boundary is None:
+            if stopped_q is None:
+                raise ValueError("actual_end_boundary is required")
+            if active.expected_end_boundary.mode is not BoundaryMode.STOP_BOUNDARY:
+                raise ValueError("stopped_q compatibility is only valid for STOP_BOUNDARY plans")
+            actual_end_boundary = MotionBoundaryState.stopped(
+                stopped_q,
+                time_seconds=active.expected_end_boundary.time_seconds,
+                predecessor_plan_id=active.plan_id,
+            )
+        if not isinstance(actual_end_boundary, MotionBoundaryState):
+            raise TypeError("actual_end_boundary must be a MotionBoundaryState")
+        q = actual_end_boundary.q
         if self.current_world is None:
             raise RuntimeError("no current planning world")
         if len(q) != len(self.current_world.current_q):
@@ -3062,7 +3100,35 @@ class ContinuousPlanningSession:
         if world_snapshot is not None:
             self._check_world_monotonic(world_snapshot)
             if not np.allclose(world_snapshot.current_q, q, atol=self._start_tolerance_rad, rtol=0.0):
-                raise ValueError("world snapshot current_q must equal actual stopped_q")
+                raise ValueError("world snapshot current_q must equal actual end boundary q")
+        self.current_motion_boundary = actual_end_boundary
+        self.last_actual_execution_boundary = actual_end_boundary
+        self.terminal_execution_identity = (execution_id, active.plan_id)
+        if success and not actual_end_boundary.matches(
+            active.expected_end_boundary,
+            q_atol=self._start_tolerance_rad,
+            qd_atol=self._start_tolerance_rad,
+            qdd_atol=self._start_tolerance_rad,
+            time_atol=self._start_tolerance_rad,
+            require_predecessor=False,
+        ):
+            deviated = self.execution.fail_for_deviation(
+                message or "actual execution end boundary differs from expected end boundary"
+            )
+            self.invalidated_plans.append(deviated)
+            self._cascade_lineage(
+                deviated.plan_id,
+                ReplanReason.EXECUTION_DEVIATION,
+                "actual execution end boundary differs from expected end boundary",
+            )
+            self.state = SessionState.RECOVERY
+            self._event(
+                "execution_deviation",
+                ReplanReason.EXECUTION_DEVIATION.value,
+                deviated.request.request_id,
+                execution_id=execution_id,
+            )
+            return deviated
         completed = self.execution.complete(success, message)
         self._event(
             "execution_completed" if success else "execution_failed",
@@ -3131,9 +3197,16 @@ class ContinuousPlanningSession:
     def acknowledge_stop(
         self,
         stopped_world: PlanningWorldSnapshot,
+        stopped_boundary: MotionBoundaryState | None = None,
         message: str = "scene-invalidated execution stopped",
+        *,
+        execution_id: str | None = None,
     ) -> PlanEnvelope:
-        """Accept the real stopped_q and new scene before starting any replan."""
+        """Accept the real stopped boundary and latest scene before replanning.
+
+        Omitting ``stopped_boundary`` is retained only for legacy STOP-boundary
+        callers and derives a zero-velocity boundary from ``stopped_world``.
+        """
 
         if self.execution.state is not ExecutionState.STOPPING:
             raise RuntimeError("session is not waiting for a stop acknowledgement")
@@ -3142,8 +3215,26 @@ class ContinuousPlanningSession:
             self.current_world.scene_revision
         ):
             raise ValueError("stop acknowledgement must include the latest scene")
+        active = self.execution.active_plan
+        assert active is not None
+        if stopped_boundary is None:
+            stopped_boundary = MotionBoundaryState.stopped(stopped_world.current_q)
+        if not isinstance(stopped_boundary, MotionBoundaryState):
+            raise TypeError("stopped_boundary must be a MotionBoundaryState")
+        if stopped_boundary.mode is not BoundaryMode.STOP_BOUNDARY:
+            raise ValueError("stop acknowledgement requires a STOP_BOUNDARY")
+        if len(stopped_boundary.q) != len(stopped_world.current_q) or not np.allclose(
+            stopped_boundary.q,
+            stopped_world.current_q,
+            atol=self._start_tolerance_rad,
+            rtol=0.0,
+        ):
+            raise ValueError("stopped world current_q must match stopped boundary q")
         plan = self.execution.acknowledge_stop(message)
         self.current_world = stopped_world
+        self.current_motion_boundary = stopped_boundary
+        self.last_actual_execution_boundary = stopped_boundary
+        self.terminal_execution_identity = (execution_id, active.plan_id)
         self._waiting_for_scene = False
         self._stopping_request = None
         while self.speculative_plans:
@@ -3151,7 +3242,12 @@ class ContinuousPlanningSession:
                 self.speculative_plans.popleft().invalidate(ReplanReason.EXECUTION_FAILED)
             )
         self._requests.append(
-            self._new_replan_progress(plan.request, stopped_world, ReplanReason.SCENE_REVISION_CHANGED)
+            self._new_replan_progress(
+                plan.request,
+                stopped_world,
+                ReplanReason.SCENE_REVISION_CHANGED,
+                motion_boundary=stopped_boundary,
+            )
         )
         self.state = SessionState.PLANNING
         self.statistics.begin_robot_idle()
@@ -3162,9 +3258,10 @@ class ContinuousPlanningSession:
     def stop_invalidated_execution(
         self,
         stopped_world: PlanningWorldSnapshot,
+        stopped_boundary: MotionBoundaryState | None = None,
         message: str = "scene-invalidated execution stopped",
     ) -> PlanEnvelope:
-        return self.acknowledge_stop(stopped_world, message)
+        return self.acknowledge_stop(stopped_world, stopped_boundary, message)
 
     def _reconcile_speculative(self) -> None:
         if not self.speculative_plans:
@@ -3192,8 +3289,31 @@ class ContinuousPlanningSession:
                     predecessor_plan_id=plan.predecessor_plan_id,
                 )
                 return
+            actual_boundary = self.last_actual_execution_boundary
+            if actual_boundary is None:
+                self.invalidated_plans.append(
+                    plan.invalidate(
+                        ReplanReason.PLAN_VALIDATION_FAILED,
+                        "actual predecessor end boundary is unavailable",
+                    )
+                )
+                self.state = SessionState.RECOVERY
+                self._event(
+                    "plan_invalidated",
+                    ReplanReason.PLAN_VALIDATION_FAILED.value,
+                    plan.request.request_id,
+                )
+                return
+            successor_boundary = replace(
+                actual_boundary,
+                predecessor_plan_id=plan.predecessor_plan_id,
+            )
             try:
-                validated, result = self._validate(plan, self.current_world)
+                validated, result = self._validate(
+                    plan,
+                    self.current_world,
+                    successor_boundary,
+                )
             except Exception as exc:
                 self.invalidated_plans.append(
                     plan.invalidate(ReplanReason.PLAN_VALIDATION_FAILED, repr(exc))
@@ -3208,10 +3328,28 @@ class ContinuousPlanningSession:
                 invalid = plan.invalidate(ReplanReason.SPECULATIVE_MISMATCH, result.message)
                 self.invalidated_plans.append(invalid)
                 self._event("plan_invalidated", ReplanReason.SPECULATIVE_MISMATCH.value, plan.request.request_id)
-                self._queue_replan(plan.request, self.current_world, ReplanReason.SPECULATIVE_MISMATCH)
+                self._queue_replan(
+                    plan.request,
+                    self.current_world,
+                    ReplanReason.SPECULATIVE_MISMATCH,
+                    motion_boundary=successor_boundary,
+                )
 
-    def notify_execution_deviation(self, message: str) -> PlanEnvelope:
+    def notify_execution_deviation(
+        self,
+        message: str,
+        actual_boundary: MotionBoundaryState | None = None,
+        *,
+        execution_id: str | None = None,
+    ) -> PlanEnvelope:
+        if actual_boundary is not None:
+            if not isinstance(actual_boundary, MotionBoundaryState):
+                raise TypeError("actual_boundary must be a MotionBoundaryState")
         plan = self.execution.fail_for_deviation(message)
+        if actual_boundary is not None:
+            self.current_motion_boundary = actual_boundary
+            self.last_actual_execution_boundary = actual_boundary
+        self.terminal_execution_identity = (execution_id, plan.plan_id)
         self.invalidated_plans.append(plan)
         self._cascade_lineage(
             plan.plan_id,
@@ -3229,6 +3367,7 @@ class ContinuousPlanningSession:
         request: PlanningRequest,
         snapshot: PlanningWorldSnapshot,
         reason: ReplanReason,
+        motion_boundary: MotionBoundaryState | None = None,
     ) -> None:
         declared_predecessor = request.motion_boundary.predecessor_plan_id
         predecessor = (
@@ -3237,7 +3376,13 @@ class ContinuousPlanningSession:
             and declared_predecessor == self.last_successful_plan_id
             else None
         )
-        progress = self._new_replan_progress(request, snapshot, reason, predecessor)
+        progress = self._new_replan_progress(
+            request,
+            snapshot,
+            reason,
+            predecessor,
+            motion_boundary,
+        )
         self._requests.append(progress)
         self._event("replan_queued", reason.value, progress.request.request_id)
         self._schedule_if_possible()

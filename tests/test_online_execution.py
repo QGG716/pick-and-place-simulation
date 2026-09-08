@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 
 import pytest
 
@@ -13,8 +13,10 @@ from unloading_sim.online_execution import (
 )
 from unloading_sim.online_planning import (
     BoundaryMode,
+    BackendCapabilities,
     ContinuousPlanningSession,
     MotionBoundaryState,
+    PlanArtifactKind,
     PlanStatus,
     PlanningCandidate,
     PlanningRequest,
@@ -23,13 +25,51 @@ from unloading_sim.online_planning import (
     PlannerBackend,
     RobotStateRevision,
     SceneRevision,
+    SessionState,
 )
 
 
 class FeasibleBackend(PlannerBackend):
+    def __init__(self):
+        super().__init__()
+        self.requests = []
+
     def plan(self, request, candidate, planning_path):
         del planning_path
+        self.requests.append(request)
         return PlanningResult.succeeded(candidate, (request.start_state, (0.2, -0.1)))
+
+
+class ContinuousBackend(PlannerBackend):
+    def __init__(self):
+        super().__init__()
+        self.capabilities = BackendCapabilities(
+            frozenset({path for path in self.capabilities.supported_planning_paths}),
+            frozenset({BoundaryMode.CONTINUOUS_BOUNDARY}),
+            frozenset({PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY}),
+            supports_warm_start=True,
+            supports_deterministic_seed=True,
+            supports_attached_object=True,
+            supports_revalidation=True,
+        )
+
+    def plan(self, request, candidate, planning_path):
+        del planning_path
+        start = request.motion_boundary
+        end = MotionBoundaryState(
+            (0.2, -0.1),
+            (0.2, -0.1),
+            (0.01, 0.02),
+            start.time_seconds + 1.0,
+            BoundaryMode.CONTINUOUS_BOUNDARY,
+        )
+        return PlanningResult.succeeded(
+            candidate,
+            (start.q, end.q),
+            artifact_kind=PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY,
+            expected_start_boundary=start,
+            expected_end_boundary=end,
+        )
 
 
 def world() -> PlanningWorldSnapshot:
@@ -189,3 +229,107 @@ def test_sim_backend_rejection_duplicate_start_and_shutdown_are_fail_closed():
     backend.shutdown()
     assert backend.health is ExecutionBackendHealth.SHUTDOWN
     assert backend.start(plan).status is ExecutionCommandStatus.BACKEND_UNAVAILABLE
+
+
+def test_complete_execution_records_actual_boundary_and_waits_for_real_scene():
+    snapshot = world()
+    session = ContinuousPlanningSession(FeasibleBackend())
+    session.submit(PlanningRequest("actual", snapshot, (PlanningCandidate("a", "top"),)))
+    session.run_until_stable()
+    plan = session.start_execution()
+
+    session.complete_execution(success=True, actual_end_boundary=plan.expected_end_boundary)
+
+    assert session.state is SessionState.WAITING_FOR_SCENE
+    assert session.last_actual_execution_boundary == plan.expected_end_boundary
+    assert session.current_motion_boundary == plan.expected_end_boundary
+    assert session.terminal_execution_identity == (None, plan.plan_id)
+
+
+def test_success_with_actual_continuous_boundary_mismatch_is_execution_deviation():
+    snapshot = world()
+    start = MotionBoundaryState(
+        snapshot.current_q,
+        (0.1, 0.0),
+        (0.0, 0.0),
+        0.0,
+        BoundaryMode.CONTINUOUS_BOUNDARY,
+    )
+    session = ContinuousPlanningSession(ContinuousBackend(), rolling_horizon=2)
+    session.submit(
+        PlanningRequest(
+            "continuous-k",
+            snapshot,
+            (PlanningCandidate("a", "top"),),
+            motion_boundary=start,
+        )
+    )
+    session.run_until_stable()
+    plan = session.start_execution(start)
+    predicted_scene = {"cartons": ["b"]}
+    predicted = PlanningWorldSnapshot(
+        SceneRevision.from_scene(predicted_scene, 1),
+        predicted_scene,
+        RobotStateRevision(1, plan.expected_end_boundary.q, {"mode": "AUTO"}),
+        snapshot.tool_attachment,
+        snapshot.payload_attachment,
+        snapshot.base_state,
+        snapshot.conveyor_state,
+        snapshot.config_identity,
+    )
+    session.submit_speculative(
+        PlanningRequest(
+            "continuous-k+1",
+            predicted,
+            (PlanningCandidate("b", "top"),),
+            speculative=True,
+            motion_boundary=plan.expected_end_boundary,
+        )
+    )
+    session.run_until_stable()
+    actual = replace(plan.expected_end_boundary, qd=(0.25, -0.1))
+
+    completed = session.complete_execution(success=True, actual_end_boundary=actual)
+
+    assert completed.invalidated_by is not None
+    assert session.state is SessionState.RECOVERY
+    assert plan.plan_id not in session.successful_completed_plan_ids
+    assert not session.speculative_plans
+    assert session.last_actual_execution_boundary == actual
+
+
+def test_stop_acknowledgement_replans_from_complete_stopped_boundary():
+    backend = FeasibleBackend()
+    snapshot = world()
+    session = ContinuousPlanningSession(backend)
+    session.submit(PlanningRequest("stop", snapshot, (PlanningCandidate("a", "top"),)))
+    session.run_until_stable()
+    session.start_execution()
+    changed_scene = {"cartons": ["a", "intrusion"]}
+    changed = PlanningWorldSnapshot(
+        SceneRevision.from_scene(changed_scene, 1),
+        changed_scene,
+        RobotStateRevision(1, (0.05, -0.02), {"mode": "AUTO"}),
+        snapshot.tool_attachment,
+        snapshot.payload_attachment,
+        snapshot.base_state,
+        snapshot.conveyor_state,
+        snapshot.config_identity,
+    )
+    session.update_scene(changed)
+    stopped = MotionBoundaryState.stopped((0.05, -0.02), time_seconds=0.4)
+    mismatched = replace(
+        changed,
+        robot_state_revision=RobotStateRevision(2, (0.06, -0.02), {"mode": "AUTO"}),
+    )
+
+    with pytest.raises(ValueError, match="match stopped boundary"):
+        session.acknowledge_stop(mismatched, stopped)
+    session.acknowledge_stop(changed, stopped)
+    session.run_until_stable()
+
+    replanned_boundary = backend.requests[-1].motion_boundary
+    assert replanned_boundary.matches(stopped)
+    assert replanned_boundary.qd == (0.0, 0.0)
+    assert replanned_boundary.qdd == (0.0, 0.0)
+    assert replanned_boundary.time_seconds == pytest.approx(0.4)
