@@ -27,6 +27,32 @@ class RigidAttachment:
         return OBB(pose[:3, 3], self.half_extents, pose[:3, :3], self.name, "payload")
 
 
+@dataclass(frozen=True)
+class ContactState:
+    """One closed, validated contact endpoint and its continuous attachment."""
+
+    q: np.ndarray
+    actual_tcp_world: np.ndarray
+    actual_box_world: np.ndarray
+    face: str
+    coverage: dict
+    collision_validation: dict
+    attachment: RigidAttachment
+    model_asset_fingerprint_sha256: str
+
+    def evidence(self) -> dict:
+        attached_box = self.attachment.box_at(self.actual_tcp_world)
+        continuity_error = float(np.max(np.abs(attached_box.world_from_local-self.actual_box_world)))
+        return {"q_rad": self.q.tolist(), "face": self.face,
+                "actual_tcp_world": self.actual_tcp_world.tolist(),
+                "actual_box_world": self.actual_box_world.tolist(),
+                "coverage": self.coverage,
+                "collision_validation": self.collision_validation,
+                "tcp_from_box": self.attachment.tcp_from_box.tolist(),
+                "model_asset_fingerprint_sha256": self.model_asset_fingerprint_sha256,
+                "attachment_pose_continuity_max_abs": continuity_error}
+
+
 def suction_coverage(tcp: np.ndarray, box: OBB, face: str, tool: dict, tolerance: float) -> dict:
     """Check complete circular seals on the actual box face, including roll."""
     axis, sign = {"front": (0, -1), "left": (1, 1), "right": (1, -1), "top": (2, 1)}[face]

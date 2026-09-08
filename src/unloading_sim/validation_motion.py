@@ -15,7 +15,7 @@ from .ik import solve_ik_multistart, pose_error
 from .planner import RRTConnectPlanner
 from .support import SupportRelationGraph
 from .timing import time_parameterize_joint_path
-from .validation_physics import (InitialProximityTracker, RigidAttachment,
+from .validation_physics import (ContactState, InitialProximityTracker, RigidAttachment,
                                  contact_separated, external_load, suction_coverage,
                                  support_audit, urdf_collision_shapes, world_link_boxes)
 
@@ -81,11 +81,13 @@ def residual_failure_detail(ik, planning):
 
 
 def escape_path_proposals(target, pure_direction, constraints, pure_distance, planning):
-    """Find the first straight-distance station with a shorter geometric escape.
+    """Yield deterministic escape candidates across stations and directions.
 
-    This is only a deterministic geometric prefilter.  The returned local
-    motions are not accepted until robot IK, full edge collision, rigid
-    attachment and initial-proximity history all pass.
+    Geometry generation is separate from expensive robot validation. Base
+    station/direction pairs are scheduled for novelty before any pair receives
+    a second rotation, so a small global budget is not consumed by one station
+    or one direction. Path length is evidence and a ranking input only; a
+    longer-than-straight detour remains a valid candidate.
     """
     pure=np.asarray(pure_direction,float);pure/=np.linalg.norm(pure)
     directions=[('lift',np.array([0.,0.,1.])),('left',np.array([0.,1.,0.])),
@@ -96,23 +98,54 @@ def escape_path_proposals(target, pure_direction, constraints, pure_distance, pl
     directions=[(name,direction/np.linalg.norm(direction)) for name,direction in directions
                 if abs(float(direction@pure))/np.linalg.norm(direction)<1-1e-9]
     step=planning['extraction_scan_step_m']
-    for constrained in np.arange(0.0,pure_distance+step/2,step):
-        moved=OBB(target.center+pure*constrained,target.half_extents,target.rotation,
-                  target.name,target.category)
-        station=[]
-        for name,direction in directions:
-            local=minimum_clearance_extraction_distance(moved,direction,constraints,
-                free_space_clearance_m=planning['extraction_free_clearance_m'],
-                scan_step_m=step,maximum_distance_m=planning['maximum_extraction_m'])
-            if local is None or constrained+local>=pure_distance-1e-9:
+    stations=list(np.arange(0.0,pure_distance+step/2,step))
+    if not stations or stations[-1]<pure_distance-1e-12:
+        stations.append(float(pure_distance))
+    # Start each direction at a new station, then promptly backfill that new
+    # direction at nearer stations. This makes the first four valid proposals
+    # cover multiple stations and directions while retaining the important
+    # station-zero alternatives. A Latin traversal supplies every remaining
+    # pair. Geometry is lazy and cached across later rotation refinement.
+    def pair_order():
+        emitted=set()
+        for direction_index in range(len(directions)):
+            anchor=min(direction_index,len(stations)-1)
+            for station_index in range(anchor,-1,-1):
+                key=(station_index,direction_index)
+                if key not in emitted:
+                    emitted.add(key);yield key
+        for direction_offset in range(len(directions)):
+            for station_index in range(len(stations)):
+                direction_index=(station_index+direction_offset)%len(directions)
+                key=(station_index,direction_index)
+                if key not in emitted:
+                    emitted.add(key);yield key
+
+    geometry_cache={};geometry_queries=0;schedule_index=0
+    for rotation_index,rotation in enumerate(planning['escape_rotation_candidates_rad']):
+        for station_index,direction_index in pair_order():
+            constrained=stations[station_index];name,direction=directions[direction_index]
+            key=(station_index,direction_index)
+            if key not in geometry_cache:
+                moved=OBB(target.center+pure*constrained,target.half_extents,target.rotation,
+                          target.name,target.category)
+                geometry_cache[key]=minimum_clearance_extraction_distance(moved,direction,constraints,
+                    free_space_clearance_m=planning['extraction_free_clearance_m'],
+                    scan_step_m=step,maximum_distance_m=planning['maximum_extraction_m'])
+                geometry_queries+=1
+            local=geometry_cache[key]
+            if local is None:
                 continue
-            for rotation in planning['escape_rotation_candidates_rad']:
-                station.append({'constrained_straight_distance_m':float(constrained),
-                    'escape_direction':name,'escape_direction_world':direction.tolist(),
-                    'escape_translation_m':float(local),'escape_rotation_world_z_rad':float(rotation)})
-        if station:
-            return station
-    return []
+            yield {'station_index':station_index,'direction_index':direction_index,
+                'constrained_straight_distance_m':float(constrained),
+                'escape_direction':name,'escape_direction_world':direction.tolist(),
+                'escape_translation_m':float(local),
+                'geometric_path_length_m':float(constrained+local),
+                'longer_than_pure_straight':bool(constrained+local>pure_distance+1e-12),
+                'escape_rotation_world_z_rad':float(rotation),'rotation_index':rotation_index,
+                'schedule_index':schedule_index,'geometry_queries_so_far':geometry_queries,
+                'scheduler':'station_direction_novelty_then_rotation_v2'}
+            schedule_index+=1
 
 
 def support_relations(target, cartons, fixtures, planning):
@@ -268,6 +301,27 @@ class Cell:
             position_tolerance=p["ik_position_tolerance_m"],orientation_tolerance=p["ik_orientation_tolerance_rad"],
             orientation_weight=p["ik_orientation_weight"],extra_state_valid=valid,
             collision_check_stride=p["ik_iterations"]+1)
+
+    def validate_contact_endpoint(self,q,target,face,obstacles):
+        """Close the contact contract at the actual endpoint before attaching."""
+        q=np.asarray(q,float);actual_tcp=self.robot.fk(q)
+        coverage=suction_coverage(actual_tcp,target,face,self.d["tool"],self.p["contact_tolerance_m"])
+        if not coverage["geometric_coverage"]:
+            return None,{"reason":"FINAL_CONTACT_COVERAGE_FAILED","coverage":coverage,
+                         "q_rad":q.tolist(),"actual_tcp_world":actual_tcp.tolist()}
+        collision=self.state_failure(q,obstacles,target_contact=target)
+        if collision:
+            return None,{"reason":"FINAL_CONTACT_COLLISION_FAILED","collision":collision,
+                         "coverage":coverage,"q_rad":q.tolist(),
+                         "actual_tcp_world":actual_tcp.tolist()}
+        # Creation happens only after every endpoint check above has passed.
+        attachment=RigidAttachment.capture(actual_tcp,target)
+        state=ContactState(q.copy(),actual_tcp.copy(),target.world_from_local.copy(),face,
+                           coverage,{"valid":True,"target_contact_rule":True},attachment,
+                           self.config.asset_manifest["semantic_fingerprint_sha256"])
+        if state.evidence()["attachment_pose_continuity_max_abs"]>1e-12:
+            raise RuntimeError("validated contact attachment is not pose-continuous")
+        return state,None
 
     def transit(self,start,goal,obstacles,seed,attachment=None,support_names=(),target_contact=None):
         state = lambda q: self.state_failure(q,obstacles,attachment,support_names,target_contact) is None
@@ -460,10 +514,6 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                         "strict_fk_pose_reached":False,"search_status":"BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF"}
                     continue
             actual=r.fk(ik.q)
-            attachment=RigidAttachment.capture(actual,target)
-            attempt["tcp_from_box"]=attachment.tcp_from_box.tolist()
-            attempt["load_contact"]=external_load(r,cell.config.tool,ik.q,attachment,cell.d["scene"]["box_mass_kg"],cell.d["scene"]["box_com_fraction"],cell.config.model)
-            record["load_status"]=attempt["load_contact"]["qualification"]
             actual_coverage=suction_coverage(actual,target,face,cell.d["tool"],p["contact_tolerance_m"])
             attempt["actual_coverage"]=actual_coverage
             if not actual_coverage["geometric_coverage"]:
@@ -529,9 +579,17 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 sub["paths"]["contact"]=[q.tolist() for q in contact_path]
                 if failure:
                     sub.update(stage="contact",reason=failure["reason"],failure=failure);continue
-                # Capture at the endpoint actually reached by the approach.
-                attached=RigidAttachment.capture(r.fk(contact_path[-1]),target)
+                contact_state,failure=cell.validate_contact_endpoint(
+                    contact_path[-1],target,face,[*obstacles,target])
+                if failure:
+                    sub.update(stage="contact_validation",reason=failure["reason"],failure=failure)
+                    continue
+                sub["contact_state"]=contact_state.evidence()
+                attached=contact_state.attachment
                 sub["tcp_from_box"]=attached.tcp_from_box.tolist()
+                attempt["load_contact"]=external_load(r,cell.config.tool,contact_state.q,attached,
+                    cell.d["scene"]["box_mass_kg"],cell.d["scene"]["box_com_fraction"],cell.config.model)
+                record["load_status"]=attempt["load_contact"]["qualification"]
                 proximity_path=initial_proximity.clone()
                 support_path,failure,support_event=cell.support_release(contact_path[-1],attached,obstacles,
                     support_names,attempt["seed"]+4500+oi,proximity_path)
@@ -544,9 +602,19 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                 released_start_box=attached.box_at(r.fk(extraction_start))
                 pure_endpoint=r.fk(extraction_start).copy();pure_endpoint[:3,3]+=candidate.outward_direction_world*distance
                 extraction=[];failure=None;proximity_path=None;escape_selected=None
-                proposals=escape_path_proposals(released_start_box,candidate.outward_direction_world,constraints,distance,p)
+                proposal_iterator=escape_path_proposals(
+                    released_start_box,candidate.outward_direction_world,constraints,distance,p)
+                escape_budget=p["escape_path_attempt_limit"]
+                scheduled=list(itertools.islice(proposal_iterator,escape_budget+1))
+                proposals=scheduled[:escape_budget]
+                candidates_remain=len(scheduled)>escape_budget
                 sub["escape_attempts"]=[]
-                for pi,proposal in enumerate(proposals[:p["escape_path_attempt_limit"]]):
+                sub["escape_search"]={"scheduler":"station_direction_novelty_then_rotation_v2",
+                    "robot_validation_budget":escape_budget,"scheduled_attempts":len(proposals),
+                    "candidate_availability_after_schedule":"MORE_AVAILABLE" if candidates_remain else "EXHAUSTED",
+                    "pure_straight_budget_semantics":"mandatory fallback outside escape validation budget",
+                    "termination":"NOT_SEARCHED"}
+                for pi,proposal in enumerate(proposals):
                     tracker=support_proximity.clone()
                     start_q=extraction_start;prefix=[]
                     if proposal["constrained_straight_distance_m"]>0:
@@ -554,24 +622,35 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
                         prefix,failure=cell.cartesian(start_q,station,obstacles,attempt["seed"]+5000+pi*100,
                             attached,initial_proximity=tracker)
                         if failure:
-                            sub["escape_attempts"].append({**proposal,"failure":failure});continue
+                            sub["escape_attempts"].append({**proposal,"validation_stage":"constrained_straight",
+                                "status":"REJECTED_CONSTRAINT","failure":failure});continue
                         start_q=prefix[-1]
                     endpoint=r.fk(start_q).copy()
                     endpoint[:3,3]+=np.asarray(proposal["escape_direction_world"])*proposal["escape_translation_m"]
                     endpoint[:3,:3]=rotation_matrix_from_rpy(0,0,proposal["escape_rotation_world_z_rad"])@endpoint[:3,:3]
                     escaped,failure=cell.cartesian_se3(start_q,endpoint,obstacles,attempt["seed"]+5050+pi*100,
                         attached,initial_proximity=tracker)
-                    evidence={**proposal,"failure":failure,"normal_margin_restored":tracker.fully_released}
+                    evidence={**proposal,"validation_stage":"escape_se3",
+                        "status":"ACCEPTED" if failure is None and tracker.fully_released else
+                                 "REJECTED_CONSTRAINT" if failure else "REJECTED_MARGIN_NOT_RESTORED",
+                        "failure":failure,"normal_margin_restored":tracker.fully_released}
                     sub["escape_attempts"].append(evidence)
                     if failure is None and tracker.fully_released:
                         extraction=[*prefix,*escaped[1:]] if prefix else escaped
                         proximity_path=tracker;escape_selected=evidence;break
                 if escape_selected is None:
+                    sub["escape_search"]["termination"]=("SEARCH_BUDGET_EXHAUSTED" if candidates_remain
+                        else "CANDIDATES_EXHAUSTED" if proposals else "NO_GEOMETRIC_CANDIDATES")
+                    sub["escape_search"]["pure_straight_attempted"]=True
                     proximity_path=support_proximity.clone()
                     extraction,failure=cell.cartesian(extraction_start,pure_endpoint,obstacles,seed+500+oi,
                         attached,initial_proximity=proximity_path)
+                    sub["pure_straight_attempt"]={"status":"ACCEPTED" if failure is None else "REJECTED_CONSTRAINT",
+                                                   "failure":failure,"distance_m":distance}
                 else:
                     failure=None
+                    sub["escape_search"].update(termination="SUCCESS",pure_straight_attempted=False,
+                                                 selected_schedule_index=escape_selected["schedule_index"])
                 sub["paths"]["extraction"]=[q.tolist() for q in extraction]
                 sub["initial_proximity"]=proximity_path.evidence()
                 tcp=[r.fk(q)[:3,3] for q in extraction]
@@ -655,7 +734,7 @@ def evaluate_task(cell: Cell,target,remaining,current_q,conveyor_state,*,seed,mo
         first=record["attempts"][0]
         record["first_failure"]={"stage":first["stage"],"reason":first["reason"]}
         stages=["coverage","grasp_ik","grasp_collision","attachment_clearance","grasp_task_set",
-                "grasp_task_set_complete","conveyor","conveyor_preposition","approach","contact",
+                "grasp_task_set_complete","conveyor","conveyor_preposition","approach","contact","contact_validation",
                 "support_release","extraction","handoff","carry","place","withdrawal","complete"]
         furthest=max(record["attempts"],key=lambda a:stages.index(a["stage"]))
         record.update(failure_stage=furthest["stage"],failure_reason=furthest["reason"])

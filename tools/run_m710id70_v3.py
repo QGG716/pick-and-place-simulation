@@ -27,6 +27,14 @@ from unloading_sim.validation_scenes import grid_tasks, regular_scene, random_sc
 from unloading_sim.timing import time_parameterize_joint_path
 from tools.capture_m710_evidence import capture
 
+TASK_CACHE_SCHEMA = "m710_task_cache_v2_model_assets"
+VALIDATION_STRATEGY_VERSION = "strict_contact_escape_scheduler_v2"
+
+
+def canonical_digest(value):
+    encoded=json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=True)
+    return hashlib.sha256(encoded.encode('utf-8')).hexdigest()
+
 
 def write_json(path,value):
     path.parent.mkdir(parents=True,exist_ok=True)
@@ -76,6 +84,8 @@ def compact(task_id,result,**extra):
             'failure_stage':result['failure_stage'],'failure_reason':result['failure_reason'],
             'candidate_failure_counts':dict(reasons),'grasp_failure_detail_counts':dict(details),
             'face':best.get('face'),'roll_deg':best.get('roll_deg'),
+            'escape_search_termination':best.get('escape_search',{}).get('termination'),
+            'escape_robot_validations':len(best.get('escape_attempts',[])),
             'loaded_tcp_path_m':best.get('loaded_tcp_path_m'),'cycle_s':best.get('cycle_s'),
             'conveyor_action_s':best.get('conveyor_action_s')}
 
@@ -164,25 +174,54 @@ def frozen_recovery_summary(rows):
 class Run:
     def __init__(self,cfg,output,workers=1):
         self.cfg=cfg;self.output=output;self.count=0;self.workers=workers
-        self.configuration_digest=hashlib.sha256(json.dumps(cfg.evidence(),sort_keys=True).encode()).hexdigest()
+        self.cache_identity=cfg.cache_identity()
+        self.configuration_digest=canonical_digest(self.cache_identity)
         # Untracked implementation files must also invalidate cached evidence.
         source_paths=sorted([*ROOT.joinpath('src/unloading_sim').rglob('*.py'),Path(__file__)])
-        self.code_digest=hashlib.sha256(b''.join(p.read_bytes() for p in source_paths)).hexdigest()
+        self.code_manifest={p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
+                            for p in source_paths}
+        self.code_digest=canonical_digest(self.code_manifest)
 
-    def task(self,task_id,cell,target,remaining,q,belt,seed,mode='dynamic',only_face=None,grasp_only=False):
-        key={'code':self.code_digest,'config':self.configuration_digest,'height':cell.robot.base_transform.tolist(),
+    def task_identity(self,cell,target,remaining,q,belt,seed,mode,only_face,grasp_only):
+        key={'cache_schema_version':TASK_CACHE_SCHEMA,
+             'validation_strategy_version':VALIDATION_STRATEGY_VERSION,
+             'code':self.code_digest,'config':self.configuration_digest,
+             'model_asset_fingerprint_sha256':self.cfg.asset_manifest['semantic_fingerprint_sha256'],
+             'cache_validity_runtime':self.cache_identity['cache_validity_runtime'],
+             'height':cell.robot.base_transform.tolist(),
              'target':target.name,'boxes':[{'name':b.name,'pose':b.world_from_local.tolist(),'half':b.half_extents.tolist()} for b in remaining],
              'q':np.asarray(q).tolist(),'belt':list(belt),'seed':int(seed),'mode':mode,
              'only_face':only_face,'grasp_only':grasp_only}
-        digest=hashlib.sha256(json.dumps(key,sort_keys=True).encode()).hexdigest()
+        return key,canonical_digest(key)
+
+    @staticmethod
+    def cached_result(path,digest,asset_fingerprint):
+        if not path.exists():return None
+        saved=json.loads(path.read_text(encoding='utf-8'))
+        result=saved.get('result',{})
+        evidence=result.get('validation_evidence',{}) if isinstance(result,dict) else {}
+        if (saved.get('cache_schema_version')!=TASK_CACHE_SCHEMA
+                or saved.get('input_digest')!=digest
+                or evidence.get('model_asset_fingerprint_sha256')!=asset_fingerprint):
+            return None
+        return result
+
+    def task(self,task_id,cell,target,remaining,q,belt,seed,mode='dynamic',only_face=None,grasp_only=False):
+        key,digest=self.task_identity(cell,target,remaining,q,belt,seed,mode,only_face,grasp_only)
         path=self.output/'tasks'/f'{task_id}.json'
-        if path.exists():
-            saved=json.loads(path.read_text(encoding='utf-8'))
-            if saved.get('input_digest')==digest:return saved['result']
+        cached=self.cached_result(path,digest,self.cfg.asset_manifest['semantic_fingerprint_sha256'])
+        if cached is not None:return cached
         result=evaluate_task(cell,target,remaining,q,belt,seed=seed,mode=mode,only_face=only_face,
                              grasp_only=grasp_only)
         if not grasp_only:sample_loads(cell,result)
-        write_json(path,{'input_digest':digest,'inputs':key,'result':result})
+        result['validation_evidence']={
+            'task_cache_schema_version':TASK_CACHE_SCHEMA,
+            'validation_strategy_version':VALIDATION_STRATEGY_VERSION,
+            'model_asset_fingerprint_sha256':self.cfg.asset_manifest['semantic_fingerprint_sha256'],
+            'configuration_digest':self.configuration_digest,'code_digest':self.code_digest,
+            'cache_validity_runtime':self.cache_identity['cache_validity_runtime']}
+        write_json(path,{'cache_schema_version':TASK_CACHE_SCHEMA,'input_digest':digest,
+                         'inputs':key,'result':result})
         self.count+=1
         if self.count%5==0:
             print(json.dumps({'completed_tasks':self.count,'last':task_id,'success':result['geometric_feasible'],'failure':result['failure_reason']}),flush=True)
@@ -296,7 +335,11 @@ def grid(run):
                     extraction_metrics.append({'task_id':f'grid_{index:03}','mode':mode,
                         'attempt_index':attempt_index,'option_index':option_index,'face':attempt['face'],
                         'roll_deg':attempt['roll_deg'],'task_set_variant':attempt['task_set']['variant'],
-                        'result':option['reason'],**option['extraction_metrics']})
+                        'result':option['reason'],
+                        'escape_search_termination':option.get('escape_search',{}).get('termination'),
+                        'escape_robot_validations':len(option.get('escape_attempts',[])),
+                        'escape_robot_validation_budget':option.get('escape_search',{}).get('robot_validation_budget'),
+                        **option['extraction_metrics']})
         a,b=results['fixed'],results['dynamic'];common=a['geometric_feasible'] and b['geometric_feasible']
         paired.append({'task_id':f'grid_{index:03}','fixed_feasible':a['geometric_feasible'],'dynamic_feasible':b['geometric_feasible'],
                        'new_feasible':b['geometric_feasible'] and not a['geometric_feasible'],'lost_feasible':a['geometric_feasible'] and not b['geometric_feasible'],
@@ -406,6 +449,9 @@ def fixed_geometry_scan(run):
                     metrics.append({'task_id':task_id,'mode':'fixed','attempt_index':attempt_index,
                         'option_index':option_index,'face':attempt['face'],'roll_deg':attempt['roll_deg'],
                         'task_set_variant':attempt['task_set']['variant'],'result':option['reason'],
+                        'escape_search_termination':option.get('escape_search',{}).get('termination'),
+                        'escape_robot_validations':len(option.get('escape_attempts',[])),
+                        'escape_robot_validation_budget':option.get('escape_search',{}).get('robot_validation_budget'),
                         **option['extraction_metrics']})
     successful=[row['task_id'] for row in rows if row['GEOMETRICALLY_REACHABLE']]
     frozen=frozen_v3_task_failures()

@@ -282,6 +282,14 @@ def test_original_grid_022_top_escape_is_a_reproducible_full_geometry_witness():
     assert result['selected']['face']=='top'
     assert result['selected']['roll_deg']==90
     assert result['selected']['task_set']['variant']=='offset_local_y_+0.025'
+    assert result['selected']['contact_state']['coverage']['geometric_coverage']
+    assert result['selected']['contact_state']['collision_validation']['valid']
+    assert result['selected']['contact_state']['attachment_pose_continuity_max_abs']<1e-12
+    search=result['selected']['escape_search']
+    assert search['termination']=='SUCCESS'
+    assert search['selected_schedule_index']>0
+    assert len(result['selected']['escape_attempts'])<=p['escape_path_attempt_limit']
+    assert result['selected']['escape_attempts'][0]['status'].startswith('REJECTED')
     metrics=result['selected']['extraction_metrics']
     assert np.isclose(metrics['pure_straight_clearance_distance'],.32,atol=1e-8)
     assert metrics['escape_path_used']
