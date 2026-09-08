@@ -1,10 +1,18 @@
-# Trailer Unloading Geometric Simulator v0.5.2.dev0
+# Trailer Unloading Geometric Simulator v0.5.2.dev1
 
 v0.5 建立了与底层几何规划成功率解耦的在线连续规划控制平面。当前版本不以
 M-710iD/70 原始任务成功率、连续清空率或 900 boxes/h 作为验收指标，详细边界见
 [V0.5.2 开发说明](docs/releases/V0.5.2-dev.md)、
 [V0.5.1 发布说明](docs/releases/V0.5.1.md)和
 [在线连续规划设计](docs/online_continuous_planning.md)。
+
+v0.5.2.dev1 新增严格 FIFO 的单 worker `ThreadedPlanningExecutor`：plan k 保持
+`EXECUTING` 时，k+1 可在真实后台线程中计算，但 completion 只能由主线程 poll 后改变
+session。`CooperativePlanningExecutor` 仍用于确定性单元测试，历史
+`DeterministicAsyncPlanningExecutor` 只是兼容名，不创建线程。running planner 只能
+合作取消；Python thread 不能安全强杀任务，也不提供 hard deadline 或保证纯 Python CPU
+代码并行。当前 `ExecutionMonitor` 不是机器人执行后端，本版本不证明非零速度无缝拼接或
+真实卸货吞吐。
 
 > 当前工作分支增加了 **M-710iD/70 V3 技术验证修复**。V3 使用完整 TCP
 > 变换、实际刚体附着、完整路径检查和解析时间参数化，验收入口为
@@ -238,6 +246,7 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
+- v0.5.2.dev1：单 worker threaded planning、queued/running 取消、late-result 隔离及 queue/compute/backend/validation/end-to-end 延迟分层。
 - v0.5.2.dev0：完整 motion boundary、严格 plan lineage、真实 rolling-horizon occupancy、provider-neutral capability 与独立 validation contract。
 - v0.5.1：不可变 planning world、执行前连续性验证、STOPPING 握手和 generation 隔离。
 - v0.5：与底层成功率解耦的在线连续规划控制平面、scene revision、rolling horizon 与 speculative replan。
@@ -246,4 +255,4 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev0`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev1`。

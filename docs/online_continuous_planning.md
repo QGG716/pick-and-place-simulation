@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev0)
+# Online continuous planning control plane (0.5.2.dev1)
 
 ## Acceptance scope
 
@@ -25,7 +25,8 @@ waiting for a planner. `production_throughput` is deliberately `null`.
 - FAST, WARM, and COLD escalation;
 - rolling-horizon and speculative-plan bookkeeping;
 - scene-bound validation, invalidation, and explicit `ReplanReason` events;
-- cooperative deterministic asynchronous and synchronous execution;
+- synchronous, deterministic cooperative, and single-worker threaded planning
+  execution;
 - `ContinuousPlanningSession`, `ExecutionMonitor`, and latency/idle metrics.
 
 It does not own or modify grasp generation, IK, depalletizing, conveyor layout,
@@ -117,6 +118,44 @@ A rejected submission is checked before request IDs, queues, events, or metrics
 are mutated. If execution completes without a new scene revision, the session
 remains `WAITING_FOR_SCENE`.
 
+## Planning executors
+
+`SynchronousPlanningExecutor` runs the operation during `submit`.
+`CooperativePlanningExecutor` only queues during `submit`; `advance` runs FIFO
+work in its caller. The historical `DeterministicAsyncPlanningExecutor` remains
+as a deprecated compatibility subclass, but it is not asynchronous in the
+threading sense and never creates a background thread.
+
+`ThreadedPlanningExecutor` owns exactly one worker thread. FIFO operations run
+on that worker and produce immutable `PlanningTaskCompletion` values. The
+worker never mutates `ContinuousPlanningSession`; only an explicit, nonblocking
+session `advance`/poll consumes a completion and changes READY/speculative
+queues, events, generation, lineage, state, or statistics. `run_until_stable`
+uses a finite completion timeout instead of busy-spinning.
+
+Queued work can be cancelled before it starts and never calls
+`PlannerBackend.plan`. Once an operation is running, Python cannot safely stop
+its thread. The executor records a logical cancellation request; when the
+backend declares logical-cancel support, the session also calls
+`PlannerBackend.logical_cancel(request_id)`. Without that capability, the
+session emits an explicit unsupported event. In both cases generation and
+lineage invalidation reject the late completion, so it cannot enter `READY` or
+be counted as a successful attempt.
+
+`shutdown(wait, cancel_pending)` is explicit and idempotent. It rejects later
+submissions and can cancel queued work. `wait=False` only initiates shutdown;
+it does not claim that a running worker has stopped. `wait=True` has a finite
+timeout and is appropriate only when the caller knows the backend operation can
+return. A threaded executor passed into a session remains caller-owned; the
+session does not unexpectedly close a potentially shared executor. Tests
+release every synchronization primitive before shutdown and do not rely on
+object destruction for cleanup.
+
+Python threads provide control-plane concurrency, but do not guarantee parallel
+execution for a pure-Python CPU-bound planner because of the interpreter lock.
+They also do not provide hard deadlines or force termination. A hard deadline
+requires cooperation from the backend or future process isolation.
+
 ## Test fixtures
 
 The tests use three layers:
@@ -132,10 +171,20 @@ The tests use three layers:
 ## Metrics
 
 Initialization and prewarm latency are recorded separately per backend. Each
-attempt records queue, planning compute, authoritative validation, and
-end-to-end planning latency. Reports also include robot idle time waiting for a
-planner, fallback counts by scheduling path, and outcomes by backend and
-domain/operational category.
+attempt records executor-measured queue and compute latency, optional
+backend-reported latency, main-thread authoritative validation latency, and
+submit-to-validation end-to-end latency. Executor compute is the authoritative
+control-plane planning-compute value. A backend-reported value is diagnostic
+only and cannot overwrite it. End-to-end latency is at least queue + executor
+compute + validation. Reports also include robot idle time waiting for a
+planner, cancellation/stale-result counts, fallback counts by scheduling path,
+and outcomes by backend and domain/operational category.
+
+For compatibility, the legacy `planning_latency` and
+`planning_latency_by_path` report fields retain the backend-reported value when
+one exists (otherwise executor compute). New consumers should use
+`planning_compute_latency`/`executor_compute_latency` and
+`backend_reported_latency` explicitly.
 
 These metrics do not represent production throughput. Startup costs are not
 folded into per-request planning performance, and `production_throughput`
@@ -155,7 +204,10 @@ for those external planners. It proves only that the stable interfaces,
 scheduling, lifecycle, validation gate, metrics, and state machine can safely
 host such backends in the future.
 
-The deterministic cooperative executor remains the dev0 execution abstraction.
-A real threaded executor is deferred to dev1. Robot/controller execution
-backends, runtime stop acknowledgement, and production integration are deferred
-to dev2 and later integration work.
+`ExecutionMonitor` remains a control-plane state holder, not a robot execution
+backend. Dev1 proves only that k+1 can compute in a worker while k remains
+`EXECUTING`. It does not provide nonzero-velocity seamless blending between k
+and k+1, real controller feedback, or real unloading throughput.
+`ExecutionBackend`, `ExecutionFeedback`, the continuous planning runtime,
+controller stop acknowledgement, and production integration are deferred to
+dev2 and later integration work.
