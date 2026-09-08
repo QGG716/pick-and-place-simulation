@@ -922,6 +922,7 @@ class PlanEnvelope:
         return (
             self.invalidated_by is None
             and self.result.success
+            and not self.speculative
             and self.validated_snapshot is not None
             and self.validated_by is not None
             and self.validation_timestamp_seconds is not None

@@ -258,6 +258,7 @@ def test_successful_predecessor_is_recorded_before_successor_becomes_ready():
     session.submit_speculative(successor)
     session.run_until_stable()
     assert not session.ready_plans
+    assert not session.speculative_plans[0].executable
 
     session.complete_execution(
         success=True,
