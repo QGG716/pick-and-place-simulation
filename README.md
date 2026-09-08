@@ -1,4 +1,9 @@
-# Trailer Unloading Geometric Simulator v0.4
+# Trailer Unloading Geometric Simulator v0.5 perception/ROS 2
+
+This branch adds a dependency-free shared contract, conservative adapters for
+pinned visual JSON and isolated workers, and a ROS 2 Humble replay/mock bridge.
+Start with [`docs/vision_ros2_integration.md`](docs/vision_ros2_integration.md);
+the geometric core remains ROS/GPU independent.
 
 > 当前工作分支增加了 **M-710iD/70 V3 技术验证修复**。V3 使用完整 TCP
 > 变换、实际刚体附着、完整路径检查和解析时间参数化，验收入口为

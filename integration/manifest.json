@@ -1,0 +1,34 @@
+{
+  "manifest_version": 1,
+  "contracts_schema_version": "1.0.0",
+  "generated_for": "feat/v0.5-perception-ros2",
+  "baseline": {
+    "repository": "https://github.com/QGG716/pick-and-place-simulation.git",
+    "ref": "baseline/v0.4-v3validated",
+    "commit": "c5fcf4da58183b50ac79f37ae88d918389becf70"
+  },
+  "vision_upstream": {
+    "repository": "https://github.com/QGG716/cargo-detection-and-6D-estimation.git",
+    "reference_ref": "dev",
+    "commit": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+    "runtime_policy": "fixed commit only; dev is audit metadata, never the installed version"
+  },
+  "consumers": {
+    "feasibility_core": {
+      "ref": "feat/v0.5-feasibility-core",
+      "commit": "c6fa45595833088319e342c7ef61cc94afef3f58",
+      "patch": "integration/patches/feasibility-core-contract-adapter.patch"
+    },
+    "online_continuous": {
+      "ref": "feat/v0.5-online-continuous",
+      "commit": "2c337098ecc5e70363cb966750c5b4f336a8d9cd",
+      "patch": "integration/patches/online-continuous-contract-reexport.patch"
+    }
+  },
+  "acceptance_environment": {
+    "os": "Ubuntu 22.04 LTS",
+    "ros": "Humble",
+    "python": "3.10",
+    "architecture": "amd64"
+  }
+}
