@@ -87,12 +87,12 @@ def world() -> PlanningWorldSnapshot:
     )
 
 
-def executable_plan():
+def executable_plan(request_id: str = "plan"):
     snapshot = world()
     session = ContinuousPlanningSession(FeasibleBackend())
     session.submit(
         PlanningRequest(
-            "plan",
+            request_id,
             snapshot,
             (PlanningCandidate("a", "top"),),
         )
@@ -118,6 +118,8 @@ def test_execution_feedback_is_immutable_and_validates_fields():
     metadata["nested"].append("changed")
 
     assert feedback.metadata["nested"] == ("value",)
+    assert feedback.feedback_stream_id == "default"
+    assert feedback.producer_epoch == 0
     with pytest.raises(FrozenInstanceError):
         feedback.progress = 0.5
     with pytest.raises(ValueError, match="progress"):
@@ -133,6 +135,26 @@ def test_execution_feedback_is_immutable_and_validates_fields():
             0.0,
             boundary,
             observed_at_monotonic_seconds=-1.0,
+        )
+    with pytest.raises(ValueError, match="stream"):
+        ExecutionFeedback(
+            1,
+            "e",
+            "p",
+            ExecutionFeedbackStatus.RUNNING,
+            0.0,
+            boundary,
+            feedback_stream_id="",
+        )
+    with pytest.raises(ValueError, match="epoch"):
+        ExecutionFeedback(
+            1,
+            "e",
+            "p",
+            ExecutionFeedbackStatus.RUNNING,
+            0.0,
+            boundary,
+            producer_epoch=-1,
         )
 
 
@@ -169,7 +191,7 @@ def test_sim_backend_success_is_deterministic_and_poll_consumes_once():
         ExecutionFeedbackStatus.RUNNING,
         ExecutionFeedbackStatus.SUCCEEDED,
     ]
-    assert [item.feedback_sequence for item in feedback] == [1, 2, 3, 4]
+    assert [item.feedback_sequence for item in feedback] == [0, 1, 2, 3]
     assert [item.progress for item in feedback] == [0.0, 0.0, 0.5, 1.0]
     assert feedback[-1].current_boundary.matches(plan.expected_end_boundary)
     assert backend.poll() is None
@@ -232,6 +254,23 @@ def test_sim_backend_rejection_duplicate_start_and_shutdown_are_fail_closed():
     assert backend.health is ExecutionBackendHealth.SHUTDOWN
     assert backend.state is ExecutionBackendState.SHUTDOWN
     assert backend.start(plan).status is ExecutionCommandStatus.BACKEND_UNAVAILABLE
+
+
+def test_sim_backend_feedback_sequence_restarts_for_each_execution():
+    backend = DeterministicSimExecutionBackend(execution_steps=1)
+    first = executable_plan("sequence-a")
+    assert backend.start(first).accepted
+    first_feedback = backend.poll()
+    assert first_feedback.feedback_sequence == 0
+    backend.advance(2)
+    while backend.poll() is not None:
+        pass
+
+    second = executable_plan("sequence-b")
+    assert backend.start(second).accepted
+    second_feedback = backend.poll()
+    assert second_feedback.feedback_sequence == 0
+    assert second_feedback.execution_id != first_feedback.execution_id
 
 
 def test_complete_execution_records_actual_boundary_and_waits_for_real_scene():
