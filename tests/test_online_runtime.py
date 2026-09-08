@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import replace
+from threading import Barrier, Event, Thread
 
 import pytest
 
@@ -21,6 +22,7 @@ from unloading_sim.online_planning import (
     BoundaryMode,
     ContinuousPlanningSession,
     CooperativePlanningExecutor,
+    ExecutionState,
     MotionBoundaryState,
     PlanArtifactKind,
     PlanStatus,
@@ -40,12 +42,25 @@ from unloading_sim.online_runtime import (
     ObservationAuthority,
     RuntimeIngressStatus,
     RuntimeState,
+    RuntimeWatchdogPolicy,
     SuccessorRequestFactory,
+    WatchdogTerminalAction,
     WorldObservation,
 )
 
 
 WAIT_SECONDS = 3.0
+
+
+class FakeClock:
+    def __init__(self):
+        self.value = 0.0
+
+    def __call__(self):
+        return self.value
+
+    def advance(self, seconds):
+        self.value += seconds
 
 
 def world(
@@ -199,6 +214,7 @@ class InjectedExecutionBackend(ExecutionBackend):
         self.execution_index = 0
         self.plan = None
         self.poll_error = poll_error
+        self.stop_calls = 0
 
     @property
     def identity(self):
@@ -237,6 +253,7 @@ class InjectedExecutionBackend(ExecutionBackend):
 
     def request_stop(self, plan_id, reason):
         del reason
+        self.stop_calls += 1
         return ExecutionCommandResult(
             ExecutionCommandStatus.ACCEPTED,
             "injected-stop",
@@ -585,10 +602,8 @@ def test_runtime_shutdown_is_idempotent_and_executor_ownership_is_explicit():
     runtime.shutdown()
     assert not shared.closed
     assert backend.health is ExecutionBackendHealth.SHUTDOWN
-    with pytest.raises(RuntimeError, match="closed"):
-        runtime.submit_initial(request("late", world()))
-    with pytest.raises(RuntimeError, match="closed"):
-        runtime.observe_world(observation(world()))
+    assert runtime.submit_initial(request("late", world())).status is RuntimeIngressStatus.REJECTED
+    assert runtime.observe_world(observation(world())).status is RuntimeIngressStatus.REJECTED
     with pytest.raises(RuntimeError, match="closed"):
         runtime.step()
     shared.shutdown()
@@ -884,4 +899,307 @@ def test_planner_exhaustion_and_duplicate_request_error_reach_terminal_states():
     runtime.submit_initial(duplicate)
     runtime.submit_initial(duplicate)
     assert runtime.run_until_stable(timeout_seconds=WAIT_SECONDS) is RuntimeState.RECOVERY
+    runtime.shutdown()
+
+
+def test_mpsc_mailbox_accepts_external_threads_without_mutating_session_until_step():
+    runtime, session, _, _ = runtime_fixture(
+        initial_request_capacity=8,
+        world_observation_capacity=8,
+    )
+    barrier = Barrier(3)
+    results = []
+
+    def submit_request():
+        barrier.wait(timeout=WAIT_SECONDS)
+        results.append(runtime.submit_initial(request("thread-request", world())))
+
+    def submit_observation():
+        barrier.wait(timeout=WAIT_SECONDS)
+        results.append(
+            runtime.observe_world(
+                observation(world(1), producer_id="thread-camera")
+            )
+        )
+
+    threads = [Thread(target=submit_request), Thread(target=submit_observation)]
+    for thread in threads:
+        thread.start()
+    barrier.wait(timeout=WAIT_SECONDS)
+    for thread in threads:
+        thread.join(timeout=WAIT_SECONDS)
+        assert not thread.is_alive()
+
+    assert all(item.accepted for item in results)
+    assert session.state is SessionState.IDLE
+    runtime.step()
+    assert session.state is not SessionState.IDLE
+    runtime.shutdown()
+
+
+def test_mailbox_shutdown_racing_producers_is_bounded_and_deadlock_free():
+    runtime, _, _, _ = runtime_fixture(initial_request_capacity=4)
+    barrier = Barrier(5)
+    results = []
+
+    def producer(index):
+        barrier.wait(timeout=WAIT_SECONDS)
+        results.append(runtime.submit_initial(request(f"racing-{index}", world())))
+
+    threads = [Thread(target=producer, args=(index,)) for index in range(4)]
+    for thread in threads:
+        thread.start()
+    barrier.wait(timeout=WAIT_SECONDS)
+    runtime.shutdown()
+    for thread in threads:
+        thread.join(timeout=WAIT_SECONDS)
+        assert not thread.is_alive()
+    assert len(results) == 4
+    assert all(
+        item.status in {RuntimeIngressStatus.ACCEPTED, RuntimeIngressStatus.REJECTED}
+        for item in results
+    )
+    assert runtime.submit_initial(request("after-close", world())).status is RuntimeIngressStatus.REJECTED
+
+
+def test_scene_freshness_boundary_and_stale_scene_prevents_start():
+    clock = FakeClock()
+    policy = RuntimeWatchdogPolicy(scene_freshness_timeout_seconds=2.0)
+    runtime, session, _, _ = runtime_fixture(clock=clock, watchdog_policy=policy)
+    runtime.submit_initial(request("freshness", world()))
+    clock.advance(1.999)
+    runtime.step()
+    assert runtime.metrics.execution_start_command_count == 1
+    runtime.shutdown()
+
+    clock = FakeClock()
+    runtime, session, _, _ = runtime_fixture(clock=clock, watchdog_policy=policy)
+    runtime.submit_initial(request("stale", world()))
+    clock.advance(2.0)
+    runtime.step()
+    assert runtime.metrics.execution_start_command_count == 0
+    assert session.state is SessionState.WAITING_FOR_SCENE
+    assert session.snapshot()["terminal_reason"] == ReplanReason.SCENE_STALE.value
+    runtime.observe_world(observation(world(), sequence=1))
+    runtime.step()
+    assert runtime.metrics.execution_start_command_count == 1
+    runtime.shutdown()
+
+
+def test_feedback_silence_requests_one_stop_and_stop_ack_timeout_recovers():
+    clock = FakeClock()
+    backend = InjectedExecutionBackend()
+    policy = RuntimeWatchdogPolicy(
+        scene_freshness_timeout_seconds=None,
+        execution_feedback_timeout_seconds=2.0,
+        stop_ack_timeout_seconds=3.0,
+    )
+    runtime, session, _, _ = runtime_fixture(
+        execution_backend=backend,
+        clock=clock,
+        watchdog_policy=policy,
+    )
+    runtime.submit_initial(request("silent", world()))
+    runtime.step()
+    clock.advance(2.0)
+    runtime.step()
+    assert session.state is SessionState.STOPPING
+    assert backend.stop_calls == 1
+    runtime.step()
+    assert backend.stop_calls == 1
+    clock.advance(3.0)
+    runtime.step()
+    assert session.state is SessionState.RECOVERY
+    assert session.snapshot()["terminal_reason"] == ReplanReason.STOP_ACK_TIMEOUT.value
+    assert session.last_actual_execution_boundary is None
+    runtime.shutdown()
+
+
+def test_valid_feedback_resets_silence_watchdog_receive_time():
+    clock = FakeClock()
+    backend = InjectedExecutionBackend()
+    runtime, session, _, _ = runtime_fixture(
+        execution_backend=backend,
+        clock=clock,
+        watchdog_policy=RuntimeWatchdogPolicy(
+            scene_freshness_timeout_seconds=None,
+            execution_feedback_timeout_seconds=2.0,
+        ),
+    )
+    runtime.submit_initial(request("feedback-reset", world()))
+    runtime.step()
+    clock.advance(1.9)
+    backend.emit(0, ExecutionFeedbackStatus.ACCEPTED, 0.0)
+    runtime.step()
+    clock.advance(1.9)
+    runtime.step()
+    assert session.execution.state is ExecutionState.RUNNING
+    assert backend.stop_calls == 0
+    runtime.shutdown()
+
+
+def test_stopped_observation_timeout_enters_policy_selected_blocked_state():
+    clock = FakeClock()
+    backend = DeterministicSimExecutionBackend(execution_steps=5, clock=clock)
+    runtime, session, _, _ = runtime_fixture(
+        execution_backend=backend,
+        clock=clock,
+        watchdog_policy=RuntimeWatchdogPolicy(
+            scene_freshness_timeout_seconds=None,
+            execution_feedback_timeout_seconds=None,
+            stop_ack_timeout_seconds=None,
+            stopped_observation_timeout_seconds=2.0,
+            stopped_observation_timeout_action=WatchdogTerminalAction.BLOCKED,
+        ),
+    )
+    runtime.submit_initial(request("stop-observation-timeout", world()))
+    runtime.step()
+    runtime.step()
+    runtime.observe_world(observation(world(1, ("a", "changed"), (9.0, 9.0))))
+    runtime.step()
+    runtime.step()
+    runtime.step()
+    assert runtime.state is RuntimeState.WAITING_FOR_OBSERVATION
+    clock.advance(2.0)
+    runtime.step()
+    assert session.state is SessionState.BLOCKED
+    assert session.snapshot()["terminal_reason"] == ReplanReason.STOP_OBSERVATION_TIMEOUT.value
+    runtime.shutdown()
+
+
+def test_running_planning_timeout_isolates_late_result_without_killing_thread():
+    clock = FakeClock()
+    started = Event()
+    release = Event()
+
+    class BlockingPlanner(RecordingPlanner):
+        def plan(self, request_, candidate, planning_path):
+            started.set()
+            assert release.wait(WAIT_SECONDS)
+            return super().plan(request_, candidate, planning_path)
+
+    executor = ThreadedPlanningExecutor(clock=clock)
+    session = ContinuousPlanningSession(BlockingPlanner(), executor=executor, clock=clock)
+    runtime = ContinuousPlanningRuntime(
+        session,
+        DeterministicSimExecutionBackend(clock=clock),
+        owns_executor=True,
+        clock=clock,
+        watchdog_policy=RuntimeWatchdogPolicy(
+            scene_freshness_timeout_seconds=None,
+            planning_timeout_seconds=1.0,
+        ),
+    )
+    runtime.submit_initial(request("planning-timeout", world()))
+    runtime.step()
+    assert started.wait(WAIT_SECONDS)
+    clock.advance(1.0)
+    runtime.step()
+    assert session.state is SessionState.RECOVERY
+    assert session.snapshot()["terminal_reason"] == ReplanReason.PLANNING_TIMEOUT.value
+    release.set()
+    assert executor.wait_for_completion(WAIT_SECONDS)
+    runtime.step()
+    assert not session.ready_plans
+    assert session.statistics.stale_result_discarded_count == 1
+    runtime.shutdown()
+
+
+def test_queued_planning_timeout_cancels_before_backend_start():
+    clock = FakeClock()
+    blocker_started = Event()
+    release_blocker = Event()
+    executor = ThreadedPlanningExecutor(clock=clock)
+
+    def blocker():
+        blocker_started.set()
+        assert release_blocker.wait(WAIT_SECONDS)
+        return PlanningResult.failed(
+            PlanStatus.NOT_EVALUATED,
+            PlanningCandidate("blocker", "blocker"),
+        )
+
+    executor.submit("external-blocker", blocker)
+    assert blocker_started.wait(WAIT_SECONDS)
+    planner = RecordingPlanner()
+    session = ContinuousPlanningSession(planner, executor=executor, clock=clock)
+    runtime = ContinuousPlanningRuntime(
+        session,
+        DeterministicSimExecutionBackend(clock=clock),
+        owns_executor=True,
+        clock=clock,
+        watchdog_policy=RuntimeWatchdogPolicy(
+            scene_freshness_timeout_seconds=None,
+            planning_timeout_seconds=1.0,
+        ),
+    )
+    runtime.submit_initial(request("queued-timeout", world()))
+    runtime.step()
+    assert executor.pending_count == 1
+    clock.advance(1.0)
+    runtime.step()
+    assert session.state is SessionState.RECOVERY
+    assert session.statistics.cancelled_before_start_count == 1
+    assert not planner.requests
+    release_blocker.set()
+    runtime.shutdown()
+
+
+def test_runtime_and_session_event_journals_are_bounded_and_gap_aware():
+    session = ContinuousPlanningSession(
+        RecordingPlanner(),
+        event_journal_capacity=3,
+    )
+    runtime = ContinuousPlanningRuntime(
+        session,
+        DeterministicSimExecutionBackend(),
+        event_journal_capacity=3,
+    )
+    runtime.submit_initial(request("journal", world()))
+    runtime.run_until_stable(timeout_seconds=WAIT_SECONDS)
+
+    assert len(runtime.events) <= 3
+    assert len(session.events) <= 3
+    assert runtime.events.dropped_count > 0
+    assert session.events.dropped_count > 0
+    sequences = [event.sequence for event in runtime.events]
+    assert sequences == sorted(sequences)
+    read = runtime.events_since(0)
+    assert read.history_gap
+    assert runtime.metrics.event_history_gap_count == 1
+    assert runtime.metrics.event_dropped_count == runtime.events.dropped_count
+    runtime.shutdown()
+
+
+def test_unhealthy_execution_backend_blocks_start_with_auditable_reason():
+    backend = InjectedExecutionBackend()
+    backend._health = ExecutionBackendHealth.FAULTED
+    runtime, session, _, _ = runtime_fixture(
+        execution_backend=backend,
+        watchdog_policy=RuntimeWatchdogPolicy(scene_freshness_timeout_seconds=None),
+    )
+    runtime.submit_initial(request("unhealthy", world()))
+    runtime.step()
+    assert runtime.metrics.execution_start_command_count == 0
+    assert session.state is SessionState.RECOVERY
+    assert session.snapshot()["terminal_reason"] == ReplanReason.BACKEND_UNHEALTHY.value
+    runtime.shutdown()
+
+
+def test_backend_health_is_checked_while_execution_is_running():
+    backend = InjectedExecutionBackend()
+    runtime, session, _, _ = runtime_fixture(
+        execution_backend=backend,
+        watchdog_policy=RuntimeWatchdogPolicy(
+            scene_freshness_timeout_seconds=None,
+            execution_feedback_timeout_seconds=None,
+        ),
+    )
+    runtime.submit_initial(request("health-running", world()))
+    runtime.step()
+    assert session.execution.state is ExecutionState.RUNNING
+    backend._health = ExecutionBackendHealth.FAULTED
+    runtime.step()
+    assert session.state is SessionState.RECOVERY
+    assert session.snapshot()["terminal_reason"] == ReplanReason.BACKEND_UNHEALTHY.value
     runtime.shutdown()
