@@ -1,4 +1,15 @@
-# Trailer Unloading Geometric Simulator v0.5.2.dev3
+# Trailer Unloading Geometric Simulator v0.5.2.dev4
+
+v0.5.2.dev4 adds a thread-safe, bounded MPSC `RuntimeIngressMailbox` for
+external planning requests and authoritative world observations. Producers
+only enqueue immutable messages; the runtime owner thread remains the sole
+writer of session and runtime state. Configurable monotonic-clock watchdogs
+cover scene freshness, execution-feedback silence, stop acknowledgement,
+stopped-world reconciliation, planning deadlines, and execution-backend
+health. Runtime/session event streams and long-lived histories are bounded and
+expose overflow and history-gap diagnostics through `events_since(...)`.
+These are control-plane liveness and audit features, not ROS integration,
+controller simulation, physical timing, or production-throughput evidence.
 
 v0.5 建立了与底层几何规划成功率解耦的在线连续规划控制平面。当前版本不以
 M-710iD/70 原始任务成功率、连续清空率或 900 boxes/h 作为验收指标，详细边界见
@@ -260,6 +271,7 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
+- v0.5.2.dev4: thread-safe external ingress, deterministic watchdog policies, and bounded auditable journals.
 - v0.5.2.dev3：类型化 world observation、execution-scoped feedback ordering、STOPPED/world 乱序汇合及有界 ingress 背压。
 - v0.5.2.dev2：执行后端/反馈契约、完整实际 boundary、确定性执行 fixture、自动 successor 与 STOPPED acknowledgement runtime。
 - v0.5.2.dev1：单 worker threaded planning、queued/running 取消、late-result 隔离及 queue/compute/backend/validation/end-to-end 延迟分层。
@@ -271,4 +283,4 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev3`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev4`。

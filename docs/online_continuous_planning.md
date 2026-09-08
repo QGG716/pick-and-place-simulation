@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev3)
+# Online continuous planning control plane (0.5.2.dev4)
 
 ## Acceptance scope
 
@@ -38,6 +38,58 @@ back on runtime, and an execution backend cannot modify a session or its queues.
 It does not own or modify grasp generation, IK, depalletizing, conveyor layout,
 base optimization, collision algorithms, or trajectory time parameterization.
 A stronger planner can replace `PlannerBackend` without changing the session.
+
+## External ingress and owner-thread boundary
+
+`RuntimeIngressMailbox` is a bounded, thread-safe multi-producer/single-consumer
+port for immutable `PlanningRequest` and authoritative `WorldObservation`
+messages. External callbacks may call the compatibility entry points
+`runtime.submit_initial(...)` and `runtime.observe_world(...)`; neither call
+mutates session state. Only the runtime step owner drains the mailbox and
+applies transitions. Capacity, backpressure, duplicate, stale, conflict,
+coalescing, and producer/stream/epoch/sequence semantics remain explicit.
+Shutdown closes ingress first and subsequent submissions return `REJECTED`.
+
+Execution feedback continues to enter exclusively through
+`ExecutionBackend.poll()`. There is no second callback path that can bypass
+feedback identity, sequence, progress, terminal, boundary, or lineage gates.
+
+## Deterministic watchdogs and time domains
+
+`RuntimeWatchdogPolicy` uses the injected runtime monotonic clock. Its
+conservative defaults are 30 s scene freshness, 5 s execution-feedback
+silence, 5 s stop acknowledgement, 10 s stopped-observation reconciliation,
+and 30 s planning completion. Every deadline can be disabled with `None`.
+Scene staleness defaults to `WAITING_FOR_SCENE`; stopped-observation timeout
+defaults to `RECOVERY` and may instead be configured as `BLOCKED`.
+
+At or beyond a deadline, a stale scene cannot start execution; feedback
+silence initiates one safe-stop request; missing stop acknowledgement enters
+recovery without inventing a STOP boundary; missing post-stop world evidence
+remains non-executing and enters the configured terminal state; planning
+timeout logically cancels the task and isolates its late result by generation;
+and an unhealthy execution backend blocks a start or faults an active
+execution. Python planning threads are never forcibly killed.
+
+Producer observation timestamps and producer feedback timestamps are
+diagnostic values within their producer domains. Watchdogs use the local
+receive time captured by the runtime mailbox or feedback poll. Monotonic values
+from different processes are never compared, and wall-clock calendar time is
+not used. A future ROS adapter should map its header timestamp to diagnostic
+metadata, maintain explicit producer epoch and sequence, and let runtime record
+its own receive timestamp; no ROS dependency or adapter is implemented here.
+
+## Bounded audit journals
+
+Runtime and session events use configurable `BoundedEventJournal` instances.
+Sequence numbers remain globally monotonic after eviction. Consumers call
+`events_since(sequence, limit)` and receive retained events plus oldest/latest
+sequence, overflow, and explicit history-gap indicators. Snapshots contain
+bounded summaries rather than unbounded copies. Planning latency samples,
+backend lifecycle samples, invalidated-plan history, request IDs, lineage
+tombstones, and terminal histories also have configurable retention bounds.
+Eviction means an audit consumer must resynchronize; it is never presented as
+a complete history.
 
 FAST, WARM, and COLD are scheduling policies, not product or algorithm names.
 The scheduler intersects each requested path and motion boundary with declared
@@ -311,6 +363,11 @@ coalesced/backpressured/rejected results, stale execution feedback, and determin
 steps/time spent waiting to reconcile STOPPED with a world observation. They are
 audit counters only, not controller tracking or robot execution performance
 measurements.
+
+Dev4 additionally records mailbox results, watchdog activations, journal
+evictions/overflows, history-gap reads, bounded sample retention, and whether a
+timed-out planning worker is still exiting. Producer timestamps are never
+folded into planning or watchdog latency.
 
 For compatibility, the legacy `planning_latency` and
 `planning_latency_by_path` report fields retain the backend-reported value when
