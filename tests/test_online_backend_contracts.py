@@ -57,12 +57,19 @@ def world(sequence=0, cartons=("a",), q=(0.0, 0.0), *, robot_model=ROBOT_MODEL, 
 
 
 def request(request_id, snapshot, *, boundary=BoundaryMode.STOP_BOUNDARY):
-    velocity = None if boundary is BoundaryMode.STOP_BOUNDARY else tuple(0.1 for _ in snapshot.current_q)
+    velocity = tuple(0.0 for _ in snapshot.current_q) if boundary is BoundaryMode.STOP_BOUNDARY else tuple(0.1 for _ in snapshot.current_q)
+    acceleration = tuple(0.0 for _ in snapshot.current_q)
     return PlanningRequest(
         request_id,
         snapshot,
         (PlanningCandidate("a", "top"),),
-        motion_boundary=MotionBoundaryState(boundary, snapshot.current_q, velocity),
+        motion_boundary=MotionBoundaryState(
+            snapshot.current_q,
+            velocity,
+            acceleration,
+            0.0,
+            boundary,
+        ),
     )
 
 
@@ -73,21 +80,21 @@ def identity(name="semantic", *, robot_model=ROBOT_MODEL, world_model=WORLD_MODE
 def capabilities(
     *paths,
     boundaries=(BoundaryMode.STOP_BOUNDARY,),
-    artifacts=(ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY,),
+    artifacts=(ArtifactKind.GEOMETRIC_PATH,),
     initialize=False,
     prewarm=False,
 ):
     return BackendCapabilities(
         supported_planning_paths=frozenset(paths),
         supported_boundary_modes=frozenset(boundaries),
-        output_artifact_kinds=frozenset(artifacts),
-        warm_start_support=PlanningPath.WARM in paths,
-        deterministic_seed_support=True,
-        attached_object_support=True,
-        incremental_world_update_support=False,
-        logical_cancellation_support=True,
-        hard_deadline_support=False,
-        revalidation_support=False,
+        supported_artifact_kinds=frozenset(artifacts),
+        supports_warm_start=PlanningPath.WARM in paths,
+        supports_deterministic_seed=True,
+        supports_attached_object=True,
+        supports_incremental_world_update=False,
+        supports_logical_cancel=True,
+        supports_hard_deadline=False,
+        supports_revalidation=False,
         initialization_required=initialize,
         prewarm_required=prewarm,
     )
@@ -139,10 +146,24 @@ class SemanticBackend(PlannerBackend):
         if outcome is not PlanStatus.SUCCESS:
             return PlanningResult.failed(outcome, candidate)
         q = planning_request.motion_boundary.current_q
+        end_q = tuple(value + 0.1 for value in q)
+        artifact = next(iter(self.capabilities.supported_artifact_kinds))
+        if artifact is ArtifactKind.GEOMETRIC_PATH:
+            return PlanningResult.succeeded(candidate, [q, end_q], artifact_kind=artifact)
+        start = planning_request.motion_boundary
+        end = MotionBoundaryState(
+            end_q,
+            start.qd,
+            start.qdd,
+            start.time_seconds + 1.0,
+            start.boundary_mode,
+        )
         return PlanningResult.succeeded(
             candidate,
-            [q, tuple(value + 0.1 for value in q)],
-            artifact_kind=next(iter(self.capabilities.output_artifact_kinds)),
+            [q, end_q],
+            artifact_kind=artifact,
+            expected_start_boundary=start,
+            expected_end_boundary=end,
         )
 
 
@@ -178,7 +199,7 @@ def test_backend_identity_provenance_and_capabilities_are_immutable_and_saved():
     assert isinstance(envelope.proposed_by, BackendProvenance)
     assert envelope.proposed_by.backend_name == "cpu-stop"
     assert envelope.proposed_by.deterministic_seed == 0
-    assert envelope.artifact_kind is ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY
+    assert envelope.artifact_kind is ArtifactKind.GEOMETRIC_PATH
     assert envelope.robot_model_fingerprint == ROBOT_MODEL
     assert envelope.world_model_fingerprint == WORLD_MODEL
     assert envelope.validated_by == "authoritative-test-validator@1.0"
@@ -205,7 +226,13 @@ def test_fast_cache_miss_falls_through_to_warm_without_blocking():
         capabilities(PlanningPath.FAST),
         {PlanningPath.FAST: OperationalOutcome.CACHE_MISS},
     )
-    warm = SemanticBackend("warm", capabilities(PlanningPath.WARM))
+    warm = SemanticBackend(
+        "warm",
+        capabilities(
+            PlanningPath.WARM,
+            artifacts=(ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY,),
+        ),
+    )
     session = ContinuousPlanningSession((library, warm), validator=SemanticValidator())
     session.submit(request("fallback", world()))
     session.run_until_stable()
@@ -259,6 +286,7 @@ def test_continuous_execution_requires_actual_motion_boundary_state():
         capabilities(
             PlanningPath.WARM,
             boundaries=(BoundaryMode.CONTINUOUS_BOUNDARY,),
+            artifacts=(ArtifactKind.TIME_PARAMETERIZED_TRAJECTORY,),
         ),
     )
     snapshot = world()

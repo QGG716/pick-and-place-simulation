@@ -22,6 +22,7 @@ from .support import SupportEdge, SupportRelationGraph
 from .qualification import ReplayQualificationPolicy, evaluate_replay_qualification
 from .online_planning import (
     ArtifactKind,
+    BackendPlanValidatorAdapter,
     BackendCapabilities,
     BackendHealth,
     BackendIdentity,
@@ -37,6 +38,7 @@ from .online_planning import (
     OperationalOutcome,
     OutcomeCategory,
     PlanEnvelope,
+    PlanArtifactKind,
     PlanValidationResult,
     PlanValidator,
     ProviderNeutralPlanValidator,
@@ -94,6 +96,7 @@ __all__ = [
     "SupportFootprint",
     "ContinuousPlanningSession",
     "ArtifactKind",
+    "BackendPlanValidatorAdapter",
     "BackendCapabilities",
     "BackendHealth",
     "BackendIdentity",
@@ -108,6 +111,7 @@ __all__ = [
     "OperationalOutcome",
     "OutcomeCategory",
     "PlanEnvelope",
+    "PlanArtifactKind",
     "PlanValidationResult",
     "PlanValidator",
     "ProviderNeutralPlanValidator",
