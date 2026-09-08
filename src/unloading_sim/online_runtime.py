@@ -1197,10 +1197,11 @@ class ContinuousPlanningRuntime:
         plan_id = self._active_plan.plan_id
         self._stop_requested_plan_ids.add(plan_id)
         self.metrics.execution_stop_request_count += 1
+        stop_reason = self.session.terminal_reason or ReplanReason.SCENE_REVISION_CHANGED.value
         try:
             result = self.execution_backend.request_stop(
                 plan_id,
-                ReplanReason.SCENE_REVISION_CHANGED.value,
+                stop_reason,
             )
         except Exception as exc:
             self.metrics.execution_stop_rejected_count += 1

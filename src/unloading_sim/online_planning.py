@@ -2018,6 +2018,10 @@ class ContinuousPlanningSession:
     def active_planning_request_id(self) -> str | None:
         return None if self._active_progress is None else self._active_progress.request.request_id
 
+    @property
+    def terminal_reason(self) -> str | None:
+        return self._terminal_reason
+
     def _remember_request_id(self, request_id: str) -> None:
         if request_id in self._request_ids:
             self._request_ids.move_to_end(request_id)
