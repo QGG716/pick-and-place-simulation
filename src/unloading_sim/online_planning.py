@@ -1812,6 +1812,17 @@ class ExecutionMonitor:
         self.message = message
         return plan
 
+    def fault(self, reason: ReplanReason, message: str) -> PlanEnvelope:
+        """Fail closed without claiming completion or a safe stopped state."""
+
+        if self.state not in {ExecutionState.RUNNING, ExecutionState.STOPPING} or self.active_plan is None:
+            raise RuntimeError("no active execution to fault")
+        plan = self.active_plan.invalidate(reason, message)
+        self.active_plan = None
+        self.state = ExecutionState.FAILED
+        self.message = message
+        return plan
+
 
 @dataclass
 class _PlanningRoute:
@@ -3360,6 +3371,36 @@ class ContinuousPlanningSession:
             self._queue_replan(plan.request, self.current_world, ReplanReason.EXECUTION_DEVIATION)
         self.state = SessionState.RECOVERY
         self._event("execution_deviation", ReplanReason.EXECUTION_DEVIATION.value, plan.request.request_id)
+        return plan
+
+    def fail_execution_control_plane(
+        self,
+        message: str,
+        *,
+        reason: ReplanReason = ReplanReason.EXECUTION_FAILED,
+        actual_boundary: MotionBoundaryState | None = None,
+        execution_id: str | None = None,
+    ) -> PlanEnvelope:
+        """Enter recovery without claiming that the robot completed or stopped."""
+
+        if actual_boundary is not None and not isinstance(actual_boundary, MotionBoundaryState):
+            raise TypeError("actual_boundary must be a MotionBoundaryState")
+        plan = self.execution.fault(reason, message)
+        if actual_boundary is not None:
+            self.current_motion_boundary = actual_boundary
+            self.last_actual_execution_boundary = actual_boundary
+        self.terminal_execution_identity = (execution_id, plan.plan_id)
+        self.invalidated_plans.append(plan)
+        self._cascade_lineage(plan.plan_id, reason, message)
+        self.state = SessionState.RECOVERY
+        self.statistics.end_robot_idle()
+        self._event(
+            "execution_control_plane_failure",
+            reason.value,
+            plan.request.request_id,
+            message=message,
+            execution_id=execution_id,
+        )
         return plan
 
     def _queue_replan(

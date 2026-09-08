@@ -67,10 +67,18 @@ from .online_execution import (
     ExecutionBackendCapabilities,
     ExecutionBackendHealth,
     ExecutionBackendIdentity,
+    ExecutionBackendState,
     ExecutionCommandResult,
     ExecutionCommandStatus,
     ExecutionFeedback,
     ExecutionFeedbackStatus,
+)
+from .online_runtime import (
+    ContinuousPlanningRuntime,
+    RuntimeEvent,
+    RuntimeMetrics,
+    RuntimeState,
+    SuccessorRequestFactory,
 )
 
 __all__ = [
@@ -154,8 +162,14 @@ __all__ = [
     "ExecutionBackendCapabilities",
     "ExecutionBackendHealth",
     "ExecutionBackendIdentity",
+    "ExecutionBackendState",
     "ExecutionCommandResult",
     "ExecutionCommandStatus",
     "ExecutionFeedback",
     "ExecutionFeedbackStatus",
+    "ContinuousPlanningRuntime",
+    "RuntimeEvent",
+    "RuntimeMetrics",
+    "RuntimeState",
+    "SuccessorRequestFactory",
 ]

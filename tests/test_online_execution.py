@@ -7,6 +7,7 @@ import pytest
 from unloading_sim.online_execution import (
     DeterministicSimExecutionBackend,
     ExecutionBackendHealth,
+    ExecutionBackendState,
     ExecutionCommandStatus,
     ExecutionFeedback,
     ExecutionFeedbackStatus,
@@ -155,6 +156,7 @@ def test_sim_backend_success_is_deterministic_and_poll_consumes_once():
     backend = DeterministicSimExecutionBackend(execution_steps=2)
     command = backend.start(plan)
     assert command.status is ExecutionCommandStatus.ACCEPTED
+    assert backend.state is ExecutionBackendState.RUNNING
 
     feedback = [backend.poll()]
     for _ in range(3):
@@ -228,6 +230,7 @@ def test_sim_backend_rejection_duplicate_start_and_shutdown_are_fail_closed():
     backend.shutdown()
     backend.shutdown()
     assert backend.health is ExecutionBackendHealth.SHUTDOWN
+    assert backend.state is ExecutionBackendState.SHUTDOWN
     assert backend.start(plan).status is ExecutionCommandStatus.BACKEND_UNAVAILABLE
 
 

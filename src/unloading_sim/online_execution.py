@@ -43,6 +43,14 @@ class ExecutionBackendHealth(str, Enum):
     FAULTED = "FAULTED"
 
 
+class ExecutionBackendState(str, Enum):
+    IDLE = "IDLE"
+    RUNNING = "RUNNING"
+    STOPPING = "STOPPING"
+    FAULTED = "FAULTED"
+    SHUTDOWN = "SHUTDOWN"
+
+
 class ExecutionFeedbackStatus(str, Enum):
     ACCEPTED = "ACCEPTED"
     RUNNING = "RUNNING"
@@ -111,10 +119,18 @@ class ExecutionBackendCapabilities:
         object.__setattr__(self, "supported_boundary_modes", boundaries)
 
     def supports(self, plan: PlanEnvelope) -> bool:
+        continuous = bool(
+            plan.expected_start_boundary.boundary_mode is BoundaryMode.CONTINUOUS_BOUNDARY
+            or plan.expected_end_boundary.boundary_mode is BoundaryMode.CONTINUOUS_BOUNDARY
+        )
         return bool(
             plan.artifact_kind in self.supported_artifact_kinds
             and plan.expected_start_boundary.boundary_mode in self.supported_boundary_modes
             and plan.expected_end_boundary.boundary_mode in self.supported_boundary_modes
+            and (not continuous or self.supports_continuous_handoff)
+            and (not continuous or self.reports_position)
+            and (not continuous or self.reports_velocity)
+            and (not continuous or self.reports_acceleration)
         )
 
 
@@ -198,6 +214,10 @@ class ExecutionBackend(ABC):
     @property
     @abstractmethod
     def health(self) -> ExecutionBackendHealth: ...
+
+    @property
+    @abstractmethod
+    def state(self) -> ExecutionBackendState: ...
 
     def initialize(self) -> None: ...
 
@@ -298,6 +318,18 @@ class DeterministicSimExecutionBackend(ExecutionBackend):
     @property
     def health(self) -> ExecutionBackendHealth:
         return self._health
+
+    @property
+    def state(self) -> ExecutionBackendState:
+        if self._health is ExecutionBackendHealth.SHUTDOWN:
+            return ExecutionBackendState.SHUTDOWN
+        if self._health is ExecutionBackendHealth.FAULTED:
+            return ExecutionBackendState.FAULTED
+        if self._active is None:
+            return ExecutionBackendState.IDLE
+        if self._active.stop_requested:
+            return ExecutionBackendState.STOPPING
+        return ExecutionBackendState.RUNNING
 
     def _command(
         self,
@@ -535,6 +567,7 @@ __all__ = [
     "ExecutionBackendCapabilities",
     "ExecutionBackendHealth",
     "ExecutionBackendIdentity",
+    "ExecutionBackendState",
     "ExecutionCommandResult",
     "ExecutionCommandStatus",
     "ExecutionFeedback",
