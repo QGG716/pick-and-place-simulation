@@ -449,6 +449,21 @@ def test_feedback_backend_exception_enters_recovery():
     runtime.shutdown()
 
 
+def test_faulted_feedback_enters_explicit_recovery():
+    backend = InjectedExecutionBackend()
+    runtime, session, _, _ = runtime_fixture(execution_backend=backend)
+    runtime.submit_initial(request("faulted", world()))
+    runtime.step()
+    backend.emit(1, ExecutionFeedbackStatus.FAULTED, 0.0)
+
+    runtime.step()
+
+    assert runtime.state is RuntimeState.RECOVERY
+    assert session.execution.active_plan is None
+    assert runtime.metrics.execution_failure_count == 1
+    runtime.shutdown()
+
+
 def test_continuous_feedback_without_velocity_capability_fails_closed_without_zero_fill():
     backend = InjectedExecutionBackend()
     backend._capabilities = replace(backend.capabilities, reports_velocity=False)

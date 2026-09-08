@@ -177,7 +177,9 @@ class ContinuousPlanningRuntime:
     def _assert_open(self) -> None:
         if self._closed:
             raise RuntimeError("continuous planning runtime is closed")
-        if self._owner_thread_id is not None and get_ident() != self._owner_thread_id:
+        if self._owner_thread_id is None:
+            self._owner_thread_id = get_ident()
+        elif get_ident() != self._owner_thread_id:
             raise RuntimeError("runtime operations must stay on the step owner thread")
 
     def _event(
@@ -573,8 +575,6 @@ class ContinuousPlanningRuntime:
 
     def step(self) -> RuntimeState:
         self._assert_open()
-        if self._owner_thread_id is None:
-            self._owner_thread_id = get_ident()
         while self._pending_initial:
             self.session.submit(self._pending_initial.popleft())
         self._poll_execution_feedback()
@@ -641,7 +641,9 @@ class ContinuousPlanningRuntime:
     def shutdown(self) -> None:
         if self._closed:
             return
-        if self._owner_thread_id is not None and get_ident() != self._owner_thread_id:
+        if self._owner_thread_id is None:
+            self._owner_thread_id = get_ident()
+        elif get_ident() != self._owner_thread_id:
             raise RuntimeError("runtime shutdown must run on the step owner thread")
         if self.owns_execution_backend:
             self.execution_backend.shutdown()
