@@ -814,10 +814,8 @@ def test_world_observation_before_stopped_feedback_reconciles_safely():
 
 def test_bounded_ingress_backpressure_coalescing_and_terminal_delivery():
     backend = InjectedExecutionBackend()
-    runtime, session, _, _ = runtime_fixture(execution_backend=backend)
-    runtime = ContinuousPlanningRuntime(
-        session,
-        backend,
+    runtime, _, _, _ = runtime_fixture(
+        execution_backend=backend,
         initial_request_capacity=1,
         world_observation_capacity=1,
         execution_feedback_capacity=1,
