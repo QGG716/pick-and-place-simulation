@@ -61,6 +61,17 @@ from .online_planning import (
     ThreadedPlanningExecutor,
     ValidationStatus,
 )
+from .online_execution import (
+    DeterministicSimExecutionBackend,
+    ExecutionBackend,
+    ExecutionBackendCapabilities,
+    ExecutionBackendHealth,
+    ExecutionBackendIdentity,
+    ExecutionCommandResult,
+    ExecutionCommandStatus,
+    ExecutionFeedback,
+    ExecutionFeedbackStatus,
+)
 
 __all__ = [
     "Capsule",
@@ -138,4 +149,13 @@ __all__ = [
     "SynchronousPlanningExecutor",
     "ThreadedPlanningExecutor",
     "ValidationStatus",
+    "DeterministicSimExecutionBackend",
+    "ExecutionBackend",
+    "ExecutionBackendCapabilities",
+    "ExecutionBackendHealth",
+    "ExecutionBackendIdentity",
+    "ExecutionCommandResult",
+    "ExecutionCommandStatus",
+    "ExecutionFeedback",
+    "ExecutionFeedbackStatus",
 ]
