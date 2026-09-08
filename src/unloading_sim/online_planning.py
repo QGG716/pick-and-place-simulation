@@ -1204,6 +1204,8 @@ class PlanningLatencySample:
     queue_seconds: float = 0.0
     validation_seconds: float = 0.0
     end_to_end_seconds: float | None = None
+    executor_compute_seconds: float | None = None
+    backend_reported_seconds: float | None = None
 
 
 class PlanningLatencyStatistics:
@@ -1217,12 +1219,24 @@ class PlanningLatencyStatistics:
         self.fallback_count_by_path: Counter[str] = Counter()
         self.outcome_count_by_backend_category: dict[str, Counter[str]] = {}
         self.unsupported_route_skip_count = 0
+        self.cancellation_requested_count = 0
+        self.cancelled_before_start_count = 0
+        self.stale_result_discarded_count = 0
         self._idle_started: float | None = None
         self.robot_idle_waiting_seconds = 0.0
 
     def record(self, sample: PlanningLatencySample) -> None:
-        if not isfinite(sample.seconds) or sample.seconds < 0.0:
-            raise ValueError("planning latency must be finite and non-negative")
+        values = {
+            "planning latency": sample.seconds,
+            "queue latency": sample.queue_seconds,
+            "validation latency": sample.validation_seconds,
+            "end-to-end planning latency": sample.end_to_end_seconds,
+            "executor compute latency": sample.executor_compute_seconds,
+            "backend-reported latency": sample.backend_reported_seconds,
+        }
+        for name, value in values.items():
+            if value is not None and (not isfinite(value) or value < 0.0):
+                raise ValueError(f"{name} must be finite and non-negative")
         self.samples.append(sample)
         key = f"{sample.outcome_category.value}:{sample.outcome_code}"
         self.outcome_count_by_backend_category.setdefault(sample.backend_name, Counter())[key] += 1
@@ -1238,6 +1252,15 @@ class PlanningLatencyStatistics:
 
     def record_unsupported_route(self) -> None:
         self.unsupported_route_skip_count += 1
+
+    def record_cancellation_requested(self) -> None:
+        self.cancellation_requested_count += 1
+
+    def record_cancelled_before_start(self) -> None:
+        self.cancelled_before_start_count += 1
+
+    def record_stale_result_discarded(self) -> None:
+        self.stale_result_discarded_count += 1
 
     def begin_robot_idle(self) -> None:
         if self._idle_started is None:
@@ -1279,8 +1302,19 @@ class PlanningLatencyStatistics:
             sample.end_to_end_seconds if sample.end_to_end_seconds is not None else sample.queue_seconds + sample.seconds + sample.validation_seconds
             for sample in self.samples
         ]
+        executor_compute = [
+            sample.executor_compute_seconds
+            if sample.executor_compute_seconds is not None
+            else sample.seconds
+            for sample in self.samples
+        ]
+        backend_reported = [
+            sample.backend_reported_seconds
+            for sample in self.samples
+            if sample.backend_reported_seconds is not None
+        ]
         return {
-            "model": "online_control_plane_latency_v2",
+            "model": "online_control_plane_latency_v3",
             "planning_latency": self._summary([sample.seconds for sample in self.samples]),
             "planning_latency_by_path": by_path,
             "backend_init_latency": {
@@ -1290,7 +1324,9 @@ class PlanningLatencyStatistics:
                 name: self._summary(values) for name, values in sorted(self.backend_warmup_samples.items())
             },
             "queue_latency": self._summary(queue),
-            "planning_compute_latency": self._summary([sample.seconds for sample in self.samples]),
+            "planning_compute_latency": self._summary(executor_compute),
+            "executor_compute_latency": self._summary(executor_compute),
+            "backend_reported_latency": self._summary(backend_reported),
             "validation_latency": self._summary(validation),
             "end_to_end_planning_latency": self._summary(end_to_end),
             "planning_status_counts": dict(sorted(Counter(sample.status.value for sample in self.samples).items())),
@@ -1302,6 +1338,9 @@ class PlanningLatencyStatistics:
                 for name, counts in sorted(self.outcome_count_by_backend_category.items())
             },
             "unsupported_route_skip_count": self.unsupported_route_skip_count,
+            "cancellation_requested_count": self.cancellation_requested_count,
+            "cancelled_before_start_count": self.cancelled_before_start_count,
+            "stale_result_discarded_count": self.stale_result_discarded_count,
             "speculative_planning_count": sum(sample.speculative for sample in self.samples),
             "robot_idle_waiting_for_planner_seconds": float(idle),
             "production_throughput": None,
@@ -1861,6 +1900,7 @@ class ContinuousPlanningSession:
         self._requests: deque[_RequestProgress] = deque()
         self._active_progress: _RequestProgress | None = None
         self._submitted_task: str | None = None
+        self._task_submitted_at: float | None = None
         self._event_sequence = 0
         self._task_sequence = 0
         self._replan_sequence = 0
@@ -1962,6 +2002,7 @@ class ContinuousPlanningSession:
         cancellation = self.executor.cancel(task_id)
         if cancellation is PlanningCancellationResult.CANCELLED_BEFORE_START:
             self._cancelled_task_ids.add(task_id)
+            self.statistics.record_cancelled_before_start()
             self._event(
                 "planning_cancelled_before_start",
                 cancellation.value,
@@ -1980,6 +2021,7 @@ class ContinuousPlanningSession:
             )
             return
         self._cancelled_task_ids.add(task_id)
+        self.statistics.record_cancellation_requested()
         if not backend.capabilities.supports_logical_cancel:
             self._event(
                 "planning_cancel_unsupported",
@@ -2254,8 +2296,10 @@ class ContinuousPlanningSession:
                 backend.set_seed(request.seed)
             return backend.plan(request, candidate, path)
 
+        submitted_at = self.statistics._clock()
         self.executor.submit(task_id, operation)
         self._submitted_task = task_id
+        self._task_submitted_at = submitted_at
         self._event("planning_started", path.value, request.request_id, target=candidate.target_id, candidate=candidate.candidate_id, backend=backend.identity.backend_name)
 
     def advance(self, max_tasks: int = 1) -> SessionState:
@@ -2303,7 +2347,9 @@ class ContinuousPlanningSession:
     def _consume(self, completion: _ExecutorCompletion) -> None:
         if completion.task_id != self._submitted_task or self._active_progress is None:
             raise RuntimeError("executor returned an out-of-order completion")
+        task_submitted_at = self._task_submitted_at
         self._submitted_task = None
+        self._task_submitted_at = None
         self._cancelled_task_ids.discard(completion.task_id)
         progress = self._active_progress
         request = progress.request
@@ -2312,6 +2358,7 @@ class ContinuousPlanningSession:
         path = route.planning_path
         backend = self.backends[route.backend_index]
         if progress.generation != self._planning_generation:
+            self.statistics.record_stale_result_discarded()
             self._event(
                 "stale_result_discarded",
                 ReplanReason.SCENE_REVISION_CHANGED.value,
@@ -2335,6 +2382,7 @@ class ContinuousPlanningSession:
             self._schedule_if_possible()
             return
         if progress.predecessor_plan_id in self._invalid_lineage_plan_ids:
+            self.statistics.record_stale_result_discarded()
             self._event(
                 "stale_lineage_result_discarded",
                 ReplanReason.PLAN_INVALIDATED.value,
@@ -2416,8 +2464,13 @@ class ContinuousPlanningSession:
                 self.state = SessionState.RECOVERY
                 self.statistics.end_robot_idle()
                 return
-        latency = completion.elapsed_seconds if result.latency_seconds is None else result.latency_seconds
-        result = replace(result, latency_seconds=latency)
+        executor_compute_seconds = completion.executor_compute_seconds
+        backend_reported_seconds = result.latency_seconds
+        compatibility_latency = (
+            executor_compute_seconds
+            if backend_reported_seconds is None
+            else backend_reported_seconds
+        )
         progress.attempts.append(result)
         validation_seconds = 0.0
         if result.success:
@@ -2445,6 +2498,8 @@ class ContinuousPlanningSession:
                 self.statistics.end_robot_idle()
                 return
             validation_seconds = self.statistics._clock() - validation_started
+            if not isfinite(validation_seconds) or validation_seconds < 0.0:
+                raise RuntimeError("statistics clock moved backwards during validation")
             if not validation.valid:
                 self.invalidated_plans.append(
                     envelope.invalidate(ReplanReason.PLAN_VALIDATION_FAILED, validation.message)
@@ -2457,42 +2512,82 @@ class ContinuousPlanningSession:
                     backend=backend.identity.backend_name,
                 )
             else:
+                minimum_end_to_end = (
+                    completion.queue_seconds
+                    + executor_compute_seconds
+                    + validation_seconds
+                )
+                measured_end_to_end = minimum_end_to_end
+                if task_submitted_at is not None:
+                    measured_end_to_end = self.statistics._clock() - task_submitted_at
+                    if not isfinite(measured_end_to_end) or measured_end_to_end < 0.0:
+                        raise RuntimeError("statistics clock moved backwards during planning")
+                end_to_end_seconds = max(minimum_end_to_end, measured_end_to_end)
                 sample = PlanningLatencySample(
                     request.request_id,
                     path,
                     result.status,
-                    latency,
+                    compatibility_latency,
                     request.speculative,
-                    backend.identity.backend_name,
-                    result.outcome_category,
-                    result.outcome_code,
-                    completion.queue_seconds,
-                    validation_seconds,
-                    completion.queue_seconds + latency + validation_seconds,
+                    backend_name=backend.identity.backend_name,
+                    outcome_category=result.outcome_category,
+                    outcome_code=result.outcome_code,
+                    queue_seconds=completion.queue_seconds,
+                    validation_seconds=validation_seconds,
+                    end_to_end_seconds=end_to_end_seconds,
+                    executor_compute_seconds=executor_compute_seconds,
+                    backend_reported_seconds=backend_reported_seconds,
                 )
                 self.statistics.record(sample)
-                self._event("planning_finished", result.outcome_code, request.request_id, path=path.value, latency_seconds=latency, backend=backend.identity.backend_name)
+                self._event(
+                    "planning_finished",
+                    result.outcome_code,
+                    request.request_id,
+                    path=path.value,
+                    latency_seconds=executor_compute_seconds,
+                    executor_compute_seconds=executor_compute_seconds,
+                    backend_reported_seconds=backend_reported_seconds,
+                    backend=backend.identity.backend_name,
+                )
                 (self.speculative_plans if request.speculative else self.ready_plans).append(envelope)
                 self._active_progress = None
                 self._event("plan_ready", path.value, request.request_id, plan_id=envelope.plan_id, speculative=request.speculative)
                 self._schedule_if_possible()
                 return
 
+        minimum_end_to_end = completion.queue_seconds + executor_compute_seconds + validation_seconds
+        measured_end_to_end = minimum_end_to_end
+        if task_submitted_at is not None:
+            measured_end_to_end = self.statistics._clock() - task_submitted_at
+            if not isfinite(measured_end_to_end) or measured_end_to_end < 0.0:
+                raise RuntimeError("statistics clock moved backwards during planning")
+        end_to_end_seconds = max(minimum_end_to_end, measured_end_to_end)
         sample = PlanningLatencySample(
             request.request_id,
             path,
             result.status,
-            latency,
+            compatibility_latency,
             request.speculative,
-            backend.identity.backend_name,
-            result.outcome_category,
-            result.outcome_code,
-            completion.queue_seconds,
-            validation_seconds,
-            completion.queue_seconds + latency + validation_seconds,
+            backend_name=backend.identity.backend_name,
+            outcome_category=result.outcome_category,
+            outcome_code=result.outcome_code,
+            queue_seconds=completion.queue_seconds,
+            validation_seconds=validation_seconds,
+            end_to_end_seconds=end_to_end_seconds,
+            executor_compute_seconds=executor_compute_seconds,
+            backend_reported_seconds=backend_reported_seconds,
         )
         self.statistics.record(sample)
-        self._event("planning_finished", result.outcome_code, request.request_id, path=path.value, latency_seconds=latency, backend=backend.identity.backend_name)
+        self._event(
+            "planning_finished",
+            result.outcome_code,
+            request.request_id,
+            path=path.value,
+            latency_seconds=executor_compute_seconds,
+            executor_compute_seconds=executor_compute_seconds,
+            backend_reported_seconds=backend_reported_seconds,
+            backend=backend.identity.backend_name,
+        )
 
         next_route_index: int | None = None
         for index in range(progress.route_index + 1, len(progress.routes)):

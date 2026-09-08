@@ -188,6 +188,9 @@ def test_scene_change_discards_late_old_generation_result_after_logical_cancel()
         assert not session.ready_plans
         assert not session.speculative_plans
         assert any(event.kind == "stale_result_discarded" for event in session.events)
+        metrics = session.statistics.report()
+        assert metrics["cancellation_requested_count"] == 1
+        assert metrics["stale_result_discarded_count"] == 1
     finally:
         backend.release.set()
         executor.shutdown(wait=True, cancel_pending=True, timeout_seconds=WAIT_SECONDS)
@@ -214,6 +217,7 @@ def test_predecessor_failure_logically_cancels_and_discards_running_successor():
         assert not session.ready_plans
         assert not session.speculative_plans
         assert any(event.kind == "stale_lineage_result_discarded" for event in session.events)
+        assert session.statistics.report()["stale_result_discarded_count"] == 1
     finally:
         backend.release.set()
         executor.shutdown(wait=True, cancel_pending=True, timeout_seconds=WAIT_SECONDS)
@@ -264,6 +268,80 @@ def test_backend_exception_does_not_kill_worker_and_falls_back():
         assert [call[1] for call in backend.calls[:2]] == [PlanningPath.FAST, PlanningPath.WARM]
         assert any(event.kind == "backend_error" for event in session.events)
         assert executor.worker_alive
+    finally:
+        executor.shutdown(wait=True, cancel_pending=True, timeout_seconds=WAIT_SECONDS)
+
+
+def test_unsupported_running_cancellation_is_explicit_and_still_generation_safe():
+    executor = ThreadedPlanningExecutor()
+    backend = BlockingBackend(blocked_request_id="k+1", supports_logical_cancel=False)
+    try:
+        session, plan = ready_executing_session(backend, executor)
+        predicted = world(1, ("b",), plan.expected_end_state)
+        session.submit_speculative(request("k+1", predicted, speculative=True))
+        assert backend.started.wait(WAIT_SECONDS)
+
+        session.update_scene(world(1, ("b", "changed"), plan.expected_end_state))
+        assert backend.cancelled == []
+        assert any(event.kind == "planning_cancel_unsupported" for event in session.events)
+
+        backend.release.set()
+        assert executor.wait_for_completion(WAIT_SECONDS)
+        session.advance()
+        assert not session.ready_plans
+        assert not session.speculative_plans
+        metrics = session.statistics.report()
+        assert metrics["cancellation_requested_count"] == 1
+        assert metrics["stale_result_discarded_count"] == 1
+    finally:
+        backend.release.set()
+        executor.shutdown(wait=True, cancel_pending=True, timeout_seconds=WAIT_SECONDS)
+
+
+def test_cooperative_queued_successor_cancel_releases_without_backend_call():
+    executor = CooperativePlanningExecutor()
+    backend = BlockingBackend(blocked_request_id="k+1")
+    session = ContinuousPlanningSession(backend, executor=executor, rolling_horizon=2)
+    session.submit(request("k", world()))
+    session.run_until_stable()
+    plan = session.start_execution()
+    predicted = world(1, ("b",), plan.expected_end_state)
+    session.submit_speculative(request("k+1", predicted, speculative=True))
+
+    session.complete_execution(success=False, stopped_q=plan.expected_end_state)
+    session.advance()
+
+    assert all(call[0] != "k+1" for call in backend.calls)
+    assert session.occupancy == 0
+    metrics = session.statistics.report()
+    assert metrics["cancelled_before_start_count"] == 1
+    assert metrics["stale_result_discarded_count"] == 1
+
+
+def test_executor_measurement_is_authoritative_and_backend_latency_is_diagnostic():
+    executor = ThreadedPlanningExecutor()
+    backend = BlockingBackend()
+    try:
+        session = ContinuousPlanningSession(backend, executor=executor)
+        session.submit(request("latency", world()))
+        session.run_until_stable(timeout_seconds=WAIT_SECONDS)
+        sample = session.statistics.samples[0]
+        report = session.statistics.report()
+
+        assert sample.backend_reported_seconds == pytest.approx(123.0)
+        assert sample.executor_compute_seconds >= 0.0
+        assert sample.executor_compute_seconds != pytest.approx(123.0)
+        assert report["backend_reported_latency"]["total_seconds"] == pytest.approx(123.0)
+        assert report["planning_compute_latency"]["total_seconds"] == pytest.approx(
+            sample.executor_compute_seconds
+        )
+        assert report["executor_compute_latency"] == report["planning_compute_latency"]
+        assert sample.end_to_end_seconds >= (
+            sample.queue_seconds
+            + sample.executor_compute_seconds
+            + sample.validation_seconds
+        )
+        assert report["production_throughput"] is None
     finally:
         executor.shutdown(wait=True, cancel_pending=True, timeout_seconds=WAIT_SECONDS)
 
