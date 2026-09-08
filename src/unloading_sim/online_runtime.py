@@ -7,13 +7,14 @@ from collections import Counter, OrderedDict, deque
 from dataclasses import dataclass, field
 from enum import Enum
 from math import isfinite
-from threading import get_ident
+from threading import Lock, get_ident
 from time import monotonic
 from types import MappingProxyType
 from typing import Any, Callable, Mapping
 
 from .online_execution import (
     ExecutionBackend,
+    ExecutionBackendHealth,
     ExecutionCommandResult,
     ExecutionCommandStatus,
     ExecutionFeedback,
@@ -29,6 +30,7 @@ from .online_planning import (
     ReplanReason,
     SessionState,
 )
+from .online_journal import BoundedEventJournal, EventJournalRead
 
 
 def _freeze(value: Any) -> Any:
@@ -156,6 +158,19 @@ class _FeedbackDomainState:
 
 
 @dataclass(frozen=True)
+class _ReceivedIngress:
+    message: PlanningRequest | WorldObservation
+    received_at_monotonic_seconds: float
+
+
+@dataclass(frozen=True)
+class _MailboxDrain:
+    requests: tuple[_ReceivedIngress, ...]
+    observations: tuple[_ReceivedIngress, ...]
+    conflict: str | None = None
+
+
+@dataclass(frozen=True)
 class RuntimeEvent:
     sequence: int
     kind: str
@@ -183,8 +198,48 @@ class SuccessorRequestFactory(ABC):
     ) -> PlanningRequest | None: ...
 
 
+class WatchdogTerminalAction(str, Enum):
+    WAITING_FOR_SCENE = "WAITING_FOR_SCENE"
+    RECOVERY = "RECOVERY"
+    BLOCKED = "BLOCKED"
+
+
+@dataclass(frozen=True)
+class RuntimeWatchdogPolicy:
+    """Local monotonic-time safety policy; ``None`` disables a deadline."""
+
+    scene_freshness_timeout_seconds: float | None = 30.0
+    execution_feedback_timeout_seconds: float | None = 5.0
+    stop_ack_timeout_seconds: float | None = 5.0
+    stopped_observation_timeout_seconds: float | None = 10.0
+    planning_timeout_seconds: float | None = 30.0
+    scene_stale_action: WatchdogTerminalAction = WatchdogTerminalAction.WAITING_FOR_SCENE
+    stopped_observation_timeout_action: WatchdogTerminalAction = WatchdogTerminalAction.RECOVERY
+
+    def __post_init__(self) -> None:
+        for name in (
+            "scene_freshness_timeout_seconds",
+            "execution_feedback_timeout_seconds",
+            "stop_ack_timeout_seconds",
+            "stopped_observation_timeout_seconds",
+            "planning_timeout_seconds",
+        ):
+            value = getattr(self, name)
+            if value is not None and (not isfinite(value) or value < 0.0):
+                raise ValueError(f"{name} must be finite and non-negative, or None")
+        object.__setattr__(self, "scene_stale_action", WatchdogTerminalAction(self.scene_stale_action))
+        object.__setattr__(
+            self,
+            "stopped_observation_timeout_action",
+            WatchdogTerminalAction(self.stopped_observation_timeout_action),
+        )
+        if self.stopped_observation_timeout_action is WatchdogTerminalAction.WAITING_FOR_SCENE:
+            raise ValueError("stopped observation timeout action must be RECOVERY or BLOCKED")
+
+
 class RuntimeMetrics:
     def __init__(self) -> None:
+        self._ingress_lock = Lock()
         self.execution_start_command_count = 0
         self.execution_start_rejected_count = 0
         self.execution_feedback_count_by_status: Counter[str] = Counter()
@@ -208,15 +263,38 @@ class RuntimeMetrics:
         self.stale_execution_feedback_count = 0
         self.stop_waiting_observation_steps = 0
         self.stop_waiting_observation_seconds = 0.0
+        self.scene_stale_count = 0
+        self.execution_feedback_timeout_count = 0
+        self.stop_ack_timeout_count = 0
+        self.stop_observation_timeout_count = 0
+        self.planning_timeout_count = 0
+        self.backend_unhealthy_count = 0
+        self.event_history_gap_count = 0
+        self.event_dropped_count = 0
+        self.event_overflow_count = 0
 
     def record_ingress(self, port: str, status: RuntimeIngressStatus) -> None:
-        name = status.value.lower()
-        attribute = f"ingress_{name}_count"
-        if hasattr(self, attribute):
-            setattr(self, attribute, getattr(self, attribute) + 1)
-        self.ingress_count_by_port_and_status[f"{port}:{status.value}"] += 1
+        with self._ingress_lock:
+            name = status.value.lower()
+            attribute = f"ingress_{name}_count"
+            if hasattr(self, attribute):
+                setattr(self, attribute, getattr(self, attribute) + 1)
+            self.ingress_count_by_port_and_status[f"{port}:{status.value}"] += 1
 
     def report(self) -> dict[str, Any]:
+        with self._ingress_lock:
+            ingress = {
+                "ingress_accepted_count": self.ingress_accepted_count,
+                "ingress_stale_count": self.ingress_stale_count,
+                "ingress_duplicate_count": self.ingress_duplicate_count,
+                "ingress_conflict_count": self.ingress_conflict_count,
+                "ingress_coalesced_count": self.ingress_coalesced_count,
+                "ingress_backpressured_count": self.ingress_backpressured_count,
+                "ingress_rejected_count": self.ingress_rejected_count,
+                "ingress_count_by_port_and_status": dict(
+                    sorted(self.ingress_count_by_port_and_status.items())
+                ),
+            }
         return {
             "execution_start_command_count": self.execution_start_command_count,
             "execution_start_rejected_count": self.execution_start_rejected_count,
@@ -232,31 +310,181 @@ class RuntimeMetrics:
             "invalid_feedback_count": self.invalid_feedback_count,
             "speculative_request_created_count": self.speculative_request_created_count,
             "speculative_request_skipped_count": self.speculative_request_skipped_count,
-            "ingress_accepted_count": self.ingress_accepted_count,
-            "ingress_stale_count": self.ingress_stale_count,
-            "ingress_duplicate_count": self.ingress_duplicate_count,
-            "ingress_conflict_count": self.ingress_conflict_count,
-            "ingress_coalesced_count": self.ingress_coalesced_count,
-            "ingress_backpressured_count": self.ingress_backpressured_count,
-            "ingress_rejected_count": self.ingress_rejected_count,
-            "ingress_count_by_port_and_status": dict(
-                sorted(self.ingress_count_by_port_and_status.items())
-            ),
+            **ingress,
             "stale_execution_feedback_count": self.stale_execution_feedback_count,
             "stop_waiting_observation_steps": self.stop_waiting_observation_steps,
             "stop_waiting_observation_seconds": self.stop_waiting_observation_seconds,
+            "scene_stale_count": self.scene_stale_count,
+            "execution_feedback_timeout_count": self.execution_feedback_timeout_count,
+            "stop_ack_timeout_count": self.stop_ack_timeout_count,
+            "stop_observation_timeout_count": self.stop_observation_timeout_count,
+            "planning_timeout_count": self.planning_timeout_count,
+            "backend_unhealthy_count": self.backend_unhealthy_count,
+            "event_history_gap_count": self.event_history_gap_count,
+            "event_dropped_count": self.event_dropped_count,
+            "event_overflow_count": self.event_overflow_count,
             "production_throughput": None,
         }
+
+
+class RuntimeIngressMailbox:
+    """Thread-safe MPSC ingress; only the runtime step owner drains it."""
+
+    def __init__(
+        self,
+        *,
+        initial_request_capacity: int,
+        world_observation_capacity: int,
+        observation_stream_capacity: int,
+        clock: Callable[[], float],
+        record_ingress: Callable[[str, RuntimeIngressStatus], None],
+    ) -> None:
+        self._lock = Lock()
+        self._closed = False
+        self._requests: deque[_ReceivedIngress] = deque()
+        self._observations: deque[_ReceivedIngress] = deque()
+        self._cursors: OrderedDict[tuple[str, str], _ObservationCursor] = OrderedDict()
+        self._conflict: str | None = None
+        self._request_capacity = initial_request_capacity
+        self._observation_capacity = world_observation_capacity
+        self._stream_capacity = observation_stream_capacity
+        self._clock = clock
+        self._record_ingress = record_ingress
+
+    def _result(
+        self,
+        status: RuntimeIngressStatus,
+        port: str,
+        message: str,
+        **metadata: Any,
+    ) -> RuntimeIngressResult:
+        self._record_ingress(port, status)
+        return RuntimeIngressResult(status, port, message, metadata)
+
+    @property
+    def closed(self) -> bool:
+        with self._lock:
+            return self._closed
+
+    def submit_initial(self, request: PlanningRequest) -> RuntimeIngressResult:
+        if not isinstance(request, PlanningRequest):
+            raise TypeError("initial request must be a PlanningRequest")
+        with self._lock:
+            if self._closed:
+                return self._result(RuntimeIngressStatus.REJECTED, "initial_request", "mailbox is closed")
+            if len(self._requests) >= self._request_capacity:
+                return self._result(
+                    RuntimeIngressStatus.BACKPRESSURED,
+                    "initial_request",
+                    "initial request ingress is full",
+                    request_id=request.request_id,
+                )
+            self._requests.append(_ReceivedIngress(request, float(self._clock())))
+            return self._result(
+                RuntimeIngressStatus.ACCEPTED,
+                "initial_request",
+                "initial request accepted",
+                request_id=request.request_id,
+            )
+
+    def observe_world(self, observation: WorldObservation) -> RuntimeIngressResult:
+        if not isinstance(observation, WorldObservation):
+            raise TypeError("world observation must be a WorldObservation envelope")
+        with self._lock:
+            if self._closed:
+                return self._result(RuntimeIngressStatus.REJECTED, "world_observation", "mailbox is closed")
+            if observation.authority is not ObservationAuthority.AUTHORITATIVE:
+                return self._result(
+                    RuntimeIngressStatus.REJECTED,
+                    "world_observation",
+                    "only AUTHORITATIVE observations can update runtime world state",
+                )
+            key = observation.stream_key
+            cursor = self._cursors.get(key)
+            if cursor is None and len(self._cursors) >= self._stream_capacity:
+                return self._result(
+                    RuntimeIngressStatus.BACKPRESSURED,
+                    "world_observation",
+                    "world observation stream capacity is full",
+                )
+            if cursor is not None:
+                if observation.producer_epoch < cursor.producer_epoch:
+                    return self._result(RuntimeIngressStatus.STALE, "world_observation", "observation producer epoch is stale")
+                if observation.producer_epoch == cursor.producer_epoch:
+                    if observation.sequence < cursor.sequence:
+                        return self._result(RuntimeIngressStatus.STALE, "world_observation", "observation sequence is stale")
+                    if observation.sequence == cursor.sequence:
+                        if observation.snapshot.fingerprint == cursor.snapshot_fingerprint:
+                            return self._result(RuntimeIngressStatus.DUPLICATE, "world_observation", "identical observation already accepted")
+                        self._conflict = "same world observation identity has conflicting content"
+                        return self._result(RuntimeIngressStatus.CONFLICT, "world_observation", self._conflict)
+            pending_index = next(
+                (
+                    index
+                    for index, pending in enumerate(self._observations)
+                    if isinstance(pending.message, WorldObservation)
+                    and pending.message.stream_key == key
+                ),
+                None,
+            )
+            if pending_index is None and len(self._observations) >= self._observation_capacity:
+                return self._result(RuntimeIngressStatus.BACKPRESSURED, "world_observation", "world observation ingress is full")
+            received = _ReceivedIngress(observation, float(self._clock()))
+            status = RuntimeIngressStatus.ACCEPTED
+            if pending_index is None:
+                self._observations.append(received)
+            else:
+                self._observations[pending_index] = received
+                status = RuntimeIngressStatus.COALESCED
+            self._cursors[key] = _ObservationCursor(
+                observation.producer_epoch,
+                observation.sequence,
+                observation.snapshot.fingerprint,
+            )
+            self._cursors.move_to_end(key)
+            return self._result(
+                status,
+                "world_observation",
+                "authoritative observation accepted",
+                producer_id=observation.producer_id,
+                stream_id=observation.stream_id,
+                producer_epoch=observation.producer_epoch,
+                sequence=observation.sequence,
+                source=observation.source,
+            )
+
+    def drain(self, max_requests: int, max_observations: int) -> _MailboxDrain:
+        with self._lock:
+            requests = tuple(
+                self._requests.popleft()
+                for _ in range(min(max_requests, len(self._requests)))
+            )
+            observations = tuple(
+                self._observations.popleft()
+                for _ in range(min(max_observations, len(self._observations)))
+            )
+            conflict, self._conflict = self._conflict, None
+            return _MailboxDrain(requests, observations, conflict)
+
+    def pending_counts(self) -> tuple[int, int]:
+        with self._lock:
+            return len(self._requests), len(self._observations)
+
+    def shutdown(self) -> None:
+        with self._lock:
+            self._closed = True
 
 
 class ContinuousPlanningRuntime:
     """Single-thread-owned deterministic planning/execution orchestrator."""
 
     STEP_ORDER = (
+        "mailbox_drain",
         "ingress_fault",
         "submit_initial",
         "execution_feedback",
         "world_observation",
+        "watchdog",
         "planning_poll",
         "execution_start",
         "successor_request",
@@ -282,6 +510,8 @@ class ContinuousPlanningRuntime:
         max_world_observations_per_step: int = 1,
         max_execution_feedback_per_step: int = 16,
         clock: Callable[[], float] = monotonic,
+        watchdog_policy: RuntimeWatchdogPolicy | None = None,
+        event_journal_capacity: int = 2048,
     ) -> None:
         if not isinstance(session, ContinuousPlanningSession):
             raise TypeError("session must be a ContinuousPlanningSession")
@@ -298,6 +528,7 @@ class ContinuousPlanningRuntime:
             "max_initial_requests_per_step": max_initial_requests_per_step,
             "max_world_observations_per_step": max_world_observations_per_step,
             "max_execution_feedback_per_step": max_execution_feedback_per_step,
+            "event_journal_capacity": event_journal_capacity,
         }
         if any(not isinstance(value, int) or value < 1 for value in capacities.values()):
             raise ValueError("runtime ingress capacities and per-step limits must be positive integers")
@@ -309,7 +540,9 @@ class ContinuousPlanningRuntime:
         self.owns_executor = bool(owns_executor)
         self.owns_execution_backend = bool(owns_execution_backend)
         self.metrics = RuntimeMetrics()
-        self.events: list[RuntimeEvent] = []
+        self.events: BoundedEventJournal[RuntimeEvent] = BoundedEventJournal(
+            event_journal_capacity
+        )
         self.state = RuntimeState.IDLE
         self._closed = False
         self._owner_thread_id: int | None = None
@@ -323,10 +556,19 @@ class ContinuousPlanningRuntime:
         self._max_world_observations_per_step = max_world_observations_per_step
         self._max_execution_feedback_per_step = max_execution_feedback_per_step
         self._clock = clock
-        self._pending_initial: deque[PlanningRequest] = deque()
-        self._pending_worlds: deque[WorldObservation] = deque()
+        self.watchdog_policy = watchdog_policy or RuntimeWatchdogPolicy()
+        if not isinstance(self.watchdog_policy, RuntimeWatchdogPolicy):
+            raise TypeError("watchdog_policy must be a RuntimeWatchdogPolicy")
+        self.ingress_mailbox = RuntimeIngressMailbox(
+            initial_request_capacity=initial_request_capacity,
+            world_observation_capacity=world_observation_capacity,
+            observation_stream_capacity=observation_stream_capacity,
+            clock=clock,
+            record_ingress=self.metrics.record_ingress,
+        )
+        self._pending_initial: deque[_ReceivedIngress] = deque()
+        self._pending_worlds: deque[_ReceivedIngress] = deque()
         self._pending_feedback: deque[ExecutionFeedback] = deque()
-        self._observation_cursors: OrderedDict[tuple[str, str], _ObservationCursor] = OrderedDict()
         self._latest_world: PlanningWorldSnapshot | None = None
         self._latest_world_observation: WorldObservation | None = None
         self._active_plan: PlanEnvelope | None = None
@@ -341,6 +583,14 @@ class ContinuousPlanningRuntime:
         self._pending_ingress_fault: str | None = None
         self._successor_attempted_plan_ids: set[str] = set()
         self._stop_requested_plan_ids: set[str] = set()
+        self._scene_received_at: float | None = None
+        self._execution_started_at: float | None = None
+        self._last_feedback_received_at: float | None = None
+        self._stop_requested_at: float | None = None
+        self._planning_task_id: str | None = None
+        self._planning_started_at: float | None = None
+        self._timed_out_planning_task_id: str | None = None
+        self._watchdog_latches: set[str] = set()
 
     @property
     def closed(self) -> bool:
@@ -364,6 +614,7 @@ class ContinuousPlanningRuntime:
         **details: Any,
     ) -> None:
         self._event_sequence += 1
+        dropped_before = self.events.dropped_count
         self.events.append(
             RuntimeEvent(
                 self._event_sequence,
@@ -374,6 +625,9 @@ class ContinuousPlanningRuntime:
                 details,
             )
         )
+        if self.events.dropped_count != dropped_before:
+            self.metrics.event_dropped_count += 1
+            self.metrics.event_overflow_count += 1
 
     def _ingress_result(
         self,
@@ -386,112 +640,10 @@ class ContinuousPlanningRuntime:
         return RuntimeIngressResult(status, port, message, metadata)
 
     def submit_initial(self, request: PlanningRequest) -> RuntimeIngressResult:
-        self._assert_open()
-        if not isinstance(request, PlanningRequest):
-            raise TypeError("initial request must be a PlanningRequest")
-        if len(self._pending_initial) >= self._initial_request_capacity:
-            return self._ingress_result(
-                RuntimeIngressStatus.BACKPRESSURED,
-                "initial_request",
-                "initial request ingress is full",
-                request_id=request.request_id,
-            )
-        self._pending_initial.append(request)
-        return self._ingress_result(
-            RuntimeIngressStatus.ACCEPTED,
-            "initial_request",
-            "initial request accepted",
-            request_id=request.request_id,
-        )
+        return self.ingress_mailbox.submit_initial(request)
 
     def observe_world(self, observation: WorldObservation) -> RuntimeIngressResult:
-        self._assert_open()
-        if not isinstance(observation, WorldObservation):
-            raise TypeError("world observation must be a WorldObservation envelope")
-        if observation.authority is not ObservationAuthority.AUTHORITATIVE:
-            return self._ingress_result(
-                RuntimeIngressStatus.REJECTED,
-                "world_observation",
-                "only AUTHORITATIVE observations can update runtime world state",
-                producer_id=observation.producer_id,
-                stream_id=observation.stream_id,
-            )
-        key = observation.stream_key
-        cursor = self._observation_cursors.get(key)
-        if cursor is None and len(self._observation_cursors) >= self._observation_stream_capacity:
-            return self._ingress_result(
-                RuntimeIngressStatus.BACKPRESSURED,
-                "world_observation",
-                "world observation stream capacity is full",
-                producer_id=observation.producer_id,
-                stream_id=observation.stream_id,
-            )
-        if cursor is not None:
-            if observation.producer_epoch < cursor.producer_epoch:
-                return self._ingress_result(
-                    RuntimeIngressStatus.STALE,
-                    "world_observation",
-                    "observation producer epoch is stale",
-                )
-            if observation.producer_epoch == cursor.producer_epoch:
-                if observation.sequence < cursor.sequence:
-                    return self._ingress_result(
-                        RuntimeIngressStatus.STALE,
-                        "world_observation",
-                        "observation sequence is stale",
-                    )
-                if observation.sequence == cursor.sequence:
-                    if observation.snapshot.fingerprint == cursor.snapshot_fingerprint:
-                        return self._ingress_result(
-                            RuntimeIngressStatus.DUPLICATE,
-                            "world_observation",
-                            "identical observation already accepted",
-                        )
-                    self._pending_ingress_fault = (
-                        "same world observation identity has conflicting content"
-                    )
-                    return self._ingress_result(
-                        RuntimeIngressStatus.CONFLICT,
-                        "world_observation",
-                        self._pending_ingress_fault,
-                    )
-
-        pending_index = next(
-            (
-                index
-                for index, pending in enumerate(self._pending_worlds)
-                if pending.stream_key == key
-            ),
-            None,
-        )
-        if pending_index is None and len(self._pending_worlds) >= self._world_observation_capacity:
-            return self._ingress_result(
-                RuntimeIngressStatus.BACKPRESSURED,
-                "world_observation",
-                "world observation ingress is full",
-            )
-        status = RuntimeIngressStatus.ACCEPTED
-        if pending_index is None:
-            self._pending_worlds.append(observation)
-        else:
-            self._pending_worlds[pending_index] = observation
-            status = RuntimeIngressStatus.COALESCED
-        self._observation_cursors[key] = _ObservationCursor(
-            observation.producer_epoch,
-            observation.sequence,
-            observation.snapshot.fingerprint,
-        )
-        self._observation_cursors.move_to_end(key)
-        return self._ingress_result(
-            status,
-            "world_observation",
-            "authoritative observation accepted",
-            producer_id=observation.producer_id,
-            stream_id=observation.stream_id,
-            producer_epoch=observation.producer_epoch,
-            sequence=observation.sequence,
-            source=observation.source,
-        )
+        return self.ingress_mailbox.observe_world(observation)
 
     def _fail_active(
         self,
@@ -626,6 +778,11 @@ class ContinuousPlanningRuntime:
         self._active_plan = None
         self._active_execution_id = None
         self._active_feedback_domain = None
+        self._execution_started_at = None
+        self._last_feedback_received_at = None
+        self._stop_requested_at = None
+        self._watchdog_latches.discard("execution_feedback")
+        self._watchdog_latches.discard("stop_ack")
 
     def _try_reconcile_pending_stop(self) -> None:
         feedback = self._pending_stopped_feedback
@@ -756,6 +913,7 @@ class ContinuousPlanningRuntime:
         state.last_status = feedback.status
         state.last_progress = max(previous_progress, feedback.progress)
         state.last_feedback = feedback
+        self._last_feedback_received_at = float(self._clock())
         self.metrics.execution_feedback_count_by_status[feedback.status.value] += 1
         self._event(
             "execution_feedback",
@@ -880,7 +1038,9 @@ class ContinuousPlanningRuntime:
     def _apply_world_observations(self) -> None:
         processed = 0
         while self._pending_worlds and processed < self._max_world_observations_per_step:
-            observation = self._pending_worlds.popleft()
+            received = self._pending_worlds.popleft()
+            observation = received.message
+            assert isinstance(observation, WorldObservation)
             snapshot = observation.snapshot
             try:
                 self.session.update_scene(snapshot)
@@ -889,6 +1049,8 @@ class ContinuousPlanningRuntime:
                 return
             self._latest_world = snapshot
             self._latest_world_observation = observation
+            self._scene_received_at = received.received_at_monotonic_seconds
+            self._watchdog_latches.discard("scene_stale")
             if self.session.state is SessionState.STOPPING:
                 self._pending_stop_observation = observation
                 self._try_reconcile_pending_stop()
@@ -909,6 +1071,30 @@ class ContinuousPlanningRuntime:
 
     def _start_ready_plan(self) -> None:
         if self.session.state is not SessionState.READY or self._active_plan is not None:
+            return
+        now = float(self._clock())
+        if self._expired(
+            now,
+            self._scene_received_at,
+            self.watchdog_policy.scene_freshness_timeout_seconds,
+        ):
+            if "scene_stale" not in self._watchdog_latches:
+                self._watchdog_latches.add("scene_stale")
+                self.metrics.scene_stale_count += 1
+                message = "authoritative scene observation is stale"
+                self._apply_terminal_action(
+                    self.watchdog_policy.scene_stale_action,
+                    ReplanReason.SCENE_STALE,
+                    message,
+                )
+                self._event("watchdog_scene_stale", ReplanReason.SCENE_STALE.value)
+            return
+        if self.execution_backend.health is not ExecutionBackendHealth.READY:
+            self.metrics.backend_unhealthy_count += 1
+            self._fail_active(
+                f"execution backend is not ready: {self.execution_backend.health.value}",
+                reason=ReplanReason.BACKEND_UNHEALTHY,
+            )
             return
         plan = self.session.start_execution(self.session.current_motion_boundary)
         if plan is None:
@@ -942,6 +1128,9 @@ class ContinuousPlanningRuntime:
         self._active_plan = plan
         self._active_execution_id = result.execution_id
         self._active_feedback_domain = None
+        self._execution_started_at = now
+        self._last_feedback_received_at = now
+        self._stop_requested_at = None
         self._event(
             "execution_start_command",
             result.status.value,
@@ -1025,6 +1214,7 @@ class ContinuousPlanningRuntime:
             status = type(result).__name__ if not isinstance(result, ExecutionCommandResult) else result.status.value
             self._fail_active(f"execution stop request rejected: {status}")
             return
+        self._stop_requested_at = float(self._clock())
         self._event(
             "execution_stop_command",
             result.status.value,
@@ -1032,6 +1222,124 @@ class ContinuousPlanningRuntime:
             execution_id=self._active_execution_id,
             command_id=result.command_id,
         )
+
+    def _apply_terminal_action(
+        self,
+        action: WatchdogTerminalAction,
+        reason: ReplanReason,
+        message: str,
+    ) -> None:
+        if action is WatchdogTerminalAction.WAITING_FOR_SCENE:
+            self.session.wait_for_scene(message, reason=reason)
+        elif action is WatchdogTerminalAction.BLOCKED:
+            self.session.enter_blocked(message, reason=reason)
+        else:
+            self.session.enter_recovery(message, reason=reason)
+
+    @staticmethod
+    def _expired(now: float, started: float | None, timeout: float | None) -> bool:
+        return bool(timeout is not None and started is not None and now - started >= timeout)
+
+    def _sync_planning_watch(self, now: float) -> None:
+        task_id = self.session.active_planning_task_id
+        if task_id is None:
+            self._planning_task_id = None
+            self._planning_started_at = None
+        elif task_id != self._planning_task_id:
+            self._planning_task_id = task_id
+            self._planning_started_at = now
+
+    def _run_watchdogs(self, now: float) -> None:
+        policy = self.watchdog_policy
+        self._sync_planning_watch(now)
+        if (
+            self.session.state is SessionState.READY
+            and self._expired(now, self._scene_received_at, policy.scene_freshness_timeout_seconds)
+            and "scene_stale" not in self._watchdog_latches
+        ):
+            self._watchdog_latches.add("scene_stale")
+            self.metrics.scene_stale_count += 1
+            message = "authoritative scene observation is stale"
+            self._apply_terminal_action(policy.scene_stale_action, ReplanReason.SCENE_STALE, message)
+            self._event("watchdog_scene_stale", ReplanReason.SCENE_STALE.value, message=message)
+            return
+        if (
+            self.session.execution.state is ExecutionState.RUNNING
+            and self._expired(
+                now,
+                self._last_feedback_received_at or self._execution_started_at,
+                policy.execution_feedback_timeout_seconds,
+            )
+            and "execution_feedback" not in self._watchdog_latches
+        ):
+            self._watchdog_latches.add("execution_feedback")
+            self.metrics.execution_feedback_timeout_count += 1
+            message = "execution feedback silence exceeded watchdog deadline"
+            self.session.begin_safety_stop(ReplanReason.EXECUTION_FEEDBACK_TIMEOUT, message)
+            self._event(
+                "watchdog_execution_feedback_timeout",
+                ReplanReason.EXECUTION_FEEDBACK_TIMEOUT.value,
+                plan_id=None if self._active_plan is None else self._active_plan.plan_id,
+                execution_id=self._active_execution_id,
+            )
+        if (
+            self.session.state is SessionState.STOPPING
+            and self._pending_stopped_feedback is None
+            and self._expired(now, self._stop_requested_at, policy.stop_ack_timeout_seconds)
+            and "stop_ack" not in self._watchdog_latches
+        ):
+            self._watchdog_latches.add("stop_ack")
+            self.metrics.stop_ack_timeout_count += 1
+            message = "safe-stop acknowledgement deadline exceeded"
+            self._fail_active(message, reason=ReplanReason.STOP_ACK_TIMEOUT)
+            self._event("watchdog_stop_ack_timeout", ReplanReason.STOP_ACK_TIMEOUT.value)
+            return
+        if (
+            self._pending_stopped_feedback is not None
+            and self._expired(
+                now,
+                self._stop_wait_started_at,
+                policy.stopped_observation_timeout_seconds,
+            )
+            and "stop_observation" not in self._watchdog_latches
+        ):
+            self._watchdog_latches.add("stop_observation")
+            self.metrics.stop_observation_timeout_count += 1
+            message = "STOPPED feedback was not reconciled with a fresh world observation"
+            self._apply_terminal_action(
+                policy.stopped_observation_timeout_action,
+                ReplanReason.STOP_OBSERVATION_TIMEOUT,
+                message,
+            )
+            self._event("watchdog_stop_observation_timeout", ReplanReason.STOP_OBSERVATION_TIMEOUT.value)
+            return
+        if (
+            self.session.active_planning_task_id is not None
+            and self._expired(now, self._planning_started_at, policy.planning_timeout_seconds)
+            and "planning" not in self._watchdog_latches
+        ):
+            self._watchdog_latches.add("planning")
+            self.metrics.planning_timeout_count += 1
+            task_id = self.session.timeout_active_planning()
+            self._timed_out_planning_task_id = task_id
+            self._event(
+                "watchdog_planning_timeout",
+                ReplanReason.PLANNING_TIMEOUT.value,
+                task_id=task_id,
+                worker_still_exiting=bool(self.session.executor.running_count),
+            )
+            return
+        if (
+            self._active_plan is not None
+            and self.execution_backend.health is not ExecutionBackendHealth.READY
+            and "backend_health" not in self._watchdog_latches
+        ):
+            self._watchdog_latches.add("backend_health")
+            self.metrics.backend_unhealthy_count += 1
+            self._fail_active(
+                f"execution backend became unhealthy: {self.execution_backend.health.value}",
+                reason=ReplanReason.BACKEND_UNHEALTHY,
+            )
 
     def _sync_state(self) -> RuntimeState:
         if self._closed:
@@ -1060,13 +1368,23 @@ class ContinuousPlanningRuntime:
 
     def step(self) -> RuntimeState:
         self._assert_open()
+        drained = self.ingress_mailbox.drain(
+            self._max_initial_requests_per_step,
+            self._max_world_observations_per_step,
+        )
+        self._pending_initial.extend(drained.requests)
+        self._pending_worlds.extend(drained.observations)
+        if drained.conflict is not None:
+            self._pending_ingress_fault = drained.conflict
         if self._pending_ingress_fault is not None:
             message, self._pending_ingress_fault = self._pending_ingress_fault, None
             self._fail_active(message, reason=ReplanReason.PLAN_INVALIDATED)
             return self._sync_state()
         submitted = 0
         while self._pending_initial and submitted < self._max_initial_requests_per_step:
-            request = self._pending_initial.popleft()
+            received = self._pending_initial.popleft()
+            request = received.message
+            assert isinstance(request, PlanningRequest)
             try:
                 self.session.submit(request)
             except Exception as exc:
@@ -1075,14 +1393,32 @@ class ContinuousPlanningRuntime:
                     reason=ReplanReason.PLANNER_FAILURE,
                 )
                 return self._sync_state()
+            self._scene_received_at = received.received_at_monotonic_seconds
+            self._latest_world = request.world_snapshot
+            self._watchdog_latches.discard("scene_stale")
             submitted += 1
         self._poll_execution_feedback()
         if self.state is RuntimeState.RECOVERY:
+            if self._timed_out_planning_task_id is not None:
+                self.session.advance(1)
+                if self.session.active_planning_task_id is None:
+                    self._timed_out_planning_task_id = None
             return self._sync_state()
         self._apply_world_observations()
         if self.state is RuntimeState.RECOVERY:
             return self._sync_state()
+        now = float(self._clock())
+        self._run_watchdogs(now)
+        if self.session.state in {SessionState.RECOVERY, SessionState.BLOCKED}:
+            if self._timed_out_planning_task_id is not None:
+                self.session.advance(1)
+                if self.session.active_planning_task_id is None:
+                    self._timed_out_planning_task_id = None
+            return self._sync_state()
         self.session.advance(1)
+        self._sync_planning_watch(float(self._clock()))
+        if self.session.active_planning_task_id is None:
+            self._watchdog_latches.discard("planning")
         self._start_ready_plan()
         if self.session.state is not SessionState.RECOVERY:
             self._create_successor()
@@ -1109,13 +1445,14 @@ class ContinuousPlanningRuntime:
         deadline = monotonic() + timeout_seconds
         for _ in range(max_steps):
             state = self.step()
+            mailbox_requests, mailbox_worlds = self.ingress_mailbox.pending_counts()
             if state in {
                 RuntimeState.IDLE,
                 RuntimeState.WAITING_FOR_SCENE,
                 RuntimeState.WAITING_FOR_OBSERVATION,
                 RuntimeState.RECOVERY,
                 RuntimeState.BLOCKED,
-            } and not self._pending_initial and not self._pending_worlds:
+            } and not self._pending_initial and not self._pending_worlds and not mailbox_requests and not mailbox_worlds:
                 return state
             executor = self.session.executor
             if executor.running_count or executor.pending_count:
@@ -1127,14 +1464,15 @@ class ContinuousPlanningRuntime:
         raise RuntimeError("runtime did not stabilize within max_steps")
 
     def snapshot(self) -> dict[str, Any]:
+        mailbox_requests, mailbox_worlds = self.ingress_mailbox.pending_counts()
         return {
             "state": self.state.value,
             "closed": self._closed,
             "step_order": self.STEP_ORDER,
             "active_plan_id": None if self._active_plan is None else self._active_plan.plan_id,
             "active_execution_id": self._active_execution_id,
-            "pending_initial_requests": len(self._pending_initial),
-            "pending_world_observations": len(self._pending_worlds),
+            "pending_initial_requests": len(self._pending_initial) + mailbox_requests,
+            "pending_world_observations": len(self._pending_worlds) + mailbox_worlds,
             "pending_execution_feedback": len(self._pending_feedback),
             "latest_world_fingerprint": (
                 None if self._latest_world is None else self._latest_world.fingerprint
@@ -1145,9 +1483,27 @@ class ContinuousPlanningRuntime:
                 "execution_feedback": self._execution_feedback_capacity,
             },
             "terminal_feedback_history": len(self._terminal_feedback),
+            "event_journal": self.events.summary(),
+            "watchdog": {
+                "scene_received_at": self._scene_received_at,
+                "last_feedback_received_at": self._last_feedback_received_at,
+                "stop_requested_at": self._stop_requested_at,
+                "planning_started_at": self._planning_started_at,
+                "timed_out_planning_task_id": self._timed_out_planning_task_id,
+            },
             "metrics": self.metrics.report(),
             "session": self.session.snapshot(),
         }
+
+    def events_since(
+        self,
+        sequence: int,
+        limit: int | None = None,
+    ) -> EventJournalRead[RuntimeEvent]:
+        result = self.events.events_since(sequence, limit)
+        if result.history_gap:
+            self.metrics.event_history_gap_count += 1
+        return result
 
     def shutdown(self) -> None:
         if self._closed:
@@ -1156,6 +1512,7 @@ class ContinuousPlanningRuntime:
             self._owner_thread_id = get_ident()
         elif get_ident() != self._owner_thread_id:
             raise RuntimeError("runtime shutdown must run on the step owner thread")
+        self.ingress_mailbox.shutdown()
         if self.owns_execution_backend:
             self.execution_backend.shutdown()
         if self.owns_executor:
@@ -1177,11 +1534,14 @@ class ContinuousPlanningRuntime:
 __all__ = [
     "ContinuousPlanningRuntime",
     "ObservationAuthority",
+    "RuntimeIngressMailbox",
     "RuntimeEvent",
     "RuntimeIngressResult",
     "RuntimeIngressStatus",
     "RuntimeMetrics",
     "RuntimeState",
+    "RuntimeWatchdogPolicy",
     "SuccessorRequestFactory",
+    "WatchdogTerminalAction",
     "WorldObservation",
 ]

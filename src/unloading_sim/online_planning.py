@@ -14,7 +14,7 @@ control-plane concurrency without allowing worker threads to mutate a session.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections import Counter, deque
+from collections import Counter, OrderedDict, deque
 from dataclasses import dataclass, field, replace
 from enum import Enum
 import hashlib
@@ -26,6 +26,8 @@ from types import MappingProxyType
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 import numpy as np
+
+from .online_journal import BoundedEventJournal, EventJournalRead
 
 
 class PlanStatus(str, Enum):
@@ -116,6 +118,12 @@ class ReplanReason(str, Enum):
     EXECUTION_FAILED = "EXECUTION_FAILED"
     PLANNER_FAILURE = "PLANNER_FAILURE"
     HORIZON_EXHAUSTED = "HORIZON_EXHAUSTED"
+    SCENE_STALE = "SCENE_STALE"
+    PLANNING_TIMEOUT = "PLANNING_TIMEOUT"
+    EXECUTION_FEEDBACK_TIMEOUT = "EXECUTION_FEEDBACK_TIMEOUT"
+    STOP_ACK_TIMEOUT = "STOP_ACK_TIMEOUT"
+    STOP_OBSERVATION_TIMEOUT = "STOP_OBSERVATION_TIMEOUT"
+    BACKEND_UNHEALTHY = "BACKEND_UNHEALTHY"
 
 
 class FailureAction(str, Enum):
@@ -1211,17 +1219,28 @@ class PlanningLatencySample:
 class PlanningLatencyStatistics:
     """Planning and robot-idle metrics only; no production cycle claim."""
 
-    def __init__(self, clock: Callable[[], float] = perf_counter) -> None:
+    def __init__(
+        self,
+        clock: Callable[[], float] = perf_counter,
+        *,
+        sample_capacity: int = 4096,
+    ) -> None:
+        if not isinstance(sample_capacity, int) or sample_capacity < 1:
+            raise ValueError("planning latency sample capacity must be positive")
         self._clock = clock
-        self.samples: list[PlanningLatencySample] = []
-        self.backend_init_samples: dict[str, list[float]] = {}
-        self.backend_warmup_samples: dict[str, list[float]] = {}
+        self.sample_capacity = sample_capacity
+        self.samples: deque[PlanningLatencySample] = deque()
+        self.dropped_sample_count = 0
+        self.backend_init_samples: dict[str, deque[float]] = {}
+        self.backend_warmup_samples: dict[str, deque[float]] = {}
+        self.dropped_lifecycle_sample_count = 0
         self.fallback_count_by_path: Counter[str] = Counter()
         self.outcome_count_by_backend_category: dict[str, Counter[str]] = {}
         self.unsupported_route_skip_count = 0
         self.cancellation_requested_count = 0
         self.cancelled_before_start_count = 0
         self.stale_result_discarded_count = 0
+        self.event_history_gap_count = 0
         self._idle_started: float | None = None
         self.robot_idle_waiting_seconds = 0.0
 
@@ -1237,6 +1256,9 @@ class PlanningLatencyStatistics:
         for name, value in values.items():
             if value is not None and (not isfinite(value) or value < 0.0):
                 raise ValueError(f"{name} must be finite and non-negative")
+        if len(self.samples) >= self.sample_capacity:
+            self.samples.popleft()
+            self.dropped_sample_count += 1
         self.samples.append(sample)
         key = f"{sample.outcome_category.value}:{sample.outcome_code}"
         self.outcome_count_by_backend_category.setdefault(sample.backend_name, Counter())[key] += 1
@@ -1245,7 +1267,10 @@ class PlanningLatencyStatistics:
         if not isfinite(seconds) or seconds < 0.0:
             raise ValueError("backend lifecycle latency must be finite and non-negative")
         target = self.backend_init_samples if phase == "initialize" else self.backend_warmup_samples
-        target.setdefault(backend_name, []).append(float(seconds))
+        samples = target.setdefault(backend_name, deque(maxlen=self.sample_capacity))
+        if len(samples) >= self.sample_capacity:
+            self.dropped_lifecycle_sample_count += 1
+        samples.append(float(seconds))
 
     def record_fallback(self, path: PlanningPath) -> None:
         self.fallback_count_by_path[path.value] += 1
@@ -1341,7 +1366,12 @@ class PlanningLatencyStatistics:
             "cancellation_requested_count": self.cancellation_requested_count,
             "cancelled_before_start_count": self.cancelled_before_start_count,
             "stale_result_discarded_count": self.stale_result_discarded_count,
+            "event_history_gap_count": self.event_history_gap_count,
             "speculative_planning_count": sum(sample.speculative for sample in self.samples),
+            "retained_planning_sample_count": len(self.samples),
+            "dropped_planning_sample_count": self.dropped_sample_count,
+            "dropped_lifecycle_sample_count": self.dropped_lifecycle_sample_count,
+            "planning_sample_capacity": self.sample_capacity,
             "robot_idle_waiting_for_planner_seconds": float(idle),
             "production_throughput": None,
             "timing_scope": "planning latency and robot idle waiting for planner only",
@@ -1871,6 +1901,9 @@ class ContinuousPlanningSession:
         failure_policy: FailurePolicy | None = None,
         clock: Callable[[], float] = perf_counter,
         start_tolerance_rad: float = 1e-6,
+        event_journal_capacity: int = 2048,
+        history_capacity: int = 4096,
+        latency_sample_capacity: int = 4096,
     ) -> None:
         if rolling_horizon < 1:
             raise ValueError("rolling horizon must be at least one")
@@ -1879,6 +1912,13 @@ class ContinuousPlanningSession:
             raise ValueError("planning paths must be non-empty and unique")
         if not isfinite(start_tolerance_rad) or start_tolerance_rad < 0.0:
             raise ValueError("start tolerance must be finite and non-negative")
+        for name, value in (
+            ("event_journal_capacity", event_journal_capacity),
+            ("history_capacity", history_capacity),
+            ("latency_sample_capacity", latency_sample_capacity),
+        ):
+            if not isinstance(value, int) or value < 1:
+                raise ValueError(f"{name} must be a positive integer")
         if isinstance(backend, PlannerBackend):
             backends = (backend,)
         else:
@@ -1900,14 +1940,19 @@ class ContinuousPlanningSession:
         self.rolling_horizon = int(rolling_horizon)
         self.planning_paths = paths
         self.failure_policy = FailurePolicy() if failure_policy is None else failure_policy
-        self.statistics = PlanningLatencyStatistics(clock)
+        self.statistics = PlanningLatencyStatistics(
+            clock,
+            sample_capacity=latency_sample_capacity,
+        )
         self.execution = ExecutionMonitor()
         self.state = SessionState.IDLE
         self.current_world: PlanningWorldSnapshot | None = None
         self.ready_plans: deque[PlanEnvelope] = deque()
         self.speculative_plans: deque[PlanEnvelope] = deque()
-        self.invalidated_plans: list[PlanEnvelope] = []
-        self.events: list[SessionEvent] = []
+        self.invalidated_plans: deque[PlanEnvelope] = deque(maxlen=history_capacity)
+        self.events: BoundedEventJournal[SessionEvent] = BoundedEventJournal(
+            event_journal_capacity
+        )
         self._requests: deque[_RequestProgress] = deque()
         self._active_progress: _RequestProgress | None = None
         self._submitted_task: str | None = None
@@ -1917,21 +1962,31 @@ class ContinuousPlanningSession:
         self._replan_sequence = 0
         self._last_exhausted_request: PlanningRequest | None = None
         self._planning_generation = 0
-        self._request_ids: set[str] = set()
-        self._terminal_failures: list[tuple[PlanningRequest, bool]] = []
-        self._exhausted_progress: list[_RequestProgress] = []
+        self._generation_invalidation_reason = ReplanReason.SCENE_REVISION_CHANGED
+        self._request_ids: OrderedDict[str, None] = OrderedDict()
+        self._request_tombstone_dropped_count = 0
+        self._terminal_failures: deque[tuple[PlanningRequest, bool]] = deque(
+            maxlen=history_capacity
+        )
+        self._exhausted_progress: deque[_RequestProgress] = deque(
+            maxlen=history_capacity
+        )
         self._waiting_for_scene = False
         self._stopping_request: PlanningRequest | None = None
         self._discard_without_replan_ids: set[str] = set()
-        self._successful_completed_plan_ids: set[str] = set()
+        self._successful_completed_plan_ids: OrderedDict[str, None] = OrderedDict()
         self.last_successful_plan_id: str | None = None
         self.current_motion_boundary: MotionBoundaryState | None = None
         self.last_actual_execution_boundary: MotionBoundaryState | None = None
         self.terminal_execution_identity: tuple[str | None, str] | None = None
-        self._plan_children: dict[str, set[str]] = {}
-        self._invalid_lineage_plan_ids: set[str] = set()
+        self._plan_children: OrderedDict[str, set[str]] = OrderedDict()
+        self._invalid_lineage_plan_ids: OrderedDict[str, None] = OrderedDict()
+        self._lineage_tombstone_dropped_count = 0
         self._cancelled_task_ids: set[str] = set()
         self._start_tolerance_rad = float(start_tolerance_rad)
+        self._history_capacity = history_capacity
+        self._terminal_reason: str | None = None
+        self._terminal_message: str = ""
 
     @property
     def terminal_results(self) -> tuple[PlanningResult, ...]:
@@ -1954,6 +2009,36 @@ class ContinuousPlanningSession:
     @property
     def known_request_ids(self) -> frozenset[str]:
         return frozenset(self._request_ids)
+
+    @property
+    def active_planning_task_id(self) -> str | None:
+        return self._submitted_task
+
+    @property
+    def active_planning_request_id(self) -> str | None:
+        return None if self._active_progress is None else self._active_progress.request.request_id
+
+    def _remember_request_id(self, request_id: str) -> None:
+        if request_id in self._request_ids:
+            self._request_ids.move_to_end(request_id)
+            return
+        if len(self._request_ids) >= self._history_capacity:
+            self._request_ids.popitem(last=False)
+            self._request_tombstone_dropped_count += 1
+        self._request_ids[request_id] = None
+
+    def _remember_lineage_id(
+        self,
+        records: OrderedDict[str, None],
+        plan_id: str,
+    ) -> None:
+        if plan_id in records:
+            records.move_to_end(plan_id)
+            return
+        if len(records) >= self._history_capacity:
+            records.popitem(last=False)
+            self._lineage_tombstone_dropped_count += 1
+        records[plan_id] = None
 
     @property
     def occupancy(self) -> int:
@@ -2074,7 +2159,11 @@ class ContinuousPlanningSession:
         )
         if not predecessor_known or predecessor in self._invalid_lineage_plan_ids:
             raise ValueError("plan proposal has an unknown, orphan, or invalid predecessor")
+        if predecessor not in self._plan_children and len(self._plan_children) >= self._history_capacity:
+            self._plan_children.popitem(last=False)
+            self._lineage_tombstone_dropped_count += 1
         self._plan_children.setdefault(predecessor, set()).add(envelope.plan_id)
+        self._plan_children.move_to_end(predecessor)
 
     def _cascade_lineage(
         self,
@@ -2090,7 +2179,8 @@ class ContinuousPlanningSession:
                 if child not in affected:
                     affected.add(child)
                     pending.append(child)
-        self._invalid_lineage_plan_ids.update(affected)
+        for plan_id in affected:
+            self._remember_lineage_id(self._invalid_lineage_plan_ids, plan_id)
 
         def invalidate_plans(plans: deque[PlanEnvelope]) -> deque[PlanEnvelope]:
             retained: deque[PlanEnvelope] = deque()
@@ -2169,6 +2259,16 @@ class ContinuousPlanningSession:
         self._event_sequence += 1
         self.events.append(SessionEvent(self._event_sequence, kind, request_id, reason, details))
 
+    def events_since(
+        self,
+        sequence: int,
+        limit: int | None = None,
+    ) -> EventJournalRead[SessionEvent]:
+        result = self.events.events_since(sequence, limit)
+        if result.history_gap:
+            self.statistics.event_history_gap_count += 1
+        return result
+
     @property
     def blocked(self) -> bool:
         return self.state is SessionState.BLOCKED
@@ -2225,7 +2325,7 @@ class ContinuousPlanningSession:
                 raise ValueError("non-speculative request must bind the current planning world snapshot")
         elif request.scene_revision.sequence <= self.current_world.scene_revision.sequence:
             raise ValueError("speculative request must bind a future scene revision")
-        self._request_ids.add(request.request_id)
+        self._remember_request_id(request.request_id)
         self._requests.append(
             _RequestProgress(
                 request,
@@ -2380,7 +2480,7 @@ class ContinuousPlanningSession:
             self.statistics.record_stale_result_discarded()
             self._event(
                 "stale_result_discarded",
-                ReplanReason.SCENE_REVISION_CHANGED.value,
+                self._generation_invalidation_reason.value,
                 request.request_id,
                 result_generation=progress.generation,
                 current_generation=self._planning_generation,
@@ -2765,6 +2865,8 @@ class ContinuousPlanningSession:
             self.statistics.end_robot_idle()
         elif self._terminal_failures:
             self.state = SessionState.BLOCKED
+            self._terminal_reason = "ALL_REQUESTS_EXHAUSTED"
+            self._terminal_message = "all available planning routes and candidates failed"
             self.statistics.end_robot_idle()
         else:
             self.state = SessionState.IDLE
@@ -2968,7 +3070,7 @@ class ContinuousPlanningSession:
             speculative=False,
             replan_reason=reason,
         )
-        self._request_ids.add(request_id)
+        self._remember_request_id(request_id)
         return _RequestProgress(
             replanned,
             self._planning_generation,
@@ -2988,9 +3090,14 @@ class ContinuousPlanningSession:
             sequence=snapshot.scene_revision.sequence,
         )
         if not changed:
+            if self._terminal_reason == ReplanReason.SCENE_STALE.value:
+                self._waiting_for_scene = False
+                self._terminal_reason = None
+                self._terminal_message = ""
             self._refresh_state()
             return
 
+        self._generation_invalidation_reason = ReplanReason.SCENE_REVISION_CHANGED
         self._planning_generation += 1
         self._logical_cancel_active()
         self._terminal_failures.clear()
@@ -3154,7 +3261,7 @@ class ContinuousPlanningSession:
             )
             self.state = SessionState.RECOVERY
             return completed
-        self._successful_completed_plan_ids.add(completed.plan_id)
+        self._remember_lineage_id(self._successful_completed_plan_ids, completed.plan_id)
         self.last_successful_plan_id = completed.plan_id
         if world_snapshot is None:
             robot = RobotStateRevision(
@@ -3182,6 +3289,7 @@ class ContinuousPlanningSession:
             self.state = SessionState.WAITING_FOR_SCENE
             self.statistics.end_robot_idle()
             return completed
+        self._generation_invalidation_reason = ReplanReason.SCENE_REVISION_CHANGED
         self._planning_generation += 1
         self._logical_cancel_active()
         self._waiting_for_scene = False
@@ -3291,7 +3399,7 @@ class ContinuousPlanningSession:
                     "successor predecessor is not the last successfully completed plan",
                 )
                 self.invalidated_plans.append(invalid)
-                self._invalid_lineage_plan_ids.add(plan.plan_id)
+                self._remember_lineage_id(self._invalid_lineage_plan_ids, plan.plan_id)
                 self.state = SessionState.RECOVERY
                 self._event(
                     "lineage_invalidated",
@@ -3393,6 +3501,8 @@ class ContinuousPlanningSession:
         self.invalidated_plans.append(plan)
         self._cascade_lineage(plan.plan_id, reason, message)
         self.state = SessionState.RECOVERY
+        self._terminal_reason = reason.value
+        self._terminal_message = message
         self.statistics.end_robot_idle()
         self._event(
             "execution_control_plane_failure",
@@ -3453,6 +3563,8 @@ class ContinuousPlanningSession:
             self._cascade_lineage(plan_id, reason, message)
         self._waiting_for_scene = False
         self.state = SessionState.RECOVERY
+        self._terminal_reason = reason.value
+        self._terminal_message = message
         self.statistics.end_robot_idle()
         self._event(
             "control_plane_recovery",
@@ -3463,6 +3575,93 @@ class ContinuousPlanningSession:
             execution_id=execution_id,
         )
         return None
+
+    def enter_blocked(
+        self,
+        message: str,
+        *,
+        reason: ReplanReason,
+        plan_id: str | None = None,
+        execution_id: str | None = None,
+    ) -> None:
+        self.enter_recovery(
+            message,
+            reason=reason,
+            plan_id=plan_id,
+            execution_id=execution_id,
+        )
+        self.state = SessionState.BLOCKED
+        self._terminal_reason = reason.value
+        self._terminal_message = message
+        self._event(
+            "control_plane_blocked",
+            reason.value,
+            None,
+            message=message,
+            plan_id=plan_id,
+            execution_id=execution_id,
+        )
+
+    def wait_for_scene(
+        self,
+        message: str,
+        *,
+        reason: ReplanReason = ReplanReason.SCENE_STALE,
+    ) -> None:
+        if self.execution.state in {ExecutionState.RUNNING, ExecutionState.STOPPING}:
+            raise RuntimeError("cannot wait for a scene while execution is active")
+        self._waiting_for_scene = True
+        self.state = SessionState.WAITING_FOR_SCENE
+        self._terminal_reason = reason.value
+        self._terminal_message = message
+        self.statistics.end_robot_idle()
+        self._event("waiting_for_scene", reason.value, None, message=message)
+
+    def begin_safety_stop(
+        self,
+        reason: ReplanReason,
+        message: str,
+    ) -> PlanEnvelope:
+        if self.execution.state is not ExecutionState.RUNNING or self.execution.active_plan is None:
+            raise RuntimeError("no running execution can enter STOPPING")
+        active = self.execution.begin_stopping(message)
+        self.invalidated_plans.append(active)
+        self._cascade_lineage(active.plan_id, reason, message)
+        self._stopping_request = active.request
+        if self._active_progress is not None:
+            self._discard_without_replan_ids.add(self._active_progress.request.request_id)
+            self._logical_cancel_active()
+        while self._requests:
+            stale = self._requests.popleft()
+            self._event("pending_request_invalidated", reason.value, stale.request.request_id)
+        while self.speculative_plans:
+            self.invalidated_plans.append(self.speculative_plans.popleft().invalidate(reason, message))
+        self.state = SessionState.STOPPING
+        self._terminal_reason = reason.value
+        self._terminal_message = message
+        self.statistics.end_robot_idle()
+        self._event("execution_stopping", reason.value, active.request.request_id)
+        return active
+
+    def timeout_active_planning(self, message: str = "planning request timed out") -> str | None:
+        task_id = self._submitted_task
+        if task_id is None or self._active_progress is None:
+            return None
+        request_id = self._active_progress.request.request_id
+        self._generation_invalidation_reason = ReplanReason.PLANNING_TIMEOUT
+        self._planning_generation += 1
+        self._discard_without_replan_ids.add(request_id)
+        worker_running = bool(self.executor.running_count)
+        self._logical_cancel_active()
+        self.enter_recovery(message, reason=ReplanReason.PLANNING_TIMEOUT)
+        self._event(
+            "planning_timeout",
+            ReplanReason.PLANNING_TIMEOUT.value,
+            request_id,
+            task_id=task_id,
+            worker_still_exiting=worker_running,
+        )
+        return task_id
 
     def _queue_replan(
         self,
@@ -3498,9 +3697,14 @@ class ContinuousPlanningSession:
         if self.state is SessionState.PLANNING:
             self.statistics.begin_robot_idle()
             self._schedule_if_possible()
+        self._terminal_reason = None
+        self._terminal_message = ""
         return self.state
 
     def snapshot(self) -> dict[str, Any]:
+        metrics = self.statistics.report()
+        metrics["event_dropped_count"] = self.events.dropped_count
+        metrics["event_overflow_count"] = self.events.overflow_count
         return {
             "state": self.state.value,
             "scene_revision": None if self.current_revision is None else {
@@ -3514,6 +3718,8 @@ class ContinuousPlanningSession:
             "pending_requests": len(self._requests) + int(self._active_progress is not None),
             "occupancy": self.occupancy,
             "known_request_ids": sorted(self._request_ids),
+            "request_tombstone_dropped_count": self._request_tombstone_dropped_count,
+            "lineage_tombstone_dropped_count": self._lineage_tombstone_dropped_count,
             "successful_completed_plan_ids": sorted(self._successful_completed_plan_ids),
             "last_successful_plan_id": self.last_successful_plan_id,
             "plan_children": {
@@ -3521,7 +3727,12 @@ class ContinuousPlanningSession:
             },
             "planning_generation": self._planning_generation,
             "blocked": self.blocked,
-            "metrics": self.statistics.report(),
+            "terminal_reason": self._terminal_reason,
+            "terminal_message": self._terminal_message,
+            "event_journal": self.events.summary(),
+            "history_capacity": self._history_capacity,
+            "retained_invalidated_plans": len(self.invalidated_plans),
+            "metrics": metrics,
         }
 
 

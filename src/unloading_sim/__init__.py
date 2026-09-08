@@ -76,14 +76,18 @@ from .online_execution import (
 from .online_runtime import (
     ContinuousPlanningRuntime,
     ObservationAuthority,
+    RuntimeIngressMailbox,
     RuntimeEvent,
     RuntimeIngressResult,
     RuntimeIngressStatus,
     RuntimeMetrics,
     RuntimeState,
+    RuntimeWatchdogPolicy,
     SuccessorRequestFactory,
+    WatchdogTerminalAction,
     WorldObservation,
 )
+from .online_journal import BoundedEventJournal, EventJournalRead
 
 __all__ = [
     "Capsule",
@@ -173,11 +177,16 @@ __all__ = [
     "ExecutionFeedbackStatus",
     "ContinuousPlanningRuntime",
     "ObservationAuthority",
+    "RuntimeIngressMailbox",
     "RuntimeEvent",
     "RuntimeIngressResult",
     "RuntimeIngressStatus",
     "RuntimeMetrics",
     "RuntimeState",
+    "RuntimeWatchdogPolicy",
     "SuccessorRequestFactory",
+    "WatchdogTerminalAction",
     "WorldObservation",
+    "BoundedEventJournal",
+    "EventJournalRead",
 ]
