@@ -1,0 +1,14 @@
+string schema_version
+string command_id
+string plan_id
+string request_id
+string session_id
+string epoch
+uint64 planning_generation
+string predecessor_plan_id
+string world_fingerprint
+string robot_model_fingerprint
+string config_identity
+string validation_reference
+uint64 validation_generation
+trajectory_msgs/JointTrajectory trajectory

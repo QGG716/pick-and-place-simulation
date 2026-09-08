@@ -1,0 +1,17 @@
+string schema_version
+string observation_id
+string source_epoch
+uint64 source_sequence
+builtin_interfaces/Time capture_time
+builtin_interfaces/Time processed_time
+string clock_domain
+string provider
+string upstream_commit
+string model_identity
+string config_identity
+string status
+string failure_code
+string failure_message
+bool synthetic
+unloading_interfaces/CargoObservation[] cargo
+unloading_interfaces/UnknownRegion[] unknown_regions

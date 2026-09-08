@@ -1,0 +1,14 @@
+unloading_perception:
+  ros__parameters:
+    backend: replay
+    publish_period_seconds: 1.0
+    upstream_commit: 1d208f2ed380a207e6e46b4a62d2ac640edfe477
+unloading_world_bridge:
+  ros__parameters:
+    world_frame: world
+    tf_timeout_seconds: 0.2
+    snapshot_freshness_seconds: 2.0
+unloading_execution_bridge:
+  ros__parameters:
+    enable_hardware: false
+    controller_action: /mock_controller/follow_joint_trajectory

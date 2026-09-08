@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>unloading_ros_bridge</name>
+  <version>1.0.0</version>
+  <description>ROS 2 Humble perception, world, and mock execution bridges.</description>
+  <maintainer email="maintainers@example.invalid">Unloading Simulation Maintainers</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <depend>action_msgs</depend>
+  <depend>control_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>unloading_interfaces</depend>
+  <depend>visualization_msgs</depend>
+  <test_depend>ament_pytest</test_depend>
+  <test_depend>launch_testing</test_depend>
+  <export><build_type>ament_python</build_type></export>
+</package>

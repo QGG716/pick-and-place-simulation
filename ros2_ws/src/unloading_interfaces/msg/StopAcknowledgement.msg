@@ -1,0 +1,10 @@
+string command_id
+string plan_id
+string epoch
+uint64 planning_generation
+builtin_interfaces/Time stopped_time
+string clock_domain
+float64[] actual_positions
+float64[] actual_velocities
+string criterion
+string evidence_reference
