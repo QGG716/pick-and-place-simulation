@@ -587,9 +587,15 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config',type=Path,default=DEFAULT)
     parser.add_argument('--output-dir',type=Path,default=ROOT/'outputs/m710id70_v3/v3')
-    parser.add_argument('--phase',choices=['small','grasp','grid-fixed','grid','continuous','lift','all'],default='all')
+    parser.add_argument('--phase',choices=['layout','small','grasp','grid-fixed','grid','continuous','lift','all'],default='all')
     parser.add_argument('--workers',type=int,default=4,help='Independent CPU processes; task seeds and outputs are unchanged')
-    args=parser.parse_args();cfg=load_validation_config(args.config);out=args.output_dir;out.mkdir(parents=True,exist_ok=True)
+    args=parser.parse_args()
+    if args.phase=='layout':
+        from tools.validate_m710id70_layout import run_layout_validation
+        result=run_layout_validation(args.config,args.output_dir)
+        print(json.dumps({'completed_phase':'layout',**result}),flush=True)
+        return
+    cfg=load_validation_config(args.config);out=args.output_dir;out.mkdir(parents=True,exist_ok=True)
     capture(out,'python tools/run_m710id70_v3.py '+' '.join(sys.argv[1:]));write_json(out/'effective_config.json',cfg.evidence())
     run=Run(cfg,out,args.workers)
     if args.phase=='small':
