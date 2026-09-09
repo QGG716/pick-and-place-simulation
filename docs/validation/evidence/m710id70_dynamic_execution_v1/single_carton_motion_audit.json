@@ -1,0 +1,6486 @@
+{
+  "schema": "m710id70_layout_single_carton_motion_audit_v1",
+  "run_status": "COMPLETED",
+  "layout_id": "m710id70_unloading_layout_v1",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+  "policy_fingerprint": "6763915b62e4e240ef720b5c155973ea9987829cd880795561a54be553c0f658",
+  "implementation_identity": {
+    "source_sha256": {
+      "src/unloading_sim/depalletizing.py": "2ebfde4c2ce3bd2e831c6c5afde6422adecb9a2db504f35cc3b407a7d04854f6",
+      "src/unloading_sim/fanuc_m710id70.py": "836b3dc0915a3b0a91328948d28ed368b8e2ed7d1d26838ccc918f5aa17cd8f8",
+      "src/unloading_sim/geometry.py": "5ddd9c94be8284307ccdb7ae65e8ab089721768ec83b3995ae357b6cc9f82514",
+      "src/unloading_sim/grasp.py": "2f4e1aecf848863a8c9c583b85d3636e1730231bfc06f718019b4f8b38a5b72e",
+      "src/unloading_sim/ik.py": "888e855bf71194dca2522b705f3c7e0a2359bfc553c6957112a565d095c6b2e0",
+      "src/unloading_sim/layout_single_carton.py": "93b6a1dbf1d8042479fcf37dbf860c45d6726b640166885411110f8911fff4e8",
+      "src/unloading_sim/planner.py": "e35344f8a4252aae8e0f22abc4d15e83b49c8723c59410ae028335fb95cb33e4",
+      "src/unloading_sim/robot.py": "c8b5e9f5a1819bd3258368b71b2ad408a438ecc0ae841436d4e2ba5869057288",
+      "src/unloading_sim/robot_load/model.py": "13097486a55304b3e8517157e9de2b2ab38dbfb82f0d0d82a3ac98fc330c3d89",
+      "src/unloading_sim/robot_load/spatial.py": "616d696e2fdf9cd05b38dfe5db1ecf3a815e6db32891860217b71c22c06e3618",
+      "src/unloading_sim/robot_load/task.py": "83b61dbb5a225dd5e4ddc51b4bbc0eb8db89de2560f9be2f67544a440648d65a",
+      "src/unloading_sim/scene.py": "7849e50ce3feaf921654329ebc1391e30dc64f26565918dcb44e13832c3d272c",
+      "src/unloading_sim/support.py": "6efc235227f348c3e37065e741e76fd1f6c6438729e57240bc00b55a7b32b6c1",
+      "src/unloading_sim/timing.py": "64a449ef4a021041ae0d1f40e6cb4b5ff51dcbd9ce0596819ba20e77ba7ab89d",
+      "src/unloading_sim/validation_motion.py": "dc49984f2ea7b6c4f0235104ea586e2f9374ada084fc288804fd8a9253103e63",
+      "src/unloading_sim/validation_physics.py": "e902f04615392d2e252eb2348bd94fad8571b441a8ac75f2a597ce162ae9261d",
+      "src/unloading_sim/workcell_layout.py": "062171ceddddad399c7d39e57ee6e34181748aa77ca029364fdbb0b446785eb3"
+    },
+    "runtime": {
+      "python": "3.14.7",
+      "python_implementation": "CPython",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "numpy": "2.5.2"
+    }
+  },
+  "snapshot_verification": {
+    "status": "PASS",
+    "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+    "checked_assets": [
+      "assets/robots/fanuc_m710id_70/m710id_70.urdf",
+      "configs/robots/fanuc_m710id_70.yaml",
+      "configs/tools/unloading_gripper_20kg.yaml",
+      "configs/tools/unloading_gripper_10kg.yaml",
+      "assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb",
+      "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+      "assets/grippers/shanghai_wantai_three_zone/mass_properties.json"
+    ]
+  },
+  "snapshot_consistency_status": "PASS",
+  "scene": {
+    "source": "build_then_verify_content_addressed_snapshot",
+    "carton_count": 40,
+    "fixed_component_names": [
+      "chassis",
+      "conveyor_transverse",
+      "conveyor_longitudinal"
+    ],
+    "planning_obstacle_count": 43,
+    "all_cartons_retained_during_candidate_checks": true
+  },
+  "task_population": {
+    "selector": "SupportRelationGraph.removable_cartons",
+    "carton_ids": [
+      "carton_l07_c02",
+      "carton_l07_c01",
+      "carton_l07_c03",
+      "carton_l07_c00",
+      "carton_l07_c04"
+    ],
+    "literal_expected_top_layer": [
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "legacy_104_and_129_denominators_used": false,
+    "support_graph": {
+      "model": "conservative_world_projection_support_graph_v1",
+      "cartons": 40,
+      "support_edges": [
+        {
+          "supporter": "carton_l00_c00",
+          "supported": "carton_l01_c00",
+          "vertical_gap_m": -5.551115123125783e-17,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l00_c01",
+          "supported": "carton_l01_c01",
+          "vertical_gap_m": -5.551115123125783e-17,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l00_c02",
+          "supported": "carton_l01_c02",
+          "vertical_gap_m": -5.551115123125783e-17,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l00_c03",
+          "supported": "carton_l01_c03",
+          "vertical_gap_m": -5.551115123125783e-17,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l00_c04",
+          "supported": "carton_l01_c04",
+          "vertical_gap_m": -5.551115123125783e-17,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l01_c00",
+          "supported": "carton_l02_c00",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l01_c01",
+          "supported": "carton_l02_c01",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l01_c02",
+          "supported": "carton_l02_c02",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l01_c03",
+          "supported": "carton_l02_c03",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l01_c04",
+          "supported": "carton_l02_c04",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l02_c00",
+          "supported": "carton_l03_c00",
+          "vertical_gap_m": -2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l02_c01",
+          "supported": "carton_l03_c01",
+          "vertical_gap_m": -2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l02_c02",
+          "supported": "carton_l03_c02",
+          "vertical_gap_m": -2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l02_c03",
+          "supported": "carton_l03_c03",
+          "vertical_gap_m": -2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l02_c04",
+          "supported": "carton_l03_c04",
+          "vertical_gap_m": -2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l03_c00",
+          "supported": "carton_l04_c00",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l03_c01",
+          "supported": "carton_l04_c01",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l03_c02",
+          "supported": "carton_l04_c02",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l03_c03",
+          "supported": "carton_l04_c03",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l03_c04",
+          "supported": "carton_l04_c04",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l04_c00",
+          "supported": "carton_l05_c00",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l04_c01",
+          "supported": "carton_l05_c01",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l04_c02",
+          "supported": "carton_l05_c02",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l04_c03",
+          "supported": "carton_l05_c03",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l04_c04",
+          "supported": "carton_l05_c04",
+          "vertical_gap_m": 2.220446049250313e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l05_c00",
+          "supported": "carton_l06_c00",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l05_c01",
+          "supported": "carton_l06_c01",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l05_c02",
+          "supported": "carton_l06_c02",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l05_c03",
+          "supported": "carton_l06_c03",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l05_c04",
+          "supported": "carton_l06_c04",
+          "vertical_gap_m": 0.0,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l06_c00",
+          "supported": "carton_l07_c00",
+          "vertical_gap_m": 4.440892098500626e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l06_c01",
+          "supported": "carton_l07_c01",
+          "vertical_gap_m": 4.440892098500626e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l06_c02",
+          "supported": "carton_l07_c02",
+          "vertical_gap_m": 4.440892098500626e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l06_c03",
+          "supported": "carton_l07_c03",
+          "vertical_gap_m": 4.440892098500626e-16,
+          "footprint_overlap_ratio": 1.0
+        },
+        {
+          "supporter": "carton_l06_c04",
+          "supported": "carton_l07_c04",
+          "vertical_gap_m": 4.440892098500626e-16,
+          "footprint_overlap_ratio": 1.0
+        }
+      ]
+    }
+  },
+  "fixed_cell_contract": {
+    "receiver": "conveyor_transverse",
+    "lift_enabled": false,
+    "conveyor_extension_enabled": false,
+    "conveyor_z_optimization_enabled": false,
+    "base_scan_enabled": false
+  },
+  "strict_contract": {
+    "minimum_sealed_cups": 60,
+    "ik_position_tolerance_m": 0.0001,
+    "ik_orientation_tolerance_rad": 0.0002,
+    "collision_margin_m": 0.01,
+    "joint_margin_rad": 0.0174532925199433,
+    "tool_frames": {
+      "schema": "m710id70_planner_tool_frames_v1",
+      "transform_convention": "T_parent_child_maps_child_coordinates_into_parent",
+      "active_physical_contact_frame": "nominal_compressed_contact",
+      "T_flange_virtual_task_tcp": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.25
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_flange_uncompressed_cup_plane": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.2275
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_flange_nominal_compressed_contact": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.2125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "virtual_to_physical_contact_offset_m": 0.037500000000000006,
+      "virtual_task_tcp_role": "strict_ik_fk_residual_only_never_attachment",
+      "attachment_frame_role": "actual_physical_contact_only",
+      "tool0_clocking_status": "PROVISIONAL_180_DEGREE_DISCREPANCY_UNRESOLVED",
+      "execution_qualified": false
+    }
+  },
+  "execution_collision_qualification": {
+    "required_for_complete_trajectory": true,
+    "qualified": false,
+    "checks": {
+      "qualification_manifest_declared": false,
+      "robot_links_use_cad_collision_meshes": false,
+      "tool_collision_geometry_execution_qualified": false,
+      "robot_mounting_geometry_execution_qualified": false
+    },
+    "robot_links_with_collision": [
+      "base_link",
+      "J1_link",
+      "J2_link",
+      "J3_link",
+      "J4_link",
+      "J5_link",
+      "J6_link"
+    ],
+    "robot_collision_shape_types": {
+      "box": 4,
+      "cylinder": 2,
+      "sphere": 1
+    },
+    "tool_geometry_status": "STEP_DERIVED_ENGINEERING_PROXY",
+    "mounting_geometry_status": "ENGINEERING_PROXY_REAL_MOUNTING_PLATE_CAD_NOT_CONFIRMED",
+    "failure_reason": "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED",
+    "proxy_geometry_use": "KINEMATIC_AUDIT_ONLY"
+  },
+  "tasks": [
+    {
+      "task_id": "carton_l07_c02",
+      "target_pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "scene_cartons_retained": 40,
+      "exposed_faces": [
+        "front",
+        "top"
+      ],
+      "attempts": [
+        {
+          "face": "front",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 71070,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 71171,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.0
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.0
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.0
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 71272,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 71373,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 71474,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 71575,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                -0.2017369882002908,
+                0.7727414231202105,
+                1.4279446065298411,
+                3.143543695490495,
+                2.1176463899138245,
+                4.913765710040325
+              ],
+              "position_error_m": 0.2880748819135811,
+              "orientation_error_rad": 0.10837493486239437,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 71676,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 71777,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                -0.20188991240170476,
+                0.750852381877235,
+                1.4119455068685873,
+                3.1415926492445947,
+                2.004101329457883,
+                -4.510499072005207
+              ],
+              "position_error_m": 0.24749807154558404,
+              "orientation_error_rad": 0.22778812232836596,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        }
+      ],
+      "face_summary": {
+        "front": {
+          "candidate_poses": 4,
+          "coverage_rejected": 4,
+          "no_ik": 0,
+          "strict_grasp_candidates": 0
+        },
+        "top": {
+          "candidate_poses": 4,
+          "coverage_rejected": 2,
+          "no_ik": 2,
+          "strict_grasp_candidates": 0
+        }
+      },
+      "strict_grasp_candidate_count": 0,
+      "complete_trajectory": false,
+      "failure_reason": "NO_STRICT_GRASP_IK"
+    },
+    {
+      "task_id": "carton_l07_c01",
+      "target_pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "scene_cartons_retained": 40,
+      "exposed_faces": [
+        "front",
+        "top"
+      ],
+      "attempts": [
+        {
+          "face": "front",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 81878,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 81979,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              -0.42
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              -0.42
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              -0.42
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 82080,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 82181,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 82282,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 82383,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                -0.4230640510232818,
+                0.7110846818637092,
+                1.2578395981721469,
+                6.282995549838881,
+                -1.9099835879082536,
+                1.994296046175653
+              ],
+              "position_error_m": 0.3508227252332426,
+              "orientation_error_rad": 0.20756836821648014,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 82484,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              -0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 82585,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                -0.42373208985027666,
+                0.7835914819465012,
+                1.37423909241129,
+                0.0047713425085703694,
+                -2.0589844872885097,
+                -1.1458055697672478
+              ],
+              "position_error_m": 0.381978396492728,
+              "orientation_error_rad": 0.10254801563620379,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        }
+      ],
+      "face_summary": {
+        "front": {
+          "candidate_poses": 4,
+          "coverage_rejected": 4,
+          "no_ik": 0,
+          "strict_grasp_candidates": 0
+        },
+        "top": {
+          "candidate_poses": 4,
+          "coverage_rejected": 2,
+          "no_ik": 2,
+          "strict_grasp_candidates": 0
+        }
+      },
+      "strict_grasp_candidate_count": 0,
+      "complete_trajectory": false,
+      "failure_reason": "NO_STRICT_GRASP_IK"
+    },
+    {
+      "task_id": "carton_l07_c03",
+      "target_pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "scene_cartons_retained": 40,
+      "exposed_faces": [
+        "front",
+        "top"
+      ],
+      "attempts": [
+        {
+          "face": "front",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 92686,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.42
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.42
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.42
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 92787,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.42
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.42
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.42
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 92888,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.42
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.42
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.42
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 92989,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 93090,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 93191,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                0.040868403865573,
+                0.7216903416815666,
+                1.3428976660646228,
+                -0.0004073999093944513,
+                -2.1080817092100927,
+                1.529183455320965
+              ],
+              "position_error_m": 0.2735443304953744,
+              "orientation_error_rad": 0.0839242514751615,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 93292,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              0.42
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 93393,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                0.038983927734378615,
+                0.7304460623416367,
+                1.3636412548231867,
+                3.127790776613228,
+                2.1088104115544763,
+                1.5238731939458947
+              ],
+              "position_error_m": 0.2693639103043947,
+              "orientation_error_rad": 0.0958728440312178,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        }
+      ],
+      "face_summary": {
+        "front": {
+          "candidate_poses": 4,
+          "coverage_rejected": 4,
+          "no_ik": 0,
+          "strict_grasp_candidates": 0
+        },
+        "top": {
+          "candidate_poses": 4,
+          "coverage_rejected": 2,
+          "no_ik": 2,
+          "strict_grasp_candidates": 0
+        }
+      },
+      "strict_grasp_candidate_count": 0,
+      "complete_trajectory": false,
+      "failure_reason": "NO_STRICT_GRASP_IK"
+    },
+    {
+      "task_id": "carton_l07_c00",
+      "target_pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "scene_cartons_retained": 40,
+      "exposed_faces": [
+        "front",
+        "top",
+        "right"
+      ],
+      "attempts": [
+        {
+          "face": "front",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 103494,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 103595,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              -0.84
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              -0.84
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              -0.84
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 103696,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 103797,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 103898,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 103999,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                -0.6113626328574632,
+                0.8480827418020997,
+                1.4167250690393043,
+                -0.01618659478822945,
+                -1.808307346361348,
+                2.164722584428103
+              ],
+              "position_error_m": 0.4505635201728465,
+              "orientation_error_rad": 0.33164191552059397,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 104100,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              -0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 104201,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                -0.6079753278393536,
+                0.8373969126668732,
+                1.4115834232472064,
+                3.1415803618969007,
+                1.699519335280147,
+                -4.104424992729566
+              ],
+              "position_error_m": 0.4048251411771124,
+              "orientation_error_rad": 0.4454635022951811,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "right",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.0025
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.0025
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.04
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 104302,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "right",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.0025
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.0025
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.04
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 104403,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                -0.83958760367753,
+                1.234693875996007,
+                1.5662281302565997,
+                -2.0165444912797477,
+                -1.907140068251974,
+                1.0341964694524215
+              ],
+              "position_error_m": 0.4442131171296074,
+              "orientation_error_rad": 0.45187498554142086,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "right",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.0025
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.0025
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.04
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 104504,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "right",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.0025
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.0025
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -1.04
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 104605,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                -0.8417924761644568,
+                1.1485678245127002,
+                1.4083067154694127,
+                -5.115307788083355,
+                1.8845066839567866,
+                -5.16026321755834
+              ],
+              "position_error_m": 0.41708253483974256,
+              "orientation_error_rad": 0.5017179985867464,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        }
+      ],
+      "face_summary": {
+        "front": {
+          "candidate_poses": 4,
+          "coverage_rejected": 4,
+          "no_ik": 0,
+          "strict_grasp_candidates": 0
+        },
+        "top": {
+          "candidate_poses": 4,
+          "coverage_rejected": 2,
+          "no_ik": 2,
+          "strict_grasp_candidates": 0
+        },
+        "right": {
+          "candidate_poses": 4,
+          "coverage_rejected": 2,
+          "no_ik": 2,
+          "strict_grasp_candidates": 0
+        }
+      },
+      "strict_grasp_candidate_count": 0,
+      "complete_trajectory": false,
+      "failure_reason": "NO_STRICT_GRASP_IK"
+    },
+    {
+      "task_id": "carton_l07_c04",
+      "target_pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "scene_cartons_retained": 40,
+      "exposed_faces": [
+        "front",
+        "top",
+        "left"
+      ],
+      "attempts": [
+        {
+          "face": "front",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 114706,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.84
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.84
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.84
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 114807,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.84
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.84
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.84
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 114908,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "front",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.84
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.037500000000000006
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.84
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.84
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 115009,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 115110,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              -1.0,
+              -6.123233995736766e-17,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 115211,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                0.27907185953715646,
+                0.7581539511404227,
+                1.4113107836312255,
+                6.283185306705738,
+                -1.9641458937840537,
+                -4.991460840325919
+              ],
+              "position_error_m": 0.258893198541748,
+              "orientation_error_rad": 0.2598072655016458,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              -1.2246467991473532e-16,
+              1.0,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 48,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 115312,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "top",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.3625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              1.0,
+              1.8369701987210297e-16,
+              0.0,
+              0.84
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              2.4
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 115413,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                0.27906566075072536,
+                0.7639343266203902,
+                1.4137821784351556,
+                6.283163904761462,
+                -2.002369150458415,
+                4.433290508873229
+              ],
+              "position_error_m": 0.2737326552134659,
+              "orientation_error_rad": 0.2182750299932721,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "left",
+          "roll_deg": 0,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.0025
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.0025
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.04
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 115514,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "left",
+          "roll_deg": 90,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.0025
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.0025
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              6.123233995736766e-17,
+              -1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.04
+            ],
+            [
+              1.0,
+              6.123233995736766e-17,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 115615,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                0.572652415946297,
+                1.052180078413845,
+                1.4159755333452215,
+                -4.459351260233128,
+                -1.9889060168210937,
+                -4.2720369129289795
+              ],
+              "position_error_m": 0.16463078853482155,
+              "orientation_error_rad": 0.11554076140831523,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "left",
+          "roll_deg": 180,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.0025
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.0025
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.0,
+              -1.2246467991473532e-16,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.04
+            ],
+            [
+              1.2246467991473532e-16,
+              -1.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 36,
+            "required_cups": 60,
+            "geometric_coverage": false,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 115716,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "failure_stage": "coverage",
+          "failure_reason": "INSUFFICIENT_SEALED_CUPS",
+          "search_status": "NOT_RUN_COVERAGE_GATE",
+          "ik_stream": null,
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        },
+        {
+          "face": "left",
+          "roll_deg": 270,
+          "task_set": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "requested_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.0025
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_virtual_task_tcp_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.0025
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "requested_physical_contact_pose_world": [
+            [
+              -1.8369701987210297e-16,
+              1.0,
+              0.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0,
+              1.04
+            ],
+            [
+              -1.0,
+              -1.8369701987210297e-16,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "coverage_frame": "requested_physical_contact",
+          "coverage": {
+            "sealed_cups": 72,
+            "required_cups": 60,
+            "geometric_coverage": true,
+            "normal_alignment": 1.0,
+            "suction_force_status": "NOT_EVALUATED"
+          },
+          "rng_seed": 115817,
+          "strict_grasp_candidates": [],
+          "path_connection_attempts": 0,
+          "complete_trajectory": false,
+          "ik_stream": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 23,
+            "explicit_seed_count": 3,
+            "random_restart_count": 20,
+            "seeds_attempted": 23,
+            "last_seed_index": 22,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 4140,
+            "iteration_capacity_for_attempted_seeds": 4140,
+            "iterations_consumed": 4140,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "candidate_limit": 3,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": true,
+            "termination": "SEED_STREAM_EXHAUSTED",
+            "best_failure": {
+              "q_rad": [
+                0.5731729831819982,
+                0.9658221925668945,
+                1.256346549510366,
+                4.934915991850099,
+                2.000028262170869,
+                1.9337407746881734
+              ],
+              "position_error_m": 0.16763642116006522,
+              "orientation_error_rad": 0.12227202984083096,
+              "iterations": 180,
+              "message": "maximum iterations reached"
+            }
+          },
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF",
+          "path_search": "NOT_RUN_NO_STRICT_GRASP"
+        }
+      ],
+      "face_summary": {
+        "front": {
+          "candidate_poses": 4,
+          "coverage_rejected": 4,
+          "no_ik": 0,
+          "strict_grasp_candidates": 0
+        },
+        "top": {
+          "candidate_poses": 4,
+          "coverage_rejected": 2,
+          "no_ik": 2,
+          "strict_grasp_candidates": 0
+        },
+        "left": {
+          "candidate_poses": 4,
+          "coverage_rejected": 2,
+          "no_ik": 2,
+          "strict_grasp_candidates": 0
+        }
+      },
+      "strict_grasp_candidate_count": 0,
+      "complete_trajectory": false,
+      "failure_reason": "NO_STRICT_GRASP_IK"
+    }
+  ],
+  "statistics": {
+    "task_count": 5,
+    "task_success_count": 0,
+    "candidate_pose_attempts": 48,
+    "coverage_rejected": 34,
+    "ik_calls": 14,
+    "ik_seed_pool_available": 322,
+    "ik_seeds_attempted": 322,
+    "ik_iterations_consumed": 57960,
+    "ik_converged_pose_results": 0,
+    "ik_valid_solutions": 0,
+    "ik_deduplicated_candidates": 0,
+    "path_connection_attempts": 0,
+    "complete_trajectory_success_count": 0,
+    "task_failure_counts": {
+      "NO_STRICT_GRASP_IK": 5
+    },
+    "candidate_failure_counts": {
+      "INSUFFICIENT_SEALED_CUPS": 34,
+      "NO_IK": 14
+    }
+  },
+  "complete_trajectory_status": "FAIL_CLOSED",
+  "complete_trajectory_failure_reason": "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED",
+  "evidence_fingerprint": "98f963f752712b77f740ec58beab426e51b420a4c4fce33e46d51ec0c1a42a74"
+}

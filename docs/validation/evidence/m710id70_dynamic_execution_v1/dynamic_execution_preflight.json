@@ -1,0 +1,5399 @@
+{
+  "schema": "m710id70_dynamic_execution_preflight_v1",
+  "status": "BLOCKED",
+  "simulation_execution_ready": false,
+  "execution_qualified": false,
+  "simulation_readiness_blockers": [
+    "DYNAMIC_COLLISION_REPRESENTATION_NOT_QUALIFIED",
+    "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED",
+    "FLANGE_CLOCKING_PROVISIONAL",
+    "J3_FOLLOWS_J2_CONTROLLER_TO_KINEMATIC_MAPPING",
+    "NO_STRICT_GRASP_IK",
+    "PER_LINK_COLLISION_MESHES_MISSING",
+    "PER_LINK_VISUAL_MESHES_MISSING",
+    "REAL_BASE_MOUNTING_EXTENT_NOT_AVAILABLE",
+    "TOOL0_CLOCKING_180_DEG_ABOUT_COMMON_TOOL_Z"
+  ],
+  "blockers": [
+    "DYNAMIC_COLLISION_REPRESENTATION_NOT_QUALIFIED",
+    "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED",
+    "FLANGE_CLOCKING_PROVISIONAL",
+    "J3_FOLLOWS_J2_CONTROLLER_TO_KINEMATIC_MAPPING",
+    "NO_STRICT_GRASP_IK",
+    "PER_LINK_COLLISION_MESHES_MISSING",
+    "PER_LINK_VISUAL_MESHES_MISSING",
+    "REAL_BASE_MOUNTING_EXTENT_NOT_AVAILABLE",
+    "TOOL0_CLOCKING_180_DEG_ABOUT_COMMON_TOOL_Z"
+  ],
+  "machine_qualified": false,
+  "machine_qualification_warnings": [
+    "CERTIFIED_JOINT_DRIVE_TORQUE_LIMITS_NOT_SUPPLIED",
+    "LINK_MASS_CENTER_OF_MASS_AND_INERTIA_NOT_SUPPLIED",
+    "SUPPLIED_ASSEMBLY_MATERIAL_AND_COMPONENT_MASSES_NOT_AVAILABLE",
+    "VACUUM_FORCE_SHEAR_AND_PEEL_ENVELOPE_NOT_MEASURED",
+    "ZONE_ASSIGNMENT_NOT_VENDOR_CONFIRMED"
+  ],
+  "backend_execution_status": "NOT_RUN_PER_USER_REQUEST",
+  "isaac_validation_performed": false,
+  "input_identity": {
+    "execution_config_fingerprint": "c48e12415215a6bc59896370557d506e8b02ea4b244c731da0412105b5857c04",
+    "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+    "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+    "motion_evidence_fingerprint": "98f963f752712b77f740ec58beab426e51b420a4c4fce33e46d51ec0c1a42a74",
+    "execution_implementation_source_sha256": {
+      "src/unloading_sim/asset_audit.py": "565568da791b4007c20d26d4e6f5045e51eed902013ba17ec34571e46bafe279",
+      "src/unloading_sim/isaac_bridge.py": "d40414fc024c56d23aa58d3a3658644bc818a389cd73e3401814e89efa2e2da1",
+      "src/unloading_sim/m710_dynamics.py": "5a5239f9aae27e2d508d73be85298939ad7b00d89cd3c4d3f441e6a84b4f2417",
+      "src/unloading_sim/m710_execution.py": "4410dfa471275059da6a0e7e336a8d05c0a07d5267ba87b8ce94fd4c5d39629e",
+      "src/unloading_sim/m710_replay_physics.py": "1c435f90e419be9dca9b7fa2b7f35cda1be30c15323e51a760d3a6bf40c55b89",
+      "src/unloading_sim/m710_replay_contract.py": "4389f9ce4f574a6565e6f74e03d756ae4aff3c4fde8a528f3a75e72c7266f17a",
+      "scripts/export_isaac_fanuc_replay.py": "2226d956b8b4067c89b3c8573e49588af1f46db1c4cffcd6cfe9158872b22d9e",
+      "scripts/isaacsim_fanuc_replay.py": "aad99c523100d5deb8c17ff31643ca9b5ade5fb1fac76f1574639e79c410b1e3"
+    },
+    "dynamics_fingerprint": "5ba73115907f51a36570ae865260e08459bc9e7fffb6c13af6d56c55e6a51e57",
+    "robot_manifest_sha256": "607fe3b95e5197cb88cb6ef75ba4a020647ffb755603a6f287eb9b7d829dc1bb",
+    "tool_manifest_sha256": "f3f5fab0fe151fac31cfa812254bebb349f3aa5394d214783ab908635fac6592",
+    "robot_missing_mesh_outputs": [
+      "assets/robots/fanuc_m710id_70/meshes/visual/base_link.glb",
+      "assets/robots/fanuc_m710id_70/meshes/visual/J1_link.glb",
+      "assets/robots/fanuc_m710id_70/meshes/visual/J2_link.glb",
+      "assets/robots/fanuc_m710id_70/meshes/visual/J3_link.glb",
+      "assets/robots/fanuc_m710id_70/meshes/visual/J4_link.glb",
+      "assets/robots/fanuc_m710id_70/meshes/visual/J5_link.glb",
+      "assets/robots/fanuc_m710id_70/meshes/visual/J6_link.glb",
+      "assets/robots/fanuc_m710id_70/meshes/collision/base_link.stl",
+      "assets/robots/fanuc_m710id_70/meshes/collision/J1_link.stl",
+      "assets/robots/fanuc_m710id_70/meshes/collision/J2_link.stl",
+      "assets/robots/fanuc_m710id_70/meshes/collision/J3_link.stl",
+      "assets/robots/fanuc_m710id_70/meshes/collision/J4_link.stl",
+      "assets/robots/fanuc_m710id_70/meshes/collision/J5_link.stl",
+      "assets/robots/fanuc_m710id_70/meshes/collision/J6_link.stl"
+    ]
+  },
+  "execution_asset_fingerprint_sha256": "d44bb8cdae825b8999e1ec8073bcb4404436233ec4e2734aaf67efede50af33b",
+  "asset_audit": {
+    "status": "SOURCE_INTEGRITY_PASS_CONVERSION_REQUIRED",
+    "execution_qualified": false,
+    "robot": {
+      "manifest_path": "assets/robots/fanuc_m710id_70/cad_asset_manifest.yaml",
+      "schema_version": "m710id70_cad_asset_manifest_v1",
+      "manifest_sha256": "607fe3b95e5197cb88cb6ef75ba4a020647ffb755603a6f287eb9b7d829dc1bb",
+      "source_integrity": true,
+      "conversion_status": "SOURCE_AVAILABLE_CONVERSION_REQUIRED",
+      "execution_qualified": false,
+      "verified_file_count": 17,
+      "verified_source_bytes": 29450224,
+      "missing_converted_outputs": [
+        "assets/robots/fanuc_m710id_70/meshes/visual/base_link.glb",
+        "assets/robots/fanuc_m710id_70/meshes/visual/J1_link.glb",
+        "assets/robots/fanuc_m710id_70/meshes/visual/J2_link.glb",
+        "assets/robots/fanuc_m710id_70/meshes/visual/J3_link.glb",
+        "assets/robots/fanuc_m710id_70/meshes/visual/J4_link.glb",
+        "assets/robots/fanuc_m710id_70/meshes/visual/J5_link.glb",
+        "assets/robots/fanuc_m710id_70/meshes/visual/J6_link.glb",
+        "assets/robots/fanuc_m710id_70/meshes/collision/base_link.stl",
+        "assets/robots/fanuc_m710id_70/meshes/collision/J1_link.stl",
+        "assets/robots/fanuc_m710id_70/meshes/collision/J2_link.stl",
+        "assets/robots/fanuc_m710id_70/meshes/collision/J3_link.stl",
+        "assets/robots/fanuc_m710id_70/meshes/collision/J4_link.stl",
+        "assets/robots/fanuc_m710id_70/meshes/collision/J5_link.stl",
+        "assets/robots/fanuc_m710id_70/meshes/collision/J6_link.stl"
+      ],
+      "unresolved": [
+        "J3_FOLLOWS_J2_CONTROLLER_TO_KINEMATIC_MAPPING",
+        "TOOL0_CLOCKING_180_DEG_ABOUT_COMMON_TOOL_Z",
+        "PER_LINK_VISUAL_MESHES_MISSING",
+        "PER_LINK_COLLISION_MESHES_MISSING",
+        "LINK_MASS_CENTER_OF_MASS_AND_INERTIA_NOT_SUPPLIED",
+        "CERTIFIED_JOINT_DRIVE_TORQUE_LIMITS_NOT_SUPPLIED"
+      ]
+    },
+    "tool": {
+      "manifest_path": "assets/grippers/shanghai_wantai_three_zone/asset_manifest.yaml",
+      "schema_version": "shanghai_wantai_three_zone_asset_manifest_v1",
+      "manifest_sha256": "f3f5fab0fe151fac31cfa812254bebb349f3aa5394d214783ab908635fac6592",
+      "source_integrity": true,
+      "conversion_status": "DERIVED_ASSETS_PRESENT_ENGINEERING_ONLY",
+      "execution_qualified": false,
+      "verified_file_count": 5,
+      "verified_source_bytes": 29141501,
+      "missing_converted_outputs": [],
+      "unresolved": [
+        "FLANGE_CLOCKING_PROVISIONAL",
+        "DYNAMIC_COLLISION_REPRESENTATION_NOT_QUALIFIED",
+        "SUPPLIED_ASSEMBLY_MATERIAL_AND_COMPONENT_MASSES_NOT_AVAILABLE",
+        "ZONE_ASSIGNMENT_NOT_VENDOR_CONFIRMED",
+        "VACUUM_FORCE_SHEAR_AND_PEEL_ENVELOPE_NOT_MEASURED"
+      ]
+    }
+  },
+  "dynamics": {
+    "qualification_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED",
+    "machine_qualified": false,
+    "robot_mass_kg": 580.0,
+    "tool_mass_kg": 20.0,
+    "carton_count": 40,
+    "carton_mass_kg_each": 42.5,
+    "total_configured_mass_kg": 2300.0,
+    "fingerprint": "5ba73115907f51a36570ae865260e08459bc9e7fffb6c13af6d56c55e6a51e57"
+  },
+  "motion": {
+    "run_status": "COMPLETED",
+    "complete_trajectory_status": "FAIL_CLOSED",
+    "complete_trajectory_failure_reason": "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED",
+    "statistics": {
+      "task_count": 5,
+      "task_success_count": 0,
+      "candidate_pose_attempts": 48,
+      "coverage_rejected": 34,
+      "ik_calls": 14,
+      "ik_seed_pool_available": 322,
+      "ik_seeds_attempted": 322,
+      "ik_iterations_consumed": 57960,
+      "ik_converged_pose_results": 0,
+      "ik_valid_solutions": 0,
+      "ik_deduplicated_candidates": 0,
+      "path_connection_attempts": 0,
+      "complete_trajectory_success_count": 0,
+      "task_failure_counts": {
+        "NO_STRICT_GRASP_IK": 5
+      },
+      "candidate_failure_counts": {
+        "INSUFFICIENT_SEALED_CUPS": 34,
+        "NO_IK": 14
+      }
+    },
+    "task_population": [
+      "carton_l07_c02",
+      "carton_l07_c01",
+      "carton_l07_c03",
+      "carton_l07_c00",
+      "carton_l07_c04"
+    ],
+    "evidence_fingerprint": "98f963f752712b77f740ec58beab426e51b420a4c4fce33e46d51ec0c1a42a74"
+  },
+  "scene": {
+    "layout_id": "m710id70_unloading_layout_v1",
+    "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+    "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+    "trailer_length_m": null,
+    "trailer_height_m": null,
+    "trailer_extent_claim": "NOT_DEFINED",
+    "carton_count": 40,
+    "dynamic_carton_count": 40,
+    "primitives": [
+      {
+        "name": "chassis",
+        "category": "chassis",
+        "center_m": [
+          -1.95,
+          0.35,
+          0.3
+        ],
+        "size_m": [
+          2.1,
+          1.5,
+          0.6
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": false,
+        "material": "painted_steel"
+      },
+      {
+        "name": "conveyor_transverse",
+        "category": "conveyor",
+        "center_m": [
+          -0.55,
+          0.35,
+          0.54
+        ],
+        "size_m": [
+          0.7,
+          1.5,
+          0.12
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": false,
+        "material": "conveyor_belt"
+      },
+      {
+        "name": "conveyor_longitudinal",
+        "category": "conveyor",
+        "center_m": [
+          -1.6,
+          -0.7500000000000001,
+          0.54
+        ],
+        "size_m": [
+          2.8,
+          0.7,
+          0.12
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": false,
+        "material": "conveyor_belt"
+      },
+      {
+        "name": "carton_l00_c00",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.84,
+          0.15
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l00_c01",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.42,
+          0.15
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l00_c02",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.0,
+          0.15
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l00_c03",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.42,
+          0.15
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l00_c04",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.84,
+          0.15
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l01_c00",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.84,
+          0.44999999999999996
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l01_c01",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.42,
+          0.44999999999999996
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l01_c02",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.0,
+          0.44999999999999996
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l01_c03",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.42,
+          0.44999999999999996
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l01_c04",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.84,
+          0.44999999999999996
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l02_c00",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.84,
+          0.75
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l02_c01",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.42,
+          0.75
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l02_c02",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.0,
+          0.75
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l02_c03",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.42,
+          0.75
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l02_c04",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.84,
+          0.75
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l03_c00",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.84,
+          1.0499999999999998
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l03_c01",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.42,
+          1.0499999999999998
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l03_c02",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.0,
+          1.0499999999999998
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l03_c03",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.42,
+          1.0499999999999998
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l03_c04",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.84,
+          1.0499999999999998
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l04_c00",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.84,
+          1.3499999999999999
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l04_c01",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.42,
+          1.3499999999999999
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l04_c02",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.0,
+          1.3499999999999999
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l04_c03",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.42,
+          1.3499999999999999
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l04_c04",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.84,
+          1.3499999999999999
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l05_c00",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.84,
+          1.65
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l05_c01",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.42,
+          1.65
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l05_c02",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.0,
+          1.65
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l05_c03",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.42,
+          1.65
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l05_c04",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.84,
+          1.65
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l06_c00",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.84,
+          1.9499999999999997
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l06_c01",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.42,
+          1.9499999999999997
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l06_c02",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.0,
+          1.9499999999999997
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l06_c03",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.42,
+          1.9499999999999997
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l06_c04",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.84,
+          1.9499999999999997
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l07_c00",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.84,
+          2.25
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l07_c01",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          -0.42,
+          2.25
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l07_c02",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.0,
+          2.25
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l07_c03",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.42,
+          2.25
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "carton_l07_c04",
+        "category": "carton",
+        "center_m": [
+          0.3,
+          0.84,
+          2.25
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": true,
+        "material": "carton",
+        "mass_kg": 42.5,
+        "inertia_at_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ]
+      },
+      {
+        "name": "physical_floor_reachable_patch",
+        "category": "floor",
+        "center_m": [
+          -1.4100000000000001,
+          0.0,
+          -0.025
+        ],
+        "size_m": [
+          4.708,
+          2.3,
+          0.05
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": false,
+        "material": "painted_steel",
+        "boundary": {
+          "axis": "z",
+          "value_m": 0.0,
+          "inside": "+",
+          "extent_status": "FINITE_SOLVER_PATCH_COVERS_ROBOT_REACHABLE_ENVELOPE_NOT_A_TRAILER_DIMENSION"
+        }
+      },
+      {
+        "name": "physical_right_sidewall_reachable_patch",
+        "category": "side_wall",
+        "center_m": [
+          -1.4100000000000001,
+          -1.1749999999999998,
+          1.477
+        ],
+        "size_m": [
+          4.708,
+          0.05,
+          2.954
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": false,
+        "material": "painted_steel",
+        "boundary": {
+          "axis": "y",
+          "value_m": -1.15,
+          "inside": "+",
+          "extent_status": "FINITE_SOLVER_PATCH_COVERS_ROBOT_REACHABLE_ENVELOPE_NOT_A_TRAILER_DIMENSION"
+        }
+      },
+      {
+        "name": "physical_left_sidewall_reachable_patch",
+        "category": "side_wall",
+        "center_m": [
+          -1.4100000000000001,
+          1.1749999999999998,
+          1.477
+        ],
+        "size_m": [
+          4.708,
+          0.05,
+          2.954
+        ],
+        "rotation_matrix": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "dynamic": false,
+        "material": "painted_steel",
+        "boundary": {
+          "axis": "y",
+          "value_m": 1.15,
+          "inside": "-",
+          "extent_status": "FINITE_SOLVER_PATCH_COVERS_ROBOT_REACHABLE_ENVELOPE_NOT_A_TRAILER_DIMENSION"
+        }
+      }
+    ],
+    "receiver": "conveyor_transverse"
+  },
+  "replay_adapter_inputs": {
+    "plan_common": {
+      "robot": {
+        "model": "fanuc_m710id_70",
+        "urdf_path": "assets/robots/fanuc_m710id_70/m710id_70.urdf",
+        "base_position": [
+          -1.41,
+          0.35,
+          0.6
+        ],
+        "base_rpy": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "isaac_grasp_body_path_suffix": "Geometry/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link",
+        "flange_offset_from_grasp_body_m": [
+          0.175,
+          0.0,
+          0.0
+        ]
+      },
+      "scene_primitives": [
+        {
+          "name": "chassis",
+          "category": "chassis",
+          "center_m": [
+            -1.95,
+            0.35,
+            0.3
+          ],
+          "size_m": [
+            2.1,
+            1.5,
+            0.6
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": false,
+          "material": "painted_steel"
+        },
+        {
+          "name": "conveyor_transverse",
+          "category": "conveyor",
+          "center_m": [
+            -0.55,
+            0.35,
+            0.54
+          ],
+          "size_m": [
+            0.7,
+            1.5,
+            0.12
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": false,
+          "material": "conveyor_belt"
+        },
+        {
+          "name": "conveyor_longitudinal",
+          "category": "conveyor",
+          "center_m": [
+            -1.6,
+            -0.7500000000000001,
+            0.54
+          ],
+          "size_m": [
+            2.8,
+            0.7,
+            0.12
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": false,
+          "material": "conveyor_belt"
+        },
+        {
+          "name": "carton_l00_c00",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.84,
+            0.15
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l00_c01",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.42,
+            0.15
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l00_c02",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.0,
+            0.15
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l00_c03",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.42,
+            0.15
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l00_c04",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.84,
+            0.15
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l01_c00",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.84,
+            0.44999999999999996
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l01_c01",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.42,
+            0.44999999999999996
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l01_c02",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.0,
+            0.44999999999999996
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l01_c03",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.42,
+            0.44999999999999996
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l01_c04",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.84,
+            0.44999999999999996
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l02_c00",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.84,
+            0.75
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l02_c01",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.42,
+            0.75
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l02_c02",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.0,
+            0.75
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l02_c03",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.42,
+            0.75
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l02_c04",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.84,
+            0.75
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l03_c00",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.84,
+            1.0499999999999998
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l03_c01",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.42,
+            1.0499999999999998
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l03_c02",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.0,
+            1.0499999999999998
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l03_c03",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.42,
+            1.0499999999999998
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l03_c04",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.84,
+            1.0499999999999998
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l04_c00",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.84,
+            1.3499999999999999
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l04_c01",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.42,
+            1.3499999999999999
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l04_c02",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.0,
+            1.3499999999999999
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l04_c03",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.42,
+            1.3499999999999999
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l04_c04",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.84,
+            1.3499999999999999
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l05_c00",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.84,
+            1.65
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l05_c01",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.42,
+            1.65
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l05_c02",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.0,
+            1.65
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l05_c03",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.42,
+            1.65
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l05_c04",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.84,
+            1.65
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l06_c00",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.84,
+            1.9499999999999997
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l06_c01",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.42,
+            1.9499999999999997
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l06_c02",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.0,
+            1.9499999999999997
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l06_c03",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.42,
+            1.9499999999999997
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l06_c04",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.84,
+            1.9499999999999997
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l07_c00",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.84,
+            2.25
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l07_c01",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            -0.42,
+            2.25
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l07_c02",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.0,
+            2.25
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l07_c03",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.42,
+            2.25
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "carton_l07_c04",
+          "category": "carton",
+          "center_m": [
+            0.3,
+            0.84,
+            2.25
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": true,
+          "material": "carton",
+          "mass_kg": 42.5,
+          "inertia_at_com_kg_m2": [
+            [
+              0.885416666666667,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.59375,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.841666666666667
+            ]
+          ]
+        },
+        {
+          "name": "physical_floor_reachable_patch",
+          "category": "floor",
+          "center_m": [
+            -1.4100000000000001,
+            0.0,
+            -0.025
+          ],
+          "size_m": [
+            4.708,
+            2.3,
+            0.05
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": false,
+          "material": "painted_steel",
+          "boundary": {
+            "axis": "z",
+            "value_m": 0.0,
+            "inside": "+",
+            "extent_status": "FINITE_SOLVER_PATCH_COVERS_ROBOT_REACHABLE_ENVELOPE_NOT_A_TRAILER_DIMENSION"
+          }
+        },
+        {
+          "name": "physical_right_sidewall_reachable_patch",
+          "category": "side_wall",
+          "center_m": [
+            -1.4100000000000001,
+            -1.1749999999999998,
+            1.477
+          ],
+          "size_m": [
+            4.708,
+            0.05,
+            2.954
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": false,
+          "material": "painted_steel",
+          "boundary": {
+            "axis": "y",
+            "value_m": -1.15,
+            "inside": "+",
+            "extent_status": "FINITE_SOLVER_PATCH_COVERS_ROBOT_REACHABLE_ENVELOPE_NOT_A_TRAILER_DIMENSION"
+          }
+        },
+        {
+          "name": "physical_left_sidewall_reachable_patch",
+          "category": "side_wall",
+          "center_m": [
+            -1.4100000000000001,
+            1.1749999999999998,
+            1.477
+          ],
+          "size_m": [
+            4.708,
+            0.05,
+            2.954
+          ],
+          "rotation_matrix": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "dynamic": false,
+          "material": "painted_steel",
+          "boundary": {
+            "axis": "y",
+            "value_m": 1.15,
+            "inside": "-",
+            "extent_status": "FINITE_SOLVER_PATCH_COVERS_ROBOT_REACHABLE_ENVELOPE_NOT_A_TRAILER_DIMENSION"
+          }
+        }
+      ],
+      "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+      "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+      "motion_evidence_fingerprint": "98f963f752712b77f740ec58beab426e51b420a4c4fce33e46d51ec0c1a42a74",
+      "execution_asset_fingerprint_sha256": "d44bb8cdae825b8999e1ec8073bcb4404436233ec4e2734aaf67efede50af33b",
+      "simulation_execution_ready": false,
+      "execution_qualified": false,
+      "execution_blockers": [
+        "DYNAMIC_COLLISION_REPRESENTATION_NOT_QUALIFIED",
+        "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED",
+        "FLANGE_CLOCKING_PROVISIONAL",
+        "J3_FOLLOWS_J2_CONTROLLER_TO_KINEMATIC_MAPPING",
+        "NO_STRICT_GRASP_IK",
+        "PER_LINK_COLLISION_MESHES_MISSING",
+        "PER_LINK_VISUAL_MESHES_MISSING",
+        "REAL_BASE_MOUNTING_EXTENT_NOT_AVAILABLE",
+        "TOOL0_CLOCKING_180_DEG_ABOUT_COMMON_TOOL_Z"
+      ],
+      "machine_qualified": false,
+      "machine_qualification_warnings": [
+        "CERTIFIED_JOINT_DRIVE_TORQUE_LIMITS_NOT_SUPPLIED",
+        "LINK_MASS_CENTER_OF_MASS_AND_INERTIA_NOT_SUPPLIED",
+        "SUPPLIED_ASSEMBLY_MATERIAL_AND_COMPONENT_MASSES_NOT_AVAILABLE",
+        "VACUUM_FORCE_SHEAR_AND_PEEL_ENVELOPE_NOT_MEASURED",
+        "ZONE_ASSIGNMENT_NOT_VENDOR_CONFIRMED"
+      ],
+      "collision_geometry": "real_cad_per_link_visual_and_compound_collision_required"
+    },
+    "configuration": {
+      "execution": {
+        "limits_source": "configs/robots/fanuc_m710id_70.yaml",
+        "joint_velocity_limits_rad_s": [
+          3.141592654,
+          3.141592654,
+          3.141592654,
+          4.537856055,
+          4.537856055,
+          6.457718232
+        ],
+        "joint_acceleration_limits_rad_s2": [
+          1.5,
+          1.5,
+          1.5,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "joint_jerk_limits_rad_s3": [
+          7.5,
+          7.5,
+          7.5,
+          15.0,
+          15.0,
+          20.0
+        ],
+        "joint_effort_limits_nm": [
+          12000.0,
+          12000.0,
+          8000.0,
+          3000.0,
+          2000.0,
+          1200.0
+        ],
+        "joint_drive_stiffness_nm_rad": [
+          80000.0,
+          80000.0,
+          60000.0,
+          25000.0,
+          16000.0,
+          10000.0
+        ],
+        "joint_drive_damping_nm_s_rad": [
+          6000.0,
+          6000.0,
+          4500.0,
+          1800.0,
+          1200.0,
+          800.0
+        ],
+        "motion_limit_scale": 0.5,
+        "minimum_segment_seconds": 0.002,
+        "pre_grasp_controller_settle_seconds": 0.2,
+        "vacuum_establish_seconds": 0.3,
+        "release_seconds": 0.1,
+        "post_release_settle_seconds": 1.0,
+        "isaac_replay_time_scale": 1.0
+      },
+      "planning": {
+        "trajectory_waypoint_period_seconds": 0.02
+      },
+      "tool": {
+        "mass_kg": 20.0,
+        "com_xyz_m": [
+          0.149810098,
+          0.000777904,
+          0.002622005
+        ],
+        "inertia_tensor_com_kg_m2": [
+          [
+            0.629784544,
+            0.001445978,
+            0.004337304
+          ],
+          [
+            0.001445978,
+            0.191270136,
+            -0.004253938
+          ],
+          [
+            0.004337304,
+            -0.004253938,
+            0.535363874
+          ]
+        ],
+        "fixed_mass_accounting_policy": "FIXED_TOOL_COMBINED_INTO_J6_RIGID_BODY_EXACTLY_ONCE",
+        "attach_to_link": "J6_link",
+        "independent_tool_rigid_body_required": false,
+        "planner_tool_length_m": 0.25,
+        "frame_contract": {
+          "schema": "m710id70_planner_tool_frames_v1",
+          "transform_convention": "T_parent_child_maps_child_coordinates_into_parent",
+          "active_physical_contact_frame": "nominal_compressed_contact",
+          "T_flange_virtual_task_tcp": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.25
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "T_flange_uncompressed_cup_plane": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.2275
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "T_flange_nominal_compressed_contact": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.2125
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "virtual_to_physical_contact_offset_m": 0.037500000000000006,
+          "virtual_task_tcp_role": "strict_ik_fk_residual_only_never_attachment",
+          "attachment_frame_role": "actual_physical_contact_only",
+          "tool0_clocking_status": "PROVISIONAL_180_DEGREE_DISCREPANCY_UNRESOLVED",
+          "execution_qualified": false
+        },
+        "geometry": {
+          "step_path": "res/上海皖泰真空吸盘三分区.STEP",
+          "visual_mesh_path": "assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb",
+          "collision_mesh_path": "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+          "mass_properties_path": "assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+          "outer_size_m": [
+            0.576,
+            0.288,
+            0.2275
+          ],
+          "rigid_plate_collision_size_m": [
+            0.288,
+            0.576,
+            0.024
+          ],
+          "rigid_plate_center_behind_working_plane_m": 0.0655,
+          "flange_origin_step_mm": [
+            -48.561731506404,
+            -162.659188413158,
+            0.0
+          ],
+          "step_from_tool_rotation_matrix": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0
+            ]
+          ],
+          "flange_transform_confidence": "provisional_from_step_and_installation_image"
+        }
+      },
+      "simulation_validation": {
+        "vacuum_product_model": "上海皖泰真空吸盘三分区",
+        "vacuum_cup_model": "FG42",
+        "vacuum_cup_count": 72,
+        "vacuum_cup_rows": 6,
+        "vacuum_cup_columns": 12,
+        "vacuum_cup_pitch_m": [
+          0.048,
+          0.048
+        ],
+        "vacuum_cup_radius_m": 0.0215,
+        "vacuum_zone_count": 3,
+        "vacuum_pull_off_force_per_cup_n": 59.0,
+        "vacuum_shear_force_per_cup_n": 43.0,
+        "vacuum_holding_torque_nm": 180.0,
+        "vacuum_solver_total_break_force_n": 4248.0,
+        "vacuum_cup_compression_m": 0.015,
+        "vacuum_max_grip_distance_m": 0.002,
+        "vacuum_max_normal_misalignment_rad": 0.0872664625997165,
+        "vacuum_maximum_contact_penetration_m": 0.0002,
+        "vacuum_surface_gripper_capture_tolerance_m": 0.002,
+        "vacuum_footprint_size_m": [
+          0.288,
+          0.576
+        ],
+        "vacuum_effective_seal_area_m2": null,
+        "vacuum_limits_calibrated": false,
+        "vacuum_attachment_model": "per_sealed_cup",
+        "vacuum_solver_attachment_model": "equivalent_zone_row_band_centers",
+        "vacuum_solver_position_iterations": 16,
+        "vacuum_solver_velocity_iterations": 4,
+        "vacuum_task_tcp_from_flange_m": 0.25,
+        "vacuum_physical_uncompressed_face_from_flange_m": 0.2275,
+        "vacuum_compressed_contact_plane_from_flange_m": 0.2125,
+        "vacuum_frame_contract": {
+          "schema": "m710id70_planner_tool_frames_v1",
+          "transform_convention": "T_parent_child_maps_child_coordinates_into_parent",
+          "active_physical_contact_frame": "nominal_compressed_contact",
+          "T_flange_virtual_task_tcp": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.25
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "T_flange_uncompressed_cup_plane": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.2275
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "T_flange_nominal_compressed_contact": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.2125
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "virtual_to_physical_contact_offset_m": 0.037500000000000006,
+          "virtual_task_tcp_role": "strict_ik_fk_residual_only_never_attachment",
+          "attachment_frame_role": "actual_physical_contact_only",
+          "tool0_clocking_status": "PROVISIONAL_180_DEGREE_DISCREPANCY_UNRESOLVED",
+          "execution_qualified": false
+        },
+        "robot_link_dynamics": [
+          {
+            "link": "base_link",
+            "mass_kg": 139.17651285364823,
+            "com_xyz_m": [
+              0.0,
+              0.0,
+              0.2825
+            ],
+            "inertia_at_com_kg_m2": [
+              [
+                7.046100914284385,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                7.046100914284385,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                6.687431442617798
+              ]
+            ],
+            "source_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED"
+          },
+          {
+            "link": "J1_link",
+            "mass_kg": 103.26204196006212,
+            "com_xyz_m": [
+              0.075,
+              0.0,
+              0.2825
+            ],
+            "inertia_at_com_kg_m2": [
+              [
+                5.445566808614693,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.123812671525897,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                4.075408589357119
+              ]
+            ],
+            "source_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED"
+          },
+          {
+            "link": "J2_link",
+            "mass_kg": 182.26860048626895,
+            "com_xyz_m": [
+              0.0,
+              0.0,
+              0.4475
+            ],
+            "inertia_at_com_kg_m2": [
+              [
+                16.273927939666727,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                15.66636593804583,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                7.606676260293625
+              ]
+            ],
+            "source_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED"
+          },
+          {
+            "link": "J3_link",
+            "mass_kg": 26.79787062370639,
+            "com_xyz_m": [
+              0.0,
+              0.0,
+              0.085
+            ],
+            "inertia_at_com_kg_m2": [
+              [
+                0.537073990416782,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.45846690325391,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.86646448349984
+              ]
+            ],
+            "source_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED"
+          },
+          {
+            "link": "J4_link",
+            "mass_kg": 110.50082859303993,
+            "com_xyz_m": [
+              0.5225,
+              0.0,
+              0.0
+            ],
+            "inertia_at_com_kg_m2": [
+              [
+                2.386817897609662,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                11.24921456083103,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                11.24921456083103
+              ]
+            ],
+            "source_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED"
+          },
+          {
+            "link": "J5_link",
+            "mass_kg": 11.534708643124638,
+            "com_xyz_m": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "inertia_at_com_kg_m2": [
+              [
+                0.103812377788122,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.103812377788122,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.103812377788122
+              ]
+            ],
+            "source_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED"
+          },
+          {
+            "link": "J6_link",
+            "mass_kg": 6.459436840149692,
+            "com_xyz_m": [
+              0.0875,
+              0.0,
+              0.0
+            ],
+            "inertia_at_com_kg_m2": [
+              [
+                0.046507945249078,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.039738993727004,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.039738993727004
+              ]
+            ],
+            "source_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED"
+          }
+        ],
+        "physics": {
+          "parameter_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED",
+          "gravity_world_m_s2": [
+            0.0,
+            0.0,
+            -9.81
+          ],
+          "physics_time_step_s": 0.004166666666666667,
+          "materials": {
+            "carton": {
+              "static_friction": 0.55,
+              "dynamic_friction": 0.45,
+              "restitution": 0.02
+            },
+            "painted_steel": {
+              "static_friction": 0.65,
+              "dynamic_friction": 0.5,
+              "restitution": 0.02
+            },
+            "conveyor_belt": {
+              "static_friction": 0.8,
+              "dynamic_friction": 0.7,
+              "restitution": 0.02
+            },
+            "robot_coating": {
+              "static_friction": 0.4,
+              "dynamic_friction": 0.3,
+              "restitution": 0.02
+            }
+          },
+          "material_by_category": {
+            "carton": "carton",
+            "conveyor": "conveyor_belt",
+            "chassis": "painted_steel",
+            "floor": "painted_steel",
+            "side_wall": "painted_steel"
+          },
+          "damping": {
+            "robot_links": {
+              "linear_damping_s_inv": 0.05,
+              "angular_damping_s_inv": 0.1
+            },
+            "tool": {
+              "linear_damping_s_inv": 0.05,
+              "angular_damping_s_inv": 0.1
+            },
+            "cartons": {
+              "linear_damping_s_inv": 0.15,
+              "angular_damping_s_inv": 0.2
+            }
+          },
+          "settling": {
+            "maximum_settle_time_s": 10.0,
+            "required_stable_duration_s": 0.5,
+            "max_linear_speed_m_s": 0.01,
+            "max_angular_speed_rad_s": 0.03,
+            "max_position_drift_m": 0.002,
+            "max_penetration_m": 0.001
+          }
+        },
+        "rendering": {
+          "required_output": {
+            "width_px": 1920,
+            "height_px": 1080,
+            "fps": 30,
+            "camera_mode": "fixed_overview_with_contact_and_place_keyframes"
+          }
+        },
+        "conveyor": {
+          "enabled": true,
+          "speed_m_s": 0.3,
+          "surface_directions_world": {
+            "conveyor_transverse": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "conveyor_longitudinal": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "start_policy": "after_release_retreat",
+          "exclusive_surface_drive_at_transfer": true
+        }
+      }
+    },
+    "trajectory_segment": null,
+    "trajectory_segment_status": "NOT_AVAILABLE",
+    "input_binding": {
+      "schema": "m710id70_replay_input_binding_v1",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE",
+      "execution_asset_fingerprint_sha256": "d44bb8cdae825b8999e1ec8073bcb4404436233ec4e2734aaf67efede50af33b",
+      "execution_implementation_identity_sha256": "15347b0bac5b134a6f94e0f1f1b2b0009790c1c9f6077b4fec5165f91e949c54",
+      "asset_audit_sha256": "938b579fab4b0a3b6b3d5cdfe6e3463e8bff292d08504dfe4032c3ae6b259f47",
+      "plan_common_sha256": "4ed499f3ec056c40a9fdb58b3e6d561b92f67ecdb0966fdbb7757debdaa5f50c",
+      "configuration_sha256": "4986fca784023741e3eaf3e28106463fcd00fcb753ffb64293d48431092876ed",
+      "scene_primitives_sha256": "f929e746786fb7f2a037731d53843ec9c32d1669f724cc49fb91512fff93d3fe",
+      "trajectory_segment_status": "NOT_AVAILABLE",
+      "trajectory_segment_sha256": null,
+      "binding_sha256": "9bda103f08dfe07a491acf3f2e2462b180565b11fa562ae7cc78cb630276b174"
+    }
+  },
+  "claims": {
+    "real_robot_cad_source_integrity": true,
+    "real_robot_cad_per_link_conversion_complete": false,
+    "real_tool_source_integrity": true,
+    "real_tool_dynamic_collision_qualified": false,
+    "engineering_dynamics_input_validated": true,
+    "manufacturer_link_inertials_or_drive_limits_confirmed": false,
+    "complete_single_carton_motion": false,
+    "physical_simulation_execution": "NOT_RUN_PER_USER_REQUEST",
+    "video": "NOT_PRODUCED_WITHOUT_A_PHYSICAL_EXECUTION"
+  },
+  "preflight_fingerprint": "b1c3bc946051e4d693b3d3c51de53f39b02177c44c3965818a25acf99ec685d8"
+}

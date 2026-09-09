@@ -1,0 +1,96 @@
+schema: m710id70_layout_single_carton_motion_v1
+layout_validation_config: m710id70_layout_v1.yaml
+
+# This is a new layout-bound population.  It is deliberately independent of
+# the historical 104-task grid and 129-carton continuous scenes.
+task_population:
+  selector: support_relation_graph_removable
+  expected_scene_cartons: 40
+  expected_removable_cartons: 5
+  face_modes: [front, top, side]
+  support_contact_tolerance_m: 0.0002
+  support_minimum_overlap_ratio: 0.20
+
+receiver:
+  name: conveyor_transverse
+  fixed: true
+
+# Layout v1 has one accepted, rigid assembly state.  These switches are
+# contracts, rather than optimization options.
+fixed_cell:
+  lift_enabled: false
+  conveyor_extension_enabled: false
+  conveyor_z_optimization_enabled: false
+  base_scan_enabled: false
+
+# Full SE(3) contract from the modeled FANUC flange to frames that use the
+# planner tool-axis convention.  In each child frame +Z points from the flange
+# toward the carton and +X/+Y span the cup array.  These transforms do not
+# resolve the outstanding 180-degree tool0 clocking discrepancy.
+tool_frame_contract:
+  schema: m710id70_planner_tool_frames_v1
+  transform_convention: T_parent_child_maps_child_coordinates_into_parent
+  planner_axes:
+    x: cup_array_row_tangent
+    y: cup_array_column_tangent
+    z: flange_toward_carton_inward_normal_at_contact
+  T_flange_virtual_task_tcp:
+    - [0.0, 0.0, 1.0, 0.2500]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [-1.0, 0.0, 0.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+  T_flange_uncompressed_cup_plane:
+    - [0.0, 0.0, 1.0, 0.2275]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [-1.0, 0.0, 0.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+  T_flange_nominal_compressed_contact:
+    - [0.0, 0.0, 1.0, 0.2125]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [-1.0, 0.0, 0.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+  active_physical_contact_frame: nominal_compressed_contact
+  virtual_task_tcp_role: strict_ik_fk_residual_only_never_attachment
+  attachment_frame_role: actual_physical_contact_only
+  tool0_clocking_status: PROVISIONAL_180_DEGREE_DISCREPANCY_UNRESOLVED
+  execution_qualified: false
+
+suction:
+  cup_rows: 6
+  cup_columns: 12
+  cup_pitch_m: [0.048, 0.048]
+  cup_radius_m: 0.0215
+  minimum_sealed_cups: 60
+  suction_edge_margin_m: 0.0
+
+ik:
+  seed: 71070
+  roll_candidates_deg: [0, 90, 180, 270]
+  # The initial layout audit is intentionally a bounded face-centre task set.
+  # Later task-set expansion must retain every strict check below.
+  grasp_face_offset_candidates_m: [0.0]
+  grasp_tilt_candidates_rad: [0.0]
+  random_restarts: 20
+  candidate_limit: 3
+  max_iterations: 180
+  damping: 0.015
+  max_step_rad: 0.20
+  position_tolerance_m: 0.0001
+  orientation_tolerance_rad: 0.0002
+  orientation_weight: 0.55
+  candidate_dedup_tolerance_rad: 0.001
+  candidate_dedup_tolerance_m: 0.0001
+
+state_validity:
+  collision_margin_m: 0.010
+  contact_tolerance_m: 0.0002
+  joint_margin_rad: 0.0174532925199433
+  maximum_jacobian_condition: 10000.0
+  official_radial_reach_m: 2.104
+  radial_guard_tolerance_m: 0.002
+
+execution_collision:
+  require_execution_qualified_cad_collision: true
+  # No qualified robot-link/tool/mounting collision manifest exists yet.
+  # A null value is an explicit fail-closed gate, not a proxy approval.
+  qualification_manifest: null

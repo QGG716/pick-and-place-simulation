@@ -60,7 +60,44 @@ For interactive remote viewing, expose the TCP/UDP ports required by the
 selected Isaac Sim livestream client through the cloud provider. SSH port
 forwarding alone cannot replace a required UDP mapping.
 
-## FANUC payload replay status (2026-08-25)
+## FANUC M-710iD/70 layout-bound replay status (2026-09-09)
+
+This round was intentionally CPU-only and did not upload to a server or start
+Isaac Sim.  The frozen-layout audit retained all 40 cartons but found no strict
+complete trajectory among the five removable top cartons.  Consequently
+`dynamic_execution_preflight.json` is `BLOCKED`, with
+`trajectory_segment=null` and `trajectory_segment_status=NOT_AVAILABLE`; no
+M-710 video or backend state log was produced.  Earlier smoke tests and the
+static layout recording are not M-710 physical-execution evidence for this
+round.  See the
+[round report](validation/m710id70_real_cad_dynamics_round.md) and
+[portable run summary](validation/evidence/m710id70_dynamic_execution_v1/run_summary.json).
+
+M-710 export is fail-closed and accepts only a complete READY preflight:
+
+```bash
+python scripts/export_isaac_fanuc_replay.py \
+  --preflight docs/validation/evidence/m710id70_dynamic_execution_v1/dynamic_execution_preflight.json \
+  --output outputs/m710id70_layout_v1/isaacsim/qualified_replay_bundle.json
+```
+
+With the currently archived BLOCKED input this command must fail without
+creating an output file.  A future qualified bundle is accepted only after the
+runner, before importing or instantiating `SimulationApp`, verifies the bundle
+payload hash, embedded READY preflight, exact plan/config/scene/unique
+trajectory, current implementation files, manifests and asset audit.  These
+SHA-256 checks provide content-integrity and staleness detection, not a digital
+signature or authorization boundary.
+
+The runtime contact gate uses the nominally compressed physical cup plane, all
+active-cup rays, a 2 mm maximum gap, 0.2 mm penetration tolerance and 5 degree
+normal tolerance before asking SurfaceGripper to close.  Conveyor transfer is
+exclusive and break-before-make: at most one physical surface drive is active,
+and transport metrics follow only that actual active direction.  The M-20
+`--plan --config --segment` compatibility path below must not be used for
+M-710.
+
+## FANUC M-20iD/35 payload replay status (2026-08-25)
 
 The FANUC M-20iD/35 replay now imports the real URDF collision meshes, creates
 the trailer, locked AMR, conveyors and cartons, and records RGB, metric depth,

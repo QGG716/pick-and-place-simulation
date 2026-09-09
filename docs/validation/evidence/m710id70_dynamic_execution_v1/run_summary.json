@@ -1,0 +1,135 @@
+{
+  "schema": "m710id70_dynamic_execution_run_summary_v1",
+  "created_utc": "2026-09-09T14:41:20Z",
+  "environment": {
+    "python_version": "3.14.7",
+    "python_implementation": "CPython",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "git": {
+    "head": "897b4e29739548cf824971320e52f008af8b9ed9",
+    "branch": "feat/v0.5-feasibility-core",
+    "dirty": true,
+    "changed_paths": [
+      ".gitattributes",
+      "AGENTS.md",
+      "assets/grippers/shanghai_wantai_three_zone/asset_manifest.yaml",
+      "assets/robots/fanuc_m710id_70/cad_asset_manifest.yaml",
+      "assets/robots/fanuc_m710id_70/link_mapping.yaml",
+      "configs/simulation/m710id70_dynamic_execution_v1.yaml",
+      "configs/simulation/m710id70_engineering_dynamics_v1.yaml",
+      "configs/validation/m710id70_layout_v1_single_carton.yaml",
+      "docs/development_priorities_m710id70_v3_recovery.md",
+      "docs/validation/evidence/m710id70_dynamic_execution_v1/dynamic_execution_preflight.json",
+      "docs/validation/evidence/m710id70_dynamic_execution_v1/run_summary.json",
+      "docs/validation/evidence/m710id70_dynamic_execution_v1/single_carton_motion_audit.json",
+      "docs/validation/m710id70_real_cad_dynamics_round.md",
+      "res/M-710iD_70/2D_M-710iD_70_v01.dxf",
+      "res/M-710iD_70/3D_M-710iD_70_v01.x_t",
+      "res/M-710iD_70/ProcessSimulate_M-710iD_70_v01.zip",
+      "res/M-710iD_70/ProcessSimulate_M-710iD_70_v01/ProcessSimulate_M-710iD_70_v01/m710id_70_v01.cojt/m710id_70_v01.jt",
+      "res/M-710iD_70/ProcessSimulate_M-710iD_70_v01/ProcessSimulate_M-710iD_70_v01/m710id_70_v01.cojt/motionparameters.e",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01.zip",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.atr",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.e",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.geo",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.gm",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.gmnapx",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.gmnw",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.gri",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.info",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.m",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.r",
+      "res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.wm",
+      "scripts/export_isaac_fanuc_replay.py",
+      "scripts/isaacsim_fanuc_replay.py",
+      "src/unloading_sim/asset_audit.py",
+      "src/unloading_sim/isaac_bridge.py",
+      "src/unloading_sim/layout_single_carton.py",
+      "src/unloading_sim/m710_dynamics.py",
+      "src/unloading_sim/m710_execution.py",
+      "src/unloading_sim/m710_replay_contract.py",
+      "src/unloading_sim/m710_replay_physics.py",
+      "src/unloading_sim/robot.py",
+      "tests/test_asset_audit.py",
+      "tests/test_isaac_bridge.py",
+      "tests/test_layout_single_carton.py",
+      "tests/test_m710_dynamic_evidence.py",
+      "tests/test_m710_engineering_dynamics.py",
+      "tests/test_m710_execution.py",
+      "tests/test_m710_replay_contract.py",
+      "tests/test_m710_replay_physics.py",
+      "tools/archive_m710id70_dynamic_execution_evidence.py",
+      "tools/prepare_m710id70_dynamic_execution.py",
+      "tools/run_m710id70_layout_single_carton.py"
+    ]
+  },
+  "generation_commands": [
+    "python tools/run_m710id70_layout_single_carton.py --config configs/validation/m710id70_layout_v1_single_carton.yaml --output docs/validation/evidence/m710id70_dynamic_execution_v1/single_carton_motion_audit.json",
+    "python tools/prepare_m710id70_dynamic_execution.py --config configs/simulation/m710id70_dynamic_execution_v1.yaml --motion-result docs/validation/evidence/m710id70_dynamic_execution_v1/single_carton_motion_audit.json --output docs/validation/evidence/m710id70_dynamic_execution_v1/dynamic_execution_preflight.json",
+    "python tools/archive_m710id70_dynamic_execution_evidence.py --motion-result docs/validation/evidence/m710id70_dynamic_execution_v1/single_carton_motion_audit.json --preflight docs/validation/evidence/m710id70_dynamic_execution_v1/dynamic_execution_preflight.json --output docs/validation/evidence/m710id70_dynamic_execution_v1/run_summary.json"
+  ],
+  "evidence": {
+    "motion": {
+      "path": "docs/validation/evidence/m710id70_dynamic_execution_v1/single_carton_motion_audit.json",
+      "sha256": "cbae68fe9118515ac1b7a01b8c7b1ba334176889ee482f2a90f35ebb796e8ae5",
+      "evidence_fingerprint": "98f963f752712b77f740ec58beab426e51b420a4c4fce33e46d51ec0c1a42a74"
+    },
+    "preflight": {
+      "path": "docs/validation/evidence/m710id70_dynamic_execution_v1/dynamic_execution_preflight.json",
+      "sha256": "22b1d1a55e98a70aeb49a1e9f92c759991eab2c5f14fb1218f87249802ce5a9f",
+      "preflight_fingerprint": "b1c3bc946051e4d693b3d3c51de53f39b02177c44c3965818a25acf99ec685d8"
+    },
+    "execution_asset_fingerprint_sha256": "d44bb8cdae825b8999e1ec8073bcb4404436233ec4e2734aaf67efede50af33b",
+    "aggregate_evidence_identity_sha256": "798c8eee00b61b4b24900d36208a7fb2caff94d3c418a6bfa3f7aa0a61a1ed8f",
+    "mutual_identity_status": "PASS"
+  },
+  "implementation_identity": {
+    "motion_source_sha256": {
+      "src/unloading_sim/depalletizing.py": "2ebfde4c2ce3bd2e831c6c5afde6422adecb9a2db504f35cc3b407a7d04854f6",
+      "src/unloading_sim/fanuc_m710id70.py": "836b3dc0915a3b0a91328948d28ed368b8e2ed7d1d26838ccc918f5aa17cd8f8",
+      "src/unloading_sim/geometry.py": "5ddd9c94be8284307ccdb7ae65e8ab089721768ec83b3995ae357b6cc9f82514",
+      "src/unloading_sim/grasp.py": "2f4e1aecf848863a8c9c583b85d3636e1730231bfc06f718019b4f8b38a5b72e",
+      "src/unloading_sim/ik.py": "888e855bf71194dca2522b705f3c7e0a2359bfc553c6957112a565d095c6b2e0",
+      "src/unloading_sim/layout_single_carton.py": "93b6a1dbf1d8042479fcf37dbf860c45d6726b640166885411110f8911fff4e8",
+      "src/unloading_sim/planner.py": "e35344f8a4252aae8e0f22abc4d15e83b49c8723c59410ae028335fb95cb33e4",
+      "src/unloading_sim/robot.py": "c8b5e9f5a1819bd3258368b71b2ad408a438ecc0ae841436d4e2ba5869057288",
+      "src/unloading_sim/robot_load/model.py": "13097486a55304b3e8517157e9de2b2ab38dbfb82f0d0d82a3ac98fc330c3d89",
+      "src/unloading_sim/robot_load/spatial.py": "616d696e2fdf9cd05b38dfe5db1ecf3a815e6db32891860217b71c22c06e3618",
+      "src/unloading_sim/robot_load/task.py": "83b61dbb5a225dd5e4ddc51b4bbc0eb8db89de2560f9be2f67544a440648d65a",
+      "src/unloading_sim/scene.py": "7849e50ce3feaf921654329ebc1391e30dc64f26565918dcb44e13832c3d272c",
+      "src/unloading_sim/support.py": "6efc235227f348c3e37065e741e76fd1f6c6438729e57240bc00b55a7b32b6c1",
+      "src/unloading_sim/timing.py": "64a449ef4a021041ae0d1f40e6cb4b5ff51dcbd9ce0596819ba20e77ba7ab89d",
+      "src/unloading_sim/validation_motion.py": "dc49984f2ea7b6c4f0235104ea586e2f9374ada084fc288804fd8a9253103e63",
+      "src/unloading_sim/validation_physics.py": "e902f04615392d2e252eb2348bd94fad8571b441a8ac75f2a597ce162ae9261d",
+      "src/unloading_sim/workcell_layout.py": "062171ceddddad399c7d39e57ee6e34181748aa77ca029364fdbb0b446785eb3"
+    },
+    "execution_source_sha256": {
+      "scripts/export_isaac_fanuc_replay.py": "2226d956b8b4067c89b3c8573e49588af1f46db1c4cffcd6cfe9158872b22d9e",
+      "scripts/isaacsim_fanuc_replay.py": "aad99c523100d5deb8c17ff31643ca9b5ade5fb1fac76f1574639e79c410b1e3",
+      "src/unloading_sim/asset_audit.py": "565568da791b4007c20d26d4e6f5045e51eed902013ba17ec34571e46bafe279",
+      "src/unloading_sim/isaac_bridge.py": "d40414fc024c56d23aa58d3a3658644bc818a389cd73e3401814e89efa2e2da1",
+      "src/unloading_sim/m710_dynamics.py": "5a5239f9aae27e2d508d73be85298939ad7b00d89cd3c4d3f441e6a84b4f2417",
+      "src/unloading_sim/m710_execution.py": "4410dfa471275059da6a0e7e336a8d05c0a07d5267ba87b8ce94fd4c5d39629e",
+      "src/unloading_sim/m710_replay_contract.py": "4389f9ce4f574a6565e6f74e03d756ae4aff3c4fde8a528f3a75e72c7266f17a",
+      "src/unloading_sim/m710_replay_physics.py": "1c435f90e419be9dca9b7fa2b7f35cda1be30c15323e51a760d3a6bf40c55b89"
+    },
+    "archive_source_sha256": {
+      "tools/archive_m710id70_dynamic_execution_evidence.py": "dabaa205ca422f7bb5687057a133b175db6debf64887f4187135dd0b498746b6"
+    },
+    "aggregate_source_identity_sha256": "de0ee54df9ed7aafa364f68ce75e85fe1d522adf3548f734bb1cc1bd6d98dc38"
+  },
+  "execution_status": {
+    "preflight_status": "BLOCKED",
+    "simulation_execution_ready": false,
+    "execution_qualified": false,
+    "machine_qualified": false,
+    "isaac": {
+      "backend_execution_status": "NOT_RUN_PER_USER_REQUEST",
+      "validation_performed": false
+    },
+    "physical_simulation_execution": "NOT_RUN_PER_USER_REQUEST",
+    "video": "NOT_PRODUCED_WITHOUT_A_PHYSICAL_EXECUTION"
+  },
+  "summary_fingerprint": "2d01d3338e3c105522c88b7aa905bf2e00913feff0b59214e7c268d1f1eb5996"
+}

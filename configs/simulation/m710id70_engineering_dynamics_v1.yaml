@@ -1,0 +1,253 @@
+schema_version: m710id70_engineering_dynamics_v1
+model_id: fanuc_m710id_70
+qualification:
+  status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED
+  machine_qualified: false
+  permitted_use: rigid_body_simulation_and_controller_tuning_only
+  prohibited_use: machine_drive_sizing_or_safety_qualification
+
+sources:
+  robot_model_config: ../robots/fanuc_m710id_70.yaml
+  robot_urdf: ../../assets/robots/fanuc_m710id_70/m710id_70.urdf
+  workcell_layout: ../workcells/m710id70_unloading_layout_v1.yaml
+  tool_config: ../tools/unloading_gripper_20kg.yaml
+  gripper_asset_manifest: ../../assets/grippers/shanghai_wantai_three_zone/asset_manifest.yaml
+
+manufacturer_evidence:
+  manufacturer: FANUC America
+  product_url: https://www.fanucamerica.com/products/robot/m-710id-70
+  data_sheet_url: https://www.fanucamerica.com/docs/default-source/robotics-files/m-710id-70-data-sheet.pdf
+  verified_field: mechanical_weight_kg
+  mechanical_weight_kg: 580.0
+  scope: robot_mechanical_unit_without_controller
+  link_distribution_status: NOT_PROVIDED_BY_MANUFACTURER
+
+# These entries define what this CPU contract fingerprints.  CAD conversion,
+# mesh-to-link mapping and converter settings are intentionally owned by the
+# replay contract and must be added to the backend cache identity there.
+cache_identity_components:
+  included:
+    - dynamics_config
+    - source_files
+    - robot_link_inertials
+    - joint_drives
+    - contact_model
+    - simulation_integration
+    - settling
+    - conveyor_surface_motion
+    - vacuum_attachment
+  external_replay_contract_components:
+    - cad_visual_meshes
+    - cad_collision_meshes
+    - cad_link_mapping
+    - cad_converter_settings
+
+mass_accounting:
+  robot_link_bodies: exactly_once_each
+  # The tool remains a separately sourced 20 kg inertia contribution, but the
+  # execution rigid-body representation folds that contribution into J6.  There is
+  # no second dynamic tool body in this contract.
+  tool_body: FIXED_TOOL_COMBINED_INTO_J6_RIGID_BODY_EXACTLY_ONCE
+  carton_bodies: exactly_40_independent_bodies_once_each
+
+robot:
+  inertia_reference: center_of_mass_expressed_in_link_frame
+  drive_mode: force_limited_position_pd
+  source_status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED
+  mechanical_weight_kg: 580.0
+  mass_estimate_basis: proxy_volume_distribution_scaled_to_official_mechanical_weight_580kg
+  inertia_estimate_basis: uniform_primitive_from_current_urdf_collision_envelope_at_assigned_link_mass
+  links:
+    base_link:
+      mass_kg: 139.176512853648234
+      com_xyz_m: [0.0, 0.0, 0.2825]
+      inertia_tensor_com_kg_m2:
+        - [7.046100914284385, 0.0, 0.0]
+        - [0.0, 7.046100914284385, 0.0]
+        - [0.0, 0.0, 6.687431442617798]
+      estimate_method: uniform_cylinder_radius_0p31_length_0p565
+    J1_link:
+      mass_kg: 103.262041960062120
+      com_xyz_m: [0.075, 0.0, 0.2825]
+      inertia_tensor_com_kg_m2:
+        - [5.445566808614693, 0.0, 0.0]
+        - [0.0, 4.123812671525897, 0.0]
+        - [0.0, 0.0, 4.075408589357119]
+      estimate_method: uniform_rotated_box_link_extents_0p4_0p56_0p565
+    J2_link:
+      mass_kg: 182.268600486268951
+      com_xyz_m: [0.0, 0.0, 0.4475]
+      inertia_tensor_com_kg_m2:
+        - [16.273927939666727, 0.0, 0.0]
+        - [0.0, 15.666365938045830, 0.0]
+        - [0.0, 0.0, 7.606676260293625]
+      estimate_method: uniform_box_0p48_0p52_0p895
+    J3_link:
+      mass_kg: 26.797870623706391
+      com_xyz_m: [0.0, 0.0, 0.085]
+      inertia_tensor_com_kg_m2:
+        - [0.537073990416782, 0.0, 0.0]
+        - [0.0, 0.458466903253910, 0.0]
+        - [0.0, 0.0, 0.866464483499840]
+      estimate_method: uniform_box_0p42_0p46_0p17
+    J4_link:
+      mass_kg: 110.500828593039927
+      com_xyz_m: [0.5225, 0.0, 0.0]
+      inertia_tensor_com_kg_m2:
+        - [2.386817897609662, 0.0, 0.0]
+        - [0.0, 11.249214560831030, 0.0]
+        - [0.0, 0.0, 11.249214560831030]
+      estimate_method: uniform_box_1p045_0p36_0p36
+    J5_link:
+      mass_kg: 11.534708643124638
+      com_xyz_m: [0.0, 0.0, 0.0]
+      inertia_tensor_com_kg_m2:
+        - [0.103812377788122, 0.0, 0.0]
+        - [0.0, 0.103812377788122, 0.0]
+        - [0.0, 0.0, 0.103812377788122]
+      estimate_method: uniform_sphere_radius_0p15
+    J6_link:
+      mass_kg: 6.459436840149692
+      com_xyz_m: [0.0875, 0.0, 0.0]
+      inertia_tensor_com_kg_m2:
+        - [0.046507945249078, 0.0, 0.0]
+        - [0.0, 0.039738993727004, 0.0]
+        - [0.0, 0.0, 0.039738993727004]
+      estimate_method: uniform_x_axis_cylinder_radius_0p12_length_0p175
+  joint_drives:
+    J1: {effort_limit_nm: 12000.0, velocity_limit_rad_s: 3.141592654, stiffness_nm_rad: 80000.0, damping_nm_s_rad: 6000.0}
+    J2: {effort_limit_nm: 12000.0, velocity_limit_rad_s: 3.141592654, stiffness_nm_rad: 80000.0, damping_nm_s_rad: 6000.0}
+    J3: {effort_limit_nm: 8000.0, velocity_limit_rad_s: 3.141592654, stiffness_nm_rad: 60000.0, damping_nm_s_rad: 4500.0}
+    J4: {effort_limit_nm: 3000.0, velocity_limit_rad_s: 4.537856055, stiffness_nm_rad: 25000.0, damping_nm_s_rad: 1800.0}
+    J5: {effort_limit_nm: 2000.0, velocity_limit_rad_s: 4.537856055, stiffness_nm_rad: 16000.0, damping_nm_s_rad: 1200.0}
+    J6: {effort_limit_nm: 1200.0, velocity_limit_rad_s: 6.457718232, stiffness_nm_rad: 10000.0, damping_nm_s_rad: 800.0}
+
+tool:
+  attach_to_link: J6_link
+  body_mode: FIXED_TOOL_COMBINED_INTO_J6_RIGID_BODY_EXACTLY_ONCE
+  mass_accounting: FIXED_TOOL_COMBINED_INTO_J6_RIGID_BODY_EXACTLY_ONCE
+  expected_mass_kg: 20.0
+  source_status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED
+
+cartons:
+  count: 40
+  mass_kg_each: 42.5
+  size_xyz_m: [0.6, 0.4, 0.3]
+  com_xyz_m: [0.0, 0.0, 0.0]
+  inertia_reference: center_of_mass_expressed_in_carton_body_frame
+  inertia_tensor_com_kg_m2:
+    - [0.885416666666667, 0.0, 0.0]
+    - [0.0, 1.593750000000000, 0.0]
+    - [0.0, 0.0, 1.841666666666667]
+  inertia_estimate_basis: uniform_cuboid_at_configured_mass_and_dimensions
+  mass_accounting: exactly_once_per_carton
+  source_status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED
+
+simulation:
+  gravity_world_m_s2: [0.0, 0.0, -9.81]
+  physics_time_step_s: 0.004166666666666667
+  solver_position_iterations: 16
+  solver_velocity_iterations: 4
+  source_status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED
+
+environment:
+  floor:
+    collision_enabled: true
+    kinematic: true
+    z_m: 0.0
+    collision_model: half_space_z_greater_than_or_equal_to_floor
+    material: painted_steel
+  side_walls:
+    collision_enabled: true
+    kinematic: true
+    right_y_m: -1.15
+    left_y_m: 1.15
+    collision_model: known_y_interval_constraint
+    extent_status: TRAILER_LENGTH_AND_HEIGHT_UNDEFINED_NO_EXTENT_CLAIM
+    material: painted_steel
+
+contacts:
+  friction_combine_mode: min
+  restitution_combine_mode: min
+  source_status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED
+  materials:
+    carton:
+      static_friction: 0.55
+      dynamic_friction: 0.45
+      restitution: 0.02
+    painted_steel:
+      static_friction: 0.65
+      dynamic_friction: 0.50
+      restitution: 0.02
+    conveyor_belt:
+      static_friction: 0.80
+      dynamic_friction: 0.70
+      restitution: 0.02
+    robot_coating:
+      static_friction: 0.40
+      dynamic_friction: 0.30
+      restitution: 0.02
+
+damping:
+  source_status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED
+  rigid_bodies:
+    robot_links: {linear_damping_s_inv: 0.05, angular_damping_s_inv: 0.10}
+    tool: {linear_damping_s_inv: 0.05, angular_damping_s_inv: 0.10}
+    cartons: {linear_damping_s_inv: 0.15, angular_damping_s_inv: 0.20}
+
+settling:
+  maximum_settle_time_s: 10.0
+  required_stable_duration_s: 0.5
+  max_linear_speed_m_s: 0.01
+  max_angular_speed_rad_s: 0.03
+  max_position_drift_m: 0.002
+  max_penetration_m: 0.001
+  source_status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED
+
+conveyors:
+  source_status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED
+  exclusive_surface_drive_at_transfer: true
+  surfaces:
+    conveyor_transverse:
+      enabled: true
+      direction_world: [0.0, -1.0, 0.0]
+      speed_m_s: 0.30
+      material: conveyor_belt
+    conveyor_longitudinal:
+      enabled: true
+      direction_world: [-1.0, 0.0, 0.0]
+      speed_m_s: 0.30
+      material: conveyor_belt
+
+vacuum_attachment:
+  product_model: 上海皖泰真空吸盘三分区
+  cup_model: FG42
+  physical_cup_count: 72
+  cup_rows: 6
+  cup_columns: 12
+  cup_pitch_m: [0.048, 0.048]
+  cup_radius_m: 0.0215
+  zone_count: 3
+  cups_per_zone: [24, 24, 24]
+  cup_compression_m: 0.015
+  pull_off_force_per_cup_n: 59.0
+  shear_force_per_cup_n: 43.0
+  hardware_maximum_pull_off_force_n: 4248.0
+  hardware_maximum_shear_force_n: 3096.0
+  force_input_source: PROJECT_INPUT_NOT_MEASURED_OR_VENDOR_QUALIFIED
+  constraint_type: finite_breakable_6dof
+  require_validated_contact_endpoint: true
+  require_suction_coverage_validation: true
+  require_surface_normal_validation: true
+  teleport_payload_on_attach: false
+  unbreakable: false
+  max_attachment_gap_m: 0.002
+  max_normal_misalignment_rad: 0.0872664625997165
+  linear_stiffness_n_m: 250000.0
+  linear_damping_n_s_m: 2500.0
+  angular_stiffness_nm_rad: 8000.0
+  angular_damping_nm_s_rad: 200.0
+  break_force_n: 4248.0
+  break_force_policy: reduce_to_actual_sealed_cup_count_and_load_direction
+  break_torque_nm: 180.0
+  source_status: ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED

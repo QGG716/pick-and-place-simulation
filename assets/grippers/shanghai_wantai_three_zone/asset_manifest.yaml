@@ -1,0 +1,127 @@
+schema_version: shanghai_wantai_three_zone_asset_manifest_v1
+asset_id: shanghai_wantai_three_zone_supplied_step_v1
+manufacturer: Shanghai Wantai
+product_description: three-zone vacuum gripper with 72 FG42 cups
+source_status: AVAILABLE_HASH_VERIFIED
+conversion_status: DERIVED_ASSETS_PRESENT_ENGINEERING_ONLY
+execution_qualified: false
+source_files:
+  - role: authoritative_geometry
+    path: res/上海皖泰真空吸盘三分区.STEP
+    bytes: 17912914
+    sha256: d54ec5818a772877162e7d8eded484c67920de148037373d9d7d8e35cfa0694b
+    format: step_ap214_solidworks_2023
+  - role: installation_orientation_reference
+    path: res/上海皖泰吸具和机械臂末端的安装关系.png
+    bytes: 154444
+    sha256: f96f7098d25ea4880d0aa0ecba842e7cd7055c97e868acf02cd77286718271ae
+    format: png_rgb_957x754
+  - role: derived_visual_mesh
+    path: assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb
+    bytes: 3594252
+    sha256: a3c966bf676da0ac410f099225d2682ef00c56d8e2d9cc3184609630308b733a
+    format: glb_2_0
+  - role: derived_full_shape_triangle_mesh
+    path: assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl
+    bytes: 7440084
+    sha256: 4113746138501efde8748f8c77d82612590fba1b6baca7c7e24127c66b2c5ce8
+    format: binary_stl
+  - role: derived_mass_and_contact_analysis
+    path: assets/grippers/shanghai_wantai_three_zone/mass_properties.json
+    bytes: 39807
+    sha256: 2596f20270848f8874cf8e766602be7985da8dd047d769889b83f690009f13f0
+    format: json
+units:
+  step_geometry: millimetre
+  visual_mesh_numeric_coordinates: millimetre
+  visual_mesh_warning: raw_GLTF_numeric_coordinates_are_not_metres_and_require_explicit_0p001_scale
+  collision_mesh_numeric_coordinates: millimetre
+  runtime_geometry: metre
+step_assembly:
+  product_count: 36
+  assembly_usage_occurrence_count: 136
+  solid_occurrence_count: 202
+  bbox_min_mm: [-336.561732, -162.659189, -144.0]
+  bbox_max_mm: [239.438268, 64.840812, 144.0]
+  bbox_size_mm: [576.0, 227.5, 288.0]
+  raw_topology_bbox_min_mm: [-351.333599, -162.866857, -169.058178]
+  raw_topology_bbox_max_mm: [254.210136, 65.04848, 169.058178]
+frames:
+  step_axes:
+    length: +X
+    cup_normal: +Y
+    width: +Z
+  flange_origin_step_mm: [-48.561732, -162.659188, 0.0]
+  rotation_step_from_tool:
+    - [0.0, 1.0, 0.0]
+    - [1.0, 0.0, 0.0]
+    - [0.0, 0.0, -1.0]
+  tool_axes:
+    +X: flange_toward_suction_working_plane
+    +Y: array_length
+    +Z: negative_array_width
+  flange_clocking_status: PROVISIONAL_FROM_STEP_AND_INSTALLATION_IMAGE
+contact_geometry:
+  cup_model: FG42
+  cup_count: 72
+  rows: 6
+  columns: 12
+  pitch_length_mm: 48.0
+  pitch_width_mm: 48.0
+  cup_radius_mm: 21.5
+  seal_envelope_length_width_m: [0.571, 0.283]
+  flange_to_uncompressed_cup_extreme_m: 0.2275
+  configured_cup_compression_m: 0.015
+  flange_to_nominal_compressed_contact_plane_m: 0.2125
+  active_task_tcp_from_flange_m: 0.250
+  task_tcp_beyond_uncompressed_extreme_m: 0.0225
+  task_tcp_beyond_nominal_compressed_contact_plane_m: 0.0375
+  attachment_policy: validate_actual_cup_working_plane_contact_never_attach_at_virtual_task_tcp
+collision_geometry:
+  solid_occurrence_count: 202
+  deformable_cup_and_insert_solid_count: 144
+  rigid_solid_count: 58
+  final_dynamic_collision_status: NOT_QUALIFIED
+  required_representation: convex_or_compound_per_rigid_solid_with_cups_handled_by_contact_model
+  full_shape_stl_contains_compliant_cup_geometry: true
+  full_shape_stl_triangle_count: 148800
+  full_shape_stl_degenerate_triangle_count: 167
+  full_shape_stl_boundary_edge_count: 1045
+  full_shape_stl_nonmanifold_edge_count: 1866
+visual_geometry:
+  node_count: 1
+  mesh_count: 1
+  vertex_count: 99459
+  triangle_count: 199999
+  degenerate_triangle_count: 167
+  boundary_edge_count: 1167
+  nonmanifold_edge_count: 1761
+mass_properties:
+  source_mass_kg: 10.0
+  evidence: ENGINEERING_ESTIMATE_UNIFORM_DENSITY_OVER_STEP_SOLIDS
+  solid_volume_mm3: 6877763.727397127
+  assumed_uniform_density_kg_m3: 1453.9609670168875
+  center_of_mass_step_mm: [-47.783828, -12.84909, -2.622005]
+  center_of_mass_from_flange_tool_m: [0.149810098, 0.000777904, 0.002622005]
+  runtime_20kg_policy: linearly_scaled_from_10kg_distribution_not_measured
+  manufacturer_qualification_status: NOT_EVALUATED
+zones:
+  count: 3
+  cups_per_zone: [24, 24, 24]
+  assignment_status: INFERRED_EQUAL_CONTIGUOUS_COLUMNS_PENDING_VENDOR_CONFIRMATION
+conversion_provenance:
+  analysis_script:
+    path: scripts/analyze_gripper_step.py
+    bytes: 13708
+    sha256: e99c41c7d8be8d197fc4a4d8f925e30e2d2b4869d2106711d5c500d9d9818e4c
+  mass_analysis_format: gripper_step_analysis_v1
+  visual_mesh_generator: trimesh
+  complete_command_and_tool_versions_status: NOT_ARCHIVED
+  content_addressed_source_reference_in_derived_files_status: MISSING
+unresolved:
+  - FLANGE_CLOCKING_PROVISIONAL
+  - DYNAMIC_COLLISION_REPRESENTATION_NOT_QUALIFIED
+  - SUPPLIED_ASSEMBLY_MATERIAL_AND_COMPONENT_MASSES_NOT_AVAILABLE
+  - ZONE_ASSIGNMENT_NOT_VENDOR_CONFIRMED
+  - VACUUM_FORCE_SHEAR_AND_PEEL_ENVELOPE_NOT_MEASURED
+qualification_policy: source_and_derived_hash_integrity_does_not_imply_dynamic_execution_qualification

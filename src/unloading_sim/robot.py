@@ -667,8 +667,11 @@ class URDFRobot:
             return None
         tool = self.fk(q)
         size = self.tool_collision_size
-        # FK is located at the suction working plane; the flange and rigid
-        # head occupy the negative local-Z interval behind that plane.
+        # FK is the configured virtual task TCP.  The envelope offset is also
+        # expressed relative to that frame; it must not be interpreted as the
+        # physical cup contact plane.  Callers that grant a target-face contact
+        # exception must first transform FK to, and validate, the physical
+        # contact frame.
         center_offset = (
             0.5 * size[2]
             if self.tool_collision_center_offset is None

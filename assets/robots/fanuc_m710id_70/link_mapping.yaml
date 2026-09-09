@@ -1,0 +1,166 @@
+schema_version: m710id70_link_mapping_v1
+mapping_id: fanuc_m710id70_robocad_v01_to_urdf_v1
+model: FANUC M-710iD/70
+source_mechanism:
+  path: res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.m
+  sha256: 854989f13643ac0a8c7991dcbb7d753e847b44d4c26f8e3f66788dee4bac6260
+source_world_model:
+  path: res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.wm
+  sha256: 035f89d67abc4551796544266c74c4a1d9a3b27aa3043dd9c988e1248c26443f
+units:
+  source_length: millimetre
+  target_length: metre
+  source_joint_angle: degree
+  target_joint_angle: radian
+source_component:
+  name: m710id_70_v01
+  base_link: k1
+  tcp_link: k7
+  joint_count: 6
+  loop_count: 0
+zero_pose:
+  source_joint_values_deg: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  target_joint_values_rad: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  flange_translation_from_base_mm: [1370.0, 0.000246, 1630.0]
+  source_user_tcp_rotation_from_base:
+    - [0.0, 0.0, 1.0]
+    - [0.0, -1.0, 0.0]
+    - [1.0, 0.0, 0.0]
+  current_urdf_flange_to_tool0_rotation_from_base:
+    - [0.0, 0.0, 1.0]
+    - [0.0, 1.0, 0.0]
+    - [-1.0, 0.0, 0.0]
+  current_urdf_to_source_tcp_relative_rotation:
+    - [-1.0, 0.0, 0.0]
+    - [0.0, -1.0, 0.0]
+    - [0.0, 0.0, 1.0]
+  current_urdf_to_source_tcp_relative_angle_deg: 180.0
+  clocking_status: UNRESOLVED_180_DEG_ABOUT_COMMON_TOOL_Z
+joints:
+  - name: J1
+    robcad_name: j1
+    parent: k1
+    child: k2
+    axis_point_1_mm: [0.0, 0.0, -1000.0]
+    axis_point_2_mm: [0.0, 0.0, 1000.0]
+    axis_direction: [0.0, 0.0, 1.0]
+    direct_range_deg: [-185.0, 185.0]
+    maximum_speed_deg_s: 180.0
+  - name: J2
+    robcad_name: j2
+    parent: k2
+    child: k3
+    axis_point_1_mm: [150.0, -1000.0, 565.0]
+    axis_point_2_mm: [150.0, 1000.0, 565.0]
+    axis_direction: [0.0, 1.0, 0.0]
+    direct_range_deg: [-75.0, 150.0]
+    maximum_speed_deg_s: 180.0
+  - name: J3
+    robcad_name: j3
+    parent: k3
+    child: k4
+    axis_point_1_mm: [150.0, 1000.0, 1460.0]
+    axis_point_2_mm: [150.0, -1000.0, 1460.0]
+    axis_direction: [0.0, -1.0, 0.0]
+    direct_range_deg: null
+    dependent_range_polygon_j2_j3_deg:
+      - [-75.0, 273.0]
+      - [-75.0, -5.5]
+      - [20.0, -100.502]
+      - [149.0, -167.580005]
+      - [149.789998, -168.0]
+      - [150.0, -168.0]
+      - [150.0, 55.0]
+      - [-68.0, 273.0]
+    follows:
+      joint: J2
+      ratio: 1.0
+      source_literal: follows j2 by 1
+      interpretation_status: UNRESOLVED_CONTROLLER_TO_KINEMATIC_MAPPING
+    maximum_speed_deg_s: 180.0
+  - name: J4
+    robcad_name: j4
+    parent: k4
+    child: k5
+    axis_point_1_mm: [2000.0, 0.0, 1630.0]
+    axis_point_2_mm: [-1000.0, 0.0, 1630.0]
+    axis_direction: [-1.0, 0.0, 0.0]
+    direct_range_deg: [-400.0, 400.0]
+    maximum_speed_deg_s: 260.0
+  - name: J5
+    robcad_name: j5
+    parent: k5
+    child: k6
+    axis_point_1_mm: [1195.0, 1000.0, 1630.0]
+    axis_point_2_mm: [1195.0, -1000.0, 1630.0]
+    axis_direction: [0.0, -1.0, 0.0]
+    direct_range_deg: [-125.0, 125.0]
+    maximum_speed_deg_s: 260.0
+  - name: J6
+    robcad_name: j6
+    parent: k6
+    child: k7
+    axis_point_1_mm: [2000.0, 0.0, 1630.0]
+    axis_point_2_mm: [-1000.0, 0.0, 1630.0]
+    axis_direction: [-1.0, 0.0, 0.0]
+    direct_range_deg: [-400.0, 400.0]
+    maximum_speed_deg_s: 370.0
+links:
+  - robcad_link: k1
+    urdf_link: base_link
+    zero_origin_from_base_m: [0.0, 0.0, 0.0]
+    bodies:
+      - .surf_0_1_0
+      - .r129_b201_transport_equip.surf_0_1_0
+      - .r129_b201_rm_rp.surf_0_1_0
+      - .r129_b201_rm_rp_cable.surf_0_1_0
+  - robcad_link: k2
+    urdf_link: J1_link
+    zero_origin_from_base_m: [0.0, 0.0, 0.0]
+    bodies:
+      - .r129_b201_s301.surf_0_1_0
+  - robcad_link: k3
+    urdf_link: J2_link
+    zero_origin_from_base_m: [0.150, 0.0, 0.565]
+    bodies:
+      - .r129_b201_s302.surf_0_1_0
+  - robcad_link: k4
+    urdf_link: J3_link
+    zero_origin_from_base_m: [0.150, 0.0, 1.460]
+    bodies:
+      - .r129_b201_s401.surf_0_1_0
+      - .r129_b201_s401_plate.surf_0_1_0
+  - robcad_link: k5
+    urdf_link: J4_link
+    zero_origin_from_base_m: [0.150, 0.0, 1.630]
+    bodies:
+      - .r129_b201_s402.surf_0_1_0
+      - .r129_b201_s402_2.surf_0_1_0
+      - .r129_b201_name_70_1.surf_0_1_0
+      - .r129_b201_name_70_2.surf_0_1_0
+      - .r129_b201_name_fanuc_1.surf_0_1_0
+      - .r129_b201_name_fanuc_2.surf_0_1_0
+      - .r129_b201_name_robot_m710_1.surf_0_1_0
+      - .r129_b201_name_robot_m710_2.surf_0_1_0
+  - robcad_link: k6
+    urdf_link: J5_link
+    zero_origin_from_base_m: [1.195, 0.0, 1.630]
+    bodies:
+      - .r129_b201_s501_2.surf_0_1_0
+      - .r129_b201_s501_2_2.surf_0_1_0
+      - .r129_b201_s501_black.surf_0_1_0
+      - .r129_b201_s501_yellow.surf_0_1_0
+  - robcad_link: k7
+    urdf_link: J6_link
+    zero_origin_from_base_m: [1.195, 0.0, 1.630]
+    bodies:
+      - .r129_b201_s502.surf_0_1_0
+mesh_conversion_rule:
+  source_geometry_frame: common_ROBCAD_base_zero_frame
+  output_geometry_frame: corresponding_URDF_link_frame
+  operation: transform_each_body_by_inverse_of_zero_link_transform_before_export
+  output_mesh_origin_in_urdf: identity
+  status: SOURCE_MAPPING_AVAILABLE_CONVERSION_REQUIRED
+unresolved:
+  - J3_FOLLOWS_J2_CONTROLLER_TO_KINEMATIC_MAPPING
+  - TOOL0_CLOCKING_180_DEG_ABOUT_COMMON_TOOL_Z

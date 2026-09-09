@@ -5,3 +5,16 @@
 *.jpg binary
 *.gif binary
 *.mp4 binary
+*.x_t binary
+*.jt binary
+*.dxf binary
+*.zip binary
+*.atr binary
+*.geo binary
+*.gm binary
+*.gmnapx binary
+*.gmnw binary
+*.gri binary
+*.r binary
+*.wm binary
+res/M-710iD_70/** binary

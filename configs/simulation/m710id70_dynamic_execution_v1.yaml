@@ -1,0 +1,43 @@
+schema: m710id70_dynamic_execution_v1
+layout_validation_config: ../validation/m710id70_layout_v1.yaml
+motion_policy_config: ../validation/m710id70_layout_v1_single_carton.yaml
+dynamics_config: m710id70_engineering_dynamics_v1.yaml
+robot_cad_manifest: ../../assets/robots/fanuc_m710id_70/cad_asset_manifest.yaml
+tool_cad_manifest: ../../assets/grippers/shanghai_wantai_three_zone/asset_manifest.yaml
+
+physics_boundary_patches:
+  # These finite USD collision patches cover the robot's complete reachable
+  # envelope.  Their X/Z extents are solver extents, not claims about trailer
+  # length or height; the only physical boundaries asserted are floor Z=0 and
+  # the two confirmed side-wall Y planes.
+  extent_basis: robot_reachable_envelope_not_trailer_dimensions
+  robot_reach_m: 2.104
+  task_tcp_extension_m: 0.250
+  thickness_m: 0.050
+
+replay:
+  controller_period_s: 0.020
+  motion_limit_scale: 0.50
+  pre_grasp_controller_settle_s: 0.20
+  vacuum_establish_s: 0.30
+  release_hold_s: 0.10
+  post_release_settle_s: 1.00
+  normal_time_scale: 1.0
+  output_width_px: 1920
+  output_height_px: 1080
+  output_fps: 30
+  camera_mode: fixed_overview_with_contact_and_place_keyframes
+  command_mode: initialize_once_then_force_limited_position_drive_targets
+
+qualification:
+  require_complete_collision_checked_motion_plan: true
+  require_robot_per_link_cad_visuals: true
+  require_robot_per_link_cad_collisions: true
+  require_tool_dynamic_collision_qualification: true
+  require_resolved_j3_coupling: true
+  require_resolved_tool0_clocking: true
+  require_real_base_mounting_extent: true
+  allow_proxy_collision_for_execution: false
+  allow_carton_pose_teleport_after_initialization: false
+  allow_joint_pose_reset_after_initialization: false
+  allow_infinite_drive_or_attachment_limits: false
