@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "layout_id": "m710id70_unloading_layout_v1",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+  "carton_count": 40,
+  "initial_state_status": "PASS",
+  "complete_workcell_clearance": "NOT_EVALUATED_TRAILER_LENGTH_HEIGHT_AND_FULL_CAD_MISSING",
+  "receiver_transport": "NOT_IMPLEMENTED_FOR_LAYOUT_V1",
+  "output_dir": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_layout_v1\\validation"
+}

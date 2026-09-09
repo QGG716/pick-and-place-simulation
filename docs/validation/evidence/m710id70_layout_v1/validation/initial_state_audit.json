@@ -1,0 +1,16 @@
+{
+  "schema": "m710id70_initial_state_audit_v1",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "q_rad": [
+    3.1135901287083176,
+    0.7854566731593875,
+    0.6496218708958161,
+    0.06722349609001022,
+    -1.2117503086182402,
+    -1.9415185231007088
+  ],
+  "status": "PASS",
+  "failures": [],
+  "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_robot_and_tool_proxies",
+  "complete_workcell_clearance": "NOT_EVALUATED_TRAILER_LENGTH_HEIGHT_AND_FULL_CAD_MISSING"
+}

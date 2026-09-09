@@ -1,19 +1,33 @@
 # Trailer Unloading Geometric Simulator v0.5 feasibility core
 
-> 当前分支以 **M-710iD/70 V3 单箱完整几何可行性恢复**为核心目标。V3 已修正
-> 坐标、SO(3)、严格 IK/FK 残差、刚体附着、完整碰撞路径、负载和时间参数化；
-> 原始 104 个任务完整几何成功为 **0/104**，连续场景为 **0/129**。
-> 冻结 V2 的 50% 完整覆盖率只保留为历史证据，不再作为有效 baseline。
-> 当前实施顺序见
-> [V3 可行性恢复开发优先级](docs/development_priorities_m710id70_v3_recovery.md)，
-> 已完成验证证据见
-> [V3 技术验证报告](docs/validation/technical_qualification_report_m710id70_v3.md)
-> 和[分阶段记录](docs/validation/m710id70_v3_stages.md)。
+> 当前分支的首要验收对象是已确认工作站布局
+> `m710id70_unloading_layout_v1`。CPU 碰撞、尺寸图和回放均消费同一个带内容指纹的
+> 冻结场景快照。原 V3 的 104-task/129-carton 结果继续作为历史算法回归，不是新布局
+> 的工程验收分母，也不会通过当前配置重新解释。
+>
+> 布局专项结果见[验证报告](docs/validation/m710id70_layout_v1.md)和
+> [不可变证据清单](docs/validation/evidence/m710id70_layout_v1/evidence_manifest.json)。
+> 原可行性恢复工作及其严格碰撞、接触和 IK 修复仍保留在
+> [V3 恢复优先级](docs/development_priorities_m710id70_v3_recovery.md)中，但搜索优化暂缓。
 
 ```powershell
+# 新布局：静态数值/初始状态验收并冻结场景
+.venv\Scripts\python.exe tools/run_m710id70_v3.py --phase layout `
+  --config configs/validation/m710id70_layout_v1.yaml `
+  --output-dir outputs/m710id70_layout_v1
+# 从同一快照生成 7200 px PNG 与真矢量 SVG
+.venv\Scripts\python.exe tools/render_m710id70_layout.py `
+  --snapshot outputs/m710id70_layout_v1/scene_snapshot.json `
+  --config configs/validation/m710id70_layout_v1.yaml `
+  --output-dir outputs/m710id70_layout_v1/figures
+# 导出后端不可变初始化合同；Isaac 适配器不属于核心依赖
+.venv\Scripts\python.exe tools/export_m710id70_isaac_layout.py `
+  --snapshot outputs/m710id70_layout_v1/scene_snapshot.json `
+  --output outputs/m710id70_layout_v1/isaac/contract.json
+
 # 复现不可变 V2，并输出实际调用参数及逐任务追踪
 .venv\Scripts\python.exe tools/reproduce_m710_v2.py
-# 当前 V3 P0：grasp-only 与固定传送带原始 104 任务
+# legacy V3 算法回归：grasp-only 与固定传送带原始 104 任务
 .venv\Scripts\python.exe tools/run_m710id70_v3.py --phase all --workers 4
 # 独立 FK/Jacobian、负载、惯量与可执行轨迹数值证据
 .venv\Scripts\python.exe tools/audit_m710_v3.py
@@ -26,10 +40,16 @@ V3 配置为 `configs/validation/m710id70_v3.yaml`，允许 `extends` 覆盖并
 `v3/tasks/*.json` 保留每次候选、碰撞失败点、实际姿态及路径。
 `--workers 1` 可串行复现，任务种子不随并行度改变。
 
+新布局定义在 `configs/workcells/m710id70_unloading_layout_v1.yaml`，验证策略定义在
+`configs/validation/m710id70_layout_v1.yaml`。两者采用独立严格 schema，不加入旧
+`DEFAULT`，因此旧 V3、`common_unloading`、M-20 或 KUKA 参数不会被静默继承。
+当前布局明确把车厢长度/高度、真实安装底板 CAD 和输送机制造细节标为未定；新接收区
+转角输送也标为 `NOT_IMPLEMENTED`，不会调用旧 `validation_receiver` 路线。
+
 ## 当前开发优先级
 
-当前工作先恢复可解释的单箱完整几何可行性，不以旧成功路径、路径长度或周期为
-优化目标：
+当前先冻结并验收用户确认的工作站布局。下列 P0 算法能力已经保留，但只有在建立
+显式绑定新布局的新任务集合后才继续作为成功率验收对象：
 
 1. **P0-1 contact-aware separation**：只对已登记的目标箱—邻箱初始近接建立
    不恶化、趋向分离的临时语义；真实穿透、其他碰撞对及全局安全 margin 不放宽。

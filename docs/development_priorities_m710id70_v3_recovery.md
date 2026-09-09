@@ -1,5 +1,14 @@
 # FANUC M-710iD/70 V3 几何可行性恢复优先级
 
+> **当前门控（2026-09-09）**：开发优先级已切换到已确认工作站布局的统一、冻结
+> 场景与静态初始化验收。新入口为
+> `configs/workcells/m710id70_unloading_layout_v1.yaml` 和
+> `tools/run_m710id70_v3.py --phase layout`。本文件下面的 104-task 结果仍是旧 V3
+> 布局上的算法回归证据，不是新布局工程验收分母。接触感知、task-set IK、escape
+> 与 support-release 实现均保留，但在定义新的 layout-bound 任务集合前不继续做
+> 成功率、动态传送带、base Z、升降或节拍优化。布局专项报告见
+> [m710id70_layout_v1](validation/m710id70_layout_v1.md)。
+
 状态：当前开发分支的权威实施顺序。冻结的
 [V3 技术验证报告](validation/technical_qualification_report_m710id70_v3.md)
 仍是已完成验证结果；本文只定义后续开发与验收，不回写历史结果。

@@ -1,0 +1,21 @@
+{
+  "schema": "m710id70_snapshot_consistency_v1",
+  "status": "PASS",
+  "snapshot_verification": {
+    "status": "PASS",
+    "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+    "checked_assets": []
+  },
+  "maximum_absolute_errors": {
+    "fixed_component_pose_max_abs": 0.0,
+    "carton_pose_max_abs": 0.0,
+    "robot_mount_pose_max_abs": 0.0,
+    "flange_pose_max_abs": 0.0,
+    "tcp_pose_max_abs": 0.0,
+    "tool_collision_pose_max_abs": 0.0,
+    "robot_link_pose_max_abs": 0.0
+  },
+  "cpu_geometry_source": "workcell_layout_snapshot_v1",
+  "replay_geometry_source": "same_frozen_snapshot",
+  "receiver_transport": "NOT_IMPLEMENTED_FOR_LAYOUT_V1"
+}

@@ -1,0 +1,1729 @@
+{
+  "schema": "m710id70_isaac_layout_contract_v1",
+  "scope": "static_layout_initialization_replay_with_one_carton_focus",
+  "snapshot_schema": "m710id70_workcell_snapshot_v1",
+  "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+  "layout_id": "m710id70_unloading_layout_v1",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "asset_verification": {
+    "status": "PASS",
+    "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+    "checked_assets": [
+      "assets/robots/fanuc_m710id_70/m710id_70.urdf",
+      "configs/robots/fanuc_m710id_70.yaml",
+      "configs/tools/unloading_gripper_20kg.yaml",
+      "configs/tools/unloading_gripper_10kg.yaml",
+      "assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb",
+      "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+      "assets/grippers/shanghai_wantai_three_zone/mass_properties.json"
+    ]
+  },
+  "target": "carton_l07_c02",
+  "world": {
+    "origin": "initial_stack_front_face_width_center_floor_projection",
+    "axes": {
+      "x": "into_trailer",
+      "y": "left_when_facing_into_trailer",
+      "z": "up"
+    },
+    "floor_z_m": 0.0
+  },
+  "trailer": {
+    "inner_width_m": 2.3,
+    "right_wall_y_m": -1.15,
+    "left_wall_y_m": 1.15,
+    "length_m": null,
+    "height_m": null,
+    "length_status": "NOT_DEFINED_BY_CONFIRMED_LAYOUT",
+    "height_status": "NOT_DEFINED_BY_CONFIRMED_LAYOUT"
+  },
+  "primitives": [
+    {
+      "name": "chassis",
+      "category": "chassis",
+      "role": "fixed_assembly",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.95
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.3
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        2.1,
+        1.5,
+        0.6
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "conveyor_transverse",
+      "category": "conveyor",
+      "role": "fixed_assembly",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.55
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.54
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.7,
+        1.5,
+        0.12
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "conveyor_longitudinal",
+      "category": "conveyor",
+      "role": "fixed_assembly",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.6
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.7500000000000001
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.54
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        2.8,
+        0.7,
+        0.12
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l00_c00",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l00_c01",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l00_c02",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l00_c03",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l00_c04",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l01_c00",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l01_c01",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l01_c02",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l01_c03",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l01_c04",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l02_c00",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l02_c01",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l02_c02",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l02_c03",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l02_c04",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l03_c00",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l03_c01",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l03_c02",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l03_c03",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l03_c04",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l04_c00",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l04_c01",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l04_c02",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l04_c03",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l04_c04",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l05_c00",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l05_c01",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l05_c02",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l05_c03",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l05_c04",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l06_c00",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l06_c01",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l06_c02",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l06_c03",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l06_c04",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l07_c00",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l07_c01",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l07_c02",
+      "category": "carton",
+      "role": "selected_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l07_c03",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "carton_l07_c04",
+      "category": "carton",
+      "role": "supporting_carton",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "dynamic": false
+    },
+    {
+      "name": "tool_envelope",
+      "category": "robot",
+      "role": "tool_equal_scale_collision_proxy",
+      "pose_world": [
+        [
+          -0.3709256073849039,
+          -0.9022758678187193,
+          -0.2198009375278401,
+          -3.318983856661724
+        ],
+        [
+          -0.9284904538478418,
+          0.3648763047537263,
+          0.06907068367038713,
+          0.4230523562722965
+        ],
+        [
+          0.017879342817032157,
+          0.2297031575343343,
+          -0.973096494968093,
+          1.5218700656693445
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "size_xyz_m": [
+        0.288,
+        0.576,
+        0.2275
+      ],
+      "dynamic": false
+    }
+  ],
+  "robot": {
+    "model": "fanuc_m710id_70",
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "q_rad": [
+      3.1135901287083176,
+      0.7854566731593875,
+      0.6496218708958161,
+      0.06722349609001022,
+      -1.2117503086182402,
+      -1.9415185231007088
+    ],
+    "world_from_mount": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.41
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.35
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.6
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "urdf": {
+      "declared_path": "../../assets/robots/fanuc_m710id_70/m710id_70.urdf",
+      "repository_path": "assets/robots/fanuc_m710id_70/m710id_70.urdf",
+      "sha256": "7f1ec9ac66d520b5210533a6fcfaf68b5f3dd12e59972964358192459d0048b3"
+    }
+  },
+  "claims": {
+    "geometry_source": "same_frozen_snapshot_as_cpu_audit_and_figures",
+    "carton_count": 40,
+    "physical_grasp": "NOT_EVALUATED",
+    "payload_dynamics": "NOT_EVALUATED",
+    "complete_workcell_clearance": "NOT_EVALUATED_TRAILER_LENGTH_HEIGHT_AND_FULL_CAD_MISSING",
+    "receiver_transport": "NOT_IMPLEMENTED_FOR_LAYOUT_V1"
+  },
+  "contract_fingerprint": "33ca659b731678a3f8fa0784b413c152054c07f54af046b54a9465d456758863"
+}

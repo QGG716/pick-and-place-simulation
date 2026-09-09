@@ -1,0 +1,65 @@
+schema: m710id70_unloading_layout_v1
+layout_id: m710id70_unloading_layout_v1
+units: {length: metre, angle: radian, mass: kilogram}
+world:
+  origin: initial_stack_front_face_width_center_floor_projection
+  axes: {x: into_trailer, y: left_when_facing_into_trailer, z: up}
+  floor_z_m: 0.0
+assembly:
+  # A is the chassis-bottom projected centre. All fixed equipment is derived
+  # as T_W_component = T_W_A @ T_A_component.
+  world_xyz_m: [-1.950, 0.350, 0.0]
+  world_rpy_rad: [0.0, 0.0, 0.0]
+chassis:
+  size_xyz_m: [2.100, 1.500, 0.600]
+  center_a_m: [0.0, 0.0, 0.300]
+conveyors:
+  body_thickness_m: 0.120
+  body_thickness_source: retained_engineering_assumption_not_manufacturing_dimension
+  surface_z_a_m: 0.600
+  transverse:
+    size_xy_m: [0.700, 1.500]
+    center_xy_a_m: [1.400, 0.0]
+  longitudinal:
+    size_xy_m: [2.800, 0.700]
+    center_xy_a_m: [0.350, -1.100]
+robot:
+  model: fanuc_m710id_70
+  model_config: ../robots/fanuc_m710id_70.yaml
+  urdf_path: ../../assets/robots/fanuc_m710id_70/m710id_70.urdf
+  mounting_surface_z_a_m: 0.600
+  base_origin_xy_a_m: [0.540, 0.0]
+  base_proxy_radius_m: 0.310
+  base_proxy_height_m: 0.565
+  base_front_edge_x_world_m: -1.100
+  positioning_basis: urdf_base_link_cylinder_engineering_proxy
+  positioning_status: ENGINEERING_PROXY_REAL_MOUNTING_PLATE_CAD_NOT_CONFIRMED
+tool:
+  load_config: ../tools/unloading_gripper_20kg.yaml
+  geometry_config: ../tools/unloading_gripper_10kg.yaml
+  geometry_status: STEP_DERIVED_ENGINEERING_PROXY
+  # 0.2275 m is the STEP solid extreme. The active 0.250 m TCP remains the
+  # explicit planning/working transform from the 20 kg tool config.
+  physical_step_length_m: 0.2275
+  planning_tcp_status: ENGINEERING_WORKING_TCP_NOT_MANUFACTURER_CERTIFIED
+trailer:
+  inner_width_m: 2.300
+  right_wall_y_m: -1.150
+  left_wall_y_m: 1.150
+  length_m: null
+  height_m: null
+  length_status: NOT_DEFINED_BY_CONFIRMED_LAYOUT
+  height_status: NOT_DEFINED_BY_CONFIRMED_LAYOUT
+carton_stack:
+  carton_size_xyz_m: [0.600, 0.400, 0.300]
+  front_face_x_m: 0.0
+  depth_rows: 1
+  width_columns: 5
+  height_layers: 8
+  column_gap_m: 0.020
+  layer_gap_m: 0.0
+  center_y_m: [-0.840, -0.420, 0.0, 0.420, 0.840]
+  no_pallet: true
+evidence:
+  approval_basis: confirmed_dimension_constrained_and_corrected_two_view_layout
+  unconfirmed: [trailer_length, trailer_height, real_robot_mounting_plate_cad, conveyor_manufacturing_details]

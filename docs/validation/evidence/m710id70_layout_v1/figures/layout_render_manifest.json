@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+  "dpi": 300,
+  "png_long_edge_px": 7200,
+  "files": [
+    "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_layout_v1\\figures\\m710id70_layout_v1_dimensions.png",
+    "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_layout_v1\\figures\\m710id70_layout_v1_dimensions.svg",
+    "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_layout_v1\\figures\\m710id70_layout_v1_two_view.png",
+    "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_layout_v1\\figures\\m710id70_layout_v1_two_view.svg"
+  ]
+}

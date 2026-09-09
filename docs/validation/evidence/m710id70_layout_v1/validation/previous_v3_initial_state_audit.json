@@ -1,0 +1,25 @@
+{
+  "schema": "m710id70_initial_state_audit_v1",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "q_rad": [
+    -1.2535046523103328,
+    -0.9321730956021104,
+    -1.186652413419966,
+    -0.21179524367224456,
+    -0.2394417658165151,
+    -1.6893308052919531
+  ],
+  "status": "FAIL",
+  "failures": [
+    {
+      "reason": "TRAILER_SIDE_CLEARANCE",
+      "body": "J3_link",
+      "y_bounds_m": [
+        0.5847173943630626,
+        1.1550788481702754
+      ]
+    }
+  ],
+  "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_robot_and_tool_proxies",
+  "complete_workcell_clearance": "NOT_EVALUATED_TRAILER_LENGTH_HEIGHT_AND_FULL_CAD_MISSING"
+}

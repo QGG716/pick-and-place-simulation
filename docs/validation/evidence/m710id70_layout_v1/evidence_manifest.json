@@ -1,0 +1,181 @@
+{
+  "schema": "m710id70_layout_v1_evidence_manifest",
+  "created_utc": "2026-09-09T10:40:22.437198+00:00",
+  "branch": "feat/v0.5-feasibility-core",
+  "code_identity": {
+    "commit": "bd30eaef7878b60fb364c953a80f347a4bae1912",
+    "dirty": false,
+    "dirty_paths": [],
+    "starting_commit_before_layout_work": "1bb80f5c8400fbcb5f627882c79eb280fe0bd6c2"
+  },
+  "scope": "confirmed_layout_static_initialization_and_snapshot_replay",
+  "population": {
+    "cartons": 40,
+    "selected_isaac_focus_carton": "carton_l07_c02",
+    "legacy_v3_104_tasks": "NOT_RERUN_NOT_REINTERPRETED",
+    "legacy_continuous_129": "NOT_RERUN_NOT_REINTERPRETED"
+  },
+  "identity": {
+    "layout_id": "m710id70_unloading_layout_v1",
+    "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+    "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+    "isaac_contract_fingerprint": "33ca659b731678a3f8fa0784b413c152054c07f54af046b54a9465d456758863"
+  },
+  "claims": {
+    "numeric_layout_audit": "PASS",
+    "initial_state_audit": "PASS",
+    "physical_grasp": "NOT_EVALUATED",
+    "payload_dynamics": "NOT_EVALUATED",
+    "complete_workcell_clearance": "NOT_EVALUATED_TRAILER_LENGTH_HEIGHT_AND_FULL_CAD_MISSING",
+    "receiver_transport": "NOT_IMPLEMENTED_FOR_LAYOUT_V1"
+  },
+  "commands": [
+    "python tools/validate_m710id70_layout.py --config configs/validation/m710id70_layout_v1.yaml --output-dir <archive>/validation",
+    "python tools/render_m710id70_layout.py --snapshot <archive>/validation/scene_snapshot.json --config configs/validation/m710id70_layout_v1.yaml --output-dir <archive>/figures",
+    "python tools/export_m710id70_isaac_layout.py --snapshot <archive>/validation/scene_snapshot.json --project-root . --output <archive>/isaac_layout_contract.json",
+    "python -m pytest -q"
+  ],
+  "environment": {
+    "python": "3.14.7 (main, Aug 14 2026, 15:39:58) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.5.2",
+    "pyyaml": "6.0.3",
+    "matplotlib": "3.11.1"
+  },
+  "rendering": {
+    "status": "PASS",
+    "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+    "dpi": 300,
+    "png_long_edge_px": 7200,
+    "files": [
+      "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_layout_v1\\figures\\m710id70_layout_v1_dimensions.png",
+      "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_layout_v1\\figures\\m710id70_layout_v1_dimensions.svg",
+      "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_layout_v1\\figures\\m710id70_layout_v1_two_view.png",
+      "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\docs\\validation\\evidence\\m710id70_layout_v1\\figures\\m710id70_layout_v1_two_view.svg"
+    ]
+  },
+  "implementation_files": [
+    {
+      "path": "configs/workcells/m710id70_unloading_layout_v1.yaml",
+      "sha256": "cc37c2aaa9193c35e5b978453340bf9aff1c0cd65eed3801b5a9890d4f439202"
+    },
+    {
+      "path": "configs/validation/m710id70_layout_v1.yaml",
+      "sha256": "e7c4bf918506d24b13fe771ecd176ac2b7f2c184b5cd925ac9d648b2b94209cc"
+    },
+    {
+      "path": "src/unloading_sim/workcell_layout.py",
+      "sha256": "062171ceddddad399c7d39e57ee6e34181748aa77ca029364fdbb0b446785eb3"
+    },
+    {
+      "path": "src/unloading_sim/isaac_layout_replay.py",
+      "sha256": "1a9f7e5eb2d0355d1d55888b38b541bed5645c01a817141ee65b77e1ab67683a"
+    },
+    {
+      "path": "tools/validate_m710id70_layout.py",
+      "sha256": "3b29856e130360c518a73d037f841bc9cfadcbcd8bbfb1100e6b56c77c0a5681"
+    },
+    {
+      "path": "tools/render_m710id70_layout.py",
+      "sha256": "e1558522d20347aa98798017d046714072d13b6783a301496b7d3912b1d5d133"
+    },
+    {
+      "path": "tools/export_m710id70_isaac_layout.py",
+      "sha256": "d4308ea0c46c6b9f5c1276a35564d3f19b81b6f0b3314665470718beb47d7042"
+    },
+    {
+      "path": "scripts/isaacsim_m710_layout_replay.py",
+      "sha256": "d5e3aeb43caba7199ad3934ac9b4493f70cc7b917f3fdb9835f7b7becffcf5d5"
+    },
+    {
+      "path": "tests/test_workcell_layout.py",
+      "sha256": "22b91478a9e925b60158a4a881e91fda098e210062485d2d6d837c98829fd43b"
+    },
+    {
+      "path": "tests/test_isaac_layout_replay.py",
+      "sha256": "aeeca92f7e5aa7e5caacacc54591f4197641709b3b766df3a883d8b9d010fdcd"
+    }
+  ],
+  "archive_files": [
+    {
+      "path": "figures/layout_render_manifest.json",
+      "bytes": 855,
+      "sha256": "c1c608ad2c0314531c2beee309fb445805a350b294080d52c7b2ddc3dfe9ccdd"
+    },
+    {
+      "path": "figures/m710id70_layout_v1_dimensions.png",
+      "bytes": 742373,
+      "sha256": "8fa66cef5c5d4e87a5ef9559d4cf8d7ceb99b14bf2067e657e2bff942c298ea2"
+    },
+    {
+      "path": "figures/m710id70_layout_v1_dimensions.svg",
+      "bytes": 207533,
+      "sha256": "272132ff4ace65f9fd16b907f827386e2820b379fff2c03886ac8d6104fd284a"
+    },
+    {
+      "path": "figures/m710id70_layout_v1_two_view.png",
+      "bytes": 627183,
+      "sha256": "dc05c56bfacbb64ba2de3d4fa9b68e369272af9fece285085820c8d387e08065"
+    },
+    {
+      "path": "figures/m710id70_layout_v1_two_view.svg",
+      "bytes": 174004,
+      "sha256": "0cad6edbbc3b76ed6d7e51970bc783ddb4035ed1783d68c7324c9788c4932b06"
+    },
+    {
+      "path": "isaac_layout_contract.json",
+      "bytes": 29388,
+      "sha256": "a27b4d09da684d96cc9ab5199dbc836afb88487d46aa406c473e556a5cba9d16"
+    },
+    {
+      "path": "source_layout_config.yaml",
+      "bytes": 2382,
+      "sha256": "cc37c2aaa9193c35e5b978453340bf9aff1c0cd65eed3801b5a9890d4f439202"
+    },
+    {
+      "path": "source_validation_config.yaml",
+      "bytes": 845,
+      "sha256": "e7c4bf918506d24b13fe771ecd176ac2b7f2c184b5cd925ac9d648b2b94209cc"
+    },
+    {
+      "path": "validation/initial_state_audit.json",
+      "bytes": 554,
+      "sha256": "c07b4bc352a580e2a9f9e0254129bcfda5b3f905728a18329a65aceade19f820"
+    },
+    {
+      "path": "validation/initial_state_search.json",
+      "bytes": 928,
+      "sha256": "3127134fbc9e77cb0f1e7f69adf0596b117e6c92265e8ab1187fe8d0f7ef920d"
+    },
+    {
+      "path": "validation/numeric_audit.json",
+      "bytes": 4332,
+      "sha256": "2d2b729a922474b4fb657c7d912f05a82bff321415716901ac4815429d85fbb5"
+    },
+    {
+      "path": "validation/previous_v3_initial_state_audit.json",
+      "bytes": 733,
+      "sha256": "2e1518ec468b784a212aea6b05b834af0d02c31ca643812ac9562cf7753f587b"
+    },
+    {
+      "path": "validation/scene_snapshot.json",
+      "bytes": 44118,
+      "sha256": "3006382a7890ff30d76e1ad7a9cec68235842dc1f185ef09832ed44295a63b09"
+    },
+    {
+      "path": "validation/snapshot_asset_verification.json",
+      "bytes": 550,
+      "sha256": "8b53b3159e2cb7898e5ab5fdb48a49dd786a5207bd59de0d9226f37f96f67d00"
+    },
+    {
+      "path": "validation/snapshot_replay_consistency.json",
+      "bytes": 711,
+      "sha256": "999ba85b12cae518044de1f4bef76ba8e8d9fcaebe4503f7a08dbebada46d059"
+    },
+    {
+      "path": "validation/validation_summary.json",
+      "bytes": 617,
+      "sha256": "15be78f55f08e8af28b3aed504e9c80dafe7a13cfac262bd5af4f1a308abb3d6"
+    }
+  ]
+}

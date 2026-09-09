@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import copy
 from dataclasses import replace
+import json
 from pathlib import Path
+import subprocess
+import sys
 
 import numpy as np
 import pytest
@@ -214,3 +217,27 @@ def test_layout_schema_is_independent_from_legacy_v3_validation_schema():
     assert _config().layout.data["schema"] == LAYOUT_SCHEMA
     with pytest.raises(ValueError):
         load_workcell_layout(ROOT / "configs/validation/m710id70_v3.yaml")
+
+
+def test_feasibility_entry_routes_layout_phase_without_loading_legacy_defaults(tmp_path):
+    result = subprocess.run(
+        [
+            sys.executable,
+            "tools/run_m710id70_v3.py",
+            "--phase",
+            "layout",
+            "--config",
+            str(CONFIG),
+            "--output-dir",
+            str(tmp_path / "layout"),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    payload = json.loads(result.stdout)
+    assert payload["completed_phase"] == "layout"
+    assert payload["status"] == "PASS"
+    assert payload["layout_id"] == LAYOUT_SCHEMA
+    assert (tmp_path / "layout/scene_snapshot.json").is_file()

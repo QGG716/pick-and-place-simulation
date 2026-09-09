@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+  "checked_assets": [
+    "assets/robots/fanuc_m710id_70/m710id_70.urdf",
+    "configs/robots/fanuc_m710id_70.yaml",
+    "configs/tools/unloading_gripper_20kg.yaml",
+    "configs/tools/unloading_gripper_10kg.yaml",
+    "assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb",
+    "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+    "assets/grippers/shanghai_wantai_three_zone/mass_properties.json"
+  ]
+}

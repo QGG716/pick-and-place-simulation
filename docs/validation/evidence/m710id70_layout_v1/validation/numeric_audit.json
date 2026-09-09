@@ -1,0 +1,207 @@
+{
+  "schema": "m710id70_layout_numeric_audit_v1",
+  "layout_id": "m710id70_unloading_layout_v1",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "assembly_world_bounds_m": {
+    "x": [
+      -3.0,
+      -0.20000000000000007
+    ],
+    "y": [
+      -1.1,
+      1.1
+    ],
+    "z": [
+      0.0,
+      0.6000000000000001
+    ]
+  },
+  "checks": {
+    "chassis_size_xyz": {
+      "status": "PASS",
+      "actual": [
+        2.1,
+        1.5,
+        0.6
+      ],
+      "expected": [
+        2.1,
+        1.5,
+        0.6
+      ]
+    },
+    "transverse_size_xy": {
+      "status": "PASS",
+      "actual": [
+        0.7,
+        1.5
+      ],
+      "expected": [
+        0.7,
+        1.5
+      ]
+    },
+    "longitudinal_size_xy": {
+      "status": "PASS",
+      "actual": [
+        2.8,
+        0.7
+      ],
+      "expected": [
+        2.8,
+        0.7
+      ]
+    },
+    "transverse_surface_z": {
+      "status": "PASS",
+      "actual": 0.6000000000000001,
+      "expected": 0.6
+    },
+    "longitudinal_surface_z": {
+      "status": "PASS",
+      "actual": 0.6000000000000001,
+      "expected": 0.6
+    },
+    "transverse_front_x": {
+      "status": "PASS",
+      "actual": -0.20000000000000007,
+      "expected": -0.2
+    },
+    "longitudinal_front_x": {
+      "status": "PASS",
+      "actual": -0.20000000000000018,
+      "expected": -0.2
+    },
+    "fixed_assembly_x_extent": {
+      "status": "PASS",
+      "actual": 2.8,
+      "expected": 2.8
+    },
+    "fixed_assembly_y_extent": {
+      "status": "PASS",
+      "actual": 2.2,
+      "expected": 2.2
+    },
+    "chassis_transverse_join": {
+      "status": "PASS",
+      "gap_m": -2.220446049250313e-16,
+      "penetration_m": 2.220446049250313e-16,
+      "tangential_overlap_m": [
+        1.5,
+        0.11999999999999994
+      ]
+    },
+    "chassis_longitudinal_join": {
+      "status": "PASS",
+      "gap_m": 1.1102230246251565e-16,
+      "penetration_m": 0.0,
+      "tangential_overlap_m": [
+        2.0999999999999996,
+        0.11999999999999994
+      ]
+    },
+    "transverse_longitudinal_join": {
+      "status": "PASS",
+      "gap_m": 1.1102230246251565e-16,
+      "penetration_m": 0.0,
+      "tangential_overlap_m": [
+        0.7000000000000002,
+        0.12000000000000005
+      ]
+    },
+    "chassis_floor_contact": {
+      "status": "PASS",
+      "gap_m": 0.0
+    },
+    "robot_mount_surface": {
+      "status": "PASS",
+      "gap_m": 0.0
+    },
+    "robot_base_origin_world": {
+      "status": "PASS",
+      "actual": [
+        -1.41,
+        0.35,
+        0.6
+      ],
+      "expected": [
+        -1.41,
+        0.35,
+        0.6
+      ]
+    },
+    "robot_base_proxy_radius": {
+      "status": "PASS",
+      "actual": 0.31,
+      "expected": 0.31
+    },
+    "robot_base_front_edge": {
+      "status": "PASS",
+      "actual_x_m": -1.0999999999999999
+    },
+    "robot_base_support_footprint": {
+      "status": "PASS"
+    },
+    "left_side_clearance": {
+      "status": "PASS",
+      "clearance_m": 0.04999999999999982
+    },
+    "right_side_clearance": {
+      "status": "PASS",
+      "clearance_m": 0.04999999999999982
+    },
+    "trailer_inner_width": {
+      "status": "PASS",
+      "actual": 2.3,
+      "expected": 2.3
+    },
+    "trailer_wall_coordinates": {
+      "status": "PASS",
+      "actual": [
+        -1.15,
+        1.15
+      ],
+      "expected": [
+        -1.15,
+        1.15
+      ]
+    },
+    "trailer_length_height_undefined": {
+      "status": "PASS",
+      "length_m": null,
+      "height_m": null
+    },
+    "stack_to_conveyor_clearance": {
+      "status": "PASS",
+      "clearance_m": 0.20000000000000007
+    },
+    "stack_count": {
+      "status": "PASS",
+      "count": 40
+    },
+    "carton_size_xyz": {
+      "status": "PASS",
+      "actual": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "expected": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    "stack_width": {
+      "status": "PASS",
+      "actual": 2.08,
+      "expected": 2.08
+    },
+    "stack_height": {
+      "status": "PASS",
+      "actual": 2.4,
+      "expected": 2.4
+    }
+  },
+  "overall_status": "PASS"
+}
