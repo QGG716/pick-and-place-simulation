@@ -59,6 +59,9 @@ def archive(destination: Path) -> dict[str, object]:
     destination = destination.resolve()
     if destination.exists():
         raise FileExistsError(f"refusing to overwrite evidence archive: {destination}")
+    commit = _git("rev-parse", "HEAD")
+    branch = _git("rev-parse", "--abbrev-ref", "HEAD")
+    dirty = _git("status", "--short").splitlines()
     destination.mkdir(parents=True)
     config = ROOT / "configs/validation/m710id70_layout_v1.yaml"
     layout = ROOT / "configs/workcells/m710id70_unloading_layout_v1.yaml"
@@ -75,9 +78,6 @@ def archive(destination: Path) -> dict[str, object]:
     )
     shutil.copy2(layout, destination / "source_layout_config.yaml")
     shutil.copy2(config, destination / "source_validation_config.yaml")
-    commit = _git("rev-parse", "HEAD")
-    branch = _git("rev-parse", "--abbrev-ref", "HEAD")
-    dirty = _git("status", "--short").splitlines()
     manifest: dict[str, object] = {
         "schema": "m710id70_layout_v1_evidence_manifest",
         "created_utc": datetime.now(timezone.utc).isoformat(),
