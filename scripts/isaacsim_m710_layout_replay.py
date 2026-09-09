@@ -112,6 +112,7 @@ try:
     from unloading_sim.isaac_layout_replay import (
         ISAAC_LAYOUT_DUMP_SCHEMA,
         audit_isaac_layout_backend_dump,
+        usd_safe_prim_segment,
         verify_isaac_layout_contract,
     )
 
@@ -219,8 +220,9 @@ try:
 
     prim_paths: dict[str, str] = {}
     for index, item in enumerate(contract["primitives"]):
-        safe_name = "".join(char if char.isalnum() or char == "_" else "_" for char in item["name"])
-        path = f"/Layout/Primitives/{index:02d}_{safe_name}"
+        # Keep the source name in the dump, but use a deterministic legal USD
+        # identifier whose first character cannot be numeric.
+        path = f"/Layout/Primitives/{usd_safe_prim_segment(index, item['name'])}"
         cube = UsdGeom.Cube.Define(stage, path)
         cube.CreateSizeAttr(1.0)
         pose = np.asarray(item["pose_world"], dtype=float)

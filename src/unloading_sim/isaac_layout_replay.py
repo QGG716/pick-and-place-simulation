@@ -20,6 +20,19 @@ ISAAC_LAYOUT_CONTRACT_SCHEMA = "m710id70_isaac_layout_contract_v1"
 ISAAC_LAYOUT_DUMP_SCHEMA = "m710id70_isaac_layout_backend_dump_v1"
 
 
+def usd_safe_prim_segment(index: int, name: str) -> str:
+    """Return a deterministic USD identifier whose first character is legal."""
+    if isinstance(index, bool) or index < 0:
+        raise ValueError("USD primitive index must be a nonnegative integer")
+    safe_name = "".join(
+        char if char.isascii() and (char.isalnum() or char == "_") else "_"
+        for char in str(name)
+    )
+    if not safe_name:
+        raise ValueError("USD primitive name must be nonempty")
+    return f"p_{index:02d}_{safe_name}"
+
+
 def _primitive(record: Mapping[str, Any], role: str) -> dict[str, Any]:
     pose = np.asarray(record["pose_world"], dtype=float)
     half = np.asarray(record["half_extents_m"], dtype=float)

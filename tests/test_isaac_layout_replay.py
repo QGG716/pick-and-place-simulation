@@ -10,6 +10,7 @@ from unloading_sim.isaac_layout_replay import (
     ISAAC_LAYOUT_DUMP_SCHEMA,
     audit_isaac_layout_backend_dump,
     build_isaac_layout_contract,
+    usd_safe_prim_segment,
     verify_isaac_layout_contract,
 )
 
@@ -83,3 +84,12 @@ def test_backend_dump_audit_detects_geometry_or_joint_drift():
     audit = audit_isaac_layout_backend_dump(contract, wrong)
     assert audit["status"] == "FAIL"
     assert audit["robot_q_max_abs_rad"] == pytest.approx(1e-3)
+
+
+def test_usd_prim_segments_never_start_with_numeric_source_index():
+    assert usd_safe_prim_segment(0, "chassis") == "p_00_chassis"
+    unicode_name = usd_safe_prim_segment(40, "箱体 40")
+    assert unicode_name.startswith("p_40_")
+    assert all(char.isascii() and (char.isalnum() or char == "_") for char in unicode_name)
+    with pytest.raises(ValueError):
+        usd_safe_prim_segment(-1, "bad")
