@@ -3,13 +3,15 @@
 日期：2026-09-09  
 布局 ID：`m710id70_unloading_layout_v1`  
 起始代码：`1bb80f5c8400fbcb5f627882c79eb280fe0bd6c2`  
-证据代码：`bd30eaef7878b60fb364c953a80f347a4bae1912`
+冻结 CPU 证据代码：`bd30eaef7878b60fb364c953a80f347a4bae1912`
+
+Isaac USD 标识符修复代码：`e3bb771750039c10581f47eea18b31cbc86fe828`
 
 ## 结论与资格边界
 
 已把确认尺寸落为独立、严格版本化的布局定义，并使 CPU 几何、碰撞初始化检查、
 尺寸图和 Isaac 初始化合同都消费同一个冻结快照。数值布局检查、已知几何中的初始
-状态检查、资产哈希和 CPU 快照重放一致性均为 **PASS**。
+状态检查、资产哈希、CPU 快照重放一致性和 Isaac 后端场景读回审计均为 **PASS**。
 
 本结果不是完整工作单元、物理抓取、负载、输送或完整单箱周期资格。车厢长度/高度、
 真实机器人安装底板 CAD 和完整输送机制造几何尚未确认，因此完整工作单元净空为
@@ -107,9 +109,9 @@ python tools/export_m710id70_isaac_layout.py \
 python -m pytest -q
 ```
 
-本机实际结果：`313 passed, 4 deselected in 138.78s`。其中新增布局/Isaac 合同专项
-为 `14 passed`。4 个 deselected 是默认配置显式排除的可选重型仿真测试，不被写成
-通过。
+最终本机实际结果：`315 passed, 4 deselected in 181.38s`。其中布局/Isaac 合同专项
+为 `16 passed in 2.09s`。4 个 deselected 是默认配置显式排除的可选重型仿真测试，
+不被写成通过。
 
 Isaac 初始化入口：
 
@@ -121,8 +123,35 @@ python scripts/isaacsim_m710_layout_replay.py \
 ```
 
 适配器保留全部 40 箱并高亮 `carton_l07_c02`，读取实际创建的 USD 物体位姿/尺寸
-和机器人 `q` 形成 backend dump，再由 CPU 合同反审计。当前远端实际运行状态将在
-获得 NVIDIA Omniverse EULA 明确授权后补入本报告；在此之前不声明后端 PASS。
+和机器人 `q` 形成 backend dump，再由 CPU 合同反审计。
+
+## Isaac Sim 实跑结果
+
+用户明确同意 NVIDIA Omniverse EULA 后，在隔离运行根目录
+`/root/autodl-tmp/m710-layout-v1-20260909` 执行了 Isaac Sim 6.0.1.0 后端回放；
+`OMNI_KIT_ACCEPT_EULA=YES` 只对该运行进程设置。新建 16 MB venv 及独立 cache、
+config、data、USD 和 output 目录，只读引用服务器既有 Isaac site-packages，没有向
+27 GB 的既有环境安装包。硬件为 NVIDIA RTX PRO 6000 Blackwell Server Edition，
+驱动 595.71.05，运行 Python 3.12.3。
+
+实跑状态为 **PASS**：44 个合同 primitive（3 个固定组件、40 个箱体和 1 个工具代理）
+全部从 USD stage 读回，无缺失、无额外对象；机器人安装位姿也从 articulation 读回。
+最大 primitive 位姿/尺寸误差分别为 `7.483020125764739e-08 m` 和
+`9.536743172944284e-08 m`，机器人安装位姿误差为 0，最大关节误差为
+`1.1177019798580545e-07 rad`。显式后端序列化审计阈值为 `1e-6 m`、`1e-5 rad`；
+它只覆盖 USD/float32 读回，不改变核心碰撞 margin、IK/FK 容差或接触语义。
+
+视频为 1280×720、30 FPS、180 帧、6 秒，首帧可解码。完整证据见
+[`Isaac run README`](evidence/m710id70_layout_v1/isaac_run/README.md)、
+[`MP4`](evidence/m710id70_layout_v1/isaac_run/m710id70_layout_one_carton_focus.mp4)、
+[`后端审计`](evidence/m710id70_layout_v1/isaac_run/backend_scene_audit.json)和
+[`运行清单`](evidence/m710id70_layout_v1/isaac_run/isaac_run_manifest.json)。
+第二次成功运行复用了同一隔离目录内第一次尝试已导入的 USD，因此
+`urdf_imported_this_run=false`；URDF 内容哈希仍固定为
+`7f1ec9ac66d520b5210533a6fcfaf68b5f3dd12e59972964358192459d0048b3`。
+
+这里的“一箱”是完整货垛中的一个聚焦目标箱，不是删除其余箱体后的缩小场景。
+物理抓取、吸附、负载动力学和完整单箱周期均为 `NOT_EVALUATED`。
 
 ## 未完成项
 

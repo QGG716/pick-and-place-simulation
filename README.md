@@ -7,6 +7,9 @@
 >
 > 布局专项结果见[验证报告](docs/validation/m710id70_layout_v1.md)和
 > [不可变证据清单](docs/validation/evidence/m710id70_layout_v1/evidence_manifest.json)。
+> Isaac Sim 6.0.1.0 的 40 箱静态初始化/单箱聚焦实跑为 **PASS**；
+> [视频、关键帧和后端读回审计](docs/validation/evidence/m710id70_layout_v1/isaac_run/README.md)
+> 已独立归档，物理抓取与完整单箱周期仍明确为 `NOT_EVALUATED`。
 > 原可行性恢复工作及其严格碰撞、接触和 IK 修复仍保留在
 > [V3 恢复优先级](docs/development_priorities_m710id70_v3_recovery.md)中，但搜索优化暂缓。
 

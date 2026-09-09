@@ -1,0 +1,64 @@
+{
+  "schema": "m710id70_layout_v1_isaac_run_manifest_v1",
+  "completed_utc": "2026-09-09T11:00:37Z",
+  "status": "PASS",
+  "scope": "static_layout_initialization_replay_with_one_carton_focus",
+  "target": "carton_l07_c02",
+  "carton_count": 40,
+  "claims": {
+    "physical_grasp": "NOT_EVALUATED",
+    "payload_dynamics": "NOT_EVALUATED",
+    "complete_workcell_clearance": "NOT_EVALUATED_TRAILER_LENGTH_HEIGHT_AND_FULL_CAD_MISSING"
+  },
+  "runtime": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "driver": "595.71.05",
+    "isaac_sim": "6.0.1.0",
+    "python": "3.12.3",
+    "isolated_run_root": "/root/autodl-tmp/m710-layout-v1-20260909",
+    "isolated_venv_size": "16M",
+    "existing_isaac_environment": "/root/autodl-tmp/envs/isaacsim-clean",
+    "isolation_policy": "new venv/cache/config/data/output directories; existing Isaac site-packages referenced read-only; no package installed into the existing environment",
+    "eula_acceptance": "OMNI_KIT_ACCEPT_EULA=YES set only for the authorized run process"
+  },
+  "code_identity": {
+    "source_archive_base_commit": "bd30eaef7878b60fb364c953a80f347a4bae1912",
+    "source_archive_sha256": "c8ac3e5c3515e404a68293f5799d4a759bb42aac7c8c2b86c99adedffdad00be",
+    "usd_identifier_fix_commit": "e3bb771750039c10581f47eea18b31cbc86fe828",
+    "adapter_sha256": "6965febd6736bf3733d45a27981a8bffd0c1ea2133935ac0bf778f52fb052286",
+    "backend_neutral_helper_sha256": "aa1f2d22b0c65a28f3bcb48dbd32c41841a25bb32751fbf66c8943e71f522ec7",
+    "contract_sha256": "a27b4d09da684d96cc9ab5199dbc836afb88487d46aa406c473e556a5cba9d16",
+    "contract_fingerprint": "33ca659b731678a3f8fa0784b413c152054c07f54af046b54a9465d456758863",
+    "urdf_sha256": "7f1ec9ac66d520b5210533a6fcfaf68b5f3dd12e59972964358192459d0048b3"
+  },
+  "backend_audit": {
+    "primitive_count": 44,
+    "missing_primitives": [],
+    "extra_primitives": [],
+    "primitive_pose_max_abs_m": 7.483020125764739e-08,
+    "primitive_size_max_abs_m": 9.536743172944284e-08,
+    "robot_mount_pose_max_abs_m": 0.0,
+    "robot_q_max_abs_rad": 1.1177019798580545e-07,
+    "pose_tolerance_m": 1e-06,
+    "joint_tolerance_rad": 1e-05
+  },
+  "video": {
+    "file": "m710id70_layout_one_carton_focus.mp4",
+    "width": 1280,
+    "height": 720,
+    "fps": 30.0,
+    "frames": 180,
+    "duration_s": 6.0,
+    "first_frame_read": true,
+    "sha256": "62e6150fb1c866d392aa24b718db1d378f5942c0d5d816fe30028e1e980be522"
+  },
+  "files": [
+    {"path": "01_overview.png", "bytes": 377806, "sha256": "3e9fc17b327e3f0098ff4fcc488c0acc40ea0b030e95a38882da057cde47328e"},
+    {"path": "02_opposite.png", "bytes": 367597, "sha256": "8a52f9c64807fea7aff9a57993f2c1f02fd6e231e274da46db391d6e4eb1fc9a"},
+    {"path": "03_target_focus.png", "bytes": 430890, "sha256": "1b5d4bbd9eca2aced3adfd298551c19df570e431c97c4cbf7d0de528b291b0f3"},
+    {"path": "backend_scene_audit.json", "bytes": 756, "sha256": "6996a3df1405bc312752aad43d00c20832b4db34bc88d1e8aa6e84192614b766"},
+    {"path": "backend_scene_dump.json", "bytes": 26618, "sha256": "9d20f18328e482b4a6a1394d2a0ff4720f86d1c2a8cc42aa6a26f352f14edb9a"},
+    {"path": "m710id70_layout_one_carton_focus.mp4", "bytes": 848322, "sha256": "62e6150fb1c866d392aa24b718db1d378f5942c0d5d816fe30028e1e980be522"},
+    {"path": "run_status.json", "bytes": 2112, "sha256": "54c6c56def6fcb7579d588e5f547f8291e875a17eacc86fe0afe701fe4fee1fc"}
+  ]
+}

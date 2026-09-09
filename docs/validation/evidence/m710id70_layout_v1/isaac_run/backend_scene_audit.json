@@ -1,0 +1,20 @@
+{
+  "schema": "m710id70_isaac_layout_replay_audit_v1",
+  "status": "PASS",
+  "contract_verification": {
+    "status": "PASS",
+    "contract_fingerprint": "33ca659b731678a3f8fa0784b413c152054c07f54af046b54a9465d456758863",
+    "primitive_count": 44
+  },
+  "missing_primitives": [],
+  "extra_primitives": [],
+  "primitive_pose_max_abs_m": 7.483020125764739e-08,
+  "primitive_size_max_abs_m": 9.536743172944284e-08,
+  "robot_mount_pose_max_abs_m": 0.0,
+  "robot_q_max_abs_rad": 1.1177019798580545e-07,
+  "pose_tolerance": 1e-06,
+  "joint_tolerance": 1e-05,
+  "scope": "static_layout_initialization_replay_with_one_carton_focus",
+  "physical_grasp": "NOT_EVALUATED",
+  "complete_workcell_clearance": "NOT_EVALUATED_TRAILER_LENGTH_HEIGHT_AND_FULL_CAD_MISSING"
+}
