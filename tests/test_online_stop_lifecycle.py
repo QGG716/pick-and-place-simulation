@@ -107,6 +107,11 @@ class Planner(PlannerBackend):
         )
 
 
+class ResumeFailingSession(ContinuousPlanningSession):
+    def resume_after_recovery(self):
+        raise RuntimeError("injected resume failure")
+
+
 class ScriptedExecutionBackend(ExecutionBackend):
     def __init__(
         self,
@@ -737,3 +742,380 @@ def test_conflicting_stop_evidence_requires_new_attempt_and_explicit_resume():
     assert snapshot["stop_lifecycle"]["prior_accepted_evidence"]["q"] == (0.0, 0.0)
     assert snapshot["stop_lifecycle"]["prior_conflicting_evidence"]["q"] == (0.01, 0.0)
     assert runtime.resume_after_recovery() in {RuntimeState.IDLE, RuntimeState.PLANNING}
+
+
+def test_reconciled_stop_evidence_conflict_revokes_unconsumed_recovery_grant():
+    runtime, session, backend, _ = running_runtime()
+    backend.emit(2, ExecutionFeedbackStatus.FAULTED, 0.2)
+    runtime.step()
+    command_id = backend.stop_command_id
+    stopped = MotionBoundaryState.stopped((0.0, 0.0), time_seconds=0.2)
+    backend.emit(
+        3,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        stopped,
+        stop_command_id=command_id,
+    )
+    runtime.step()
+    runtime.observe_world(observation(world(1, q=stopped.q)))
+    runtime.step()
+
+    before_conflict = runtime.snapshot()
+    assert runtime.state is RuntimeState.RECOVERY
+    assert session.execution.state is ExecutionState.FAILED
+    assert before_conflict["stop_lifecycle"]["stopped_confirmed"]
+    assert before_conflict["stop_lifecycle"]["world_reconciled"]
+    assert before_conflict["stop_lifecycle"]["resume_allowed"]
+
+    backend.emit(
+        4,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+        stop_command_id=command_id,
+    )
+    for _ in range(3):
+        runtime.step()
+
+    conflicted = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert conflicted["stop_lifecycle"]["evidence_conflict"]
+    assert not conflicted["stop_lifecycle"]["resume_allowed"]
+    assert not conflicted["stop_lifecycle"]["recovery_resume_authorized"]
+    assert conflicted["stop_lifecycle"]["failure_reason"] == "STOP_EVIDENCE_CONFLICT"
+    assert conflicted["stop_lifecycle"]["accepted_evidence"]["q"] == (0.0, 0.0)
+    assert conflicted["stop_lifecycle"]["conflicting_evidence"]["q"] == (0.01, 0.0)
+    with pytest.raises(RuntimeError, match="conflicting"):
+        runtime.resume_after_recovery()
+
+
+def _faulted_runtime(
+    *,
+    feedback_limit: int,
+    session_class=ContinuousPlanningSession,
+):
+    clock = FakeClock()
+    backend = ScriptedExecutionBackend()
+    session = session_class(Planner(), clock=clock)
+    runtime = ContinuousPlanningRuntime(
+        session,
+        backend,
+        clock=clock,
+        max_execution_feedback_per_step=feedback_limit,
+    )
+    runtime.submit_initial(request("matrix-k", world()))
+    runtime.step()
+    backend.emit(0, ExecutionFeedbackStatus.ACCEPTED, 0.0)
+    backend.emit(1, ExecutionFeedbackStatus.RUNNING, 0.2)
+    for _ in range(2):
+        runtime.step()
+    backend.emit(2, ExecutionFeedbackStatus.FAULTED, 0.2)
+    for _ in range(3):
+        runtime.step()
+        if backend.stop_calls:
+            break
+    assert backend.stop_calls == 1
+    return runtime, session, backend
+
+
+def _prepare_evidence_phase(
+    phase: str,
+    delivery: str,
+    feedback_limit: int,
+    *,
+    session_class=ContinuousPlanningSession,
+):
+    runtime, session, backend = _faulted_runtime(
+        feedback_limit=feedback_limit,
+        session_class=session_class,
+    )
+    command_id = backend.stop_command_id
+    stopped = MotionBoundaryState.stopped((0.0, 0.0), time_seconds=0.2)
+    terminal = ExecutionFeedback(
+        3,
+        backend.execution_id,
+        backend.plan.plan_id,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        stopped,
+        feedback_stream_id="scripted-feedback",
+        producer_epoch=7,
+        stop_command_id=command_id,
+    )
+    observed = observation(world(1, q=stopped.q))
+    if phase == "A":
+        backend.feedback.append(terminal)
+        runtime.step()
+    elif delivery == "stopped-first":
+        backend.feedback.append(terminal)
+        runtime.step()
+        runtime.observe_world(observed)
+        runtime.step()
+    elif delivery == "observation-first":
+        runtime.observe_world(observed)
+        runtime.step()
+        backend.feedback.append(terminal)
+        runtime.step()
+    elif delivery == "same-step":
+        backend.feedback.append(terminal)
+        runtime.observe_world(observed)
+        runtime.step()
+    else:
+        raise AssertionError(f"unsupported matrix delivery: {delivery}")
+    if phase in {"C", "D"}:
+        runtime.resume_after_recovery()
+    if phase == "D":
+        runtime.submit_initial(
+            PlanningRequest(
+                "matrix-next",
+                session.current_world,
+                (PlanningCandidate("a", "top"),),
+                motion_boundary=session.current_motion_boundary,
+            )
+        )
+        for _ in range(4):
+            runtime.step()
+            if backend.start_calls == 2:
+                break
+        assert backend.start_calls == 2
+    return runtime, session, backend, terminal
+
+
+@pytest.mark.parametrize(
+    "phase,input_kind,delivery,feedback_limit,conflict_expected,start_count",
+    [
+        ("A", "identical", "stopped-first", 1, False, 1),
+        ("A", "same-sequence-conflict", "stopped-first", 8, True, 1),
+        ("A", "higher-sequence-conflict", "stopped-first", 1, True, 1),
+        ("B", "identical", "stopped-first", 8, False, 1),
+        ("B", "same-sequence-conflict", "observation-first", 1, True, 1),
+        ("B", "higher-sequence-conflict", "same-step", 8, True, 1),
+        ("C", "identical", "observation-first", 8, False, 1),
+        ("C", "same-sequence-conflict", "stopped-first", 8, True, 1),
+        ("C", "higher-sequence-conflict", "same-step", 1, True, 1),
+        ("D", "identical", "same-step", 1, False, 2),
+        ("D", "higher-sequence-conflict", "observation-first", 8, False, 2),
+    ],
+    ids=lambda value: str(value),
+)
+def test_recovery_stop_evidence_event_ordering_matrix(
+    phase,
+    input_kind,
+    delivery,
+    feedback_limit,
+    conflict_expected,
+    start_count,
+):
+    replay = (
+        f"phase={phase},input={input_kind},delivery={delivery},"
+        f"feedback_limit={feedback_limit}"
+    )
+    runtime, session, backend, terminal = _prepare_evidence_phase(
+        phase,
+        delivery,
+        feedback_limit,
+    )
+    if input_kind == "identical":
+        injected = terminal
+    else:
+        sequence = terminal.feedback_sequence
+        if input_kind == "higher-sequence-conflict":
+            sequence += 1
+        injected = ExecutionFeedback(
+            sequence,
+            terminal.execution_id,
+            terminal.plan_id,
+            ExecutionFeedbackStatus.STOPPED,
+            terminal.progress,
+            MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+            feedback_stream_id=terminal.feedback_stream_id,
+            producer_epoch=terminal.producer_epoch,
+            stop_command_id=terminal.stop_command_id,
+        )
+    backend.feedback.append(injected)
+    for _ in range(4):
+        runtime.step()
+
+    snapshot = runtime.snapshot()
+    lifecycle = snapshot["stop_lifecycle"]
+    assert backend.start_calls == start_count, replay
+    assert lifecycle["evidence_conflict"] is conflict_expected, replay
+    assert lifecycle["retired"] is (phase == "D"), replay
+    if conflict_expected:
+        assert runtime.state is RuntimeState.RECOVERY, replay
+        assert session.state is SessionState.RECOVERY, replay
+        assert not lifecycle["resume_allowed"], replay
+        assert not lifecycle["recovery_grant_valid"], replay
+        assert lifecycle["failure_reason"] == "STOP_EVIDENCE_CONFLICT", replay
+        assert lifecycle["accepted_evidence"]["q"] == (0.0, 0.0), replay
+        assert lifecycle["conflicting_evidence"]["q"] == (0.01, 0.0), replay
+    elif phase == "A":
+        assert lifecycle["evidence_phase"] == "AWAITING_WORLD", replay
+        assert not lifecycle["resume_allowed"], replay
+    elif phase == "B":
+        assert lifecycle["evidence_phase"] == "AWAITING_RECOVERY_AUTHORIZATION", replay
+        assert lifecycle["resume_allowed"], replay
+    elif phase == "C":
+        assert lifecycle["evidence_phase"] == "RECOVERY_AUTHORIZED", replay
+        assert lifecycle["recovery_grant_valid"], replay
+    else:
+        assert lifecycle["evidence_phase"] == "RETIRED", replay
+        assert not lifecycle["recovery_grant_valid"], replay
+
+
+def test_batched_stop_confirmations_cannot_bypass_feedback_limit_or_conflict_gate():
+    runtime, session, backend = _faulted_runtime(feedback_limit=8)
+    command_id = backend.stop_command_id
+    plan_id = backend.plan.plan_id
+    first = ExecutionFeedback(
+        3,
+        backend.execution_id,
+        plan_id,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        MotionBoundaryState.stopped((0.0, 0.0), time_seconds=0.2),
+        feedback_stream_id="scripted-feedback",
+        producer_epoch=7,
+        stop_command_id=command_id,
+    )
+    conflict = ExecutionFeedback(
+        4,
+        backend.execution_id,
+        plan_id,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+        feedback_stream_id="scripted-feedback",
+        producer_epoch=7,
+        stop_command_id=command_id,
+    )
+    backend.feedback.extend((first, conflict))
+    runtime.observe_world(observation(world(1, q=first.current_boundary.q)))
+    for _ in range(3):
+        runtime.step()
+
+    lifecycle = runtime.snapshot()["stop_lifecycle"]
+    assert backend.start_calls == 1
+    assert session.state is SessionState.RECOVERY
+    assert lifecycle["evidence_conflict"]
+    assert not lifecycle["resume_allowed"]
+    assert not lifecycle["recovery_grant_valid"]
+
+
+def test_reconciled_conflict_can_reestablish_evidence_then_retire_on_accepted_handoff():
+    runtime, session, backend, terminal = _prepare_evidence_phase("B", "same-step", 8)
+    backend.feedback.append(
+        ExecutionFeedback(
+            4,
+            terminal.execution_id,
+            terminal.plan_id,
+            ExecutionFeedbackStatus.STOPPED,
+            terminal.progress,
+            MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+            feedback_stream_id=terminal.feedback_stream_id,
+            producer_epoch=terminal.producer_epoch,
+            stop_command_id=terminal.stop_command_id,
+        )
+    )
+    runtime.step()
+    assert runtime.retry_stop_after_evidence_conflict() is RuntimeState.STOPPING
+    runtime.step()
+    assert backend.stop_calls == 2
+
+    replacement = MotionBoundaryState.stopped((0.0, 0.0), time_seconds=0.3)
+    backend.emit(
+        5,
+        ExecutionFeedbackStatus.STOPPED,
+        0.3,
+        replacement,
+        stop_command_id=backend.stop_command_id,
+    )
+    runtime.observe_world(observation(world(2, q=replacement.q)))
+    runtime.step()
+    reconciled = runtime.snapshot()["stop_lifecycle"]
+    assert reconciled["resume_allowed"]
+    assert reconciled["prior_evidence_conflict"]
+
+    runtime.resume_after_recovery()
+    authorized = runtime.snapshot()["stop_lifecycle"]
+    assert authorized["recovery_grant_valid"]
+    runtime.submit_initial(
+        PlanningRequest(
+            "after-reestablished-stop",
+            session.current_world,
+            (PlanningCandidate("a", "top"),),
+            motion_boundary=session.current_motion_boundary,
+        )
+    )
+    for _ in range(4):
+        runtime.step()
+        if backend.start_calls == 2:
+            break
+
+    retired = runtime.snapshot()["stop_lifecycle"]
+    assert backend.start_calls == 2
+    assert retired["retired"]
+    assert retired["evidence_phase"] == "RETIRED"
+    assert retired["retired_by_start_attempt_id"] is not None
+    assert not retired["recovery_grant_valid"]
+
+
+def test_failed_resume_does_not_leave_a_partial_recovery_grant():
+    runtime, session, backend, _ = _prepare_evidence_phase(
+        "B",
+        "same-step",
+        8,
+        session_class=ResumeFailingSession,
+    )
+    before = runtime.snapshot()["stop_lifecycle"]
+    assert before["resume_allowed"]
+    assert not before["recovery_grant_valid"]
+
+    with pytest.raises(RuntimeError, match="injected resume failure"):
+        runtime.resume_after_recovery()
+
+    after = runtime.snapshot()["stop_lifecycle"]
+    assert runtime.state is RuntimeState.RECOVERY
+    assert session.state is SessionState.RECOVERY
+    assert backend.start_calls == 1
+    assert after["resume_allowed"]
+    assert not after["recovery_resume_authorized"]
+    assert after["recovery_grant_attempt_id"] is None
+    assert after["recovery_grant_evidence_version"] is None
+    assert not after["recovery_grant_valid"]
+
+
+def test_reconfirmation_rejection_remains_recovery_with_external_confirmation_required():
+    runtime, session, backend, terminal = _prepare_evidence_phase("B", "same-step", 8)
+    backend.feedback.append(
+        ExecutionFeedback(
+            4,
+            terminal.execution_id,
+            terminal.plan_id,
+            ExecutionFeedbackStatus.STOPPED,
+            terminal.progress,
+            MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+            feedback_stream_id=terminal.feedback_stream_id,
+            producer_epoch=terminal.producer_epoch,
+            stop_command_id=terminal.stop_command_id,
+        )
+    )
+    runtime.step()
+    backend.stop_status = ExecutionCommandStatus.UNSUPPORTED
+    runtime.retry_stop_after_evidence_conflict()
+    for _ in range(3):
+        runtime.step()
+
+    lifecycle = runtime.snapshot()["stop_lifecycle"]
+    assert backend.start_calls == 1
+    assert backend.stop_calls == 2
+    assert runtime.state is RuntimeState.RECOVERY
+    assert session.state is SessionState.RECOVERY
+    assert lifecycle["command_state"] == "REJECTED"
+    assert not lifecycle["stopped_confirmed"]
+    assert not lifecycle["world_reconciled"]
+    assert not lifecycle["resume_allowed"]
+    assert not lifecycle["recovery_grant_valid"]
+    with pytest.raises(RuntimeError, match="before stopped evidence"):
+        runtime.resume_after_recovery()
