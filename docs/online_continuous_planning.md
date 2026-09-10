@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev5)
+# Online continuous planning control plane (0.5.2.dev6)
 
 ## Acceptance scope
 
@@ -112,6 +112,44 @@ remaining staging capacity. Recovery continues consuming authoritative world
 observations for audit/reconciliation but does not clear the recovery fault or
 start motion. Accepted requests discarded by recovery or shutdown are counted
 and journaled rather than silently evicted.
+
+### dev6 safe-stop lifecycle
+
+Execution-task outcome and physical stop evidence are separate facts. A normal
+`FAILED`, `DEVIATED`, or `FAULTED` report records the task result and triggers or
+continues STOPPING; it does not clear the active execution identity and does not
+prove zero velocity. STOPPING/STOPPED feedback used as stop evidence carries
+`stop_command_id` and must match the current stop attempt's execution ID, plan
+ID, command ID, feedback stream, and producer epoch. Its sequence is checked in
+an independent stop-feedback domain, so a valid STOPPED may follow a previously
+recorded FAULTED task outcome without rewriting that outcome. An adapter that
+cannot correlate stop evidence must fail closed and cannot use an uncorrelated
+STOPPED report to authorize motion.
+
+The runtime snapshot exposes the immutable view of the current/last stop
+lifecycle: trigger and later failure reasons, command state and identity,
+execution outcome, actual stopped boundary, confirmation stream/epoch, world
+reconciliation, recovery requirement, and whether explicit resume is permitted.
+Original trigger reason is not overwritten by a later command rejection or
+watchdog timeout. Each new stop attempt has a new attempt identity and isolated
+sequence/watchdog state.
+
+| Condition | Command/evidence | Runtime/session effect | May resume? |
+| --- | --- | --- | --- |
+| Stop required | No command yet | STOPPING; mandatory step epilogue dispatches once | No |
+| Stop accepted | Correlated command result | Continue supervision; `stop_unconfirmed=true` until STOPPED | No |
+| Stop rejected/error/timeout | No valid stop evidence | RECOVERY with execution monitor and identities retained | No |
+| STOPPED first | Correlated actual STOP boundary | WAITING_FOR_OBSERVATION | No |
+| Observation first | Authoritative compatible world retained | Continue STOPPING until STOPPED | No |
+| Normal scene-change stop reconciled | STOPPED plus compatible world | Automatic replan from actual stopped boundary | Yes, automatically |
+| Severe task/protocol/backend fault reconciled | STOPPED plus compatible world | RECOVERY; original failure remains recorded | Only through public explicit resume |
+
+`resume_after_recovery()` rejects an unconfirmed or unreconciled stop and an
+unhealthy execution backend. A normal observation alone never clears a serious
+fault. Stop rejection, exception, or timeout cannot fabricate a boundary or
+claim hardware emergency-stop capability. The step loop services the mandatory
+stop epilogue even when ordinary ingress/error handling returns early, preventing
+continuous conflicting input from starving the one-shot stop command.
 
 ## Bounded audit journals
 
@@ -303,6 +341,9 @@ When `supports_command_acknowledgement` is true, the first normal feedback must 
 ACCEPTED. When false, the accepted start command is the acknowledgement and an
 extra ACCEPTED feedback is invalid. Runtime still requires matching execution/plan
 identity and a finite complete boundary with the expected DOF.
+`stop_command_id` is an optional compatibility extension on the immutable
+envelope, but is mandatory when STOPPING/STOPPED is offered as authoritative
+evidence for a runtime stop request. It is invalid on ordinary task feedback.
 `MotionBoundaryState.time_seconds` is trajectory/execution logical time, while
 `observed_at_monotonic_seconds` is the feedback clock; they are not directly
 compared and calendar time never participates in boundary matching.
@@ -339,6 +380,10 @@ order, which is part of the tested contract:
 9. advance a deterministic execution backend, when supported;
 10. synchronize runtime state and append audit events.
 
+Every early-return path also runs a mandatory safety epilogue that dispatches a
+required stop once. This epilogue does not reorder ordinary work; it prevents
+error handling from starving safety-command delivery.
+
 Planning workers and execution backends only produce completions or feedback;
 they never mutate runtime/session state. A caller-supplied planning executor is
 not closed unless `owns_executor=True`. Execution-backend ownership is also
@@ -361,9 +406,11 @@ an accepted authoritative world is available. The two facts may arrive in either
 order. If STOPPED arrives without a matching world position, runtime enters the
 explicit `WAITING_FOR_OBSERVATION` state, retains the boundary, blocks successors,
 and reconciles only after a compatible observation. DOF mismatch, observation
-identity conflict, or rejected stop fails closed. Rejected/unsupported stop, controller fault,
-invalid feedback, execution failure, or deviation enters explicit recovery and
-cascades lineage invalidation without pretending that the robot stopped.
+identity conflict, or rejected stop fails closed. Rejected/unsupported stop,
+controller fault, invalid feedback, execution failure, or deviation preserves
+stop supervision and cascades lineage invalidation without pretending that the
+robot stopped. Serious faults remain in recovery after STOPPED/world
+reconciliation until the public explicit-resume gate is called.
 
 ## Test fixtures
 

@@ -1,4 +1,13 @@
-# Trailer Unloading Geometric Simulator v0.5.2.dev5
+# Trailer Unloading Geometric Simulator v0.5.2.dev6
+
+v0.5.2.dev6 completes the safe-stop lifecycle contract. A stop request is a
+command, not proof of rest; FAILED/DEVIATED/FAULTED remains the execution-task
+outcome, while only STOPPED correlated to the current stop command can supply
+stop evidence. Stop evidence and an authoritative compatible world observation
+may arrive in either order. Severe faults require explicit
+`ContinuousPlanningRuntime.resume_after_recovery()` after reconciliation.
+Repeated conflicts cannot starve or duplicate stop dispatch. This remains
+control-plane bookkeeping, not a hardware emergency stop or safety rating.
 
 v0.5.2.dev5 hardens compound-failure behavior in the existing online runtime.
 A speculative k+1 planning timeout is isolated from a still-valid executing k;
@@ -280,6 +289,7 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
+- v0.5.2.dev6: correlated stop-attempt lifecycle, independent task-terminal/STOPPED evidence, and explicit recovery authorization.
 - v0.5.2.dev5: compound-failure isolation, end-to-end bounded ingress staging, and receive-time feedback watchdogs.
 - v0.5.2.dev4: thread-safe external ingress, deterministic watchdog policies, and bounded auditable journals.
 - v0.5.2.dev3：类型化 world observation、execution-scoped feedback ordering、STOPPED/world 乱序汇合及有界 ingress 背压。
@@ -293,4 +303,4 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev5`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev6`。
