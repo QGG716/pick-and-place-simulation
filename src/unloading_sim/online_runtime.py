@@ -171,6 +171,12 @@ class _MailboxDrain:
 
 
 @dataclass(frozen=True)
+class _ReceivedExecutionFeedback:
+    feedback: ExecutionFeedback
+    received_at_monotonic_seconds: float
+
+
+@dataclass(frozen=True)
 class RuntimeEvent:
     sequence: int
     kind: str
@@ -272,6 +278,8 @@ class RuntimeMetrics:
         self.event_history_gap_count = 0
         self.event_dropped_count = 0
         self.event_overflow_count = 0
+        self.accepted_ingress_discarded_count = 0
+        self.stop_unconfirmed_count = 0
 
     def record_ingress(self, port: str, status: RuntimeIngressStatus) -> None:
         with self._ingress_lock:
@@ -323,6 +331,8 @@ class RuntimeMetrics:
             "event_history_gap_count": self.event_history_gap_count,
             "event_dropped_count": self.event_dropped_count,
             "event_overflow_count": self.event_overflow_count,
+            "accepted_ingress_discarded_count": self.accepted_ingress_discarded_count,
+            "stop_unconfirmed_count": self.stop_unconfirmed_count,
             "production_throughput": None,
         }
 
@@ -470,9 +480,13 @@ class RuntimeIngressMailbox:
         with self._lock:
             return len(self._requests), len(self._observations)
 
-    def shutdown(self) -> None:
+    def shutdown(self) -> tuple[int, int]:
         with self._lock:
             self._closed = True
+            pending = (len(self._requests), len(self._observations))
+            self._requests.clear()
+            self._observations.clear()
+            return pending
 
 
 class ContinuousPlanningRuntime:
@@ -568,7 +582,7 @@ class ContinuousPlanningRuntime:
         )
         self._pending_initial: deque[_ReceivedIngress] = deque()
         self._pending_worlds: deque[_ReceivedIngress] = deque()
-        self._pending_feedback: deque[ExecutionFeedback] = deque()
+        self._pending_feedback: deque[_ReceivedExecutionFeedback] = deque()
         self._latest_world: PlanningWorldSnapshot | None = None
         self._latest_world_observation: WorldObservation | None = None
         self._active_plan: PlanEnvelope | None = None
@@ -591,6 +605,7 @@ class ContinuousPlanningRuntime:
         self._planning_started_at: float | None = None
         self._timed_out_planning_task_id: str | None = None
         self._watchdog_latches: set[str] = set()
+        self._stop_unconfirmed = False
 
     @property
     def closed(self) -> bool:
@@ -652,6 +667,33 @@ class ContinuousPlanningRuntime:
         reason: ReplanReason = ReplanReason.EXECUTION_FAILED,
         feedback: ExecutionFeedback | None = None,
     ) -> None:
+        if (
+            self._active_plan is not None
+            and self.session.execution.state is ExecutionState.RUNNING
+        ):
+            self.session.begin_safety_stop(reason, message)
+            self.state = RuntimeState.STOPPING
+            self._event(
+                "runtime_safety_stop_required",
+                reason.value,
+                plan_id=self._active_plan.plan_id,
+                execution_id=self._active_execution_id,
+                message=message,
+            )
+            return
+        if self.session.execution.state is ExecutionState.STOPPING:
+            self.session.mark_stop_unconfirmed(reason, message)
+            self._stop_unconfirmed = True
+            self.metrics.stop_unconfirmed_count += 1
+            self.state = RuntimeState.RECOVERY
+            self._event(
+                "runtime_stop_unconfirmed",
+                reason.value,
+                plan_id=None if self._active_plan is None else self._active_plan.plan_id,
+                execution_id=self._active_execution_id,
+                message=message,
+            )
+            return
         self.session.enter_recovery(
             message,
             reason=reason,
@@ -781,6 +823,7 @@ class ContinuousPlanningRuntime:
         self._execution_started_at = None
         self._last_feedback_received_at = None
         self._stop_requested_at = None
+        self._stop_unconfirmed = False
         self._watchdog_latches.discard("execution_feedback")
         self._watchdog_latches.discard("stop_ack")
 
@@ -820,7 +863,8 @@ class ContinuousPlanningRuntime:
         self._stop_wait_last_at = None
         self._clear_active_execution()
 
-    def _consume_feedback(self, feedback: ExecutionFeedback) -> None:
+    def _consume_feedback(self, received: _ReceivedExecutionFeedback) -> None:
+        feedback = received.feedback
         if not isinstance(feedback, ExecutionFeedback):
             self._invalid_feedback(
                 f"expected ExecutionFeedback, got {type(feedback).__name__}"
@@ -913,7 +957,8 @@ class ContinuousPlanningRuntime:
         state.last_status = feedback.status
         state.last_progress = max(previous_progress, feedback.progress)
         state.last_feedback = feedback
-        self._last_feedback_received_at = float(self._clock())
+        self._last_feedback_received_at = received.received_at_monotonic_seconds
+        processed_at = float(self._clock())
         self.metrics.execution_feedback_count_by_status[feedback.status.value] += 1
         self._event(
             "execution_feedback",
@@ -921,6 +966,12 @@ class ContinuousPlanningRuntime:
             plan_id=feedback.plan_id,
             execution_id=feedback.execution_id,
             progress=feedback.progress,
+            received_at_monotonic_seconds=received.received_at_monotonic_seconds,
+            processed_at_monotonic_seconds=processed_at,
+            runtime_queue_wait_seconds=max(
+                0.0,
+                processed_at - received.received_at_monotonic_seconds,
+            ),
         )
         if feedback.status is ExecutionFeedbackStatus.RUNNING:
             if self.session.execution.state is not ExecutionState.RUNNING:
@@ -997,7 +1048,8 @@ class ContinuousPlanningRuntime:
             return
         self.metrics.execution_failure_count += 1
         self._fail_active(feedback.message or feedback.status.value, feedback=feedback)
-        self._clear_active_execution()
+        if self.session.execution.state is not ExecutionState.STOPPING:
+            self._clear_active_execution()
 
     def _poll_execution_feedback(self) -> None:
         while len(self._pending_feedback) < self._execution_feedback_capacity:
@@ -1013,7 +1065,9 @@ class ContinuousPlanningRuntime:
                     f"expected ExecutionFeedback, got {type(feedback).__name__}"
                 )
                 return
-            self._pending_feedback.append(feedback)
+            self._pending_feedback.append(
+                _ReceivedExecutionFeedback(feedback, float(self._clock()))
+            )
             self.metrics.record_ingress(
                 "execution_feedback",
                 RuntimeIngressStatus.ACCEPTED,
@@ -1030,9 +1084,13 @@ class ContinuousPlanningRuntime:
             )
         processed = 0
         while self._pending_feedback and processed < self._max_execution_feedback_per_step:
+            invalid_before = self.metrics.invalid_feedback_count
             self._consume_feedback(self._pending_feedback.popleft())
             processed += 1
-            if self.state is RuntimeState.RECOVERY:
+            if (
+                self.state is RuntimeState.RECOVERY
+                or self.metrics.invalid_feedback_count != invalid_before
+            ):
                 return
 
     def _apply_world_observations(self) -> None:
@@ -1051,7 +1109,7 @@ class ContinuousPlanningRuntime:
             self._latest_world_observation = observation
             self._scene_received_at = received.received_at_monotonic_seconds
             self._watchdog_latches.discard("scene_stale")
-            if self.session.state is SessionState.STOPPING:
+            if self.session.execution.state is ExecutionState.STOPPING:
                 self._pending_stop_observation = observation
                 self._try_reconcile_pending_stop()
                 if self.state is RuntimeState.RECOVERY:
@@ -1114,16 +1172,29 @@ class ContinuousPlanningRuntime:
                 f"execution start returned {type(result).__name__}, expected ExecutionCommandResult"
             )
             return
-        if (
-            result.status is not ExecutionCommandStatus.ACCEPTED
-            or result.plan_id != plan.plan_id
-            or not result.execution_id
-        ):
+        if result.status is not ExecutionCommandStatus.ACCEPTED:
             self.metrics.execution_start_rejected_count += 1
             self._active_plan = plan
-            self._fail_active(
-                f"execution start rejected: {result.status.value}: {result.message}"
+            message = f"execution start rejected: {result.status.value}: {result.message}"
+            self.session.enter_recovery(
+                message,
+                reason=ReplanReason.EXECUTION_FAILED,
+                plan_id=plan.plan_id,
             )
+            self.state = RuntimeState.RECOVERY
+            self._event(
+                "runtime_recovery",
+                ReplanReason.EXECUTION_FAILED.value,
+                plan_id=plan.plan_id,
+                message=message,
+            )
+            self._clear_active_execution()
+            return
+        if result.plan_id != plan.plan_id or not result.execution_id:
+            self.metrics.execution_start_rejected_count += 1
+            self._active_plan = plan
+            self._active_execution_id = result.execution_id
+            self._fail_active("accepted execution start returned an invalid identity")
             return
         self._active_plan = plan
         self._active_execution_id = result.execution_id
@@ -1215,6 +1286,16 @@ class ContinuousPlanningRuntime:
             status = type(result).__name__ if not isinstance(result, ExecutionCommandResult) else result.status.value
             self._fail_active(f"execution stop request rejected: {status}")
             return
+        if (
+            result.plan_id != plan_id
+            or (
+                self._active_execution_id is not None
+                and result.execution_id != self._active_execution_id
+            )
+        ):
+            self.metrics.execution_stop_rejected_count += 1
+            self._fail_active("execution stop acknowledgement identity mismatch")
+            return
         self._stop_requested_at = float(self._clock())
         self._event(
             "execution_stop_command",
@@ -1268,7 +1349,11 @@ class ContinuousPlanningRuntime:
             self.session.execution.state is ExecutionState.RUNNING
             and self._expired(
                 now,
-                self._last_feedback_received_at or self._execution_started_at,
+                (
+                    self._last_feedback_received_at
+                    if self._last_feedback_received_at is not None
+                    else self._execution_started_at
+                ),
                 policy.execution_feedback_timeout_seconds,
             )
             and "execution_feedback" not in self._watchdog_latches
@@ -1369,9 +1454,17 @@ class ContinuousPlanningRuntime:
 
     def step(self) -> RuntimeState:
         self._assert_open()
+        request_staging_space = max(
+            0,
+            self._initial_request_capacity - len(self._pending_initial),
+        )
+        world_staging_space = max(
+            0,
+            self._world_observation_capacity - len(self._pending_worlds),
+        )
         drained = self.ingress_mailbox.drain(
-            self._max_initial_requests_per_step,
-            self._max_world_observations_per_step,
+            min(self._max_initial_requests_per_step, request_staging_space),
+            min(self._max_world_observations_per_step, world_staging_space),
         )
         self._pending_initial.extend(drained.requests)
         self._pending_worlds.extend(drained.observations)
@@ -1386,6 +1479,15 @@ class ContinuousPlanningRuntime:
             received = self._pending_initial.popleft()
             request = received.message
             assert isinstance(request, PlanningRequest)
+            if self.session.state is SessionState.RECOVERY:
+                self.metrics.accepted_ingress_discarded_count += 1
+                self._event(
+                    "accepted_initial_request_discarded",
+                    "RUNTIME_IN_RECOVERY",
+                    request_id=request.request_id,
+                )
+                submitted += 1
+                continue
             try:
                 self.session.submit(request)
             except Exception as exc:
@@ -1399,14 +1501,12 @@ class ContinuousPlanningRuntime:
             self._watchdog_latches.discard("scene_stale")
             submitted += 1
         self._poll_execution_feedback()
+        self._apply_world_observations()
         if self.state is RuntimeState.RECOVERY:
             if self._timed_out_planning_task_id is not None:
                 self.session.advance(1)
                 if self.session.active_planning_task_id is None:
                     self._timed_out_planning_task_id = None
-            return self._sync_state()
-        self._apply_world_observations()
-        if self.state is RuntimeState.RECOVERY:
             return self._sync_state()
         now = float(self._clock())
         self._run_watchdogs(now)
@@ -1417,6 +1517,11 @@ class ContinuousPlanningRuntime:
                     self._timed_out_planning_task_id = None
             return self._sync_state()
         self.session.advance(1)
+        if (
+            self._timed_out_planning_task_id is not None
+            and self.session.active_planning_task_id is None
+        ):
+            self._timed_out_planning_task_id = None
         self._sync_planning_watch(float(self._clock()))
         if self.session.active_planning_task_id is None:
             self._watchdog_latches.discard("planning")
@@ -1479,11 +1584,25 @@ class ContinuousPlanningRuntime:
                 None if self._latest_world is None else self._latest_world.fingerprint
             ),
             "ingress_capacities": {
+                "semantics": "bounded per layer; total is mailbox plus runtime staging",
                 "initial_requests": self._initial_request_capacity,
                 "world_observations": self._world_observation_capacity,
+                "mailbox_initial_requests": self._initial_request_capacity,
+                "staging_initial_requests": self._initial_request_capacity,
+                "maximum_total_initial_requests": 2 * self._initial_request_capacity,
+                "mailbox_world_observations": self._world_observation_capacity,
+                "staging_world_observations": self._world_observation_capacity,
+                "maximum_total_world_observations": 2 * self._world_observation_capacity,
                 "execution_feedback": self._execution_feedback_capacity,
             },
+            "ingress_pending_by_layer": {
+                "mailbox_initial_requests": mailbox_requests,
+                "staging_initial_requests": len(self._pending_initial),
+                "mailbox_world_observations": mailbox_worlds,
+                "staging_world_observations": len(self._pending_worlds),
+            },
             "terminal_feedback_history": len(self._terminal_feedback),
+            "stop_unconfirmed": self._stop_unconfirmed,
             "event_journal": self.events.summary(),
             "watchdog": {
                 "scene_received_at": self._scene_received_at,
@@ -1513,7 +1632,20 @@ class ContinuousPlanningRuntime:
             self._owner_thread_id = get_ident()
         elif get_ident() != self._owner_thread_id:
             raise RuntimeError("runtime shutdown must run on the step owner thread")
-        self.ingress_mailbox.shutdown()
+        mailbox_requests, mailbox_worlds = self.ingress_mailbox.shutdown()
+        discarded_requests = mailbox_requests + len(self._pending_initial)
+        discarded_worlds = mailbox_worlds + len(self._pending_worlds)
+        if discarded_requests or discarded_worlds:
+            discarded = discarded_requests + discarded_worlds
+            self.metrics.accepted_ingress_discarded_count += discarded
+            self._event(
+                "accepted_ingress_discarded",
+                "RUNTIME_SHUTDOWN",
+                planning_requests=discarded_requests,
+                world_observations=discarded_worlds,
+            )
+            self._pending_initial.clear()
+            self._pending_worlds.clear()
         if self.owns_execution_backend:
             self.execution_backend.shutdown()
         if self.owns_executor:

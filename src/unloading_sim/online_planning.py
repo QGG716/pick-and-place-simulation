@@ -1805,10 +1805,15 @@ class ExecutionMonitor:
             raise ValueError("execution progress must be finite, monotonic, and inside [0, 1]")
         self.progress = float(progress)
 
-    def begin_stopping(self, message: str) -> PlanEnvelope:
+    def begin_stopping(
+        self,
+        message: str,
+        *,
+        reason: ReplanReason = ReplanReason.SCENE_REVISION_CHANGED,
+    ) -> PlanEnvelope:
         if self.state is not ExecutionState.RUNNING or self.active_plan is None:
             raise RuntimeError("no running execution to stop")
-        plan = self.active_plan.invalidate(ReplanReason.SCENE_REVISION_CHANGED, message)
+        plan = self.active_plan.invalidate(reason, message)
         self.active_plan = plan
         self.state = ExecutionState.STOPPING
         self.message = message
@@ -3628,7 +3633,7 @@ class ContinuousPlanningSession:
     ) -> PlanEnvelope:
         if self.execution.state is not ExecutionState.RUNNING or self.execution.active_plan is None:
             raise RuntimeError("no running execution can enter STOPPING")
-        active = self.execution.begin_stopping(message)
+        active = self.execution.begin_stopping(message, reason=reason)
         self.invalidated_plans.append(active)
         self._cascade_lineage(active.plan_id, reason, message)
         self._stopping_request = active.request
@@ -3647,23 +3652,55 @@ class ContinuousPlanningSession:
         self._event("execution_stopping", reason.value, active.request.request_id)
         return active
 
+    def mark_stop_unconfirmed(
+        self,
+        reason: ReplanReason,
+        message: str,
+    ) -> PlanEnvelope:
+        """Record a stop-control failure without claiming motion has stopped."""
+
+        if self.execution.state is not ExecutionState.STOPPING or self.execution.active_plan is None:
+            raise RuntimeError("no STOPPING execution can be marked unconfirmed")
+        active = self.execution.active_plan
+        self.state = SessionState.RECOVERY
+        self._terminal_reason = reason.value
+        self._terminal_message = message
+        self.statistics.end_robot_idle()
+        self._event(
+            "execution_stop_unconfirmed",
+            reason.value,
+            active.request.request_id,
+            plan_id=active.plan_id,
+            message=message,
+        )
+        return active
+
     def timeout_active_planning(self, message: str = "planning request timed out") -> str | None:
         task_id = self._submitted_task
         if task_id is None or self._active_progress is None:
             return None
         request_id = self._active_progress.request.request_id
+        isolated_from_execution = bool(
+            self._active_progress.request.speculative
+            and self.execution.state is ExecutionState.RUNNING
+            and self.execution.active_plan is not None
+        )
         self._generation_invalidation_reason = ReplanReason.PLANNING_TIMEOUT
         self._planning_generation += 1
         self._discard_without_replan_ids.add(request_id)
         worker_running = bool(self.executor.running_count)
         self._logical_cancel_active()
-        self.enter_recovery(message, reason=ReplanReason.PLANNING_TIMEOUT)
+        if isolated_from_execution:
+            self.state = SessionState.EXECUTING
+        else:
+            self.enter_recovery(message, reason=ReplanReason.PLANNING_TIMEOUT)
         self._event(
             "planning_timeout",
             ReplanReason.PLANNING_TIMEOUT.value,
             request_id,
             task_id=task_id,
             worker_still_exiting=worker_running,
+            isolated_from_active_execution=isolated_from_execution,
         )
         return task_id
 
