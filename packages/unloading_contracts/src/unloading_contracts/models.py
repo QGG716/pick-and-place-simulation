@@ -558,8 +558,14 @@ class PlanningWorldSnapshot:
         if any(value is None for value in (self.tool_attachment, self.base_state, self.conveyor_state, self.config_identity)):
             raise ValueError("complete mechanism, tool, and config state is required")
         scene = deep_freeze(self.scene_snapshot)
-        if scene_fingerprint(scene) != self.scene_revision.fingerprint:
-            raise ValueError("actual scene snapshot does not match scene revision fingerprint")
+        geometry_fingerprint = (
+            scene.get("geometry_fingerprint") if isinstance(scene, Mapping) else None
+        )
+        expected_scene_fingerprint = (
+            str(geometry_fingerprint) if geometry_fingerprint else scene_fingerprint(scene)
+        )
+        if expected_scene_fingerprint != self.scene_revision.fingerprint:
+            raise ValueError("actual scene geometry does not match scene revision fingerprint")
         frozen = {name: deep_freeze(getattr(self, name)) for name in ("tool_attachment", "payload_attachment", "base_state", "conveyor_state", "config_identity")}
         object.__setattr__(self, "scene_snapshot", scene)
         for name, value in frozen.items():
@@ -586,6 +592,17 @@ class PlanningWorldSnapshot:
         if isinstance(self.config_identity, Mapping) and self.config_identity.get("world_model_fingerprint"):
             return str(self.config_identity["world_model_fingerprint"])
         return scene_fingerprint({"scene": self.scene_snapshot, "base": self.base_state, "conveyor": self.conveyor_state, "config": self.config_identity})
+
+    @property
+    def mechanism_fingerprint(self) -> str:
+        """Identity of mechanism/attachment state, separate from scene geometry."""
+        return scene_fingerprint({
+            "tool": self.tool_attachment,
+            "payload": self.payload_attachment,
+            "base": self.base_state,
+            "conveyor": self.conveyor_state,
+            "config": self.config_identity,
+        })
 
     def planning_context_matches(self, other: PlanningWorldSnapshot) -> bool:
         return bool(

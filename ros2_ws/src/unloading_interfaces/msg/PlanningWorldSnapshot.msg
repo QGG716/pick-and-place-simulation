@@ -1,6 +1,16 @@
 string schema_version
+string publisher_epoch
+uint64 publisher_sequence
+bool publisher_restart
+builtin_interfaces/Time published_time
+builtin_interfaces/Time robot_sample_time
+builtin_interfaces/Time mechanism_sample_time
 uint64 scene_revision_sequence
 string scene_fingerprint
+uint64 robot_state_revision_sequence
+string robot_state_fingerprint
+uint64 mechanism_revision_sequence
+string mechanism_fingerprint
 string world_fingerprint
 string source_epoch
 builtin_interfaces/Time source_capture_time

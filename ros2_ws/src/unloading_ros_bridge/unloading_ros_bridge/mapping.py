@@ -173,11 +173,21 @@ def _state_identity(value, *, label: str) -> str:
     return canonical_fingerprint({"state_kind": label, "state": value})
 
 
-def snapshot_to_msg(snapshot: PlanningWorldSnapshot, *, source_epoch: str, source_capture_time: float, blocking_reasons=(), obstacles=(), unknown_regions=()) -> PlanningWorldSnapshotMsg:
+def snapshot_to_msg(snapshot: PlanningWorldSnapshot, *, source_epoch: str, source_capture_time: float, blocking_reasons=(), obstacles=(), unknown_regions=(), publisher_epoch: str = "legacy-publisher", publisher_sequence: int = 0, publisher_restart: bool = False, published_time: float | None = None, robot_sample_time: float | None = None, mechanism_sample_time: float | None = None, mechanism_revision_sequence: int = 0) -> PlanningWorldSnapshotMsg:
     message = PlanningWorldSnapshotMsg()
     message.schema_version = "1.1.0"
+    message.publisher_epoch = publisher_epoch
+    message.publisher_sequence = int(publisher_sequence)
+    message.publisher_restart = bool(publisher_restart)
+    message.published_time = float_to_time(source_capture_time if published_time is None else published_time)
+    message.robot_sample_time = float_to_time(0.0 if robot_sample_time is None else robot_sample_time)
+    message.mechanism_sample_time = float_to_time(0.0 if mechanism_sample_time is None else mechanism_sample_time)
     message.scene_revision_sequence = snapshot.scene_revision.sequence
     message.scene_fingerprint = snapshot.scene_revision.fingerprint
+    message.robot_state_revision_sequence = snapshot.robot_state_revision.sequence
+    message.robot_state_fingerprint = snapshot.robot_state_revision.fingerprint
+    message.mechanism_revision_sequence = int(mechanism_revision_sequence)
+    message.mechanism_fingerprint = snapshot.mechanism_fingerprint
     message.world_fingerprint = snapshot.fingerprint
     message.source_epoch = source_epoch
     message.source_capture_time = float_to_time(source_capture_time)
@@ -204,4 +214,10 @@ def snapshot_from_msg(message: PlanningWorldSnapshotMsg) -> PlanningWorldSnapsho
         raise ValueError("ROS snapshot payload is not a PlanningWorldSnapshot")
     if snapshot.fingerprint != message.world_fingerprint or snapshot.scene_revision.fingerprint != message.scene_fingerprint:
         raise ValueError("ROS snapshot envelope fingerprint mismatch")
+    if (
+        snapshot.robot_state_revision.sequence != int(message.robot_state_revision_sequence)
+        or snapshot.robot_state_revision.fingerprint != message.robot_state_fingerprint
+        or snapshot.mechanism_fingerprint != message.mechanism_fingerprint
+    ):
+        raise ValueError("ROS snapshot state-revision envelope mismatch")
     return snapshot

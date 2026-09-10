@@ -10,9 +10,12 @@ from unloading_contracts import (
     UnknownRegion, Validity,
 )
 from unloading_perception.backends import CargoJsonReplayBackend, CargoPipelineBackend, resolve_controlled_reference
-from unloading_perception.execution import ExecutionGate
+from unloading_perception.execution import DuplicateCallbackError, ExecutionGate
 from unloading_perception.geometry import transform_pose
-from unloading_perception.scene import ObservationTracker, SnapshotAssembler, build_scene_update
+from unloading_perception.scene import (
+    ObservationTracker, SnapshotAssembler, SourceEpochGuard,
+    build_scene_update, parse_mechanism_bundle,
+)
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "vision_upstream" / "cargo7_minimal.json"
@@ -165,14 +168,14 @@ def admissible_snapshot():
     scene = {"obstacles": (), "unknown_regions": (), "planning_admissible": True, "blocking_reasons": ()}
     return PlanningWorldSnapshot(
         SceneRevision.from_scene(scene, 1), scene,
-        RobotStateRevision(1, (0.0, 0.0), {"joint_names": ("j1", "j2")}),
+        RobotStateRevision(1, (0.0, 0.0), {"joint_names": ("j1", "j2"), "actual_velocities": (0.0, 0.0)}),
         {"identity": "tool"}, {"identity": "payload"}, {"identity": "base"},
         {"identity": "conveyor"}, {"identity": "config", "robot_model_fingerprint": "robot-sha", "world_model_fingerprint": "world-sha"},
     )
 
 
 def trajectory():
-    return TimedJointTrajectory(("j1", "j2"), (TimedJointPoint((0, 0), 0.0), TimedJointPoint((1, 1), 1.0)), PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY, "mock-fixture", "robot-sha", "config-sha")
+    return TimedJointTrajectory(("j1", "j2"), (TimedJointPoint((0, 0), 0.0, (0.0, 0.0)), TimedJointPoint((1, 1), 1.0, (0.0, 0.0))), PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY, "mock-fixture", "robot-sha", "config-sha")
 
 
 def command(snapshot, command_id="cmd-1", epoch="epoch-a", generation=2):
@@ -228,6 +231,110 @@ def test_cancel_acceptance_is_not_stop_acknowledgement():
     acknowledgement = gate.confirm_stop(ControllerStopFact("mock", "controller-a", "goal-a", 1, 2.0, 3.0, "monotonic", ("j1", "j2"), (0.2, 0.3), (0.0, 0.0), "feedback-2"), now=3.0, max_age_seconds=1.0)
     assert acknowledgement.plan_id == "plan-1"
     assert acknowledgement.goal_id == "goal-a"
+
+
+def test_mechanism_bundle_is_all_or_nothing_and_requires_explicit_state():
+    valid = dict(
+        tool_identity="tool-a", tool_json='{"verified":true}',
+        payload_identity="payload-a", payload_json='{"object_id":null}',
+        base_identity="base-a", base_json='{"position_m":[0,0,0]}',
+        conveyor_identity="conveyor-a", conveyor_json='{"running":false}',
+        source_epoch="mechanism-a", source_sequence=1, sample_time=10.0,
+    )
+    committed = parse_mechanism_bundle(**valid)
+    assert committed["tool_attachment"]["details"]["verified"] is True
+    malformed = {**valid, "conveyor_json": '{"running":"no"}'}
+    with pytest.raises(ValueError, match="boolean running"):
+        parse_mechanism_bundle(**malformed)
+    assert committed["conveyor_state"]["details"]["running"] is False
+    with pytest.raises(ValueError, match="non-empty JSON"):
+        parse_mechanism_bundle(**{**valid, "tool_json": "{}"})
+
+
+def test_source_epoch_restart_rejects_late_retired_epoch():
+    guard = SourceEpochGuard(retired_capacity=2)
+    guard.accept("epoch-a", 4)
+    guard.accept("epoch-a", 5)
+    with pytest.raises(ValueError, match="explicit"):
+        guard.accept("epoch-b", 0)
+    guard.accept("epoch-b", 0, restart=True)
+    with pytest.raises(ValueError, match="retired"):
+        guard.accept("epoch-a", 6)
+    with pytest.raises(ValueError, match="out-of-order"):
+        guard.accept("epoch-b", 0)
+
+
+def test_freshness_changes_snapshot_identity_not_geometry_revision():
+    from dataclasses import replace
+    source = observation()
+    world_cargo = tuple(
+        replace(item, pose=None if item.pose is None else replace(item.pose, frame_id="world"))
+        for item in source.cargo
+    )
+    source = replace(source, cargo=world_cargo, unknown_regions=())
+    fresh = build_scene_update(source, now=source.capture_time, max_age_seconds=2.0)
+    stale = build_scene_update(source, now=source.capture_time + 3.0, max_age_seconds=2.0)
+    assembler = complete_assembler(fresh)
+    before = assembler.assemble().snapshot
+    assembler.update = stale
+    after = assembler.assemble().snapshot
+    assert before.scene_revision == after.scene_revision
+    assert before.fingerprint != after.fingerprint
+    assert after.scene_snapshot["planning_admissible"] is False
+
+
+def test_send_reservation_revocation_and_busy_check_are_atomic():
+    snapshot = admissible_snapshot()
+    first = command(snapshot, command_id="cmd-first")
+    second = command(snapshot, command_id="cmd-second")
+    gate = ExecutionGate()
+    gate.register_grant(grant(first))
+    gate.register_grant(grant(second))
+    accepted, reservation = gate.reserve(first, snapshot, epoch="epoch-a", generation=2, now=1.0)
+    assert accepted.kind is ExecutionEventKind.ACCEPTED and reservation is not None
+    rejected, no_reservation = gate.reserve(second, snapshot, epoch="epoch-a", generation=2, now=1.0)
+    assert rejected.message == "CONTROLLER_BUSY" and no_reservation is None
+    gate.revoke_all(now=1.1)
+    assert gate.commit_send(first, reservation, now=1.2).message == "SEND_RESERVATION_REVOKED"
+    assert gate.active_command is None
+
+
+def test_late_result_and_duplicate_stop_do_not_touch_new_active_command():
+    snapshot = admissible_snapshot()
+    first = command(snapshot, command_id="cmd-old")
+    gate = ExecutionGate(history_capacity=4)
+    gate.register_grant(grant(first))
+    gate.authorize(first, snapshot, epoch="epoch-a", generation=2, now=1.0)
+    gate.bind_goal(first.command_id, controller_id="mock", controller_epoch="controller-a", goal_id="goal-old")
+    gate.accept_cancel(first.command_id, event_time=2.0)
+    fact = ControllerStopFact("mock", "controller-a", "goal-old", 1, 2.0, 2.1, "monotonic", ("j1", "j2"), (0.0, 0.0), (0.0, 0.0), "feedback-old")
+    acknowledgement = gate.confirm_stop(fact, now=2.1, max_age_seconds=1.0)
+    second = command(snapshot, command_id="cmd-new")
+    gate.register_grant(grant(second))
+    gate.authorize(second, snapshot, epoch="epoch-a", generation=2, now=2.2)
+    with pytest.raises(DuplicateCallbackError):
+        gate.complete(first.command_id, ExecutionEventKind.CANCELED, "late", event_time=2.3)
+    assert gate.confirm_stop(fact, now=2.3, max_age_seconds=1.0) == acknowledgement
+    assert gate.active_command.command_id == second.command_id
+
+
+def test_terminal_history_is_bounded():
+    snapshot = admissible_snapshot()
+    gate = ExecutionGate(history_capacity=3, history_ttl_seconds=100.0)
+    for index in range(12):
+        value = command(snapshot, command_id=f"cmd-{index}")
+        gate.register_grant(grant(value))
+        gate.authorize(value, snapshot, epoch="epoch-a", generation=2, now=float(index))
+        gate.complete(value.command_id, ExecutionEventKind.SUCCEEDED, "done", event_time=float(index) + 0.1)
+    assert gate.history_size <= 3
+
+
+def test_pending_grant_cache_is_bounded():
+    snapshot = admissible_snapshot()
+    gate = ExecutionGate(history_capacity=3, history_ttl_seconds=100.0)
+    for index in range(12):
+        gate.register_grant(grant(command(snapshot, command_id=f"cmd-{index}")))
+    assert len(gate._grants) == 3
 
 
 def test_pipeline_capability_fails_closed_without_interpreter(tmp_path):

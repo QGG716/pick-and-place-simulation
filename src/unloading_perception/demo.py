@@ -51,7 +51,10 @@ def _assemble(observation: PerceptionObservation):
     update = build_scene_update(observation, tracked)
     assembler = SnapshotAssembler()
     assembler.update = update
-    assembler.robot_state = RobotStateRevision(1, (0.0,) * 6, {"joint_names": tuple(f"joint_{index}" for index in range(1, 7)), "source": "mock_joint_state"})
+    assembler.robot_state = RobotStateRevision(1, (0.0,) * 6, {
+        "joint_names": tuple(f"joint_{index}" for index in range(1, 7)),
+        "actual_velocities": (0.0,) * 6, "source": "mock_joint_state",
+    })
     assembler.tool_attachment = {"tool_id": "synthetic-vacuum", "confirmed": True}
     assembler.payload_attachment = {"object_id": None, "confirmed": True}
     assembler.base_state = {"pose": (0.0, 0.0, 0.0), "confirmed": True}

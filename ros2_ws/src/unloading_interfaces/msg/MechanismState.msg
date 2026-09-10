@@ -1,6 +1,7 @@
 string schema_version
 string source_epoch
 uint64 sequence
+bool source_restart
 builtin_interfaces/Time observed_time
 string clock_domain
 string tool_state_identity

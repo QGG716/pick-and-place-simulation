@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from dataclasses import dataclass, replace
+import json
+import math
 from typing import Any, Mapping
 
 from unloading_contracts import (
@@ -20,6 +23,86 @@ def bbox_iou(first: tuple[float, ...], second: tuple[float, ...]) -> float:
     first_area = (first[2]-first[0]) * (first[3]-first[1])
     second_area = (second[2]-second[0]) * (second[3]-second[1])
     return intersection / max(first_area + second_area - intersection, 1e-12)
+
+
+class SourceEpochGuard:
+    """Monotonic source ownership with explicit, bounded restart takeover."""
+
+    def __init__(self, *, retired_capacity: int = 16) -> None:
+        if retired_capacity <= 0:
+            raise ValueError("retired epoch capacity must be positive")
+        self.retired_capacity = int(retired_capacity)
+        self.current_epoch: str | None = None
+        self.sequence = -1
+        self._retired: OrderedDict[str, None] = OrderedDict()
+
+    def accept(self, epoch: str, sequence: int, *, restart: bool = False) -> None:
+        epoch, sequence = str(epoch), int(sequence)
+        if not epoch or sequence < 0:
+            raise ValueError("source epoch and sequence are invalid")
+        if self.current_epoch is None:
+            self.current_epoch, self.sequence = epoch, sequence
+            return
+        if epoch == self.current_epoch:
+            if restart:
+                raise ValueError("restart cannot reuse the current source epoch")
+            if sequence <= self.sequence:
+                raise ValueError("duplicate or out-of-order source sequence")
+            self.sequence = sequence
+            return
+        if epoch in self._retired:
+            raise ValueError("retired source epoch cannot take ownership again")
+        if not restart or sequence != 0:
+            raise ValueError("new source epoch requires an explicit sequence-zero restart")
+        self._retired[self.current_epoch] = None
+        while len(self._retired) > self.retired_capacity:
+            self._retired.popitem(last=False)
+        self.current_epoch, self.sequence = epoch, sequence
+
+
+def parse_mechanism_bundle(
+    *, tool_identity: str, tool_json: str, payload_identity: str,
+    payload_json: str, base_identity: str, base_json: str,
+    conveyor_identity: str, conveyor_json: str, source_epoch: str,
+    source_sequence: int, sample_time: float,
+) -> dict[str, Mapping[str, Any]]:
+    """Parse and validate every mechanism field before returning any state."""
+
+    def document(identity: str, raw: str, name: str) -> dict[str, Any]:
+        if not identity:
+            raise ValueError(f"{name} identity is required")
+        value = json.loads(raw)
+        if not isinstance(value, dict) or not value:
+            raise ValueError(f"{name} state must be a non-empty JSON object")
+        return value
+
+    tool = document(tool_identity, tool_json, "tool")
+    payload = document(payload_identity, payload_json, "payload")
+    base = document(base_identity, base_json, "base")
+    conveyor = document(conveyor_identity, conveyor_json, "conveyor")
+    if not tool.get("verified"):
+        raise ValueError("tool state requires affirmative verified evidence")
+    if "object_id" not in payload:
+        raise ValueError("payload state requires explicit object_id, including null")
+    position = base.get("position_m")
+    if not isinstance(position, list) or len(position) != 3 or not all(
+        isinstance(value, (int, float)) and math.isfinite(float(value)) for value in position
+    ):
+        raise ValueError("base state requires three finite position_m values")
+    if not isinstance(conveyor.get("running"), bool):
+        raise ValueError("conveyor state requires boolean running")
+
+    common = {
+        "confirmed": True,
+        "source": "mechanism_state_topic",
+        "source_epoch": source_epoch,
+    }
+    return {
+        "tool_attachment": {**common, "identity": tool_identity, "details": tool},
+        "payload_attachment": {**common, "identity": payload_identity, "details": payload},
+        "base_state": {**common, "identity": base_identity, "details": base},
+        "conveyor_state": {**common, "identity": conveyor_identity, "details": conveyor},
+    }
 
 
 class ObservationTracker:
@@ -91,7 +174,6 @@ def build_scene_update(observation: PerceptionObservation, tracked: tuple[CargoO
         if now is None:
             raise ValueError("freshness evaluation requires now")
         if now - observation.capture_time > max_age_seconds:
-            unknown.append(UnknownRegion("stale-observation", "coverage", "OBSERVATION_STALE"))
             blocking.append("OBSERVATION_STALE")
     for item in cargo:
         if item.pose is None:
@@ -133,6 +215,7 @@ class SnapshotAssembler:
             return SnapshotAssemblyResult(None, "INCOMPLETE_STATE", missing)
         assert self.update is not None and self.robot_state is not None
         scene = {
+            "geometry_fingerprint": self.update.geometry_fingerprint,
             "obstacles": tuple({
                 "object_id": item.object_id,
                 "source_instance_id": item.source_instance_id,
@@ -161,7 +244,7 @@ class SnapshotAssembler:
             "planning_admissible": self.update.planning_admissible,
             "blocking_reasons": self.update.blocking_reasons,
         }
-        fingerprint = canonical_fingerprint(scene)
+        fingerprint = self.update.geometry_fingerprint
         if self._revision is None or self._revision.fingerprint != fingerprint:
             sequence = 0 if self._revision is None else self._revision.sequence + 1
             self._revision = SceneRevision(sequence, fingerprint, "perception-integration", None if self._revision is None else self._revision.fingerprint)

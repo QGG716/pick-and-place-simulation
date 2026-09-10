@@ -34,6 +34,7 @@ class MockStatePublisher(Node):
         self.joints.publish(joint)
         self.mechanism.publish(MechanismState(
             schema_version="1.1.0", source_epoch=self.epoch, sequence=self.sequence,
+            source_restart=self.sequence == 0,
             observed_time=stamp, clock_domain="ros", tool_state_identity="synthetic-vacuum-v1",
             payload_state_identity="synthetic-no-payload", base_state_identity="synthetic-base-fixed",
             conveyor_state_identity="synthetic-conveyor-stopped",

@@ -15,7 +15,8 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from unloading_contracts import ExecutionCommand, PlanArtifactKind, TimedJointPoint, TimedJointTrajectory
 from unloading_interfaces.msg import (
     ExecutionAuthorization, ExecutionCancel, ExecutionContext, ExecutionEvent,
-    ExecutionGrant, PerceptionObservation, PlanningWorldSnapshot, StopAcknowledgement,
+    ExecutionGrant, MechanismState, PerceptionObservation, PlanningWorldSnapshot,
+    StopAcknowledgement,
 )
 from unloading_perception.demo import _synthetic_observation
 from unloading_ros_bridge.mapping import observation_to_msg, snapshot_from_msg
@@ -28,11 +29,11 @@ CONTROLLER_EPOCH = "integration-controller-epoch"
 def generate_test_description():
     common = {
         "expected_joint_names": [f"joint_{i}" for i in range(1, 7)],
-        "snapshot_freshness_seconds": 5.0, "robot_state_freshness_seconds": 5.0,
+        "snapshot_freshness_seconds": 5.0, "robot_state_freshness_seconds": 0.3,
+        "mechanism_state_freshness_seconds": 5.0,
     }
     return LaunchDescription([
         Node(package="unloading_ros_bridge", executable="mock_follow_joint_trajectory", output="screen", parameters=[{"controller_epoch": CONTROLLER_EPOCH}]),
-        Node(package="unloading_ros_bridge", executable="mock_state_publisher", output="screen"),
         Node(package="unloading_ros_bridge", executable="world_bridge_node", output="screen", parameters=[common]),
         Node(package="unloading_ros_bridge", executable="execution_bridge_node", output="screen", parameters=[{"controller_epoch": CONTROLLER_EPOCH}]),
         ReadyToTest(),
@@ -65,6 +66,7 @@ class TestBridgeIntegration:
         self.node.create_subscription(ExecutionEvent, "/unloading/execution_events", events.append, 10)
         self.node.create_subscription(StopAcknowledgement, "/unloading/stop_acknowledgements", stops.append, 10)
         joints_pub = self.node.create_publisher(JointState, "/joint_states", 10)
+        mechanism_pub = self.node.create_publisher(MechanismState, "/unloading/mechanism_state", 10)
         perception_pub = self.node.create_publisher(PerceptionObservation, "/unloading/perception", 10)
         context_pub = self.node.create_publisher(ExecutionContext, "/unloading/execution_context", 10)
         grant_pub = self.node.create_publisher(ExecutionGrant, "/unloading/execution_grant", 10)
@@ -79,10 +81,73 @@ class TestBridgeIntegration:
         capture = time.time()
         observation = replace(_synthetic_observation(), capture_time=capture, processed_time=capture + 0.001, clock_domain="ros")
         perception_pub.publish(observation_to_msg(observation))
-        world_message = self.wait_for(snapshots, lambda item: item.planning_admissible)
+        deadline = time.monotonic() + 0.2
+        while time.monotonic() < deadline:
+            rclpy.spin_once(self.node, timeout_sec=0.02)
+        assert not snapshots
+
+        def mechanism(epoch, sequence, tool, *, restart=False, conveyor='{"running":false}'):
+            stamp = self.node.get_clock().now().to_msg()
+            return MechanismState(
+                schema_version="1.1.0", source_epoch=epoch, sequence=sequence,
+                source_restart=restart, observed_time=stamp, clock_domain="ros",
+                tool_state_identity=tool, payload_state_identity="payload-none",
+                base_state_identity="base-fixed", conveyor_state_identity="conveyor-stopped",
+                config_identity="synthetic_metric_v1",
+                robot_model_fingerprint="synthetic-robot-v1",
+                world_model_fingerprint="synthetic-world-v1",
+                tool_state_json='{"verified":true}', payload_state_json='{"object_id":null}',
+                base_state_json='{"position_m":[0,0,0]}', conveyor_state_json=conveyor,
+            )
+
+        mechanism_pub.publish(mechanism("mechanism-a", 0, "tool-a", restart=True))
+        initial_world = self.wait_for(snapshots, lambda item: item.planning_admissible)
+
+        changed = JointState(name=list(joints.name), position=[0.01] * 6, velocity=[0.0] * 6)
+        changed.header.stamp = self.node.get_clock().now().to_msg()
+        joints_pub.publish(changed)
+        robot_world = self.wait_for(
+            snapshots,
+            lambda item: item.world_fingerprint != initial_world.world_fingerprint
+            and item.actual_joint_positions == [0.01] * 6,
+        )
+        assert robot_world.scene_fingerprint == initial_world.scene_fingerprint
+        assert robot_world.source_capture_time == initial_world.source_capture_time
+        assert robot_world.robot_state_revision_sequence > initial_world.robot_state_revision_sequence
+        assert robot_world.mechanism_revision_sequence == initial_world.mechanism_revision_sequence
+
+        mechanism_pub.publish(mechanism("mechanism-a", 1, "tool-b"))
+        tool_world = self.wait_for(snapshots, lambda item: item.tool_state_identity == "tool-b")
+        assert tool_world.scene_fingerprint == initial_world.scene_fingerprint
+        assert tool_world.robot_state_revision_sequence == robot_world.robot_state_revision_sequence
+        assert tool_world.mechanism_revision_sequence > robot_world.mechanism_revision_sequence
+        count_before_bad = len(snapshots)
+        mechanism_pub.publish(mechanism("mechanism-a", 2, "tool-partial", conveyor='{"running":"invalid"}'))
+        deadline = time.monotonic() + 0.15
+        while time.monotonic() < deadline:
+            rclpy.spin_once(self.node, timeout_sec=0.02)
+        assert not any(item.tool_state_identity == "tool-partial" for item in snapshots[count_before_bad:])
+        mechanism_pub.publish(mechanism("mechanism-a", 2, "tool-c"))
+        self.wait_for(snapshots, lambda item: item.tool_state_identity == "tool-c")
+        mechanism_pub.publish(mechanism("mechanism-b", 0, "tool-restarted", restart=True))
+        restarted = self.wait_for(snapshots, lambda item: item.tool_state_identity == "tool-restarted")
+        mechanism_pub.publish(mechanism("mechanism-a", 3, "tool-old-late"))
+        deadline = time.monotonic() + 0.15
+        while time.monotonic() < deadline:
+            rclpy.spin_once(self.node, timeout_sec=0.02)
+        assert not any(item.tool_state_identity == "tool-old-late" for item in snapshots)
+
+        stale = self.wait_for(snapshots, lambda item: "ROBOT_STATE_STALE_OR_TIME_JUMP" in item.blocking_reasons)
+        assert stale.scene_fingerprint == restarted.scene_fingerprint
+        changed.header.stamp = self.node.get_clock().now().to_msg()
+        joints_pub.publish(changed)
+        world_message = self.wait_for(
+            snapshots,
+            lambda item: item.publisher_sequence > stale.publisher_sequence and item.planning_admissible,
+        )
         world = snapshot_from_msg(world_message)
 
-        points = tuple(TimedJointPoint((index / 100.0,) * 6, (index + 1) / 100.0, (0.0,) * 6) for index in range(30))
+        points = tuple(TimedJointPoint((0.01 + index / 100.0,) * 6, (index + 1) / 100.0, (0.0,) * 6) for index in range(30))
         trajectory = TimedJointTrajectory(tuple(f"joint_{i}" for i in range(1, 7)), points, PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY, "mock-validator@1", "synthetic-robot-v1", "synthetic_metric_v1")
         command = ExecutionCommand("cmd-integration", "plan-integration", "request-integration", "session-integration", "execution-epoch", 4, None, world.fingerprint, "synthetic-robot-v1", "synthetic_metric_v1", "mock-validator@1", 4, trajectory)
 
@@ -98,6 +163,21 @@ class TestBridgeIntegration:
         authorization.trajectory.joint_names = list(trajectory.joint_names)
         authorization.trajectory.points = ros_points
         command_pub.publish(authorization)
+        competing = replace(command, command_id="cmd-competing")
+        competing_authorization = ExecutionAuthorization(
+            schema_version="1.1.0", command_id=competing.command_id,
+            plan_id=competing.plan_id, request_id=competing.request_id,
+            session_id=competing.session_id, epoch=competing.epoch,
+            planning_generation=competing.planning_generation,
+            predecessor_plan_id="", world_fingerprint=competing.world_fingerprint,
+            robot_model_fingerprint=competing.robot_model_fingerprint,
+            config_identity=competing.config_identity,
+            validation_reference=competing.validation_reference,
+            validation_generation=competing.validation_generation,
+        )
+        competing_authorization.trajectory = authorization.trajectory
+        command_pub.publish(competing_authorization)
+        self.wait_for(events, lambda item: item.command_id == competing.command_id and item.kind == "REJECTED")
         self.wait_for(events, lambda item: item.command_id == command.command_id and item.kind == "STARTED")
 
         cancel_pub.publish(ExecutionCancel(schema_version="1.1.0", command_id=command.command_id, plan_id=command.plan_id, epoch=command.epoch, planning_generation=command.planning_generation, reason="integration cancellation"))

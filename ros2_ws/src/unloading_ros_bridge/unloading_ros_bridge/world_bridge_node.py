@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 import math
+from uuid import uuid4
 
 import rclpy
 from rclpy.duration import Duration
@@ -14,7 +15,10 @@ from unloading_interfaces.msg import MechanismState, PerceptionObservation, Plan
 from visualization_msgs.msg import Marker, MarkerArray
 
 from unloading_perception.geometry import rotation_from_quaternion, transform_pose
-from unloading_perception.scene import ObservationTracker, SnapshotAssembler, build_scene_update
+from unloading_perception.scene import (
+    ObservationTracker, SnapshotAssembler, SourceEpochGuard,
+    build_scene_update, parse_mechanism_bundle,
+)
 
 from .common import require_humble_python310, time_to_float
 from .mapping import observation_from_msg, snapshot_to_msg
@@ -35,16 +39,19 @@ class WorldBridgeNode(Node):
         self.listener = TransformListener(self.buffer, self)
         self.tracker = ObservationTracker()
         self.assembler = SnapshotAssembler()
-        self.mechanism_epoch = None
-        self.mechanism_sequence = -1
+        self.mechanism_guard = SourceEpochGuard()
         self.mechanism_stamp = None
         self.robot_sequence = 0
+        self.mechanism_sequence = 0
         self.last_robot_content = None
+        self.last_mechanism_content = None
         self.last_joint_stamp: float | None = None
         self.last_observation = None
         self.last_tracked = None
         self.last_snapshot = None
         self.stale_key = None
+        self.publisher_epoch = str(uuid4())
+        self.publisher_sequence = 0
         reliable = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE)
         self.create_subscription(JointState, "/joint_states", self.on_joints, qos_profile_sensor_data)
         self.create_subscription(MechanismState, "/unloading/mechanism_state", self.on_mechanism, reliable)
@@ -54,32 +61,59 @@ class WorldBridgeNode(Node):
         self.watchdog = self.create_timer(0.1, self.check_freshness)
 
     def on_mechanism(self, message: MechanismState) -> None:
-        import json
         if message.schema_version != "1.1.0" or message.clock_domain != "ros" or not all((message.source_epoch, message.tool_state_identity, message.payload_state_identity, message.base_state_identity, message.conveyor_state_identity, message.config_identity, message.robot_model_fingerprint, message.world_model_fingerprint)):
             self.get_logger().error("rejecting incomplete mechanism state")
-            return
-        if self.mechanism_epoch != message.source_epoch:
-            self.mechanism_epoch, self.mechanism_sequence = message.source_epoch, -1
-        if int(message.sequence) <= self.mechanism_sequence:
-            self.get_logger().error("rejecting duplicate/out-of-order mechanism state")
             return
         stamp = time_to_float(message.observed_time)
         if stamp <= 0.0:
             self.get_logger().error("rejecting mechanism state without sample time")
             return
-        def state(identity, payload):
-            return {"identity": identity, "confirmed": True, "source": "mechanism_state_topic", "details": json.loads(payload or "{}")}
         try:
-            self.assembler.tool_attachment = state(message.tool_state_identity, message.tool_state_json)
-            self.assembler.payload_attachment = state(message.payload_state_identity, message.payload_state_json)
-            self.assembler.base_state = state(message.base_state_identity, message.base_state_json)
-            self.assembler.conveyor_state = state(message.conveyor_state_identity, message.conveyor_state_json)
+            bundle = parse_mechanism_bundle(
+                tool_identity=message.tool_state_identity, tool_json=message.tool_state_json,
+                payload_identity=message.payload_state_identity, payload_json=message.payload_state_json,
+                base_identity=message.base_state_identity, base_json=message.base_state_json,
+                conveyor_identity=message.conveyor_state_identity, conveyor_json=message.conveyor_state_json,
+                source_epoch=message.source_epoch, source_sequence=int(message.sequence), sample_time=stamp,
+            )
+            if (
+                message.source_epoch == self.mechanism_guard.current_epoch
+                and self.mechanism_stamp is not None and stamp <= self.mechanism_stamp
+            ):
+                raise ValueError("mechanism sample time is duplicate or out of order")
+            self.mechanism_guard.accept(
+                message.source_epoch, int(message.sequence), restart=bool(message.source_restart)
+            )
         except (ValueError, TypeError) as exc:
-            self.get_logger().error(f"rejecting malformed mechanism JSON: {exc}")
+            self.get_logger().error(f"rejecting malformed or stale mechanism state: {exc}")
             return
-        self.assembler.config_identity = {"identity": message.config_identity, "robot_model_fingerprint": message.robot_model_fingerprint, "world_model_fingerprint": message.world_model_fingerprint, "source": "mechanism_state_topic"}
-        self.mechanism_sequence = int(message.sequence)
+        # One commit after every field and source takeover rule has passed.
+        self.assembler.tool_attachment = bundle["tool_attachment"]
+        self.assembler.payload_attachment = bundle["payload_attachment"]
+        self.assembler.base_state = bundle["base_state"]
+        self.assembler.conveyor_state = bundle["conveyor_state"]
+        self.assembler.config_identity = {
+            "identity": message.config_identity,
+            "robot_model_fingerprint": message.robot_model_fingerprint,
+            "world_model_fingerprint": message.world_model_fingerprint,
+            "source": "mechanism_state_topic", "source_epoch": message.source_epoch,
+        }
+        content = (
+            self.assembler.tool_attachment, self.assembler.payload_attachment,
+            self.assembler.base_state, self.assembler.conveyor_state,
+            self.assembler.config_identity,
+        )
+        content_changed = content != self.last_mechanism_content
+        was_stale = self.mechanism_stamp is None or (
+            self.get_clock().now().nanoseconds / 1e9 - self.mechanism_stamp
+            > float(self.get_parameter("mechanism_state_freshness_seconds").value)
+        )
+        self.last_mechanism_content = content
+        if content_changed:
+            self.mechanism_sequence += 1
         self.mechanism_stamp = stamp
+        if content_changed or was_stale:
+            self._commit_snapshot("mechanism")
 
     def on_joints(self, message: JointState) -> None:
         expected = tuple(str(name) for name in self.get_parameter("expected_joint_names").value)
@@ -96,8 +130,13 @@ class WorldBridgeNode(Node):
         if invalid:
             self.get_logger().error("rejecting malformed, unordered, non-finite, or stale JointState")
             return
+        was_stale = self.last_joint_stamp is None or (
+            self.get_clock().now().nanoseconds / 1e9 - self.last_joint_stamp
+            > float(self.get_parameter("robot_state_freshness_seconds").value)
+        )
         self.last_joint_stamp = stamp
         content = (positions, velocities, tuple(message.effort), names)
+        content_changed = content != self.last_robot_content
         if content != self.last_robot_content:
             self.robot_sequence += 1
             self.last_robot_content = content
@@ -105,6 +144,8 @@ class WorldBridgeNode(Node):
             "joint_names": names, "actual_velocities": velocities,
             "actual_efforts": tuple(message.effort),
         }, sample_time=stamp, clock_domain="ros", source="joint_states")
+        if content_changed or was_stale:
+            self._commit_snapshot("robot")
 
     def _transform_observation(self, observation):
         world_frame = str(self.get_parameter("world_frame").value)
@@ -147,9 +188,10 @@ class WorldBridgeNode(Node):
             self.get_logger().error(f"rejecting invalid perception observation: {exc}")
             return
         self.last_observation, self.last_tracked = observation, tracked
-        self._publish_current()
+        self._commit_snapshot("perception")
 
-    def _publish_current(self, *, now: float | None = None) -> None:
+    def _commit_snapshot(self, event: str, *, now: float | None = None) -> None:
+        """Single entry for evaluating and publishing every world-state event."""
         if self.last_observation is None or self.last_tracked is None or self.assembler.robot_state is None:
             return
         current = self.get_clock().now().nanoseconds / 1e9 if now is None else now
@@ -171,8 +213,16 @@ class WorldBridgeNode(Node):
             source_capture_time=self.last_observation.capture_time,
             blocking_reasons=update.blocking_reasons,
             obstacles=update.accepted_obstacles, unknown_regions=update.unknown_regions,
+            publisher_epoch=self.publisher_epoch,
+            publisher_sequence=self.publisher_sequence,
+            publisher_restart=self.publisher_sequence == 0,
+            published_time=current,
+            robot_sample_time=self.last_joint_stamp,
+            mechanism_sample_time=self.mechanism_stamp,
+            mechanism_revision_sequence=self.mechanism_sequence,
         )
         self.publisher.publish(output)
+        self.publisher_sequence += 1
         self.last_snapshot = result.snapshot
         self.publish_markers(output, str(self.get_parameter("world_frame").value))
 
@@ -186,8 +236,8 @@ class WorldBridgeNode(Node):
         stale_key = (observation_age > float(self.get_parameter("snapshot_freshness_seconds").value) or observation_age < 0.0,
                      robot_age > float(self.get_parameter("robot_state_freshness_seconds").value) or robot_age < 0.0,
                      mechanism_age > float(self.get_parameter("mechanism_state_freshness_seconds").value) or mechanism_age < 0.0)
-        if any(stale_key) and stale_key != self.stale_key:
-            self._publish_current(now=now)
+        if stale_key != self.stale_key:
+            self._commit_snapshot("freshness", now=now)
         self.stale_key = stale_key
 
     def publish_markers(self, snapshot: PlanningWorldSnapshot, frame_id: str) -> None:
