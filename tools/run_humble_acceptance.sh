@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-ARTIFACT_ROOT=${ARTIFACT_ROOT:-/root/autodl-tmp/v05-acceptance}
+ARTIFACT_ROOT=${ARTIFACT_ROOT:-${TMPDIR:-/tmp}/unloading-acceptance}
 RUN_ID=${RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}
 RUN="$ARTIFACT_ROOT/humble/$RUN_ID"
 test -f /opt/ros/humble/setup.bash

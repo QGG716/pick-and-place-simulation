@@ -14,15 +14,27 @@ jobs:
       - name: Install build tools
         run: |
           apt-get update
-          apt-get install -y python3-pip python3-pytest python3-colcon-common-extensions python3-rosdep
+          apt-get install -y python3-pip python3-venv python3-pytest python3-colcon-common-extensions python3-rosdep
           rosdep update
-      - name: Install lightweight contracts and core test dependencies
+      - name: Build and smoke-test install artifacts outside the source tree
+        shell: bash
         run: |
-          python3 -m pip install ./packages/unloading_contracts
-          python3 -m pip install -e '.[dev]'
-          python3 -c 'import sys, rclpy, unloading_contracts; assert sys.version_info[:2] == (3, 10); assert unloading_contracts.__version__ == "1.1.0"'
+          source /opt/ros/humble/setup.bash
+          RUN_ID=github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
+          ARTIFACT_ROOT="$RUNNER_TEMP/acceptance" \
+          PYTHON_BIN=/usr/bin/python3.10 \
+          bash tools/run_install_artifact_smoke.sh
       - name: Core and integration tests
-        run: python3 -m pytest -q --basetemp "$RUNNER_TEMP/pytest"
+        shell: bash
+        run: |
+          source /opt/ros/humble/setup.bash
+          VENV="$RUNNER_TEMP/core-venv"
+          /usr/bin/python3.10 -m venv "$VENV"
+          "$VENV/bin/python" -m pip install pip==25.2 setuptools==79.0.1 wheel==0.45.1
+          "$VENV/bin/python" -m pip install ./packages/unloading_contracts
+          "$VENV/bin/python" -m pip install -e '.[dev]'
+          "$VENV/bin/python" -m pytest -q --basetemp "$RUNNER_TEMP/pytest" \
+            --junitxml "$RUNNER_TEMP/acceptance/core-pytest.xml"
       - name: Build and test Humble workspace
         shell: bash
         run: |
@@ -33,3 +45,13 @@ jobs:
           source install/setup.bash
           colcon test --return-code-on-test-failure
           colcon test-result --verbose
+      - name: Upload install and test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: humble-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/acceptance
+            ros2_ws/log
+            ros2_ws/build/**/pytest.xml

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=68,<80", "wheel==0.45.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,6 +9,7 @@ description = "Fast geometric simulation and motion planning for industrial-arm 
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+  "unloading-contracts==1.1.0",
   "numpy>=1.24",
   "PyYAML>=6.0",
   "matplotlib>=3.7",
@@ -36,7 +37,13 @@ unloading-perception-demo = "unloading_perception.demo:main"
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
-where = ["src", "packages/unloading_contracts/src"]
+where = ["src"]
+
+[tool.uv.workspace]
+members = ["packages/unloading_contracts"]
+
+[tool.uv.sources]
+unloading-contracts = { workspace = true }
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "packages/unloading_contracts/src", "."]

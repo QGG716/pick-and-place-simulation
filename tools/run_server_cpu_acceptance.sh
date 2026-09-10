@@ -2,12 +2,14 @@
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-ARTIFACT_ROOT=${ARTIFACT_ROOT:-/root/autodl-tmp/v05-acceptance}
+ARTIFACT_ROOT=${ARTIFACT_ROOT:-${TMPDIR:-/tmp}/unloading-acceptance}
+RUN_ID=${RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}
 export PIP_INDEX_URL=${PIP_INDEX_URL:-https://pypi.org/simple}
-RUN="$ARTIFACT_ROOT/cpu"
+RUN="$ARTIFACT_ROOT/cpu/$RUN_ID"
 mkdir -p "$RUN"
 /usr/bin/python3.10 -m venv "$RUN/venv"
 "$RUN/venv/bin/python" -m pip install pip==25.2 setuptools==80.9.0 wheel==0.45.1
+"$RUN/venv/bin/python" -m pip install "$ROOT/packages/unloading_contracts"
 "$RUN/venv/bin/python" -m pip install -e "$ROOT[dev]"
 "$RUN/venv/bin/python" -m pytest -q "$ROOT/tests" \
   --basetemp "$RUN/pytest-tmp" --junitxml "$RUN/pytest.xml" 2>&1 | tee "$RUN/pytest.log"

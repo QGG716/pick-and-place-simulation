@@ -7,6 +7,12 @@ resolution-markers = [
     "python_full_version < '3.11'",
 ]
 
+[manifest]
+members = [
+    "unloading-contracts",
+    "unloading-layer1-sim",
+]
+
 [[package]]
 name = "cmeel"
 version = "0.60.1"
@@ -1376,6 +1382,11 @@ wheels = [
 ]
 
 [[package]]
+name = "unloading-contracts"
+version = "1.1.0"
+source = { editable = "packages/unloading_contracts" }
+
+[[package]]
 name = "unloading-layer1-sim"
 version = "0.5.0.dev0"
 source = { editable = "." }
@@ -1386,6 +1397,7 @@ dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "numpy", version = "2.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pyyaml" },
+    { name = "unloading-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -1407,5 +1419,6 @@ requires-dist = [
     { name = "pybullet", marker = "extra == 'viz'", specifier = ">=3.2" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "pyyaml", specifier = ">=6.0" },
+    { name = "unloading-contracts", editable = "packages/unloading_contracts" },
 ]
 provides-extras = ["dev", "viz", "pinocchio"]
