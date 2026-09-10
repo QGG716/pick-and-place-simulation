@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev6)
+# Online continuous planning control plane (0.5.2.dev7)
 
 ## Acceptance scope
 
@@ -150,6 +150,50 @@ fault. Stop rejection, exception, or timeout cannot fabricate a boundary or
 claim hardware emergency-stop capability. The step loop services the mandatory
 stop epilogue even when ordinary ingress/error handling returns early, preventing
 continuous conflicting input from starving the one-shot stop command.
+
+### dev7 strict execution-adapter contract
+
+`ExecutionFeedback.stop_command_id` remains optional at object-construction
+level for source compatibility with ordinary execution feedback. It is not
+optional evidence: STOPPING or STOPPED received while a stop lifecycle is
+active must carry the exact command identity returned for that attempt. The
+runtime never infers, supplies, or substitutes a missing identity. Missing,
+wrong, or old identities cannot enter `acknowledge_stop`, reconcile a world,
+queue a replan, or authorize a subsequent execution start.
+
+The public `ExecutionStartState` separates `ACCEPTED`, `REJECTED`, and
+`UNKNOWN`. A backend exception, malformed result, ambiguous already-running
+status, or accepted result with invalid identity means the command may have
+reached the controller. The plan and local start-attempt identity are retained,
+start is never retried, and the runtime makes at most one bounded plan-scoped
+stop request. A correlated stop result or later feedback may fill an unknown
+execution identity; it does not rewrite the original start outcome. Snapshot
+fields record both the returned identity and the source of any later identity.
+
+The terminal-confirmation key includes feedback stream, producer epoch,
+execution, plan, stop command, and local attempt. An identical repeat is
+idempotent. A different STOPPED boundary for the active authorization attempt
+sets `STOP_EVIDENCE_CONFLICT`, preserves both boundaries, clears automatic
+resume eligibility, and ignores ordinary observations as recovery authority.
+`retry_stop_after_evidence_conflict()` creates one new stop attempt with fresh
+sequence/watchdog state; its new correlated STOPPED plus a compatible
+authoritative observation must reconcile before `resume_after_recovery()` can
+authorize work. Reusing a stop command identity within the same execution and
+plan is rejected because an old confirmation would be indistinguishable.
+
+| Condition | Trusted execution fact | Stop status | Start/resume rule |
+| --- | --- | --- | --- |
+| Start explicitly rejected | Not started | No stop required | RECOVERY; no automatic retry |
+| Start response unknown | Plan known; execution ID may be unknown | Stop required and unconfirmed | Block every new start |
+| Correlated STOPPED, world absent/mismatched | Start/execution identity retained | Confirmed, awaiting world | No start |
+| Active STOPPED evidence conflicts | Both boundaries retained | Untrusted/conflicting | New stop attempt plus explicit recovery required |
+| Fresh correlated proof and compatible world | Original failure still retained | Confirmed and reconciled | Explicit resume may authorize planning |
+| Historical execution/attempt feedback | Historical only | Cannot affect current stop | Ignore duplicate or reject conflict |
+
+The execution-start final gate independently checks unresolved stop evidence,
+recovery authorization, and ambiguous-start state. This is defense in depth;
+it does not depend on a particular upstream session state happening to remain
+correct.
 
 ## Bounded audit journals
 

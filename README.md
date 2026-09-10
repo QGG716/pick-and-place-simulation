@@ -1,4 +1,14 @@
-# Trailer Unloading Geometric Simulator v0.5.2.dev6
+# Trailer Unloading Geometric Simulator v0.5.2.dev7
+
+v0.5.2.dev7 makes the execution-adapter boundary fail closed. STOPPING/STOPPED
+can authorize stop reconciliation only when they carry the current correlated
+`stop_command_id`; legacy uncorrelated objects remain constructible but have no
+authoritative stop meaning. An exception or malformed response after `start()`
+is recorded as an `UNKNOWN` start result, never blindly retried, and supervised
+through one bounded stop attempt. Conflicting evidence for the active stop
+attempt latches recovery and requires a new independently correlated stop proof
+through the public recovery gate. These are control-plane contracts, not a real
+controller, emergency stop, robot-safety certification, or throughput result.
 
 v0.5.2.dev6 completes the safe-stop lifecycle contract. A stop request is a
 command, not proof of rest; FAILED/DEVIATED/FAULTED remains the execution-task
@@ -289,6 +299,7 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
+- v0.5.2.dev7: strict correlated STOPPED authority, contained ambiguous starts, and latched active-stop evidence conflicts.
 - v0.5.2.dev6: correlated stop-attempt lifecycle, independent task-terminal/STOPPED evidence, and explicit recovery authorization.
 - v0.5.2.dev5: compound-failure isolation, end-to-end bounded ingress staging, and receive-time feedback watchdogs.
 - v0.5.2.dev4: thread-safe external ingress, deterministic watchdog policies, and bounded auditable journals.
@@ -303,4 +314,4 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev6`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev7`。
