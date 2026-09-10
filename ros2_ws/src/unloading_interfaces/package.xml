@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>unloading_interfaces</name>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>Typed ROS 2 Humble wire mappings for unloading contracts.</description>
   <maintainer email="maintainers@example.invalid">Unloading Simulation Maintainers</maintainer>
   <license>MIT</license>

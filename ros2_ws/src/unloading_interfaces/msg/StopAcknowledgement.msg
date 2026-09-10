@@ -8,3 +8,7 @@ float64[] actual_positions
 float64[] actual_velocities
 string criterion
 string evidence_reference
+string controller_id
+string controller_epoch
+string goal_id
+uint64 stop_sequence

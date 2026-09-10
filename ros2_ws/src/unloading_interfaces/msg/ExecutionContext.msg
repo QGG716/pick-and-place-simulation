@@ -1,0 +1,8 @@
+string schema_version
+string session_id
+string epoch
+uint64 planning_generation
+string allowed_plan_id
+string predecessor_plan_id
+builtin_interfaces/Time observed_time
+string clock_domain

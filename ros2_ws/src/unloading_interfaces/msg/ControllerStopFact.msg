@@ -1,3 +1,8 @@
+string controller_id
+string controller_epoch
+string goal_id
+uint64 sequence
+builtin_interfaces/Time cancel_accepted_time
 builtin_interfaces/Time stopped_time
 string clock_domain
 string[] joint_names

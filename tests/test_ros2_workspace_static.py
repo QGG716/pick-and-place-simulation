@@ -23,6 +23,9 @@ def test_ros_process_has_no_heavy_vision_or_cuda_imports():
         assert forbidden not in source
     assert "ROS_DISTRO" in source
     assert "Python 3.10" in source
+    perception = (ROS / "unloading_ros_bridge" / "unloading_ros_bridge" / "perception_node.py").read_text(encoding="utf-8")
+    assert "self.worker_pool = ThreadPoolExecutor" in perception
+    assert "self.executor = ThreadPoolExecutor" not in perception
 
 
 def test_optional_ros_fields_have_explicit_presence_flags():
@@ -33,4 +36,7 @@ def test_optional_ros_fields_have_explicit_presence_flags():
     assert "planning_generation" in (ROS / "unloading_interfaces" / "msg" / "ExecutionCancel.msg").read_text(encoding="utf-8")
     bridge = (ROS / "unloading_ros_bridge" / "unloading_ros_bridge" / "execution_bridge_node.py").read_text(encoding="utf-8")
     assert '"/unloading/controller_stop_facts"' in bridge
-    assert "command_id=command.command_id" in bridge
+    assert "acknowledgement.command_id" in bridge
+    assert "ExecutionGate" in bridge
+    world_bridge = (ROS / "unloading_ros_bridge" / "unloading_ros_bridge" / "world_bridge_node.py").read_text(encoding="utf-8")
+    assert "transform_cache" in world_bridge

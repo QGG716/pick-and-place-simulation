@@ -80,6 +80,34 @@ def compose_rotation(left: Sequence[Sequence[float]], right: Sequence[Sequence[f
     return tuple(tuple(sum(left[row][k] * right[k][col] for k in range(3)) for col in range(3)) for row in range(3))
 
 
+def _orthonormalized_axes_rows(axes_rows: Sequence[Sequence[float]]) -> tuple[tuple[float, float, float], ...]:
+    """Remove only bounded serialization round-off from upstream unit axes."""
+
+    rows = _matrix(axes_rows, 3, 3, "axis rows")
+    dot = lambda left, right: sum(left[index] * right[index] for index in range(3))
+    for first in range(3):
+        for second in range(3):
+            expected = 1.0 if first == second else 0.0
+            if abs(dot(rows[first], rows[second]) - expected) > 1e-4:
+                raise ValueError("axis rows are not a bounded near-orthonormal basis")
+    first_norm = sqrt(dot(rows[0], rows[0]))
+    first = tuple(value / first_norm for value in rows[0])
+    projection = dot(rows[1], first)
+    second_residual = tuple(rows[1][index] - projection * first[index] for index in range(3))
+    second_norm = sqrt(dot(second_residual, second_residual))
+    if second_norm <= 1e-12:
+        raise ValueError("axis rows are degenerate")
+    second = tuple(value / second_norm for value in second_residual)
+    third = (
+        first[1] * second[2] - first[2] * second[1],
+        first[2] * second[0] - first[0] * second[2],
+        first[0] * second[1] - first[1] * second[0],
+    )
+    if dot(third, rows[2]) <= 0.0:
+        raise ValueError("axis rows must be right handed")
+    return first, second, third
+
+
 def transform_pose(transform_parent_child: Sequence[Sequence[float]], pose_child: Pose3D, parent_frame: str) -> Pose3D:
     matrix = validate_transform_parent_child(transform_parent_child)
     rotation = tuple(row[:3] for row in matrix[:3])
@@ -94,7 +122,7 @@ def transform_pose(transform_parent_child: Sequence[Sequence[float]], pose_child
 
 
 def pose_from_axes_rows(center_m: Sequence[float], axes_rows: Sequence[Sequence[float]], frame_id: str, evidence: EvidenceKind) -> Pose3D:
-    rows = _matrix(axes_rows, 3, 3, "axis rows")
+    rows = _orthonormalized_axes_rows(axes_rows)
     # Upstream records each local axis as a row vector in camera coordinates;
     # rotation matrices expose those vectors as columns.
     rotation = tuple(tuple(rows[col][row] for col in range(3)) for row in range(3))

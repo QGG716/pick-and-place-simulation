@@ -1,6 +1,6 @@
 {
   "manifest_version": 1,
-  "contracts_schema_version": "1.0.0",
+  "contracts_schema_version": "1.1.0",
   "generated_for": "feat/v0.5-perception-ros2",
   "baseline": {
     "repository": "https://github.com/QGG716/pick-and-place-simulation.git",
@@ -16,12 +16,12 @@
   "consumers": {
     "feasibility_core": {
       "ref": "feat/v0.5-feasibility-core",
-      "commit": "c6fa45595833088319e342c7ef61cc94afef3f58",
+      "commit": "a372c7f117e61509229b2c15eef344cd7908d499",
       "patch": "integration/patches/feasibility-core-contract-adapter.patch"
     },
     "online_continuous": {
       "ref": "feat/v0.5-online-continuous",
-      "commit": "2c337098ecc5e70363cb966750c5b4f336a8d9cd",
+      "commit": "31f160d3f47d0b801ab5698e16dc7267e89434f1",
       "patch": "integration/patches/online-continuous-contract-reexport.patch"
     }
   },

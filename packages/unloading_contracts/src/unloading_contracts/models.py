@@ -13,11 +13,12 @@ from enum import Enum
 import hashlib
 import json
 from math import isfinite, sqrt
+from numbers import Integral, Real
 from types import MappingProxyType
 from typing import Any, Mapping, Protocol, Sequence, runtime_checkable
 
 
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 
 
 class Validity(str, Enum):
@@ -119,6 +120,12 @@ class ReplanReason(str, Enum):
     EXECUTION_FAILED = "EXECUTION_FAILED"
     PLANNER_FAILURE = "PLANNER_FAILURE"
     HORIZON_EXHAUSTED = "HORIZON_EXHAUSTED"
+    SCENE_STALE = "SCENE_STALE"
+    PLANNING_TIMEOUT = "PLANNING_TIMEOUT"
+    EXECUTION_FEEDBACK_TIMEOUT = "EXECUTION_FEEDBACK_TIMEOUT"
+    STOP_ACK_TIMEOUT = "STOP_ACK_TIMEOUT"
+    STOP_OBSERVATION_TIMEOUT = "STOP_OBSERVATION_TIMEOUT"
+    BACKEND_UNHEALTHY = "BACKEND_UNHEALTHY"
 
 
 class ExecutionEventKind(str, Enum):
@@ -126,6 +133,7 @@ class ExecutionEventKind(str, Enum):
     STARTED = "STARTED"
     FEEDBACK = "FEEDBACK"
     CANCEL_ACCEPTED = "CANCEL_ACCEPTED"
+    CANCELED = "CANCELED"
     STOPPING = "STOPPING"
     STOP_CONFIRMED = "STOP_CONFIRMED"
     SUCCEEDED = "SUCCEEDED"
@@ -149,12 +157,18 @@ def deep_freeze(value: Any) -> Any:
         return MappingProxyType({str(key): deep_freeze(item) for key, item in value.items()})
     if isinstance(value, (list, tuple)):
         return tuple(deep_freeze(item) for item in value)
-    if value is None or isinstance(value, (str, int, bool)):
+    if value is None or isinstance(value, (str, bool)):
         return value
-    if isinstance(value, float):
-        if not isfinite(value):
+    if isinstance(value, Integral):
+        return int(value)
+    if isinstance(value, Real):
+        number = float(value)
+        if not isfinite(number):
             raise ValueError("contract values must be finite")
-        return value
+        return number
+    to_list = getattr(value, "tolist", None)
+    if callable(to_list):
+        return deep_freeze(to_list())
     raise TypeError(f"unsupported mutable contract value: {type(value).__name__}")
 
 
@@ -171,12 +185,18 @@ def _canonical(value: Any) -> Any:
             for name, definition in value.__dataclass_fields__.items()
             if definition.init
         }
-    if value is None or isinstance(value, (str, int, bool)):
+    if value is None or isinstance(value, (str, bool)):
         return value
-    if isinstance(value, float):
-        if not isfinite(value):
+    if isinstance(value, Integral):
+        return int(value)
+    if isinstance(value, Real):
+        number = float(value)
+        if not isfinite(number):
             raise ValueError("fingerprint input must be finite")
-        return value
+        return number
+    to_list = getattr(value, "tolist", None)
+    if callable(to_list):
+        return _canonical(to_list())
     raise TypeError(f"cannot fingerprint {type(value).__name__}")
 
 
@@ -500,6 +520,9 @@ class RobotStateRevision:
     sequence: int
     current_q: tuple[float, ...]
     robot_state: Mapping[str, Any] = field(default_factory=dict)
+    sample_time: float | None = field(default=None, compare=False)
+    clock_domain: str | None = field(default=None, compare=False)
+    source: str | None = field(default=None, compare=False)
     fingerprint: str = field(init=False)
 
     def __post_init__(self) -> None:
@@ -507,6 +530,10 @@ class RobotStateRevision:
             raise ValueError("robot state revision sequence must be non-negative")
         q = _finite_tuple(self.current_q, name="robot current_q")
         state = deep_freeze(self.robot_state)
+        if self.sample_time is not None and not isfinite(float(self.sample_time)):
+            raise ValueError("robot state sample time must be finite")
+        if (self.sample_time is None) != (self.clock_domain is None):
+            raise ValueError("robot state sample time and clock domain must be supplied together")
         object.__setattr__(self, "current_q", q)
         object.__setattr__(self, "robot_state", state)
         object.__setattr__(self, "fingerprint", scene_fingerprint({"current_q": q, "robot_state": state}))
@@ -525,8 +552,11 @@ class PlanningWorldSnapshot:
     fingerprint: str = field(init=False)
 
     def __post_init__(self) -> None:
-        if any(value is None for value in (self.tool_attachment, self.payload_attachment, self.base_state, self.conveyor_state, self.config_identity)):
-            raise ValueError("complete mechanism, attachment, and config state is required")
+        # ``None`` is the explicit, known "no payload attached" state used by
+        # the online consumer.  All other mechanism/config inputs must carry
+        # source-owned state; the assembler never invents home/zero defaults.
+        if any(value is None for value in (self.tool_attachment, self.base_state, self.conveyor_state, self.config_identity)):
+            raise ValueError("complete mechanism, tool, and config state is required")
         scene = deep_freeze(self.scene_snapshot)
         if scene_fingerprint(scene) != self.scene_revision.fingerprint:
             raise ValueError("actual scene snapshot does not match scene revision fingerprint")
@@ -558,7 +588,17 @@ class PlanningWorldSnapshot:
         return scene_fingerprint({"scene": self.scene_snapshot, "base": self.base_state, "conveyor": self.conveyor_state, "config": self.config_identity})
 
     def planning_context_matches(self, other: PlanningWorldSnapshot) -> bool:
-        return self.fingerprint == other.fingerprint
+        return bool(
+            isinstance(other, PlanningWorldSnapshot)
+            and self.scene_revision.same_scene(other.scene_revision)
+            and self.scene_snapshot == other.scene_snapshot
+            and self.robot_state_revision.robot_state == other.robot_state_revision.robot_state
+            and self.tool_attachment == other.tool_attachment
+            and self.payload_attachment == other.payload_attachment
+            and self.base_state == other.base_state
+            and self.conveyor_state == other.conveyor_state
+            and self.config_identity == other.config_identity
+        )
 
 
 @dataclass(frozen=True)
@@ -608,8 +648,39 @@ class MotionBoundaryState:
     def current_acceleration(self) -> tuple[float, ...]:
         return self.qdd
 
-    def matches(self, other: MotionBoundaryState, *, tolerance: float = 1e-6, require_predecessor: bool = True) -> bool:
-        return isinstance(other, MotionBoundaryState) and self.mode is other.mode and (not require_predecessor or self.predecessor_plan_id == other.predecessor_plan_id) and abs(self.time_seconds - other.time_seconds) <= tolerance and all(abs(a-b) <= tolerance for left, right in ((self.q, other.q), (self.qd, other.qd), (self.qdd, other.qdd)) for a, b in zip(left, right))
+    def matches(
+        self,
+        other: MotionBoundaryState,
+        *,
+        tolerance: float | None = None,
+        q_atol: float = 1e-6,
+        qd_atol: float = 1e-6,
+        qdd_atol: float = 1e-6,
+        time_atol: float = 1e-6,
+        require_predecessor: bool = True,
+    ) -> bool:
+        """Compare boundaries using the online-planning branch's public API.
+
+        ``tolerance`` is retained as a backwards-compatible shorthand for callers
+        that used the original shared-contract method.
+        """
+        if tolerance is not None:
+            q_atol = qd_atol = qdd_atol = time_atol = float(tolerance)
+        if not isinstance(other, MotionBoundaryState) or self.mode is not other.mode:
+            return False
+        if require_predecessor and self.predecessor_plan_id != other.predecessor_plan_id:
+            return False
+        if any(
+            len(left) != len(right)
+            for left, right in ((self.q, other.q), (self.qd, other.qd), (self.qdd, other.qdd))
+        ):
+            return False
+        return (
+            abs(self.time_seconds - other.time_seconds) <= time_atol
+            and all(abs(a - b) <= q_atol for a, b in zip(self.q, other.q))
+            and all(abs(a - b) <= qd_atol for a, b in zip(self.qd, other.qd))
+            and all(abs(a - b) <= qdd_atol for a, b in zip(self.qdd, other.qdd))
+        )
 
 
 @dataclass(frozen=True)
@@ -741,14 +812,23 @@ class PlanningRequest:
     motion_boundary: MotionBoundaryState | None = None
 
     def __post_init__(self) -> None:
-        if not self.request_id or not self.candidates:
-            raise ValueError("planning request identity and candidates are required")
+        if not self.request_id:
+            raise ValueError("planning request identity is required")
+        if not isinstance(self.world_snapshot, PlanningWorldSnapshot):
+            raise TypeError("planning request must bind a PlanningWorldSnapshot")
+        candidates = tuple(self.candidates)
+        if not candidates:
+            raise ValueError("planning request candidates are required")
         if self.horizon_index < 0:
             raise ValueError("planning horizon index must be non-negative")
-        boundary = self.motion_boundary or MotionBoundaryState.stopped(self.world_snapshot.current_q)
+        boundary = self.motion_boundary
+        if boundary is None:
+            boundary = MotionBoundaryState.stopped(self.world_snapshot.current_q)
+        if not isinstance(boundary, MotionBoundaryState):
+            raise TypeError("planning request motion_boundary must be a MotionBoundaryState")
         if boundary.current_q != self.world_snapshot.current_q:
             raise ValueError("motion boundary must match bound world snapshot")
-        object.__setattr__(self, "candidates", tuple(self.candidates))
+        object.__setattr__(self, "candidates", candidates)
         object.__setattr__(self, "motion_boundary", boundary)
         object.__setattr__(self, "replan_reason", ReplanReason(self.replan_reason))
         object.__setattr__(self, "metadata", deep_freeze(self.metadata))
@@ -861,19 +941,44 @@ class PlanningResult:
                 raise ValueError("successful trajectory requires both motion boundaries")
             if start.q != trajectory[0] or end.q != trajectory[-1]:
                 raise ValueError("trajectory boundaries must match endpoints")
+            if artifact is PlanArtifactKind.GEOMETRIC_PATH and (
+                start.boundary_mode is not BoundaryMode.STOP_BOUNDARY
+                or end.boundary_mode is not BoundaryMode.STOP_BOUNDARY
+            ):
+                raise ValueError("GEOMETRIC_PATH can only declare STOP_BOUNDARY endpoints")
+            if (
+                start.boundary_mode is BoundaryMode.CONTINUOUS_BOUNDARY
+                or end.boundary_mode is BoundaryMode.CONTINUOUS_BOUNDARY
+            ) and artifact is not PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY:
+                raise ValueError("CONTINUOUS_BOUNDARY requires a time-parameterized trajectory")
+            if end.time_seconds < start.time_seconds:
+                raise ValueError("proposal end boundary time cannot precede start boundary time")
             if self.timed_trajectory is not None:
                 timed_positions = tuple(point.positions for point in self.timed_trajectory.points)
                 if timed_positions != trajectory or artifact is not PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY:
                     raise ValueError("geometric and timed trajectory representations must agree")
-            elif artifact is PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY:
-                raise ValueError("time-parameterized result requires TimedJointTrajectory")
             object.__setattr__(self, "expected_start_boundary", start)
             object.__setattr__(self, "expected_end_boundary", end)
         elif trajectory or self.timed_trajectory is not None:
             raise ValueError("failed result cannot carry a trajectory")
         failure = self.failure
         if status is not PlanStatus.SUCCESS and failure is None:
-            failure = FailureDetails(status in (PlanStatus.NOT_EVALUATED, PlanStatus.TIMEOUT), FailureScope.SCENE_LOCAL, status.value, self.message)
+            scope = {
+                PlanStatus.NO_IK: FailureScope.CANDIDATE_LOCAL,
+                PlanStatus.GRASP_CONSTRAINT_FAILED: FailureScope.CANDIDATE_LOCAL,
+                PlanStatus.INITIAL_CLEARANCE_FAILED: FailureScope.TARGET_LOCAL,
+                PlanStatus.COLLISION: FailureScope.CANDIDATE_LOCAL,
+                PlanStatus.NOT_EVALUATED: FailureScope.SCENE_LOCAL,
+                PlanStatus.TIMEOUT: FailureScope.BACKEND_LOCAL,
+            }[status]
+            failure = FailureDetails(
+                status in (PlanStatus.NOT_EVALUATED, PlanStatus.TIMEOUT),
+                scope,
+                status.value,
+                self.message,
+                allow_path_fallback=True,
+                allow_backend_fallback=True,
+            )
         object.__setattr__(self, "status", status)
         object.__setattr__(self, "trajectory", trajectory)
         object.__setattr__(self, "artifact_kind", artifact)
@@ -964,7 +1069,7 @@ class PlanEnvelope:
 
     @property
     def executable(self) -> bool:
-        return self.result.success and not self.speculative and self.invalidated_by is None and self.validated_snapshot is not None and self.validated_by is not None and self.validation_generation is not None
+        return self.result.success and not self.speculative and self.invalidated_by is None and self.validated_snapshot is not None and self.validated_by is not None and self.validation_timestamp_seconds is not None and self.validation_generation is not None
 
     @property
     def planned_revision(self) -> SceneRevision:
@@ -1070,6 +1175,87 @@ class ExecutionCommand:
         if self.trajectory.robot_model_fingerprint != self.robot_model_fingerprint:
             raise ValueError("trajectory robot identity does not match command")
 
+    @property
+    def trajectory_fingerprint(self) -> str:
+        return canonical_fingerprint(self.trajectory)
+
+
+@dataclass(frozen=True)
+class ExecutionGrant:
+    """Authoritative, independently registered permission for one command."""
+
+    grant_id: str
+    command_id: str
+    plan_id: str
+    request_id: str
+    session_id: str
+    epoch: str
+    planning_generation: int
+    predecessor_plan_id: str | None
+    world_fingerprint: str
+    robot_model_fingerprint: str
+    config_identity: str
+    validation_reference: str
+    validation_generation: int
+    trajectory_fingerprint: str
+    expires_at: float
+    clock_domain: str
+    mock_only: bool = False
+
+    def __post_init__(self) -> None:
+        for name in (
+            "grant_id", "command_id", "plan_id", "request_id", "session_id",
+            "epoch", "world_fingerprint", "robot_model_fingerprint",
+            "config_identity", "validation_reference", "trajectory_fingerprint",
+            "clock_domain",
+        ):
+            if not getattr(self, name):
+                raise ValueError(f"{name} must be non-empty")
+        if self.planning_generation < 0 or self.validation_generation < 0:
+            raise ValueError("grant generations must be non-negative")
+        if not isfinite(float(self.expires_at)):
+            raise ValueError("grant expiry must be finite")
+
+    def matches(self, command: ExecutionCommand) -> bool:
+        fields = (
+            "command_id", "plan_id", "request_id", "session_id", "epoch",
+            "planning_generation", "predecessor_plan_id", "world_fingerprint",
+            "robot_model_fingerprint", "config_identity", "validation_reference",
+            "validation_generation",
+        )
+        return all(getattr(self, name) == getattr(command, name) for name in fields) and self.trajectory_fingerprint == command.trajectory_fingerprint
+
+
+@dataclass(frozen=True)
+class ControllerStopFact:
+    """Controller feedback fact; it is not itself permission to replan."""
+
+    controller_id: str
+    controller_epoch: str
+    goal_id: str
+    sequence: int
+    cancel_accepted_time: float
+    sample_time: float
+    clock_domain: str
+    joint_names: tuple[str, ...]
+    actual_positions: tuple[float, ...]
+    actual_velocities: tuple[float, ...]
+    evidence_reference: str
+
+    def __post_init__(self) -> None:
+        if not all((self.controller_id, self.controller_epoch, self.goal_id, self.clock_domain, self.evidence_reference)):
+            raise ValueError("controller stop identity, clock, and evidence are required")
+        if self.sequence < 0 or not isfinite(float(self.cancel_accepted_time)) or not isfinite(float(self.sample_time)) or self.sample_time < self.cancel_accepted_time:
+            raise ValueError("controller stop sequence/time is invalid")
+        names = tuple(str(name) for name in self.joint_names)
+        if not names or len(names) != len(set(names)):
+            raise ValueError("controller stop joint names must be non-empty and unique")
+        positions = _finite_tuple(self.actual_positions, len(names), "stop positions")
+        velocities = _finite_tuple(self.actual_velocities, len(names), "stop velocities")
+        object.__setattr__(self, "joint_names", names)
+        object.__setattr__(self, "actual_positions", positions)
+        object.__setattr__(self, "actual_velocities", velocities)
+
 
 @dataclass(frozen=True)
 class ExecutionEvent:
@@ -1108,6 +1294,10 @@ class StopAcknowledgement:
     actual_velocities: tuple[float, ...]
     criterion: str
     evidence_reference: str
+    controller_id: str = "unspecified"
+    controller_epoch: str = "unspecified"
+    goal_id: str = "unspecified"
+    stop_sequence: int = 0
 
     def __post_init__(self) -> None:
         positions = _finite_tuple(self.actual_positions, name="stop positions")
@@ -1116,6 +1306,8 @@ class StopAcknowledgement:
             raise ValueError("stop acknowledgement requires measured near-zero velocity")
         if not self.criterion or not self.evidence_reference:
             raise ValueError("stop confirmation criterion and evidence are required")
+        if not self.controller_id or not self.controller_epoch or not self.goal_id or self.stop_sequence < 0:
+            raise ValueError("stop confirmation controller/goal identity is invalid")
         object.__setattr__(self, "actual_positions", positions)
         object.__setattr__(self, "actual_velocities", velocities)
 

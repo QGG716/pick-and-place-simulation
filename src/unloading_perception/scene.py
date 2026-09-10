@@ -8,6 +8,7 @@ from typing import Any, Mapping
 from unloading_contracts import (
     CargoObservation, PerceptionObservation, PerceptionSceneUpdate,
     PlanningWorldSnapshot, RobotStateRevision, SceneRevision, UnknownRegion,
+    ObservationStatus,
     Validity, canonical_fingerprint,
 )
 
@@ -52,15 +53,19 @@ class ObservationTracker:
                 unused.remove(track_id)
                 status = "ASSOCIATED"
             elif ambiguous:
-                track_id = None
+                track_id = f"ambiguous-{observation.source_epoch}-{observation.source_sequence}-{cargo.source_instance_id}"
                 status = "AMBIGUOUS"
             else:
                 track_id = f"track-{self._next_track}"
                 self._next_track += 1
                 status = "NEW"
-            item = replace(cargo, object_id=track_id, track_id=track_id, association_status=status)
-            if track_id is not None:
-                updated[track_id] = (item, 0)
+            reasons = cargo.eligibility_reasons
+            eligible = cargo.candidate_eligible
+            if ambiguous:
+                eligible = False
+                reasons = tuple(dict.fromkeys(reasons + ("ASSOCIATION_AMBIGUOUS",)))
+            item = replace(cargo, object_id=track_id, track_id=track_id, association_status=status, candidate_eligible=eligible, eligibility_reasons=reasons)
+            updated[track_id] = (item, 0)
         for track_id in sorted(unused):
             previous, misses = self._tracks[track_id]
             misses += 1
@@ -74,6 +79,12 @@ def build_scene_update(observation: PerceptionObservation, tracked: tuple[CargoO
     cargo = observation.cargo if tracked is None else tracked
     unknown = list(observation.unknown_regions)
     blocking = []
+    if observation.status in (ObservationStatus.FAILED, ObservationStatus.BACKEND_UNAVAILABLE, ObservationStatus.STALE):
+        unknown.append(UnknownRegion(f"observation-{observation.observation_id}", "coverage", observation.failure_code or observation.status.value))
+        blocking.append("PERCEPTION_NOT_USABLE")
+    if not cargo and not unknown:
+        unknown.append(UnknownRegion(f"empty-{observation.observation_id}", "coverage", "EMPTY_OBSERVATION_DOES_NOT_PROVE_FREE_SPACE"))
+        blocking.append("EMPTY_OBSERVATION")
     if max_age_seconds is not None:
         if max_age_seconds <= 0.0:
             raise ValueError("max_age_seconds must be positive")
@@ -87,8 +98,8 @@ def build_scene_update(observation: PerceptionObservation, tracked: tuple[CargoO
             unknown.append(UnknownRegion(f"object-{item.source_instance_id}", "source_image", "OBJECT_WITHOUT_WORLD_GEOMETRY", item.bbox_xyxy))
         elif item.pose.frame_id != "world":
             unknown.append(UnknownRegion(f"object-{item.source_instance_id}", item.pose.frame_id, "WORLD_TRANSFORM_MISSING", item.bbox_xyxy))
-        if item.metric_scale_validity is not Validity.VALID:
-            blocking.append(f"{item.source_instance_id}:METRIC_SCALE_NOT_VALID")
+        elif item.full_dimensions_m is None:
+            unknown.append(UnknownRegion(f"object-{item.source_instance_id}", item.pose.frame_id, "OBJECT_WITHOUT_CONSERVATIVE_VOLUME", item.bbox_xyxy))
     if unknown:
         blocking.append("UNKNOWN_OR_UNTRANSFORMED_REGIONS")
     geometry_fingerprint = canonical_fingerprint({"obstacles": cargo, "unknown_regions": tuple(unknown)})
@@ -132,18 +143,23 @@ class SnapshotAssembler:
                     "frame_id": item.pose.frame_id,
                 },
                 "full_dimensions_m": item.full_dimensions_m,
+                "corners_3d_m": item.corners_3d_m,
+                "axes_3d_rows": item.axes_3d_rows,
+                "pose_evidence": None if item.pose_evidence is None else item.pose_evidence.value,
+                "size_evidence": None if item.size_evidence is None else item.size_evidence.value,
+                "depth_evidence": None if item.depth_evidence is None else item.depth_evidence.value,
+                "scale_evidence": None if item.scale_evidence is None else item.scale_evidence.value,
+                "metric_scale_validity": item.metric_scale_validity.value,
+                "geometry_validity": item.geometry_validity.value,
                 "candidate_eligible": item.candidate_eligible,
+                "eligibility_reasons": item.eligibility_reasons,
                 "association_status": item.association_status,
+                "occluded": item.occluded,
+                "raw_result": item.raw_result,
             } for item in self.update.accepted_obstacles),
             "unknown_regions": tuple({"region_id": item.region_id, "frame_id": item.frame_id, "reason": item.reason, "bbox_xyxy": item.bbox_xyxy} for item in self.update.unknown_regions),
             "planning_admissible": self.update.planning_admissible,
-            "mechanism_context": {
-                "tool_attachment": self.tool_attachment,
-                "payload_attachment": self.payload_attachment,
-                "base_state": self.base_state,
-                "conveyor_state": self.conveyor_state,
-                "config_identity": self.config_identity,
-            },
+            "blocking_reasons": self.update.blocking_reasons,
         }
         fingerprint = canonical_fingerprint(scene)
         if self._revision is None or self._revision.fingerprint != fingerprint:

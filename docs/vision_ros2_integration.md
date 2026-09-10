@@ -3,10 +3,10 @@
 ## Process split
 
 1. The ROS process uses Ubuntu 22.04 system Python 3.10, `rclpy`, generated messages, tf2, and the lightweight contracts package.
-2. The vision worker uses its own interpreter and the pinned visual SHA. It has no `rclpy` dependency. Requests and responses are bounded, newline-delimited schema-1.0 JSON with request/frame/epoch identity. Timeouts, crashes, bad schema, and late results fail closed.
+2. The vision worker uses its own interpreter and the pinned visual SHA. It has no `rclpy` dependency. Requests and responses are bounded, newline-delimited schema-1.1 JSON with request/frame/epoch identity. Timeouts, crashes, bad schema, and late results fail closed.
 3. A future planning worker may use another isolated interpreter. It consumes the same serialized domain contracts; it must not add multiple branch versions of `unloading_sim` to one process.
 
-`CargoJsonReplayBackend` and `SimGroundTruthBackend` are runnable. `CargoPipelineBackend` implements process isolation and capability/error handling. `tools/vision_worker_entry.py` binds a fixed upstream checkout to a published result. The upstream has multiple staged scripts and external/generated prerequisites rather than a verified single real-time entry, so this adapter does not label a published-result read as live inference.
+`CargoJsonReplayBackend` and `SimGroundTruthBackend` are runnable. `CargoPipelineBackend` implements process isolation, a bounded queue, timeouts, restart epochs and capability/error handling. It accepts only local input/output references under configured roots and verifies every returned SHA-256 before deserializing an observation. `tools/vision_worker_entry.py` binds the fixed upstream checkout to sequential SAM, 2-D geometry, MoGe, 3-D cuboid and result-assembly subprocesses. SAM and MoGe are rerun; the fixed proposal and person-mask inputs are disclosed by the Mode-B manifest, so the run is not labelled raw-image automatic.
 
 ## Evidence behavior
 
@@ -26,6 +26,6 @@ World conversion uses explicit `T_parent_child` at capture time. The contract us
 - `/unloading/controller_stop_facts`: controller/simulator measurements without planning identity.
 - `/unloading/stop_acknowledgements`: execution-bridge output that binds a stationary controller fact to command, plan, epoch, and planning generation.
 
-The nodes use bounded TF lookup, an async action client, a reentrant callback group, and a multithreaded executor. Long vision work stays outside callbacks. Default `enable_hardware=false`; setting it true is rejected because no verified FANUC adapter is present.
+The nodes use bounded TF lookup, an async action client, a reentrant callback group, and a multithreaded executor. Long vision work stays in the external worker and the perception callback only polls bounded IPC state. Default `enable_hardware=false`; setting it true is rejected because no verified FANUC adapter is present.
 
 For rosbag replay record RGB/depth/CameraInfo, `/tf`, `/tf_static`, `/joint_states`, perception/world topics, configuration identities, and the manifest. Replayed consumers must still check capture time, epoch, freshness, and calibration identity.

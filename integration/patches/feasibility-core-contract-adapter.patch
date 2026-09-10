@@ -2,7 +2,7 @@ diff --git a/src/unloading_sim/feasibility_contract_adapter.py b/src/unloading_s
 new file mode 100644
 --- /dev/null
 +++ b/src/unloading_sim/feasibility_contract_adapter.py
-@@ -0,0 +1,82 @@
+@@ -0,0 +1,84 @@
 +"""Thin contract adapter; all feasibility mathematics stays in existing modules."""
 +from __future__ import annotations
 +
@@ -87,3 +87,66 @@ new file mode 100644
 +    # Keep the result geometric. The existing feasibility time parameterizer
 +    # must construct TimedJointTrajectory before ROS execution eligibility.
 +    return PlanningResult.succeeded(candidate, knots, metadata={"physical_result": result})
+diff --git a/tests/test_shared_contract_adapter.py b/tests/test_shared_contract_adapter.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_shared_contract_adapter.py
+@@ -0,0 +1,58 @@
++"""Exercise the real grasp generator through the frozen schema adapter."""
++from __future__ import annotations
++
++from unloading_contracts import (
++    PlanArtifactKind, PlanStatus, PlanningWorldSnapshot, RobotStateRevision,
++    SceneRevision,
++)
++from unloading_sim.feasibility_contract_adapter import (
++    SnapshotCandidateProvider, adapt_task_result,
++)
++
++
++def _snapshot() -> PlanningWorldSnapshot:
++    scene = {
++        "obstacles": ({
++            "object_id": "carton-1",
++            "candidate_eligible": True,
++            "pose": {
++                "position_m": (1.2, 0.1, 0.8),
++                "orientation_xyzw": (0.0, 0.0, 0.0, 1.0),
++                "frame_id": "world",
++            },
++            "full_dimensions_m": (0.5, 0.4, 0.3),
++        },),
++        "unknown_regions": (),
++        "planning_admissible": True,
++        "blocking_reasons": (),
++    }
++    return PlanningWorldSnapshot(
++        SceneRevision.from_scene(scene, 1), scene,
++        RobotStateRevision(1, (0.0,) * 6, {"mode": "mock"}),
++        {"tool_id": "test-suction"}, None,
++        {"pose": "fixed"}, {"state": "stopped"},
++        {"robot_model_fingerprint": "robot-v1", "world_model_fingerprint": "world-v1"},
++    )
++
++
++def test_adapter_calls_real_suction_candidate_generator() -> None:
++    candidates = SnapshotCandidateProvider((0.0, 0.0, 0.5)).candidates(_snapshot())
++    assert candidates
++    assert {item.target_id for item in candidates} == {"carton-1"}
++    assert {item.metadata["face_mode"] for item in candidates} <= {"front", "side", "top"}
++    assert all(len(item.metadata["contact_point_m"]) == 3 for item in candidates)
++
++
++def test_result_mapping_never_promotes_missing_physics_or_timing() -> None:
++    candidate = SnapshotCandidateProvider((0.0, 0.0, 0.5)).candidates(_snapshot())[0]
++    rejected = adapt_task_result(candidate, {"geometric_feasible": False, "failure_reason": "collision"})
++    assert rejected.status is PlanStatus.NOT_EVALUATED
++    assert rejected.failure.native_message == "collision"
++
++    geometric = adapt_task_result(candidate, {
++        "geometric_feasible": True,
++        "selected": {"trajectory": {"q_knots": [(0.0,) * 6, (0.1,) * 6]}},
++    })
++    assert geometric.status is PlanStatus.SUCCESS
++    assert geometric.artifact_kind is PlanArtifactKind.GEOMETRIC_PATH
++    assert geometric.timed_trajectory is None

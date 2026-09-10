@@ -16,7 +16,7 @@ from unloading_interfaces.msg import ControllerStopFact
 @pytest.mark.launch_test
 def generate_test_description():
     return LaunchDescription([
-        Node(package="unloading_ros_bridge", executable="mock_follow_joint_trajectory", output="screen"),
+        Node(package="unloading_ros_bridge", executable="mock_follow_joint_trajectory", output="screen", parameters=[{"controller_epoch": "launch-test-controller-epoch"}]),
         ReadyToTest(),
     ])
 
@@ -60,3 +60,6 @@ class TestMockFollowJointTrajectory:
         assert feedback
         assert stop_facts
         assert stop_facts[0].criterion == "mock measured velocity is zero"
+        assert stop_facts[0].controller_epoch == "launch-test-controller-epoch"
+        assert stop_facts[0].goal_id == bytes(handle.goal_id.uuid).hex()
+        assert stop_facts[0].actual_positions != list(goal.trajectory.points[-1].positions)

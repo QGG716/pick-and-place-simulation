@@ -1,0 +1,27 @@
+numpy==1.26.4
+scipy==1.14.1
+opencv-python-headless==4.10.0.84
+pyransac3d==0.7.0
+Pillow==11.3.0
+matplotlib==3.10.3
+trimesh==4.7.1
+transformers==4.53.2
+huggingface-hub==0.33.4
+safetensors==0.5.3
+tokenizers==0.21.2
+requests==2.32.4
+tqdm==4.67.1
+PyYAML==6.0.2
+# Runtime dependencies declared by the pinned PyTorch CUDA wheels.  They are
+# installed from the ordinary package index so that it is not queried through
+# PyTorch's deliberately small wheel index.
+filelock==3.32.3
+typing-extensions==4.16.0
+sympy==1.14.0
+mpmath==1.3.0
+networkx==3.4.2
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+fsspec==2026.7.0
+moderngl==5.12.0
+glcontext==3.0.0

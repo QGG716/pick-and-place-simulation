@@ -1,36 +1,75 @@
-diff --git a/src/unloading_sim/shared_contracts.py b/src/unloading_sim/shared_contracts.py
+diff --git a/src/unloading_sim/online_planning.py b/src/unloading_sim/online_planning.py
+--- a/src/unloading_sim/online_planning.py
++++ b/src/unloading_sim/online_planning.py
+@@ -1155,6 +1155,30 @@ class PlannerBackend(ABC):
+             reused=valid and snapshot != envelope.planned_snapshot,
+         )
+
++# Schema 1.1 migration boundary.  These are explicit compatibility re-exports,
++# installed as part of importing online_planning itself; callers do not need to
++# import a shim first and no module attributes are changed dynamically.
++_LegacyPlannerBackend = PlannerBackend
++_LegacyPlanValidator = PlanValidator
++from unloading_contracts import (  # noqa: E402
++    ArtifactKind, BackendCapabilities, BackendHealth, BackendIdentity,
++    BackendProvenance, BoundaryMode, FailureDetails, FailureScope,
++    MotionBoundaryState, OperationalOutcome, OutcomeCategory,
++    PlanArtifactKind, PlanEnvelope, PlanStatus, PlanValidation,
++    PlanValidationResult, PlanValidator as _SharedPlanValidator,
++    PlanningCandidate, PlanningPath, PlanningRequest, PlanningResult,
++    PlanningWorldSnapshot, PlannerBackend as _SharedPlannerBackend,
++    ReplanReason, RobotStateRevision, SceneRevision, ValidationStatus,
++    scene_fingerprint,
++)
++
++# Consumer implementations defined above remain valid implementations of the
++# shared abstract interfaces.  New imports/classes see the shared identities.
++_SharedPlannerBackend.register(_LegacyPlannerBackend)
++_SharedPlanValidator.register(_LegacyPlanValidator)
++PlannerBackend = _SharedPlannerBackend
++PlanValidator = _SharedPlanValidator
++
+-
++
+ def normalize_plan_status(value: str | PlanStatus) -> PlanStatus:
+     """Map legacy planner reasons into the control-plane status vocabulary."""
+diff --git a/tests/test_shared_contract_identity.py b/tests/test_shared_contract_identity.py
 new file mode 100644
 --- /dev/null
-+++ b/src/unloading_sim/shared_contracts.py
-@@ -0,0 +1,31 @@
-+"""Install the contracts-1.0 type-identity migration shim.
++++ b/tests/test_shared_contract_identity.py
+@@ -0,0 +1,35 @@
++"""Schema 1.1 must be the public identity for either import order."""
++from __future__ import annotations
 +
-+Import this module before constructing a ContinuousPlanningSession. The old
-+online_planning path remains a compatibility re-export after installation.
-+"""
-+import unloading_contracts as _shared
-+from . import online_planning as _online
++import subprocess
++import sys
 +
-+_shared.PlannerBackend.register(_online.PlannerBackend)
-+_shared.PlanValidator.register(_online.PlanValidator)
-+_NAMES = (
-+    "ArtifactKind", "BackendCapabilities", "BackendHealth", "BackendIdentity",
-+    "BackendProvenance", "BoundaryMode", "FailureDetails", "FailureScope",
-+    "MotionBoundaryState", "OperationalOutcome", "OutcomeCategory",
-+    "PlanArtifactKind", "PlanEnvelope", "PlanStatus", "PlanValidation",
-+    "PlanValidationResult", "PlanValidator", "PlanningCandidate", "PlanningPath",
-+    "PlanningRequest", "PlanningResult", "PlanningWorldSnapshot", "PlannerBackend",
-+    "ReplanReason", "RobotStateRevision", "SceneRevision", "ValidationStatus",
-+)
-+for _name in _NAMES:
-+    setattr(_online, _name, getattr(_shared, _name))
 +
-+globals().update({_name: getattr(_shared, _name) for _name in _NAMES})
-+ContinuousPlanningSession = _online.ContinuousPlanningSession
-+BackendPlanValidatorAdapter = _online.BackendPlanValidatorAdapter
-+ProviderNeutralPlanValidator = _online.ProviderNeutralPlanValidator
++def _check(source: str) -> None:
++    subprocess.run([sys.executable, "-c", source], check=True)
 +
-+__all__ = list(_NAMES) + [
-+    "ContinuousPlanningSession", "BackendPlanValidatorAdapter",
-+    "ProviderNeutralPlanValidator",
-+]
++
++def test_shared_first_import_order() -> None:
++    _check("""
++import unloading_contracts as shared
++import unloading_sim.online_planning as online
++assert online.PlanningWorldSnapshot is shared.PlanningWorldSnapshot
++assert online.PlanningRequest is shared.PlanningRequest
++assert online.PlanningResult is shared.PlanningResult
++assert online.PlannerBackend is shared.PlannerBackend
++assert online.PlanValidator is shared.PlanValidator
++assert issubclass(online.ProviderNeutralPlanValidator, shared.PlanValidator)
++""")
++
++
++def test_online_first_import_order() -> None:
++    _check("""
++import unloading_sim.online_planning as online
++import unloading_contracts as shared
++assert online.PlanningWorldSnapshot is shared.PlanningWorldSnapshot
++assert online.PlanningRequest is shared.PlanningRequest
++assert online.PlanningResult is shared.PlanningResult
++assert online.PlannerBackend is shared.PlannerBackend
++assert online.PlanValidator is shared.PlanValidator
++assert issubclass(online.BackendPlanValidatorAdapter, shared.PlanValidator)
++""")

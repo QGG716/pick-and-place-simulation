@@ -4,8 +4,10 @@ import sys
 import pytest
 
 from unloading_contracts import (
-    ExecutionCommand, ExecutionEventKind, PlanArtifactKind, ResourceReference,
-    RobotStateRevision, SensorFrame, TimedJointPoint, TimedJointTrajectory, Validity,
+    ControllerStopFact, ExecutionCommand, ExecutionEventKind, ExecutionGrant,
+    PlanArtifactKind, PlanningWorldSnapshot, ResourceReference, RobotStateRevision,
+    Pose3D, SceneRevision, SensorFrame, TimedJointPoint, TimedJointTrajectory,
+    UnknownRegion, Validity,
 )
 from unloading_perception.backends import CargoJsonReplayBackend, CargoPipelineBackend, resolve_controlled_reference
 from unloading_perception.execution import ExecutionGate
@@ -89,6 +91,48 @@ def test_tracker_rejects_duplicate_retains_missed_and_resets_epoch():
     assert all(item.association_status == "NEW" for item in reset)
 
 
+def test_ambiguous_association_retains_current_observation_and_old_occupancy():
+    from dataclasses import replace
+    base = observation()
+    cargo = base.cargo[0]
+    first = replace(cargo, source_instance_id="a", bbox_xyxy=(0.0, 0.0, 10.0, 10.0))
+    second = replace(cargo, source_instance_id="b", bbox_xyxy=(0.2, 0.0, 10.2, 10.0))
+    tracker = ObservationTracker(association_iou=0.5)
+    tracker.update(replace(base, cargo=(first, second)))
+    current = replace(cargo, source_instance_id="c", bbox_xyxy=(0.1, 0.0, 10.1, 10.0))
+    result = tracker.update(replace(observation(2), cargo=(current,)))
+    ambiguous = [item for item in result if item.association_status == "AMBIGUOUS"]
+    assert len(ambiguous) == 1
+    assert ambiguous[0].object_id.startswith("ambiguous-")
+    assert sum(item.association_status == "STALE_OCCLUDED" for item in result) == 2
+
+
+def test_scene_fingerprint_changes_for_position_and_rotation_but_not_heartbeat():
+    from dataclasses import replace
+    original = observation()
+    cargo = original.cargo[1]
+    update = build_scene_update(original)
+    moved_pose = replace(cargo.pose, position_m=(cargo.pose.position_m[0] + 1e-6, *cargo.pose.position_m[1:]))
+    moved = build_scene_update(replace(original, source_sequence=2, cargo=(replace(cargo, pose=moved_pose),)))
+    rotated_pose = replace(cargo.pose, orientation_xyzw=(0.0, 0.0, 1.0, 0.0))
+    rotated = build_scene_update(replace(original, source_sequence=3, cargo=(replace(cargo, pose=rotated_pose),)))
+    heartbeat = build_scene_update(replace(original, source_sequence=4))
+    assert moved.geometry_fingerprint != update.geometry_fingerprint
+    assert rotated.geometry_fingerprint != update.geometry_fingerprint
+    assert heartbeat.geometry_fingerprint == update.geometry_fingerprint
+
+
+def test_unknown_only_and_failed_empty_observations_are_never_free_space():
+    from dataclasses import replace
+    source = observation()
+    unknown_only = replace(source, cargo=(), unknown_regions=(UnknownRegion("u", "coverage", "NO_DEPTH"),))
+    assert not build_scene_update(unknown_only).planning_admissible
+    failed = replace(source, cargo=(), unknown_regions=(), status="FAILED", failure_code="WORKER_OOM", failure_message="deterministic injection")
+    update = build_scene_update(failed)
+    assert not update.planning_admissible
+    assert update.unknown_regions
+
+
 def test_snapshot_requires_real_mechanism_state_and_is_immutable():
     update = build_scene_update(observation())
     assembler = SnapshotAssembler()
@@ -104,7 +148,7 @@ def test_snapshot_requires_real_mechanism_state_and_is_immutable():
         first.snapshot.scene_snapshot["new"] = 1
 
 
-def test_freshness_and_attachment_changes_invalidate_scene_revision():
+def test_freshness_and_attachment_changes_only_invalidate_world_context():
     fresh = build_scene_update(observation(), now=11.5, max_age_seconds=2.0)
     stale = build_scene_update(observation(), now=20.0, max_age_seconds=2.0)
     assert "OBSERVATION_STALE" not in fresh.blocking_reasons
@@ -113,8 +157,18 @@ def test_freshness_and_attachment_changes_invalidate_scene_revision():
     before = assembler.assemble().snapshot
     assembler.payload_attachment = {"object_id": "track-1", "confirmed": True}
     after = assembler.assemble().snapshot
-    assert after.scene_revision.sequence == before.scene_revision.sequence + 1
+    assert after.scene_revision.sequence == before.scene_revision.sequence
     assert after.fingerprint != before.fingerprint
+
+
+def admissible_snapshot():
+    scene = {"obstacles": (), "unknown_regions": (), "planning_admissible": True, "blocking_reasons": ()}
+    return PlanningWorldSnapshot(
+        SceneRevision.from_scene(scene, 1), scene,
+        RobotStateRevision(1, (0.0, 0.0), {"joint_names": ("j1", "j2")}),
+        {"identity": "tool"}, {"identity": "payload"}, {"identity": "base"},
+        {"identity": "conveyor"}, {"identity": "config", "robot_model_fingerprint": "robot-sha", "world_model_fingerprint": "world-sha"},
+    )
 
 
 def trajectory():
@@ -125,31 +179,55 @@ def command(snapshot, command_id="cmd-1", epoch="epoch-a", generation=2):
     return ExecutionCommand(command_id, "plan-1", "request-1", "session-1", epoch, generation, None, snapshot.fingerprint, "robot-sha", "config-sha", "validator@1:validation-1", 2, trajectory())
 
 
+def grant(value, *, expires_at=100.0, trajectory_fingerprint=None):
+    return ExecutionGrant(
+        "grant-" + value.command_id, value.command_id, value.plan_id, value.request_id,
+        value.session_id, value.epoch, value.planning_generation, value.predecessor_plan_id,
+        value.world_fingerprint, value.robot_model_fingerprint, value.config_identity,
+        value.validation_reference, value.validation_generation,
+        trajectory_fingerprint or value.trajectory_fingerprint, expires_at, "monotonic", True,
+    )
+
+
 def test_execution_gate_rejects_hardware_duplicate_and_changed_world():
-    snapshot = complete_assembler(build_scene_update(observation())).assemble().snapshot
-    assert snapshot is not None
+    snapshot = admissible_snapshot()
     hardware = ExecutionGate(enable_hardware=True, hardware_adapter_verified=False)
     assert hardware.authorize(command(snapshot), snapshot, epoch="epoch-a", generation=2).kind is ExecutionEventKind.REJECTED
     gate = ExecutionGate()
-    assert gate.authorize(command(snapshot), snapshot, epoch="epoch-a", generation=2).kind is ExecutionEventKind.ACCEPTED
-    assert gate.authorize(command(snapshot), snapshot, epoch="epoch-a", generation=2).message == "DUPLICATE_COMMAND"
+    gate.register_grant(grant(command(snapshot)))
+    assert gate.authorize(command(snapshot), snapshot, epoch="epoch-a", generation=2, now=1.0).kind is ExecutionEventKind.ACCEPTED
+    assert gate.authorize(command(snapshot), snapshot, epoch="epoch-a", generation=2, now=1.0).message == "DUPLICATE_COMMAND"
     assert ExecutionGate().authorize(command(snapshot, epoch="old"), snapshot, epoch="epoch-a", generation=2).message == "STALE_EPOCH_OR_GENERATION"
-    altered_assembler = complete_assembler(build_scene_update(observation()))
-    altered_assembler.conveyor_state = {"running": True, "confirmed": True}
-    altered = altered_assembler.assemble().snapshot
+    scene = dict(snapshot.scene_snapshot)
+    altered = PlanningWorldSnapshot(snapshot.scene_revision, scene, snapshot.robot_state_revision, snapshot.tool_attachment, snapshot.payload_attachment, snapshot.base_state, {"identity": "moving"}, snapshot.config_identity)
     assert ExecutionGate().authorize(command(snapshot, command_id="cmd-world"), altered, epoch="epoch-a", generation=2).message == "WORLD_CHANGED_BEFORE_SEND"
 
 
-def test_cancel_acceptance_is_not_stop_acknowledgement():
-    snapshot = complete_assembler(build_scene_update(observation())).assemble().snapshot
+def test_execution_gate_requires_exact_registered_grant():
+    snapshot = admissible_snapshot()
+    value = command(snapshot)
     gate = ExecutionGate()
-    gate.authorize(command(snapshot), snapshot, epoch="epoch-a", generation=2)
-    event = gate.accept_cancel("cmd-1")
+    assert gate.authorize(value, snapshot, epoch="epoch-a", generation=2, now=1.0).message == "AUTHORIZATION_GRANT_MISSING"
+    gate.register_grant(grant(value, trajectory_fingerprint="wrong"))
+    assert gate.authorize(value, snapshot, epoch="epoch-a", generation=2, now=1.0).message == "AUTHORIZATION_GRANT_MISMATCH"
+
+
+def test_cancel_acceptance_is_not_stop_acknowledgement():
+    snapshot = admissible_snapshot()
+    gate = ExecutionGate()
+    value = command(snapshot)
+    gate.register_grant(grant(value))
+    gate.authorize(value, snapshot, epoch="epoch-a", generation=2, now=1.0)
+    gate.bind_goal("cmd-1", controller_id="mock", controller_epoch="controller-a", goal_id="goal-a")
+    event = gate.accept_cancel("cmd-1", event_time=2.0)
     assert event.kind is ExecutionEventKind.CANCEL_ACCEPTED
+    with pytest.raises(ValueError, match="identity mismatch"):
+        gate.confirm_stop(ControllerStopFact("mock", "controller-a", "wrong", 1, 2.0, 3.0, "monotonic", ("j1", "j2"), (0.2, 0.3), (0.0, 0.0), "feedback-1"), now=3.0, max_age_seconds=1.0)
     with pytest.raises(ValueError, match="near-zero"):
-        gate.confirm_stop((0.2, 0.3), (0.0, 0.01), evidence_reference="feedback-1", event_time=5.0)
-    acknowledgement = gate.confirm_stop((0.2, 0.3), (0.0, 0.0), evidence_reference="feedback-2", event_time=6.0)
+        gate.confirm_stop(ControllerStopFact("mock", "controller-a", "goal-a", 1, 2.0, 3.0, "monotonic", ("j1", "j2"), (0.2, 0.3), (0.0, 0.01), "feedback-1"), now=3.0, max_age_seconds=1.0)
+    acknowledgement = gate.confirm_stop(ControllerStopFact("mock", "controller-a", "goal-a", 1, 2.0, 3.0, "monotonic", ("j1", "j2"), (0.2, 0.3), (0.0, 0.0), "feedback-2"), now=3.0, max_age_seconds=1.0)
     assert acknowledgement.plan_id == "plan-1"
+    assert acknowledgement.goal_id == "goal-a"
 
 
 def test_pipeline_capability_fails_closed_without_interpreter(tmp_path):
@@ -160,12 +238,33 @@ def test_pipeline_capability_fails_closed_without_interpreter(tmp_path):
 
 
 def test_pipeline_timeout_crash_and_bad_schema_are_distinct(tmp_path):
+    digest = __import__("hashlib").sha256(FIXTURE.read_bytes()).hexdigest()
+    valid_frame = frame()
+    from dataclasses import replace
+    valid_frame = replace(valid_frame, rgb=ResourceReference(FIXTURE.resolve().as_uri(), digest))
     sleeper = tmp_path / "sleep.py"
     sleeper.write_text("import time; time.sleep(2)\n", encoding="utf-8")
-    assert CargoPipelineBackend((sys.executable, str(sleeper)), cwd=tmp_path, timeout_seconds=0.05).infer(frame()).failure_code == "WORKER_TIMEOUT"
+    assert CargoPipelineBackend((sys.executable, str(sleeper)), cwd=tmp_path, timeout_seconds=0.05, allowed_roots=(FIXTURE.parent,)).infer(valid_frame).failure_code == "WORKER_TIMEOUT"
     crash = tmp_path / "crash.py"
     crash.write_text("raise SystemExit(7)\n", encoding="utf-8")
-    assert CargoPipelineBackend((sys.executable, str(crash)), cwd=tmp_path).infer(frame()).failure_code == "WORKER_CRASH"
+    assert CargoPipelineBackend((sys.executable, str(crash)), cwd=tmp_path, allowed_roots=(FIXTURE.parent,)).infer(valid_frame).failure_code == "WORKER_CRASH"
     malformed = tmp_path / "malformed.py"
     malformed.write_text("print('not-json')\n", encoding="utf-8")
-    assert CargoPipelineBackend((sys.executable, str(malformed)), cwd=tmp_path).infer(frame()).failure_code == "WORKER_SCHEMA_ERROR"
+    assert CargoPipelineBackend((sys.executable, str(malformed)), cwd=tmp_path, allowed_roots=(FIXTURE.parent,)).infer(valid_frame).failure_code == "WORKER_SCHEMA_ERROR"
+
+
+def test_pipeline_output_references_are_root_bounded_and_hash_verified(tmp_path):
+    artifact = tmp_path / "artifact.json"
+    artifact.write_text('{"ok":true}\n', encoding="utf-8")
+    digest = __import__("hashlib").sha256(artifact.read_bytes()).hexdigest()
+    backend = CargoPipelineBackend((sys.executable, "worker.py"), cwd=tmp_path, allowed_roots=(tmp_path,))
+    assert backend._validated_output_reference(
+        {"path": str(artifact), "sha256": digest}, name="artifact"
+    ) == artifact.resolve()
+    with pytest.raises(ValueError, match="SHA-256 mismatch"):
+        backend._validated_output_reference({"path": str(artifact), "sha256": "0" * 64}, name="artifact")
+    with pytest.raises(ValueError, match="escapes configured roots"):
+        backend._validated_output_reference(
+            {"path": str(FIXTURE.resolve()), "sha256": __import__("hashlib").sha256(FIXTURE.read_bytes()).hexdigest()},
+            name="artifact",
+        )

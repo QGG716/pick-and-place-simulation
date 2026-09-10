@@ -1,0 +1,16 @@
+string schema_version
+string source_epoch
+uint64 sequence
+builtin_interfaces/Time observed_time
+string clock_domain
+string tool_state_identity
+string payload_state_identity
+string base_state_identity
+string conveyor_state_identity
+string config_identity
+string robot_model_fingerprint
+string world_model_fingerprint
+string tool_state_json
+string payload_state_json
+string base_state_json
+string conveyor_state_json

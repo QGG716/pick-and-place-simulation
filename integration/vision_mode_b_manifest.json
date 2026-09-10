@@ -1,0 +1,28 @@
+{
+  "manifest_version": 1,
+  "mode": "REAL_IMAGE_WITH_FROZEN_PROPOSALS",
+  "raw_image_automatic": false,
+  "vision_repository": "https://github.com/QGG716/cargo-detection-and-6D-estimation.git",
+  "vision_commit": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+  "input": {
+    "path": "runs/current/cargo_7/01_proposals/source.png",
+    "width": 1290,
+    "height": 1333,
+    "sha256": "4ae030b9e29edb83976830011a3e221ffc375a98aaa20228a062dfdd1f8830d7"
+  },
+  "frozen_proposals": {
+    "path": "runs/current/cargo_7/01_proposals/boxes_merged.json",
+    "sha256": "43b44525eb8de42cbe7be77921025b9d5ec7311abc7146b27f9f0e55389c76c8"
+  },
+  "frozen_person_masks": {
+    "path": "runs/current/cargo_7/02_people/person_masks.npz",
+    "sha256": "6029140ff28a11a40f005b0ecc75d8406212ce00e9949ce85e3149695903cbf5"
+  },
+  "models": {
+    "sam": {"repository": "facebook/sam-vit-base", "revision": "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f"},
+    "moge": {"repository": "Ruicheng/moge-2-vits-normal", "revision": "26b477f41595707c5db6770294c0d1721e8ed4ed"},
+    "moge_source": {"repository": "https://github.com/microsoft/MoGe.git", "commit": "b942f00bdc2a2a23ebb474fbe034d487e6dcceec"},
+    "utils3d_source": {"repository": "https://github.com/EasternJournalist/utils3d.git", "commit": "3fab839f0be9931dac7c8488eb0e1600c236e183"}
+  },
+  "configuration": {"device": "cuda", "batch_size": 1, "num_tokens": 1800, "cuboid_seed": 17}
+}

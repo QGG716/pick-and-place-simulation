@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 from unloading_contracts import (
-    SCHEMA_VERSION, CargoObservation, EvidenceKind, ExecutionCommand,
+    SCHEMA_VERSION, CargoObservation, ControllerStopFact, EvidenceKind, ExecutionCommand, ExecutionGrant,
     ImageMapping, ObservationStatus, PerceptionObservation, PlanArtifactKind,
     Pose3D, ResourceReference, RobotStateRevision, SensorFrame,
     TimedJointPoint, TimedJointTrajectory, Validity, to_wire,
@@ -72,9 +72,22 @@ def _mock_execution(snapshot):
         "mock-contract-validator@1:synthetic-validation", 1, trajectory,
     )
     gate = ExecutionGate(enable_hardware=False)
-    accepted = gate.authorize(command, snapshot, epoch="synthetic-epoch", generation=1)
-    cancel = gate.accept_cancel(command.command_id)
-    stopped = gate.confirm_stop(points[0].positions, points[0].velocities, evidence_reference="synthetic_mock_feedback", event_time=2.0)
+    gate.register_grant(ExecutionGrant(
+        "synthetic-grant-1", command.command_id, command.plan_id, command.request_id,
+        command.session_id, command.epoch, command.planning_generation,
+        command.predecessor_plan_id, command.world_fingerprint,
+        command.robot_model_fingerprint, command.config_identity,
+        command.validation_reference, command.validation_generation,
+        command.trajectory_fingerprint, 10.0, "monotonic", True,
+    ))
+    accepted = gate.authorize(command, snapshot, epoch="synthetic-epoch", generation=1, now=1.0)
+    gate.bind_goal(command.command_id, controller_id="synthetic-mock-controller", controller_epoch="synthetic-controller-epoch", goal_id="synthetic-goal-1")
+    cancel = gate.accept_cancel(command.command_id, event_time=1.5)
+    stopped = gate.confirm_stop(ControllerStopFact(
+        "synthetic-mock-controller", "synthetic-controller-epoch", "synthetic-goal-1", 1,
+        1.5, 2.0, "monotonic", trajectory.joint_names, points[0].positions,
+        points[0].velocities, "synthetic_mock_feedback",
+    ), now=2.0, max_age_seconds=1.0)
     return accepted, cancel, stopped
 
 

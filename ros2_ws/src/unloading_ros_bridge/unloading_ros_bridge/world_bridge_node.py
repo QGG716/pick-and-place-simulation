@@ -1,137 +1,194 @@
 from __future__ import annotations
 
-import hashlib
+from dataclasses import replace
+import math
 
 import rclpy
-from geometry_msgs.msg import PoseStamped
 from rclpy.duration import Duration
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, qos_profile_sensor_data
 from sensor_msgs.msg import JointState
-from tf2_geometry_msgs import do_transform_pose
 from tf2_ros import Buffer, TransformException, TransformListener
-from unloading_interfaces.msg import PerceptionObservation, PlanningWorldSnapshot
+from unloading_contracts import ObservationStatus, RobotStateRevision
+from unloading_interfaces.msg import MechanismState, PerceptionObservation, PlanningWorldSnapshot
 from visualization_msgs.msg import Marker, MarkerArray
 
-from .common import require_humble_python310
+from unloading_perception.geometry import rotation_from_quaternion, transform_pose
+from unloading_perception.scene import ObservationTracker, SnapshotAssembler, build_scene_update
+
+from .common import require_humble_python310, time_to_float
+from .mapping import observation_from_msg, snapshot_to_msg
 
 
 class WorldBridgeNode(Node):
+    """Transport/TF adapter around the shared domain tracker and assembler."""
+
     def __init__(self) -> None:
         super().__init__("unloading_world_bridge")
-        for name, default in (
-            ("world_frame", "world"), ("robot_model_fingerprint", ""),
-            ("world_model_fingerprint", ""), ("tool_state_identity", ""),
-            ("payload_state_identity", ""), ("base_state_identity", ""),
-            ("conveyor_state_identity", ""), ("config_identity", ""),
-        ):
-            self.declare_parameter(name, default)
+        self.declare_parameter("world_frame", "world")
+        self.declare_parameter("expected_joint_names", ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"])
         self.declare_parameter("tf_timeout_seconds", 0.2)
         self.declare_parameter("snapshot_freshness_seconds", 2.0)
-        required = [name for name in ("robot_model_fingerprint", "world_model_fingerprint", "tool_state_identity", "payload_state_identity", "base_state_identity", "conveyor_state_identity", "config_identity") if not self.get_parameter(name).value]
-        if required:
-            raise RuntimeError("world bridge refuses incomplete mechanism/config state: " + ", ".join(required))
+        self.declare_parameter("robot_state_freshness_seconds", 0.5)
+        self.declare_parameter("mechanism_state_freshness_seconds", 2.0)
         self.buffer = Buffer()
         self.listener = TransformListener(self.buffer, self)
-        self.latest_joint_state = None
-        self.sequence = 0
-        self.last_fingerprint = ""
-        self.last_epoch = None
-        self.last_source_sequence = -1
+        self.tracker = ObservationTracker()
+        self.assembler = SnapshotAssembler()
+        self.mechanism_epoch = None
+        self.mechanism_sequence = -1
+        self.mechanism_stamp = None
+        self.robot_sequence = 0
+        self.last_robot_content = None
+        self.last_joint_stamp: float | None = None
+        self.last_observation = None
+        self.last_tracked = None
         self.last_snapshot = None
-        self.stale_published = False
+        self.stale_key = None
         reliable = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE)
         self.create_subscription(JointState, "/joint_states", self.on_joints, qos_profile_sensor_data)
+        self.create_subscription(MechanismState, "/unloading/mechanism_state", self.on_mechanism, reliable)
         self.create_subscription(PerceptionObservation, "/unloading/perception", self.on_observation, reliable)
         self.publisher = self.create_publisher(PlanningWorldSnapshot, "/unloading/world_snapshot", reliable)
         self.marker_publisher = self.create_publisher(MarkerArray, "/unloading/markers", reliable)
         self.watchdog = self.create_timer(0.1, self.check_freshness)
 
-    def on_joints(self, message: JointState) -> None:
-        if len(message.name) != len(message.position) or not message.name:
-            self.get_logger().error("rejecting malformed JointState")
+    def on_mechanism(self, message: MechanismState) -> None:
+        import json
+        if message.schema_version != "1.1.0" or message.clock_domain != "ros" or not all((message.source_epoch, message.tool_state_identity, message.payload_state_identity, message.base_state_identity, message.conveyor_state_identity, message.config_identity, message.robot_model_fingerprint, message.world_model_fingerprint)):
+            self.get_logger().error("rejecting incomplete mechanism state")
             return
-        self.latest_joint_state = message
+        if self.mechanism_epoch != message.source_epoch:
+            self.mechanism_epoch, self.mechanism_sequence = message.source_epoch, -1
+        if int(message.sequence) <= self.mechanism_sequence:
+            self.get_logger().error("rejecting duplicate/out-of-order mechanism state")
+            return
+        stamp = time_to_float(message.observed_time)
+        if stamp <= 0.0:
+            self.get_logger().error("rejecting mechanism state without sample time")
+            return
+        def state(identity, payload):
+            return {"identity": identity, "confirmed": True, "source": "mechanism_state_topic", "details": json.loads(payload or "{}")}
+        try:
+            self.assembler.tool_attachment = state(message.tool_state_identity, message.tool_state_json)
+            self.assembler.payload_attachment = state(message.payload_state_identity, message.payload_state_json)
+            self.assembler.base_state = state(message.base_state_identity, message.base_state_json)
+            self.assembler.conveyor_state = state(message.conveyor_state_identity, message.conveyor_state_json)
+        except (ValueError, TypeError) as exc:
+            self.get_logger().error(f"rejecting malformed mechanism JSON: {exc}")
+            return
+        self.assembler.config_identity = {"identity": message.config_identity, "robot_model_fingerprint": message.robot_model_fingerprint, "world_model_fingerprint": message.world_model_fingerprint, "source": "mechanism_state_topic"}
+        self.mechanism_sequence = int(message.sequence)
+        self.mechanism_stamp = stamp
 
-    def on_observation(self, observation: PerceptionObservation) -> None:
-        if observation.source_epoch != self.last_epoch:
-            self.last_epoch = observation.source_epoch
-            self.last_source_sequence = -1
-            self.last_fingerprint = ""
-        if observation.source_sequence <= self.last_source_sequence:
-            self.get_logger().warning("rejecting duplicate/out-of-order perception observation")
+    def on_joints(self, message: JointState) -> None:
+        expected = tuple(str(name) for name in self.get_parameter("expected_joint_names").value)
+        names = tuple(message.name)
+        positions = tuple(message.position)
+        velocities = tuple(message.velocity)
+        stamp = time_to_float(message.header.stamp)
+        invalid = (
+            names != expected or len(names) != len(set(names)) or len(positions) != len(names)
+            or len(velocities) != len(names) or (message.effort and len(message.effort) != len(names))
+            or not all(math.isfinite(value) for value in positions + velocities + tuple(message.effort))
+            or stamp <= 0.0 or (self.last_joint_stamp is not None and stamp <= self.last_joint_stamp)
+        )
+        if invalid:
+            self.get_logger().error("rejecting malformed, unordered, non-finite, or stale JointState")
             return
-        self.last_source_sequence = observation.source_sequence
-        if self.latest_joint_state is None:
-            self.get_logger().warning("world snapshot blocked: actual JointState missing")
-            return
-        output = PlanningWorldSnapshot()
-        output.schema_version = observation.schema_version
-        output.source_epoch = observation.source_epoch
-        output.source_capture_time = observation.capture_time
-        output.obstacles = list(observation.cargo)
-        output.unknown_regions = list(observation.unknown_regions)
-        output.joint_names = list(self.latest_joint_state.name)
-        output.actual_joint_positions = list(self.latest_joint_state.position)
-        blocking = []
+        self.last_joint_stamp = stamp
+        content = (positions, velocities, tuple(message.effort), names)
+        if content != self.last_robot_content:
+            self.robot_sequence += 1
+            self.last_robot_content = content
+        self.assembler.robot_state = RobotStateRevision(self.robot_sequence, positions, {
+            "joint_names": names, "actual_velocities": velocities,
+            "actual_efforts": tuple(message.effort),
+        }, sample_time=stamp, clock_domain="ros", source="joint_states")
+
+    def _transform_observation(self, observation):
         world_frame = str(self.get_parameter("world_frame").value)
-        for cargo in output.obstacles:
-            if not cargo.has_pose:
-                blocking.append(cargo.source_instance_id + ":POSE_MISSING")
+        transformed = []
+        transform_cache = {}
+        for cargo in observation.cargo:
+            if cargo.pose is None or cargo.pose.frame_id == world_frame:
+                transformed.append(cargo)
                 continue
-            stamped = PoseStamped()
-            stamped.header.frame_id = cargo.pose_frame_id
-            stamped.header.stamp = observation.capture_time
-            stamped.pose = cargo.pose
-            try:
-                transform = self.buffer.lookup_transform(world_frame, cargo.pose_frame_id, rclpy.time.Time.from_msg(observation.capture_time), timeout=Duration(seconds=float(self.get_parameter("tf_timeout_seconds").value)))
-                cargo.pose = do_transform_pose(stamped.pose, transform)
-                cargo.pose_frame_id = world_frame
-            except TransformException as exc:
-                blocking.append(cargo.source_instance_id + ":TF_AT_CAPTURE_MISSING")
-                self.get_logger().warning(str(exc))
-            if cargo.metric_scale_validity != "VALID" or cargo.geometry_validity != "VALID":
-                blocking.append(cargo.source_instance_id + ":GEOMETRY_NOT_ADMISSIBLE")
-        output.blocking_reasons = sorted(set(blocking))
-        output.planning_admissible = not output.blocking_reasons and all(item.candidate_eligible for item in output.obstacles if item.category in ("box", "cardboard_box"))
-        fingerprint_payload = repr([(item.source_instance_id, item.pose_frame_id, tuple(item.full_dimensions_m), item.geometry_validity) for item in output.obstacles] + [(item.region_id, item.reason) for item in output.unknown_regions])
-        fingerprint = hashlib.sha256(fingerprint_payload.encode("utf-8")).hexdigest()
-        if fingerprint != self.last_fingerprint:
-            self.sequence += 1
-            self.last_fingerprint = fingerprint
-        output.scene_revision_sequence = self.sequence
-        output.scene_fingerprint = fingerprint
-        output.robot_model_fingerprint = str(self.get_parameter("robot_model_fingerprint").value)
-        output.world_model_fingerprint = str(self.get_parameter("world_model_fingerprint").value)
-        output.tool_state_identity = str(self.get_parameter("tool_state_identity").value)
-        output.payload_state_identity = str(self.get_parameter("payload_state_identity").value)
-        output.base_state_identity = str(self.get_parameter("base_state_identity").value)
-        output.conveyor_state_identity = str(self.get_parameter("conveyor_state_identity").value)
-        output.config_identity = str(self.get_parameter("config_identity").value)
-        output.world_fingerprint = hashlib.sha256((fingerprint + repr(tuple(output.actual_joint_positions)) + output.config_identity).encode("utf-8")).hexdigest()
+            source_frame = cargo.pose.frame_id
+            if source_frame not in transform_cache:
+                try:
+                    transform_cache[source_frame] = self.buffer.lookup_transform(
+                        world_frame, source_frame,
+                        rclpy.time.Time(nanoseconds=int(round(observation.capture_time * 1_000_000_000))),
+                        timeout=Duration(seconds=float(self.get_parameter("tf_timeout_seconds").value)),
+                    )
+                except TransformException as exc:
+                    self.get_logger().warning(str(exc))
+                    transform_cache[source_frame] = None
+            transform = transform_cache[source_frame]
+            if transform is None:
+                transformed.append(cargo)
+                continue
+            q = transform.transform.rotation
+            rotation = rotation_from_quaternion((q.x, q.y, q.z, q.w))
+            t = transform.transform.translation
+            matrix = tuple(tuple(rotation[row][col] for col in range(3)) + ((t.x, t.y, t.z)[row],) for row in range(3)) + ((0.0, 0.0, 0.0, 1.0),)
+            pose = transform_pose(matrix, cargo.pose, world_frame)
+            corners = None if cargo.corners_3d_m is None else tuple(tuple(sum(rotation[row][col] * point[col] for col in range(3)) + (t.x, t.y, t.z)[row] for row in range(3)) for point in cargo.corners_3d_m)
+            axes = None if cargo.axes_3d_rows is None else tuple(tuple(sum(rotation[row][col] * axis[col] for col in range(3)) for row in range(3)) for axis in cargo.axes_3d_rows)
+            transformed.append(replace(cargo, pose=pose, corners_3d_m=corners, axes_3d_rows=axes))
+        return replace(observation, cargo=tuple(transformed))
+
+    def on_observation(self, message: PerceptionObservation) -> None:
+        try:
+            observation = self._transform_observation(observation_from_msg(message))
+            tracked = self.tracker.update(observation)
+        except (ValueError, TypeError) as exc:
+            self.get_logger().error(f"rejecting invalid perception observation: {exc}")
+            return
+        self.last_observation, self.last_tracked = observation, tracked
+        self._publish_current()
+
+    def _publish_current(self, *, now: float | None = None) -> None:
+        if self.last_observation is None or self.last_tracked is None or self.assembler.robot_state is None:
+            return
+        current = self.get_clock().now().nanoseconds / 1e9 if now is None else now
+        update = build_scene_update(
+            self.last_observation, self.last_tracked, now=current,
+            max_age_seconds=float(self.get_parameter("snapshot_freshness_seconds").value),
+        )
+        if self.last_joint_stamp is None or current - self.last_joint_stamp > float(self.get_parameter("robot_state_freshness_seconds").value) or current < self.last_joint_stamp:
+            update = replace(update, planning_admissible=False, blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + ("ROBOT_STATE_STALE_OR_TIME_JUMP",))))
+        if self.mechanism_stamp is None or current - self.mechanism_stamp > float(self.get_parameter("mechanism_state_freshness_seconds").value) or current < self.mechanism_stamp:
+            update = replace(update, planning_admissible=False, blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + ("MECHANISM_STATE_STALE_OR_TIME_JUMP",))))
+        self.assembler.update = update
+        result = self.assembler.assemble()
+        if result.snapshot is None:
+            self.get_logger().warning("world snapshot blocked: " + ",".join(result.missing))
+            return
+        output = snapshot_to_msg(
+            result.snapshot, source_epoch=self.last_observation.source_epoch,
+            source_capture_time=self.last_observation.capture_time,
+            blocking_reasons=update.blocking_reasons,
+            obstacles=update.accepted_obstacles, unknown_regions=update.unknown_regions,
+        )
         self.publisher.publish(output)
-        self.last_snapshot = output
-        self.stale_published = False
-        self.publish_markers(output, world_frame)
+        self.last_snapshot = result.snapshot
+        self.publish_markers(output, str(self.get_parameter("world_frame").value))
 
     def check_freshness(self) -> None:
-        if self.last_snapshot is None or self.stale_published:
+        if self.last_observation is None:
             return
-        now_ns = self.get_clock().now().nanoseconds
-        capture_ns = self.last_snapshot.source_capture_time.sec * 1_000_000_000 + self.last_snapshot.source_capture_time.nanosec
-        age = (now_ns - capture_ns) / 1e9
-        maximum = float(self.get_parameter("snapshot_freshness_seconds").value)
-        if age <= maximum and age >= 0.0:
-            return
-        reason = "ROS_TIME_JUMP" if age < 0.0 else "OBSERVATION_STALE"
-        self.last_snapshot.planning_admissible = False
-        self.last_snapshot.blocking_reasons = sorted(set(list(self.last_snapshot.blocking_reasons) + [reason]))
-        self.sequence += 1
-        self.last_snapshot.scene_revision_sequence = self.sequence
-        self.last_snapshot.scene_fingerprint = hashlib.sha256((self.last_snapshot.scene_fingerprint + reason).encode("utf-8")).hexdigest()
-        self.last_snapshot.world_fingerprint = hashlib.sha256((self.last_snapshot.world_fingerprint + reason).encode("utf-8")).hexdigest()
-        self.publisher.publish(self.last_snapshot)
-        self.stale_published = True
+        now = self.get_clock().now().nanoseconds / 1e9
+        observation_age = now - self.last_observation.capture_time
+        robot_age = math.inf if self.last_joint_stamp is None else now - self.last_joint_stamp
+        mechanism_age = math.inf if self.mechanism_stamp is None else now - self.mechanism_stamp
+        stale_key = (observation_age > float(self.get_parameter("snapshot_freshness_seconds").value) or observation_age < 0.0,
+                     robot_age > float(self.get_parameter("robot_state_freshness_seconds").value) or robot_age < 0.0,
+                     mechanism_age > float(self.get_parameter("mechanism_state_freshness_seconds").value) or mechanism_age < 0.0)
+        if any(stale_key) and stale_key != self.stale_key:
+            self._publish_current(now=now)
+        self.stale_key = stale_key
 
     def publish_markers(self, snapshot: PlanningWorldSnapshot, frame_id: str) -> None:
         markers = MarkerArray()

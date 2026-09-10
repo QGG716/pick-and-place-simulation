@@ -17,3 +17,7 @@ def float_to_time(value: float):
 
     seconds = int(value)
     return Time(sec=seconds, nanosec=int(round((value - seconds) * 1_000_000_000)))
+
+
+def time_to_float(value) -> float:
+    return float(value.sec) + float(value.nanosec) / 1_000_000_000.0

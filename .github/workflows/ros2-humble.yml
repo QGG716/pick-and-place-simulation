@@ -20,7 +20,7 @@ jobs:
         run: |
           python3 -m pip install ./packages/unloading_contracts
           python3 -m pip install -e '.[dev]'
-          python3 -c 'import sys, rclpy, unloading_contracts; assert sys.version_info[:2] == (3, 10); assert unloading_contracts.__version__ == "1.0.0"'
+          python3 -c 'import sys, rclpy, unloading_contracts; assert sys.version_info[:2] == (3, 10); assert unloading_contracts.__version__ == "1.1.0"'
       - name: Core and integration tests
         run: python3 -m pytest -q --basetemp "$RUNNER_TEMP/pytest"
       - name: Build and test Humble workspace
@@ -31,5 +31,5 @@ jobs:
           rosdep install --from-paths src --ignore-src --rosdistro humble -r -y
           colcon build --symlink-install
           source install/setup.bash
-          colcon test
+          colcon test --return-code-on-test-failure
           colcon test-result --verbose

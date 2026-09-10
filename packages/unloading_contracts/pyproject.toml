@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unloading-contracts"
-version = "1.0.0"
+version = "1.1.0"
 description = "ROS- and backend-neutral contracts for unloading perception, planning, and execution"
 requires-python = ">=3.10"
 dependencies = []

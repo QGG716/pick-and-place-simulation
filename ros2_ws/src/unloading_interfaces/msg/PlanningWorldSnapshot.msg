@@ -17,3 +17,4 @@ string payload_state_identity
 string base_state_identity
 string conveyor_state_identity
 string config_identity
+string domain_payload_json

@@ -25,6 +25,23 @@ def test_axis_rows_are_explicitly_transposed_to_rotation_columns():
     assert sum(value * value for value in pose.orientation_xyzw) == pytest.approx(1.0)
 
 
+def test_axis_rows_remove_only_bounded_serialization_roundoff():
+    pose = pose_from_axes_rows(
+        (0, 0, 1),
+        ((1.0000006, 0.0000002, 0.0), (-0.0000001, 0.9999995, 0.0), (0.0, 0.0, 1.0000007)),
+        "camera",
+        EvidenceKind.MODEL_ESTIMATED,
+    )
+    assert pose.orientation_xyzw == pytest.approx((0.0, 0.0, 0.0, 1.0), abs=2e-7)
+
+
+def test_axis_rows_reject_materially_nonorthogonal_or_left_handed_bases():
+    with pytest.raises(ValueError, match="near-orthonormal"):
+        pose_from_axes_rows((0, 0, 1), ((1, 0, 0), (0.01, 1, 0), (0, 0, 1)), "camera", EvidenceKind.MODEL_ESTIMATED)
+    with pytest.raises(ValueError, match="right handed"):
+        pose_from_axes_rows((0, 0, 1), ((1, 0, 0), (0, 1, 0), (0, 0, -1)), "camera", EvidenceKind.MODEL_ESTIMATED)
+
+
 @pytest.mark.parametrize("bad", [
     ((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 0)),
     ((1, 0, 0, 0), (0, 2, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)),

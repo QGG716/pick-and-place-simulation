@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 from typing import Any, Mapping, Sequence
+from urllib.parse import unquote, urlparse
+from urllib.request import url2pathname
 from uuid import uuid4
 
 from unloading_contracts import (
@@ -191,14 +195,17 @@ class SimGroundTruthBackend:
 class CargoPipelineBackend:
     """Bounded JSON-lines subprocess adapter for a separately managed worker."""
 
-    def __init__(self, command: Sequence[str], *, cwd: Path, timeout_seconds: float = 60.0, worker_epoch: str | None = None) -> None:
+    def __init__(self, command: Sequence[str], *, cwd: Path, timeout_seconds: float = 60.0, worker_epoch: str | None = None, allowed_roots: Sequence[Path] = ()) -> None:
         if not command or timeout_seconds <= 0.0:
             raise ValueError("worker command and positive timeout are required")
         self.command = tuple(str(item) for item in command)
         self.cwd = cwd.resolve()
         self.timeout_seconds = float(timeout_seconds)
         self.worker_epoch = worker_epoch or str(uuid4())
+        self.allowed_roots = tuple(path.resolve() for path in (allowed_roots or (self.cwd,)))
+        self.latest_epoch: str | None = None
         self.latest_sequence = -1
+        self._process: subprocess.Popen[str] | None = None
 
     def capability(self) -> tuple[bool, str]:
         if not self.cwd.is_dir():
@@ -212,30 +219,122 @@ class CargoPipelineBackend:
         available, reason = self.capability()
         if not available:
             return self._failure(frame, "BACKEND_UNAVAILABLE", reason, ObservationStatus.BACKEND_UNAVAILABLE)
-        request = json.dumps({
-            "schema_version": SCHEMA_VERSION, "op": "infer", "request_id": str(uuid4()),
-            "worker_epoch": self.worker_epoch, "frame": {"source": frame.source, "stream": frame.stream, "epoch": frame.epoch, "sequence": frame.sequence, "rgb_uri": frame.rgb.uri},
-        }) + "\n"
+        request_id = str(uuid4())
         try:
-            completed = subprocess.run(self.command, cwd=self.cwd, input=request, text=True, capture_output=True, timeout=self.timeout_seconds, check=False)
+            image_path = self._validated_image(frame.rgb)
+        except (ValueError, FileNotFoundError) as exc:
+            return self._failure(frame, "INPUT_REFERENCE_INVALID", str(exc), ObservationStatus.FAILED)
+        request = json.dumps({
+            "schema_version": SCHEMA_VERSION, "op": "infer", "request_id": request_id,
+            "worker_epoch": self.worker_epoch,
+            "frame": {
+                "source": frame.source, "stream": frame.stream, "epoch": frame.epoch,
+                "sequence": frame.sequence, "capture_time": frame.capture_time,
+                "receive_time": frame.receive_time, "clock_domain": frame.clock_domain,
+                "frame_id": frame.frame_id, "width": frame.width, "height": frame.height,
+                "encoding": frame.encoding, "rgb_uri": image_path.as_uri(),
+                "rgb_sha256": frame.rgb.sha256,
+            },
+        }, sort_keys=True) + "\n"
+        try:
+            self._process = subprocess.Popen(self.command, cwd=self.cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            stdout, stderr = self._process.communicate(request, timeout=self.timeout_seconds)
+            returncode = self._process.returncode
         except subprocess.TimeoutExpired:
+            assert self._process is not None
+            self._process.kill()
+            self._process.communicate()
             return self._failure(frame, "WORKER_TIMEOUT", "vision worker exceeded configured timeout", ObservationStatus.FAILED)
         except OSError as exc:
             return self._failure(frame, "WORKER_START_FAILED", str(exc), ObservationStatus.BACKEND_UNAVAILABLE)
-        if completed.returncode != 0:
-            return self._failure(frame, "WORKER_CRASH", f"worker exited {completed.returncode}: {completed.stderr[-500:]}", ObservationStatus.FAILED)
+        finally:
+            self._process = None
+        if returncode != 0:
+            try:
+                response = json.loads(stdout.strip().splitlines()[-1])
+            except (ValueError, IndexError, json.JSONDecodeError):
+                return self._failure(frame, "WORKER_CRASH", f"worker exited {returncode}: {stderr[-500:]}", ObservationStatus.FAILED)
+            code = str(response.get("error_code") or "WORKER_CRASH")
+            status = ObservationStatus.BACKEND_UNAVAILABLE if code in ("MODEL_MISSING", "GPU_UNAVAILABLE") else ObservationStatus.FAILED
+            return self._failure(frame, code, str(response.get("error_message") or stderr[-500:]), status)
         try:
-            observation = loads(completed.stdout.strip().splitlines()[-1])
+            response = json.loads(stdout.strip().splitlines()[-1])
+            if response.get("schema_version") != SCHEMA_VERSION or response.get("request_id") != request_id or response.get("worker_epoch") != self.worker_epoch:
+                raise ValueError("worker response envelope identity mismatch")
+            if response.get("input_sha256") != frame.rgb.sha256:
+                raise ValueError("worker response input hash mismatch")
+            if response.get("status") != "COMPLETE":
+                code = str(response.get("error_code") or "WORKER_FAILED")
+                status = ObservationStatus.BACKEND_UNAVAILABLE if code in ("MODEL_MISSING", "GPU_UNAVAILABLE") else ObservationStatus.FAILED
+                return self._failure(frame, code, str(response.get("error_message") or code), status)
+            self._validated_output_reference(response.get("metrics_reference"), name="metrics_reference")
+            self._validated_output_reference(response.get("output_reference"), name="output_reference")
+            observation = loads(response["observation"])
         except (ValueError, KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
             return self._failure(frame, "WORKER_SCHEMA_ERROR", str(exc), ObservationStatus.FAILED)
         if not isinstance(observation, PerceptionObservation):
             return self._failure(frame, "WORKER_SCHEMA_ERROR", "worker did not return PerceptionObservation", ObservationStatus.FAILED)
         if observation.source_epoch != frame.epoch or observation.source_sequence != frame.sequence:
             return self._failure(frame, "WORKER_IDENTITY_MISMATCH", "worker response does not match request frame", ObservationStatus.FAILED)
+        try:
+            artifacts = observation.coverage.get("artifacts", {})
+            if not isinstance(artifacts, Mapping):
+                raise ValueError("worker artifacts must be a mapping")
+            for name, reference in artifacts.items():
+                self._validated_output_reference(reference, name=f"artifact:{name}")
+        except (ValueError, FileNotFoundError) as exc:
+            return self._failure(frame, "WORKER_SCHEMA_ERROR", str(exc), ObservationStatus.FAILED)
+        if self.latest_epoch != frame.epoch:
+            self.latest_epoch, self.latest_sequence = frame.epoch, -1
         if frame.sequence <= self.latest_sequence:
             return self._failure(frame, "LATE_WORKER_RESULT", "late result cannot replace a newer frame", ObservationStatus.STALE)
         self.latest_sequence = frame.sequence
         return observation
+
+    def shutdown(self) -> None:
+        process = self._process
+        if process is not None and process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=5.0)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+
+    def _validated_image(self, reference: ResourceReference) -> Path:
+        parsed = urlparse(reference.uri)
+        if parsed.scheme != "file" or parsed.netloc not in ("", "localhost"):
+            raise ValueError("pipeline RGB input must be a local file URI")
+        local_path = url2pathname(unquote(parsed.path))
+        if os.name == "nt" and len(local_path) >= 3 and local_path[0] in ("/", "\\") and local_path[2] == ":":
+            local_path = local_path[1:]
+        candidate = Path(local_path).resolve()
+        if not any(candidate == root or root in candidate.parents for root in self.allowed_roots):
+            raise ValueError("pipeline RGB input escapes configured roots")
+        if not candidate.is_file():
+            raise FileNotFoundError(candidate)
+        if reference.sha256 is None:
+            raise ValueError("pipeline RGB input requires a SHA-256")
+        digest = hashlib.sha256(candidate.read_bytes()).hexdigest()
+        if digest != reference.sha256.lower():
+            raise ValueError("pipeline RGB input SHA-256 mismatch")
+        return candidate
+
+    def _validated_output_reference(self, reference: Any, *, name: str) -> Path:
+        if not isinstance(reference, Mapping):
+            raise ValueError(f"{name} must be a path/hash mapping")
+        raw_path, expected = reference.get("path"), reference.get("sha256")
+        if not isinstance(raw_path, str) or not raw_path or not isinstance(expected, str) or len(expected) != 64:
+            raise ValueError(f"{name} requires path and SHA-256")
+        candidate = Path(raw_path).resolve()
+        if not any(candidate == root or root in candidate.parents for root in self.allowed_roots):
+            raise ValueError(f"{name} escapes configured roots")
+        if not candidate.is_file():
+            raise FileNotFoundError(candidate)
+        digest = hashlib.sha256(candidate.read_bytes()).hexdigest()
+        if digest != expected.lower():
+            raise ValueError(f"{name} SHA-256 mismatch")
+        return candidate
 
     def _failure(self, frame: SensorFrame, code: str, message: str, status: ObservationStatus) -> PerceptionObservation:
         return PerceptionObservation(

@@ -15,3 +15,4 @@ string failure_message
 bool synthetic
 unloading_interfaces/CargoObservation[] cargo
 unloading_interfaces/UnknownRegion[] unknown_regions
+string coverage_json

@@ -1,10 +1,12 @@
 from dataclasses import FrozenInstanceError
 
 import pytest
+import numpy as np
 
 from unloading_contracts import (
-    CameraIntrinsics, EvidenceKind, PlanArtifactKind, Pose3D, ResourceReference,
-    RobotStateRevision, SceneRevision, SensorFrame, TimedJointPoint,
+    BoundaryMode, CameraIntrinsics, EvidenceKind, MotionBoundaryState,
+    PlanArtifactKind, Pose3D, ResourceReference, RobotStateRevision,
+    SceneRevision, SensorFrame, TimedJointPoint,
     TimedJointTrajectory, Validity, canonical_fingerprint, dumps, loads,
 )
 
@@ -53,3 +55,17 @@ def test_timed_trajectory_requires_strict_time_and_explicit_provenance():
 def test_scene_fingerprint_ignores_mapping_insertion_order_but_not_geometry():
     assert canonical_fingerprint({"a": 1, "b": [2, 3]}) == canonical_fingerprint({"b": [2, 3], "a": 1})
     assert canonical_fingerprint({"a": 1}) != canonical_fingerprint({"a": 2})
+
+
+def test_motion_boundary_matches_supports_independent_online_tolerances():
+    expected = MotionBoundaryState((1.0,), (0.1,), (0.2,), 3.0, BoundaryMode.CONTINUOUS_BOUNDARY, "plan-a")
+    actual = MotionBoundaryState((1.01,), (0.12,), (0.23,), 3.04, BoundaryMode.CONTINUOUS_BOUNDARY, "plan-a")
+    assert expected.matches(actual, q_atol=0.02, qd_atol=0.03, qdd_atol=0.04, time_atol=0.05)
+    assert not expected.matches(actual, q_atol=0.001, qd_atol=0.03, qdd_atol=0.04, time_atol=0.05)
+    assert expected.matches(actual, tolerance=0.05)
+
+
+def test_contract_freeze_normalizes_numpy_scalars_and_arrays_without_aliasing():
+    revision = RobotStateRevision(1, (0.0,), {"count": np.int64(2), "samples": np.array([1.0, 2.0])})
+    assert revision.robot_state["count"] == 2
+    assert revision.robot_state["samples"] == (1.0, 2.0)

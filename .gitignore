@@ -16,3 +16,4 @@ results/
 tmp/
 .test-tmp/
 .vscode/
+.audit/
