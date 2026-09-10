@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev7)
+# Online continuous planning control plane (0.5.2.dev8)
 
 ## Acceptance scope
 
@@ -150,6 +150,48 @@ fault. Stop rejection, exception, or timeout cannot fabricate a boundary or
 claim hardware emergency-stop capability. The step loop services the mandatory
 stop epilogue even when ordinary ingress/error handling returns early, preventing
 continuous conflicting input from starving the one-shot stop command.
+
+### dev8 stop-evidence authorization lifetime
+
+World reconciliation does not retire stop evidence. Correlated STOPPED evidence
+remains authoritative while it is awaiting a compatible observation, awaiting
+explicit recovery, or carrying an unconsumed recovery grant. It is retired only
+after a distinct successor execution returns an accepted start result. A start
+exception, malformed response, rejection, queued plan, or planning completion
+does not constitute that handoff.
+
+The runtime assigns each accepted or replacement STOPPED an evidence version.
+`resume_after_recovery()` grants a specific stop-attempt ID and evidence version
+only after the session transition succeeds; failed recovery calls leave no
+partial grant. The execution-start gate independently requires the same grant
+to remain valid. Any current-evidence conflict increments the evidence version,
+clears the grant, records both boundaries, enters public session recovery, and
+sets `STOP_EVIDENCE_CONFLICT`. This applies even after the execution monitor has
+legitimately moved from STOPPING to FAILED; the runtime never fabricates a new
+running execution to process the conflict.
+
+`ContinuousPlanningSession.reconcile_recovery_stop_evidence(...)` is the narrow
+public transition for replacement evidence after an acknowledged stop. It
+requires RECOVERY/FAILED, the exact terminal execution and plan identity, the
+latest monotonic world revision, a STOP boundary, and matching world `current_q`.
+`ContinuousPlanningRuntime.retry_stop_after_evidence_conflict()` opens a fresh
+correlated stop attempt. If the backend rejects or cannot provide a new proof,
+the runtime remains in recovery with external confirmation required.
+
+| Evidence phase | Still authorizes recovery/start? | Conflicting same-attempt STOPPED |
+| --- | --- | --- |
+| STOPPED received, world absent | Yes, after future reconciliation | Revoke and latch conflict |
+| World reconciled, resume not called | Yes | Revoke and latch conflict |
+| Recovery grant issued, successor not accepted | Yes, for its exact evidence version | Revoke grant and latch conflict |
+| Successor start explicitly accepted | No; evidence is retired history | Ignore exact duplicate; reject conflict without affecting current execution |
+
+The finite acceptance matrix covers exact duplicates, same-sequence conflicts,
+higher-sequence conflicts, and retired-execution late feedback across
+STOPPED-first, observation-first, same-step, and split-step delivery, with per-step
+feedback limits of one and greater than one. Observation-first is not used to
+represent the definitionally STOPPED-without-world phase, and evidence cannot be
+classified as retired until an accepted successor start exists. Every generated
+case includes a replayable phase/input/delivery/limit identifier.
 
 ### dev7 strict execution-adapter contract
 

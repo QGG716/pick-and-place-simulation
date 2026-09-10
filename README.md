@@ -1,4 +1,13 @@
-# Trailer Unloading Geometric Simulator v0.5.2.dev7
+# Trailer Unloading Geometric Simulator v0.5.2.dev8
+
+v0.5.2.dev8 retains correlated stop evidence until an accepted successor
+execution explicitly retires it. Reconciliation alone no longer makes evidence
+historical: a conflict before recovery, after reconciliation, or after explicit
+authorization revokes the version-bound recovery grant and blocks execution.
+Replacement evidence can be reconciled through the public recovery path without
+pretending that a failed execution is running again. A finite event-ordering
+matrix locks these conclusions across delivery order and feedback batch limits.
+This remains a control-plane contract, not hardware stop or safety evidence.
 
 v0.5.2.dev7 makes the execution-adapter boundary fail closed. STOPPING/STOPPED
 can authorize stop reconciliation only when they carry the current correlated
@@ -299,6 +308,7 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
+- v0.5.2.dev8: stop-evidence retirement at accepted handoff, version-bound recovery grants, and finite event-ordering acceptance matrix.
 - v0.5.2.dev7: strict correlated STOPPED authority, contained ambiguous starts, and latched active-stop evidence conflicts.
 - v0.5.2.dev6: correlated stop-attempt lifecycle, independent task-terminal/STOPPED evidence, and explicit recovery authorization.
 - v0.5.2.dev5: compound-failure isolation, end-to-end bounded ingress staging, and receive-time feedback watchdogs.
@@ -314,4 +324,4 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev7`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev8`。
