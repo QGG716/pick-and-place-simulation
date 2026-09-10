@@ -113,6 +113,8 @@ class ScriptedExecutionBackend(ExecutionBackend):
         *,
         stop_status: ExecutionCommandStatus = ExecutionCommandStatus.ACCEPTED,
         stop_error: Exception | None = None,
+        start_error_after_accept: Exception | None = None,
+        start_result: object | None = None,
     ) -> None:
         self._identity = ExecutionBackendIdentity("scripted-stop", "1", "1")
         self._capabilities = ExecutionBackendCapabilities(
@@ -135,6 +137,8 @@ class ScriptedExecutionBackend(ExecutionBackend):
         self.start_calls = 0
         self.stop_status = stop_status
         self.stop_error = stop_error
+        self.start_error_after_accept = start_error_after_accept
+        self.start_result = start_result
 
     @property
     def identity(self):
@@ -156,6 +160,12 @@ class ScriptedExecutionBackend(ExecutionBackend):
         self.start_calls += 1
         self.execution_id = f"execution-{self.start_calls}"
         self.plan = plan_envelope
+        if self.start_error_after_accept is not None:
+            raise self.start_error_after_accept
+        if self.start_result is not None:
+            if callable(self.start_result):
+                return self.start_result(plan_envelope, self.execution_id)
+            return self.start_result
         return ExecutionCommandResult(
             ExecutionCommandStatus.ACCEPTED,
             f"start-{self.start_calls}",
@@ -499,3 +509,231 @@ def test_second_stop_attempt_has_independent_identity_watchdog_and_stale_feedbac
     runtime.step()
     assert runtime.snapshot()["stop_lifecycle"]["failure_reason"] == ReplanReason.STOP_ACK_TIMEOUT.value
     assert runtime.metrics.stop_ack_timeout_count == 1
+
+
+def test_problem_a_uncorrelated_stopped_cannot_reconcile_or_start_again():
+    runtime, session, backend, _ = running_runtime()
+    runtime.observe_world(observation(world(1, ("a", "intrusion"))))
+    runtime.step()
+    backend.emit(
+        2,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        MotionBoundaryState.stopped((0.0, 0.0), time_seconds=0.2),
+        stop_command_id=None,
+    )
+
+    for _ in range(3):
+        runtime.step()
+
+    snapshot = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert session.execution.state is ExecutionState.STOPPING
+    assert snapshot["active_execution_id"] == backend.execution_id
+    assert not snapshot["stop_lifecycle"]["stopped_confirmed"]
+    assert not snapshot["stop_lifecycle"]["world_reconciled"]
+    assert snapshot["stop_lifecycle"]["recovery_required"]
+    assert not snapshot["stop_lifecycle"]["resume_allowed"]
+    assert any(event.kind == "invalid_execution_feedback" for event in runtime.events)
+
+
+def test_problem_b_start_response_loss_is_contained_without_retry_or_fake_identity():
+    backend = ScriptedExecutionBackend(
+        start_error_after_accept=RuntimeError("start response lost"),
+    )
+    clock = FakeClock()
+    session = ContinuousPlanningSession(Planner(), clock=clock)
+    runtime = ContinuousPlanningRuntime(session, backend, clock=clock)
+    runtime.submit_initial(request("ambiguous-start", world()))
+
+    runtime.step()
+    runtime.submit_initial(request("must-not-repeat", world()))
+    for _ in range(3):
+        runtime.step()
+
+    snapshot = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert backend.stop_calls == 1
+    assert snapshot["active_plan_id"] == backend.plan.plan_id
+    assert snapshot["active_execution_id"] == backend.execution_id
+    assert snapshot["start_lifecycle"]["state"] == "UNKNOWN"
+    assert snapshot["start_lifecycle"]["execution_id"] == backend.execution_id
+    assert snapshot["start_lifecycle"]["identity_source"] == "STOP_COMMAND_RESULT"
+    assert snapshot["start_lifecycle"]["external_confirmation_required"]
+    assert snapshot["stop_unconfirmed"]
+    assert runtime.state is RuntimeState.STOPPING
+    assert any(event.kind == "execution_start_unknown" for event in runtime.events)
+
+
+def test_problem_c_conflicting_current_stop_evidence_latches_recovery():
+    runtime, session, backend, _ = running_runtime()
+    runtime.observe_world(observation(world(1, ("a", "intrusion"), q=(9.0, 9.0))))
+    runtime.step()
+    first = backend.emit(
+        2,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        MotionBoundaryState.stopped((0.0, 0.0), time_seconds=0.2),
+        stop_command_id=backend.stop_command_id,
+    )
+    runtime.step()
+    assert runtime.state is RuntimeState.WAITING_FOR_OBSERVATION
+
+    backend.emit(
+        3,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+        stop_command_id=backend.stop_command_id,
+    )
+    runtime.step()
+    runtime.observe_world(observation(world(2, ("a", "intrusion"), q=first.current_boundary.q)))
+    for _ in range(3):
+        runtime.step()
+
+    snapshot = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert session.state is SessionState.RECOVERY
+    assert snapshot["stop_lifecycle"]["evidence_conflict"]
+    assert snapshot["stop_lifecycle"]["recovery_required"]
+    assert not snapshot["stop_lifecycle"]["world_reconciled"]
+    assert snapshot["stop_lifecycle"]["failure_reason"] == "STOP_EVIDENCE_CONFLICT"
+    assert snapshot["stop_lifecycle"]["accepted_evidence"]["q"] == (0.0, 0.0)
+    assert snapshot["stop_lifecycle"]["conflicting_evidence"]["q"] == (0.01, 0.0)
+
+
+def test_explicit_start_rejection_is_not_treated_as_an_ambiguous_start():
+    backend = ScriptedExecutionBackend(
+        start_result=lambda plan, _: ExecutionCommandResult(
+            ExecutionCommandStatus.REJECTED,
+            "start-rejected",
+            None,
+            plan.plan_id,
+            "controller rejected command",
+        )
+    )
+    session = ContinuousPlanningSession(Planner())
+    runtime = ContinuousPlanningRuntime(session, backend)
+    runtime.submit_initial(request("rejected-start", world()))
+
+    for _ in range(3):
+        runtime.step()
+
+    snapshot = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert backend.stop_calls == 0
+    assert snapshot["active_plan_id"] is None
+    assert snapshot["active_execution_id"] is None
+    assert snapshot["start_lifecycle"]["state"] == "REJECTED"
+    assert not snapshot["start_lifecycle"]["external_confirmation_required"]
+    assert runtime.state is RuntimeState.RECOVERY
+
+
+@pytest.mark.parametrize(
+    "start_result",
+    [
+        object(),
+        lambda plan, execution_id: ExecutionCommandResult(
+            ExecutionCommandStatus.ACCEPTED,
+            "bad-start-identity",
+            execution_id,
+            f"wrong-{plan.plan_id}",
+        ),
+    ],
+    ids=["wrong-result-type", "wrong-accepted-identity"],
+)
+def test_invalid_start_response_is_ambiguous_and_never_retried(start_result):
+    backend = ScriptedExecutionBackend(start_result=start_result)
+    session = ContinuousPlanningSession(Planner())
+    runtime = ContinuousPlanningRuntime(session, backend)
+    runtime.submit_initial(request("invalid-start-result", world()))
+
+    for _ in range(5):
+        runtime.step()
+
+    snapshot = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert backend.stop_calls == 1
+    assert snapshot["start_lifecycle"]["state"] == "UNKNOWN"
+    assert snapshot["start_lifecycle"]["external_confirmation_required"]
+    assert snapshot["stop_unconfirmed"]
+    assert snapshot["active_plan_id"] is not None
+    assert not snapshot["stop_lifecycle"]["world_reconciled"]
+
+
+@pytest.mark.parametrize("stop_command_id", [None, "wrong-stop", "stop-from-old-attempt"])
+def test_uncorrelated_stopped_evidence_never_authorizes_replan(stop_command_id):
+    runtime, session, backend, _ = running_runtime()
+    runtime.observe_world(observation(world(1, ("a", "intrusion"))))
+    runtime.step()
+    backend.emit(
+        2,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        MotionBoundaryState.stopped((0.0, 0.0), time_seconds=0.2),
+        stop_command_id=stop_command_id,
+    )
+
+    for _ in range(4):
+        runtime.step()
+
+    snapshot = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert backend.stop_calls == 1
+    assert session.execution.state is ExecutionState.STOPPING
+    assert not snapshot["stop_lifecycle"]["stopped_confirmed"]
+    assert not snapshot["stop_lifecycle"]["world_reconciled"]
+    assert not snapshot["stop_lifecycle"]["resume_allowed"]
+
+
+def test_conflicting_stop_evidence_requires_new_attempt_and_explicit_resume():
+    runtime, session, backend, _ = running_runtime()
+    mismatching_world = world(1, ("a", "intrusion"), q=(9.0, 9.0))
+    runtime.observe_world(observation(mismatching_world))
+    runtime.step()
+    command_one = backend.stop_command_id
+    backend.emit(
+        2,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        MotionBoundaryState.stopped((0.0, 0.0), time_seconds=0.2),
+        stop_command_id=command_one,
+    )
+    runtime.step()
+    backend.emit(
+        3,
+        ExecutionFeedbackStatus.STOPPED,
+        0.2,
+        MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+        stop_command_id=command_one,
+    )
+    runtime.step()
+
+    with pytest.raises(RuntimeError, match="conflicting"):
+        runtime.resume_after_recovery()
+    assert runtime.retry_stop_after_evidence_conflict() is RuntimeState.STOPPING
+    runtime.step()
+    assert backend.stop_calls == 2
+    command_two = backend.stop_command_id
+    assert command_two != command_one
+
+    trusted = MotionBoundaryState.stopped((0.0, 0.0), time_seconds=0.3)
+    backend.emit(
+        4,
+        ExecutionFeedbackStatus.STOPPED,
+        0.3,
+        trusted,
+        stop_command_id=command_two,
+    )
+    runtime.observe_world(observation(world(2, ("a", "safe"), q=trusted.q)))
+    runtime.step()
+
+    snapshot = runtime.snapshot()
+    assert runtime.state is RuntimeState.RECOVERY
+    assert session.execution.state is ExecutionState.FAILED
+    assert snapshot["stop_lifecycle"]["stopped_confirmed"]
+    assert snapshot["stop_lifecycle"]["world_reconciled"]
+    assert snapshot["stop_lifecycle"]["prior_evidence_conflict"]
+    assert snapshot["stop_lifecycle"]["prior_accepted_evidence"]["q"] == (0.0, 0.0)
+    assert snapshot["stop_lifecycle"]["prior_conflicting_evidence"]["q"] == (0.01, 0.0)
+    assert runtime.resume_after_recovery() in {RuntimeState.IDLE, RuntimeState.PLANNING}
