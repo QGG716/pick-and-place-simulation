@@ -1,4 +1,13 @@
-# Trailer Unloading Geometric Simulator v0.5.2.dev4
+# Trailer Unloading Geometric Simulator v0.5.2.dev5
+
+v0.5.2.dev5 hardens compound-failure behavior in the existing online runtime.
+A speculative k+1 planning timeout is isolated from a still-valid executing k;
+runtime staging is bounded in addition to the ingress mailbox; and execution
+feedback retains its local poll receive time while queued, so old backlog
+cannot renew the feedback-silence watchdog. Failures that leave motion status
+uncertain now request a real stop and retain explicit stop-unconfirmed state
+until authoritative STOPPED feedback is reconciled. This is control-plane
+safety bookkeeping, not a real controller or robot-safety certification.
 
 v0.5.2.dev4 adds a thread-safe, bounded MPSC `RuntimeIngressMailbox` for
 external planning requests and authoritative world observations. Producers
@@ -271,6 +280,7 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
+- v0.5.2.dev5: compound-failure isolation, end-to-end bounded ingress staging, and receive-time feedback watchdogs.
 - v0.5.2.dev4: thread-safe external ingress, deterministic watchdog policies, and bounded auditable journals.
 - v0.5.2.dev3：类型化 world observation、execution-scoped feedback ordering、STOPPED/world 乱序汇合及有界 ingress 背压。
 - v0.5.2.dev2：执行后端/反馈契约、完整实际 boundary、确定性执行 fixture、自动 successor 与 STOPPED acknowledgement runtime。
@@ -283,4 +293,4 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev4`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev5`。

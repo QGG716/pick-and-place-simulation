@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev4)
+# Online continuous planning control plane (0.5.2.dev5)
 
 ## Acceptance scope
 
@@ -78,6 +78,40 @@ from different processes are never compared, and wall-clock calendar time is
 not used. A future ROS adapter should map its header timestamp to diagnostic
 metadata, maintain explicit producer epoch and sequence, and let runtime record
 its own receive timestamp; no ROS dependency or adapter is implemented here.
+
+### dev5 compound-failure rules
+
+A planning timeout is classified by ownership. An initial/current planning
+timeout enters recovery. When k is still executing and only its speculative
+k+1 request times out, the runtime cooperatively cancels and generation-isolates
+k+1 without changing k's execution monitor to FAILED or asking the execution
+backend to stop. The late k+1 result cannot become READY. If k later completes
+without a successor, the existing actual-boundary and authoritative-scene gates
+remain mandatory before further planning.
+
+By contrast, an execution protocol error, backend-health loss, or other fault
+that makes the active motion uncertain enters the real STOPPING path and issues
+one `request_stop`. The returned plan and execution identities must match.
+Rejected, exceptional, mismatched, or timed-out stop acknowledgement records
+`stop_unconfirmed`; it does not clear the active execution monitor, invent a
+STOP boundary, or permit another start. A later valid STOPPED boundary can
+still be reconciled with an authoritative world observation.
+
+Feedback has two local runtime times: receive time is captured exactly when
+`ExecutionBackend.poll()` first yields the immutable feedback; processing time
+is recorded when the owner thread consumes it. Only valid feedback receive
+time renews the silence watchdog. Duplicate, stale, conflicting, illegal, or
+queued-old feedback cannot renew it. This covers the runtime's poll boundary
+only; it does not measure or guarantee upstream adapter/network transport
+latency.
+
+Ingress capacity is explicitly layered. The configured request and observation
+capacity applies independently to the mailbox and runtime staging, and the
+snapshot reports each layer plus the maximum combined bound. Draining respects
+remaining staging capacity. Recovery continues consuming authoritative world
+observations for audit/reconciliation but does not clear the recovery fault or
+start motion. Accepted requests discarded by recovery or shutdown are counted
+and journaled rather than silently evicted.
 
 ## Bounded audit journals
 
