@@ -215,6 +215,7 @@ class InjectedExecutionBackend(ExecutionBackend):
         self.plan = None
         self.poll_error = poll_error
         self.stop_calls = 0
+        self.stop_command_id = None
 
     @property
     def identity(self):
@@ -254,9 +255,10 @@ class InjectedExecutionBackend(ExecutionBackend):
     def request_stop(self, plan_id, reason):
         del reason
         self.stop_calls += 1
+        self.stop_command_id = f"injected-stop-{self.stop_calls}"
         return ExecutionCommandResult(
             ExecutionCommandStatus.ACCEPTED,
-            "injected-stop",
+            self.stop_command_id,
             self.execution_id,
             plan_id,
         )
@@ -278,6 +280,7 @@ class InjectedExecutionBackend(ExecutionBackend):
         plan_id=None,
         feedback_stream_id="injected-feedback",
         producer_epoch=0,
+        stop_command_id=None,
     ):
         assert self.plan is not None
         item = ExecutionFeedback(
@@ -290,6 +293,18 @@ class InjectedExecutionBackend(ExecutionBackend):
             observed_at_monotonic_seconds=float(sequence),
             feedback_stream_id=feedback_stream_id,
             producer_epoch=producer_epoch,
+            stop_command_id=(
+                stop_command_id
+                if stop_command_id is not None
+                else (
+                    self.stop_command_id
+                    if status in {
+                        ExecutionFeedbackStatus.STOPPING,
+                        ExecutionFeedbackStatus.STOPPED,
+                    }
+                    else None
+                )
+            ),
         )
         self.feedback.append(item)
         return item
@@ -907,7 +922,10 @@ def test_planner_exhaustion_and_duplicate_request_error_reach_terminal_states():
     duplicate = request("duplicate-ingress", world())
     runtime.submit_initial(duplicate)
     runtime.submit_initial(duplicate)
-    assert runtime.run_until_stable(timeout_seconds=WAIT_SECONDS) is RuntimeState.RECOVERY
+    assert runtime.run_until_stable(timeout_seconds=WAIT_SECONDS) is RuntimeState.WAITING_FOR_OBSERVATION
+    duplicate_snapshot = runtime.snapshot()
+    assert duplicate_snapshot["stop_lifecycle"]["stopped_confirmed"]
+    assert duplicate_snapshot["stop_lifecycle"]["recovery_required"]
     runtime.shutdown()
 
 
@@ -1021,7 +1039,11 @@ def test_feedback_silence_requests_one_stop_and_stop_ack_timeout_recovers():
     assert session.state is SessionState.RECOVERY
     assert session.execution.state is ExecutionState.STOPPING
     assert runtime.snapshot()["stop_unconfirmed"]
-    assert session.snapshot()["terminal_reason"] == ReplanReason.STOP_ACK_TIMEOUT.value
+    session_snapshot = session.snapshot()
+    assert session_snapshot["terminal_reason"] == ReplanReason.EXECUTION_FEEDBACK_TIMEOUT.value
+    assert session_snapshot["stop_failure_reason"] == ReplanReason.STOP_ACK_TIMEOUT.value
+    assert runtime.snapshot()["stop_lifecycle"]["trigger_reason"] == ReplanReason.EXECUTION_FEEDBACK_TIMEOUT.value
+    assert runtime.snapshot()["stop_lifecycle"]["failure_reason"] == ReplanReason.STOP_ACK_TIMEOUT.value
     assert session.last_actual_execution_boundary is None
     starts_before = runtime.metrics.execution_start_command_count
     runtime.submit_initial(request("blocked-until-stopped", world(1)))
@@ -1078,7 +1100,9 @@ def test_stopped_observation_timeout_enters_policy_selected_blocked_state():
     clock.advance(2.0)
     runtime.step()
     assert session.state is SessionState.BLOCKED
-    assert session.snapshot()["terminal_reason"] == ReplanReason.STOP_OBSERVATION_TIMEOUT.value
+    session_snapshot = session.snapshot()
+    assert session_snapshot["terminal_reason"] == ReplanReason.SCENE_REVISION_CHANGED.value
+    assert session_snapshot["stop_failure_reason"] == ReplanReason.STOP_OBSERVATION_TIMEOUT.value
     runtime.shutdown()
 
 

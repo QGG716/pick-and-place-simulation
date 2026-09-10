@@ -156,6 +156,26 @@ def test_execution_feedback_is_immutable_and_validates_fields():
             boundary,
             producer_epoch=-1,
         )
+    with pytest.raises(ValueError, match="only valid"):
+        ExecutionFeedback(
+            2,
+            "e",
+            "p",
+            ExecutionFeedbackStatus.RUNNING,
+            0.1,
+            boundary,
+            stop_command_id="stop-1",
+        )
+    stopped_feedback = ExecutionFeedback(
+        3,
+        "e",
+        "p",
+        ExecutionFeedbackStatus.STOPPED,
+        0.1,
+        boundary,
+        stop_command_id="stop-1",
+    )
+    assert stopped_feedback.stop_command_id == "stop-1"
 
 
 def test_stopped_and_succeeded_feedback_contracts_are_explicit():
