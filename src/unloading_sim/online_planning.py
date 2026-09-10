@@ -1992,6 +1992,9 @@ class ContinuousPlanningSession:
         self._history_capacity = history_capacity
         self._terminal_reason: str | None = None
         self._terminal_message: str = ""
+        self._stop_trigger_reason: ReplanReason | None = None
+        self._stop_failure_reason: ReplanReason | None = None
+        self._stop_failure_message: str = ""
 
     @property
     def terminal_results(self) -> tuple[PlanningResult, ...]:
@@ -2026,6 +2029,14 @@ class ContinuousPlanningSession:
     @property
     def terminal_reason(self) -> str | None:
         return self._terminal_reason
+
+    @property
+    def stop_trigger_reason(self) -> ReplanReason | None:
+        return self._stop_trigger_reason
+
+    @property
+    def stop_failure_reason(self) -> ReplanReason | None:
+        return self._stop_failure_reason
 
     def _remember_request_id(self, request_id: str) -> None:
         if request_id in self._request_ids:
@@ -3122,6 +3133,9 @@ class ContinuousPlanningSession:
                 "predecessor entered STOPPING after scene change",
             )
             self._stopping_request = active.request
+            self._stop_trigger_reason = ReplanReason.SCENE_REVISION_CHANGED
+            self._stop_failure_reason = None
+            self._stop_failure_message = ""
             if self._active_progress is not None:
                 self._discard_without_replan_ids.add(self._active_progress.request.request_id)
             while self._requests:
@@ -3132,6 +3146,8 @@ class ContinuousPlanningSession:
                     self.speculative_plans.popleft().invalidate(ReplanReason.SCENE_REVISION_CHANGED)
                 )
             self.state = SessionState.STOPPING
+            self._terminal_reason = ReplanReason.SCENE_REVISION_CHANGED.value
+            self._terminal_message = "scene revision changed during execution"
             self.statistics.end_robot_idle()
             self._event("execution_stopping", ReplanReason.SCENE_REVISION_CHANGED.value, active.request.request_id)
             return
@@ -3140,7 +3156,11 @@ class ContinuousPlanningSession:
             while self._requests:
                 stale = self._requests.popleft()
                 self._event("pending_request_invalidated", ReplanReason.SCENE_REVISION_CHANGED.value, stale.request.request_id)
-            self.state = SessionState.STOPPING
+            self.state = (
+                SessionState.RECOVERY
+                if self._stop_failure_reason is not None
+                else SessionState.STOPPING
+            )
             return
 
         pending = list(self._requests)
@@ -3329,6 +3349,7 @@ class ContinuousPlanningSession:
         message: str = "scene-invalidated execution stopped",
         *,
         execution_id: str | None = None,
+        resume_after_stop: bool = True,
     ) -> PlanEnvelope:
         """Accept the real stopped boundary and latest scene before replanning.
 
@@ -3369,18 +3390,31 @@ class ContinuousPlanningSession:
             self.invalidated_plans.append(
                 self.speculative_plans.popleft().invalidate(ReplanReason.EXECUTION_FAILED)
             )
-        self._requests.append(
-            self._new_replan_progress(
-                plan.request,
-                stopped_world,
-                ReplanReason.SCENE_REVISION_CHANGED,
-                motion_boundary=stopped_boundary,
+        stop_reason = self._stop_trigger_reason or ReplanReason.SCENE_REVISION_CHANGED
+        if resume_after_stop:
+            self._requests.append(
+                self._new_replan_progress(
+                    plan.request,
+                    stopped_world,
+                    stop_reason,
+                    motion_boundary=stopped_boundary,
+                )
             )
-        )
-        self.state = SessionState.PLANNING
-        self.statistics.begin_robot_idle()
-        self._event("stop_acknowledged", ReplanReason.PLAN_INVALIDATED.value, plan.request.request_id)
-        self._schedule_if_possible()
+            self.state = SessionState.PLANNING
+            self.statistics.begin_robot_idle()
+            self._event("stop_acknowledged", stop_reason.value, plan.request.request_id)
+            self._schedule_if_possible()
+        else:
+            self.state = SessionState.RECOVERY
+            self.statistics.end_robot_idle()
+            self._event(
+                "stop_acknowledged_recovery_required",
+                stop_reason.value,
+                plan.request.request_id,
+                stop_failure_reason=(
+                    None if self._stop_failure_reason is None else self._stop_failure_reason.value
+                ),
+            )
         return plan
 
     def stop_invalidated_execution(
@@ -3637,6 +3671,9 @@ class ContinuousPlanningSession:
         self.invalidated_plans.append(active)
         self._cascade_lineage(active.plan_id, reason, message)
         self._stopping_request = active.request
+        self._stop_trigger_reason = reason
+        self._stop_failure_reason = None
+        self._stop_failure_message = ""
         if self._active_progress is not None:
             self._discard_without_replan_ids.add(self._active_progress.request.request_id)
             self._logical_cancel_active()
@@ -3656,15 +3693,20 @@ class ContinuousPlanningSession:
         self,
         reason: ReplanReason,
         message: str,
+        *,
+        blocked: bool = False,
     ) -> PlanEnvelope:
         """Record a stop-control failure without claiming motion has stopped."""
 
         if self.execution.state is not ExecutionState.STOPPING or self.execution.active_plan is None:
             raise RuntimeError("no STOPPING execution can be marked unconfirmed")
         active = self.execution.active_plan
-        self.state = SessionState.RECOVERY
-        self._terminal_reason = reason.value
-        self._terminal_message = message
+        self.state = SessionState.BLOCKED if blocked else SessionState.RECOVERY
+        self._stop_failure_reason = reason
+        self._stop_failure_message = message
+        if self._terminal_reason is None:
+            self._terminal_reason = reason.value
+            self._terminal_message = message
         self.statistics.end_robot_idle()
         self._event(
             "execution_stop_unconfirmed",
@@ -3732,6 +3774,8 @@ class ContinuousPlanningSession:
     def resume_after_recovery(self) -> SessionState:
         if self.state is not SessionState.RECOVERY:
             raise RuntimeError("session is not in recovery")
+        if self.execution.state is ExecutionState.STOPPING:
+            raise RuntimeError("cannot resume recovery before stop acknowledgement")
         self.state = SessionState.PLANNING if (
             self._submitted_task is not None or self._active_progress is not None or self._requests
         ) else SessionState.IDLE
@@ -3740,6 +3784,9 @@ class ContinuousPlanningSession:
             self._schedule_if_possible()
         self._terminal_reason = None
         self._terminal_message = ""
+        self._stop_trigger_reason = None
+        self._stop_failure_reason = None
+        self._stop_failure_message = ""
         return self.state
 
     def snapshot(self) -> dict[str, Any]:
@@ -3770,6 +3817,13 @@ class ContinuousPlanningSession:
             "blocked": self.blocked,
             "terminal_reason": self._terminal_reason,
             "terminal_message": self._terminal_message,
+            "stop_trigger_reason": (
+                None if self._stop_trigger_reason is None else self._stop_trigger_reason.value
+            ),
+            "stop_failure_reason": (
+                None if self._stop_failure_reason is None else self._stop_failure_reason.value
+            ),
+            "stop_failure_message": self._stop_failure_message,
             "event_journal": self.events.summary(),
             "history_capacity": self._history_capacity,
             "retained_invalidated_plans": len(self.invalidated_plans),

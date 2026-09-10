@@ -75,6 +75,38 @@ class RuntimeIngressStatus(str, Enum):
     CONFLICT = "CONFLICT"
 
 
+class StopCommandState(str, Enum):
+    """Command-side state; it deliberately does not imply physical stop."""
+
+    REQUIRED = "REQUIRED"
+    ACCEPTED = "ACCEPTED"
+    REJECTED = "REJECTED"
+    ERROR = "ERROR"
+
+
+@dataclass
+class _StopLifecycle:
+    attempt_id: str
+    execution_id: str
+    plan_id: str
+    trigger_reason: str
+    trigger_message: str
+    command_state: StopCommandState = StopCommandState.REQUIRED
+    command_id: str | None = None
+    command_message: str = ""
+    failure_reason: str | None = None
+    failure_message: str = ""
+    execution_outcome: ExecutionFeedbackStatus | None = None
+    execution_outcome_message: str = ""
+    stopped_confirmed: bool = False
+    stopped_boundary: Any = None
+    confirmation_stream_id: str | None = None
+    confirmation_producer_epoch: int | None = None
+    world_reconciled: bool = False
+    recovery_required: bool = False
+    recovery_resume_authorized: bool = False
+
+
 @dataclass(frozen=True)
 class RuntimeIngressResult:
     status: RuntimeIngressStatus
@@ -606,6 +638,11 @@ class ContinuousPlanningRuntime:
         self._timed_out_planning_task_id: str | None = None
         self._watchdog_latches: set[str] = set()
         self._stop_unconfirmed = False
+        self._stop_attempt_sequence = 0
+        self._stop_lifecycle: _StopLifecycle | None = None
+        self._active_stop_feedback_domain: tuple[str, int, str, str] | None = None
+        self._stop_feedback_state = _FeedbackDomainState()
+        self._stop_confirmation_history: OrderedDict[str, ExecutionFeedback] = OrderedDict()
 
     @property
     def closed(self) -> bool:
@@ -660,6 +697,90 @@ class ContinuousPlanningRuntime:
     def observe_world(self, observation: WorldObservation) -> RuntimeIngressResult:
         return self.ingress_mailbox.observe_world(observation)
 
+    @staticmethod
+    def _requires_explicit_recovery(reason: ReplanReason) -> bool:
+        return reason is not ReplanReason.SCENE_REVISION_CHANGED
+
+    def _ensure_stop_lifecycle(
+        self,
+        reason: ReplanReason,
+        message: str,
+    ) -> _StopLifecycle:
+        if self._active_plan is None or self._active_execution_id is None:
+            raise RuntimeError("a stop lifecycle requires an active execution identity")
+        lifecycle = self._stop_lifecycle
+        if (
+            lifecycle is not None
+            and lifecycle.plan_id == self._active_plan.plan_id
+            and lifecycle.execution_id == self._active_execution_id
+            and not lifecycle.world_reconciled
+        ):
+            lifecycle.recovery_required = bool(
+                lifecycle.recovery_required or self._requires_explicit_recovery(reason)
+            )
+            return lifecycle
+        self._stop_attempt_sequence += 1
+        lifecycle = _StopLifecycle(
+            attempt_id=f"stop-attempt-{self._stop_attempt_sequence}",
+            execution_id=self._active_execution_id,
+            plan_id=self._active_plan.plan_id,
+            trigger_reason=reason.value,
+            trigger_message=message,
+            recovery_required=self._requires_explicit_recovery(reason),
+        )
+        self._stop_lifecycle = lifecycle
+        self._active_stop_feedback_domain = None
+        self._stop_feedback_state = _FeedbackDomainState()
+        self._pending_stopped_feedback = None
+        self._stop_unconfirmed = True
+        return lifecycle
+
+    def _mark_stop_unconfirmed(
+        self,
+        message: str,
+        *,
+        reason: ReplanReason,
+        command_state: StopCommandState | None = None,
+    ) -> None:
+        lifecycle = self._ensure_stop_lifecycle(reason, message)
+        if command_state is not None:
+            lifecycle.command_state = command_state
+        lifecycle.failure_reason = reason.value
+        lifecycle.failure_message = message
+        lifecycle.recovery_required = True
+        self.session.mark_stop_unconfirmed(reason, message)
+        self._stop_unconfirmed = True
+        self.metrics.stop_unconfirmed_count += 1
+        self.state = RuntimeState.RECOVERY
+        self._event(
+            "runtime_stop_unconfirmed",
+            reason.value,
+            plan_id=lifecycle.plan_id,
+            execution_id=lifecycle.execution_id,
+            stop_attempt_id=lifecycle.attempt_id,
+            command_id=lifecycle.command_id,
+            message=message,
+        )
+
+    def _record_execution_outcome(self, feedback: ExecutionFeedback) -> None:
+        lifecycle = self._stop_lifecycle
+        if lifecycle is None:
+            reason = (
+                ReplanReason.EXECUTION_DEVIATION
+                if feedback.status is ExecutionFeedbackStatus.DEVIATED
+                else ReplanReason.EXECUTION_FAILED
+            )
+            if self.session.execution.state is ExecutionState.STOPPING:
+                lifecycle = self._ensure_stop_lifecycle(reason, feedback.message or feedback.status.value)
+        if lifecycle is not None:
+            if lifecycle.execution_outcome is None:
+                lifecycle.execution_outcome = feedback.status
+                lifecycle.execution_outcome_message = feedback.message
+            elif lifecycle.execution_outcome is not feedback.status:
+                self._invalid_feedback("conflicting execution task terminal outcome", feedback)
+                return
+            lifecycle.recovery_required = True
+
     def _fail_active(
         self,
         message: str,
@@ -672,6 +793,7 @@ class ContinuousPlanningRuntime:
             and self.session.execution.state is ExecutionState.RUNNING
         ):
             self.session.begin_safety_stop(reason, message)
+            self._ensure_stop_lifecycle(reason, message)
             self.state = RuntimeState.STOPPING
             self._event(
                 "runtime_safety_stop_required",
@@ -682,15 +804,16 @@ class ContinuousPlanningRuntime:
             )
             return
         if self.session.execution.state is ExecutionState.STOPPING:
-            self.session.mark_stop_unconfirmed(reason, message)
-            self._stop_unconfirmed = True
-            self.metrics.stop_unconfirmed_count += 1
-            self.state = RuntimeState.RECOVERY
+            lifecycle = self._ensure_stop_lifecycle(reason, message)
+            lifecycle.recovery_required = bool(
+                lifecycle.recovery_required or self._requires_explicit_recovery(reason)
+            )
             self._event(
-                "runtime_stop_unconfirmed",
+                "runtime_fault_during_stopping",
                 reason.value,
-                plan_id=None if self._active_plan is None else self._active_plan.plan_id,
-                execution_id=self._active_execution_id,
+                plan_id=lifecycle.plan_id,
+                execution_id=lifecycle.execution_id,
+                stop_attempt_id=lifecycle.attempt_id,
                 message=message,
             )
             return
@@ -823,9 +946,139 @@ class ContinuousPlanningRuntime:
         self._execution_started_at = None
         self._last_feedback_received_at = None
         self._stop_requested_at = None
-        self._stop_unconfirmed = False
+        self._stop_unconfirmed = bool(
+            self._stop_lifecycle is not None
+            and not self._stop_lifecycle.stopped_confirmed
+        )
         self._watchdog_latches.discard("execution_feedback")
         self._watchdog_latches.discard("stop_ack")
+
+    def _remember_stop_confirmation(self, feedback: ExecutionFeedback) -> None:
+        assert feedback.stop_command_id is not None
+        self._stop_confirmation_history[feedback.stop_command_id] = feedback
+        self._stop_confirmation_history.move_to_end(feedback.stop_command_id)
+        while len(self._stop_confirmation_history) > self._terminal_feedback_history_capacity:
+            self._stop_confirmation_history.popitem(last=False)
+
+    def _consume_stop_feedback(self, received: _ReceivedExecutionFeedback) -> None:
+        feedback = received.feedback
+        command_id = feedback.stop_command_id
+        assert command_id is not None
+        historical = self._stop_confirmation_history.get(command_id)
+        if historical is not None:
+            if self._identical_feedback(historical, feedback):
+                self._ignore_feedback(
+                    RuntimeIngressStatus.DUPLICATE,
+                    feedback,
+                    "identical stop confirmation already processed",
+                )
+            else:
+                self.metrics.invalid_feedback_count += 1
+                self._event(
+                    "invalid_historical_stop_confirmation_ignored",
+                    ReplanReason.EXECUTION_DEVIATION.value,
+                    plan_id=feedback.plan_id,
+                    execution_id=feedback.execution_id,
+                    command_id=command_id,
+                    message="conflicting confirmation belongs to a completed stop attempt",
+                )
+            return
+        lifecycle = self._stop_lifecycle
+        if (
+            lifecycle is None
+            or lifecycle.command_state is not StopCommandState.ACCEPTED
+            or lifecycle.command_id != command_id
+            or lifecycle.plan_id != feedback.plan_id
+            or lifecycle.execution_id != feedback.execution_id
+        ):
+            self._invalid_feedback("stop feedback does not match the active stop request", feedback)
+            return
+        domain = (
+            feedback.feedback_stream_id,
+            feedback.producer_epoch,
+            feedback.execution_id,
+            command_id,
+        )
+        if self._active_feedback_domain is not None and (
+            feedback.feedback_stream_id,
+            feedback.producer_epoch,
+            feedback.execution_id,
+        ) != self._active_feedback_domain:
+            self._invalid_feedback("stop feedback stream or epoch does not match the execution", feedback)
+            return
+        if self._active_stop_feedback_domain is None:
+            self._active_stop_feedback_domain = domain
+        elif domain != self._active_stop_feedback_domain:
+            self._invalid_feedback("stop feedback identity changed during a stop attempt", feedback)
+            return
+        state = self._stop_feedback_state
+        if feedback.feedback_sequence == state.last_sequence:
+            if state.last_feedback is not None and self._identical_feedback(state.last_feedback, feedback):
+                self._ignore_feedback(
+                    RuntimeIngressStatus.DUPLICATE,
+                    feedback,
+                    "identical stop feedback already processed",
+                )
+            else:
+                self._invalid_feedback("same stop feedback identity has conflicting content", feedback)
+            return
+        if feedback.feedback_sequence < state.last_sequence:
+            self._ignore_feedback(
+                RuntimeIngressStatus.STALE,
+                feedback,
+                "stop feedback sequence is stale",
+            )
+            return
+        if state.last_status is None:
+            allowed = {
+                ExecutionFeedbackStatus.STOPPING,
+                ExecutionFeedbackStatus.STOPPED,
+            }
+        else:
+            allowed = (
+                {ExecutionFeedbackStatus.STOPPING, ExecutionFeedbackStatus.STOPPED}
+                if state.last_status is ExecutionFeedbackStatus.STOPPING
+                else set()
+            )
+        if feedback.status not in allowed:
+            self._invalid_feedback("illegal stop feedback transition", feedback)
+            return
+        if self._active_plan is not None and len(feedback.current_boundary.q) != len(
+            self._active_plan.expected_start_boundary.q
+        ):
+            self._invalid_feedback("stop feedback boundary DOF does not match active plan", feedback)
+            return
+        state.last_sequence = feedback.feedback_sequence
+        state.last_status = feedback.status
+        state.last_progress = max(state.last_progress, feedback.progress)
+        state.last_feedback = feedback
+        self._last_feedback_received_at = received.received_at_monotonic_seconds
+        self.metrics.execution_feedback_count_by_status[feedback.status.value] += 1
+        self._event(
+            "execution_stop_feedback",
+            feedback.status.value,
+            plan_id=feedback.plan_id,
+            execution_id=feedback.execution_id,
+            stop_attempt_id=lifecycle.attempt_id,
+            command_id=command_id,
+            feedback_stream_id=feedback.feedback_stream_id,
+            producer_epoch=feedback.producer_epoch,
+        )
+        if feedback.status is ExecutionFeedbackStatus.STOPPING:
+            return
+        state.terminal_feedback = feedback
+        lifecycle.stopped_confirmed = True
+        lifecycle.stopped_boundary = feedback.current_boundary
+        lifecycle.confirmation_stream_id = feedback.feedback_stream_id
+        lifecycle.confirmation_producer_epoch = feedback.producer_epoch
+        self._stop_unconfirmed = False
+        self._pending_stopped_feedback = feedback
+        self._remember_stop_confirmation(feedback)
+        if self._stop_wait_started_at is None:
+            now = float(self._clock())
+            self._stop_wait_started_at = now
+            self._stop_wait_last_at = now
+        self._try_reconcile_pending_stop()
 
     def _try_reconcile_pending_stop(self) -> None:
         feedback = self._pending_stopped_feedback
@@ -848,6 +1101,10 @@ class ContinuousPlanningRuntime:
                 boundary,
                 feedback.message,
                 execution_id=feedback.execution_id,
+                resume_after_stop=not (
+                    self._stop_lifecycle is not None
+                    and self._stop_lifecycle.recovery_required
+                ),
             )
         except Exception as exc:
             self._invalid_feedback(f"stop acknowledgement rejected: {exc}", feedback)
@@ -861,6 +1118,10 @@ class ContinuousPlanningRuntime:
         self._pending_stop_observation = None
         self._stop_wait_started_at = None
         self._stop_wait_last_at = None
+        if self._stop_lifecycle is not None:
+            self._stop_lifecycle.world_reconciled = True
+            self._stop_lifecycle.stopped_boundary = boundary
+            self._stop_unconfirmed = False
         self._clear_active_execution()
 
     def _consume_feedback(self, received: _ReceivedExecutionFeedback) -> None:
@@ -869,6 +1130,9 @@ class ContinuousPlanningRuntime:
             self._invalid_feedback(
                 f"expected ExecutionFeedback, got {type(feedback).__name__}"
             )
+            return
+        if feedback.stop_command_id is not None:
+            self._consume_stop_feedback(received)
             return
         domain = self._feedback_domain(feedback)
         previous_terminal = self._terminal_feedback.get(domain)
@@ -1019,35 +1283,21 @@ class ContinuousPlanningRuntime:
             return
         if feedback.status is ExecutionFeedbackStatus.FAILED:
             self.metrics.execution_failure_count += 1
-            if self.session.execution.state is ExecutionState.RUNNING:
-                self.session.complete_execution(
-                    success=False,
-                    actual_end_boundary=feedback.current_boundary,
-                    message=feedback.message,
-                    execution_id=feedback.execution_id,
-                )
-            else:
-                self._fail_active(feedback.message or "execution failed", feedback=feedback)
-            self._clear_active_execution()
+            self._fail_active(feedback.message or "execution failed", feedback=feedback)
+            self._record_execution_outcome(feedback)
             return
         if feedback.status is ExecutionFeedbackStatus.DEVIATED:
             self.metrics.execution_deviation_count += 1
-            if self.session.execution.state is ExecutionState.RUNNING:
-                self.session.notify_execution_deviation(
-                    feedback.message or "execution deviated",
-                    feedback.current_boundary,
-                    execution_id=feedback.execution_id,
-                )
-            else:
-                self._fail_active(
-                    feedback.message or "execution deviated",
-                    reason=ReplanReason.EXECUTION_DEVIATION,
-                    feedback=feedback,
-                )
-            self._clear_active_execution()
+            self._fail_active(
+                feedback.message or "execution deviated",
+                reason=ReplanReason.EXECUTION_DEVIATION,
+                feedback=feedback,
+            )
+            self._record_execution_outcome(feedback)
             return
         self.metrics.execution_failure_count += 1
         self._fail_active(feedback.message or feedback.status.value, feedback=feedback)
+        self._record_execution_outcome(feedback)
         if self.session.execution.state is not ExecutionState.STOPPING:
             self._clear_active_execution()
 
@@ -1260,23 +1510,32 @@ class ContinuousPlanningRuntime:
 
     def _request_stop_once(self) -> None:
         if (
-            self.session.state is not SessionState.STOPPING
+            self.session.execution.state is not ExecutionState.STOPPING
             or self._active_plan is None
             or self._active_plan.plan_id in self._stop_requested_plan_ids
         ):
             return
         plan_id = self._active_plan.plan_id
+        reason_value = self.session.terminal_reason or ReplanReason.SCENE_REVISION_CHANGED.value
+        try:
+            reason = ReplanReason(reason_value)
+        except ValueError:
+            reason = ReplanReason.EXECUTION_FAILED
+        lifecycle = self._ensure_stop_lifecycle(reason, self.session.snapshot()["terminal_message"])
         self._stop_requested_plan_ids.add(plan_id)
         self.metrics.execution_stop_request_count += 1
-        stop_reason = self.session.terminal_reason or ReplanReason.SCENE_REVISION_CHANGED.value
         try:
             result = self.execution_backend.request_stop(
                 plan_id,
-                stop_reason,
+                lifecycle.trigger_reason,
             )
         except Exception as exc:
             self.metrics.execution_stop_rejected_count += 1
-            self._fail_active(f"execution stop request raised: {exc}")
+            self._mark_stop_unconfirmed(
+                f"execution stop request raised: {exc}",
+                reason=ReplanReason.EXECUTION_FAILED,
+                command_state=StopCommandState.ERROR,
+            )
             return
         if not isinstance(result, ExecutionCommandResult) or result.status not in {
             ExecutionCommandStatus.ACCEPTED,
@@ -1284,7 +1543,11 @@ class ContinuousPlanningRuntime:
         }:
             self.metrics.execution_stop_rejected_count += 1
             status = type(result).__name__ if not isinstance(result, ExecutionCommandResult) else result.status.value
-            self._fail_active(f"execution stop request rejected: {status}")
+            self._mark_stop_unconfirmed(
+                f"execution stop request rejected: {status}",
+                reason=ReplanReason.EXECUTION_FAILED,
+                command_state=StopCommandState.REJECTED,
+            )
             return
         if (
             result.plan_id != plan_id
@@ -1294,8 +1557,16 @@ class ContinuousPlanningRuntime:
             )
         ):
             self.metrics.execution_stop_rejected_count += 1
-            self._fail_active("execution stop acknowledgement identity mismatch")
+            lifecycle.command_id = result.command_id
+            self._mark_stop_unconfirmed(
+                "execution stop acknowledgement identity mismatch",
+                reason=ReplanReason.EXECUTION_DEVIATION,
+                command_state=StopCommandState.REJECTED,
+            )
             return
+        lifecycle.command_state = StopCommandState.ACCEPTED
+        lifecycle.command_id = result.command_id
+        lifecycle.command_message = result.message
         self._stop_requested_at = float(self._clock())
         self._event(
             "execution_stop_command",
@@ -1377,7 +1648,10 @@ class ContinuousPlanningRuntime:
             self._watchdog_latches.add("stop_ack")
             self.metrics.stop_ack_timeout_count += 1
             message = "safe-stop acknowledgement deadline exceeded"
-            self._fail_active(message, reason=ReplanReason.STOP_ACK_TIMEOUT)
+            self._mark_stop_unconfirmed(
+                message,
+                reason=ReplanReason.STOP_ACK_TIMEOUT,
+            )
             self._event("watchdog_stop_ack_timeout", ReplanReason.STOP_ACK_TIMEOUT.value)
             return
         if (
@@ -1392,11 +1666,20 @@ class ContinuousPlanningRuntime:
             self._watchdog_latches.add("stop_observation")
             self.metrics.stop_observation_timeout_count += 1
             message = "STOPPED feedback was not reconciled with a fresh world observation"
-            self._apply_terminal_action(
-                policy.stopped_observation_timeout_action,
+            lifecycle = self._stop_lifecycle
+            if lifecycle is not None:
+                lifecycle.failure_reason = ReplanReason.STOP_OBSERVATION_TIMEOUT.value
+                lifecycle.failure_message = message
+                lifecycle.recovery_required = True
+            self.session.mark_stop_unconfirmed(
                 ReplanReason.STOP_OBSERVATION_TIMEOUT,
                 message,
+                blocked=(
+                    policy.stopped_observation_timeout_action
+                    is WatchdogTerminalAction.BLOCKED
+                ),
             )
+            self._stop_unconfirmed = False
             self._event("watchdog_stop_observation_timeout", ReplanReason.STOP_OBSERVATION_TIMEOUT.value)
             return
         if (
@@ -1452,6 +1735,12 @@ class ContinuousPlanningRuntime:
         self._stop_wait_last_at = now
         self.metrics.stop_waiting_observation_steps += 1
 
+    def _finish_step(self) -> RuntimeState:
+        if self.session.execution.state is ExecutionState.STOPPING:
+            self._request_stop_once()
+        self._record_stop_waiting()
+        return self._sync_state()
+
     def step(self) -> RuntimeState:
         self._assert_open()
         request_staging_space = max(
@@ -1473,7 +1762,7 @@ class ContinuousPlanningRuntime:
         if self._pending_ingress_fault is not None:
             message, self._pending_ingress_fault = self._pending_ingress_fault, None
             self._fail_active(message, reason=ReplanReason.PLAN_INVALIDATED)
-            return self._sync_state()
+            return self._finish_step()
         submitted = 0
         while self._pending_initial and submitted < self._max_initial_requests_per_step:
             received = self._pending_initial.popleft()
@@ -1495,7 +1784,7 @@ class ContinuousPlanningRuntime:
                     f"initial planning request rejected: {exc}",
                     reason=ReplanReason.PLANNER_FAILURE,
                 )
-                return self._sync_state()
+                return self._finish_step()
             self._scene_received_at = received.received_at_monotonic_seconds
             self._latest_world = request.world_snapshot
             self._watchdog_latches.discard("scene_stale")
@@ -1507,7 +1796,7 @@ class ContinuousPlanningRuntime:
                 self.session.advance(1)
                 if self.session.active_planning_task_id is None:
                     self._timed_out_planning_task_id = None
-            return self._sync_state()
+            return self._finish_step()
         now = float(self._clock())
         self._run_watchdogs(now)
         if self.session.state in {SessionState.RECOVERY, SessionState.BLOCKED}:
@@ -1515,7 +1804,7 @@ class ContinuousPlanningRuntime:
                 self.session.advance(1)
                 if self.session.active_planning_task_id is None:
                     self._timed_out_planning_task_id = None
-            return self._sync_state()
+            return self._finish_step()
         self.session.advance(1)
         if (
             self._timed_out_planning_task_id is not None
@@ -1528,15 +1817,13 @@ class ContinuousPlanningRuntime:
         self._start_ready_plan()
         if self.session.state is not SessionState.RECOVERY:
             self._create_successor()
-        if self.session.state is not SessionState.RECOVERY:
-            self._request_stop_once()
+        self._request_stop_once()
         if self.session.state is not SessionState.RECOVERY:
             try:
                 self.execution_backend.advance(1)
             except Exception as exc:
                 self._fail_active(f"execution backend advance failed: {exc}")
-        self._record_stop_waiting()
-        return self._sync_state()
+        return self._finish_step()
 
     def run_until_stable(
         self,
@@ -1568,6 +1855,72 @@ class ContinuousPlanningRuntime:
             if monotonic() > deadline:
                 raise TimeoutError("runtime did not stabilize before timeout")
         raise RuntimeError("runtime did not stabilize within max_steps")
+
+    def resume_after_recovery(self) -> RuntimeState:
+        """Authorize recovery only after any required stop is proven and reconciled."""
+
+        self._assert_open()
+        lifecycle = self._stop_lifecycle
+        if lifecycle is not None and lifecycle.recovery_required:
+            if not lifecycle.stopped_confirmed or not lifecycle.world_reconciled:
+                raise RuntimeError("cannot resume before stopped evidence and world reconciliation")
+            if self.execution_backend.health is not ExecutionBackendHealth.READY:
+                raise RuntimeError("cannot resume while the execution backend is unhealthy")
+            lifecycle.recovery_resume_authorized = True
+        self.session.resume_after_recovery()
+        self._event(
+            "runtime_recovery_resumed",
+            "EXPLICIT_RECOVERY",
+            plan_id=None if lifecycle is None else lifecycle.plan_id,
+            execution_id=None if lifecycle is None else lifecycle.execution_id,
+            stop_attempt_id=None if lifecycle is None else lifecycle.attempt_id,
+        )
+        return self._sync_state()
+
+    def _stop_lifecycle_snapshot(self) -> Mapping[str, Any] | None:
+        lifecycle = self._stop_lifecycle
+        if lifecycle is None:
+            return None
+        resume_allowed = bool(
+            lifecycle.recovery_required
+            and lifecycle.stopped_confirmed
+            and lifecycle.world_reconciled
+            and self.execution_backend.health is ExecutionBackendHealth.READY
+        )
+        boundary = lifecycle.stopped_boundary
+        return MappingProxyType({
+            "attempt_id": lifecycle.attempt_id,
+            "execution_id": lifecycle.execution_id,
+            "plan_id": lifecycle.plan_id,
+            "trigger_reason": lifecycle.trigger_reason,
+            "trigger_message": lifecycle.trigger_message,
+            "command_state": lifecycle.command_state.value,
+            "command_id": lifecycle.command_id,
+            "command_message": lifecycle.command_message,
+            "failure_reason": lifecycle.failure_reason,
+            "failure_message": lifecycle.failure_message,
+            "execution_outcome": (
+                None if lifecycle.execution_outcome is None else lifecycle.execution_outcome.value
+            ),
+            "execution_outcome_message": lifecycle.execution_outcome_message,
+            "stopped_confirmed": lifecycle.stopped_confirmed,
+            "stopped_boundary": None if boundary is None else {
+                "q": boundary.q,
+                "qd": boundary.qd,
+                "qdd": boundary.qdd,
+                "time_seconds": boundary.time_seconds,
+                "boundary_mode": boundary.boundary_mode.value,
+            },
+            "confirmation_stream_id": lifecycle.confirmation_stream_id,
+            "confirmation_producer_epoch": lifecycle.confirmation_producer_epoch,
+            "waiting_for_compatible_observation": bool(
+                lifecycle.stopped_confirmed and not lifecycle.world_reconciled
+            ),
+            "world_reconciled": lifecycle.world_reconciled,
+            "recovery_required": lifecycle.recovery_required,
+            "resume_allowed": resume_allowed,
+            "recovery_resume_authorized": lifecycle.recovery_resume_authorized,
+        })
 
     def snapshot(self) -> dict[str, Any]:
         mailbox_requests, mailbox_worlds = self.ingress_mailbox.pending_counts()
@@ -1602,7 +1955,11 @@ class ContinuousPlanningRuntime:
                 "staging_world_observations": len(self._pending_worlds),
             },
             "terminal_feedback_history": len(self._terminal_feedback),
-            "stop_unconfirmed": self._stop_unconfirmed,
+            "stop_unconfirmed": bool(
+                self._stop_lifecycle is not None
+                and not self._stop_lifecycle.stopped_confirmed
+            ),
+            "stop_lifecycle": self._stop_lifecycle_snapshot(),
             "event_journal": self.events.summary(),
             "watchdog": {
                 "scene_received_at": self._scene_received_at,
@@ -1674,6 +2031,7 @@ __all__ = [
     "RuntimeMetrics",
     "RuntimeState",
     "RuntimeWatchdogPolicy",
+    "StopCommandState",
     "SuccessorRequestFactory",
     "WatchdogTerminalAction",
     "WorldObservation",

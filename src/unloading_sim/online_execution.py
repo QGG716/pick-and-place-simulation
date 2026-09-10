@@ -175,6 +175,7 @@ class ExecutionFeedback:
     metadata: Mapping[str, Any] = field(default_factory=dict, compare=False)
     feedback_stream_id: str = "default"
     producer_epoch: int = 0
+    stop_command_id: str | None = None
 
     def __post_init__(self) -> None:
         status = ExecutionFeedbackStatus(self.status)
@@ -188,6 +189,14 @@ class ExecutionFeedback:
             raise ValueError("execution feedback stream id must be non-empty")
         if self.producer_epoch < 0:
             raise ValueError("execution feedback producer epoch must be non-negative")
+        if self.stop_command_id is not None:
+            if not self.stop_command_id:
+                raise ValueError("stop command id must be non-empty when provided")
+            if status not in {
+                ExecutionFeedbackStatus.STOPPING,
+                ExecutionFeedbackStatus.STOPPED,
+            }:
+                raise ValueError("stop command id is only valid on STOPPING or STOPPED feedback")
         if not isfinite(progress) or not 0.0 <= progress <= 1.0:
             raise ValueError("execution progress must be finite and inside [0, 1]")
         if not isinstance(self.current_boundary, MotionBoundaryState):
@@ -265,6 +274,7 @@ class _SimExecution:
     completed_steps: int = 0
     stop_requested: bool = False
     stopping_emitted: bool = False
+    stop_command_id: str | None = None
 
 
 class DeterministicSimExecutionBackend(ExecutionBackend):
@@ -387,6 +397,14 @@ class DeterministicSimExecutionBackend(ExecutionBackend):
                 observed_at_monotonic_seconds=self._clock(),
                 feedback_stream_id=self.feedback_stream_id,
                 producer_epoch=self.producer_epoch,
+                stop_command_id=(
+                    active.stop_command_id
+                    if status in {
+                        ExecutionFeedbackStatus.STOPPING,
+                        ExecutionFeedbackStatus.STOPPED,
+                    }
+                    else None
+                ),
             )
         )
 
@@ -563,13 +581,15 @@ class DeterministicSimExecutionBackend(ExecutionBackend):
                 plan_id=plan_id,
                 message="stop was already requested",
             )
-        self._active.stop_requested = True
-        return self._command(
+        result = self._command(
             ExecutionCommandStatus.ACCEPTED,
             execution_id=self._active.execution_id,
             plan_id=plan_id,
             message="stop request accepted",
         )
+        self._active.stop_requested = True
+        self._active.stop_command_id = result.command_id
+        return result
 
     def current_boundary(self) -> MotionBoundaryState | None:
         return self._last_boundary
