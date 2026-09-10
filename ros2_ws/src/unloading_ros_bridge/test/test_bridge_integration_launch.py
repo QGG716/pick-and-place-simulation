@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 import time
+import unittest
 
 from builtin_interfaces.msg import Duration
 from launch import LaunchDescription
@@ -40,14 +41,14 @@ def generate_test_description():
     ])
 
 
-class TestBridgeIntegration:
+class TestBridgeIntegration(unittest.TestCase):
     @classmethod
-    def setup_class(cls):
+    def setUpClass(cls):
         rclpy.init()
         cls.node = rclpy.create_node("bridge_integration_test")
 
     @classmethod
-    def teardown_class(cls):
+    def tearDownClass(cls):
         cls.node.destroy_node()
         rclpy.shutdown()
 

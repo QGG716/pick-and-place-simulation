@@ -1,4 +1,5 @@
 import time
+import unittest
 
 from builtin_interfaces.msg import Duration
 from control_msgs.action import FollowJointTrajectory
@@ -21,15 +22,15 @@ def generate_test_description():
     ])
 
 
-class TestMockFollowJointTrajectory:
+class TestMockFollowJointTrajectory(unittest.TestCase):
     @classmethod
-    def setup_class(cls):
+    def setUpClass(cls):
         rclpy.init()
         cls.node = rclpy.create_node("mock_action_launch_test")
         cls.client = ActionClient(cls.node, FollowJointTrajectory, "/mock_controller/follow_joint_trajectory")
 
     @classmethod
-    def teardown_class(cls):
+    def tearDownClass(cls):
         cls.node.destroy_node()
         rclpy.shutdown()
 
