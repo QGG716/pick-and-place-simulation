@@ -3355,6 +3355,8 @@ class ContinuousPlanningSession:
 
         Omitting ``stopped_boundary`` is retained only for legacy STOP-boundary
         callers and derives a zero-velocity boundary from ``stopped_world``.
+        ``resume_after_stop=False`` preserves recovery after severe faults;
+        callers must use the public recovery gate before submitting new work.
         """
 
         if self.execution.state is not ExecutionState.STOPPING:

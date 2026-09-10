@@ -330,6 +330,8 @@ def test_stop_rejection_or_exception_remains_unconfirmed_and_never_repeats(
     assert snapshot["stop_unconfirmed"]
     assert snapshot["stop_lifecycle"]["command_state"] == command_state
     assert not [event for event in runtime.events if event.kind == "execution_stop_command"]
+    with pytest.raises(RuntimeError, match="before stopped evidence"):
+        runtime.resume_after_recovery()
 
 
 def test_stop_timeout_accepts_late_correlated_confirmation_then_explicit_resume():

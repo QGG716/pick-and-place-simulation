@@ -24,6 +24,7 @@ from .online_planning import (
     BoundaryMode,
     ContinuousPlanningSession,
     ExecutionState,
+    MotionBoundaryState,
     PlanEnvelope,
     PlanningRequest,
     PlanningWorldSnapshot,
@@ -99,7 +100,7 @@ class _StopLifecycle:
     execution_outcome: ExecutionFeedbackStatus | None = None
     execution_outcome_message: str = ""
     stopped_confirmed: bool = False
-    stopped_boundary: Any = None
+    stopped_boundary: MotionBoundaryState | None = None
     confirmation_stream_id: str | None = None
     confirmation_producer_epoch: int | None = None
     world_reconciled: bool = False
