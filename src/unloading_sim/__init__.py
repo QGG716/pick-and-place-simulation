@@ -75,6 +75,7 @@ from .online_execution import (
 )
 from .online_runtime import (
     ContinuousPlanningRuntime,
+    ExecutionStartState,
     ObservationAuthority,
     RuntimeIngressMailbox,
     RuntimeEvent,
@@ -177,6 +178,7 @@ __all__ = [
     "ExecutionFeedback",
     "ExecutionFeedbackStatus",
     "ContinuousPlanningRuntime",
+    "ExecutionStartState",
     "ObservationAuthority",
     "RuntimeIngressMailbox",
     "RuntimeEvent",
