@@ -426,10 +426,12 @@ def test_factory_none_is_normal_and_factory_exception_enters_recovery():
     runtime.shutdown()
 
     raising_factory = SyntheticSuccessorFactory(raises=True)
-    runtime, _, _, _ = runtime_fixture(successor_factory=raising_factory)
+    runtime, session, _, _ = runtime_fixture(successor_factory=raising_factory)
     runtime.submit_initial(request("raises", world()))
-    assert runtime.run_until_stable(timeout_seconds=WAIT_SECONDS) is RuntimeState.RECOVERY
+    assert runtime.run_until_stable(timeout_seconds=WAIT_SECONDS) is RuntimeState.WAITING_FOR_OBSERVATION
     assert raising_factory.calls == 1
+    assert session.execution.state is ExecutionState.STOPPING
+    assert runtime.metrics.execution_stop_request_count == 1
     runtime.shutdown()
 
 
@@ -470,9 +472,10 @@ def test_feedback_sequence_progress_and_identity_fail_closed():
             )
         runtime.step()
 
-        assert runtime.state is RuntimeState.RECOVERY
-        assert session.execution.active_plan is None
+        assert runtime.state is RuntimeState.STOPPING
+        assert session.execution.state is ExecutionState.STOPPING
         assert runtime.metrics.invalid_feedback_count == 1
+        assert runtime.metrics.execution_stop_request_count == 1
         runtime.shutdown()
 
 
@@ -537,8 +540,9 @@ def test_faulted_feedback_enters_explicit_recovery():
 
     runtime.step()
 
-    assert runtime.state is RuntimeState.RECOVERY
-    assert session.execution.active_plan is None
+    assert runtime.state is RuntimeState.STOPPING
+    assert session.execution.state is ExecutionState.STOPPING
+    assert runtime.metrics.execution_stop_request_count == 1
     assert runtime.metrics.execution_failure_count == 1
     runtime.shutdown()
 
@@ -560,8 +564,9 @@ def test_continuous_feedback_without_velocity_capability_fails_closed_without_ze
 
     runtime.step()
 
-    assert runtime.state is RuntimeState.RECOVERY
+    assert runtime.state is RuntimeState.STOPPING
     assert runtime.metrics.invalid_feedback_count == 1
+    assert runtime.metrics.execution_stop_request_count == 1
     assert continuous.qd == (0.1, 0.0)
     runtime.shutdown()
 
@@ -589,7 +594,9 @@ def test_stop_rejection_enters_recovery_and_is_not_retried():
     runtime.step()
 
     assert runtime.state is RuntimeState.RECOVERY
-    assert session.execution.active_plan is None
+    assert session.execution.active_plan is not None
+    assert session.execution.state is ExecutionState.STOPPING
+    assert runtime.snapshot()["stop_unconfirmed"]
     assert runtime.metrics.execution_stop_request_count == 1
     assert runtime.metrics.execution_stop_rejected_count == 1
     runtime.shutdown()
@@ -749,8 +756,9 @@ def test_illegal_feedback_state_transitions_fail_closed(statuses):
     for sequence, status in enumerate(statuses):
         backend.emit(sequence, status, min(sequence * 0.1, 0.9))
     runtime.step()
-    assert runtime.state is RuntimeState.RECOVERY
+    assert runtime.state is RuntimeState.STOPPING
     assert runtime.metrics.invalid_feedback_count == 1
+    assert runtime.metrics.execution_stop_request_count == 1
     runtime.shutdown()
 
 
@@ -761,7 +769,8 @@ def test_command_acknowledgement_capability_controls_first_feedback():
     runtime.step()
     backend.emit(0, ExecutionFeedbackStatus.RUNNING, 0.1)
     runtime.step()
-    assert runtime.state is RuntimeState.RECOVERY
+    assert runtime.state is RuntimeState.STOPPING
+    assert runtime.metrics.execution_stop_request_count == 1
     runtime.shutdown()
 
     backend = InjectedExecutionBackend()
@@ -1010,8 +1019,14 @@ def test_feedback_silence_requests_one_stop_and_stop_ack_timeout_recovers():
     clock.advance(3.0)
     runtime.step()
     assert session.state is SessionState.RECOVERY
+    assert session.execution.state is ExecutionState.STOPPING
+    assert runtime.snapshot()["stop_unconfirmed"]
     assert session.snapshot()["terminal_reason"] == ReplanReason.STOP_ACK_TIMEOUT.value
     assert session.last_actual_execution_boundary is None
+    starts_before = runtime.metrics.execution_start_command_count
+    runtime.submit_initial(request("blocked-until-stopped", world(1)))
+    runtime.step()
+    assert runtime.metrics.execution_start_command_count == starts_before
     runtime.shutdown()
 
 
@@ -1200,6 +1215,205 @@ def test_backend_health_is_checked_while_execution_is_running():
     assert session.execution.state is ExecutionState.RUNNING
     backend._health = ExecutionBackendHealth.FAULTED
     runtime.step()
-    assert session.state is SessionState.RECOVERY
+    assert session.state is SessionState.STOPPING
+    assert session.execution.state is ExecutionState.STOPPING
+    assert runtime.metrics.execution_stop_request_count == 1
     assert session.snapshot()["terminal_reason"] == ReplanReason.BACKEND_UNHEALTHY.value
     runtime.shutdown()
+
+
+def test_speculative_successor_timeout_does_not_fail_running_predecessor():
+    clock = FakeClock()
+    successor_started = Event()
+    release_successor = Event()
+
+    class BlockingSuccessorPlanner(RecordingPlanner):
+        def plan(self, request_, candidate, planning_path):
+            if request_.speculative:
+                successor_started.set()
+                assert release_successor.wait(WAIT_SECONDS)
+            return super().plan(request_, candidate, planning_path)
+
+    executor = ThreadedPlanningExecutor(clock=clock)
+    session = ContinuousPlanningSession(
+        BlockingSuccessorPlanner(),
+        executor=executor,
+        clock=clock,
+        rolling_horizon=2,
+    )
+    backend = InjectedExecutionBackend()
+    runtime = ContinuousPlanningRuntime(
+        session,
+        backend,
+        SyntheticSuccessorFactory(),
+        owns_executor=True,
+        clock=clock,
+        watchdog_policy=RuntimeWatchdogPolicy(
+            scene_freshness_timeout_seconds=None,
+            execution_feedback_timeout_seconds=None,
+            planning_timeout_seconds=1.0,
+        ),
+    )
+    try:
+        runtime.submit_initial(request("active-k", world()))
+        runtime.step()
+        assert executor.wait_for_completion(WAIT_SECONDS)
+        runtime.step()
+        assert successor_started.wait(WAIT_SECONDS)
+        assert session.execution.state is ExecutionState.RUNNING
+        backend.emit(0, ExecutionFeedbackStatus.ACCEPTED, 0.0)
+        backend.emit(1, ExecutionFeedbackStatus.RUNNING, 0.2)
+        runtime.step()  # receive feedback and arm successor watchdog at clock zero
+
+        clock.advance(1.0)
+        runtime.step()
+
+        assert runtime.state is RuntimeState.EXECUTING
+        assert session.execution.state is ExecutionState.RUNNING
+        assert backend.state is ExecutionBackendState.RUNNING
+        assert backend.stop_calls == 0
+        release_successor.set()
+        assert executor.wait_for_completion(WAIT_SECONDS)
+        runtime.step()
+        assert not session.ready_plans
+        assert not session.speculative_plans
+        assert session.statistics.stale_result_discarded_count == 1
+    finally:
+        release_successor.set()
+        runtime.shutdown()
+
+
+def test_recovery_observation_staging_remains_bounded_end_to_end():
+    backend = InjectedExecutionBackend()
+    backend._health = ExecutionBackendHealth.FAULTED
+    runtime, session, _, _ = runtime_fixture(
+        execution_backend=backend,
+        world_observation_capacity=2,
+        watchdog_policy=RuntimeWatchdogPolicy(scene_freshness_timeout_seconds=None),
+    )
+    runtime.submit_initial(request("enter-recovery", world()))
+    runtime.step()
+    assert session.state is SessionState.RECOVERY
+
+    for sequence in range(1, 41):
+        runtime.observe_world(observation(world(sequence), sequence=sequence))
+        runtime.step()
+
+    snapshot = runtime.snapshot()
+    assert snapshot["pending_world_observations"] <= 2
+    assert session.state is SessionState.RECOVERY
+    runtime.shutdown()
+
+
+def test_backlogged_feedback_uses_receive_time_not_processing_time_for_watchdog():
+    clock = FakeClock()
+    backend = InjectedExecutionBackend()
+    runtime, session, _, _ = runtime_fixture(
+        execution_backend=backend,
+        clock=clock,
+        execution_feedback_capacity=8,
+        max_execution_feedback_per_step=1,
+        watchdog_policy=RuntimeWatchdogPolicy(
+            scene_freshness_timeout_seconds=None,
+            execution_feedback_timeout_seconds=2.0,
+            stop_ack_timeout_seconds=None,
+            planning_timeout_seconds=None,
+        ),
+    )
+    runtime.submit_initial(request("feedback-backlog", world()))
+    runtime.step()
+    backend.emit(0, ExecutionFeedbackStatus.ACCEPTED, 0.0)
+    backend.emit(1, ExecutionFeedbackStatus.RUNNING, 0.2)
+    backend.emit(2, ExecutionFeedbackStatus.RUNNING, 0.4)
+    runtime.step()
+    assert runtime.snapshot()["pending_execution_feedback"] == 2
+    assert runtime.snapshot()["watchdog"]["last_feedback_received_at"] == 0.0
+
+    clock.advance(3.0)
+    runtime.step()
+
+    assert session.execution.state is ExecutionState.STOPPING
+    assert backend.stop_calls == 1
+    runtime.shutdown()
+
+
+def test_stop_ack_identity_mismatch_is_unconfirmed_and_blocks_new_execution():
+    class WrongStopIdentityBackend(InjectedExecutionBackend):
+        def request_stop(self, plan_id, reason):
+            self.stop_calls += 1
+            return ExecutionCommandResult(
+                ExecutionCommandStatus.ACCEPTED,
+                "wrong-stop-identity",
+                "wrong-execution",
+                f"{plan_id}-wrong",
+                message=reason,
+            )
+
+    backend = WrongStopIdentityBackend()
+    runtime, session, _, _ = runtime_fixture(execution_backend=backend)
+    runtime.submit_initial(request("wrong-stop", world()))
+    runtime.step()
+    runtime.observe_world(observation(world(1, ("a", "changed"))))
+    runtime.step()
+
+    assert runtime.state is RuntimeState.RECOVERY
+    assert runtime.snapshot()["stop_unconfirmed"]
+    assert session.execution.state is ExecutionState.STOPPING
+    starts_before = runtime.metrics.execution_start_command_count
+    runtime.submit_initial(request("must-not-start", world(2)))
+    runtime.step()
+    assert runtime.metrics.execution_start_command_count == starts_before
+    assert runtime.metrics.accepted_ingress_discarded_count == 1
+    runtime.shutdown()
+
+
+def test_ten_thousand_step_recovery_stress_keeps_all_control_plane_history_bounded():
+    backend = InjectedExecutionBackend()
+    backend._health = ExecutionBackendHealth.FAULTED
+    session = ContinuousPlanningSession(
+        RecordingPlanner(),
+        event_journal_capacity=16,
+        history_capacity=16,
+        latency_sample_capacity=16,
+    )
+    runtime = ContinuousPlanningRuntime(
+        session,
+        backend,
+        initial_request_capacity=2,
+        world_observation_capacity=2,
+        observation_stream_capacity=2,
+        event_journal_capacity=16,
+        watchdog_policy=RuntimeWatchdogPolicy(scene_freshness_timeout_seconds=None),
+    )
+    runtime.submit_initial(request("stress-recovery", world()))
+    runtime.step()
+    assert session.state is SessionState.RECOVERY
+
+    for sequence in range(1, 10_001):
+        accepted = runtime.observe_world(observation(world(sequence), sequence=sequence))
+        assert accepted.status in {
+            RuntimeIngressStatus.ACCEPTED,
+            RuntimeIngressStatus.COALESCED,
+        }
+        if sequence % 1000 == 0:
+            conflicting = runtime.observe_world(
+                observation(
+                    world(sequence, cartons=("conflict",)),
+                    sequence=sequence,
+                )
+            )
+            assert conflicting.status is RuntimeIngressStatus.CONFLICT
+        runtime.step()
+
+    snapshot = runtime.snapshot()
+    capacities = snapshot["ingress_capacities"]
+    assert snapshot["pending_initial_requests"] <= capacities["maximum_total_initial_requests"]
+    assert snapshot["pending_world_observations"] <= capacities["maximum_total_world_observations"]
+    assert snapshot["pending_execution_feedback"] <= capacities["execution_feedback"]
+    assert len(runtime.events) <= 16
+    assert len(session.events) <= 16
+    assert len(session.invalidated_plans) <= 16
+    assert len(session.known_request_ids) <= 16
+    assert session.state is SessionState.RECOVERY
+    runtime.shutdown()
+    assert runtime.observe_world(observation(world(10_001))).status is RuntimeIngressStatus.REJECTED
