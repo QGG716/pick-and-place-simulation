@@ -135,6 +135,11 @@ class _StopLifecycle:
     prior_evidence_conflict: bool = False
     prior_accepted_evidence: MotionBoundaryState | None = None
     prior_conflicting_evidence: MotionBoundaryState | None = None
+    evidence_version: int = 0
+    recovery_grant_attempt_id: str | None = None
+    recovery_grant_evidence_version: int | None = None
+    retired: bool = False
+    retired_by_start_attempt_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -817,6 +822,66 @@ class ContinuousPlanningRuntime:
         if self._stop_lifecycle is not None and self._stop_lifecycle.execution_id is None:
             self._stop_lifecycle.execution_id = execution_id
 
+    @staticmethod
+    def _stop_evidence_trusted(lifecycle: _StopLifecycle) -> bool:
+        return bool(
+            not lifecycle.retired
+            and not lifecycle.evidence_conflict
+            and lifecycle.stopped_confirmed
+            and lifecycle.world_reconciled
+        )
+
+    @classmethod
+    def _recovery_grant_valid(cls, lifecycle: _StopLifecycle) -> bool:
+        return bool(
+            cls._stop_evidence_trusted(lifecycle)
+            and lifecycle.recovery_resume_authorized
+            and lifecycle.recovery_grant_attempt_id == lifecycle.attempt_id
+            and lifecycle.recovery_grant_evidence_version == lifecycle.evidence_version
+        )
+
+    def _resume_allowed(self, lifecycle: _StopLifecycle) -> bool:
+        return bool(
+            lifecycle.recovery_required
+            and self._stop_evidence_trusted(lifecycle)
+            and self.session.state is SessionState.RECOVERY
+            and self.execution_backend.health is ExecutionBackendHealth.READY
+        )
+
+    @classmethod
+    def _stop_evidence_phase(cls, lifecycle: _StopLifecycle) -> str:
+        if lifecycle.retired:
+            return "RETIRED"
+        if lifecycle.evidence_conflict:
+            return "CONFLICTED"
+        if not lifecycle.stopped_confirmed:
+            return "AWAITING_STOPPED"
+        if not lifecycle.world_reconciled:
+            return "AWAITING_WORLD"
+        if lifecycle.recovery_required:
+            return (
+                "RECOVERY_AUTHORIZED"
+                if cls._recovery_grant_valid(lifecycle)
+                else "AWAITING_RECOVERY_AUTHORIZATION"
+            )
+        return "READY_FOR_HANDOFF"
+
+    def _retire_stop_evidence(self, start_attempt_id: str) -> None:
+        lifecycle = self._stop_lifecycle
+        if lifecycle is None or lifecycle.retired:
+            return
+        lifecycle.retired = True
+        lifecycle.retired_by_start_attempt_id = start_attempt_id
+        self._event(
+            "stop_evidence_retired",
+            "EXECUTION_HANDOFF_ACCEPTED",
+            plan_id=lifecycle.plan_id,
+            execution_id=lifecycle.execution_id,
+            stop_attempt_id=lifecycle.attempt_id,
+            start_attempt_id=start_attempt_id,
+            evidence_version=lifecycle.evidence_version,
+        )
+
     def _mark_stop_unconfirmed(
         self,
         message: str,
@@ -824,13 +889,26 @@ class ContinuousPlanningRuntime:
         reason: ReplanReason,
         command_state: StopCommandState | None = None,
     ) -> None:
-        lifecycle = self._ensure_stop_lifecycle(reason, message)
+        lifecycle = self._stop_lifecycle
+        if lifecycle is None or lifecycle.retired:
+            lifecycle = self._ensure_stop_lifecycle(reason, message)
         if command_state is not None:
             lifecycle.command_state = command_state
         lifecycle.failure_reason = reason.value
         lifecycle.failure_message = message
         lifecycle.recovery_required = True
-        self.session.mark_stop_unconfirmed(reason, message)
+        lifecycle.recovery_resume_authorized = False
+        lifecycle.recovery_grant_attempt_id = None
+        lifecycle.recovery_grant_evidence_version = None
+        if self.session.execution.state is ExecutionState.STOPPING:
+            self.session.mark_stop_unconfirmed(reason, message)
+        else:
+            self.session.enter_recovery(
+                message,
+                reason=reason,
+                plan_id=lifecycle.plan_id,
+                execution_id=lifecycle.execution_id,
+            )
         self._stop_unconfirmed = True
         self.metrics.stop_unconfirmed_count += 1
         self.state = RuntimeState.RECOVERY
@@ -1091,9 +1169,23 @@ class ContinuousPlanningRuntime:
         lifecycle.failure_message = message
         lifecycle.recovery_required = True
         lifecycle.recovery_resume_authorized = False
+        lifecycle.recovery_grant_attempt_id = None
+        lifecycle.recovery_grant_evidence_version = None
+        lifecycle.evidence_version += 1
         lifecycle.stopped_confirmed = False
+        lifecycle.world_reconciled = False
         self._stop_unconfirmed = True
-        self.session.mark_stop_unconfirmed(ReplanReason.STOP_EVIDENCE_CONFLICT, message)
+        self._pending_stopped_feedback = None
+        self._pending_stop_observation = None
+        if self.session.execution.state is ExecutionState.STOPPING:
+            self.session.mark_stop_unconfirmed(ReplanReason.STOP_EVIDENCE_CONFLICT, message)
+        else:
+            self.session.enter_recovery(
+                message,
+                reason=ReplanReason.STOP_EVIDENCE_CONFLICT,
+                plan_id=lifecycle.plan_id,
+                execution_id=lifecycle.execution_id,
+            )
         self.state = RuntimeState.RECOVERY
         self._event(
             "active_stop_evidence_conflict",
@@ -1116,7 +1208,7 @@ class ContinuousPlanningRuntime:
         lifecycle = self._stop_lifecycle
         current_attempt = bool(
             lifecycle is not None
-            and not lifecycle.world_reconciled
+            and not lifecycle.retired
             and lifecycle.command_state is StopCommandState.ACCEPTED
             and lifecycle.command_id == command_id
             and lifecycle.plan_id == feedback.plan_id
@@ -1241,6 +1333,7 @@ class ContinuousPlanningRuntime:
         lifecycle.stopped_confirmed = True
         lifecycle.stopped_boundary = feedback.current_boundary
         lifecycle.accepted_evidence = feedback.current_boundary
+        lifecycle.evidence_version += 1
         lifecycle.confirmation_stream_id = feedback.feedback_stream_id
         lifecycle.confirmation_producer_epoch = feedback.producer_epoch
         self._stop_unconfirmed = False
@@ -1270,16 +1363,29 @@ class ContinuousPlanningRuntime:
         if any(abs(actual - stopped) > 1e-6 for actual, stopped in zip(stopped_world.current_q, boundary.q)):
             return
         try:
-            self.session.acknowledge_stop(
-                stopped_world,
-                boundary,
-                feedback.message,
-                execution_id=feedback.execution_id,
-                resume_after_stop=not (
-                    self._stop_lifecycle is not None
-                    and self._stop_lifecycle.recovery_required
-                ),
-            )
+            lifecycle = self._stop_lifecycle
+            assert lifecycle is not None
+            if self.session.execution.state is ExecutionState.STOPPING:
+                self.session.acknowledge_stop(
+                    stopped_world,
+                    boundary,
+                    feedback.message,
+                    execution_id=feedback.execution_id,
+                    resume_after_stop=not lifecycle.recovery_required,
+                )
+            elif (
+                self.session.state is SessionState.RECOVERY
+                and self.session.execution.state is ExecutionState.FAILED
+            ):
+                self.session.reconcile_recovery_stop_evidence(
+                    stopped_world,
+                    boundary,
+                    feedback.message,
+                    execution_id=feedback.execution_id,
+                    plan_id=feedback.plan_id,
+                )
+            else:
+                raise RuntimeError("session cannot reconcile stop evidence in its current state")
         except Exception as exc:
             self._invalid_feedback(f"stop acknowledgement rejected: {exc}", feedback)
             return
@@ -1566,7 +1672,19 @@ class ContinuousPlanningRuntime:
             self._latest_world_observation = observation
             self._scene_received_at = received.received_at_monotonic_seconds
             self._watchdog_latches.discard("scene_stale")
-            if self.session.execution.state is ExecutionState.STOPPING:
+            lifecycle = self._stop_lifecycle
+            awaiting_stop_reconciliation = bool(
+                lifecycle is not None
+                and not lifecycle.retired
+                and not lifecycle.evidence_conflict
+                and lifecycle.command_state is StopCommandState.ACCEPTED
+                and self.session.state is SessionState.RECOVERY
+                and self.session.execution.state is ExecutionState.FAILED
+            )
+            if (
+                self.session.execution.state is ExecutionState.STOPPING
+                or awaiting_stop_reconciliation
+            ):
                 self._pending_stop_observation = observation
                 self._try_reconcile_pending_stop()
                 if self.state is RuntimeState.RECOVERY:
@@ -1586,10 +1704,10 @@ class ContinuousPlanningRuntime:
 
     def _execution_start_invariants_hold(self) -> bool:
         lifecycle = self._stop_lifecycle
-        if lifecycle is not None:
-            if lifecycle.evidence_conflict or not lifecycle.world_reconciled:
+        if lifecycle is not None and not lifecycle.retired:
+            if not self._stop_evidence_trusted(lifecycle):
                 return False
-            if lifecycle.recovery_required and not lifecycle.recovery_resume_authorized:
+            if lifecycle.recovery_required and not self._recovery_grant_valid(lifecycle):
                 return False
         start = self._start_lifecycle
         if start is not None and start.state is ExecutionStartState.UNKNOWN:
@@ -1707,6 +1825,7 @@ class ContinuousPlanningRuntime:
             execution_id=result.execution_id,
             command_id=result.command_id,
         )
+        self._retire_stop_evidence(start_lifecycle.attempt_id)
 
     def _create_successor(self) -> None:
         if (
@@ -1757,19 +1876,39 @@ class ContinuousPlanningRuntime:
         )
 
     def _request_stop_once(self) -> None:
-        if (
-            self.session.execution.state is not ExecutionState.STOPPING
-            or self._active_plan is None
-            or self._active_plan.plan_id in self._stop_requested_plan_ids
-        ):
+        lifecycle = self._stop_lifecycle
+        stop_required = bool(
+            self.session.execution.state is ExecutionState.STOPPING
+            or (
+                lifecycle is not None
+                and not lifecycle.retired
+                and lifecycle.command_state is StopCommandState.REQUIRED
+            )
+        )
+        if not stop_required:
             return
-        plan_id = self._active_plan.plan_id
-        reason_value = self.session.terminal_reason or ReplanReason.SCENE_REVISION_CHANGED.value
-        try:
-            reason = ReplanReason(reason_value)
-        except ValueError:
-            reason = ReplanReason.EXECUTION_FAILED
-        lifecycle = self._ensure_stop_lifecycle(reason, self.session.snapshot()["terminal_message"])
+        if (
+            lifecycle is None
+            or lifecycle.retired
+            or (
+                self._active_plan is not None
+                and lifecycle.plan_id != self._active_plan.plan_id
+            )
+        ):
+            if self._active_plan is None:
+                return
+            reason_value = self.session.terminal_reason or ReplanReason.SCENE_REVISION_CHANGED.value
+            try:
+                reason = ReplanReason(reason_value)
+            except ValueError:
+                reason = ReplanReason.EXECUTION_FAILED
+            lifecycle = self._ensure_stop_lifecycle(
+                reason,
+                self.session.snapshot()["terminal_message"],
+            )
+        plan_id = lifecycle.plan_id
+        if plan_id in self._stop_requested_plan_ids:
+            return
         self._stop_requested_plan_ids.add(plan_id)
         self.metrics.execution_stop_request_count += 1
         try:
@@ -1800,8 +1939,8 @@ class ContinuousPlanningRuntime:
         if (
             result.plan_id != plan_id
             or (
-                self._active_execution_id is not None
-                and result.execution_id != self._active_execution_id
+                lifecycle.execution_id is not None
+                and result.execution_id != lifecycle.execution_id
             )
         ):
             self.metrics.execution_stop_rejected_count += 1
@@ -1812,7 +1951,7 @@ class ContinuousPlanningRuntime:
                 command_state=StopCommandState.REJECTED,
             )
             return
-        if self._active_execution_id is None:
+        if lifecycle.execution_id is None:
             try:
                 assert result.execution_id is not None
                 self._bind_execution_identity(result.execution_id, source="STOP_COMMAND_RESULT")
@@ -1825,7 +1964,7 @@ class ContinuousPlanningRuntime:
                 )
                 return
         reused_command_identity = any(
-            key[2] == self._active_execution_id
+            key[2] == lifecycle.execution_id
             and key[3] == plan_id
             and key[4] == result.command_id
             for key in self._stop_confirmation_history
@@ -1847,7 +1986,7 @@ class ContinuousPlanningRuntime:
             "execution_stop_command",
             result.status.value,
             plan_id=plan_id,
-            execution_id=self._active_execution_id,
+            execution_id=lifecycle.execution_id,
             command_id=result.command_id,
         )
 
@@ -2011,7 +2150,14 @@ class ContinuousPlanningRuntime:
         self.metrics.stop_waiting_observation_steps += 1
 
     def _finish_step(self) -> RuntimeState:
-        if self.session.execution.state is ExecutionState.STOPPING:
+        if (
+            self.session.execution.state is ExecutionState.STOPPING
+            or (
+                self._stop_lifecycle is not None
+                and not self._stop_lifecycle.retired
+                and self._stop_lifecycle.command_state is StopCommandState.REQUIRED
+            )
+        ):
             self._request_stop_once()
         self._record_stop_waiting()
         return self._sync_state()
@@ -2136,23 +2282,23 @@ class ContinuousPlanningRuntime:
 
         self._assert_open()
         lifecycle = self._stop_lifecycle
-        if lifecycle is not None and lifecycle.recovery_required:
+        if lifecycle is not None and lifecycle.recovery_required and not lifecycle.retired:
             if lifecycle.evidence_conflict:
                 raise RuntimeError("cannot resume while active stop evidence is conflicting")
-            if not lifecycle.stopped_confirmed or not lifecycle.world_reconciled:
+            if not self._stop_evidence_trusted(lifecycle):
                 raise RuntimeError("cannot resume before stopped evidence and world reconciliation")
             if self.execution_backend.health is not ExecutionBackendHealth.READY:
                 raise RuntimeError("cannot resume while the execution backend is unhealthy")
-            lifecycle.recovery_resume_authorized = True
         if self._start_lifecycle is not None and self._start_lifecycle.state is ExecutionStartState.UNKNOWN:
-            if lifecycle is None or not (
-                lifecycle.stopped_confirmed
-                and lifecycle.world_reconciled
-                and lifecycle.recovery_resume_authorized
-            ):
+            if lifecycle is None or not self._stop_evidence_trusted(lifecycle):
                 raise RuntimeError("cannot resume while an execution start result remains unresolved")
-            self._start_lifecycle.external_confirmation_required = False
         self.session.resume_after_recovery()
+        if lifecycle is not None and lifecycle.recovery_required and not lifecycle.retired:
+            lifecycle.recovery_resume_authorized = True
+            lifecycle.recovery_grant_attempt_id = lifecycle.attempt_id
+            lifecycle.recovery_grant_evidence_version = lifecycle.evidence_version
+        if self._start_lifecycle is not None and self._start_lifecycle.state is ExecutionStartState.UNKNOWN:
+            self._start_lifecycle.external_confirmation_required = False
         self._event(
             "runtime_recovery_resumed",
             "EXPLICIT_RECOVERY",
@@ -2174,8 +2320,11 @@ class ContinuousPlanningRuntime:
         if (
             lifecycle is None
             or not lifecycle.evidence_conflict
-            or self._active_plan is None
-            or self.session.execution.state is not ExecutionState.STOPPING
+            or lifecycle.retired
+            or self.session.execution.state not in {
+                ExecutionState.STOPPING,
+                ExecutionState.FAILED,
+            }
         ):
             raise RuntimeError("no conflicting active stop evidence can be retried")
         lifecycle.prior_evidence_conflict = True
@@ -2193,6 +2342,9 @@ class ContinuousPlanningRuntime:
         lifecycle.world_reconciled = False
         lifecycle.recovery_required = True
         lifecycle.recovery_resume_authorized = False
+        lifecycle.recovery_grant_attempt_id = None
+        lifecycle.recovery_grant_evidence_version = None
+        lifecycle.evidence_version += 1
         lifecycle.evidence_conflict = False
         lifecycle.accepted_evidence = None
         lifecycle.conflicting_evidence = None
@@ -2203,7 +2355,7 @@ class ContinuousPlanningRuntime:
         self._stop_wait_started_at = None
         self._stop_wait_last_at = None
         self._stop_requested_at = None
-        self._stop_requested_plan_ids.discard(self._active_plan.plan_id)
+        self._stop_requested_plan_ids.discard(lifecycle.plan_id)
         self._watchdog_latches.discard("stop_ack")
         self._stop_unconfirmed = True
         self.state = RuntimeState.STOPPING
@@ -2249,13 +2401,8 @@ class ContinuousPlanningRuntime:
         lifecycle = self._stop_lifecycle
         if lifecycle is None:
             return None
-        resume_allowed = bool(
-            lifecycle.recovery_required
-            and lifecycle.stopped_confirmed
-            and lifecycle.world_reconciled
-            and not lifecycle.evidence_conflict
-            and self.execution_backend.health is ExecutionBackendHealth.READY
-        )
+        resume_allowed = self._resume_allowed(lifecycle)
+        recovery_grant_valid = self._recovery_grant_valid(lifecycle)
         return MappingProxyType({
             "attempt_id": lifecycle.attempt_id,
             "execution_id": lifecycle.execution_id,
@@ -2279,6 +2426,10 @@ class ContinuousPlanningRuntime:
             "prior_evidence_conflict": lifecycle.prior_evidence_conflict,
             "prior_accepted_evidence": self._boundary_snapshot(lifecycle.prior_accepted_evidence),
             "prior_conflicting_evidence": self._boundary_snapshot(lifecycle.prior_conflicting_evidence),
+            "evidence_version": lifecycle.evidence_version,
+            "evidence_phase": self._stop_evidence_phase(lifecycle),
+            "retired": lifecycle.retired,
+            "retired_by_start_attempt_id": lifecycle.retired_by_start_attempt_id,
             "confirmation_stream_id": lifecycle.confirmation_stream_id,
             "confirmation_producer_epoch": lifecycle.confirmation_producer_epoch,
             "waiting_for_compatible_observation": bool(
@@ -2290,6 +2441,9 @@ class ContinuousPlanningRuntime:
             "recovery_required": lifecycle.recovery_required,
             "resume_allowed": resume_allowed,
             "recovery_resume_authorized": lifecycle.recovery_resume_authorized,
+            "recovery_grant_attempt_id": lifecycle.recovery_grant_attempt_id,
+            "recovery_grant_evidence_version": lifecycle.recovery_grant_evidence_version,
+            "recovery_grant_valid": recovery_grant_valid,
         })
 
     def snapshot(self) -> dict[str, Any]:

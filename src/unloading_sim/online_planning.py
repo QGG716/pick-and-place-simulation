@@ -3428,6 +3428,57 @@ class ContinuousPlanningSession:
     ) -> PlanEnvelope:
         return self.acknowledge_stop(stopped_world, stopped_boundary, message)
 
+    def reconcile_recovery_stop_evidence(
+        self,
+        stopped_world: PlanningWorldSnapshot,
+        stopped_boundary: MotionBoundaryState,
+        message: str = "recovery stop evidence reconciled",
+        *,
+        execution_id: str,
+        plan_id: str,
+    ) -> None:
+        """Reconcile replacement stop evidence without inventing execution state.
+
+        This path is only valid after an earlier stop acknowledgement has left
+        the execution monitor FAILED and the session in RECOVERY.  It updates
+        the authoritative stopped boundary/world while preserving the original
+        execution outcome and recovery requirement.
+        """
+
+        if self.state is not SessionState.RECOVERY:
+            raise RuntimeError("replacement stop evidence requires session recovery")
+        if self.execution.state is not ExecutionState.FAILED:
+            raise RuntimeError("replacement stop evidence requires a failed execution monitor")
+        if self.terminal_execution_identity != (execution_id, plan_id):
+            raise ValueError("replacement stop evidence identity does not match the terminal execution")
+        if not isinstance(stopped_boundary, MotionBoundaryState):
+            raise TypeError("stopped_boundary must be a MotionBoundaryState")
+        if stopped_boundary.mode is not BoundaryMode.STOP_BOUNDARY:
+            raise ValueError("replacement stop evidence requires a STOP_BOUNDARY")
+        self._check_world_monotonic(stopped_world)
+        if self.current_world is not None and not stopped_world.scene_revision.same_scene(
+            self.current_world.scene_revision
+        ):
+            raise ValueError("replacement stop evidence must include the latest scene")
+        if len(stopped_boundary.q) != len(stopped_world.current_q) or not np.allclose(
+            stopped_boundary.q,
+            stopped_world.current_q,
+            atol=self._start_tolerance_rad,
+            rtol=0.0,
+        ):
+            raise ValueError("stopped world current_q must match replacement stopped boundary q")
+        self.current_world = stopped_world
+        self.current_motion_boundary = stopped_boundary
+        self.last_actual_execution_boundary = stopped_boundary
+        self._event(
+            "recovery_stop_evidence_reconciled",
+            ReplanReason.STOP_EVIDENCE_CONFLICT.value,
+            None,
+            plan_id=plan_id,
+            execution_id=execution_id,
+            message=message,
+        )
+
     def _reconcile_speculative(self) -> None:
         if not self.speculative_plans:
             return
