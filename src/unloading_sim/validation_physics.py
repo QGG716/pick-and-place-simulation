@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import copy
+from pathlib import Path
+import struct
 import xml.etree.ElementTree as ET
 
 import numpy as np
@@ -276,14 +278,52 @@ class InitialProximityTracker:
         }
 
 
+def _urdf_mesh_path(urdf_path: Path, filename: str) -> Path:
+    if filename.startswith("package://"):
+        package_and_path = filename[len("package://") :].split("/", 1)
+        if len(package_and_path) != 2:
+            raise ValueError(f"invalid package mesh URI: {filename}")
+        package, relative = package_and_path
+        package_root = next(
+            (parent for parent in (urdf_path.parent, *urdf_path.parents) if parent.name == package),
+            None,
+        )
+        if package_root is None:
+            raise ValueError(f"cannot resolve package mesh URI from {urdf_path}: {filename}")
+        return package_root / relative
+    candidate = Path(filename)
+    return candidate if candidate.is_absolute() else urdf_path.parent / candidate
+
+
+def _binary_stl_bounds(path: Path) -> tuple[np.ndarray, np.ndarray]:
+    """Read an exact axis-aligned bound without adding a mesh dependency."""
+
+    payload = path.read_bytes()
+    if len(payload) < 84:
+        raise ValueError(f"collision STL is truncated: {path}")
+    triangle_count = struct.unpack_from("<I", payload, 80)[0]
+    if len(payload) != 84 + 50 * triangle_count:
+        raise ValueError(f"collision STL is not a canonical binary STL: {path}")
+    triangle_dtype = np.dtype(
+        [("normal", "<f4", (3,)), ("vertices", "<f4", (3, 3)), ("attribute", "<u2")]
+    )
+    triangles = np.frombuffer(payload, dtype=triangle_dtype, count=triangle_count, offset=84)
+    vertices = np.asarray(triangles["vertices"], dtype=float).reshape(-1, 3)
+    if not len(vertices) or not np.all(np.isfinite(vertices)):
+        raise ValueError(f"collision STL has no finite vertices: {path}")
+    return np.min(vertices, axis=0), np.max(vertices, axis=0)
+
+
 def urdf_collision_shapes(robot) -> list[tuple[str, np.ndarray, np.ndarray]]:
-    """Read every URDF collision primitive; cylinders/spheres use enclosing OBBs.
+    """Read every URDF collision shape as a conservative broad-phase OBB.
 
     Previously only centreline capsules were read, missing box corners.
-    Enclosing OBBs may reject valid motion but cannot drop a primitive corner.
+    Mesh bounds are used only for deterministic broad-phase/snapshot checks;
+    execution planning still requires the exact mesh backend.
     """
     result = []
-    for link in ET.parse(robot.urdf_path).getroot().findall("link"):
+    urdf_path = Path(robot.urdf_path).resolve()
+    for link in ET.parse(urdf_path).getroot().findall("link"):
         for element in link.findall("collision"):
             origin = element.find("origin")
             xyz = np.fromstring(origin.get("xyz", "0 0 0") if origin is not None else "0 0 0", sep=" ")
@@ -296,6 +336,20 @@ def urdf_collision_shapes(robot) -> list[tuple[str, np.ndarray, np.ndarray]]:
                 size = np.array([2*float(cylinder.get("radius"))]*2 + [float(cylinder.get("length"))])
             elif geometry.find("sphere") is not None:
                 size = np.full(3, 2*float(geometry.find("sphere").get("radius")))
+            elif geometry.find("mesh") is not None:
+                mesh = geometry.find("mesh")
+                mesh_path = _urdf_mesh_path(urdf_path, str(mesh.get("filename")))
+                if mesh_path.suffix.lower() != ".stl" or not mesh_path.is_file():
+                    raise ValueError(f"unsupported or missing URDF collision mesh: {mesh_path}")
+                lower, upper = _binary_stl_bounds(mesh_path)
+                scale = np.fromstring(mesh.get("scale", "1 1 1"), sep=" ")
+                if scale.shape != (3,) or np.any(scale <= 0.0):
+                    raise ValueError(f"invalid collision mesh scale: {mesh_path}")
+                lower, upper = lower * scale, upper * scale
+                center = 0.5 * (lower + upper)
+                shape_offset = make_transform(translation=center)
+                result.append((link.get("name"), make_transform(rotation_matrix_from_rpy(*rpy), xyz) @ shape_offset, 0.5 * (upper-lower)))
+                continue
             else:
                 raise ValueError("unhandled URDF collision geometry; cannot silently omit")
             result.append((link.get("name"), make_transform(rotation_matrix_from_rpy(*rpy), xyz), size/2))

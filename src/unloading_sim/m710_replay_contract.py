@@ -121,6 +121,8 @@ def _validate_input_identity(identity: Mapping[str, Any]) -> None:
         raise M710ReplayContractError(
             "input_identity.robot_missing_mesh_outputs must be a list of paths"
         )
+    if "robot_srdf_sha256" in identity:
+        _sha256(identity.get("robot_srdf_sha256"), "input_identity.robot_srdf_sha256")
 
 
 def validate_trajectory_segment(segment: Mapping[str, Any]) -> dict[str, Any]:
@@ -210,6 +212,7 @@ def build_replay_input_binding(
                 "robot_manifest_sha256": identity.get("robot_manifest_sha256"),
                 "tool_manifest_sha256": identity.get("tool_manifest_sha256"),
                 "robot_missing_mesh_outputs": identity.get("robot_missing_mesh_outputs"),
+                "robot_srdf_sha256": identity.get("robot_srdf_sha256"),
             }
         ),
         "plan_common_sha256": canonical_sha256(plan),
@@ -258,11 +261,9 @@ def verify_m710_preflight_contract(
     overall_qualified = item.get("execution_qualified")
     if not isinstance(ready, bool) or not isinstance(machine_qualified, bool):
         raise M710ReplayContractError("preflight readiness fields must be booleans")
-    if not isinstance(overall_qualified, bool) or overall_qualified != (
-        ready and machine_qualified
-    ):
+    if not isinstance(overall_qualified, bool):
         raise M710ReplayContractError(
-            "execution_qualified must equal simulation readiness AND machine qualification"
+            "legacy execution_qualified must be a boolean"
         )
     blockers = _string_list(item.get("simulation_readiness_blockers"), "readiness blockers")
     alias = _string_list(item.get("blockers"), "blocker compatibility alias")
@@ -270,6 +271,15 @@ def verify_m710_preflight_contract(
         raise M710ReplayContractError("preflight blocker fields disagree")
     if ready == bool(blockers):
         raise M710ReplayContractError("preflight readiness and blockers are inconsistent")
+    simulation_qualified = item.get(
+        "simulation_execution_qualified", ready and not blockers
+    )
+    if not isinstance(simulation_qualified, bool) or simulation_qualified != (
+        ready and not blockers
+    ):
+        raise M710ReplayContractError(
+            "simulation execution qualification must equal readiness with no blockers"
+        )
     if (not ready) != (item.get("status") == "BLOCKED"):
         raise M710ReplayContractError("preflight status and readiness are inconsistent")
     machine_warnings = _string_list(
@@ -313,6 +323,69 @@ def verify_m710_preflight_contract(
         raise M710ReplayContractError("preflight scene primitives must be a list")
     if plan_common.get("scene_primitives") != primitives:
         raise M710ReplayContractError("replay plan and preflight scene disagree")
+    official_fields_present = any(
+        name in item
+        for name in (
+            "official_model_manifest",
+            "official_model_manifest_sha256",
+            "official_model_audit",
+        )
+    )
+    if plan_common.get("official_model_required") is True and not official_fields_present:
+        raise M710ReplayContractError(
+            "official-model replay requires manifest, hash, and audit evidence"
+        )
+    if official_fields_present:
+        official_manifest = _mapping(
+            item.get("official_model_manifest"), "preflight official_model_manifest"
+        )
+        official_manifest_sha256 = _sha256(
+            item.get("official_model_manifest_sha256"),
+            "preflight official_model_manifest_sha256",
+        )
+        official_audit = _mapping(
+            item.get("official_model_audit"), "preflight official_model_audit"
+        )
+        if official_manifest.get("schema_version") != (
+            "fanuc_official_description_provenance_v1"
+        ):
+            raise M710ReplayContractError("preflight official model schema is unsupported")
+        if official_manifest_sha256 != identity.get("robot_manifest_sha256") or (
+            official_audit.get("manifest_sha256") != official_manifest_sha256
+        ):
+            raise M710ReplayContractError("official model manifest identity fields disagree")
+        for name in (
+            "source_integrity",
+            "static_urdf_integrity",
+            "model_semantics",
+            "execution_qualified",
+        ):
+            if official_audit.get(name) is not True:
+                raise M710ReplayContractError(
+                    f"official model audit did not pass {name}"
+                )
+        if (
+            plan_common.get("official_model_manifest") != official_manifest
+            or plan_common.get("official_model_manifest_sha256")
+            != official_manifest_sha256
+            or plan_common.get("official_model_audit") != official_audit
+        ):
+            raise M710ReplayContractError(
+                "replay plan and preflight official model evidence disagree"
+            )
+        replay_robot = _mapping(plan_common.get("robot"), "replay plan robot")
+        if replay_robot.get("official_model_manifest") != official_manifest:
+            raise M710ReplayContractError(
+                "replay robot and preflight official model manifest disagree"
+            )
+        if (
+            replay_robot.get("srdf_sha256") != identity.get("robot_srdf_sha256")
+            or not isinstance(replay_robot.get("srdf_path"), str)
+            or not replay_robot.get("srdf_path")
+        ):
+            raise M710ReplayContractError(
+                "replay robot SRDF identity is incomplete or inconsistent"
+            )
     cartons = [
         primitive for primitive in primitives
         if isinstance(primitive, Mapping) and primitive.get("category") == "carton"
@@ -333,6 +406,8 @@ def verify_m710_preflight_contract(
         "machine_qualified": machine_qualified,
         "machine_qualification_warnings": machine_warnings,
     }
+    if "simulation_execution_qualified" in item:
+        expected_plan_fields["simulation_execution_qualified"] = simulation_qualified
     for name, expected in expected_plan_fields.items():
         if plan_common.get(name) != expected:
             raise M710ReplayContractError(f"replay plan {name} disagrees with preflight")
@@ -378,6 +453,7 @@ def verify_m710_preflight_contract(
         "preflight_fingerprint": recorded,
         "execution_asset_fingerprint_sha256": execution_fingerprint,
         "simulation_execution_ready": ready,
+        "simulation_execution_qualified": simulation_qualified,
         "input_binding_sha256": binding["binding_sha256"],
     }
 

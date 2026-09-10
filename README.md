@@ -5,11 +5,24 @@
 > 冻结场景快照。原 V3 的 104-task/129-carton 结果继续作为历史算法回归，不是新布局
 > 的工程验收分母，也不会通过当前配置重新解释。
 >
-> 布局专项结果见[验证报告](docs/validation/m710id70_layout_v1.md)和
-> [不可变证据清单](docs/validation/evidence/m710id70_layout_v1/evidence_manifest.json)。
-> Isaac Sim 6.0.1.0 的 40 箱静态初始化/单箱聚焦实跑为 **PASS**；
-> [视频、关键帧和后端读回审计](docs/validation/evidence/m710id70_layout_v1/isaac_run/README.md)
-> 已独立归档，物理抓取与完整单箱周期仍明确为 `NOT_EVALUATED`。
+> 当前官方模型、72 杯独立控制、完整轨迹连接器及 Isaac 动力学入口见
+> [本轮验证报告](docs/validation/m710id70_official_model_independent_cups_round.md)。官方
+> FANUC 网格和动力学输入及三张独立 72-bit 吸盘 mask 已接入。规范化的 Isaac
+> [初始化录像](docs/validation/evidence/m710id70_official_dynamics_20260910/isaac_initialization/initialization.mp4)
+> 已与渲染状态同步，并在 40 箱、重力和有限驱动下保持初始构型后落稳；但它明确是
+> `INITIALIZATION_ONLY_NOT_PICK_SUCCESS`，没有附着或取放。
+>
+> 当前完整任务仍为 **0/5**，`tasks_searched=0`，没有成功目标、抓取面、杯 ID/mask
+> 或可执行回放。执行保持失败关闭，且有三个分别记录的阻塞项：初始
+> `J5_link`—`tool_rigid_13` 距离约 19.1266 mm，未达到 10 mm/体所要求的 20 mm
+> 成对净空；58 个 CAD 派生刚体 OBB 尚无逐实体语义和向外覆盖/无漏检证明；宽泛的
+> J6—工具安装碰撞例外也没有取得可接受的窄范围装配接触依据。不得通过降低 margin、
+> 扩大 SRDF 例外或把初始化录像解释成取放来绕过这些门。逐项证据见
+> [证据目录](docs/validation/evidence/m710id70_official_dynamics_20260910/README.md)。
+>
+> 先前布局专项[验证报告](docs/validation/m710id70_layout_v1.md)及其
+> [静态初始化证据](docs/validation/evidence/m710id70_layout_v1/isaac_run/README.md)
+> 只保留为代理机器人时代的历史结果，不是当前官方模型的动力学或取放结论。
 > 原可行性恢复工作及其严格碰撞、接触和 IK 修复仍保留在
 > [V3 恢复优先级](docs/development_priorities_m710id70_v3_recovery.md)中，但搜索优化暂缓。
 

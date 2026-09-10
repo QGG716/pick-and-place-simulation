@@ -191,6 +191,21 @@ def _rpy_degrees_from_rotation_matrix(rotation):
     return np.degrees(np.asarray([roll, pitch, yaw], dtype=float))
 
 
+def _rotation_matrix_from_rpy_xyz(rpy):
+    roll, pitch, yaw = (float(value) for value in rpy)
+    cr, sr = math.cos(roll), math.sin(roll)
+    cp, sp = math.cos(pitch), math.sin(pitch)
+    cy, sy = math.cos(yaw), math.sin(yaw)
+    return np.asarray(
+        [
+            [cy * cp, cy * sp * sr - sy * cr, cy * sp * cr + sy * sr],
+            [sy * cp, sy * sp * sr + cy * cr, sy * sp * cr - cy * sr],
+            [-sp, cp * sr, cp * cr],
+        ],
+        dtype=float,
+    )
+
+
 def _safe_prim_name(name: str) -> str:
     sanitized = re.sub(r"[^A-Za-z0-9_]", "_", name)
     return sanitized if sanitized and not sanitized[0].isdigit() else f"item_{sanitized}"
@@ -301,7 +316,15 @@ if metadata.get("robot_model") == "fanuc_m710id_70":
         r"[0-9a-f]{64}", execution_fingerprint
     ) is None:
         raise ValueError("M-710 dynamic replay requires a valid execution asset fingerprint")
-    if metadata.get("simulation_execution_ready") is not True or execution_blockers:
+    simulation_execution_qualified = metadata.get(
+        "simulation_execution_qualified",
+        metadata.get("simulation_execution_ready") is True and not execution_blockers,
+    )
+    if (
+        metadata.get("simulation_execution_ready") is not True
+        or execution_blockers
+        or simulation_execution_qualified is not True
+    ):
         raise ValueError(
             "M-710 dynamic replay is fail-closed until simulation readiness passes: "
             + ", ".join(execution_blockers)
@@ -315,13 +338,15 @@ if metadata.get("robot_model") == "fanuc_m710id_70":
         raise ValueError(
             "M-710 machine qualification warnings must be a list of non-empty strings"
         )
-    expected_overall_qualification = bool(
-        metadata["simulation_execution_ready"] and metadata["machine_qualified"]
-    )
-    if metadata.get("execution_qualified") is not expected_overall_qualification:
+    if not isinstance(metadata.get("execution_qualified"), bool):
+        raise ValueError("M-710 legacy execution_qualified must be a boolean")
+    if args.disable_gripper_collision:
         raise ValueError(
-            "M-710 execution_qualified must combine simulation readiness and machine qualification"
+            "M-710 qualified replay forbids disabling rigid gripper collision"
         )
+    # A sourced rigid-body simulation is allowed to run while real-machine
+    # controller/safety qualification remains false.  That evidence is kept in
+    # the result, but it is no longer a hidden execution gate.
 
 physics_contract = metadata.get("physics", {})
 if metadata.get("robot_model") == "fanuc_m710id_70":
@@ -453,9 +478,17 @@ try:
         evaluate_replay_qualification,
     )
     from unloading_sim.m710_replay_physics import (
+        audit_payload_support_contact,
         audit_surface_attachment_contact,
         select_active_conveyor_surfaces,
     )
+    from unloading_sim.independent_cups import (
+        IDEAL_INDEPENDENT_CUPS_MODE,
+        audit_actual_independent_cup_contacts,
+        build_m710_independent_cup_array,
+        evaluate_independent_cup_geometry,
+    )
+    from unloading_sim.geometry import OBB
     import omni.replicator.core as rep
     print("FANUC_REPLAY_STAGE=replicator_imported", flush=True)
     import omni.usd
@@ -479,6 +512,7 @@ try:
     from usd.schema.isaac import robot_schema
     print("FANUC_REPLAY_STAGE=surface_gripper_imported", flush=True)
     from omni.physx import get_physx_simulation_interface
+    from omni.physx.bindings._physx import ContactEventType
     from pxr import (
         Gf,
         PhysicsSchemaTools,
@@ -665,6 +699,57 @@ try:
     urdf_path = (args.project_root.resolve() / metadata["urdf_path"]).resolve()
     if not urdf_path.is_file():
         raise FileNotFoundError(f"FANUC URDF not found: {urdf_path}")
+    urdf_package_search_root = None
+    official_manifest = metadata.get("official_model_manifest")
+    if isinstance(official_manifest, dict):
+        project_root_resolved = args.project_root.resolve()
+        source_records = official_manifest.get("source_files", [])
+        for source_record in source_records:
+            source_path = (project_root_resolved / source_record["path"]).resolve()
+            try:
+                source_path.relative_to(project_root_resolved)
+            except ValueError as exc:
+                raise ValueError("official source path escapes the project root") from exc
+            if (
+                not source_path.is_file()
+                or source_path.stat().st_size != int(source_record["bytes"])
+                or _sha256_path(source_path) != source_record["sha256"]
+            ):
+                raise ValueError(f"official source asset mismatch: {source_record['path']}")
+        expanded_urdf_record = (official_manifest.get("integration") or {}).get(
+            "expanded_urdf"
+        )
+        if (
+            not isinstance(expanded_urdf_record, dict)
+            or urdf_path.stat().st_size != int(expanded_urdf_record.get("bytes", -1))
+            or _sha256_path(urdf_path) != expanded_urdf_record.get("sha256")
+        ):
+            raise ValueError("official expanded URDF bytes differ from the pinned manifest")
+        package_name = str(
+            (official_manifest.get("upstream") or {}).get("package_name", "")
+        ).strip()
+        package_manifest_records = [
+            item
+            for item in source_records
+            if isinstance(item, dict) and item.get("role") == "package_manifest"
+        ]
+        if len(package_manifest_records) != 1 or not package_name:
+            raise ValueError("official URDF requires one sourced ROS package manifest")
+        package_manifest_path = (
+            args.project_root.resolve() / package_manifest_records[0]["path"]
+        ).resolve()
+        if (
+            not package_manifest_path.is_file()
+            or package_manifest_path.parent.name != package_name
+            or urdf_path != package_manifest_path.parent / "urdf" / urdf_path.name
+        ):
+            raise ValueError("official URDF is outside its pinned ROS package")
+        urdf_package_search_root = package_manifest_path.parent.parent
+        existing_package_path = os.environ.get("ROS_PACKAGE_PATH", "")
+        search_entries = [str(urdf_package_search_root)]
+        if existing_package_path:
+            search_entries.append(existing_package_path)
+        os.environ["ROS_PACKAGE_PATH"] = os.pathsep.join(search_entries)
     print("FANUC_REPLAY_STAGE=inputs_validated", flush=True)
 
     import_manifest_path = args.usd_directory / "import_manifest.json"
@@ -678,6 +763,19 @@ try:
         "merge_mesh": False,
         "execution_asset_fingerprint_sha256": metadata.get(
             "execution_asset_fingerprint_sha256"
+        ),
+        # The expanded URDF references external DAE/STL files.  Binding only
+        # the XML hash would permit a stale cached USD after a mesh changed.
+        "official_model_manifest_sha256": metadata.get(
+            "official_model_manifest_sha256"
+        ),
+        "official_source_files": (
+            metadata.get("official_model_manifest") or {}
+        ).get("source_files", []),
+        "ros_package_search_root": (
+            None
+            if urdf_package_search_root is None
+            else str(urdf_package_search_root)
         ),
     }
     import_started_at = time.perf_counter()
@@ -755,24 +853,23 @@ try:
     if physics_variant.IsValid():
         physics_variant.SetVariantSelection("physx")
 
-    # The source M-710 URDF intentionally contains no estimated inertials.
-    # Apply the separately versioned engineering model in the adapter and
-    # fail if an imported link cannot be bound, so estimates never masquerade
-    # as manufacturer URDF data or silently fall back to importer density.
+    # Official bundles carry the exact per-link inertials from the fixed FANUC
+    # description commit.  Legacy bundles may still carry the separately
+    # versioned engineering model; both are explicit and never fall back to an
+    # importer density estimate.
     link_dynamics = list(metadata.get("robot_link_dynamics", []))
     tool_mass_accounting = metadata.get("robot_tool_mass_accounting")
     if metadata.get("robot_model") == "fanuc_m710id_70":
-        if not isinstance(tool_mass_accounting, dict) or tool_mass_accounting.get(
-            "policy"
-        ) != "FIXED_TOOL_COMBINED_INTO_J6_RIGID_BODY_EXACTLY_ONCE":
+        if not isinstance(tool_mass_accounting, dict) or not str(
+            tool_mass_accounting.get("policy", "")
+        ).startswith("FIXED_TOOL_COMBINED_INTO_"):
             raise ValueError("M-710 replay requires explicit exactly-once tool mass accounting")
         applied_mass = float(sum(float(item["mass_kg"]) for item in link_dynamics))
         expected_mass = float(tool_mass_accounting["source_robot_mass_kg"]) + float(
             tool_mass_accounting["tool_mass_kg"]
         )
         if (
-            tool_mass_accounting.get("grasp_body_link") != "J6_link"
-            or tool_mass_accounting.get("declared_attachment_link") != "J6_link"
+            not str(tool_mass_accounting.get("grasp_body_link", ""))
             or tool_mass_accounting.get("declared_policy")
             != tool_mass_accounting.get("applied_policy")
             or tool_mass_accounting.get("independent_tool_rigid_body_created") is not False
@@ -786,11 +883,21 @@ try:
         ):
             raise ValueError("M-710 exactly-once tool mass accounting is inconsistent")
     if link_dynamics:
+        imported_link_prim_lists = {}
+        for prim in stage.Traverse():
+            if str(prim.GetPath()).startswith(root_prim_path) and prim.HasAPI(
+                UsdPhysics.RigidBodyAPI
+            ):
+                imported_link_prim_lists.setdefault(prim.GetName(), []).append(prim)
+        ambiguous_dynamic_links = sorted(
+            name for name, prims in imported_link_prim_lists.items() if len(prims) != 1
+        )
+        if ambiguous_dynamic_links:
+            raise RuntimeError(
+                f"imported robot has ambiguous physical link names: {ambiguous_dynamic_links}"
+            )
         imported_link_prims = {
-            prim.GetName(): prim
-            for prim in stage.Traverse()
-            if str(prim.GetPath()).startswith(root_prim_path)
-            and prim.HasAPI(UsdPhysics.RigidBodyAPI)
+            name: prims[0] for name, prims in imported_link_prim_lists.items()
         }
         missing_dynamic_links = sorted(
             str(item["link"])
@@ -806,6 +913,10 @@ try:
             mass = float(item["mass_kg"])
             center = np.asarray(item["com_xyz_m"], dtype=float)
             inertia = np.asarray(item["inertia_at_com_kg_m2"], dtype=float)
+            inertial_rotation = _rotation_matrix_from_rpy_xyz(
+                item.get("inertial_origin_rpy_rad", [0.0, 0.0, 0.0])
+            )
+            inertia = inertial_rotation @ inertia @ inertial_rotation.T
             moments, axes = np.linalg.eigh(inertia)
             if np.linalg.det(axes) < 0.0:
                 axes[:, 0] *= -1.0
@@ -821,10 +932,38 @@ try:
                 )
             )
 
-    srdf_path = urdf_path.with_suffix(".srdf")
+    declared_srdf_path = metadata.get("robot_srdf_path")
+    if declared_srdf_path:
+        srdf_path = (args.project_root.resolve() / str(declared_srdf_path)).resolve()
+        try:
+            srdf_path.relative_to(args.project_root.resolve())
+        except ValueError as exc:
+            raise ValueError("robot SRDF path escapes the project root") from exc
+    else:
+        # Legacy M-20 bundles placed the SRDF beside the URDF.  Official M-710
+        # bundles must carry the explicit repository path and content hash.
+        srdf_path = urdf_path.with_suffix(".srdf")
+    declared_srdf_sha256 = metadata.get("robot_srdf_sha256")
+    if official_manifest is not None:
+        if (
+            not srdf_path.is_file()
+            or not isinstance(declared_srdf_sha256, str)
+            or _sha256_path(srdf_path) != declared_srdf_sha256
+        ):
+            raise ValueError("official-model SRDF bytes differ from the replay contract")
     allowed_self_collision_pairs: list[dict[str, str]] = []
     srdf_filter_complete = False
-    if srdf_path.is_file():
+    if srdf_path.is_file() and metadata.get("robot_model") == "fanuc_m710id_70":
+        from unloading_sim.isaac_collision_policy import apply_robot_only_srdf_filters
+
+        # J6 also owns the 58 mounted tool collision shapes. Body-level J5/J6
+        # filtering would silently exclude those tool/J5 pairs. Capture and
+        # filter only the official robot meshes before adding the tool.
+        allowed_self_collision_pairs = apply_robot_only_srdf_filters(
+            stage, root_prim_path, srdf_path
+        )
+        srdf_filter_complete = True
+    elif srdf_path.is_file():
         link_paths = {
             prim.GetName(): str(prim.GetPath())
             for prim in stage.Traverse()
@@ -1127,6 +1266,24 @@ try:
     if not grasp_suffix:
         raise ValueError("replay metadata requires an Isaac grasp-body path suffix")
     grasp_body_path = f"{root_prim_path}/{grasp_suffix}"
+    if not stage.GetPrimAtPath(grasp_body_path).IsValid():
+        grasp_link_name = str(
+            (metadata.get("robot_tool_mass_accounting") or {}).get(
+                "grasp_body_link", grasp_suffix.rsplit("/", 1)[-1]
+            )
+        )
+        grasp_candidates = [
+            str(prim.GetPath())
+            for prim in stage.Traverse()
+            if str(prim.GetPath()).startswith(root_prim_path)
+            and prim.GetName() == grasp_link_name
+            and prim.HasAPI(UsdPhysics.RigidBodyAPI)
+        ]
+        if len(grasp_candidates) != 1:
+            raise RuntimeError(
+                f"cannot resolve unique imported grasp body {grasp_link_name!r}: {grasp_candidates}"
+            )
+        grasp_body_path = grasp_candidates[0]
     gripper_cfg = metadata.get("gripper", {})
     footprint_size = np.asarray(gripper_cfg.get("footprint_size_m", [0.30, 0.40]), dtype=float)
     flange_offset = np.asarray(
@@ -1284,6 +1441,11 @@ try:
                 )
             ),
         )
+        commanded_visual_mask = list(gripper_cfg.get("commanded_active_mask", []))
+        active_rubber_material = _preview_material(
+            "/Validation/Materials/FG42RubberCommanded",
+            {"fallback_rgb": [0.05, 0.65, 0.18], "roughness": 0.62},
+        )
         cup_radius = float(gripper_cfg.get("cup_radius_m", 0.0215))
         visual_cup_height = min(
             0.018, float(gripper_cfg.get("physical_cup_compression_m", 0.015)) + 0.003
@@ -1303,7 +1465,13 @@ try:
                     float(cup_z),
                 )
             )
-            UsdShade.MaterialBindingAPI.Apply(cup.GetPrim()).Bind(rubber_material)
+            commanded_visual = (
+                len(commanded_visual_mask) == physical_cup_count
+                and commanded_visual_mask[cup_index] is True
+            )
+            UsdShade.MaterialBindingAPI.Apply(cup.GetPrim()).Bind(
+                active_rubber_material if commanded_visual else rubber_material
+            )
 
     surface_gripper_paths: list[str] = []
     surface_gripper_interface = None
@@ -1316,7 +1484,52 @@ try:
     point_shear_limits = None
     surface_shear_solver_fallback_used = False
     fixed_joint_torque_solver_fallback_used = False
-    active_cup_indices = list(gripper_cfg.get("active_sealed_cup_indices", []))
+    ideal_independent_mode = (
+        gripper_cfg.get("suction_mode") == IDEAL_INDEPENDENT_CUPS_MODE
+    )
+    cup_bit_order = list(gripper_cfg.get("mask_bit_order_cup_ids", []))
+    eligible_cup_mask = list(gripper_cfg.get("geometrically_eligible_mask", []))
+    commanded_cup_mask = list(gripper_cfg.get("commanded_active_mask", []))
+    planned_fk_contact_mask = list(gripper_cfg.get("planned_fk_contact_mask", []))
+    actual_contact_mask = [False] * physical_cup_count
+    independent_cup_array = None
+    if ideal_independent_mode:
+        for name, mask in (
+            ("geometrically_eligible_mask", eligible_cup_mask),
+            ("commanded_active_mask", commanded_cup_mask),
+            ("planned_fk_contact_mask", planned_fk_contact_mask),
+        ):
+            if len(mask) != physical_cup_count or any(type(value) is not bool for value in mask):
+                raise ValueError(f"ideal independent-cup {name} must contain 72 booleans")
+        if (
+            len(cup_bit_order) != physical_cup_count
+            or len(set(cup_bit_order)) != physical_cup_count
+            or not any(commanded_cup_mask)
+            or any(active and not eligible for active, eligible in zip(
+                commanded_cup_mask, eligible_cup_mask, strict=True
+            ))
+        ):
+            raise ValueError("ideal independent-cup masks and stable cup IDs are inconsistent")
+        active_cup_indices = [
+            index for index, active in enumerate(commanded_cup_mask) if active
+        ]
+        independent_cup_array = build_m710_independent_cup_array(
+            rows=int(gripper_cfg.get("cup_rows", 0)),
+            columns=int(gripper_cfg.get("cup_columns", 0)),
+            pitch_m=gripper_cfg.get("cup_pitch_m", []),
+            cup_radius_m=float(gripper_cfg.get("cup_radius_m", 0.0)),
+            zone_count=int(gripper_cfg.get("zone_count", 0)),
+        )
+        if tuple(cup_bit_order) != independent_cup_array.cup_ids:
+            raise ValueError(
+                "ideal independent-cup bit order differs from the canonical stable IDs"
+            )
+        if planned_fk_contact_mask != commanded_cup_mask:
+            raise ValueError(
+                "planned actual-FK contact must include every commanded cup"
+            )
+    else:
+        active_cup_indices = list(gripper_cfg.get("active_sealed_cup_indices", []))
     if (
         physical_cup_centers.shape != (physical_cup_count, 2)
         or not active_cup_indices
@@ -1330,11 +1543,18 @@ try:
     )
     configured_holding_torque = gripper_cfg.get("holding_torque_nm")
     gripper_wrench_envelope_complete = bool(
-        args.gripper_model == "fixed_joint_diagnostic"
-        and configured_shear_force is not None
-        and configured_holding_torque is not None
+        ideal_independent_mode
+        or (
+            args.gripper_model == "fixed_joint_diagnostic"
+            and configured_shear_force is not None
+            and configured_holding_torque is not None
+        )
     )
-    if target_carton_path is not None and args.gripper_model == "surface_gripper":
+    if (
+        target_carton_path is not None
+        and args.gripper_model == "surface_gripper"
+        and not ideal_independent_mode
+    ):
         physical_active_cup_count = int(gripper_cfg.get("active_sealed_cup_count", 0))
         point_count = int(
             args.gripper_attachment_point_count
@@ -1501,7 +1721,8 @@ try:
     grasp_joint = None
     grasp_joint_path = "/Validation/GraspJoint"
 
-    contact_pairs: dict[tuple[str, str], dict[str, float | int]] = {}
+    contact_pairs: dict[tuple[str, str], dict[str, float | int | bool | str]] = {}
+    active_contact_headers: set[tuple[str, str, str, str]] = set()
     contact_clock_s = [0.0]
     for prim in stage.Traverse():
         prim_path = str(prim.GetPath())
@@ -1512,7 +1733,7 @@ try:
             contact_api = PhysxSchema.PhysxContactReportAPI.Apply(prim)
             contact_api.CreateThresholdAttr(0.0)
 
-    def _on_contact_report(headers, _contact_data):
+    def _on_contact_report(headers, contact_data):
         for header in headers:
             actor0 = str(PhysicsSchemaTools.intToSdfPath(header.actor0))
             actor1 = str(PhysicsSchemaTools.intToSdfPath(header.actor1))
@@ -1522,21 +1743,61 @@ try:
             if not robot_involved and not payload_involved:
                 continue
             pair = tuple(sorted((actor0, actor1)))
+            collider0 = str(PhysicsSchemaTools.intToSdfPath(header.collider0))
+            collider1 = str(PhysicsSchemaTools.intToSdfPath(header.collider1))
+            contact_key = (*pair, *tuple(sorted((collider0, collider1))))
+            event_type = header.type
+            event_type_value = int(event_type)
+            event_name = str(getattr(event_type, "name", event_type))
             record = contact_pairs.setdefault(
                 pair,
                 {
                     "event_count": 0,
+                    "found_event_count": 0,
+                    "persist_event_count": 0,
+                    "lost_event_count": 0,
                     "peak_impulse_ns": 0.0,
+                    "impulse_semantics": "peak_norm_of_per_event_vector_sum_over_contact_points",
                     "first_contact_time_s": contact_clock_s[0],
                     "last_contact_time_s": contact_clock_s[0],
+                    "last_event_type": event_name,
+                    "active": False,
                 },
             )
             record["event_count"] = int(record["event_count"]) + 1
             record["last_contact_time_s"] = contact_clock_s[0]
-            try:
-                impulse = float(np.linalg.norm(np.asarray(header.total_impulse, dtype=float)))
-            except (AttributeError, TypeError, ValueError):
-                impulse = 0.0
+            record["last_event_type"] = event_name
+            if event_type_value == int(ContactEventType.CONTACT_LOST):
+                active_contact_headers.discard(contact_key)
+                record["lost_event_count"] = int(record["lost_event_count"]) + 1
+            else:
+                # subscribe_contact_report_events emits only FOUND, PERSIST and
+                # LOST headers.  FOUND/PERSIST both prove a currently active
+                # collider pair; LOST explicitly removes that exact pair.
+                active_contact_headers.add(contact_key)
+                if event_type_value == int(ContactEventType.CONTACT_FOUND):
+                    record["found_event_count"] = int(record["found_event_count"]) + 1
+                else:
+                    record["persist_event_count"] = int(record["persist_event_count"]) + 1
+            active_count = sum(key[:2] == pair for key in active_contact_headers)
+            record["active"] = active_count > 0
+            record["active_collider_pair_count"] = active_count
+            event_impulses = []
+            for contact_index in range(
+                int(header.contact_data_offset),
+                int(header.contact_data_offset) + int(header.num_contact_data),
+            ):
+                try:
+                    event_impulses.append(
+                        np.asarray(contact_data[contact_index].impulse, dtype=float)
+                    )
+                except (AttributeError, IndexError, TypeError, ValueError):
+                    continue
+            impulse = float(
+                np.linalg.norm(np.sum(event_impulses, axis=0))
+                if event_impulses
+                else 0.0
+            )
             record["peak_impulse_ns"] = max(float(record["peak_impulse_ns"]), impulse)
 
     contact_subscription = get_physx_simulation_interface().subscribe_contact_report_events(
@@ -1860,6 +2121,40 @@ try:
     else:
         for _ in range(10):
             world.step(render=True)
+
+    def _capture_carton_states() -> list[dict[str, object]]:
+        states: list[dict[str, object]] = []
+        for body, record, prim_path in zip(
+            dynamic_scene_bodies,
+            dynamic_scene_records,
+            dynamic_scene_prim_paths,
+            strict=True,
+        ):
+            body_positions, body_orientations = body.get_world_poses()
+            linear_velocities, angular_velocities = body.get_velocities()
+            states.append(
+                {
+                    "name": str(record["name"]),
+                    "prim_path": str(prim_path),
+                    "center_m": np.asarray(
+                        body_positions.numpy(), dtype=float
+                    )[0].tolist(),
+                    "quaternion_wxyz": np.asarray(
+                        body_orientations.numpy(), dtype=float
+                    )[0].tolist(),
+                    "linear_velocity_m_s": np.asarray(
+                        linear_velocities.numpy(), dtype=float
+                    )[0].tolist(),
+                    "angular_velocity_rad_s": np.asarray(
+                        angular_velocities.numpy(), dtype=float
+                    )[0].tolist(),
+                    "size_m": list(record["size_m"]),
+                    "mass_kg": float(record["mass_kg"]),
+                }
+            )
+        return states
+
+    settled_carton_states = _capture_carton_states()
     initial_target_center = None
     if target_body is not None:
         target_positions, _ = target_body.get_world_poses()
@@ -1871,11 +2166,19 @@ try:
         replay_duration += float(args.post_release_seconds)
     if args.max_sim_seconds is not None:
         replay_duration = min(replay_duration, float(args.max_sim_seconds))
-    physics_steps = int(math.ceil(replay_duration / physics_dt)) + 1
+    actual_state_gates = dict(metadata.get("actual_state_gates", {}))
+    maximum_contact_wait_s = float(actual_state_gates.get("maximum_contact_wait_s", 0.5))
+    maximum_support_wait_s = float(actual_state_gates.get("maximum_support_wait_s", 0.75))
+    physical_runtime_limit = replay_duration + maximum_contact_wait_s + maximum_support_wait_s
+    physics_steps = int(math.ceil(physical_runtime_limit / physics_dt)) + 1
     measured_rows: list[np.ndarray] = []
     commanded_rows: list[np.ndarray] = []
     projected_force_rows: list[np.ndarray] = []
     gravity_force_rows: list[np.ndarray] = []
+    measured_velocity_rows: list[np.ndarray] = []
+    drive_effort_rows: list[np.ndarray] = []
+    model_inverse_dynamics_rows: list[np.ndarray] = []
+    external_joint_load_rows: list[np.ndarray] = []
     replay_frames: list[Image.Image] = []
     replay_video_path = args.output / "replay.mp4"
     replay_video_writer = None
@@ -1908,10 +2211,16 @@ try:
     grasp_closed_time = None
     surface_grip_lost_time = None
     minimum_active_gripper_count = None
+    ideal_actual_contact_count_at_attach = None
     release_commanded = False
     release_executed = False
     release_command_succeeded = False
     release_open_confirmed = False
+    release_executed_time_s = None
+    ideal_release_request_step = None
+    ideal_release_request_time_s = None
+    ideal_release_relative_position_at_request = None
+    ideal_release_relative_quaternion_at_request = None
     release_velocity_sample_pending = False
     release_linear_velocity_before_m_s = None
     release_angular_velocity_before_rad_s = None
@@ -1924,6 +2233,18 @@ try:
     grasp_frame_rotation_error_rad = None
     attachment_raycast_distances_m: list[float | None] = []
     physical_contact_audit = None
+    independent_contact_audit = None
+    support_contact_audit = None
+    support_contact_report_observed = False
+    contact_wait_started_s = None
+    support_wait_started_s = None
+    trajectory_time = 0.0
+    event_log: list[dict[str, object]] = []
+    previous_measured_velocity = None
+    inverse_dynamics_available_all_steps = True
+    inverse_dynamics_available_after_first_difference = True
+    drive_effort_source = None
+    drive_effort_output_qualified = False
     grasp_local_position = None
     grasp_local_quaternion = None
     peak_payload_attachment_position_error_m = 0.0
@@ -1932,6 +2253,16 @@ try:
     release_event_time = metadata.get("release_time_seconds")
     expected_place_center = np.asarray(metadata.get("place_center_m", []), dtype=float)
     place_surface = str(metadata.get("place_surface") or "")
+    release_support_primitive = next(
+        (
+            primitive
+            for primitive in scene_primitives
+            if str(primitive.get("name", "")) == place_surface
+        ),
+        None,
+    )
+    if release_event_time is not None and release_support_primitive is None:
+        raise ValueError("release requires one declared receiving support primitive")
     conveyor_initial_direction_world = conveyor_directions_world.get(place_surface)
     conveyor_exclusive = bool(
         conveyor_cfg.get("exclusive_surface_drive_at_transfer", False)
@@ -1962,14 +2293,12 @@ try:
     active_conveyor_surface: str | None = None
     conveyor_surface_history: list[dict[str, object]] = []
     conveyor_selection_initialized = False
-    conveyor_start_event_time = (
-        0.0
-        if conveyor_start_policy == "immediate"
-        else metadata.get("release_time_seconds")
-        if conveyor_start_policy == "after_release"
-        else metadata.get("release_retreat_time_seconds")
-    )
-    if conveyor_enabled and conveyor_start_event_time is None:
+    conveyor_start_event_time = 0.0 if conveyor_start_policy == "immediate" else None
+    if (
+        conveyor_enabled
+        and conveyor_start_policy == "after_release_retreat"
+        and metadata.get("release_retreat_time_seconds") is None
+    ):
         raise ValueError(
             f"{conveyor_start_policy} conveyor requires its corresponding release event time"
         )
@@ -2004,13 +2333,20 @@ try:
         )
 
     for step in range(physics_steps):
-        simulation_time = min(step * physics_dt, replay_duration)
-        contact_clock_s[0] = simulation_time
-        if (
-            conveyor_enabled
-            and not conveyor_started
-            and simulation_time >= float(conveyor_start_event_time)
-        ):
+        simulation_time = step * physics_dt
+        hold_trajectory = False
+        # Commands/events above world.step use the pre-step time.  Contact
+        # callbacks and measured state are produced by the completed step.
+        contact_clock_s[0] = simulation_time + physics_dt
+        conveyor_start_due = bool(
+            conveyor_start_policy == "immediate"
+            or conveyor_start_policy == "after_release" and release_executed
+            or conveyor_start_policy == "after_release_retreat"
+            and release_executed
+            and trajectory_time
+            >= float(metadata.get("release_retreat_time_seconds", float("inf")))
+        )
+        if conveyor_enabled and not conveyor_started and conveyor_start_due:
             conveyor_started = True
             conveyor_started_time_s = simulation_time
             print(
@@ -2042,8 +2378,10 @@ try:
             target_body is not None
             and not grasp_commanded
             and grasp_event_time is not None
-            and simulation_time >= float(grasp_event_time)
+            and trajectory_time >= float(grasp_event_time)
         ):
+            if contact_wait_started_s is None:
+                contact_wait_started_s = simulation_time
             body_positions, body_orientations = grasp_body.get_world_poses()
             carton_positions, carton_orientations = target_body.get_world_poses()
             body_position = np.asarray(body_positions.numpy(), dtype=float)[0]
@@ -2102,8 +2440,92 @@ try:
                 ),
             )
             attachment_raycast_distances_m = list(physical_contact_audit.signed_gaps_m)
+            actual_contact_accepted = physical_contact_audit.accepted
             if not physical_contact_audit.accepted:
+                actual_contact_accepted = False
+            if ideal_independent_mode:
+                world_from_grasp = np.eye(4)
+                world_from_grasp[:3, :3] = body_rotation_matrix
+                world_from_grasp[:3, 3] = body_position
+                grasp_from_contact = np.eye(4)
+                grasp_from_contact[:3, :3] = np.asarray(
+                    [[0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [-1.0, 0.0, 0.0]],
+                    dtype=float,
+                )
+                grasp_from_contact[:3, 3] = [tool_contact_plane_x, 0.0, 0.0]
+                target_obb = OBB(
+                    center=carton_position,
+                    half_extents=0.5 * np.asarray(target_primitive["size_m"], dtype=float),
+                    rotation=carton_rotation_matrix,
+                    name=str(metadata["target"]),
+                    category="carton",
+                )
+                current_geometry = evaluate_independent_cup_geometry(
+                    world_from_grasp @ grasp_from_contact,
+                    target_obb,
+                    str(gripper_cfg["target_face"]),
+                    independent_cup_array,
+                    max_attachment_gap_m=float(gripper_cfg["max_grip_distance_m"]),
+                    maximum_penetration_m=float(
+                        gripper_cfg["maximum_contact_penetration_m"]
+                    ),
+                    max_normal_misalignment_rad=float(
+                        gripper_cfg["max_normal_misalignment_rad"]
+                    ),
+                )
+                commanded_ids = [
+                    cup_id
+                    for cup_id, active in zip(
+                        cup_bit_order, commanded_cup_mask, strict=True
+                    )
+                    if active
+                ]
+                independent_contact_audit = audit_actual_independent_cup_contacts(
+                    current_geometry,
+                    commanded_ids,
+                    pose_source="isaac_actual_grasp_body_and_target_state",
+                )
+                actual_contact_mask = list(
+                    independent_contact_audit.actual_contact_mask
+                )
+                commanded_penetration = any(
+                    commanded_cup_mask[contact.index]
+                    and contact.reason == "CUP_RING_PENETRATES_TARGET"
+                    for contact in current_geometry.contacts
+                )
+                actual_contact_accepted = bool(
+                    any(commanded_cup_mask)
+                    and actual_contact_mask == list(commanded_cup_mask)
+                    and not commanded_penetration
+                )
+            if not actual_contact_accepted:
                 grasp_command_succeeded = False
+            elif ideal_independent_mode:
+                # Ideal holding capacity is an explicit assumption, but the
+                # joint is created only after actual target contact.  Body1 is
+                # the original target carton and is never cloned or teleported.
+                grasp_joint = UsdPhysics.FixedJoint.Define(stage, grasp_joint_path)
+                with Sdf.ChangeBlock():
+                    grasp_joint.CreateBody0Rel().SetTargets([Sdf.Path(grasp_body_path)])
+                    grasp_joint.CreateBody1Rel().SetTargets([Sdf.Path(target_carton_path)])
+                    grasp_joint.CreateLocalPos0Attr(Gf.Vec3f(*local_position))
+                    grasp_joint.CreateLocalRot0Attr(
+                        Gf.Quatf(
+                            float(local_quaternion_array[0]),
+                            Gf.Vec3f(*local_quaternion_array[1:].tolist()),
+                        )
+                    )
+                    grasp_joint.CreateLocalPos1Attr(Gf.Vec3f(0.0, 0.0, 0.0))
+                    grasp_joint.CreateLocalRot1Attr(
+                        Gf.Quatf(1.0, Gf.Vec3f(0.0, 0.0, 0.0))
+                    )
+                    grasp_joint.CreateCollisionEnabledAttr(False)
+                    grasp_joint.CreateExcludeFromArticulationAttr(True)
+                    grasp_joint.CreateJointEnabledAttr(True)
+                grasp_command_succeeded = True
+                grasp_enabled = True
+                grasp_closed_time = simulation_time
+                ideal_actual_contact_count_at_attach = int(sum(actual_contact_mask))
             elif args.gripper_model == "surface_gripper":
                 close_results = [
                     bool(surface_gripper_interface.close_gripper(path))
@@ -2161,7 +2583,25 @@ try:
                 grasp_command_succeeded = True
                 grasp_enabled = True
                 grasp_closed_time = simulation_time
-            grasp_commanded = True
+            grasp_commanded = bool(grasp_command_succeeded)
+            if not grasp_commanded:
+                hold_trajectory = True
+                if simulation_time - float(contact_wait_started_s) > maximum_contact_wait_s:
+                    raise RuntimeError(
+                        "bounded actual-contact wait expired before a valid target attachment"
+                    )
+            event_log.append(
+                {
+                    "event": "grasp_contact_attempt",
+                    "simulation_time_s": simulation_time,
+                    "trajectory_time_s": trajectory_time,
+                    "accepted": grasp_commanded,
+                    "target": str(metadata["target"]),
+                    "actual_contact_count": int(sum(actual_contact_mask))
+                    if ideal_independent_mode
+                    else physical_contact_audit.within_gap_count,
+                }
+            )
             print(
                 f"FANUC_REPLAY_EVENT=grasp_command time_s={simulation_time:.6f} "
                 f"model={args.gripper_model} accepted={grasp_command_succeeded} "
@@ -2174,10 +2614,15 @@ try:
             grasp_enabled
             and not release_commanded
             and release_event_time is not None
-            and simulation_time >= float(release_event_time)
+            and trajectory_time >= float(release_event_time)
         ):
+            if support_wait_started_s is None:
+                support_wait_started_s = simulation_time
             release_positions, release_orientations = target_body.get_world_poses()
             target_center_at_release = np.asarray(release_positions.numpy(), dtype=float)[0]
+            target_orientation_at_release = np.asarray(
+                release_orientations.numpy(), dtype=float
+            )[0]
             linear_velocity, angular_velocity = target_body.get_velocities()
             release_linear_velocity_before_m_s = np.asarray(
                 linear_velocity.numpy(), dtype=float
@@ -2185,7 +2630,85 @@ try:
             release_angular_velocity_before_rad_s = np.asarray(
                 angular_velocity.numpy(), dtype=float
             )[0]
-            if args.gripper_model == "surface_gripper":
+            support_contact_audit = audit_payload_support_contact(
+                payload_center_m=target_center_at_release,
+                payload_rotation=_rotation_matrix_from_quaternion_wxyz(
+                    target_orientation_at_release
+                ),
+                payload_size_m=target_primitive["size_m"],
+                payload_linear_velocity_m_s=release_linear_velocity_before_m_s,
+                payload_angular_velocity_rad_s=release_angular_velocity_before_rad_s,
+                support=release_support_primitive,
+                max_support_gap_m=float(
+                    actual_state_gates.get("support_max_gap_m", 0.003)
+                ),
+                maximum_penetration_m=float(
+                    actual_state_gates.get("support_maximum_penetration_m", 0.001)
+                ),
+                minimum_footprint_overlap_ratio=float(
+                    actual_state_gates.get(
+                        "support_minimum_footprint_overlap_ratio", 0.90
+                    )
+                ),
+                max_support_tilt_rad=float(
+                    actual_state_gates.get("support_max_tilt_rad", np.deg2rad(5.0))
+                ),
+                max_linear_speed_m_s=float(
+                    actual_state_gates.get("support_max_linear_speed_m_s", 0.03)
+                ),
+                max_angular_speed_rad_s=float(
+                    actual_state_gates.get("support_max_angular_speed_rad_s", 0.08)
+                ),
+            )
+            support_prim_path = conveyor_surface_paths.get(
+                place_surface,
+                f"/Validation/Scene/{_safe_prim_name(place_surface)}",
+            )
+            support_contact_report_observed = any(
+                (
+                    actor0 == target_carton_path
+                    and (
+                        actor1 == support_prim_path
+                        or actor1.startswith(f"{support_prim_path}/")
+                    )
+                    or actor1 == target_carton_path
+                    and (
+                        actor0 == support_prim_path
+                        or actor0.startswith(f"{support_prim_path}/")
+                    )
+                )
+                for actor0, actor1, _collider0, _collider1 in active_contact_headers
+            )
+            support_release_accepted = bool(
+                support_contact_audit.accepted and support_contact_report_observed
+            )
+            if not support_release_accepted:
+                hold_trajectory = True
+                if simulation_time - float(support_wait_started_s) > maximum_support_wait_s:
+                    raise RuntimeError(
+                        "bounded support wait expired before the target reached its declared receiver"
+                    )
+            elif ideal_independent_mode:
+                enabled_attr = grasp_joint.GetPrim().GetAttribute("physics:jointEnabled")
+                if enabled_attr.IsValid():
+                    enabled_attr.Set(False)
+                stage.RemovePrim(grasp_joint_path)
+                grasp_joint = None
+                release_command_succeeded = True
+                ideal_release_request_step = step
+                ideal_release_request_time_s = simulation_time
+                body_positions, body_orientations = grasp_body.get_world_poses()
+                body_position = np.asarray(body_positions.numpy(), dtype=float)[0]
+                body_quaternion = np.asarray(body_orientations.numpy(), dtype=float)[0]
+                body_rotation = _rotation_matrix_from_quaternion_wxyz(body_quaternion)
+                ideal_release_relative_position_at_request = body_rotation.T @ (
+                    target_center_at_release - body_position
+                )
+                ideal_release_relative_quaternion_at_request = _quaternion_multiply_wxyz(
+                    _quaternion_conjugate_wxyz(body_quaternion),
+                    target_orientation_at_release,
+                )
+            elif args.gripper_model == "surface_gripper":
                 open_results = [
                     bool(surface_gripper_interface.open_gripper(path))
                     for path in surface_gripper_paths
@@ -2193,7 +2716,7 @@ try:
                 release_command_succeeded = bool(open_results and all(open_results))
                 release_executed = release_command_succeeded
                 release_velocity_sample_pending = release_executed
-            else:
+            elif support_contact_audit.accepted:
                 # FixedJoint cannot be hot-opened reliably in Isaac Sim 6.0.
                 # Keep this state handoff only in the explicitly diagnostic
                 # adapter; production qualification always rejects it.
@@ -2208,17 +2731,37 @@ try:
                 release_command_succeeded = True
                 release_executed = True
                 release_velocity_sample_pending = True
-            release_commanded = True
+            if release_executed and release_executed_time_s is None:
+                release_executed_time_s = simulation_time
+            release_commanded = bool(
+                support_release_accepted and release_command_succeeded
+            )
+            event_log.append(
+                {
+                    "event": "release_support_attempt",
+                    "simulation_time_s": simulation_time,
+                    "trajectory_time_s": trajectory_time,
+                    "support": place_surface,
+                    "support_geometry_accepted": support_contact_audit.accepted,
+                    "support_contact_report_observed": support_contact_report_observed,
+                    "support_release_accepted": support_release_accepted,
+                    "support_reason": support_contact_audit.reason,
+                    "release_executed": release_executed,
+                }
+            )
             print(
                 f"FANUC_REPLAY_EVENT=release_command time_s={simulation_time:.6f} "
-                f"model={args.gripper_model} accepted={release_command_succeeded}",
+                f"model={'ideal_fixed_constraint' if ideal_independent_mode else args.gripper_model} "
+                f"support={support_contact_audit.reason or 'PASS'} "
+                f"accepted={release_command_succeeded}",
                 flush=True,
             )
-        command_source_order = _sample(timestamps, positions, simulation_time)
+        command_source_order = _sample(timestamps, positions, trajectory_time)
         command = command_source_order[command_order]
         articulation.set_dof_position_targets(command[None, :])
         render = step % args.render_every == 0 or step == physics_steps - 1
         world.step(render=render)
+        simulation_time = (step + 1) * physics_dt
         if render and (args.record_replay or args.record_video):
             rendered_rgba = np.asarray(rgb_annotator.get_data())
             if rendered_rgba.ndim == 3 and rendered_rgba.shape[-1] >= 3:
@@ -2232,7 +2775,85 @@ try:
                         preview_video_writer.write(video_frame)
                     replay_video_frame_count += 1
         if (
+            ideal_independent_mode
+            and ideal_release_request_step is not None
+            and not release_open_confirmed
+            and step > ideal_release_request_step
+        ):
+            body_positions, body_orientations = grasp_body.get_world_poses()
+            payload_positions, payload_orientations = target_body.get_world_poses()
+            body_position = np.asarray(body_positions.numpy(), dtype=float)[0]
+            body_quaternion = np.asarray(body_orientations.numpy(), dtype=float)[0]
+            payload_position = np.asarray(payload_positions.numpy(), dtype=float)[0]
+            payload_quaternion = np.asarray(payload_orientations.numpy(), dtype=float)[0]
+            body_rotation = _rotation_matrix_from_quaternion_wxyz(body_quaternion)
+            current_relative_position = body_rotation.T @ (
+                payload_position - body_position
+            )
+            current_relative_quaternion = _quaternion_multiply_wxyz(
+                _quaternion_conjugate_wxyz(body_quaternion), payload_quaternion
+            )
+            released_relative_position_delta_m = float(
+                np.linalg.norm(
+                    current_relative_position
+                    - ideal_release_relative_position_at_request
+                )
+            )
+            released_relative_rotation_delta_rad = _quaternion_angle_wxyz(
+                _quaternion_multiply_wxyz(
+                    _quaternion_conjugate_wxyz(
+                        ideal_release_relative_quaternion_at_request
+                    ),
+                    current_relative_quaternion,
+                )
+            )
+            support_contact_still_active = any(
+                (
+                    actor0 == target_carton_path
+                    and (
+                        actor1 == support_prim_path
+                        or actor1.startswith(f"{support_prim_path}/")
+                    )
+                    or actor1 == target_carton_path
+                    and (
+                        actor0 == support_prim_path
+                        or actor0.startswith(f"{support_prim_path}/")
+                    )
+                )
+                for actor0, actor1, _collider0, _collider1 in active_contact_headers
+            )
+            release_open_confirmed = bool(
+                not stage.GetPrimAtPath(grasp_joint_path).IsValid()
+                and support_contact_still_active
+                and (
+                    released_relative_position_delta_m > 0.02
+                    or released_relative_rotation_delta_rad > 0.10
+                )
+            )
+            if release_open_confirmed:
+                release_executed = True
+                release_executed_time_s = simulation_time
+                release_velocity_sample_pending = True
+                event_log.append(
+                    {
+                        "event": "release_constraint_removal_confirmed",
+                        "simulation_time_s": simulation_time,
+                        "request_time_s": ideal_release_request_time_s,
+                        "relative_position_delta_m": released_relative_position_delta_m,
+                        "relative_rotation_delta_rad": released_relative_rotation_delta_rad,
+                        "support_contact_still_active": support_contact_still_active,
+                    }
+                )
+            elif (
+                simulation_time - float(ideal_release_request_time_s)
+                > maximum_support_wait_s
+            ):
+                raise RuntimeError(
+                    "bounded release confirmation expired before payload/tool independence"
+                )
+        if (
             args.gripper_model == "surface_gripper"
+            and not ideal_independent_mode
             and grasp_commanded
             and not release_executed
         ):
@@ -2264,6 +2885,12 @@ try:
                     f"FANUC_REPLAY_EVENT=grasp_lost time_s={simulation_time:.6f}",
                     flush=True,
                 )
+            if not grasp_enabled:
+                hold_trajectory = True
+                if simulation_time - float(contact_wait_started_s) > maximum_contact_wait_s:
+                    raise RuntimeError(
+                        "bounded actual-contact wait expired before SurfaceGripper confirmed the target"
+                    )
         if release_velocity_sample_pending:
             linear_velocity, angular_velocity = target_body.get_velocities()
             release_linear_velocity_after_m_s = np.asarray(
@@ -2275,6 +2902,7 @@ try:
             release_velocity_sample_pending = False
         if (
             args.gripper_model == "surface_gripper"
+            and not ideal_independent_mode
             and release_executed
             and not release_open_confirmed
         ):
@@ -2335,7 +2963,7 @@ try:
             payload_linear_velocity = np.asarray(
                 payload_linear_velocities.numpy(), dtype=float
             )[0]
-            elapsed_after_release = simulation_time - float(release_event_time)
+            elapsed_after_release = simulation_time - float(release_executed_time_s)
             if (
                 target_landing_center is None
                 and expected_place_center.shape == (3,)
@@ -2367,20 +2995,83 @@ try:
                         )
                     )
         measured = np.asarray(articulation.get_dof_positions().numpy(), dtype=float)[0]
-        # get_dof_efforts() reports explicitly commanded effort inputs and is
-        # zero for position drives. Projected joint forces are the physically
-        # meaningful loads transmitted along each revolute DOF.
+        measured_velocity = np.asarray(
+            articulation.get_dof_velocities().numpy(), dtype=float
+        )[0]
+        # Isaac 6 experimental Articulation exposes get_dof_efforts as the
+        # explicit effort-control input channel, not the realized output of an
+        # implicit position drive.  Keep it as telemetry, but never pass zeros
+        # from that channel as proof that the position drive respected effort.
+        drive_effort_tensor = articulation.get_dof_efforts()
+        drive_effort_source = (
+            "isaac_articulation_commanded_effort_channel_"
+            "not_position_drive_output"
+        )
+        drive_effort = np.asarray(drive_effort_tensor.numpy(), dtype=float)[0]
+        # Projected joint forces are reactions transmitted along each revolute
+        # DOF.  They are logged independently and are not compared with the
+        # official actuator effort limit.
         projected_forces = np.asarray(
             articulation.get_dof_projected_joint_forces().numpy(), dtype=float
         )[0]
         gravity_forces = np.asarray(
             articulation.get_dof_gravity_compensation_forces().numpy(), dtype=float
         )[0]
+        measured_acceleration = (
+            None
+            if previous_measured_velocity is None
+            else (measured_velocity - previous_measured_velocity) / physics_dt
+        )
+        previous_measured_velocity = measured_velocity.copy()
+        if measured_acceleration is None:
+            inverse_dynamics_available_all_steps = False
+            model_inverse_dynamics = np.full_like(measured, np.nan, dtype=float)
+        else:
+            try:
+                mass_matrix = np.asarray(
+                    articulation.get_mass_matrices().numpy(), dtype=float
+                )[0]
+                coriolis = np.asarray(
+                    articulation.get_dof_coriolis_and_centrifugal_compensation_forces().numpy(),
+                    dtype=float,
+                )[0]
+                model_inverse_dynamics = (
+                    mass_matrix @ measured_acceleration + coriolis + gravity_forces
+                )
+                if model_inverse_dynamics.shape != measured.shape or not np.all(
+                    np.isfinite(model_inverse_dynamics)
+                ):
+                    raise ValueError("invalid inverse-dynamics tensor result")
+            except (AttributeError, RuntimeError, ValueError):
+                inverse_dynamics_available_all_steps = False
+                inverse_dynamics_available_after_first_difference = False
+                model_inverse_dynamics = np.full_like(measured, np.nan, dtype=float)
+        external_joint_load = (
+            projected_forces - model_inverse_dynamics
+            if np.all(np.isfinite(model_inverse_dynamics))
+            else np.full_like(projected_forces, np.nan, dtype=float)
+        )
         measured_times.append(simulation_time)
         commanded_rows.append(command.astype(float))
         measured_rows.append(measured)
+        measured_velocity_rows.append(measured_velocity)
+        drive_effort_rows.append(drive_effort)
         projected_force_rows.append(projected_forces)
         gravity_force_rows.append(gravity_forces)
+        model_inverse_dynamics_rows.append(model_inverse_dynamics)
+        external_joint_load_rows.append(external_joint_load)
+        if not hold_trajectory:
+            trajectory_time = min(requested_duration, trajectory_time + physics_dt)
+        if (
+            trajectory_time >= requested_duration - 1e-12
+            and (
+                release_event_time is None
+                or release_executed_time_s is not None
+                and simulation_time - release_executed_time_s
+                >= float(args.post_release_seconds)
+            )
+        ):
+            break
     replay_wall_s = time.perf_counter() - replay_started_at
     if replay_video_writer is not None:
         replay_video_writer.release()
@@ -2393,16 +3084,65 @@ try:
         if not preview_video_path.is_file() or preview_video_path.stat().st_size == 0:
             raise RuntimeError("accelerated MP4 preview writer produced no output")
 
+    final_carton_states = _capture_carton_states()
+
     measured_array = np.asarray(measured_rows)
     commanded_array = np.asarray(commanded_rows)
+    measured_velocity_array = np.asarray(measured_velocity_rows)
+    drive_effort_array = np.asarray(drive_effort_rows)
     projected_force_array = np.asarray(projected_force_rows)
     gravity_force_array = np.asarray(gravity_force_rows)
+    model_inverse_dynamics_array = np.asarray(model_inverse_dynamics_rows)
+    external_joint_load_array = np.asarray(external_joint_load_rows)
     errors = measured_array - commanded_array
     rms_error = np.sqrt(np.mean(errors**2, axis=0))
     peak_error = np.max(np.abs(errors), axis=0)
     peak_projected_force = np.max(np.abs(projected_force_array), axis=0)
     peak_gravity_force = np.max(np.abs(gravity_force_array), axis=0)
-    effort_ratios = peak_projected_force / effort_limits if effort_limits.size else np.asarray([])
+    peak_drive_effort = np.max(np.abs(drive_effort_array), axis=0)
+    peak_model_inverse_dynamics = (
+        np.nanmax(np.abs(model_inverse_dynamics_array), axis=0)
+        if np.any(np.isfinite(model_inverse_dynamics_array))
+        else np.full(len(discovered_joint_names), np.nan)
+    )
+    peak_external_joint_load = (
+        np.nanmax(np.abs(external_joint_load_array), axis=0)
+        if np.any(np.isfinite(external_joint_load_array))
+        else np.full(len(discovered_joint_names), np.nan)
+    )
+    effort_ratios = (
+        peak_drive_effort / effort_limits
+        if effort_limits.size and drive_effort_output_qualified
+        else np.asarray([])
+    )
+    model_inverse_dynamics_effort_ratios = (
+        peak_model_inverse_dynamics / effort_limits
+        if effort_limits.size
+        and np.all(np.isfinite(peak_model_inverse_dynamics))
+        else np.asarray([])
+    )
+    lower_position_limits = np.asarray(
+        metadata.get("joint_position_lower_limits_rad", []), dtype=float
+    )
+    upper_position_limits = np.asarray(
+        metadata.get("joint_position_upper_limits_rad", []), dtype=float
+    )
+    joint_positions_within_limits = None
+    minimum_joint_position_margin_rad = None
+    if (
+        lower_position_limits.shape == (len(discovered_joint_names),)
+        and upper_position_limits.shape == (len(discovered_joint_names),)
+    ):
+        lower_position_limits = lower_position_limits[command_order]
+        upper_position_limits = upper_position_limits[command_order]
+        lower_margin = measured_array - lower_position_limits[None, :]
+        upper_margin = upper_position_limits[None, :] - measured_array
+        minimum_joint_position_margin_rad = np.min(
+            np.minimum(lower_margin, upper_margin), axis=0
+        )
+        joint_positions_within_limits = bool(
+            np.all(minimum_joint_position_margin_rad >= -1e-9)
+        )
 
     contact_records = [
         {"actor0": pair[0], "actor1": pair[1], **values}
@@ -2424,8 +3164,26 @@ try:
         # The collision geometry normally contacts the carton shortly before
         # the commanded vacuum event. Keep this narrow and explicit so an
         # arbitrary earlier wrist/carton collision cannot be hidden.
-        lower = float(grasp_time) - 0.25
-        upper = float("inf") if release_time is None else float(release_time) + 2.0 * physics_dt
+        actual_grasp_clock = (
+            float(grasp_closed_time)
+            if grasp_closed_time is not None
+            else float(grasp_time)
+        )
+        actual_release_clock = (
+            float(release_executed_time_s)
+            if release_executed_time_s is not None
+            else None if release_time is None else float(release_time)
+        )
+        lower = (
+            float(contact_wait_started_s) - 0.25
+            if contact_wait_started_s is not None
+            else min(float(grasp_time), actual_grasp_clock) - 0.25
+        )
+        upper = (
+            float("inf")
+            if actual_release_clock is None
+            else actual_release_clock + 2.0 * physics_dt
+        )
         return float(record["first_contact_time_s"]) >= lower and float(record["last_contact_time_s"]) <= upper
 
     robot_contact_records = [
@@ -2449,22 +3207,24 @@ try:
     ]
     premature_payload_conveyor_contacts = None
     if release_time is not None:
-        # Allow two physics ticks around the discrete release command, but fail
-        # any contact that begins while the payload is still attached. Contact
-        # reports were already collected in previous replays; the missing part
-        # was this release-relative classification.
+        # Receiver contact is required *before* release during the PLACE dwell.
+        # Only contact that starts before that declared placement phase is
+        # premature; legal non-penetrating support may persist while attached.
         release_contact_tolerance_s = 2.0 * physics_dt
+        place_support_window_start = float(
+            metadata.get("release_arrival_time_seconds", release_time)
+        )
         premature_payload_conveyor_contacts = [
             record
             for record in payload_conveyor_contact_records
             if float(record["first_contact_time_s"])
-            < float(release_time) - release_contact_tolerance_s
+            < place_support_window_start - release_contact_tolerance_s
         ]
     unexpected_contacts = [
         record for record in robot_contact_records if not _expected_target_contact(record)
     ]
     tracking_error_limit_rad = 0.05
-    full_schedule_replayed = replay_duration >= requested_duration - 1e-9
+    full_schedule_replayed = trajectory_time >= requested_duration - 1e-9
     target_final_center = None
     payload_displacement_m = None
     if target_body is not None:
@@ -2560,13 +3320,13 @@ try:
         )
     placement_tolerance_m = qualification_policy.placement_tolerance_m
     production_release_adapter = bool(
-        args.gripper_model == "surface_gripper"
+        (ideal_independent_mode or args.gripper_model == "surface_gripper")
         and release_open_confirmed
         and released_payload_path is None
     )
     release_completed = bool(
         release_open_confirmed
-        if args.gripper_model == "surface_gripper"
+        if ideal_independent_mode or args.gripper_model == "surface_gripper"
         else release_executed
     )
     qualification = evaluate_replay_qualification(
@@ -2598,18 +3358,28 @@ try:
         release_executed=release_completed,
         placement_expected=expected_place_center.shape == (3,),
         placement_center_error_m=placement_center_error_m,
-        gripper_wrench_envelope_complete=gripper_wrench_envelope_complete,
-        gripper_limits_from_configuration=bool(
-            not args.disable_gripper_break_limits
-            and args.gripper_force_limit is None
-            and args.gripper_shear_force_limit is None
-            and args.gripper_torque_limit is None
-            and args.gripper_attachment_point_count is None
-            and not surface_shear_solver_fallback_used
-            and not fixed_joint_torque_solver_fallback_used
+        gripper_wrench_envelope_complete=bool(
+            not ideal_independent_mode and gripper_wrench_envelope_complete
         ),
-        gripper_limits_calibrated=bool(metadata.get("gripper", {}).get("limits_calibrated", False)),
+        gripper_limits_from_configuration=bool(
+            not ideal_independent_mode
+            and (
+                not args.disable_gripper_break_limits
+                and args.gripper_force_limit is None
+                and args.gripper_shear_force_limit is None
+                and args.gripper_torque_limit is None
+                and args.gripper_attachment_point_count is None
+                and not surface_shear_solver_fallback_used
+                and not fixed_joint_torque_solver_fallback_used
+            )
+        ),
+        gripper_limits_calibrated=bool(
+            not ideal_independent_mode
+            and metadata.get("gripper", {}).get("limits_calibrated", False)
+        ),
         production_release_adapter=production_release_adapter,
+        ideal_holding_capacity_assumption=ideal_independent_mode,
+        joint_positions_within_limits=joint_positions_within_limits,
         conveyor_transport_expected=bool(conveyor_enabled and place_surface),
         conveyor_transport_engaged=conveyor_transport_engaged,
         conveyor_transport_speed_within_tolerance=conveyor_transport_speed_within_tolerance,
@@ -2639,31 +3409,93 @@ try:
             ["time_s"]
             + [f"command_{name}_rad" for name in discovered_joint_names]
             + [f"measured_{name}_rad" for name in discovered_joint_names]
-            + [f"projected_force_{name}_nm" for name in discovered_joint_names]
+            + [f"measured_velocity_{name}_rad_s" for name in discovered_joint_names]
+            + [f"drive_input_effort_{name}_nm" for name in discovered_joint_names]
+            + [f"model_inverse_dynamics_{name}_nm" for name in discovered_joint_names]
+            + [
+                f"projected_constraint_reaction_{name}_nm"
+                for name in discovered_joint_names
+            ]
+            + [f"external_joint_load_residual_{name}_nm" for name in discovered_joint_names]
             + [f"gravity_compensation_{name}_nm" for name in discovered_joint_names]
         )
-        for timestamp, command, measured, projected_force, gravity_force in zip(
+        for (
+            timestamp,
+            command,
+            measured,
+            measured_velocity,
+            drive_effort,
+            model_inverse_dynamics,
+            projected_force,
+            external_joint_load,
+            gravity_force,
+        ) in zip(
             measured_times,
             commanded_array,
             measured_array,
+            measured_velocity_array,
+            drive_effort_array,
+            model_inverse_dynamics_array,
             projected_force_array,
+            external_joint_load_array,
             gravity_force_array,
+            strict=True,
         ):
             writer.writerow(
                 [
                     timestamp,
                     *command.tolist(),
                     *measured.tolist(),
+                    *measured_velocity.tolist(),
+                    *drive_effort.tolist(),
+                    *model_inverse_dynamics.tolist(),
                     *projected_force.tolist(),
+                    *external_joint_load.tolist(),
                     *gravity_force.tolist(),
                 ]
             )
+
+    carton_state_path = args.output / "carton_states.json"
+    carton_state_path.write_text(
+        json.dumps(
+            {
+                "format": "isaacsim_dynamic_carton_states_v1",
+                "dynamic_carton_count": len(dynamic_scene_bodies),
+                "target": str(metadata["target"]),
+                "settled_before_replay": settled_carton_states,
+                "final_after_replay": final_carton_states,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    event_log_path = args.output / "execution_events.json"
+    event_log_path.write_text(
+        json.dumps(
+            {
+                "format": "isaacsim_fanuc_execution_events_v1",
+                "events": event_log,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    actual_replayed_simulation_seconds = (
+        float(measured_times[-1]) if measured_times else 0.0
+    )
+
+    def _finite_or_none(values) -> list[float | None]:
+        return [float(value) if np.isfinite(value) else None for value in values]
 
     result = {
         "format": "isaacsim_fanuc_replay_result_v2",
         "robot_model": metadata["robot_model"],
         "target": metadata["target"],
         "simulation_execution_ready": metadata.get("simulation_execution_ready"),
+        "simulation_execution_qualified": metadata.get(
+            "simulation_execution_qualified"
+        ),
         "execution_qualified": metadata.get("execution_qualified"),
         "machine_qualified": metadata.get("machine_qualified"),
         "machine_qualification_warnings": metadata.get(
@@ -2678,10 +3510,13 @@ try:
         "offline_planning_time_seconds": metadata.get("offline_planning_time_seconds", 0.0),
         "command_schedule_duration_seconds": requested_duration,
         "post_release_settle_seconds": float(max(0.0, replay_duration - requested_duration)),
-        "replayed_simulation_seconds": replay_duration,
+        "replayed_simulation_seconds": actual_replayed_simulation_seconds,
+        "nominal_replay_duration_seconds": replay_duration,
+        "maximum_physics_runtime_seconds": physical_runtime_limit,
         "replay_wall_seconds": replay_wall_s,
-        "simulation_realtime_factor": replay_duration / replay_wall_s,
-        "physics_steps": physics_steps,
+        "simulation_realtime_factor": actual_replayed_simulation_seconds / replay_wall_s,
+        "physics_steps": len(measured_times),
+        "maximum_physics_steps": physics_steps,
         "physics_hz": physics_hz,
         "physics_contract": physics_contract,
         "initial_state_settling": settling_audit,
@@ -2710,11 +3545,55 @@ try:
         "rms_joint_error_rad": rms_error.tolist(),
         "peak_joint_error_rad": peak_error.tolist(),
         "peak_error_rad": float(np.max(peak_error)),
-        "joint_load_metric": "physx_projected_joint_force",
+        "joint_load_metric": "explicit_multi_channel_joint_dynamics_telemetry",
+        "joint_telemetry_csv": str(args.output / "joint_tracking.csv"),
+        "joint_telemetry_semantics": {
+            "q_target": "position-drive target sampled from the frozen trajectory clock",
+            "q": "measured articulation joint position",
+            "qd": "measured articulation joint velocity",
+            "model_inverse_dynamics": "M(q)*finite_difference(qd)+c(q,qd)+g(q)",
+            "drive_input_effort": (
+                "Isaac explicit effort-control input channel; not the realized "
+                "position-drive output torque"
+            ),
+            "projected_constraint_reaction": "Isaac PhysX projected DOF force",
+            "external_joint_load_residual": (
+                "projected_constraint_reaction_minus_model_inverse_dynamics"
+            ),
+        },
+        "model_inverse_dynamics_available_all_steps": (
+            inverse_dynamics_available_all_steps
+        ),
+        "model_inverse_dynamics_available_after_first_difference": (
+            inverse_dynamics_available_after_first_difference and len(measured_rows) > 1
+        ),
+        "drive_input_effort_source": drive_effort_source,
+        "drive_effort_output_qualified": drive_effort_output_qualified,
+        "joint_positions_within_official_limits": joint_positions_within_limits,
+        "minimum_joint_position_margin_rad": (
+            None
+            if minimum_joint_position_margin_rad is None
+            else minimum_joint_position_margin_rad.tolist()
+        ),
+        "peak_measured_joint_velocity_rad_s": np.max(
+            np.abs(measured_velocity_array), axis=0
+        ).tolist(),
+        "peak_drive_input_effort_nm": peak_drive_effort.tolist(),
+        "peak_model_inverse_dynamics_nm": _finite_or_none(
+            peak_model_inverse_dynamics
+        ),
+        "peak_external_joint_load_residual_nm": _finite_or_none(
+            peak_external_joint_load
+        ),
         "peak_projected_joint_force_nm": peak_projected_force.tolist(),
         "peak_gravity_compensation_nm": peak_gravity_force.tolist(),
         "effort_limit_ratio": (
             effort_ratios.tolist() if effort_limits.size else []
+        ),
+        "model_inverse_dynamics_effort_limit_ratio": (
+            model_inverse_dynamics_effort_ratios.tolist()
+            if model_inverse_dynamics_effort_ratios.size
+            else []
         ),
         "camera_rgba_shape": list(rgba.shape),
         "camera_depth_shape": list(depth.shape),
@@ -2767,6 +3646,9 @@ try:
         "payload_grasp_closed_time_s": grasp_closed_time,
         "payload_grip_lost_time_s": surface_grip_lost_time,
         "payload_minimum_active_cup_count": minimum_active_gripper_count,
+        "payload_actual_contact_cup_count_at_attach": (
+            ideal_actual_contact_count_at_attach
+        ),
         "payload_coupled_to_robot": payload_motion_verified,
         "payload_attachment_intact": payload_attachment_intact,
         "peak_payload_attachment_position_error_m": peak_payload_attachment_position_error_m,
@@ -2778,10 +3660,19 @@ try:
         "payload_release_executed": release_completed,
         "payload_release_open_confirmed": release_open_confirmed,
         "payload_release_model": (
-            "isaac_surface_gripper_open_same_rigid_body"
+            "usd_fixed_joint_removed_after_actual_receiver_support_same_rigid_body"
+            if ideal_independent_mode
+            else "isaac_surface_gripper_open_same_rigid_body"
             if args.gripper_model == "surface_gripper"
             else "physx_free_body_state_handoff_diagnostic"
         ),
+        "payload_release_actual_support_audit": (
+            None if support_contact_audit is None else support_contact_audit.to_dict()
+        ),
+        "payload_release_support_contact_report_observed": (
+            support_contact_report_observed
+        ),
+        "release_requires_actual_receiver_support": True,
         "release_linear_velocity_before_m_s": (
             None
             if release_linear_velocity_before_m_s is None
@@ -2830,6 +3721,27 @@ try:
         "gripper_physical_contact_audit": (
             None if physical_contact_audit is None else physical_contact_audit.to_dict()
         ),
+        "gripper_independent_cup_actual_contact_audit": (
+            None
+            if independent_contact_audit is None
+            else independent_contact_audit.to_dict()
+        ),
+        "gripper_suction_mode": gripper_cfg.get("suction_mode"),
+        "gripper_holding_capacity_assumption": gripper_cfg.get(
+            "holding_capacity_assumption"
+        ),
+        "gripper_mask_bit_order_cup_ids": cup_bit_order,
+        "gripper_geometrically_eligible_mask": eligible_cup_mask,
+        "gripper_commanded_active_mask": commanded_cup_mask,
+        "gripper_planned_fk_contact_mask": planned_fk_contact_mask,
+        "gripper_actual_contact_mask": actual_contact_mask,
+        "gripper_actual_contact_mask_source": (
+            "isaac_actual_grasp_body_and_target_state"
+            if independent_contact_audit is not None
+            else None
+        ),
+        "gripper_actual_contact_gates_attachment": ideal_independent_mode,
+        "gripper_attachment_uses_original_target_body": ideal_independent_mode,
         "gripper_model_source": metadata.get("gripper", {}).get("model_source"),
         "gripper_adapter": args.gripper_model,
         "gripper_collision_enabled": not args.disable_gripper_collision,
@@ -2848,12 +3760,24 @@ try:
             "catalogue_theoretical_total_force_n_at_minus_60_kpa"
         ),
         "gripper_footprint_size_m": footprint_size.tolist(),
-        "gripper_simulation_attachment_point_count": len(surface_attachment_paths),
-        "gripper_attachment_point_count": len(surface_attachment_paths),
+        "gripper_simulation_constraint_count": (
+            int(grasp_command_succeeded) if ideal_independent_mode else len(surface_attachment_paths)
+        ),
+        "gripper_simulation_attachment_point_count": (
+            None if ideal_independent_mode else len(surface_attachment_paths)
+        ),
+        "gripper_attachment_point_count": (
+            None if ideal_independent_mode else len(surface_attachment_paths)
+        ),
         "gripper_solver_attachment_model": gripper_cfg.get("solver_attachment_model"),
         "physx_solver_position_iterations": solver_position_iterations,
         "physx_solver_velocity_iterations": solver_velocity_iterations,
         "gripper_wrench_envelope_complete": gripper_wrench_envelope_complete,
+        "gripper_capacity_qualification": (
+            "NOT_APPLICABLE_IDEAL_HOLDING_CAPACITY_ASSUMPTION"
+            if ideal_independent_mode
+            else "PHYSICAL_LIMITS_EVALUATED"
+        ),
         "surface_gripper_torque_limit_applied": False,
         "gripper_limits_calibrated": bool(metadata.get("gripper", {}).get("limits_calibrated", False)),
         "gripper_break_limits_enabled": (
@@ -2940,6 +3864,10 @@ try:
         "tracking_error_limit_rad": tracking_error_limit_rad,
         "qualification_passed": qualification_passed,
         "drive_gain_source": "simulation_assumption_pending_controller_log_calibration",
+        "dynamic_carton_state_log": str(carton_state_path),
+        "dynamic_carton_state_count": len(final_carton_states),
+        "execution_event_log": str(event_log_path),
+        "execution_event_count": len(event_log),
         "evidence_manifest": {
             "bundle_sha256": _sha256_path(args.bundle.resolve()),
             "robot_urdf_sha256": _sha256_path(urdf_path),
@@ -2984,6 +3912,8 @@ try:
                 ),
                 "depth_m_npy": _sha256_path(args.output / "depth_m.npy"),
                 "joint_tracking_csv": _sha256_path(args.output / "joint_tracking.csv"),
+                "carton_states_json": _sha256_path(carton_state_path),
+                "execution_events_json": _sha256_path(event_log_path),
             },
         },
     }

@@ -52,6 +52,7 @@ class PinocchioHppFclBackend:
         srdf_path: str | Path | None = None,
         base_transform: np.ndarray | None = None,
         tool_length: float = 0.0,
+        tip_from_tcp: np.ndarray | None = None,
         link_radii: Sequence[float] | None = None,
         name: str = "pinocchio_robot",
     ) -> None:
@@ -62,6 +63,11 @@ class PinocchioHppFclBackend:
         self.model = self.pin.buildModelFromUrdf(str(self.urdf_path))
         if self.model.nq != self.model.nv:
             raise ValueError("this backend currently requires fixed-base scalar joints with nq == nv")
+        self.active_joint_names = tuple(str(name) for name in self.model.names[1:])
+        if len(self.active_joint_names) != self.model.nq:
+            raise ValueError(
+                "this backend requires exactly one scalar configuration per non-universe joint"
+            )
         self.data = self.model.createData()
         package_paths = [str(Path(path)) for path in package_dirs]
         self.geometry_model = self.pin.buildGeomFromUrdf(
@@ -85,10 +91,39 @@ class PinocchioHppFclBackend:
         self.tip_frame = tip_frame
         self.tip_frame_id = self.model.getFrameId(tip_frame)
         self.base_transform = np.eye(4) if base_transform is None else np.asarray(base_transform, dtype=float)
-        if self.base_transform.shape != (4, 4):
-            raise ValueError("base_transform must have shape (4,4)")
+        if self.base_transform.shape != (4, 4) or not np.all(np.isfinite(self.base_transform)):
+            raise ValueError("base_transform must be a finite 4x4 transform")
+        if not np.allclose(
+            self.base_transform[3], [0.0, 0.0, 0.0, 1.0], atol=1e-12, rtol=0.0
+        ):
+            raise ValueError("base_transform must have a homogeneous bottom row")
+        base_rotation = self.base_transform[:3, :3]
+        if not np.allclose(
+            base_rotation.T @ base_rotation, np.eye(3), atol=1e-12, rtol=0.0
+        ) or not np.isclose(np.linalg.det(base_rotation), 1.0, atol=1e-12, rtol=0.0):
+            raise ValueError("base_transform must contain a proper orthonormal rotation")
         self.tool_length = float(tool_length)
+        if not np.isfinite(self.tool_length) or self.tool_length < 0.0:
+            raise ValueError("tool_length must be finite and non-negative")
+        if tip_from_tcp is not None and self.tool_length != 0.0:
+            raise ValueError("tip_from_tcp and a non-zero tool_length may not be combined")
+        if tip_from_tcp is None:
+            self.tip_from_tcp = np.eye(4)
+            self.tip_from_tcp[2, 3] = self.tool_length
+        else:
+            transform = np.asarray(tip_from_tcp, dtype=float)
+            if transform.shape != (4, 4) or not np.all(np.isfinite(transform)):
+                raise ValueError("tip_from_tcp must be a finite 4x4 transform")
+            if not np.allclose(transform[3], [0.0, 0.0, 0.0, 1.0], atol=1e-12, rtol=0.0):
+                raise ValueError("tip_from_tcp must have a homogeneous bottom row")
+            rotation = transform[:3, :3]
+            if not np.allclose(rotation.T @ rotation, np.eye(3), atol=1e-12, rtol=0.0) \
+                    or not np.isclose(np.linalg.det(rotation), 1.0, atol=1e-12, rtol=0.0):
+                raise ValueError("tip_from_tcp must contain a proper orthonormal rotation")
+            self.tip_from_tcp = transform.copy()
         self.name = name
+        self.collision_geometry_kind = "urdf_mesh"
+        self.collision_margin_semantics = "minimum_surface_distance_two_times_per_body_margin"
         self.joint_limits = np.column_stack((self.model.lowerPositionLimit, self.model.upperPositionLimit))
         default_radii = np.full(self.dof, 0.10)
         self.link_radii = default_radii if link_radii is None else np.asarray(link_radii, dtype=float)
@@ -159,9 +194,8 @@ class PinocchioHppFclBackend:
 
     def fk(self, q: np.ndarray) -> np.ndarray:
         self._update(q)
-        transform = self.base_transform @ self._matrix(self.data.oMf[self.tip_frame_id])
-        transform[:3, 3] += transform[:3, 2] * self.tool_length
-        return transform
+        tip = self.base_transform @ self._matrix(self.data.oMf[self.tip_frame_id])
+        return tip @ self.tip_from_tcp
 
     def geometric_jacobian(self, q: np.ndarray) -> np.ndarray:
         q = np.asarray(q, dtype=float)
@@ -177,7 +211,28 @@ class PinocchioHppFclBackend:
         )
         if jacobian.shape != (6, self.dof):
             raise RuntimeError(f"unexpected Pinocchio Jacobian shape: {jacobian.shape}")
+        base_rotation = self.base_transform[:3, :3]
+        jacobian[:3] = base_rotation @ jacobian[:3]
+        jacobian[3:] = base_rotation @ jacobian[3:]
+        # Pinocchio returns the Jacobian at ``tip_frame``.  Strict IK is solved
+        # at the configured virtual task TCP, which may have a full SE(3)
+        # offset (the official M-710 flange points along +X, not TCP +Z).
+        tip = self.base_transform @ self._matrix(self.data.oMf[self.tip_frame_id])
+        tcp = tip @ self.tip_from_tcp
+        offset_world = tcp[:3, 3] - tip[:3, 3]
+        jacobian[:3] += np.cross(jacobian[3:].T, offset_world).T
         return jacobian
+
+    def named_link_frames(self, q: np.ndarray) -> dict[str, np.ndarray]:
+        """Return every URDF frame plus the explicit virtual TCP frame."""
+
+        self._update(q)
+        result = {
+            str(frame.name): self.base_transform @ self._matrix(self.data.oMf[index])
+            for index, frame in enumerate(self.model.frames)
+        }
+        result["virtual_task_tcp"] = self.fk(q)
+        return result
 
     def frames(self, q: np.ndarray, include_tool: bool = True) -> list[np.ndarray]:
         self._update(q)
@@ -206,20 +261,74 @@ class PinocchioHppFclBackend:
         vector = frames[link_index][:3, 3] - frames[link_index - 1][:3, 3]
         return float(np.degrees(np.arctan2(vector[2], np.linalg.norm(vector[:2]))))
 
-    def _environment_collision(self, obstacles: Sequence[OBB], ignored: set[str]) -> CollisionResult:
-        request = self.coal.CollisionRequest()
+    def _distance(self, first_geometry, first_tf, second_geometry, second_tf) -> float:
+        request = self.coal.DistanceRequest()
+        result = self.coal.DistanceResult()
+        value = self.coal.distance(
+            first_geometry, first_tf, second_geometry, second_tf, request, result
+        )
+        recorded = getattr(result, "min_distance", value)
+        return float(recorded)
+
+    def _environment_collision(
+        self,
+        obstacles: Sequence[OBB],
+        ignored: set[str],
+        minimum_distance: float,
+        ignored_pairs: set[tuple[str, str]],
+    ) -> CollisionResult:
         for geometry_index, geometry_object in enumerate(self.geometry_model.geometryObjects):
+            parent_frame = int(getattr(geometry_object, "parentFrame", -1))
+            link_name = (
+                str(self.model.frames[parent_frame].name)
+                if 0 <= parent_frame < len(self.model.frames)
+                else str(geometry_object.name)
+            )
             placement = self.base_transform @ self._matrix(self.geometry_data.oMg[geometry_index])
             robot_tf = _transform(self.coal, placement[:3, :3], placement[:3, 3])
             for obstacle in obstacles:
                 if obstacle.name in ignored:
                     continue
+                if (link_name, obstacle.name) in ignored_pairs or (
+                    str(geometry_object.name), obstacle.name
+                ) in ignored_pairs:
+                    continue
                 box = self.coal.Box(*(2.0 * obstacle.half_extents).tolist())
                 box_tf = _transform(self.coal, obstacle.rotation, obstacle.center)
-                result = self.coal.CollisionResult()
-                self.coal.collide(geometry_object.geometry, robot_tf, box, box_tf, request, result)
-                if result.isCollision():
-                    return CollisionResult(True, "robot_obstacle", geometry_object.name, obstacle.name)
+                if self._distance(geometry_object.geometry, robot_tf, box, box_tf) <= minimum_distance:
+                    return CollisionResult(True, "robot_obstacle", link_name, obstacle.name)
+        return CollisionResult(False)
+
+    @property
+    def collision_link_names(self) -> tuple[str, ...]:
+        """Return link-frame names that own collision geometry in the URDF."""
+
+        names: list[str] = []
+        for geometry_object in self.geometry_model.geometryObjects:
+            parent_frame = int(getattr(geometry_object, "parentFrame", -1))
+            name = (
+                str(self.model.frames[parent_frame].name)
+                if 0 <= parent_frame < len(self.model.frames)
+                else str(geometry_object.name)
+            )
+            if name not in names:
+                names.append(name)
+        return tuple(names)
+
+    def _self_clearance_failure(self, minimum_distance: float) -> CollisionResult:
+        for pair in self.geometry_model.collisionPairs:
+            first = self.geometry_model.geometryObjects[int(pair.first)]
+            second = self.geometry_model.geometryObjects[int(pair.second)]
+            first_pose = self.base_transform @ self._matrix(
+                self.geometry_data.oMg[int(pair.first)]
+            )
+            second_pose = self.base_transform @ self._matrix(
+                self.geometry_data.oMg[int(pair.second)]
+            )
+            first_tf = _transform(self.coal, first_pose[:3, :3], first_pose[:3, 3])
+            second_tf = _transform(self.coal, second_pose[:3, :3], second_pose[:3, 3])
+            if self._distance(first.geometry, first_tf, second.geometry, second_tf) <= minimum_distance:
+                return CollisionResult(True, "self_collision", first.name, second.name)
         return CollisionResult(False)
 
     def collision_result(
@@ -228,26 +337,31 @@ class PinocchioHppFclBackend:
         obstacles: Sequence[OBB],
         margin: float = 0.0,
         ignored_obstacle_names: set[str] | None = None,
+        ignored_geometry_obstacle_pairs: set[tuple[str, str]] | None = None,
         check_self: bool = True,
     ) -> CollisionResult:
-        if margin != 0.0:
-            raise ValueError("Pinocchio mesh backend does not silently approximate non-zero collision margins")
+        if not np.isfinite(margin) or margin < 0.0:
+            raise ValueError("collision margin must be finite and non-negative")
         q = np.asarray(q, dtype=float)
         if not self.within_limits(q):
             return CollisionResult(True, "joint_limit")
-        if check_self and self.pin.computeCollisions(
-            self.model, self.data, self.geometry_model, self.geometry_data, q, True
-        ):
-            for index, result in enumerate(self.geometry_data.collisionResults):
-                if result.isCollision():
-                    pair = self.geometry_model.collisionPairs[index]
-                    first = self.geometry_model.geometryObjects[pair.first].name
-                    second = self.geometry_model.geometryObjects[pair.second].name
-                    return CollisionResult(True, "self_collision", first, second)
         self.pin.updateGeometryPlacements(
             self.model, self.data, self.geometry_model, self.geometry_data, q
         )
-        return self._environment_collision(obstacles, ignored_obstacle_names or set())
+        # Repository margins are per body.  Requiring a surface distance of
+        # twice that value preserves the same pairwise engineering clearance
+        # without convexifying or scaling either official mesh.
+        minimum_distance = 2.0 * float(margin)
+        if check_self:
+            failure = self._self_clearance_failure(minimum_distance)
+            if failure.in_collision:
+                return failure
+        return self._environment_collision(
+            obstacles,
+            ignored_obstacle_names or set(),
+            minimum_distance,
+            ignored_geometry_obstacle_pairs or set(),
+        )
 
     def is_collision_free(
         self,

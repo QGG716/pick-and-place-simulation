@@ -1,8 +1,8 @@
 schema: m710id70_dynamic_execution_v1
 layout_validation_config: ../validation/m710id70_layout_v1.yaml
 motion_policy_config: ../validation/m710id70_layout_v1_single_carton.yaml
-dynamics_config: m710id70_engineering_dynamics_v1.yaml
-robot_cad_manifest: ../../assets/robots/fanuc_m710id_70/cad_asset_manifest.yaml
+dynamics_config: m710id70_official_dynamics_v2.yaml
+robot_cad_manifest: ../../assets/robots/fanuc_m710id_70/official/provenance.yaml
 tool_cad_manifest: ../../assets/grippers/shanghai_wantai_three_zone/asset_manifest.yaml
 
 physics_boundary_patches:

@@ -11,12 +11,18 @@ import copy
 import hashlib
 import json
 from dataclasses import dataclass, replace
-from typing import Any
+from typing import Any, Mapping, Sequence
 
 import numpy as np
 
 from .geometry import OBB, rotation_matrix_from_rpy
 from .identity import normalize_robot_model_id
+from .independent_cups import (
+    HOLDING_CAPACITY_ASSUMPTION,
+    IDEAL_INDEPENDENT_CUPS_MODE,
+    M710_CUP_COUNT,
+    build_m710_independent_cup_array,
+)
 from .m710_replay_contract import (
     add_bundle_payload_sha256,
     build_m710_replay_contract,
@@ -31,6 +37,372 @@ from .timing import (
 
 FANUC_JOINT_NAMES = ("J1", "J2", "J3", "J4", "J5", "J6")
 SUPPORTED_FANUC_REPLAY_MODELS = frozenset({"fanuc_m20id_35", "fanuc_m710id_70"})
+OFFICIAL_M710_DESCRIPTION_REPOSITORY = "https://github.com/FANUC-CORPORATION/fanuc_description"
+OFFICIAL_M710_DESCRIPTION_COMMIT = "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2"
+
+
+def _lowercase_sha256(value: Any, name: str) -> str:
+    result = str(value or "")
+    if len(result) != 64 or any(character not in "0123456789abcdef" for character in result):
+        raise ValueError(f"{name} must be a lowercase SHA-256")
+    return result
+
+
+def _validated_bool_mask(value: Any, name: str, count: int) -> tuple[bool, ...]:
+    if not isinstance(value, (list, tuple)) or len(value) != count or any(
+        type(item) is not bool for item in value
+    ):
+        raise ValueError(f"{name} must contain exactly {count} booleans")
+    return tuple(value)
+
+
+def _validated_ideal_cup_selection(
+    segment: Mapping[str, Any], *, physical_cup_count: int, path: np.ndarray
+) -> dict[str, Any]:
+    """Validate planner/FK cup evidence without calling it runtime contact.
+
+    The planner's third mask proves contact at its strict FK endpoint.  Isaac
+    must recompute a distinct ``actual_contact_mask`` from the simulated state
+    before creating any constraint, so this function deliberately renames the
+    incoming value to ``planned_fk_contact_mask``.
+    """
+
+    contact = segment.get("contact")
+    authoritative = (
+        contact.get("cup_selection") if isinstance(contact, Mapping) else None
+    )
+    aliases = [
+        value
+        for value in (
+            segment.get("ideal_independent_cups"),
+            segment.get("independent_cup_selection"),
+        )
+        if value is not None
+    ]
+    if authoritative is not None and any(alias != authoritative for alias in aliases):
+        raise ValueError(
+            "legacy independent-cup aliases must exactly equal contact.cup_selection"
+        )
+    raw = authoritative if authoritative is not None else (aliases[0] if aliases else None)
+    if not isinstance(raw, Mapping):
+        raise ValueError(
+            "ideal_independent_cups requires planner evidence from the strict actual-FK contact pose"
+        )
+    if physical_cup_count != M710_CUP_COUNT:
+        raise ValueError("ideal_independent_cups requires the fixed 72-cup physical array")
+    target_id = str(raw.get("target_id", "")).strip()
+    if target_id != str(segment.get("target", "")).strip():
+        raise ValueError("independent-cup evidence target differs from the trajectory target")
+    target_face = str(raw.get("target_face", "")).strip()
+    if target_face not in {"front", "left", "right", "top"}:
+        raise ValueError("independent-cup evidence requires a supported target face")
+    pose_source = str(raw.get("pose_source", "")).strip()
+    if "actual_fk" not in pose_source:
+        raise ValueError("independent-cup evidence must be recomputed from the accepted actual FK")
+    bit_order = raw.get("mask_bit_order_cup_ids")
+    if not isinstance(bit_order, list) or len(bit_order) != physical_cup_count or any(
+        not isinstance(item, str) or not item for item in bit_order
+    ) or tuple(bit_order) != build_m710_independent_cup_array().cup_ids:
+        raise ValueError(
+            "independent-cup evidence requires the canonical 72 stable cup IDs"
+        )
+    eligible = _validated_bool_mask(
+        raw.get("geometrically_eligible_mask"),
+        "geometrically_eligible_mask",
+        physical_cup_count,
+    )
+    commanded = _validated_bool_mask(
+        raw.get("commanded_active_mask"),
+        "commanded_active_mask",
+        physical_cup_count,
+    )
+    planned_contact = _validated_bool_mask(
+        raw.get("actual_contact_mask"),
+        "planned actual_contact_mask",
+        physical_cup_count,
+    )
+    if not any(commanded):
+        raise ValueError("ideal_independent_cups requires a non-empty commanded cup mask")
+    if any(active and not allowed for active, allowed in zip(commanded, eligible, strict=True)):
+        raise ValueError("commanded cup mask must be a subset of geometrically eligible cups")
+    if planned_contact != commanded:
+        raise ValueError(
+            "strict actual-FK contact mask must include every commanded cup"
+        )
+    actual_q = np.asarray(raw.get("actual_q_rad", []), dtype=float)
+    grasp_index = int(segment.get("grasp_index", -1))
+    if (
+        actual_q.shape != (path.shape[1],)
+        or not np.all(np.isfinite(actual_q))
+        or grasp_index < 0
+        or grasp_index >= len(path)
+        or not np.allclose(actual_q, path[grasp_index], atol=1e-9, rtol=0.0)
+    ):
+        raise ValueError("independent-cup actual_q_rad must equal the selected grasp path endpoint")
+    return {
+        "suction_mode": IDEAL_INDEPENDENT_CUPS_MODE,
+        "holding_capacity_assumption": HOLDING_CAPACITY_ASSUMPTION,
+        "enforce_vacuum_force_capacity": False,
+        "enforce_vacuum_break_force": False,
+        "enforce_vacuum_break_torque": False,
+        "load_bearing_minimum_cup_count": None,
+        "target_id": target_id,
+        "target_face": target_face,
+        "pose_source": pose_source,
+        "mask_bit_order_cup_ids": list(bit_order),
+        "geometrically_eligible_mask": list(eligible),
+        "commanded_active_mask": list(commanded),
+        "planned_fk_contact_mask": list(planned_contact),
+        "actual_contact_mask": [False] * physical_cup_count,
+        "actual_contact_mask_source": "ISAAC_RUNTIME_ACTUAL_STATE_REQUIRED",
+        "commanded_active_indices": [index for index, active in enumerate(commanded) if active],
+        "actual_q_rad": actual_q.tolist(),
+        "actual_virtual_task_tcp_pose_world": copy.deepcopy(
+            raw.get("actual_virtual_task_tcp_pose_world")
+        ),
+    }
+
+
+def _validated_place_evidence(segment: Mapping[str, Any]) -> dict[str, Any]:
+    """Prefer the stage contract's real box pose and support evidence.
+
+    Older replay fixtures expose three flat aliases.  When the structured
+    contract exists those aliases may remain only as byte-for-byte-equivalent
+    compatibility fields, so the adapter cannot silently replay a different
+    receiving surface or release pose.
+    """
+
+    raw = segment.get("place")
+    if raw is None:
+        return {
+            "place_surface": segment.get("place_surface"),
+            "place_center_m": list(segment.get("place_center", [])),
+            "release_center_m": list(segment.get("release_center", [])),
+            "planned_support_audit": None,
+            "actual_box_pose_world": None,
+        }
+    if not isinstance(raw, Mapping):
+        raise ValueError("trajectory place evidence must be a mapping")
+    receiver = str(raw.get("receiver", "")).strip()
+    surface = str(raw.get("place_surface", "")).strip()
+    if not receiver or surface != receiver:
+        raise ValueError("place receiver and place_surface must name the same support")
+    pose = np.asarray(raw.get("actual_box_pose_world", []), dtype=float)
+    release_center = np.asarray(raw.get("release_center_world_m", []), dtype=float)
+    if (
+        pose.shape != (4, 4)
+        or release_center.shape != (3,)
+        or not np.all(np.isfinite(pose))
+        or not np.all(np.isfinite(release_center))
+        or not np.allclose(pose[3], [0.0, 0.0, 0.0, 1.0], atol=1e-12, rtol=0.0)
+        or not np.allclose(pose[:3, :3].T @ pose[:3, :3], np.eye(3), atol=1e-12, rtol=0.0)
+        or not np.isclose(np.linalg.det(pose[:3, :3]), 1.0, atol=1e-12, rtol=0.0)
+        or not np.allclose(release_center, pose[:3, 3], atol=1e-12, rtol=0.0)
+    ):
+        raise ValueError("place evidence requires one finite rigid actual box pose")
+    support = raw.get("support")
+    if not isinstance(support, Mapping):
+        raise ValueError("place evidence requires a support audit mapping")
+    edge_clearance = np.asarray(support.get("edge_clearance_xy_m", []), dtype=float)
+    support_pose = np.asarray(support.get("actual_box_pose", []), dtype=float)
+    bottom_gap = float(support.get("bottom_gap_m", float("nan")))
+    penetration = float(support.get("penetration_m", float("nan")))
+    if (
+        support.get("supported") is not True
+        or support.get("bottom_face_coplanar") is not True
+        or edge_clearance.shape != (2,)
+        or np.any(edge_clearance < 0.0)
+        or not np.all(np.isfinite(edge_clearance))
+        or not np.isfinite(bottom_gap)
+        or not np.isfinite(penetration)
+        or penetration < 0.0
+        or support_pose.shape != (4, 4)
+        or not np.allclose(support_pose, pose, atol=1e-12, rtol=0.0)
+    ):
+        raise ValueError("place support audit does not prove the selected actual box pose")
+    for alias, expected in (
+        ("place_surface", surface),
+        ("place_center", release_center.tolist()),
+        ("release_center", release_center.tolist()),
+    ):
+        if alias in segment and segment.get(alias) != expected:
+            raise ValueError(f"legacy {alias} alias differs from structured place evidence")
+    return {
+        "place_surface": surface,
+        "place_center_m": release_center.tolist(),
+        "release_center_m": release_center.tolist(),
+        "planned_support_audit": copy.deepcopy(dict(support)),
+        "actual_box_pose_world": pose.tolist(),
+    }
+
+
+def _validated_official_model_manifest(value: Any) -> dict[str, Any]:
+    """Validate the inline, fixed-commit FANUC model data consumed by Isaac."""
+
+    if not isinstance(value, Mapping):
+        raise ValueError("official FANUC model manifest must be an inline mapping")
+    manifest = copy.deepcopy(dict(value))
+    if manifest.get("schema_version") != "fanuc_official_description_provenance_v1":
+        raise ValueError("unsupported official FANUC model manifest schema")
+    upstream = manifest.get("upstream")
+    if not isinstance(upstream, Mapping):
+        raise ValueError("official FANUC manifest requires upstream provenance")
+    repository_url = str(upstream.get("repository_url", "")).rstrip("/")
+    if repository_url.removesuffix(".git") != OFFICIAL_M710_DESCRIPTION_REPOSITORY:
+        raise ValueError("official FANUC manifest repository is not authoritative")
+    if upstream.get("commit") != OFFICIAL_M710_DESCRIPTION_COMMIT:
+        raise ValueError("official FANUC manifest must use the reviewed fixed commit")
+    if str(upstream.get("license_spdx", "")) != "Apache-2.0":
+        raise ValueError("official FANUC manifest must preserve its Apache-2.0 license")
+    model = manifest.get("model")
+    integration = manifest.get("integration")
+    geometry = manifest.get("geometry")
+    if not isinstance(model, Mapping) or not isinstance(integration, Mapping) or not isinstance(
+        geometry, Mapping
+    ):
+        raise ValueError("official FANUC manifest model, geometry, and integration are required")
+    expanded_urdf_record = integration.get("expanded_urdf")
+    if not isinstance(expanded_urdf_record, Mapping):
+        raise ValueError("official FANUC manifest requires an expanded URDF record")
+    expanded_urdf = str(expanded_urdf_record.get("path", "")).strip()
+    if (
+        not expanded_urdf
+        or int(expanded_urdf_record.get("bytes", 0)) <= 0
+        or not _lowercase_sha256(
+            expanded_urdf_record.get("sha256"), "official expanded URDF sha256"
+        )
+    ):
+        raise ValueError("official FANUC manifest requires a repository-relative expanded URDF")
+    visual_meshes = geometry.get("visual_meshes")
+    collision_meshes = geometry.get("collision_meshes")
+    if not isinstance(visual_meshes, list) or not isinstance(collision_meshes, list):
+        raise ValueError("official FANUC manifest requires visual and collision mesh inventories")
+
+    source_files = manifest.get("source_files")
+    if (
+        not isinstance(source_files, list)
+        or len(source_files) != int(manifest.get("source_file_total_count", -1))
+        or any(
+            not isinstance(item, Mapping)
+            or not str(item.get("path", "")).strip()
+            or not str(item.get("upstream_path", "")).strip()
+            or int(item.get("bytes", 0)) <= 0
+            or not _lowercase_sha256(
+                item.get("sha256"), "official source-file sha256"
+            )
+            for item in source_files
+        )
+        or sum(int(item["bytes"]) for item in source_files)
+        != int(manifest.get("source_file_total_bytes", -1))
+    ):
+        raise ValueError("official FANUC source-file inventory is incomplete")
+
+    actuated_order = model.get("actuated_joint_order")
+    joints = model.get("joints")
+    moving_links = model.get("moving_links")
+    inertials = model.get("inertials")
+    if (
+        not isinstance(actuated_order, list)
+        or len(actuated_order) != 6
+        or len(set(actuated_order)) != 6
+        or not isinstance(joints, list)
+        or not isinstance(moving_links, list)
+        or len(moving_links) != 6
+        or not isinstance(inertials, list)
+    ):
+        raise ValueError("official FANUC manifest must expose six ordered joints and moving links")
+    physical_links = {str(model.get("base_link", "")), *map(str, moving_links)}
+    for name, inventory in (
+        ("visual", visual_meshes),
+        ("collision", collision_meshes),
+    ):
+        if (
+            len(inventory) != len(physical_links)
+            or {
+                str(item.get("link", ""))
+                for item in inventory
+                if isinstance(item, Mapping)
+            }
+            != physical_links
+            or any(
+                not isinstance(item, Mapping) or not str(item.get("path", "")).strip()
+                for item in inventory
+            )
+        ):
+            raise ValueError(
+                f"official FANUC {name} inventory must cover each physical link exactly once"
+            )
+    joints_by_name = {
+        str(item.get("name", "")): item for item in joints if isinstance(item, Mapping)
+    }
+    if set(joints_by_name) != set(actuated_order):
+        raise ValueError("official FANUC joint records differ from the actuated joint order")
+    lower: list[float] = []
+    upper: list[float] = []
+    velocity: list[float] = []
+    effort: list[float] = []
+    for name in actuated_order:
+        joint = joints_by_name[name]
+        limit = joint.get("limit")
+        if not isinstance(limit, Mapping):
+            raise ValueError(f"official joint {name} has no complete limit record")
+        values = np.asarray(
+            [
+                limit.get("lower_rad"),
+                limit.get("upper_rad"),
+                limit.get("velocity_rad_s"),
+                limit.get("effort_nm"),
+            ],
+            dtype=float,
+        )
+        if (
+            values.shape != (4,)
+            or not np.all(np.isfinite(values))
+            or values[0] >= values[1]
+            or values[2] <= 0.0
+            or values[3] <= 0.0
+        ):
+            raise ValueError(f"official joint {name} limits are invalid")
+        lower.append(float(values[0]))
+        upper.append(float(values[1]))
+        velocity.append(float(values[2]))
+        effort.append(float(values[3]))
+
+    link_dynamics = []
+    for raw in inertials:
+        if not isinstance(raw, Mapping):
+            raise ValueError("official link inertials must be mappings")
+        item = {
+            "link": raw.get("link"),
+            "mass_kg": raw.get("mass_kg"),
+            "com_xyz_m": raw.get("origin_xyz_m"),
+            "inertia_at_com_kg_m2": raw.get("inertia_at_com_kg_m2"),
+            "inertial_origin_rpy_rad": raw.get("origin_rpy_rad", [0.0, 0.0, 0.0]),
+            "source_status": "OFFICIAL_FANUC_DESCRIPTION_FIXED_COMMIT",
+        }
+        link_dynamics.append(item)
+    audited_dynamics = _validated_link_dynamics(link_dynamics)
+    if set(item["link"] for item in audited_dynamics) != physical_links:
+        raise ValueError("official FANUC inertials must cover the base and all six moving links")
+    total_mass = float(sum(item["mass_kg"] for item in audited_dynamics))
+    declared_total = float(model.get("total_mass_kg", float("nan")))
+    if not np.isclose(total_mass, declared_total, atol=1e-9, rtol=0.0):
+        raise ValueError("official FANUC total mass disagrees with its link inertials")
+    return {
+        "manifest": manifest,
+        "expanded_urdf": expanded_urdf,
+        "joint_names": tuple(str(name) for name in actuated_order),
+        "joint_lower_rad": np.asarray(lower, dtype=float),
+        "joint_upper_rad": np.asarray(upper, dtype=float),
+        "joint_velocity_rad_s": np.asarray(velocity, dtype=float),
+        "joint_effort_nm": np.asarray(effort, dtype=float),
+        "link_dynamics": audited_dynamics,
+        "moving_links": tuple(str(name) for name in moving_links),
+        "mass_accounting_link": str(moving_links[-1]),
+        "flange_link": str(model.get("flange_link", "")),
+        "fanuc_flange_link": str(model.get("fanuc_flange_link", "")),
+        "manifest_sha256": _canonical_digest(manifest),
+    }
 
 
 def _canonical_digest(value: Any) -> str:
@@ -160,6 +532,9 @@ def _validated_link_dynamics(value: Any) -> list[dict[str, Any]]:
         mass = float(source.get("mass_kg", float("nan")))
         center = np.asarray(source.get("com_xyz_m", []), dtype=float)
         inertia = np.asarray(source.get("inertia_at_com_kg_m2", []), dtype=float)
+        inertial_origin_rpy = np.asarray(
+            source.get("inertial_origin_rpy_rad", [0.0, 0.0, 0.0]), dtype=float
+        )
         if not name or name in names:
             raise ValueError("robot dynamic link names must be nonempty and unique")
         eigenvalues = np.linalg.eigvalsh(inertia) if inertia.shape == (3, 3) else np.asarray([])
@@ -170,6 +545,8 @@ def _validated_link_dynamics(value: Any) -> list[dict[str, Any]]:
             or not np.all(np.isfinite(center))
             or inertia.shape != (3, 3)
             or not np.all(np.isfinite(inertia))
+            or inertial_origin_rpy.shape != (3,)
+            or not np.all(np.isfinite(inertial_origin_rpy))
             or not np.allclose(inertia, inertia.T, atol=1e-10, rtol=0.0)
             or eigenvalues.shape != (3,)
             or np.any(eigenvalues <= 0.0)
@@ -182,6 +559,7 @@ def _validated_link_dynamics(value: Any) -> list[dict[str, Any]]:
                 "mass_kg": mass,
                 "com_xyz_m": center.tolist(),
                 "inertia_at_com_kg_m2": inertia.tolist(),
+                "inertial_origin_rpy_rad": inertial_origin_rpy.tolist(),
                 "source_status": str(source.get("source_status", "UNSPECIFIED")),
             }
         )
@@ -233,6 +611,35 @@ def _combine_fixed_mass_properties(
         second_inertia, second_mass, second_com
     )
     return total_mass, combined_com, combined_inertia
+
+
+def _transform_mass_properties(
+    center_child_m: Sequence[float],
+    inertia_child_at_com_kg_m2: Sequence[Sequence[float]],
+    parent_from_child: Sequence[Sequence[float]],
+) -> tuple[np.ndarray, np.ndarray]:
+    """Express a body's COM and full inertia tensor in its fixed parent frame."""
+
+    center = np.asarray(center_child_m, dtype=float)
+    inertia = np.asarray(inertia_child_at_com_kg_m2, dtype=float)
+    transform = np.asarray(parent_from_child, dtype=float)
+    if (
+        center.shape != (3,)
+        or inertia.shape != (3, 3)
+        or transform.shape != (4, 4)
+        or not np.all(np.isfinite(center))
+        or not np.all(np.isfinite(inertia))
+        or not np.all(np.isfinite(transform))
+        or not np.allclose(transform[3], [0.0, 0.0, 0.0, 1.0], atol=1e-12, rtol=0.0)
+        or not np.allclose(transform[:3, :3].T @ transform[:3, :3], np.eye(3), atol=1e-10, rtol=0.0)
+        or not np.isclose(np.linalg.det(transform[:3, :3]), 1.0, atol=1e-10, rtol=0.0)
+    ):
+        raise ValueError("fixed-body frame transform and mass properties must be finite SE(3)")
+    rotation = transform[:3, :3]
+    return (
+        rotation @ center + transform[:3, 3],
+        rotation @ inertia @ rotation.T,
+    )
 
 
 def _validated_physics_contract(
@@ -614,6 +1021,49 @@ def build_fanuc_isaac_replay_bundle(
         raise ValueError("Isaac replay requires a supported six-axis FANUC plan") from exc
     if robot_model_id not in SUPPORTED_FANUC_REPLAY_MODELS:
         raise ValueError("Isaac replay requires a supported six-axis FANUC plan")
+    raw_official_manifest = robot.get("official_model_manifest")
+    if raw_official_manifest is None:
+        raw_official_manifest = plan.get("official_model_manifest")
+    if raw_official_manifest is None:
+        raw_official_manifest = cfg.get("official_model_manifest")
+    official_model = (
+        None
+        if raw_official_manifest is None
+        else _validated_official_model_manifest(raw_official_manifest)
+    )
+    official_model_required = plan.get("official_model_required", False)
+    if not isinstance(official_model_required, bool):
+        raise ValueError("official_model_required must be a boolean")
+    if robot_model_id == "fanuc_m710id_70" and official_model_required and official_model is None:
+        raise ValueError("qualified M-710 replay requires the inline official model manifest")
+    declared_official_manifest_sha256 = robot.get("official_model_manifest_sha256")
+    if declared_official_manifest_sha256 is None:
+        declared_official_manifest_sha256 = plan.get("official_model_manifest_sha256")
+    if declared_official_manifest_sha256 is None:
+        declared_official_manifest_sha256 = cfg.get("official_model_manifest_sha256")
+    official_manifest_file_sha256 = (
+        None
+        if official_model is None
+        else _lowercase_sha256(
+            declared_official_manifest_sha256,
+            "official model manifest file sha256",
+        )
+    )
+    if official_model is None and declared_official_manifest_sha256 is not None:
+        raise ValueError("official model manifest sha256 requires the inline manifest")
+    declared_srdf_path = str(robot.get("srdf_path", "")).strip()
+    declared_srdf_sha256 = robot.get("srdf_sha256")
+    if official_model is not None:
+        if not declared_srdf_path:
+            raise ValueError("official M-710 replay requires an explicit SRDF path")
+        declared_srdf_sha256 = _lowercase_sha256(
+            declared_srdf_sha256, "official-model SRDF sha256"
+        )
+    joint_names = (
+        FANUC_JOINT_NAMES
+        if official_model is None
+        else official_model["joint_names"]
+    )
     segments = plan.get("segments")
     if not isinstance(segments, list) or not segments:
         raise ValueError("plan contains no trajectory segments")
@@ -634,10 +1084,33 @@ def build_fanuc_isaac_replay_bundle(
             segment,
         )
     path = np.asarray(segment.get("path", []), dtype=float)
-    if path.ndim != 2 or path.shape[1] != len(FANUC_JOINT_NAMES) or len(path) < 2:
+    if path.ndim != 2 or path.shape[1] != len(joint_names) or len(path) < 2:
         raise ValueError("FANUC segment path must have shape (N, 6) with at least two waypoints")
-    limits = motion_limits_from_config(cfg, path.shape[1])
+    if official_model is not None and (
+        np.any(path < official_model["joint_lower_rad"][None, :] - 1e-12)
+        or np.any(path > official_model["joint_upper_rad"][None, :] + 1e-12)
+    ):
+        raise ValueError("trajectory exceeds a fixed official FANUC joint position limit")
     execution = cfg.get("execution", {})
+    effective_cfg = cfg
+    if official_model is not None:
+        effective_cfg = copy.deepcopy(cfg)
+        effective_execution = effective_cfg.setdefault("execution", {})
+        declared_velocity = np.asarray(
+            effective_execution.get("joint_velocity_limits_rad_s", []), dtype=float
+        )
+        official_velocity = official_model["joint_velocity_rad_s"]
+        if declared_velocity.size and (
+            declared_velocity.shape != official_velocity.shape
+            or not np.allclose(declared_velocity, official_velocity, atol=1e-12, rtol=0.0)
+        ):
+            raise ValueError("execution velocity limits differ from the fixed official FANUC manifest")
+        effective_execution["joint_velocity_limits_rad_s"] = official_velocity.tolist()
+        effective_execution["limits_source"] = (
+            f"{OFFICIAL_M710_DESCRIPTION_REPOSITORY}@{OFFICIAL_M710_DESCRIPTION_COMMIT}"
+        )
+        execution = effective_execution
+    limits = motion_limits_from_config(effective_cfg, path.shape[1])
     loaded_motion_time_scale = float(execution.get("loaded_motion_time_scale", 1.0))
     release_index = int(segment.get("release_index", len(path) - 1))
     if not 0 <= release_index < len(path):
@@ -784,7 +1257,15 @@ def build_fanuc_isaac_replay_bundle(
         if source_release_time is not None and source_release_retreat_time >= source_release_time:
             release_retreat_time += release_seconds
     effort_limits = np.asarray(execution.get("joint_effort_limits_nm", []), dtype=float)
-    if effort_limits.shape not in {(0,), (len(FANUC_JOINT_NAMES),)}:
+    if official_model is not None:
+        official_effort = official_model["joint_effort_nm"]
+        if effort_limits.size and (
+            effort_limits.shape != official_effort.shape
+            or not np.allclose(effort_limits, official_effort, atol=1e-12, rtol=0.0)
+        ):
+            raise ValueError("execution effort limits differ from the fixed official FANUC manifest")
+        effort_limits = official_effort.copy()
+    if effort_limits.shape not in {(0,), (len(joint_names),)}:
         raise ValueError("joint_effort_limits_nm must contain one value per FANUC joint")
     if effort_limits.size and (not np.all(np.isfinite(effort_limits)) or np.any(effort_limits <= 0.0)):
         raise ValueError("joint effort limits must be finite and positive")
@@ -818,19 +1299,27 @@ def build_fanuc_isaac_replay_bundle(
         for item in machine_qualification_warnings
     ):
         raise ValueError("machine_qualification_warnings must be a list of non-empty strings")
-    execution_qualified = plan.get(
-        "execution_qualified", simulation_execution_ready and machine_qualified
-    )
+    # Machine/controller certification is evidence for a real installation,
+    # not a prerequisite for executing the sourced rigid-body model in Isaac.
+    # ``execution_qualified`` is retained as a legacy reporting field only.
+    execution_qualified = plan.get("execution_qualified", False)
     if not isinstance(execution_qualified, bool):
-        raise ValueError("execution_qualified must be a boolean")
-    if execution_qualified != (simulation_execution_ready and machine_qualified):
+        raise ValueError("legacy execution_qualified must be a boolean")
+    simulation_execution_qualified = plan.get(
+        "simulation_execution_qualified",
+        simulation_execution_ready and not execution_blockers,
+    )
+    if not isinstance(simulation_execution_qualified, bool) or (
+        simulation_execution_qualified
+        != (simulation_execution_ready and not execution_blockers)
+    ):
         raise ValueError(
-            "execution_qualified must equal simulation_execution_ready AND machine_qualified"
+            "simulation_execution_qualified must equal simulation readiness with no blockers"
         )
     if robot_model_id == "fanuc_m710id_70":
-        if effort_limits.shape != (len(FANUC_JOINT_NAMES),):
+        if effort_limits.shape != (len(joint_names),):
             raise ValueError("M-710 engineering replay requires six explicit finite effort limits")
-        if stiffness.shape != (len(FANUC_JOINT_NAMES),) or damping.shape != (len(FANUC_JOINT_NAMES),):
+        if stiffness.shape != (len(joint_names),) or damping.shape != (len(joint_names),):
             raise ValueError("M-710 engineering replay requires six explicit drive gains")
         if (
             not np.all(np.isfinite(stiffness))
@@ -858,15 +1347,21 @@ def build_fanuc_isaac_replay_bundle(
             raise ValueError("M-710 replay target must identify exactly one dynamic carton")
 
     validation_cfg = cfg.get("simulation_validation", {})
-    robot_link_dynamics = _validated_link_dynamics(
-        validation_cfg.get("robot_link_dynamics", [])
+    robot_link_dynamics = (
+        copy.deepcopy(official_model["link_dynamics"])
+        if official_model is not None
+        else _validated_link_dynamics(validation_cfg.get("robot_link_dynamics", []))
     )
     if robot_model_id == "fanuc_m710id_70":
-        expected_links = {"base_link", *(f"J{index}_link" for index in range(1, 7))}
+        expected_links = (
+            {"base_link", *(f"J{index}_link" for index in range(1, 7))}
+            if official_model is None
+            else {item["link"] for item in official_model["link_dynamics"]}
+        )
         actual_links = {item["link"] for item in robot_link_dynamics}
         if actual_links != expected_links:
             raise ValueError(
-                "M-710 engineering replay requires mass properties for base_link and J1_link..J6_link"
+                "M-710 replay requires mass properties for every declared physical robot link"
             )
     footprint_size = np.asarray(
         validation_cfg.get("vacuum_footprint_size_m", [0.30, 0.40]), dtype=float
@@ -893,12 +1388,31 @@ def build_fanuc_isaac_replay_bundle(
     physical_cup_count = int(validation_cfg.get("vacuum_cup_count", 0))
     if not product_model or not cup_model or physical_cup_count <= 0:
         raise ValueError("vacuum product model, cup model, and physical cup count are required")
+    suction_mode = str(
+        validation_cfg.get(
+            "vacuum_suction_mode",
+            validation_cfg.get("vacuum_attachment_model", "all_cups"),
+        )
+    )
+    attachment_model = str(validation_cfg.get("vacuum_attachment_model", "all_cups"))
+    ideal_independent_mode = suction_mode == IDEAL_INDEPENDENT_CUPS_MODE or (
+        attachment_model == IDEAL_INDEPENDENT_CUPS_MODE
+    )
+    if ideal_independent_mode:
+        suction_mode = IDEAL_INDEPENDENT_CUPS_MODE
+        attachment_model = IDEAL_INDEPENDENT_CUPS_MODE
     holding_torque = optional_positive("vacuum_holding_torque_nm")
     pull_off_force_per_cup = optional_positive("vacuum_pull_off_force_per_cup_n")
     shear_force_per_cup = optional_positive("vacuum_shear_force_per_cup_n")
-    if pull_off_force_per_cup is None or shear_force_per_cup is None:
+    if not ideal_independent_mode and (
+        pull_off_force_per_cup is None or shear_force_per_cup is None
+    ):
         raise ValueError("per-cup axial pull-off and shear forces are required")
-    if robot_model_id == "fanuc_m710id_70" and holding_torque is None:
+    if (
+        robot_model_id == "fanuc_m710id_70"
+        and not ideal_independent_mode
+        and holding_torque is None
+    ):
         raise ValueError("M-710 engineering replay requires a finite vacuum holding torque")
     cup_rows = int(validation_cfg.get("vacuum_cup_rows", 0))
     cup_columns = int(validation_cfg.get("vacuum_cup_columns", 0))
@@ -924,19 +1438,29 @@ def build_fanuc_isaac_replay_bundle(
         [(length, -width) for length in length_offsets for width in width_offsets],
         dtype=float,
     )
-    attachment_model = str(validation_cfg.get("vacuum_attachment_model", "all_cups"))
-    active_cup_indices = tuple(int(index) for index in segment.get("sealed_cup_indices", []))
-    if attachment_model == "per_sealed_cup" and not active_cup_indices:
-        raise ValueError("per-sealed-cup attachment requires sealed cup evidence in the plan")
-    if not active_cup_indices:
-        active_cup_indices = tuple(range(physical_cup_count))
+    ideal_cup_selection = None
+    if ideal_independent_mode:
+        ideal_cup_selection = _validated_ideal_cup_selection(
+            segment,
+            physical_cup_count=physical_cup_count,
+            path=path,
+        )
+        active_cup_indices = tuple(ideal_cup_selection["commanded_active_indices"])
+    else:
+        active_cup_indices = tuple(int(index) for index in segment.get("sealed_cup_indices", []))
+        if attachment_model == "per_sealed_cup" and not active_cup_indices:
+            raise ValueError("per-sealed-cup attachment requires sealed cup evidence in the plan")
+        if not active_cup_indices:
+            active_cup_indices = tuple(range(physical_cup_count))
     if len(set(active_cup_indices)) != len(active_cup_indices) or any(
         index < 0 or index >= physical_cup_count for index in active_cup_indices
     ):
         raise ValueError("sealed cup indices must be unique and inside the physical cup grid")
     active_cup_count = len(active_cup_indices)
-    solver_attachment_model = str(
-        validation_cfg.get("vacuum_solver_attachment_model", "per_sealed_cup")
+    solver_attachment_model = (
+        "single_same_body_fixed_constraint_after_actual_contact"
+        if ideal_independent_mode
+        else str(validation_cfg.get("vacuum_solver_attachment_model", "per_sealed_cup"))
     )
     solver_position_iterations = int(
         validation_cfg.get("vacuum_solver_position_iterations", 32)
@@ -950,10 +1474,14 @@ def build_fanuc_isaac_replay_bundle(
         "per_sealed_cup",
         "equivalent_center_of_pressure",
         "equivalent_zone_row_band_centers",
+        "single_same_body_fixed_constraint_after_actual_contact",
     }:
         raise ValueError("vacuum solver attachment model is unsupported")
     active_cup_centers = cup_centers_tool_yz[np.asarray(active_cup_indices, dtype=int)]
-    if solver_attachment_model == "equivalent_center_of_pressure":
+    if solver_attachment_model in {
+        "equivalent_center_of_pressure",
+        "single_same_body_fixed_constraint_after_actual_contact",
+    }:
         solver_attachment_offsets = np.mean(active_cup_centers, axis=0, keepdims=True)
         solver_attachment_cup_counts = [active_cup_count]
     elif solver_attachment_model == "equivalent_zone_row_band_centers":
@@ -984,10 +1512,22 @@ def build_fanuc_isaac_replay_bundle(
     else:
         solver_attachment_offsets = active_cup_centers
         solver_attachment_cup_counts = [1] * active_cup_count
-    holding_force = pull_off_force_per_cup * active_cup_count
-    shear_force = shear_force_per_cup * active_cup_count
-    hardware_maximum_holding_force = pull_off_force_per_cup * physical_cup_count
-    hardware_maximum_shear_force = shear_force_per_cup * physical_cup_count
+    holding_force = (
+        None if ideal_independent_mode else pull_off_force_per_cup * active_cup_count
+    )
+    shear_force = (
+        None if ideal_independent_mode else shear_force_per_cup * active_cup_count
+    )
+    hardware_maximum_holding_force = (
+        None
+        if pull_off_force_per_cup is None
+        else pull_off_force_per_cup * physical_cup_count
+    )
+    hardware_maximum_shear_force = (
+        None
+        if shear_force_per_cup is None
+        else shear_force_per_cup * physical_cup_count
+    )
     catalogue_theoretical_force = optional_positive(
         "vacuum_catalog_theoretical_total_force_n_at_minus_60_kpa"
     )
@@ -996,9 +1536,11 @@ def build_fanuc_isaac_replay_bundle(
     capture_tolerance = float(
         validation_cfg.get("vacuum_surface_gripper_capture_tolerance_m", 0.0)
     )
+    physical_positive_values = [max_grip_distance, cup_compression]
+    if holding_force is not None:
+        physical_positive_values.append(holding_force)
     if any(
-        not np.isfinite(value) or value <= 0.0
-        for value in (holding_force, max_grip_distance, cup_compression)
+        not np.isfinite(value) or value <= 0.0 for value in physical_positive_values
     ) or not np.isfinite(capture_tolerance) or capture_tolerance < 0.0:
         raise ValueError("vacuum total force and grip distance must be finite and positive")
     if robot_model_id == "fanuc_m20id_35" and not np.isclose(
@@ -1027,15 +1569,30 @@ def build_fanuc_isaac_replay_bundle(
     )
     tool_frame_contract = tool_cfg.get("frame_contract")
     validation_frame_contract = validation_cfg.get("vacuum_frame_contract")
+    mass_accounting_link = (
+        "J6_link"
+        if official_model is None
+        else official_model["mass_accounting_link"]
+    )
     if robot_model_id == "fanuc_m710id_70":
+        allowed_attachment_links = {mass_accounting_link}
+        if official_model is not None:
+            allowed_attachment_links.update(
+                link
+                for link in (
+                    official_model["flange_link"],
+                    official_model["fanuc_flange_link"],
+                )
+                if link
+            )
         if (
-            declared_tool_mass_policy
-            != "FIXED_TOOL_COMBINED_INTO_J6_RIGID_BODY_EXACTLY_ONCE"
-            or declared_tool_attachment_link != "J6_link"
+            "FIXED_TOOL_COMBINED_INTO_" not in declared_tool_mass_policy
+            or not declared_tool_mass_policy.endswith("_RIGID_BODY_EXACTLY_ONCE")
+            or declared_tool_attachment_link not in allowed_attachment_links
             or independent_tool_rigid_body_required is not False
         ):
             raise ValueError(
-                "M-710 tool topology must declare one fixed mass contribution combined into J6"
+                "M-710 tool topology must declare one fixed mass contribution combined exactly once"
             )
         if (
             not isinstance(tool_frame_contract, dict)
@@ -1129,7 +1686,11 @@ def build_fanuc_isaac_replay_bundle(
     grasp_body_path_suffix = str(
         robot.get(
             "isaac_grasp_body_path_suffix",
-            "Geometry/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link",
+            (
+                "Geometry/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link"
+                if official_model is None
+                else mass_accounting_link
+            ),
         )
     ).strip("/")
     flange_offset_from_grasp_body = np.asarray(
@@ -1145,19 +1706,49 @@ def build_fanuc_isaac_replay_bundle(
 
     mass_accounting: dict[str, Any] | None = None
     if robot_model_id == "fanuc_m710id_70":
-        grasp_body_link = grasp_body_path_suffix.rsplit("/", 1)[-1]
-        if grasp_body_link != "J6_link":
-            raise ValueError("M-710 fixed-tool mass accounting requires J6_link as the grasp body")
+        grasp_body_link = str(robot.get("isaac_grasp_body_link", mass_accounting_link))
+        if grasp_body_link != mass_accounting_link:
+            raise ValueError("M-710 fixed-tool mass accounting requires the final moving link")
         original_robot_mass = float(sum(item["mass_kg"] for item in robot_link_dynamics))
         grasp_record = next(item for item in robot_link_dynamics if item["link"] == grasp_body_link)
-        tool_com_in_grasp_body = flange_offset_from_grasp_body + gripper_com
+        grasp_body_from_tool = np.asarray(
+            tool_cfg.get("T_mass_accounting_link_tool", []), dtype=float
+        )
+        if grasp_body_from_tool.shape != (4, 4):
+            if official_model is not None:
+                raise ValueError(
+                    "official M-710 mass accounting requires T_mass_accounting_link_tool"
+                )
+            grasp_body_from_tool = np.eye(4)
+            grasp_body_from_tool[:3, 3] = flange_offset_from_grasp_body
+        if (
+            not np.all(np.isfinite(grasp_body_from_tool))
+            or not np.allclose(
+                grasp_body_from_tool[3], [0.0, 0.0, 0.0, 1.0], atol=1e-12, rtol=0.0
+            )
+            or not np.allclose(
+                grasp_body_from_tool[:3, :3].T @ grasp_body_from_tool[:3, :3],
+                np.eye(3),
+                atol=1e-12,
+                rtol=0.0,
+            )
+            or not np.isclose(
+                np.linalg.det(grasp_body_from_tool[:3, :3]), 1.0, atol=1e-12, rtol=0.0
+            )
+        ):
+            raise ValueError("T_mass_accounting_link_tool must be a finite proper SE(3) transform")
+        tool_com_in_grasp_body, tool_inertia_in_grasp_body = _transform_mass_properties(
+            gripper_com,
+            gripper_inertia,
+            grasp_body_from_tool,
+        )
         combined_mass, combined_com, combined_inertia = _combine_fixed_mass_properties(
             grasp_record["mass_kg"],
             np.asarray(grasp_record["com_xyz_m"], dtype=float),
             np.asarray(grasp_record["inertia_at_com_kg_m2"], dtype=float),
             gripper_mass,
             tool_com_in_grasp_body,
-            gripper_inertia,
+            tool_inertia_in_grasp_body,
         )
         applied_link_dynamics: list[dict[str, Any]] = []
         for item in robot_link_dynamics:
@@ -1177,9 +1768,9 @@ def build_fanuc_isaac_replay_bundle(
         if not np.isclose(applied_mass, original_robot_mass + gripper_mass, atol=1e-10, rtol=0.0):
             raise ValueError("M-710 robot/tool mass accounting is inconsistent")
         mass_accounting = {
-            "policy": "FIXED_TOOL_COMBINED_INTO_J6_RIGID_BODY_EXACTLY_ONCE",
+            "policy": declared_tool_mass_policy,
             "declared_policy": declared_tool_mass_policy,
-            "applied_policy": "FIXED_TOOL_COMBINED_INTO_J6_RIGID_BODY_EXACTLY_ONCE",
+            "applied_policy": declared_tool_mass_policy,
             "grasp_body_link": grasp_body_link,
             "declared_attachment_link": declared_tool_attachment_link,
             "independent_tool_rigid_body_created": False,
@@ -1187,6 +1778,8 @@ def build_fanuc_isaac_replay_bundle(
             "tool_mass_kg": gripper_mass,
             "applied_articulation_mass_kg": applied_mass,
             "tool_com_in_grasp_body_m": tool_com_in_grasp_body.tolist(),
+            "tool_inertia_at_com_in_grasp_body_kg_m2": tool_inertia_in_grasp_body.tolist(),
+            "T_grasp_body_tool": grasp_body_from_tool.tolist(),
         }
     physics_contract = dict(validation_cfg.get("physics", {}))
     rendering_contract = dict(validation_cfg.get("rendering", {}))
@@ -1225,12 +1818,37 @@ def build_fanuc_isaac_replay_bundle(
     ):
         raise ValueError("M-710 after_release_retreat conveyor requires release_retreat_index")
 
+    actual_state_gates = dict(validation_cfg.get("actual_state_gates", {}))
+    actual_state_gate_defaults = {
+        "maximum_contact_wait_s": 0.50,
+        "maximum_support_wait_s": 0.75,
+        "support_max_gap_m": 0.003,
+        "support_maximum_penetration_m": 0.001,
+        "support_minimum_footprint_overlap_ratio": 0.90,
+        "support_max_tilt_rad": float(np.deg2rad(5.0)),
+        "support_max_linear_speed_m_s": 0.03,
+        "support_max_angular_speed_rad_s": 0.08,
+    }
+    for name, default in actual_state_gate_defaults.items():
+        value = float(actual_state_gates.get(name, default))
+        if not np.isfinite(value) or value < 0.0:
+            raise ValueError(f"actual-state gate {name} must be finite and non-negative")
+        actual_state_gates[name] = value
+    if not 0.0 < actual_state_gates["support_minimum_footprint_overlap_ratio"] <= 1.0:
+        raise ValueError("support footprint overlap ratio must be in (0, 1]")
+
+    place_evidence = _validated_place_evidence(segment)
+
     metadata = {
         "robot_model": robot_model_id,
         "source_plan_sha256": _canonical_digest(plan),
         "merged_configuration_sha256": _canonical_digest(cfg),
-        "joint_names": list(FANUC_JOINT_NAMES),
-        "urdf_path": str(robot["urdf_path"]),
+        "joint_names": list(joint_names),
+        "urdf_path": (
+            str(robot["urdf_path"])
+            if official_model is None
+            else official_model["expanded_urdf"]
+        ),
         "base_position_m": base_position.tolist(),
         "base_rpy_rad": list(robot.get("base_rpy", [0.0, 0.0, 0.0])),
         "tool_length_m": task_tcp_from_flange,
@@ -1255,11 +1873,34 @@ def build_fanuc_isaac_replay_bundle(
         "joint_drive_damping_nm_s_rad": damping.tolist(),
         "execution_asset_fingerprint_sha256": plan.get("execution_asset_fingerprint_sha256"),
         "execution_qualified": execution_qualified,
+        "simulation_execution_qualified": simulation_execution_qualified,
         "simulation_execution_ready": simulation_execution_ready,
         "execution_blockers": execution_blockers,
         "machine_qualified": machine_qualified,
         "machine_qualification_warnings": list(machine_qualification_warnings),
         "robot_link_dynamics": robot_link_dynamics,
+        "robot_dynamics_source": (
+            "legacy_engineering_configuration"
+            if official_model is None
+            else "official_fanuc_description_fixed_commit"
+        ),
+        "official_model_manifest": (
+            None if official_model is None else official_model["manifest"]
+        ),
+        "official_model_manifest_sha256": (
+            official_manifest_file_sha256
+        ),
+        "official_model_manifest_canonical_sha256": (
+            None if official_model is None else official_model["manifest_sha256"]
+        ),
+        "robot_srdf_path": declared_srdf_path or None,
+        "robot_srdf_sha256": declared_srdf_sha256,
+        "joint_position_lower_limits_rad": (
+            [] if official_model is None else official_model["joint_lower_rad"].tolist()
+        ),
+        "joint_position_upper_limits_rad": (
+            [] if official_model is None else official_model["joint_upper_rad"].tolist()
+        ),
         "robot_tool_mass_accounting": mass_accounting,
         "physics": physics_contract,
         "required_post_release_settle_seconds": required_post_release_settle_seconds,
@@ -1273,21 +1914,71 @@ def build_fanuc_isaac_replay_bundle(
         "loaded_motion_time_scale": loaded_motion_time_scale,
         "post_release_motion_limit_scale": post_release_motion_limit_scale,
         "release_retreat_time_seconds": release_retreat_time,
-        "place_center_m": list(segment.get("place_center", [])),
-        "release_center_m": list(segment.get("release_center", [])),
-        "place_surface": segment.get("place_surface"),
+        "place_center_m": place_evidence["place_center_m"],
+        "release_center_m": place_evidence["release_center_m"],
+        "place_surface": place_evidence["place_surface"],
+        "planned_place_support_audit": place_evidence["planned_support_audit"],
+        "planned_actual_box_pose_world": place_evidence["actual_box_pose_world"],
         "free_fall_height_m": float(segment.get("free_fall_height_m", 0.0)),
         "collision_geometry": str(plan.get("collision_geometry", "urdf_collision_mesh")),
         "scene_primitives": _build_scene_primitives(plan, cfg, segment_index),
         "camera": dict(cfg.get("simulation_validation", {}).get("camera", {})),
         "rendering": rendering_contract,
         "conveyor": conveyor_contract,
+        "actual_state_gates": actual_state_gates,
         "gripper": {
+            "suction_mode": suction_mode,
+            "holding_capacity_assumption": (
+                HOLDING_CAPACITY_ASSUMPTION if ideal_independent_mode else None
+            ),
+            "enforce_vacuum_force_capacity": not ideal_independent_mode,
+            "enforce_vacuum_break_force": not ideal_independent_mode,
+            "enforce_vacuum_break_torque": not ideal_independent_mode,
+            "load_bearing_minimum_cup_count": None,
             "product_model": product_model,
             "cup_model": cup_model,
             "physical_cup_count": physical_cup_count,
             "active_sealed_cup_count": active_cup_count,
             "active_sealed_cup_indices": list(active_cup_indices),
+            "mask_bit_order_cup_ids": (
+                []
+                if ideal_cup_selection is None
+                else ideal_cup_selection["mask_bit_order_cup_ids"]
+            ),
+            "geometrically_eligible_mask": (
+                []
+                if ideal_cup_selection is None
+                else ideal_cup_selection["geometrically_eligible_mask"]
+            ),
+            "commanded_active_mask": (
+                []
+                if ideal_cup_selection is None
+                else ideal_cup_selection["commanded_active_mask"]
+            ),
+            "planned_fk_contact_mask": (
+                []
+                if ideal_cup_selection is None
+                else ideal_cup_selection["planned_fk_contact_mask"]
+            ),
+            "actual_contact_mask": (
+                []
+                if ideal_cup_selection is None
+                else ideal_cup_selection["actual_contact_mask"]
+            ),
+            "actual_contact_mask_source": (
+                None
+                if ideal_cup_selection is None
+                else ideal_cup_selection["actual_contact_mask_source"]
+            ),
+            "target_id": (
+                None if ideal_cup_selection is None else ideal_cup_selection["target_id"]
+            ),
+            "target_face": (
+                None if ideal_cup_selection is None else ideal_cup_selection["target_face"]
+            ),
+            "planner_contact_pose_source": (
+                None if ideal_cup_selection is None else ideal_cup_selection["pose_source"]
+            ),
             "sealed_cups_per_zone": list(segment.get("sealed_cups_per_zone", [])),
             "cup_rows": cup_rows,
             "cup_columns": cup_columns,
@@ -1297,7 +1988,11 @@ def build_fanuc_isaac_replay_bundle(
             "holding_force_n": holding_force,
             "holding_force_total_n": holding_force,
             "hardware_maximum_holding_force_total_n": hardware_maximum_holding_force,
-            "holding_force_derivation": "pull_off_force_per_cup_n_times_active_sealed_cup_count",
+            "holding_force_derivation": (
+                "NOT_APPLICABLE_IDEAL_HOLDING_CAPACITY_ASSUMPTION"
+                if ideal_independent_mode
+                else "pull_off_force_per_cup_n_times_active_sealed_cup_count"
+            ),
             "holding_torque_nm": holding_torque,
             "pull_off_force_per_cup_n": pull_off_force_per_cup,
             "shear_force_per_cup_n": shear_force_per_cup,
@@ -1345,7 +2040,11 @@ def build_fanuc_isaac_replay_bundle(
             ),
             "zone_count": zone_count,
             "zone_assignment_confirmed": False,
-            "model_source": "step_geometry_with_per_cup_forces_and_provisional_zone_mapping",
+            "model_source": (
+                "step_geometry_with_ideal_independent_cups_and_actual_contact_gate"
+                if ideal_independent_mode
+                else "step_geometry_with_per_cup_forces_and_provisional_zone_mapping"
+            ),
         },
     }
     if robot_model_id == "fanuc_m710id_70":

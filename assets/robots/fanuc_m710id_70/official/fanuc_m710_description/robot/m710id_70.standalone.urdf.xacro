@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<!--
+Project-owned standalone expansion wrapper for the unmodified FANUC macro.
+The relative include avoids a ROS package-index dependency.  It retains the
+upstream ee_link and FANUC flange frames and adds the simulator's explicit
+massless tool0 convention; provenance.yaml records that integration transform.
+-->
+<robot name="fanuc_m710id_70" xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:include
+    filename="../urdf/m710id_70_urdf_macro.xacro"
+  />
+
+  <link name="world" />
+  <link name="ee_link" />
+  <link name="tool0" />
+  <xacro:m710id_70 parent="world" child="ee_link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:m710id_70>
+  <!-- Planner convention: tool0 +Z follows the mechanical flange +X. -->
+  <joint name="flange-tool0" type="fixed">
+    <origin xyz="0 0 0" rpy="0 1.5707963267948966 0" />
+    <parent link="flange" />
+    <child link="tool0" />
+  </joint>
+</robot>

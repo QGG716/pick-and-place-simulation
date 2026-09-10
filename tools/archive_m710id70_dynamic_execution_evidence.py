@@ -29,6 +29,7 @@ from unloading_sim.layout_single_carton import (  # noqa: E402
 )
 from unloading_sim.m710_execution import (  # noqa: E402
     EXECUTION_IMPLEMENTATION_FILES,
+    INITIALIZATION_DIAGNOSTIC_SCHEMA,
     PREFLIGHT_SCHEMA,
     verify_m710_execution_preflight,
 )
@@ -190,12 +191,13 @@ def validate_evidence_pair(
     preflight_fingerprint = _sha256(
         preflight_verification.get("preflight_fingerprint"), "preflight.preflight_fingerprint"
     )
-    if preflight.get("schema") != PREFLIGHT_SCHEMA:
+    diagnostic = preflight.get("schema") == INITIALIZATION_DIAGNOSTIC_SCHEMA
+    if preflight.get("schema") not in {PREFLIGHT_SCHEMA, INITIALIZATION_DIAGNOSTIC_SCHEMA}:
         raise ValueError("preflight has an unsupported schema")
 
     input_identity = _mapping(preflight.get("input_identity"), "preflight.input_identity")
     execution_asset_fingerprint = _sha256(
-        preflight.get("execution_asset_fingerprint_sha256"),
+        canonical_digest(dict(input_identity)) if diagnostic else preflight.get("execution_asset_fingerprint_sha256"),
         "preflight.execution_asset_fingerprint_sha256",
     )
     if canonical_digest(dict(input_identity)) != execution_asset_fingerprint:
@@ -224,7 +226,8 @@ def validate_evidence_pair(
     )
     _require_equal(preflight_motion.get("statistics"), motion.get("statistics"), "motion statistics")
     _require_equal(
-        preflight_motion.get("task_population"),
+        _mapping(preflight_motion.get("task_population"), "diagnostic motion task population").get("carton_ids")
+        if diagnostic else preflight_motion.get("task_population"),
         task_population.get("carton_ids"),
         "task population",
     )
@@ -299,7 +302,7 @@ def _run_git(project_root: Path, *args: str, binary: bool = False) -> str | byte
     return completed.stdout if binary else completed.stdout.strip()
 
 
-def _git_metadata(project_root: Path) -> dict[str, Any]:
+def _local_git_metadata(project_root: Path) -> dict[str, Any]:
     head = _git_object_id(_run_git(project_root, "rev-parse", "HEAD"), "git HEAD")
     branch = _text(_run_git(project_root, "rev-parse", "--abbrev-ref", "HEAD"), "git branch")
     paths: set[str] = set()
@@ -321,6 +324,7 @@ def _git_metadata(project_root: Path) -> dict[str, Any]:
             ) else (_repo_relative(project_root / declared, project_root, "git changed path"), project_root / declared)
             paths.add(relative)
     return {
+        "metadata_source": "local_git",
         "head": head,
         "branch": branch,
         "dirty": bool(paths),
@@ -328,7 +332,63 @@ def _git_metadata(project_root: Path) -> dict[str, Any]:
     }
 
 
-def _standard_commands(motion_path: str, preflight_path: str, output_path: str) -> list[str]:
+def _git_metadata(
+    project_root: Path,
+    *,
+    source_base_head: str | None = None,
+    source_branch: str | None = None,
+    participating_source_paths: Sequence[str] = (),
+) -> dict[str, Any]:
+    """Use actual Git identity or a clearly declared, always-dirty source copy."""
+    if (source_base_head is None) != (source_branch is None):
+        raise ValueError("source-copy identity requires both source_base_head and source_branch")
+    declared_head = None if source_base_head is None else _git_object_id(source_base_head, "source_base_head")
+    declared_branch = None if source_branch is None else _text(source_branch, "source_branch")
+    if declared_branch is not None and (
+        re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/-]*", declared_branch) is None
+        or ".." in declared_branch or "//" in declared_branch or declared_branch.endswith("/")
+    ):
+        raise ValueError("source_branch must be a portable branch name")
+    try:
+        actual_head = _git_object_id(
+            _run_git(project_root, "rev-parse", "--verify", "HEAD^{commit}"), "git HEAD"
+        )
+    except (OSError, subprocess.CalledProcessError):
+        actual_head = None
+    # Check any available HEAD before trying index/worktree operations: a
+    # broken index must not hide a conflict with a readable commit identity.
+    if actual_head is not None and declared_head is not None and actual_head != declared_head:
+        raise ValueError("declared source_base_head does not match actual Git HEAD")
+    if actual_head is not None:
+        try:
+            metadata = _local_git_metadata(project_root)
+        except (OSError, subprocess.CalledProcessError):
+            metadata = None
+        if metadata is not None:
+            if declared_branch is not None and metadata["branch"] != declared_branch:
+                raise ValueError("declared source_branch does not match actual Git branch")
+            return metadata
+    if declared_head is None or declared_branch is None:
+        raise ValueError("Git metadata unavailable or incomplete; declare both source_base_head and source_branch")
+    paths = sorted(set(participating_source_paths))
+    if not paths:
+        raise ValueError("declared source-copy metadata requires participating source hashes")
+    for path in paths:
+        _source_path(path, project_root, "source-copy participating path")
+    return {
+        "metadata_source": "declared_source_copy",
+        "head": declared_head,
+        "branch": declared_branch,
+        "dirty": True,
+        "changed_paths": paths,
+        "changed_paths_scope": "all_hash_verified_participating_sources_no_clean_checkout_claim",
+    }
+
+
+def _standard_commands(
+    motion_path: str, preflight_path: str, output_path: str,
+    source_base_head: str | None = None, source_branch: str | None = None,
+) -> list[str]:
     return [
         "python tools/run_m710id70_layout_single_carton.py "
         "--config configs/validation/m710id70_layout_v1_single_carton.yaml "
@@ -337,7 +397,8 @@ def _standard_commands(motion_path: str, preflight_path: str, output_path: str) 
         "--config configs/simulation/m710id70_dynamic_execution_v1.yaml "
         f"--motion-result {motion_path} --output {preflight_path}",
         "python tools/archive_m710id70_dynamic_execution_evidence.py "
-        f"--motion-result {motion_path} --preflight {preflight_path} --output {output_path}",
+        f"--motion-result {motion_path} --preflight {preflight_path} --output {output_path}"
+        + (f" --source-base-head {source_base_head} --source-branch {source_branch}" if source_base_head else ""),
     ]
 
 
@@ -373,6 +434,8 @@ def build_run_summary(
     output_path: str,
     project_root: str | Path = ROOT,
     created_utc: datetime | None = None,
+    source_base_head: str | None = None,
+    source_branch: str | None = None,
 ) -> dict[str, Any]:
     root = Path(project_root).resolve()
     pair = validate_evidence_pair(motion, preflight, project_root=root)
@@ -403,8 +466,11 @@ def build_run_summary(
             "python_implementation": platform.python_implementation(),
             "platform": platform.platform(),
         },
-        "git": _git_metadata(root),
-        "generation_commands": _standard_commands(motion_path, preflight_path, output_path),
+        "git": _git_metadata(
+            root, source_base_head=source_base_head, source_branch=source_branch,
+            participating_source_paths=sorted(set(pair["motion_source_sha256"]) | set(pair["execution_source_sha256"]) | set(pair["archive_source_sha256"])),
+        ),
+        "generation_commands": _standard_commands(motion_path, preflight_path, output_path, source_base_head, source_branch),
         "evidence": {
             "motion": {
                 "path": motion_path,
@@ -451,6 +517,8 @@ def archive_dynamic_execution_evidence(
     output_path: str | Path = DEFAULT_OUTPUT,
     *,
     project_root: str | Path = ROOT,
+    source_base_head: str | None = None,
+    source_branch: str | None = None,
 ) -> dict[str, Any]:
     """Validate paired evidence and create a non-overwriting portable summary."""
 
@@ -474,6 +542,8 @@ def archive_dynamic_execution_evidence(
         preflight_path=preflight_relative,
         output_path=output_relative,
         project_root=root,
+        source_base_head=source_base_head,
+        source_branch=source_branch,
     )
     summary["evidence"]["motion"]["sha256"] = motion_file_sha256
     summary["evidence"]["preflight"]["sha256"] = preflight_file_sha256
@@ -493,6 +563,12 @@ def verify_run_summary(summary: Mapping[str, Any]) -> dict[str, str]:
     recorded = _sha256(content.pop("summary_fingerprint", None), "summary.summary_fingerprint")
     if canonical_digest(content) != recorded:
         raise ValueError("M-710 dynamic execution summary fingerprint mismatch")
+    metadata = _mapping(summary.get("git"), "summary.git")
+    if metadata.get("metadata_source") == "declared_source_copy":
+        identity = _mapping(summary.get("implementation_identity"), "summary.implementation_identity")
+        expected_paths = sorted(set(identity["motion_source_sha256"]) | set(identity["execution_source_sha256"]) | set(identity["archive_source_sha256"]))
+        if metadata.get("dirty") is not True or metadata.get("changed_paths") != expected_paths:
+            raise ValueError("declared source copy must remain dirty and enumerate all participating source hashes")
     _assert_no_absolute_paths(summary)
     return {"status": "PASS", "summary_fingerprint": recorded}
 
@@ -502,6 +578,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--motion-result", type=Path, default=DEFAULT_MOTION)
     parser.add_argument("--preflight", type=Path, default=DEFAULT_PREFLIGHT)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--source-base-head", help="base commit of an uploaded source copy; checked against Git when available")
+    parser.add_argument("--source-branch", help="branch of an uploaded source copy; required together with --source-base-head")
     return parser.parse_args(argv)
 
 
@@ -512,6 +590,8 @@ def main(argv: list[str] | None = None) -> int:
             args.motion_result,
             args.preflight,
             args.output,
+            source_base_head=args.source_base_head,
+            source_branch=args.source_branch,
         )
     except Exception as exc:
         print(json.dumps({"status": "FAIL", "reason": str(exc)}, ensure_ascii=False))

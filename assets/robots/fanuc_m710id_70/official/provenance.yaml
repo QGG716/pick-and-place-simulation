@@ -1,0 +1,307 @@
+schema_version: fanuc_official_description_provenance_v1
+asset_id: fanuc_m710id70_official_description_v2_3_0_fb40c980
+manufacturer: FANUC
+model_name: M-710iD/70
+upstream:
+  repository_url: https://github.com/FANUC-CORPORATION/fanuc_description.git
+  commit: fb40c9803a826ba68c7c8e28ba904a25efa7fcd2
+  tag: v2.3.0
+  package_name: fanuc_m710_description
+  package_version: 2.3.0
+  license_spdx: Apache-2.0
+  license_path: assets/robots/fanuc_m710id_70/official/LICENSES/Apache-2.0.txt
+source_file_total_count: 18
+source_file_total_bytes: 8657343
+source_files:
+  - role: license
+    path: assets/robots/fanuc_m710id_70/official/LICENSES/Apache-2.0.txt
+    upstream_path: LICENSES/Apache-2.0.txt
+    bytes: 10280
+    sha256: 074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff
+    format: apache_2_0_text
+  - role: package_manifest
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/package.xml
+    upstream_path: fanuc_m710_description/package.xml
+    bytes: 986
+    sha256: 3e172da46846c21ad46eecb86de0e1bcb09397a47b6d79c98c6103cf6fad8a71
+    format: ros_package_xml
+  - role: official_sample_xacro
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/robot/m710id_70.urdf.xacro
+    upstream_path: fanuc_m710_description/robot/m710id_70.urdf.xacro
+    bytes: 371
+    sha256: d74ba41dd6f9bc97f4f7745e9bee0c0096d6880b12191e3ef6eebd5c70b835b6
+    format: xacro_xml
+  - role: official_robot_macro
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_urdf_macro.xacro
+    upstream_path: fanuc_m710_description/urdf/m710id_70_urdf_macro.xacro
+    bytes: 11581
+    sha256: ede96c55fd7ec665a259d6f09422e37d8b69a2d27e3adc412f313930f37ed28d
+    format: xacro_xml
+  - role: collision_base_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/base.stl
+    upstream_path: fanuc_m710_description/meshes/m710id_70/collision/base.stl
+    bytes: 14884
+    sha256: 7335c642059e09de7f58d5f186b4dd5d9fb5e3ac22584434716f6b1eff3b8469
+    format: binary_stl
+  - role: collision_J1_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j1.stl
+    upstream_path: fanuc_m710_description/meshes/m710id_70/collision/j1.stl
+    bytes: 316484
+    sha256: af6c8411af44c282174a4ebcdd90d1ee2d2e716deff7f12ebba0466805fef7a1
+    format: binary_stl
+  - role: collision_J2_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j2.stl
+    upstream_path: fanuc_m710_description/meshes/m710id_70/collision/j2.stl
+    bytes: 150684
+    sha256: cde344ebf927e39110800b3e54e90f85826cbc21452e55d94abd5b22ba61db15
+    format: binary_stl
+  - role: collision_J3_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j3.stl
+    upstream_path: fanuc_m710_description/meshes/m710id_70/collision/j3.stl
+    bytes: 262984
+    sha256: 49116b78b394c8e0b60ca6b23f4391438ab04e702854fe4a4468b4c132c4c080
+    format: binary_stl
+  - role: collision_J4_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j4.stl
+    upstream_path: fanuc_m710_description/meshes/m710id_70/collision/j4.stl
+    bytes: 30084
+    sha256: 6b03fcd7ee9832f48e96570d10b30ae2dd9a9ccec4c0389c6308eeef86446d25
+    format: binary_stl
+  - role: collision_J5_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j5.stl
+    upstream_path: fanuc_m710_description/meshes/m710id_70/collision/j5.stl
+    bytes: 96084
+    sha256: 516e34e9174b61464cb8a494d2c1ce5498e48acea8aaecadd41977d1e6d6e15a
+    format: binary_stl
+  - role: collision_J6_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j6.stl
+    upstream_path: fanuc_m710_description/meshes/m710id_70/collision/j6.stl
+    bytes: 11084
+    sha256: ed4fbf513eab9c8a8869a53e89f3d4f649ea586a3833d8e8c8e9096e4e0bbcfd
+    format: binary_stl
+  - role: visual_base_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/base.dae
+    upstream_path: fanuc_m710_description/meshes/m710id_70/visual/base.dae
+    bytes: 675313
+    sha256: 35ee039f1d466ea7f0229f34edeb6b47bc81768d4b4013e724edd26297c0b537
+    format: collada_metre_z_up
+  - role: visual_J1_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j1.dae
+    upstream_path: fanuc_m710_description/meshes/m710id_70/visual/j1.dae
+    bytes: 965072
+    sha256: 4591de5f409f675f7e10736c6b6cf5bf6a7bc8bad9bb9856c5e1e11233c3fca7
+    format: collada_metre_z_up
+  - role: visual_J2_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j2.dae
+    upstream_path: fanuc_m710_description/meshes/m710id_70/visual/j2.dae
+    bytes: 1438918
+    sha256: e899cbe3a1082e6a8c85dbac13711bba23ab158eb310126d914958bcc3713928
+    format: collada_metre_z_up
+  - role: visual_J3_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j3.dae
+    upstream_path: fanuc_m710_description/meshes/m710id_70/visual/j3.dae
+    bytes: 1311883
+    sha256: ff35b1faba0b498915f01890887895fa7824dda213d3a60c6cef0c91ae344c88
+    format: collada_metre_z_up
+  - role: visual_J4_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j4.dae
+    upstream_path: fanuc_m710_description/meshes/m710id_70/visual/j4.dae
+    bytes: 2917370
+    sha256: 5bcefe962dbd6c7625a6b1b5be28442881e61745838d7865f3204d1d7923b80b
+    format: collada_metre_z_up
+  - role: visual_J5_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j5.dae
+    upstream_path: fanuc_m710_description/meshes/m710id_70/visual/j5.dae
+    bytes: 329365
+    sha256: 1be4482d6f520c7babee25984e50cc2b8049360aa0013d61805b098a0546324a
+    format: collada_metre_z_up
+  - role: visual_J6_link
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j6.dae
+    upstream_path: fanuc_m710_description/meshes/m710id_70/visual/j6.dae
+    bytes: 113916
+    sha256: d86c8fa173db6e4225d22b6be04c9a5082534b7ef30905c9c942d7772e159c3b
+    format: collada_metre_z_up
+geometry:
+  visual_meshes:
+    - {link: base_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/base.dae}
+    - {link: J1_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j1.dae}
+    - {link: J2_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j2.dae}
+    - {link: J3_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j3.dae}
+    - {link: J4_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j4.dae}
+    - {link: J5_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j5.dae}
+    - {link: J6_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/visual/j6.dae}
+  collision_meshes:
+    - {link: base_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/base.stl}
+    - {link: J1_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j1.stl}
+    - {link: J2_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j2.stl}
+    - {link: J3_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j3.stl}
+    - {link: J4_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j4.stl}
+    - {link: J5_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j5.stl}
+    - {link: J6_link, path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j6.stl}
+  dae_unit_m: 1.0
+  dae_up_axis: Z_UP
+  base_collision_bounds_m:
+    min_xyz_m: [-0.3385, -0.275, 0.0]
+    max_xyz_m: [0.225, 0.275, 0.245]
+  collision_triangle_count_total: 17634
+  collision_topology: manufacturer_per_link_triangle_mesh_not_asserted_convex
+  collision_policy: official_per_link_meshes_no_proxy_substitution
+model:
+  base_link: base_link
+  wbase_link: wbase
+  flange_link: flange
+  fanuc_flange_link: fanuc_flange
+  sample_child_link: ee_link
+  task_tool_link: tool0
+  task_tool_frame:
+    name: flange-tool0
+    parent: flange
+    child: tool0
+    origin_xyz_m: [0.0, 0.0, 0.0]
+    origin_rpy_rad: [0.0, 1.5707963267948966, 0.0]
+    source: project_integration_wrapper
+  moving_links: [J1_link, J2_link, J3_link, J4_link, J5_link, J6_link]
+  massless_fixed_links: [wbase, flange, fanuc_flange, ee_link, tool0]
+  actuated_joint_order: [J1, J2, J3, J4, J5, J6]
+  joints:
+    - name: J1
+      type: revolute
+      parent: base_link
+      child: J1_link
+      origin_xyz_m: [0.0, 0.0, 0.565]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      axis: [0.0, 0.0, 1.0]
+      limit: {lower_rad: -3.2288591161895095, upper_rad: 3.2288591161895095, velocity_rad_s: 3.141592653589793, effort_nm: 8000.0}
+    - name: J2
+      type: revolute
+      parent: J1_link
+      child: J2_link
+      origin_xyz_m: [0.15, 0.0, 0.0]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      axis: [0.0, 1.0, 0.0]
+      limit: {lower_rad: -1.3089969389957472, upper_rad: 2.6179938779914944, velocity_rad_s: 3.141592653589793, effort_nm: 10000.0}
+    - name: J3
+      type: revolute
+      parent: J2_link
+      child: J3_link
+      origin_xyz_m: [0.0, 0.0, 0.895]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      axis: [0.0, -1.0, 0.0]
+      limit: {lower_rad: -1.4049900478554354, upper_rad: 3.5779249665883754, velocity_rad_s: 3.141592653589793, effort_nm: 5000.0}
+    - name: J4
+      type: revolute
+      parent: J3_link
+      child: J4_link
+      origin_xyz_m: [0.0, 0.0, 0.17]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      axis: [-1.0, 0.0, 0.0]
+      limit: {lower_rad: -6.981317007977318, upper_rad: 6.981317007977318, velocity_rad_s: 4.537856055185257, effort_nm: 2000.0}
+    - name: J5
+      type: revolute
+      parent: J4_link
+      child: J5_link
+      origin_xyz_m: [1.045, 0.0, 0.0]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      axis: [0.0, -1.0, 0.0]
+      limit: {lower_rad: -2.181661564992912, upper_rad: 2.181661564992912, velocity_rad_s: 4.537856055185257, effort_nm: 1000.0}
+    - name: J6
+      type: revolute
+      parent: J5_link
+      child: J6_link
+      origin_xyz_m: [0.0, 0.0, 0.0]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      axis: [-1.0, 0.0, 0.0]
+      limit: {lower_rad: -6.981317007977318, upper_rad: 6.981317007977318, velocity_rad_s: 6.457718232379019, effort_nm: 900.0}
+  fixed_frames:
+    - name: base_link-wbase
+      parent: base_link
+      child: wbase
+      origin_xyz_m: [0.0, 0.0, 0.565]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+    - name: J6-flange
+      parent: J6_link
+      child: flange
+      origin_xyz_m: [0.175, 0.0, 0.0]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+    - name: flange-fanuc_flange
+      parent: flange
+      child: fanuc_flange
+      origin_xyz_m: [0.0, 0.0, 0.0]
+      origin_rpy_rad: [3.141592653589793, -1.5707963267948966, 0.0]
+  inertials:
+    - link: base_link
+      mass_kg: 115.0
+      origin_xyz_m: [-0.0562, -0.000509, 0.109]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      inertia_at_com_kg_m2: [[2.95, -0.0346, 0.0263], [-0.0346, 3.15, 0.00171], [0.0263, 0.00171, 5.12]]
+    - link: J1_link
+      mass_kg: 189.0
+      origin_xyz_m: [0.0361, -0.00394, -0.0874]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      inertia_at_com_kg_m2: [[7.22, 0.238, -0.646], [0.238, 5.83, 0.444], [-0.646, 0.444, 7.43]]
+    - link: J2_link
+      mass_kg: 137.0
+      origin_xyz_m: [-0.0291, 0.17, 0.4]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      inertia_at_com_kg_m2: [[13.3, 0.0925, -0.0231], [0.0925, 14.2, -1.14], [-0.0231, -1.14, 1.9]]
+    - link: J3_link
+      mass_kg: 93.9
+      origin_xyz_m: [0.0255, -0.005, 0.0679]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      inertia_at_com_kg_m2: [[2.0, -0.0815, -0.327], [-0.0815, 2.53, -0.0631], [-0.327, -0.0631, 2.02]]
+    - link: J4_link
+      mass_kg: 34.8
+      origin_xyz_m: [0.612, -0.00489, 0.000279]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      inertia_at_com_kg_m2: [[0.14, 0.012, -0.000192], [0.012, 1.83, -0.000335], [-0.000192, -0.000335, 1.83]]
+    - link: J5_link
+      mass_kg: 10.2
+      origin_xyz_m: [0.0344, -0.0134, 0.0000000923]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      inertia_at_com_kg_m2: [[0.0448, -0.00501, -0.000000106], [-0.00501, 0.0525, -0.00000028], [-0.000000106, -0.00000028, 0.0678]]
+    - link: J6_link
+      mass_kg: 0.447
+      origin_xyz_m: [0.165, -7.3e-19, 3.24e-19]
+      origin_rpy_rad: [0.0, 0.0, 0.0]
+      inertia_at_com_kg_m2: [[0.000872, -1.22e-19, -4.86e-20], [-1.22e-19, 0.000451, -1.66e-21], [-4.86e-20, -1.66e-21, 0.000451]]
+  total_mass_kg: 580.347
+  zero_pose:
+    flange_xyz_m: [1.370, 0.0, 1.630]
+    flange_rpy_rad: [0.0, 0.0, 0.0]
+    fanuc_flange_xyz_m: [1.370, 0.0, 1.630]
+    fanuc_flange_rpy_rad: [3.141592653589793, -1.5707963267948966, 0.0]
+    tool0_xyz_m: [1.370, 0.0, 1.630]
+    tool0_rpy_rad: [0.0, 1.5707963267948966, 0.0]
+integration:
+  official_sample_xacro: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/robot/m710id_70.urdf.xacro
+  standalone_xacro:
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/robot/m710id_70.standalone.urdf.xacro
+    bytes: 915
+    sha256: 0bd23192ce28d1b1ecfd5aac8a36d4a73143702e335205cf3631666c52b539fb
+  expanded_urdf:
+    path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf
+    bytes: 6891
+    sha256: 2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf
+  expansion_script:
+    path: scripts/expand_official_m710id70_urdf.py
+    bytes: 2015
+    sha256: efb826490eb04727745708ce88824446d0f9ec1fae66519231943a3bd392e7e5
+  generator:
+    name: xacro
+    version: 2.1.1
+    canonicalization: xml.etree.ElementTree.canonicalize(strip_text=true,with_comments=false)
+qualification:
+  scope: robot_description_asset_only
+  execution_qualified: true
+  system_execution_qualified: false
+  required_checks:
+    - pinned_source_hashes
+    - package_identity
+    - unmodified_official_macro
+    - seven_visual_meshes
+    - seven_collision_meshes
+    - joint_and_frame_semantics
+    - complete_official_inertials
+    - deterministic_static_urdf
+    - no_proxy_collision
+  policy: robot_asset_qualification_does_not_qualify_tool_path_workcell_or_replay

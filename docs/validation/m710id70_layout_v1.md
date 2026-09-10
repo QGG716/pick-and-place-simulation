@@ -1,5 +1,10 @@
 # M-710iD/70 已确认卸货工作站布局专项验证
 
+> 历史记录（2026-09-09）：本页的机器人代理、`X=-1.41 m` 基座原点和静态 Isaac
+> PASS 只用于当时布局冻结。当前官方模型按真实 base mesh 得到 `X=-1.325 m` 原点，
+> 严格 home 为 FAIL；当前结论见
+> [官方模型与独立吸盘验证轮次](m710id70_official_model_independent_cups_round.md)。
+
 日期：2026-09-09  
 布局 ID：`m710id70_unloading_layout_v1`  
 起始代码：`1bb80f5c8400fbcb5f627882c79eb280fe0bd6c2`  

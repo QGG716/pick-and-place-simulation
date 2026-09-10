@@ -16,6 +16,7 @@ import numpy as np
 PASS = "PASS"
 FAIL = "FAIL"
 NOT_EVALUATED = "NOT_EVALUATED"
+NOT_APPLICABLE = "NOT_APPLICABLE"
 BLOCKED_BY = "BLOCKED_BY"
 
 
@@ -69,6 +70,8 @@ def evaluate_replay_qualification(
     gripper_limits_from_configuration: bool,
     gripper_limits_calibrated: bool,
     production_release_adapter: bool,
+    ideal_holding_capacity_assumption: bool = False,
+    joint_positions_within_limits: bool | None = None,
     conveyor_transport_expected: bool = False,
     conveyor_transport_engaged: bool | None = None,
     conveyor_transport_speed_within_tolerance: bool | None = None,
@@ -148,7 +151,7 @@ def evaluate_replay_qualification(
         attachment = _detail(NOT_EVALUATED, "payload qualification requires a grasp event")
     elif not full_schedule_replayed:
         attachment = _detail(NOT_EVALUATED, "full transport was not replayed")
-    elif not gripper_wrench_envelope_complete:
+    elif not ideal_holding_capacity_assumption and not gripper_wrench_envelope_complete:
         attachment = _detail(
             NOT_EVALUATED,
             "attachment simulation lacks a complete axial, shear, and moment envelope",
@@ -227,30 +230,55 @@ def evaluate_replay_qualification(
         )
     checks["placement_within_tolerance"] = placement
 
-    checks["gripper_wrench_envelope_complete"] = _detail(
-        PASS if gripper_wrench_envelope_complete else FAIL,
-        "axial, shear, and moment limits are all available"
-        if gripper_wrench_envelope_complete
-        else "one or more axial, shear, or moment limits are unavailable",
-    )
-    checks["gripper_limits_from_configuration"] = _detail(
-        PASS if gripper_limits_from_configuration else FAIL,
-        "gripper limits came from the replay bundle"
-        if gripper_limits_from_configuration
-        else "diagnostic gripper overrides were used",
-    )
-    checks["gripper_limits_calibrated"] = _detail(
-        PASS if gripper_limits_calibrated else FAIL,
-        "gripper working envelope is calibrated"
-        if gripper_limits_calibrated
-        else "gripper values are unqualified hardware or simulation assumptions",
-    )
+    if ideal_holding_capacity_assumption:
+        checks["gripper_wrench_envelope_complete"] = _detail(
+            NOT_APPLICABLE,
+            "ideal_independent_cups explicitly assumes holding capacity",
+            suction_mode="ideal_independent_cups",
+        )
+        checks["gripper_limits_from_configuration"] = _detail(
+            NOT_APPLICABLE,
+            "vacuum force/break limits are outside the ideal-independent-cup mode",
+            suction_mode="ideal_independent_cups",
+        )
+        checks["gripper_limits_calibrated"] = _detail(
+            NOT_APPLICABLE,
+            "no calibrated vacuum envelope is claimed in ideal-independent-cup mode",
+            suction_mode="ideal_independent_cups",
+        )
+    else:
+        checks["gripper_wrench_envelope_complete"] = _detail(
+            PASS if gripper_wrench_envelope_complete else FAIL,
+            "axial, shear, and moment limits are all available"
+            if gripper_wrench_envelope_complete
+            else "one or more axial, shear, or moment limits are unavailable",
+        )
+        checks["gripper_limits_from_configuration"] = _detail(
+            PASS if gripper_limits_from_configuration else FAIL,
+            "gripper limits came from the replay bundle"
+            if gripper_limits_from_configuration
+            else "diagnostic gripper overrides were used",
+        )
+        checks["gripper_limits_calibrated"] = _detail(
+            PASS if gripper_limits_calibrated else FAIL,
+            "gripper working envelope is calibrated"
+            if gripper_limits_calibrated
+            else "gripper values are unqualified hardware or simulation assumptions",
+        )
     checks["production_release_adapter"] = _detail(
         PASS if production_release_adapter else FAIL,
         "the original payload was opened by the production release adapter"
         if production_release_adapter
         else "release used a diagnostic state-handoff adapter",
     )
+
+    if joint_positions_within_limits is not None:
+        checks["joint_positions_within_limits"] = _detail(
+            PASS if joint_positions_within_limits else FAIL,
+            "measured joint positions stayed inside the official limits"
+            if joint_positions_within_limits
+            else "one or more measured joint positions exceeded an official limit",
+        )
 
     if conveyor_transport_expected:
         if conveyor_transport_engaged is None:
@@ -276,7 +304,10 @@ def evaluate_replay_qualification(
                 else "payload conveyor speed is outside tolerance",
             )
 
-    boolean_checks = {name: detail["status"] == PASS for name, detail in checks.items()}
+    boolean_checks = {
+        name: detail["status"] in {PASS, NOT_APPLICABLE}
+        for name, detail in checks.items()
+    }
     failures = [name for name, passed in boolean_checks.items() if not passed]
     return {
         "model": "fail_closed_payload_qualification_v2",

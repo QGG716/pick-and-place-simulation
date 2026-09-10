@@ -1,0 +1,123 @@
+{
+  "schema": "m710id70_dynamic_execution_run_summary_v1",
+  "created_utc": "2026-09-10T06:17:18Z",
+  "environment": {
+    "python_version": "3.12.3",
+    "python_implementation": "CPython",
+    "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35"
+  },
+  "git": {
+    "metadata_source": "declared_source_copy",
+    "head": "a372c7f117e61509229b2c15eef344cd7908d499",
+    "branch": "feat/v0.5-feasibility-core",
+    "dirty": true,
+    "changed_paths": [
+      "scripts/export_isaac_fanuc_replay.py",
+      "scripts/isaacsim_fanuc_replay.py",
+      "src/unloading_sim/asset_audit.py",
+      "src/unloading_sim/depalletizing.py",
+      "src/unloading_sim/fanuc_m710id70.py",
+      "src/unloading_sim/geometry.py",
+      "src/unloading_sim/grasp.py",
+      "src/unloading_sim/ik.py",
+      "src/unloading_sim/independent_cups.py",
+      "src/unloading_sim/isaac_bridge.py",
+      "src/unloading_sim/layout_single_carton.py",
+      "src/unloading_sim/layout_trajectory.py",
+      "src/unloading_sim/m710_dynamics.py",
+      "src/unloading_sim/m710_execution.py",
+      "src/unloading_sim/m710_official_dynamics.py",
+      "src/unloading_sim/m710_replay_contract.py",
+      "src/unloading_sim/m710_replay_physics.py",
+      "src/unloading_sim/pinocchio_backend.py",
+      "src/unloading_sim/planner.py",
+      "src/unloading_sim/qualification.py",
+      "src/unloading_sim/robot.py",
+      "src/unloading_sim/robot_load/model.py",
+      "src/unloading_sim/robot_load/spatial.py",
+      "src/unloading_sim/robot_load/task.py",
+      "src/unloading_sim/scene.py",
+      "src/unloading_sim/support.py",
+      "src/unloading_sim/timing.py",
+      "src/unloading_sim/validation_motion.py",
+      "src/unloading_sim/validation_physics.py",
+      "src/unloading_sim/workcell_layout.py",
+      "tools/archive_m710id70_dynamic_execution_evidence.py"
+    ],
+    "changed_paths_scope": "all_hash_verified_participating_sources_no_clean_checkout_claim"
+  },
+  "generation_commands": [
+    "python tools/run_m710id70_layout_single_carton.py --config configs/validation/m710id70_layout_v1_single_carton.yaml --output outputs/m710_official_dynamics_20260910/single_carton_motion_audit.json",
+    "python tools/prepare_m710id70_dynamic_execution.py --config configs/simulation/m710id70_dynamic_execution_v1.yaml --motion-result outputs/m710_official_dynamics_20260910/single_carton_motion_audit.json --output outputs/m710_official_dynamics_20260910/dynamic_execution_preflight.json",
+    "python tools/archive_m710id70_dynamic_execution_evidence.py --motion-result outputs/m710_official_dynamics_20260910/single_carton_motion_audit.json --preflight outputs/m710_official_dynamics_20260910/dynamic_execution_preflight.json --output outputs/m710_official_dynamics_20260910/run_summary.json --source-base-head a372c7f117e61509229b2c15eef344cd7908d499 --source-branch feat/v0.5-feasibility-core"
+  ],
+  "evidence": {
+    "motion": {
+      "path": "outputs/m710_official_dynamics_20260910/single_carton_motion_audit.json",
+      "sha256": "aba0b6b0a53059cb98d089bcdabb1fb10005712a2869f9e7409027cdedecb859",
+      "evidence_fingerprint": "cfd2bfd9169d738e3baba041756b192126460a80360723a9ddfc9dfac9256b49"
+    },
+    "preflight": {
+      "path": "outputs/m710_official_dynamics_20260910/dynamic_execution_preflight.json",
+      "sha256": "90f462377b556d64516b27389b4a0ab02fdad471b4160c148c3f071e0c002d22",
+      "preflight_fingerprint": "b5c476933e288aaeb56f57f3e86f1fc16ccefee8df1cc854de9b1ab1b22a0cb1"
+    },
+    "execution_asset_fingerprint_sha256": "400a303e7ba48d3db72e067c4c1062be7bfa142b683dca61a826660f21c5fdd6",
+    "aggregate_evidence_identity_sha256": "4963e88de27e768d9cedef90249498009c99e3d9e1fe00b6e4d8270b1cfab3ed",
+    "mutual_identity_status": "PASS"
+  },
+  "implementation_identity": {
+    "motion_source_sha256": {
+      "src/unloading_sim/depalletizing.py": "2ebfde4c2ce3bd2e831c6c5afde6422adecb9a2db504f35cc3b407a7d04854f6",
+      "src/unloading_sim/fanuc_m710id70.py": "836b3dc0915a3b0a91328948d28ed368b8e2ed7d1d26838ccc918f5aa17cd8f8",
+      "src/unloading_sim/geometry.py": "5ddd9c94be8284307ccdb7ae65e8ab089721768ec83b3995ae357b6cc9f82514",
+      "src/unloading_sim/grasp.py": "2f4e1aecf848863a8c9c583b85d3636e1730231bfc06f718019b4f8b38a5b72e",
+      "src/unloading_sim/ik.py": "888e855bf71194dca2522b705f3c7e0a2359bfc553c6957112a565d095c6b2e0",
+      "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+      "src/unloading_sim/layout_single_carton.py": "4c188d944ea1b1c409aa80c93cdb38bb9087a7df100e92563bd1bb1a9ab0c9f2",
+      "src/unloading_sim/layout_trajectory.py": "ed01c46cf13fc55aee73dad29e3b66dbaed20ba64f0114b8ae883d9c8b7ce645",
+      "src/unloading_sim/pinocchio_backend.py": "8bf4674d0ea983156470b50d99d502fd029cbcd8ffaedb64b474eb8453863756",
+      "src/unloading_sim/planner.py": "e35344f8a4252aae8e0f22abc4d15e83b49c8723c59410ae028335fb95cb33e4",
+      "src/unloading_sim/robot.py": "c8b5e9f5a1819bd3258368b71b2ad408a438ecc0ae841436d4e2ba5869057288",
+      "src/unloading_sim/robot_load/model.py": "13097486a55304b3e8517157e9de2b2ab38dbfb82f0d0d82a3ac98fc330c3d89",
+      "src/unloading_sim/robot_load/spatial.py": "616d696e2fdf9cd05b38dfe5db1ecf3a815e6db32891860217b71c22c06e3618",
+      "src/unloading_sim/robot_load/task.py": "83b61dbb5a225dd5e4ddc51b4bbc0eb8db89de2560f9be2f67544a440648d65a",
+      "src/unloading_sim/scene.py": "7849e50ce3feaf921654329ebc1391e30dc64f26565918dcb44e13832c3d272c",
+      "src/unloading_sim/support.py": "6efc235227f348c3e37065e741e76fd1f6c6438729e57240bc00b55a7b32b6c1",
+      "src/unloading_sim/timing.py": "64a449ef4a021041ae0d1f40e6cb4b5ff51dcbd9ce0596819ba20e77ba7ab89d",
+      "src/unloading_sim/validation_motion.py": "dc49984f2ea7b6c4f0235104ea586e2f9374ada084fc288804fd8a9253103e63",
+      "src/unloading_sim/validation_physics.py": "0464520fb79bc3fbcdc4f1e60704b8739c8588d1c999a420e3e6b48975773422",
+      "src/unloading_sim/workcell_layout.py": "3861d013f7c1bcc289fe6466f4dce3c3e50dbaa0a7a117fdbbb9df4ddd2de3b5"
+    },
+    "execution_source_sha256": {
+      "scripts/export_isaac_fanuc_replay.py": "2226d956b8b4067c89b3c8573e49588af1f46db1c4cffcd6cfe9158872b22d9e",
+      "scripts/isaacsim_fanuc_replay.py": "2a0d82239fe6e9d87ce5ffdccbcd3f08b179bf3602362467c297f660b6c07f2c",
+      "src/unloading_sim/asset_audit.py": "058c9963eec829152c4048d498b564221fe78ba772e28e3be2bf0f10dacf5639",
+      "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+      "src/unloading_sim/isaac_bridge.py": "185c3c0371d422217a3b062f12e248060a9f41aa24a485ff8c6b4092d747aa49",
+      "src/unloading_sim/m710_dynamics.py": "a6f30ef0bf44b23c3fc9ea18597ee9a86e44a1fd48cac45885bd5f5a0388414d",
+      "src/unloading_sim/m710_execution.py": "2485190a5fcdb29dc9718f68a19eba78f1d66b880ae01afa7a51d5aa056de25d",
+      "src/unloading_sim/m710_official_dynamics.py": "cb34cf971aa55ec9f722e417a819aca07110bb442f0ba6bd0db4cdc1a7c7d772",
+      "src/unloading_sim/m710_replay_contract.py": "fa7fe3bd53a7b9e30c6a8943f7701a8d1a11915c255a40d938a94dbff32e017c",
+      "src/unloading_sim/m710_replay_physics.py": "a478ffdc62660d71f60384b0651e71df49401aca3ae3be1a913e537d2da1d9dd",
+      "src/unloading_sim/qualification.py": "5b900f8931f2705ce2a9a1a3205d42899e83ad1e4d7a7d8d977fba3a1ad7a505"
+    },
+    "archive_source_sha256": {
+      "tools/archive_m710id70_dynamic_execution_evidence.py": "cec59bf30e1eb56fbc2658902f1d3e7911c67208234e30b44d974399f1e013d2"
+    },
+    "aggregate_source_identity_sha256": "fbeddb01e94a7bd221609ac5288965ae7a1f2943503c2f526562d388c91a3125"
+  },
+  "execution_status": {
+    "preflight_status": "BLOCKED",
+    "simulation_execution_ready": false,
+    "execution_qualified": false,
+    "machine_qualified": false,
+    "isaac": {
+      "backend_execution_status": "NOT_RUN",
+      "validation_performed": false
+    },
+    "physical_simulation_execution": "NOT_RUN",
+    "video": "NOT_PRODUCED_WITHOUT_A_PHYSICAL_EXECUTION"
+  },
+  "summary_fingerprint": "3339c6b9186e003b975ad6f463b8c1ed4c741a1569dfbeda44d1de22c1dde83c"
+}

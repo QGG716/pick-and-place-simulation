@@ -1,5 +1,6 @@
 *.STEP binary
 *.stl binary
+*.dae binary
 *.glb binary
 *.png binary
 *.jpg binary
@@ -18,3 +19,13 @@
 *.r binary
 *.wm binary
 res/M-710iD_70/** binary
+
+# Preserve the fixed upstream FANUC source bytes across Windows/Linux checkouts.
+assets/robots/fanuc_m710id_70/official/LICENSES/Apache-2.0.txt text eol=lf
+assets/robots/fanuc_m710id_70/official/fanuc_m710_description/package.xml text eol=lf
+assets/robots/fanuc_m710id_70/official/fanuc_m710_description/robot/m710id_70.urdf.xacro binary
+assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_urdf_macro.xacro binary
+assets/robots/fanuc_m710id_70/official/fanuc_m710_description/robot/m710id_70.standalone.urdf.xacro text eol=lf
+assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/*.urdf text eol=lf
+assets/robots/fanuc_m710id_70/official/*.yaml text eol=lf
+scripts/expand_official_m710id70_urdf.py text eol=lf

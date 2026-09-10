@@ -1,3 +1,7 @@
+# Historical proxy-only estimate, retained for explicit legacy regressions.
+# The selected runtime default is m710id70_official_dynamics_v2.yaml. This
+# document must be paired with its legacy model/layout source fixtures, never
+# rebound to the official URDF while retaining proxy-derived link inertials.
 schema_version: m710id70_engineering_dynamics_v1
 model_id: fanuc_m710id_70
 qualification:

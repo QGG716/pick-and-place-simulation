@@ -56,7 +56,7 @@ def main(argv: list[str] | None = None) -> int:
             indent=2,
         )
     )
-    return 0
+    return 1 if result["run_status"] == "BLOCKED" else 0
 
 
 if __name__ == "__main__":

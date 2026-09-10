@@ -26,22 +26,28 @@ conveyors:
 robot:
   model: fanuc_m710id_70
   model_config: ../robots/fanuc_m710id_70.yaml
-  urdf_path: ../../assets/robots/fanuc_m710id_70/m710id_70.urdf
+  urdf_path: ../../assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf
   mounting_surface_z_a_m: 0.600
-  base_origin_xy_a_m: [0.540, 0.0]
-  base_proxy_radius_m: 0.310
-  base_proxy_height_m: 0.565
+  # The official base collision mesh spans X [-0.3385, 0.225] m at q=0.
+  # A_x=0.625 therefore keeps its real front extent at world X=-1.100 m.
+  base_origin_xy_a_m: [0.625, 0.0]
+  base_support_bbox_min_xyz_m: [-0.3385, -0.275, 0.0]
+  base_support_bbox_max_xyz_m: [0.225, 0.275, 0.245]
   base_front_edge_x_world_m: -1.100
-  positioning_basis: urdf_base_link_cylinder_engineering_proxy
-  positioning_status: ENGINEERING_PROXY_REAL_MOUNTING_PLATE_CAD_NOT_CONFIRMED
+  positioning_basis: fanuc_official_base_collision_mesh_bbox_at_fb40c9803a826ba68c7c8e28ba904a25efa7fcd2
+  positioning_status: EXECUTION_QUALIFIED_CAD_COLLISION
 tool:
   load_config: ../tools/unloading_gripper_20kg.yaml
   geometry_config: ../tools/unloading_gripper_10kg.yaml
-  geometry_status: STEP_DERIVED_ENGINEERING_PROXY
+  # The 58 boxes are hash-bound CAD-derived engineering geometry, but the
+  # source audit does not yet contain a per-solid semantic classification and
+  # outward-containment certificate.  They therefore remain useful for
+  # fail-closed diagnostics, not for accepting a complete execution path.
+  geometry_status: CAD_DERIVED_COMPOUND_OBB_COVERAGE_UNVERIFIED
   # 0.2275 m is the STEP solid extreme. The active 0.250 m TCP remains the
   # explicit planning/working transform from the 20 kg tool config.
   physical_step_length_m: 0.2275
-  planning_tcp_status: ENGINEERING_WORKING_TCP_NOT_MANUFACTURER_CERTIFIED
+  planning_tcp_status: PROJECT_EXECUTION_FRAME_EXPLICITLY_ADAPTED_FROM_OFFICIAL_FLANGE
 trailer:
   inner_width_m: 2.300
   right_wall_y_m: -1.150

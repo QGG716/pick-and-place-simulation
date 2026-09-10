@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from unloading_sim.m710_replay_physics import (
+    audit_payload_support_contact,
     audit_surface_attachment_contact,
     select_active_conveyor_surfaces,
 )
@@ -81,6 +82,76 @@ def _surface(name: str, center, size):
         "size_m": size,
         "rotation_matrix": IDENTITY,
     }
+
+
+def _support_audit(
+    *,
+    center=(0.0, 0.0, 0.25),
+    rotation=None,
+    linear_velocity=(0.0, 0.0, 0.0),
+    angular_velocity=(0.0, 0.0, 0.0),
+):
+    return audit_payload_support_contact(
+        payload_center_m=center,
+        payload_rotation=IDENTITY if rotation is None else rotation,
+        payload_size_m=[0.6, 0.4, 0.3],
+        payload_linear_velocity_m_s=linear_velocity,
+        payload_angular_velocity_rad_s=angular_velocity,
+        support=_surface("receiver", [0.0, 0.0, 0.05], [1.0, 1.0, 0.1]),
+        max_support_gap_m=0.003,
+        maximum_penetration_m=0.001,
+        minimum_footprint_overlap_ratio=0.90,
+        max_support_tilt_rad=np.deg2rad(5.0),
+        max_linear_speed_m_s=0.03,
+        max_angular_speed_rad_s=0.08,
+    )
+
+
+def test_payload_release_support_accepts_only_settled_actual_contact_geometry():
+    exact = _support_audit()
+    at_gap_limit = _support_audit(center=(0.0, 0.0, 0.253))
+
+    assert exact.accepted
+    assert exact.signed_normal_gap_m == pytest.approx(0.0)
+    assert exact.footprint_overlap_ratio == pytest.approx(1.0)
+    assert exact.support_normal_alignment == pytest.approx(1.0)
+    assert at_gap_limit.accepted
+
+
+@pytest.mark.parametrize(
+    ("audit", "reason"),
+    [
+        (_support_audit(center=(0.0, 0.0, 0.2531)), "PAYLOAD_NOT_IN_SUPPORT_CONTACT"),
+        (_support_audit(center=(0.0, 0.0, 0.2489)), "PAYLOAD_PENETRATES_SUPPORT"),
+        (_support_audit(center=(0.4, 0.0, 0.25)), "PAYLOAD_SUPPORT_FOOTPRINT_INSUFFICIENT"),
+        (
+            _support_audit(linear_velocity=(0.031, 0.0, 0.0)),
+            "PAYLOAD_LINEAR_SPEED_TOO_HIGH_FOR_RELEASE",
+        ),
+        (
+            _support_audit(angular_velocity=(0.0, 0.0, 0.081)),
+            "PAYLOAD_ANGULAR_SPEED_TOO_HIGH_FOR_RELEASE",
+        ),
+    ],
+)
+def test_payload_release_support_rejects_invalid_actual_state(audit, reason):
+    assert not audit.accepted
+    assert audit.reason == reason
+
+
+def test_payload_release_support_rejects_edge_or_side_contact_as_support():
+    angle = np.deg2rad(6.0)
+    tilted = np.asarray(
+        [
+            [1.0, 0.0, 0.0],
+            [0.0, np.cos(angle), -np.sin(angle)],
+            [0.0, np.sin(angle), np.cos(angle)],
+        ]
+    )
+    audit = _support_audit(rotation=tilted)
+
+    assert not audit.accepted
+    assert audit.reason == "PAYLOAD_SUPPORT_NORMAL_MISALIGNED"
 
 
 def test_exclusive_conveyor_selection_never_selects_two_surfaces():

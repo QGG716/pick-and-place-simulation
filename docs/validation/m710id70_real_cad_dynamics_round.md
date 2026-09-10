@@ -1,5 +1,10 @@
 # M-710iD/70 真实 CAD、运动学与工程动力学轮次
 
+> 历史记录（2026-09-09）：本页描述切换官方 FANUC 模型之前的代理/CAD 门控。
+> 当前实现与结论已由
+> [官方模型与独立吸盘验证轮次](m710id70_official_model_independent_cups_round.md)
+> 取代；本页的“缺少14个网格”、60杯门限和 `NOT_RUN_PER_USER_REQUEST` 不再是当前状态。
+
 日期：2026-09-09
 分支：`feat/v0.5-feasibility-core`
 

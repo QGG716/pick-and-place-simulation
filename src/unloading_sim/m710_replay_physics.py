@@ -38,6 +38,38 @@ class AttachmentContactAudit:
         }
 
 
+@dataclass(frozen=True)
+class PayloadSupportAudit:
+    """Actual-state gate for releasing a payload onto one declared support.
+
+    The audit is intentionally geometric and kinematic.  It does not infer a
+    support from the planned release time: the payload bottom plane must be at
+    the real support top plane, their horizontal footprints must overlap, and
+    the payload must have settled below the configured velocity thresholds.
+    """
+
+    accepted: bool
+    reason: str | None
+    support_name: str
+    signed_normal_gap_m: float
+    footprint_overlap_ratio: float
+    support_normal_alignment: float
+    linear_speed_m_s: float
+    angular_speed_rad_s: float
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "accepted": self.accepted,
+            "reason": self.reason,
+            "support_name": self.support_name,
+            "signed_normal_gap_m": self.signed_normal_gap_m,
+            "footprint_overlap_ratio": self.footprint_overlap_ratio,
+            "support_normal_alignment": self.support_normal_alignment,
+            "linear_speed_m_s": self.linear_speed_m_s,
+            "angular_speed_rad_s": self.angular_speed_rad_s,
+        }
+
+
 def _rotation(value: Sequence[Sequence[float]], name: str) -> np.ndarray:
     result = np.asarray(value, dtype=float)
     if (
@@ -189,6 +221,136 @@ def audit_surface_attachment_contact(
     )
 
 
+def audit_payload_support_contact(
+    *,
+    payload_center_m: Sequence[float],
+    payload_rotation: Sequence[Sequence[float]],
+    payload_size_m: Sequence[float],
+    payload_linear_velocity_m_s: Sequence[float],
+    payload_angular_velocity_rad_s: Sequence[float],
+    support: Mapping[str, Any],
+    max_support_gap_m: float = 0.003,
+    maximum_penetration_m: float = 0.001,
+    minimum_footprint_overlap_ratio: float = 0.90,
+    max_support_tilt_rad: float = np.deg2rad(5.0),
+    max_linear_speed_m_s: float = 0.03,
+    max_angular_speed_rad_s: float = 0.08,
+) -> PayloadSupportAudit:
+    """Require real, non-penetrating receiver support before vacuum release.
+
+    ``support.rotation_matrix[:, 2]`` is the support normal.  This keeps the
+    calculation valid for a known tilted receiver while still rejecting a
+    side-wall as a support because its local-X/Y footprint and top plane would
+    not match the payload bottom plane.
+    """
+
+    payload_center = np.asarray(payload_center_m, dtype=float)
+    payload_size = np.asarray(payload_size_m, dtype=float)
+    payload_linear_velocity = np.asarray(payload_linear_velocity_m_s, dtype=float)
+    payload_angular_velocity = np.asarray(payload_angular_velocity_rad_s, dtype=float)
+    payload_rotation_matrix = _rotation(payload_rotation, "payload_rotation")
+    support_center = np.asarray(support.get("center_m", []), dtype=float)
+    support_size = np.asarray(support.get("size_m", []), dtype=float)
+    support_rotation = _rotation(
+        support.get("rotation_matrix", []), "support rotation"
+    )
+    support_name = str(support.get("name", "")).strip()
+    scalars = np.asarray(
+        [
+            max_support_gap_m,
+            maximum_penetration_m,
+            minimum_footprint_overlap_ratio,
+            max_support_tilt_rad,
+            max_linear_speed_m_s,
+            max_angular_speed_rad_s,
+        ],
+        dtype=float,
+    )
+    if (
+        payload_center.shape != (3,)
+        or payload_size.shape != (3,)
+        or payload_linear_velocity.shape != (3,)
+        or payload_angular_velocity.shape != (3,)
+        or support_center.shape != (3,)
+        or support_size.shape != (3,)
+        or not support_name
+        or not all(
+            np.all(np.isfinite(value))
+            for value in (
+                payload_center,
+                payload_size,
+                payload_linear_velocity,
+                payload_angular_velocity,
+                support_center,
+                support_size,
+            )
+        )
+        or np.any(payload_size <= 0.0)
+        or np.any(support_size <= 0.0)
+        or not np.all(np.isfinite(scalars))
+        or max_support_gap_m < 0.0
+        or maximum_penetration_m < 0.0
+        or not 0.0 < minimum_footprint_overlap_ratio <= 1.0
+        or not 0.0 <= max_support_tilt_rad < 0.5 * np.pi
+        or max_linear_speed_m_s < 0.0
+        or max_angular_speed_rad_s < 0.0
+    ):
+        raise ValueError("payload support audit inputs must be finite and physical")
+
+    support_from_payload = support_rotation.T @ payload_rotation_matrix
+    payload_half = 0.5 * payload_size
+    support_half = 0.5 * support_size
+    payload_center_support = support_rotation.T @ (payload_center - support_center)
+    projected_payload_half = np.abs(support_from_payload) @ payload_half
+    signed_gap = float(
+        payload_center_support[2]
+        - projected_payload_half[2]
+        - support_half[2]
+    )
+
+    overlaps = []
+    payload_widths = []
+    for axis in (0, 1):
+        payload_min = float(payload_center_support[axis] - projected_payload_half[axis])
+        payload_max = float(payload_center_support[axis] + projected_payload_half[axis])
+        support_min = -float(support_half[axis])
+        support_max = float(support_half[axis])
+        overlaps.append(max(0.0, min(payload_max, support_max) - max(payload_min, support_min)))
+        payload_widths.append(2.0 * float(projected_payload_half[axis]))
+    payload_area = payload_widths[0] * payload_widths[1]
+    overlap_ratio = float(overlaps[0] * overlaps[1] / payload_area)
+    support_normal_alignment = float(
+        np.clip(payload_rotation_matrix[:, 2] @ support_rotation[:, 2], -1.0, 1.0)
+    )
+    linear_speed = float(np.linalg.norm(payload_linear_velocity))
+    angular_speed = float(np.linalg.norm(payload_angular_velocity))
+    epsilon = 1e-12
+    if support_normal_alignment < cos(max_support_tilt_rad) - epsilon:
+        reason = "PAYLOAD_SUPPORT_NORMAL_MISALIGNED"
+    elif signed_gap > max_support_gap_m + epsilon:
+        reason = "PAYLOAD_NOT_IN_SUPPORT_CONTACT"
+    elif signed_gap < -maximum_penetration_m - epsilon:
+        reason = "PAYLOAD_PENETRATES_SUPPORT"
+    elif overlap_ratio + epsilon < minimum_footprint_overlap_ratio:
+        reason = "PAYLOAD_SUPPORT_FOOTPRINT_INSUFFICIENT"
+    elif linear_speed > max_linear_speed_m_s + epsilon:
+        reason = "PAYLOAD_LINEAR_SPEED_TOO_HIGH_FOR_RELEASE"
+    elif angular_speed > max_angular_speed_rad_s + epsilon:
+        reason = "PAYLOAD_ANGULAR_SPEED_TOO_HIGH_FOR_RELEASE"
+    else:
+        reason = None
+    return PayloadSupportAudit(
+        accepted=reason is None,
+        reason=reason,
+        support_name=support_name,
+        signed_normal_gap_m=signed_gap,
+        footprint_overlap_ratio=overlap_ratio,
+        support_normal_alignment=support_normal_alignment,
+        linear_speed_m_s=linear_speed,
+        angular_speed_rad_s=angular_speed,
+    )
+
+
 def _horizontal_footprint_contains(
     payload_center_m: np.ndarray,
     primitive: Mapping[str, Any],
@@ -257,6 +419,8 @@ def select_active_conveyor_surfaces(
 
 __all__ = [
     "AttachmentContactAudit",
+    "PayloadSupportAudit",
+    "audit_payload_support_contact",
     "audit_surface_attachment_contact",
     "select_active_conveyor_surfaces",
 ]

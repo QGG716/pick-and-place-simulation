@@ -53,7 +53,7 @@ def main(argv: list[str] | None = None) -> int:
         result = build_m710_execution_preflight(
             args.config.resolve(),
             motion_result=motion,
-            backend_execution_status="NOT_RUN_PER_USER_REQUEST",
+            backend_execution_status="NOT_RUN",
         )
         verification = verify_m710_execution_preflight(result)
         destination = write_m710_execution_preflight(result, args.output.resolve())

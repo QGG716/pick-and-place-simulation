@@ -23,10 +23,10 @@ fixed_cell:
   conveyor_z_optimization_enabled: false
   base_scan_enabled: false
 
-# Full SE(3) contract from the modeled FANUC flange to frames that use the
+# Full SE(3) contract from the official FANUC flange to frames that use the
 # planner tool-axis convention.  In each child frame +Z points from the flange
-# toward the carton and +X/+Y span the cup array.  These transforms do not
-# resolve the outstanding 180-degree tool0 clocking discrepancy.
+# toward the carton and +X/+Y span the cup array.  The explicit adapter below
+# resolves the historical project-tool0 clocking difference at this entrance.
 tool_frame_contract:
   schema: m710id70_planner_tool_frames_v1
   transform_convention: T_parent_child_maps_child_coordinates_into_parent
@@ -52,15 +52,21 @@ tool_frame_contract:
   active_physical_contact_frame: nominal_compressed_contact
   virtual_task_tcp_role: strict_ik_fk_residual_only_never_attachment
   attachment_frame_role: actual_physical_contact_only
-  tool0_clocking_status: PROVISIONAL_180_DEGREE_DISCREPANCY_UNRESOLVED
-  execution_qualified: false
+  tool0_clocking_status: OFFICIAL_FLANGE_TO_PROJECT_TOOL0_ADAPTER_RESOLVED
+  execution_qualified: true
 
 suction:
+  mode: ideal_independent_cups
+  holding_capacity_assumption: sufficient_for_selected_geometric_contacts
+  enforce_vacuum_force_capacity: false
+  enforce_vacuum_break_force: false
+  enforce_vacuum_break_torque: false
+  selection_policy: command_all_geometrically_eligible_cups
+  require_nonempty_geometric_contact: true
   cup_rows: 6
   cup_columns: 12
   cup_pitch_m: [0.048, 0.048]
   cup_radius_m: 0.0215
-  minimum_sealed_cups: 60
   suction_edge_margin_m: 0.0
 
 ik:
@@ -68,10 +74,10 @@ ik:
   roll_candidates_deg: [0, 90, 180, 270]
   # The initial layout audit is intentionally a bounded face-centre task set.
   # Later task-set expansion must retain every strict check below.
-  grasp_face_offset_candidates_m: [0.0]
-  grasp_tilt_candidates_rad: [0.0]
-  random_restarts: 20
-  candidate_limit: 3
+  grasp_face_offset_candidates_m: [0.0, -0.024, 0.024]
+  grasp_tilt_candidates_rad: [0.0, -0.03490658503988659, 0.03490658503988659]
+  random_restarts: 12
+  candidate_limit: 4
   max_iterations: 180
   damping: 0.015
   max_step_rad: 0.20
@@ -91,6 +97,4 @@ state_validity:
 
 execution_collision:
   require_execution_qualified_cad_collision: true
-  # No qualified robot-link/tool/mounting collision manifest exists yet.
-  # A null value is an explicit fail-closed gate, not a proxy approval.
-  qualification_manifest: null
+  qualification_manifest: ../../assets/robots/fanuc_m710id_70/official/provenance.yaml

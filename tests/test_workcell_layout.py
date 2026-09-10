@@ -9,14 +9,18 @@ import sys
 
 import numpy as np
 import pytest
+import yaml
 
 from unloading_sim.geometry import OBB
+from unloading_sim.m710_initialization_diagnostic import (
+    SCOPE as INITIALIZATION_SCOPE,
+    build_initialization_diagnostic_contract,
+    verify_initialization_diagnostic_contract,
+)
 from unloading_sim.workcell_layout import (
     LAYOUT_SCHEMA,
-    SNAPSHOT_SCHEMA,
     audit_initial_state,
     audit_layout_constraints,
-    audit_snapshot_consistency,
     build_scene_snapshot,
     compute_layout_fingerprint,
     find_initial_state_witness,
@@ -80,9 +84,11 @@ def test_robot_mount_derivation_is_explicit_and_supported():
     config = _config()
     layout = config.layout
     origin = layout.robot_base_transform()[:3, 3]
-    np.testing.assert_allclose(origin, [-1.41, 0.35, 0.6])
-    assert origin[0] + layout.data["robot"]["base_proxy_radius_m"] == pytest.approx(-1.1)
-    assert layout.data["robot"]["positioning_status"].startswith("ENGINEERING_PROXY")
+    np.testing.assert_allclose(origin, [-1.325, 0.35, 0.6])
+    np.testing.assert_allclose(layout.data["robot"]["base_support_bbox_min_xyz_m"], [-0.3385, -0.275, 0.0])
+    np.testing.assert_allclose(layout.data["robot"]["base_support_bbox_max_xyz_m"], [0.225, 0.275, 0.245])
+    assert origin[0] + 0.225 == pytest.approx(-1.1)
+    assert layout.data["robot"]["positioning_status"] == "EXECUTION_QUALIFIED_CAD_COLLISION"
 
     chassis = next(box for box in layout.fixed_components() if box.name == "chassis")
     touching = OBB(origin + [0, 0, 0.1], [0.2, 0.2, 0.1], np.eye(3), "mount_proxy")
@@ -163,43 +169,51 @@ def test_initial_state_is_collision_checked_and_seeded_witness_is_reproducible()
     previous = audit_initial_state(config, np.asarray(config.data["initial_state"]["previous_v3_q_rad"]))
     assert previous["status"] == "FAIL"
     assert any(failure["reason"] == "TRAILER_SIDE_CLEARANCE" for failure in previous["failures"])
-    assert audit_initial_state(config)["status"] == "PASS"
-    witness = find_initial_state_witness(config, int(config.data["initial_state"]["search_maximum_random_draws"]))
-    assert witness["status"] == "PASS"
-    assert witness["random_draw"] == config.data["initial_state"]["selected_random_draw_1_based"]
-    np.testing.assert_allclose(witness["q_rad"], config.initial_q, atol=1e-12, rtol=0)
-    assert witness["path_from_previous_state"] == "NOT_EVALUATED"
+    initial = audit_initial_state(config)
+    assert initial["status"] == "FAIL"
+    assert any(failure["reason"] == "TOOL_SELF_COLLISION" and failure["pair"] == ["tool_rigid_13", "J5_link"]
+               for failure in initial["failures"])
+    # Test deterministic failure accounting with a bounded search; the real
+    # 3000-draw diagnostic remains evidence, not a test-time success fixture.
+    witness = find_initial_state_witness(config, 1)
+    assert witness == find_initial_state_witness(config, 1)
+    assert witness["status"] == "FAIL"
+    assert witness["seed"] == 71070
+    assert witness["maximum_random_draws"] == 1
+    assert witness["draw"] is None
+    assert witness["last_audit"]["status"] == "FAIL"
 
 
-def test_snapshot_is_frozen_content_addressed_and_replay_consistent():
+def test_invalid_home_refuses_snapshot_and_freezes_only_diagnostic_geometry():
     config = _config()
-    snapshot = build_scene_snapshot(config)
-    assert snapshot["schema"] == SNAPSHOT_SCHEMA
-    assert snapshot["layout_fingerprint"] == config.layout.layout_fingerprint
-    assert len(snapshot["cartons"]) == 40
-    assert len(snapshot["robot"]["link_collision_obbs"]) == 7
-    assert snapshot["receiver"]["transport_capability"] == "NOT_IMPLEMENTED_FOR_LAYOUT_V1"
-    assert snapshot["attachments"] == []
-    np.testing.assert_allclose(snapshot["robot"]["tcp_pose_world"], snapshot["tool"]["task_tcp_pose_world"])
-    np.testing.assert_allclose(
-        2 * np.asarray(snapshot["tool"]["collision_obb"]["half_extents_m"]),
-        [0.288, 0.576, 0.2275],
+    with pytest.raises(ValueError, match="refusing to snapshot invalid initial state"):
+        build_scene_snapshot(config)
+    diagnostic = build_initialization_diagnostic_contract(
+        CONFIG, ROOT / "configs/simulation/m710id70_official_dynamics_v2.yaml", ROOT,
     )
-    verification = verify_scene_snapshot(snapshot, ROOT)
-    assert verification["status"] == "PASS"
-    assert len(verification["checked_assets"]) == 7
-    consistency = audit_snapshot_consistency(config, snapshot)
-    assert consistency["status"] == "PASS"
-    assert max(consistency["maximum_absolute_errors"].values()) <= 1e-12
-
-    tampered = copy.deepcopy(snapshot)
-    tampered["cartons"][0]["center_m"][0] += 0.001
+    verify_initialization_diagnostic_contract(diagnostic)
+    assert diagnostic["scope"] == INITIALIZATION_SCOPE
+    assert diagnostic["initial_state_audit"]["status"] == "FAIL"
+    assert diagnostic["layout_fingerprint"] == config.layout.layout_fingerprint
+    assert not diagnostic["motion_execution_permitted"]
+    assert not diagnostic["attachment_permitted"]
+    expected = {b.name: b for b in [*config.layout.fixed_components(), *config.layout.cartons(),
+                                  *config.layout.robot().tool_collision_obbs(config.initial_q)]}
+    assert len(diagnostic["primitives"]) == 101
+    for record in diagnostic["primitives"]:
+        box = expected[record["name"]]
+        np.testing.assert_allclose(record["pose_world"], box.world_from_local, atol=1e-12)
+        np.testing.assert_allclose(record["size_xyz_m"], 2 * box.half_extents, atol=1e-12)
+    tampered = copy.deepcopy(diagnostic)
+    tampered["primitives"][0]["pose_world"][0][3] += 0.001
     with pytest.raises(ValueError, match="fingerprint mismatch"):
-        verify_scene_snapshot(tampered)
-    missing = copy.deepcopy(snapshot)
-    missing.pop("scene_fingerprint")
+        verify_initialization_diagnostic_contract(tampered)
+    missing = copy.deepcopy(diagnostic)
+    missing.pop("contract_fingerprint")
     with pytest.raises(ValueError, match="fingerprint mismatch"):
-        verify_scene_snapshot(missing)
+        verify_initialization_diagnostic_contract(missing)
+    with pytest.raises(ValueError, match="schema"):
+        verify_scene_snapshot(diagnostic)
 
 
 def test_layout_fingerprint_tracks_geometry_but_not_validation_render_settings():
@@ -220,6 +234,11 @@ def test_layout_schema_is_independent_from_legacy_v3_validation_schema():
 
 
 def test_feasibility_entry_routes_layout_phase_without_loading_legacy_defaults(tmp_path):
+    validation = copy.deepcopy(_config().data)
+    validation["layout_config"] = str(_config().layout.config_path)
+    validation["initial_state"]["search_maximum_random_draws"] = 1
+    config_path = tmp_path / "layout_validation.yaml"
+    config_path.write_text(yaml.safe_dump(validation), encoding="utf-8")
     result = subprocess.run(
         [
             sys.executable,
@@ -227,17 +246,20 @@ def test_feasibility_entry_routes_layout_phase_without_loading_legacy_defaults(t
             "--phase",
             "layout",
             "--config",
-            str(CONFIG),
+            str(config_path),
             "--output-dir",
             str(tmp_path / "layout"),
         ],
         cwd=ROOT,
-        check=True,
+        check=False,
         capture_output=True,
         text=True,
     )
-    payload = json.loads(result.stdout)
-    assert payload["completed_phase"] == "layout"
-    assert payload["status"] == "PASS"
-    assert payload["layout_id"] == LAYOUT_SCHEMA
-    assert (tmp_path / "layout/scene_snapshot.json").is_file()
+    assert result.returncode != 0
+    numeric = json.loads((tmp_path / "layout/numeric_audit.json").read_text(encoding="utf-8"))
+    initial = json.loads((tmp_path / "layout/initial_state_audit.json").read_text(encoding="utf-8"))
+    search = json.loads((tmp_path / "layout/initial_state_search.json").read_text(encoding="utf-8"))
+    assert numeric["overall_status"] == "PASS"
+    assert initial["status"] == "FAIL" and initial["failures"]
+    assert search["status"] == "FAIL"
+    assert not (tmp_path / "layout/scene_snapshot.json").exists()

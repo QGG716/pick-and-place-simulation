@@ -1,30 +1,40 @@
 # FANUC M-710iD/70 V3 几何可行性恢复优先级
 
-> **当前门控（2026-09-09）**：开发优先级已由静态初始化转入“真实 CAD、严格运动学、
-> 工程刚体动力学执行”闭环。`m710id70_unloading_layout_v1` 及其内容寻址冻结快照仍是
-> 唯一布局来源；新 layout-bound 任务集是 `SupportRelationGraph` 给出的 5 个顶层可移除
-> 箱。一次物理执行必须同时通过三道独立门：真实 CAD 分连杆渲染/碰撞资格、完整严格
-> 轨迹、动力学/后端预检。任一门失败都不得回退代理碰撞、瞬移或无限约束。当前结果与
-> 未解决项见 [m710id70_real_cad_dynamics_round](validation/m710id70_real_cad_dynamics_round.md)。
-> 当前原始 CAD 来源审计和工程动力学输入校验已通过，但分连杆执行网格未转换，冻结
-> 布局顶层任务严格完整轨迹为 0/5，preflight 因此为 `BLOCKED`。回放 bundle 现在在
-> `SimulationApp` 启动前绑定并核验 READY preflight、plan/config/scene/trajectory、
-> 当前源码和资产身份；在三道门全部通过前不运行 Isaac、不生成动作录像。
+> **当前门控（2026-09-10）**：固定提交
+> `FANUC-CORPORATION/fanuc_description@fb40c9803a826ba68c7c8e28ba904a25efa7fcd2`
+> 的完整官方关节链、7 个 visual、7 个 collision mesh、逐连杆惯量和有限关节
+> speed/effort 已作为工程仿真输入接入；真机资格继续独立记录。72 杯独立几何选择、
+> 官方机器人 triangle-mesh 严格规划、58 个 CAD 派生实体包围盒的工程复合表示、完整
+> 阶段连接及 Isaac 实际接触/支撑门控执行入口也已实现。
+> 但当前 58/144 实体分类和包围盒尚无逐实体语义及向外包含证书，因此该工具表示只能
+> 用于诊断和保守拒绝，不能接受执行路径；当前精确验证器对 J6 与全部工具盒的父级
+> 忽略也尚未收窄为有尺寸依据的安装界面接触。这两项都是独立于 home 冲突的
+> fail-closed 门。
+> 当前 `m710id70_unloading_layout_v1` 的生产 home 在规划前严格失败：每体 10 mm margin
+> 对 `J5_link`—`tool_rigid_13` 要求 20 mm 成对净空，完整工具 STL 的 49 点 J6 扫描最大
+> 仅约 19.1266 mm。因而本轮 5 个顶层任务尚未进入 IK/路径搜索，动态取放 preflight
+> 正确保持 `BLOCKED`；不得通过 SRDF、margin、工具偏移或代理碰撞绕过。模型初始化
+> 诊断与完整取放执行分级：前者可以加载真实资产和 40 个动态箱，但必须显式标记
+> `INITIALIZATION_ONLY_NOT_PICK_SUCCESS`。本轮详情见
+> [官方模型与独立吸盘验证报告](validation/m710id70_official_model_independent_cups_round.md)。
 > 本文件下面的 104-task 与 129-carton 结果仍是旧 V3 布局的历史算法证据，不是新布局
 > 工程验收分母；其接触感知、task-set IK、escape 与 support-release 实现继续复用。
 
 ## 当前工程闭环实施顺序
 
-1. 在不改变已确认装配外廓的前提下，解决 ROBCAD `J3 follows J2`、tool0 绕公共
-   工具 Z 的 180 度差异和真实基座安装外廓。
-2. 使用真正支持 Parasolid/JT 的转换器生成并审计 7 个 link visual 和 7 个
-   CAD-derived compound collision mesh；代理体只保留为 CPU 预筛选。
-3. 保留全部 40 箱及既有严格 FK、限位、覆盖、接触和碰撞判据，在 5 个顶层可移除
-   箱中恢复至少一条完整轨迹。
-4. 三道 preflight 门全部通过后，才通过可选 Isaac 适配层执行有限工程质量、惯量、
-   驱动、接触和吸附参数下的刚体仿真。
-5. 只保存来自实际物理状态的日志和正常时间倍率录像；在此之前不以静态画面、代理
-   碰撞、瞬移或无限约束替代执行结果。
+1. 取得可溯源的实际装配尺寸或经批准的安装适配件定义，解释并解除官方 J5 与皖泰
+   安装板当前约 0.8734 mm 的工程净空缺口；不能猜测垫片、改变 margin 或扩大 SRDF。
+2. 为 58 个工具刚体补齐逐实体物理语义和保守向外包含证书，并把 J6—工具合法接触
+   例外收窄到有可溯源尺寸依据的真实安装界面；在这两个门关闭前，规划只能作诊断搜索，
+   不能接受为执行轨迹。
+3. 三个 fail-closed 门全部通过后，保留全部 40 箱，在 5 个顶层可移除箱中运行已接通的
+   task-set IK、独立杯选择和完整阶段连接，恢复至少一条完整轨迹。
+4. 只有完整轨迹通过，才允许实际接触后建立同一箱体的理想固定约束，并按真实接收面
+   支撑门控完成带载搬运、释放、撤离和输送。
+5. 保存实际状态日志、正常时间倍率连续录像及接触/附着/释放关键帧；初始化诊断录像
+   只证明模型加载与正向运行并记录落稳结果，不能替代完整取放。当前规范实跑记录为
+   `RETAINED_AND_SETTLED_DIAGNOSTIC_ONLY`，但未执行 penetration gate，且严格合同禁止
+   进入取放，因此不能称为完整取放成功或执行资格。
 
 状态：上面的工程闭环顺序是当前开发分支的权威实施顺序。冻结的
 [V3 技术验证报告](validation/technical_qualification_report_m710id70_v3.md)

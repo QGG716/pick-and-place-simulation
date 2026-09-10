@@ -1,0 +1,1164 @@
+{
+  "schema": "m710id70_initialization_diagnostic_preflight_v1",
+  "status": "BLOCKED",
+  "simulation_execution_ready": false,
+  "simulation_execution_qualified": false,
+  "execution_qualified": false,
+  "simulation_readiness_blockers": [
+    "INITIAL_STATE_INVALID"
+  ],
+  "blockers": [
+    "INITIAL_STATE_INVALID"
+  ],
+  "machine_qualified": false,
+  "machine_qualification_warnings": [
+    "SUPPLIED_ASSEMBLY_MATERIAL_AND_COMPONENT_MASSES_NOT_AVAILABLE",
+    "VACUUM_FORCE_SHEAR_AND_PEEL_ENVELOPE_NOT_MEASURED",
+    "ZONE_ASSIGNMENT_NOT_VENDOR_CONFIRMED"
+  ],
+  "backend_execution_status": "NOT_RUN",
+  "isaac_validation_performed": false,
+  "input_identity": {
+    "execution_config_fingerprint": "ba74ffdc3dff2697ddc8b3a8e78603a2965680042d548d8bef33c2eccf7f5c50",
+    "layout_fingerprint": "240f91728870edb2c073d38b4d9465fe1d20d6c5222fd24d057f5e5f6d6caada",
+    "scene_fingerprint": null,
+    "motion_evidence_fingerprint": "cfd2bfd9169d738e3baba041756b192126460a80360723a9ddfc9dfac9256b49",
+    "execution_implementation_source_sha256": {
+      "src/unloading_sim/asset_audit.py": "058c9963eec829152c4048d498b564221fe78ba772e28e3be2bf0f10dacf5639",
+      "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+      "src/unloading_sim/isaac_bridge.py": "185c3c0371d422217a3b062f12e248060a9f41aa24a485ff8c6b4092d747aa49",
+      "src/unloading_sim/m710_dynamics.py": "a6f30ef0bf44b23c3fc9ea18597ee9a86e44a1fd48cac45885bd5f5a0388414d",
+      "src/unloading_sim/m710_execution.py": "2485190a5fcdb29dc9718f68a19eba78f1d66b880ae01afa7a51d5aa056de25d",
+      "src/unloading_sim/m710_official_dynamics.py": "cb34cf971aa55ec9f722e417a819aca07110bb442f0ba6bd0db4cdc1a7c7d772",
+      "src/unloading_sim/m710_replay_physics.py": "a478ffdc62660d71f60384b0651e71df49401aca3ae3be1a913e537d2da1d9dd",
+      "src/unloading_sim/m710_replay_contract.py": "fa7fe3bd53a7b9e30c6a8943f7701a8d1a11915c255a40d938a94dbff32e017c",
+      "src/unloading_sim/qualification.py": "5b900f8931f2705ce2a9a1a3205d42899e83ad1e4d7a7d8d977fba3a1ad7a505",
+      "scripts/export_isaac_fanuc_replay.py": "2226d956b8b4067c89b3c8573e49588af1f46db1c4cffcd6cfe9158872b22d9e",
+      "scripts/isaacsim_fanuc_replay.py": "2a0d82239fe6e9d87ce5ffdccbcd3f08b179bf3602362467c297f660b6c07f2c"
+    },
+    "dynamics_fingerprint": "5b8b0dfd7ab72ecb2b073bcf48fd84ea0117226d08a1acadbe39938ddb05c130",
+    "robot_manifest_sha256": "adf419aed06c1b1ed8874dea98246ca25795e268fdd71515ff441d400dc72af6",
+    "tool_manifest_sha256": "f3f5fab0fe151fac31cfa812254bebb349f3aa5394d214783ab908635fac6592"
+  },
+  "asset_audit": {
+    "robot": {
+      "manifest_path": "assets/robots/fanuc_m710id_70/official/provenance.yaml",
+      "manifest_sha256": "adf419aed06c1b1ed8874dea98246ca25795e268fdd71515ff441d400dc72af6",
+      "upstream_commit": "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2",
+      "package_version": "2.3.0",
+      "source_integrity": true,
+      "static_urdf_integrity": true,
+      "model_semantics": true,
+      "verified_source_file_count": 18,
+      "verified_source_bytes": 8657343,
+      "visual_mesh_count": 7,
+      "collision_mesh_count": 7,
+      "execution_qualified": true
+    },
+    "tool": {
+      "manifest_path": "assets/grippers/shanghai_wantai_three_zone/asset_manifest.yaml",
+      "schema_version": "shanghai_wantai_three_zone_asset_manifest_v1",
+      "manifest_sha256": "f3f5fab0fe151fac31cfa812254bebb349f3aa5394d214783ab908635fac6592",
+      "source_integrity": true,
+      "conversion_status": "DERIVED_ASSETS_PRESENT_ENGINEERING_ONLY",
+      "execution_qualified": false,
+      "verified_file_count": 5,
+      "verified_source_bytes": 29141501,
+      "missing_converted_outputs": [],
+      "unresolved": [
+        "FLANGE_CLOCKING_PROVISIONAL",
+        "DYNAMIC_COLLISION_REPRESENTATION_NOT_QUALIFIED",
+        "SUPPLIED_ASSEMBLY_MATERIAL_AND_COMPONENT_MASSES_NOT_AVAILABLE",
+        "ZONE_ASSIGNMENT_NOT_VENDOR_CONFIRMED",
+        "VACUUM_FORCE_SHEAR_AND_PEEL_ENVELOPE_NOT_MEASURED"
+      ]
+    }
+  },
+  "model_initialization": {
+    "model_load_ready": true,
+    "scope": "official_robot_and_supplied_tool_inputs_only_not_validated_scene_or_execution",
+    "official_robot_inertials_and_finite_drive_limits_validated": true,
+    "tool_execution_integration": "NOT_RUN_NO_VALID_SCENE_SNAPSHOT"
+  },
+  "dynamics": {
+    "qualification_status": "OFFICIAL_PUBLIC_MODEL_ENGINEERING_SIMULATION",
+    "machine_qualified": false,
+    "robot_mass_kg": 580.347,
+    "tool_mass_kg": 20.0,
+    "carton_count": 40,
+    "carton_mass_kg_each": 42.5,
+    "total_configured_mass_kg": 2300.3469999999998,
+    "fingerprint": "5b8b0dfd7ab72ecb2b073bcf48fd84ea0117226d08a1acadbe39938ddb05c130"
+  },
+  "motion": {
+    "schema": "m710id70_layout_single_carton_motion_audit_v1",
+    "run_status": "BLOCKED",
+    "layout_id": "m710id70_unloading_layout_v1",
+    "layout_fingerprint": "240f91728870edb2c073d38b4d9465fe1d20d6c5222fd24d057f5e5f6d6caada",
+    "scene_fingerprint": null,
+    "policy_fingerprint": "400aaf60839b48d76d7aef3fd128c56b15b829df536a6a338dd52bd387a11e0b",
+    "implementation_identity": {
+      "source_sha256": {
+        "src/unloading_sim/depalletizing.py": "2ebfde4c2ce3bd2e831c6c5afde6422adecb9a2db504f35cc3b407a7d04854f6",
+        "src/unloading_sim/fanuc_m710id70.py": "836b3dc0915a3b0a91328948d28ed368b8e2ed7d1d26838ccc918f5aa17cd8f8",
+        "src/unloading_sim/geometry.py": "5ddd9c94be8284307ccdb7ae65e8ab089721768ec83b3995ae357b6cc9f82514",
+        "src/unloading_sim/grasp.py": "2f4e1aecf848863a8c9c583b85d3636e1730231bfc06f718019b4f8b38a5b72e",
+        "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+        "src/unloading_sim/ik.py": "888e855bf71194dca2522b705f3c7e0a2359bfc553c6957112a565d095c6b2e0",
+        "src/unloading_sim/layout_single_carton.py": "4c188d944ea1b1c409aa80c93cdb38bb9087a7df100e92563bd1bb1a9ab0c9f2",
+        "src/unloading_sim/layout_trajectory.py": "ed01c46cf13fc55aee73dad29e3b66dbaed20ba64f0114b8ae883d9c8b7ce645",
+        "src/unloading_sim/pinocchio_backend.py": "8bf4674d0ea983156470b50d99d502fd029cbcd8ffaedb64b474eb8453863756",
+        "src/unloading_sim/planner.py": "e35344f8a4252aae8e0f22abc4d15e83b49c8723c59410ae028335fb95cb33e4",
+        "src/unloading_sim/robot.py": "c8b5e9f5a1819bd3258368b71b2ad408a438ecc0ae841436d4e2ba5869057288",
+        "src/unloading_sim/robot_load/model.py": "13097486a55304b3e8517157e9de2b2ab38dbfb82f0d0d82a3ac98fc330c3d89",
+        "src/unloading_sim/robot_load/spatial.py": "616d696e2fdf9cd05b38dfe5db1ecf3a815e6db32891860217b71c22c06e3618",
+        "src/unloading_sim/robot_load/task.py": "83b61dbb5a225dd5e4ddc51b4bbc0eb8db89de2560f9be2f67544a440648d65a",
+        "src/unloading_sim/scene.py": "7849e50ce3feaf921654329ebc1391e30dc64f26565918dcb44e13832c3d272c",
+        "src/unloading_sim/support.py": "6efc235227f348c3e37065e741e76fd1f6c6438729e57240bc00b55a7b32b6c1",
+        "src/unloading_sim/timing.py": "64a449ef4a021041ae0d1f40e6cb4b5ff51dcbd9ce0596819ba20e77ba7ab89d",
+        "src/unloading_sim/validation_motion.py": "dc49984f2ea7b6c4f0235104ea586e2f9374ada084fc288804fd8a9253103e63",
+        "src/unloading_sim/validation_physics.py": "0464520fb79bc3fbcdc4f1e60704b8739c8588d1c999a420e3e6b48975773422",
+        "src/unloading_sim/workcell_layout.py": "3861d013f7c1bcc289fe6466f4dce3c3e50dbaa0a7a117fdbbb9df4ddd2de3b5"
+      },
+      "runtime": {
+        "python": "3.12.3",
+        "python_implementation": "CPython",
+        "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+        "numpy": "2.3.2"
+      }
+    },
+    "input_assets": {
+      "robot_model_config": {
+        "declared_path": "../robots/fanuc_m710id_70.yaml",
+        "repository_path": "configs/robots/fanuc_m710id_70.yaml",
+        "sha256": "45485fc28e5f12deaf84f321ef8bb4976178a78ed2f67507fc730d4e8fba6a37"
+      },
+      "robot_urdf": {
+        "declared_path": "../../assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+        "repository_path": "assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+        "sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf"
+      },
+      "tool_load_config": {
+        "declared_path": "../tools/unloading_gripper_20kg.yaml",
+        "repository_path": "configs/tools/unloading_gripper_20kg.yaml",
+        "sha256": "724a68677f768817465ea8391e24385d62a7523258ac2a1ec435567baf91b64a"
+      },
+      "tool_geometry_config": {
+        "declared_path": "../tools/unloading_gripper_10kg.yaml",
+        "repository_path": "configs/tools/unloading_gripper_10kg.yaml",
+        "sha256": "4a83e53d16e84d79cbd0dd15ef218d5cb2b372db9268c32b2177d2ea1338f0c3"
+      },
+      "tool_visual_mesh": {
+        "declared_path": "assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb",
+        "repository_path": "assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb",
+        "sha256": "a3c966bf676da0ac410f099225d2682ef00c56d8e2d9cc3184609630308b733a"
+      },
+      "tool_collision_mesh": {
+        "declared_path": "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+        "repository_path": "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+        "sha256": "4113746138501efde8748f8c77d82612590fba1b6baca7c7e24127c66b2c5ce8"
+      },
+      "tool_step_analysis": {
+        "declared_path": "assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+        "repository_path": "assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+        "sha256": "2596f20270848f8874cf8e766602be7985da8dd047d769889b83f690009f13f0"
+      }
+    },
+    "effective_motion_policy": {
+      "schema": "m710id70_layout_single_carton_motion_v1",
+      "layout_validation_config": "m710id70_layout_v1.yaml",
+      "task_population": {
+        "selector": "support_relation_graph_removable",
+        "expected_scene_cartons": 40,
+        "expected_removable_cartons": 5,
+        "face_modes": [
+          "front",
+          "top",
+          "side"
+        ],
+        "support_contact_tolerance_m": 0.0002,
+        "support_minimum_overlap_ratio": 0.2
+      },
+      "receiver": {
+        "name": "conveyor_transverse",
+        "fixed": true
+      },
+      "fixed_cell": {
+        "lift_enabled": false,
+        "conveyor_extension_enabled": false,
+        "conveyor_z_optimization_enabled": false,
+        "base_scan_enabled": false
+      },
+      "tool_frame_contract": {
+        "schema": "m710id70_planner_tool_frames_v1",
+        "transform_convention": "T_parent_child_maps_child_coordinates_into_parent",
+        "planner_axes": {
+          "x": "cup_array_row_tangent",
+          "y": "cup_array_column_tangent",
+          "z": "flange_toward_carton_inward_normal_at_contact"
+        },
+        "T_flange_virtual_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "T_flange_uncompressed_cup_plane": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.2275
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "T_flange_nominal_compressed_contact": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.2125
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "active_physical_contact_frame": "nominal_compressed_contact",
+        "virtual_task_tcp_role": "strict_ik_fk_residual_only_never_attachment",
+        "attachment_frame_role": "actual_physical_contact_only",
+        "tool0_clocking_status": "OFFICIAL_FLANGE_TO_PROJECT_TOOL0_ADAPTER_RESOLVED",
+        "execution_qualified": true
+      },
+      "suction": {
+        "mode": "ideal_independent_cups",
+        "holding_capacity_assumption": "sufficient_for_selected_geometric_contacts",
+        "enforce_vacuum_force_capacity": false,
+        "enforce_vacuum_break_force": false,
+        "enforce_vacuum_break_torque": false,
+        "selection_policy": "command_all_geometrically_eligible_cups",
+        "require_nonempty_geometric_contact": true,
+        "cup_rows": 6,
+        "cup_columns": 12,
+        "cup_pitch_m": [
+          0.048,
+          0.048
+        ],
+        "cup_radius_m": 0.0215,
+        "suction_edge_margin_m": 0.0
+      },
+      "ik": {
+        "seed": 71070,
+        "roll_candidates_deg": [
+          0,
+          90,
+          180,
+          270
+        ],
+        "grasp_face_offset_candidates_m": [
+          0.0,
+          -0.024,
+          0.024
+        ],
+        "grasp_tilt_candidates_rad": [
+          0.0,
+          -0.03490658503988659,
+          0.03490658503988659
+        ],
+        "random_restarts": 12,
+        "candidate_limit": 4,
+        "max_iterations": 180,
+        "damping": 0.015,
+        "max_step_rad": 0.2,
+        "position_tolerance_m": 0.0001,
+        "orientation_tolerance_rad": 0.0002,
+        "orientation_weight": 0.55,
+        "candidate_dedup_tolerance_rad": 0.001,
+        "candidate_dedup_tolerance_m": 0.0001
+      },
+      "state_validity": {
+        "collision_margin_m": 0.01,
+        "contact_tolerance_m": 0.0002,
+        "joint_margin_rad": 0.0174532925199433,
+        "maximum_jacobian_condition": 10000.0,
+        "official_radial_reach_m": 2.104,
+        "radial_guard_tolerance_m": 0.002
+      },
+      "execution_collision": {
+        "require_execution_qualified_cad_collision": true,
+        "qualification_manifest": "../../assets/robots/fanuc_m710id_70/official/provenance.yaml"
+      }
+    },
+    "initial_state_audit": {
+      "schema": "m710id70_initial_state_audit_v1",
+      "layout_fingerprint": "240f91728870edb2c073d38b4d9465fe1d20d6c5222fd24d057f5e5f6d6caada",
+      "q_rad": [
+        3.1135901287083176,
+        0.7854566731593875,
+        0.6496218708958161,
+        0.06722349609001022,
+        -1.2117503086182402,
+        -1.9415185231007088
+      ],
+      "status": "FAIL",
+      "failures": [
+        {
+          "reason": "TOOL_SELF_COLLISION",
+          "pair": [
+            "tool_rigid_13",
+            "J5_link"
+          ]
+        }
+      ],
+      "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_58_rigid_tool_solids",
+      "complete_workcell_clearance": "KNOWN_GEOMETRY_EVALUATED_TRAILER_LENGTH_AND_HEIGHT_UNDEFINED"
+    },
+    "initial_state_exact_diagnostic": {
+      "status": "FAIL",
+      "failure_reason": "ROBOT_RIGID_TOOL_COLLISION",
+      "scope": "single_unloaded_home_state_only_no_ik_or_path_search",
+      "can_override_initial_state_gate": false,
+      "state_validations": 1,
+      "failure": {
+        "reason": "ROBOT_RIGID_TOOL_COLLISION",
+        "collision_kind": "robot_obstacle",
+        "pair": [
+          "J5_link",
+          "tool_rigid_13"
+        ],
+        "stage": "initial_state_diagnostic"
+      }
+    },
+    "snapshot_verification": {
+      "status": "NOT_RUN",
+      "failure_reason": "INITIAL_STATE_INVALID"
+    },
+    "snapshot_consistency_status": "NOT_RUN",
+    "scene": {
+      "source": "confirmed_layout_only_snapshot_refused_invalid_initial_state",
+      "carton_count": 40,
+      "carton_ids": [
+        "carton_l00_c00",
+        "carton_l00_c01",
+        "carton_l00_c02",
+        "carton_l00_c03",
+        "carton_l00_c04",
+        "carton_l01_c00",
+        "carton_l01_c01",
+        "carton_l01_c02",
+        "carton_l01_c03",
+        "carton_l01_c04",
+        "carton_l02_c00",
+        "carton_l02_c01",
+        "carton_l02_c02",
+        "carton_l02_c03",
+        "carton_l02_c04",
+        "carton_l03_c00",
+        "carton_l03_c01",
+        "carton_l03_c02",
+        "carton_l03_c03",
+        "carton_l03_c04",
+        "carton_l04_c00",
+        "carton_l04_c01",
+        "carton_l04_c02",
+        "carton_l04_c03",
+        "carton_l04_c04",
+        "carton_l05_c00",
+        "carton_l05_c01",
+        "carton_l05_c02",
+        "carton_l05_c03",
+        "carton_l05_c04",
+        "carton_l06_c00",
+        "carton_l06_c01",
+        "carton_l06_c02",
+        "carton_l06_c03",
+        "carton_l06_c04",
+        "carton_l07_c00",
+        "carton_l07_c01",
+        "carton_l07_c02",
+        "carton_l07_c03",
+        "carton_l07_c04"
+      ],
+      "fixed_component_names": [
+        "chassis",
+        "conveyor_transverse",
+        "conveyor_longitudinal"
+      ],
+      "planning_obstacle_count": 43,
+      "all_cartons_retained_during_candidate_checks": null
+    },
+    "task_population": {
+      "selector": "SupportRelationGraph.removable_cartons",
+      "carton_ids": [
+        "carton_l07_c02",
+        "carton_l07_c01",
+        "carton_l07_c03",
+        "carton_l07_c00",
+        "carton_l07_c04"
+      ],
+      "literal_expected_top_layer": [
+        "carton_l07_c00",
+        "carton_l07_c01",
+        "carton_l07_c02",
+        "carton_l07_c03",
+        "carton_l07_c04"
+      ],
+      "legacy_104_and_129_denominators_used": false,
+      "support_graph": {
+        "model": "conservative_world_projection_support_graph_v1",
+        "cartons": 40,
+        "support_edges": [
+          {
+            "supporter": "carton_l00_c00",
+            "supported": "carton_l01_c00",
+            "vertical_gap_m": -5.551115123125783e-17,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l00_c01",
+            "supported": "carton_l01_c01",
+            "vertical_gap_m": -5.551115123125783e-17,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l00_c02",
+            "supported": "carton_l01_c02",
+            "vertical_gap_m": -5.551115123125783e-17,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l00_c03",
+            "supported": "carton_l01_c03",
+            "vertical_gap_m": -5.551115123125783e-17,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l00_c04",
+            "supported": "carton_l01_c04",
+            "vertical_gap_m": -5.551115123125783e-17,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l01_c00",
+            "supported": "carton_l02_c00",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l01_c01",
+            "supported": "carton_l02_c01",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l01_c02",
+            "supported": "carton_l02_c02",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l01_c03",
+            "supported": "carton_l02_c03",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l01_c04",
+            "supported": "carton_l02_c04",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l02_c00",
+            "supported": "carton_l03_c00",
+            "vertical_gap_m": -2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l02_c01",
+            "supported": "carton_l03_c01",
+            "vertical_gap_m": -2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l02_c02",
+            "supported": "carton_l03_c02",
+            "vertical_gap_m": -2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l02_c03",
+            "supported": "carton_l03_c03",
+            "vertical_gap_m": -2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l02_c04",
+            "supported": "carton_l03_c04",
+            "vertical_gap_m": -2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l03_c00",
+            "supported": "carton_l04_c00",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l03_c01",
+            "supported": "carton_l04_c01",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l03_c02",
+            "supported": "carton_l04_c02",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l03_c03",
+            "supported": "carton_l04_c03",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l03_c04",
+            "supported": "carton_l04_c04",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l04_c00",
+            "supported": "carton_l05_c00",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l04_c01",
+            "supported": "carton_l05_c01",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l04_c02",
+            "supported": "carton_l05_c02",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l04_c03",
+            "supported": "carton_l05_c03",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l04_c04",
+            "supported": "carton_l05_c04",
+            "vertical_gap_m": 2.220446049250313e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l05_c00",
+            "supported": "carton_l06_c00",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l05_c01",
+            "supported": "carton_l06_c01",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l05_c02",
+            "supported": "carton_l06_c02",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l05_c03",
+            "supported": "carton_l06_c03",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l05_c04",
+            "supported": "carton_l06_c04",
+            "vertical_gap_m": 0.0,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l06_c00",
+            "supported": "carton_l07_c00",
+            "vertical_gap_m": 4.440892098500626e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l06_c01",
+            "supported": "carton_l07_c01",
+            "vertical_gap_m": 4.440892098500626e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l06_c02",
+            "supported": "carton_l07_c02",
+            "vertical_gap_m": 4.440892098500626e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l06_c03",
+            "supported": "carton_l07_c03",
+            "vertical_gap_m": 4.440892098500626e-16,
+            "footprint_overlap_ratio": 1.0
+          },
+          {
+            "supporter": "carton_l06_c04",
+            "supported": "carton_l07_c04",
+            "vertical_gap_m": 4.440892098500626e-16,
+            "footprint_overlap_ratio": 1.0
+          }
+        ]
+      }
+    },
+    "trajectory_backend": {
+      "schema": "m710id70_exact_layout_trajectory_backend_v1",
+      "collision_contract": {
+        "robot": "official_urdf_per_link_triangle_mesh_via_pinocchio_coal",
+        "tool": "58_step_rigid_solid_bounds_as_compound_obbs",
+        "payload": "actual_fk_physical_contact_rigid_attachment",
+        "fixed_body_aggregation_pairs": {
+          "base_mount": [
+            "base_link",
+            "chassis"
+          ],
+          "tool_mount": [
+            "J6_link",
+            "tool_rigid_*"
+          ]
+        },
+        "target_rigid_geometry_deleted": false,
+        "engineering_margin_reduced": false
+      },
+      "urdf_path": "/root/autodl-tmp/m710-official-dynamics-20260910/repo/assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+      "srdf_path": "/root/autodl-tmp/m710-official-dynamics-20260910/repo/assets/robots/fanuc_m710id_70/official/m710id_70_official.srdf",
+      "package_dirs": [
+        "/root/autodl-tmp/m710-official-dynamics-20260910/repo/assets/robots/fanuc_m710id_70/official"
+      ],
+      "kinematic_consistency_probes": [
+        {
+          "index": 0,
+          "q_rad": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "flange_pose_max_abs": 5.551115123125783e-17,
+          "virtual_tcp_pose_max_abs": 1.6081226496766364e-16,
+          "virtual_tcp_geometric_jacobian_max_abs": 5.551115123125783e-17,
+          "flange_contract_tcp_pose_max_abs": 6.123233995736766e-17
+        },
+        {
+          "index": 1,
+          "q_rad": [
+            0.17,
+            -0.31,
+            0.24,
+            0.19,
+            -0.22,
+            0.27
+          ],
+          "flange_pose_max_abs": 4.440892098500626e-16,
+          "virtual_tcp_pose_max_abs": 4.440892098500626e-16,
+          "virtual_tcp_geometric_jacobian_max_abs": 4.440892098500626e-16,
+          "flange_contract_tcp_pose_max_abs": 5.551115123125783e-17
+        },
+        {
+          "index": 2,
+          "q_rad": [
+            -0.23,
+            0.18,
+            -0.27,
+            -0.31,
+            0.25,
+            -0.19
+          ],
+          "flange_pose_max_abs": 1.1102230246251565e-16,
+          "virtual_tcp_pose_max_abs": 2.220446049250313e-16,
+          "virtual_tcp_geometric_jacobian_max_abs": 2.220446049250313e-16,
+          "flange_contract_tcp_pose_max_abs": 5.551115123125783e-17
+        }
+      ],
+      "tool_frame_contract": {
+        "T_flange_virtual_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "T_flange_nominal_compressed_contact": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.2125
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "virtual_to_physical_offset_m": 0.0375
+      },
+      "repository_root": "/root/autodl-tmp/m710-official-dynamics-20260910/repo",
+      "official_model_audit": {
+        "manifest_path": "assets/robots/fanuc_m710id_70/official/provenance.yaml",
+        "manifest_sha256": "adf419aed06c1b1ed8874dea98246ca25795e268fdd71515ff441d400dc72af6",
+        "upstream_commit": "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2",
+        "package_version": "2.3.0",
+        "source_integrity": true,
+        "static_urdf_integrity": true,
+        "model_semantics": true,
+        "verified_source_file_count": 18,
+        "verified_source_bytes": 8657343,
+        "visual_mesh_count": 7,
+        "collision_mesh_count": 7,
+        "execution_qualified": true
+      },
+      "official_srdf_policy": {
+        "sha256": "5991658df1a6035019b2f9bf3e0e8eccef3c4da201d472b25783301b13a5812a",
+        "group": {
+          "name": "manipulator",
+          "base_link": "base_link",
+          "tip_link": "tool0"
+        },
+        "disabled_self_collision_pairs": [
+          [
+            "base_link",
+            "J1_link"
+          ],
+          [
+            "J1_link",
+            "J2_link"
+          ],
+          [
+            "J2_link",
+            "J3_link"
+          ],
+          [
+            "J3_link",
+            "J4_link"
+          ],
+          [
+            "J4_link",
+            "J5_link"
+          ],
+          [
+            "J5_link",
+            "J6_link"
+          ]
+        ],
+        "non_adjacent_exclusions_allowed": false
+      },
+      "status": "AVAILABLE",
+      "failure_reason": null,
+      "source_identity": {
+        "urdf_sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+        "srdf_sha256": "5991658df1a6035019b2f9bf3e0e8eccef3c4da201d472b25783301b13a5812a",
+        "official_manifest_sha256": "adf419aed06c1b1ed8874dea98246ca25795e268fdd71515ff441d400dc72af6",
+        "official_upstream_commit": "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2",
+        "collision_geometry_count": 7,
+        "collision_link_names": [
+          "base_link",
+          "J1_link",
+          "J2_link",
+          "J3_link",
+          "J4_link",
+          "J5_link",
+          "J6_link"
+        ],
+        "rigid_tool_solid_count": 58,
+        "rigid_tool_compound_q0_sha256": "eaaf848bae068f0703710a13a4a46477a1b9b3ee22f74f35419802edc23e8473",
+        "tip_from_tcp": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            1.5308084989341915e-17
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "base_transform": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.325
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.6
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "flange_from_virtual_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "flange_from_physical_contact": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.2125
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "collision_margin_m": 0.01,
+        "contact_tolerance_m": 0.0002,
+        "joint_margin_rad": 0.0174532925199433,
+        "maximum_jacobian_condition": 10000.0,
+        "official_radial_reach_m": 2.104,
+        "radial_guard_tolerance_m": 0.002,
+        "floor_z_m": 0.0,
+        "right_wall_y_m": -1.15,
+        "left_wall_y_m": 1.15
+      },
+      "validator_identity": "m710id70_exact_mesh_tool:80667e33189490e8ebbdadaed75e78405a4a6216c9b07d57449ba12c394010c9",
+      "search_budget": {
+        "task_pose_connection_attempts": 12,
+        "task_pose_scope": "shared_by_one_task_across_faces_rolls_and_task_set_variants",
+        "grasp_branches_per_pose": 4,
+        "stage_ik_candidates": 3,
+        "stage_connection_attempts": 3,
+        "stage_connection_iterations": 600,
+        "stage_connection_scope": "shared_across_lazy_ik_candidates_for_one_stage_endpoint",
+        "cartesian_policy": "one_continuation_seed_per_bounded_cartesian_sample",
+        "cartesian_max_samples_per_stage": 80,
+        "extraction_direction_attempts": 5,
+        "maximum_extraction_m": 0.8
+      }
+    },
+    "search": {
+      "status": "NOT_RUN",
+      "failure_reason": "INITIAL_STATE_INVALID"
+    },
+    "tasks": [
+      {
+        "task_id": "carton_l07_c02",
+        "attempts": [],
+        "complete_trajectory": false,
+        "scene_cartons_retained": 40,
+        "failure_reason": "INITIAL_STATE_INVALID",
+        "search_status": "NOT_RUN_INITIAL_STATE_INVALID"
+      },
+      {
+        "task_id": "carton_l07_c01",
+        "attempts": [],
+        "complete_trajectory": false,
+        "scene_cartons_retained": 40,
+        "failure_reason": "INITIAL_STATE_INVALID",
+        "search_status": "NOT_RUN_INITIAL_STATE_INVALID"
+      },
+      {
+        "task_id": "carton_l07_c03",
+        "attempts": [],
+        "complete_trajectory": false,
+        "scene_cartons_retained": 40,
+        "failure_reason": "INITIAL_STATE_INVALID",
+        "search_status": "NOT_RUN_INITIAL_STATE_INVALID"
+      },
+      {
+        "task_id": "carton_l07_c00",
+        "attempts": [],
+        "complete_trajectory": false,
+        "scene_cartons_retained": 40,
+        "failure_reason": "INITIAL_STATE_INVALID",
+        "search_status": "NOT_RUN_INITIAL_STATE_INVALID"
+      },
+      {
+        "task_id": "carton_l07_c04",
+        "attempts": [],
+        "complete_trajectory": false,
+        "scene_cartons_retained": 40,
+        "failure_reason": "INITIAL_STATE_INVALID",
+        "search_status": "NOT_RUN_INITIAL_STATE_INVALID"
+      }
+    ],
+    "statistics": {
+      "task_success_count": 0,
+      "candidate_pose_attempts": 0,
+      "coverage_rejected": 0,
+      "ik_calls": 0,
+      "ik_seed_pool_available": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "ik_converged_pose_results": 0,
+      "ik_valid_solutions": 0,
+      "ik_deduplicated_candidates": 0,
+      "path_connection_attempts": 0,
+      "trajectory_pose_attempts": 0,
+      "trajectory_ik_calls": 0,
+      "trajectory_ik_seeds_attempted": 0,
+      "trajectory_ik_iterations_consumed": 0,
+      "trajectory_state_validations": 0,
+      "trajectory_edge_validation_calls": 0,
+      "trajectory_edge_state_samples": 0,
+      "trajectory_rrt_iterations_consumed": 0,
+      "trajectory_cartesian_samples": 0,
+      "complete_trajectory_success_count": 0,
+      "task_count": 5,
+      "tasks_searched": 0,
+      "task_failure_counts": {
+        "INITIAL_STATE_INVALID": 5
+      },
+      "candidate_failure_counts": {},
+      "initial_state_diagnostic_validations": 1
+    },
+    "selected_trajectory_segment": null,
+    "complete_trajectory_status": "FAIL_CLOSED",
+    "complete_trajectory_failure_reason": "INITIAL_STATE_INVALID",
+    "evidence_fingerprint": "cfd2bfd9169d738e3baba041756b192126460a80360723a9ddfc9dfac9256b49"
+  },
+  "initial_state_audit": {
+    "schema": "m710id70_initial_state_audit_v1",
+    "layout_fingerprint": "240f91728870edb2c073d38b4d9465fe1d20d6c5222fd24d057f5e5f6d6caada",
+    "q_rad": [
+      3.1135901287083176,
+      0.7854566731593875,
+      0.6496218708958161,
+      0.06722349609001022,
+      -1.2117503086182402,
+      -1.9415185231007088
+    ],
+    "status": "FAIL",
+    "failures": [
+      {
+        "reason": "TOOL_SELF_COLLISION",
+        "pair": [
+          "tool_rigid_13",
+          "J5_link"
+        ]
+      }
+    ],
+    "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_58_rigid_tool_solids",
+    "complete_workcell_clearance": "KNOWN_GEOMETRY_EVALUATED_TRAILER_LENGTH_AND_HEIGHT_UNDEFINED"
+  },
+  "scene": {
+    "layout_id": "m710id70_unloading_layout_v1",
+    "layout_fingerprint": "240f91728870edb2c073d38b4d9465fe1d20d6c5222fd24d057f5e5f6d6caada",
+    "scene_fingerprint": null,
+    "snapshot_status": "NOT_CREATED_INVALID_INITIAL_STATE",
+    "carton_count": 40,
+    "carton_ids": [
+      "carton_l00_c00",
+      "carton_l00_c01",
+      "carton_l00_c02",
+      "carton_l00_c03",
+      "carton_l00_c04",
+      "carton_l01_c00",
+      "carton_l01_c01",
+      "carton_l01_c02",
+      "carton_l01_c03",
+      "carton_l01_c04",
+      "carton_l02_c00",
+      "carton_l02_c01",
+      "carton_l02_c02",
+      "carton_l02_c03",
+      "carton_l02_c04",
+      "carton_l03_c00",
+      "carton_l03_c01",
+      "carton_l03_c02",
+      "carton_l03_c03",
+      "carton_l03_c04",
+      "carton_l04_c00",
+      "carton_l04_c01",
+      "carton_l04_c02",
+      "carton_l04_c03",
+      "carton_l04_c04",
+      "carton_l05_c00",
+      "carton_l05_c01",
+      "carton_l05_c02",
+      "carton_l05_c03",
+      "carton_l05_c04",
+      "carton_l06_c00",
+      "carton_l06_c01",
+      "carton_l06_c02",
+      "carton_l06_c03",
+      "carton_l06_c04",
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "configured_dynamic_carton_count": 40,
+    "dynamic_carton_count": 0,
+    "primitives": []
+  },
+  "replay_adapter_inputs": null,
+  "claims": {
+    "engineering_dynamics_input_validated": true,
+    "complete_single_carton_motion": false,
+    "physical_simulation_execution": "NOT_RUN",
+    "video": "NOT_PRODUCED_WITHOUT_A_PHYSICAL_EXECUTION"
+  },
+  "preflight_fingerprint": "b5c476933e288aaeb56f57f3e86f1fc16ccefee8df1cc854de9b1ab1b22a0cb1"
+}

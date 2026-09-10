@@ -1,17 +1,23 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import importlib.util
+import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from unloading_sim.fanuc_m710id70 import target_pose
 from unloading_sim.geometry import OBB
+from unloading_sim.independent_cups import (
+    evaluate_independent_cup_geometry,
+    m710_cup_array_from_mapping,
+    select_ideal_independent_cups,
+)
 from unloading_sim.layout_single_carton import (
-    EXECUTION_GATE_REASON,
     EXPECTED_TOP_CARTONS,
-    NO_IK_SEARCH_STATUS,
     audit_execution_collision_geometry,
     build_verified_motion_input,
     load_layout_motion_policy,
@@ -19,7 +25,10 @@ from unloading_sim.layout_single_carton import (
     run_layout_single_carton_audit,
     virtual_tcp_from_physical_contact,
 )
-from unloading_sim.validation_physics import suction_coverage
+from unloading_sim.layout_trajectory import LayoutTrajectoryConnectorBuildResult
+from unloading_sim.asset_audit import audit_m710id70_official_model
+from unloading_sim.support import SupportRelationGraph
+from unloading_sim.workcell_layout import audit_initial_state, canonical_digest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,16 +43,20 @@ def _quick_policy():
     return replace(policy, data=data)
 
 
-def test_motion_input_is_verified_frozen_layout_and_literal_top_population():
-    scene = build_verified_motion_input(load_layout_motion_policy(CONFIG), ROOT)
-    assert scene.snapshot_verification["status"] == "PASS"
-    assert scene.snapshot_consistency["status"] == "PASS"
-    assert len(scene.cartons) == 40
-    assert len(scene.all_obstacles) == 43
-    assert tuple(sorted(scene.removable_cartons)) == EXPECTED_TOP_CARTONS
-    assert all(name.startswith("carton_l07_") for name in scene.removable_cartons)
-    assert scene.receiver.name == "conveyor_transverse"
-    assert {box.name for box in scene.cartons} == {
+def test_production_invalid_home_refuses_snapshot_and_preserves_literal_population():
+    policy = load_layout_motion_policy(CONFIG)
+    initial = audit_initial_state(policy.layout_validation)
+    assert initial["status"] == "FAIL"
+    assert any(item["reason"] == "TOOL_SELF_COLLISION" for item in initial["failures"])
+    with pytest.raises(ValueError, match="refusing to snapshot invalid initial state"):
+        build_verified_motion_input(policy, ROOT)
+    layout = policy.layout_validation.layout
+    cartons = layout.cartons()
+    assert len(cartons) == 40
+    assert len(layout.fixed_components()) + len(cartons) == 43
+    graph = SupportRelationGraph.build(cartons)
+    assert tuple(sorted(graph.removable_cartons(face_modes=("top",)))) == EXPECTED_TOP_CARTONS
+    assert {box.name for box in cartons} == {
         f"carton_l{layer:02d}_c{column:02d}" for layer in range(8) for column in range(5)
     }
 
@@ -62,7 +75,8 @@ def test_tool_frame_contract_retains_literal_physical_dimensions():
     assert frames.flange_from_uncompressed_cup_plane[0, 3] == 0.2275
     assert frames.flange_from_physical_contact[0, 3] == 0.2125
     assert frames.virtual_to_physical_contact_offset_m == pytest.approx(0.0375, abs=1e-15)
-    assert frames.tool0_clocking_status == "PROVISIONAL_180_DEGREE_DISCREPANCY_UNRESOLVED"
+    assert frames.tool0_clocking_status == "OFFICIAL_FLANGE_TO_PROJECT_TOOL0_ADAPTER_RESOLVED"
+    assert frames.execution_qualified is True
 
 
 @pytest.mark.parametrize(
@@ -108,11 +122,18 @@ def test_coverage_is_checked_at_transformed_physical_plane_not_virtual_tcp():
         frames.flange_from_virtual_task_tcp,
         frames.flange_from_physical_contact,
     )
-    correct = suction_coverage(
-        transformed_contact, box, "top", policy.data["suction"], 0.0002
+    array = m710_cup_array_from_mapping(policy.data["suction"])
+    correct_geometry = evaluate_independent_cup_geometry(
+        transformed_contact,
+        box,
+        "top",
+        array,
+        max_attachment_gap_m=0.002,
+        maximum_penetration_m=0.0002,
     )
-    assert correct["geometric_coverage"]
-    assert correct["sealed_cups"] == 72
+    correct = select_ideal_independent_cups(correct_geometry)
+    assert len(correct.actual_contact_ids) == 72
+    assert correct.to_dict()["load_bearing_minimum_cup_count"] is None
 
     # The historical misuse put the virtual frame directly on the surface.
     # Recovering its real cup plane exposes a 37.5 mm air gap, so no cup seals.
@@ -121,9 +142,15 @@ def test_coverage_is_checked_at_transformed_physical_plane_not_virtual_tcp():
         frames.flange_from_virtual_task_tcp,
         frames.flange_from_physical_contact,
     )
-    old = suction_coverage(old_physical, box, "top", policy.data["suction"], 0.0002)
-    assert not old["geometric_coverage"]
-    assert old["sealed_cups"] == 0
+    old = evaluate_independent_cup_geometry(
+        old_physical,
+        box,
+        "top",
+        array,
+        max_attachment_gap_m=0.002,
+        maximum_penetration_m=0.0002,
+    )
+    assert not any(old.geometrically_eligible_mask)
     assert np.linalg.norm(old_physical[:3, 3] - surface[:3, 3]) == pytest.approx(0.0375)
 
     wrong_sign_virtual = surface.copy()
@@ -133,58 +160,139 @@ def test_coverage_is_checked_at_transformed_physical_plane_not_virtual_tcp():
         frames.flange_from_virtual_task_tcp,
         frames.flange_from_physical_contact,
     )
-    wrong = suction_coverage(
-        wrong_sign_contact, box, "top", policy.data["suction"], 0.0002
+    wrong = evaluate_independent_cup_geometry(
+        wrong_sign_contact,
+        box,
+        "top",
+        array,
+        max_attachment_gap_m=0.002,
+        maximum_penetration_m=0.0002,
     )
-    assert not wrong["geometric_coverage"]
-    assert wrong["sealed_cups"] == 0
+    assert not any(wrong.geometrically_eligible_mask)
 
 
-def test_execution_collision_geometry_is_explicitly_fail_closed():
-    scene = build_verified_motion_input(load_layout_motion_policy(CONFIG), ROOT)
+def test_execution_collision_geometry_requires_the_official_qualified_assets():
+    # Asset readiness and home validity are separate predicates. Valid official
+    # assets must never manufacture a valid frozen scene for a colliding home.
+    audit = audit_m710id70_official_model(ROOT).to_mapping()
+    assert audit["execution_qualified"]
+    assert audit["source_integrity"]
+    assert audit["static_urdf_integrity"]
+    assert audit["model_semantics"]
+    with pytest.raises(ValueError, match="refusing to snapshot invalid initial state"):
+        build_verified_motion_input(load_layout_motion_policy(CONFIG), ROOT)
+
+
+def test_unverified_tool_compound_cannot_open_the_execution_geometry_gate():
+    policy = load_layout_motion_policy(CONFIG)
+    layout = policy.layout_validation.layout
+    assert (
+        layout.data["tool"]["geometry_status"]
+        == "CAD_DERIVED_COMPOUND_OBB_COVERAGE_UNVERIFIED"
+    )
+    scene = SimpleNamespace(
+        policy=policy,
+        snapshot={
+            "robot": {
+                "urdf": layout.assets["robot_urdf"],
+                "mounting_reference": {
+                    "status": layout.data["robot"]["positioning_status"]
+                },
+            },
+            "tool": {"geometry_status": layout.data["tool"]["geometry_status"]},
+        },
+    )
     audit = audit_execution_collision_geometry(scene, ROOT)
-    assert not audit["qualified"]
-    assert audit["failure_reason"] == EXECUTION_GATE_REASON
-    assert not audit["checks"]["qualification_manifest_declared"]
-    assert not audit["checks"]["robot_links_use_cad_collision_meshes"]
-    assert audit["proxy_geometry_use"] == "KINEMATIC_AUDIT_ONLY"
+    assert audit["qualified"] is False
+    assert (
+        audit["checks"]["tool_rigid_solid_no_false_negative_coverage_proven"]
+        is False
+    )
+    assert audit["failure_reason"] == "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED"
 
 
-def test_quick_full_population_audit_is_deterministic_and_preserves_failure_taxonomy():
-    # Keep the five-task denominator and every candidate pose, but use one IK
-    # iteration here; the production CLI exercises the configured full budget.
+def test_invalid_home_audit_is_deterministic_and_never_searches(
+    monkeypatch, tmp_path,
+):
+    # Keep all five tasks and 40 cartons; none is mislabeled as an IK failure.
     policy = _quick_policy()
+    unavailable = LayoutTrajectoryConnectorBuildResult(
+        None,
+        "UNAVAILABLE",
+        "TEST_BACKEND_UNAVAILABLE",
+        {"status": "UNAVAILABLE", "failure_reason": "TEST_BACKEND_UNAVAILABLE"},
+    )
+    monkeypatch.setattr(
+        "unloading_sim.layout_single_carton._build_automatic_trajectory_connector",
+        lambda scene, robot: unavailable,
+    )
+    def forbidden(*args, **kwargs):
+        pytest.fail("invalid initial state must not enter snapshot, IK, or path search")
+    monkeypatch.setattr("unloading_sim.layout_single_carton.build_verified_motion_input", forbidden)
+    monkeypatch.setattr("unloading_sim.layout_single_carton.iter_ik_solutions", forbidden)
     first = run_layout_single_carton_audit(policy, project_root=ROOT)
     second = run_layout_single_carton_audit(policy, project_root=ROOT)
-    scene = build_verified_motion_input(policy, ROOT)
     assert first["evidence_fingerprint"] == second["evidence_fingerprint"]
-    assert first["task_population"]["carton_ids"] == list(scene.removable_cartons)
+    assert sorted(first["task_population"]["carton_ids"]) == list(EXPECTED_TOP_CARTONS)
     assert first["scene"]["carton_count"] == 40
-    assert first["fixed_cell_contract"] == {
-        "receiver": "conveyor_transverse",
-        "lift_enabled": False,
-        "conveyor_extension_enabled": False,
-        "conveyor_z_optimization_enabled": False,
-        "base_scan_enabled": False,
-    }
-    front = [
+    candidate_attempts = [
         attempt
         for task in first["tasks"]
         for attempt in task["attempts"]
-        if attempt["face"] == "front"
     ]
-    assert front
-    assert all(attempt["failure_reason"] == "INSUFFICIENT_SEALED_CUPS" for attempt in front)
-    assert max(attempt["coverage"]["sealed_cups"] for attempt in front) == 48
-    no_ik = [
-        attempt
-        for task in first["tasks"]
-        for attempt in task["attempts"]
-        if attempt["failure_reason"] == "NO_IK"
-    ]
-    assert no_ik
-    assert all(attempt["search_status"] == NO_IK_SEARCH_STATUS for attempt in no_ik)
+    assert candidate_attempts == []
+    assert first["run_status"] == "BLOCKED"
+    assert first["scene_fingerprint"] is None
+    assert first["initial_state_audit"]["status"] == "FAIL"
+    assert first["initial_state_exact_diagnostic"]["failure_reason"] == "TEST_BACKEND_UNAVAILABLE"
+    assert first["statistics"]["ik_calls"] == 0
+    assert first["statistics"]["path_connection_attempts"] == 0
+    assert first["statistics"]["tasks_searched"] == 0
     assert first["statistics"]["task_count"] == 5
     assert first["statistics"]["complete_trajectory_success_count"] == 0
     assert first["complete_trajectory_status"] == "FAIL_CLOSED"
-    assert first["complete_trajectory_failure_reason"] == EXECUTION_GATE_REASON
+    assert first["complete_trajectory_failure_reason"] == "INITIAL_STATE_INVALID"
+    assert first["trajectory_backend"]["status"] == "UNAVAILABLE"
+    assert first["selected_trajectory_segment"] is None
+    assert all(task["failure_reason"] == "INITIAL_STATE_INVALID" for task in first["tasks"])
+    # Exercise the real CLI writer and its nonzero process status on blockage.
+    spec = importlib.util.spec_from_file_location("layout_audit_cli", ROOT / "tools/run_m710id70_layout_single_carton.py")
+    cli = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    monkeypatch.setattr(cli, "run_layout_single_carton_audit", lambda *args, **kwargs: first)
+    output = tmp_path / "blocked_motion.json"
+    assert cli.main(["--output", str(output)]) == 1
+    saved = json.loads(output.read_text(encoding="utf-8"))
+    recorded = saved.pop("evidence_fingerprint")
+    assert canonical_digest(saved) == recorded
+    assert saved["initial_state_audit"]["failures"] == first["initial_state_audit"]["failures"]
+
+
+def test_exact_diagnostic_cannot_override_rejected_production_home(monkeypatch):
+    calls = []
+
+    class DiagnosticConnector:
+        def validate_unloaded_state(self, q, obstacles, *, stage):
+            calls.append((np.asarray(q).tolist(), [box.name for box in obstacles], stage))
+            return None
+
+    monkeypatch.setattr(
+        "unloading_sim.layout_single_carton._build_automatic_trajectory_connector",
+        lambda policy, robot: LayoutTrajectoryConnectorBuildResult(
+            DiagnosticConnector(), "AVAILABLE", None, {"status": "AVAILABLE"}
+        ),
+    )
+    def forbidden(*args, **kwargs):
+        pytest.fail("diagnostic PASS must not override the production home gate")
+    monkeypatch.setattr("unloading_sim.layout_single_carton.build_verified_motion_input", forbidden)
+    monkeypatch.setattr("unloading_sim.layout_single_carton.iter_ik_solutions", forbidden)
+    result = run_layout_single_carton_audit(_quick_policy(), project_root=ROOT)
+    assert result["run_status"] == "BLOCKED"
+    assert result["initial_state_exact_diagnostic"]["status"] == "PASS"
+    assert result["initial_state_exact_diagnostic"]["can_override_initial_state_gate"] is False
+    assert result["statistics"]["initial_state_diagnostic_validations"] == 1
+    assert result["statistics"]["trajectory_state_validations"] == 0
+    assert result["statistics"]["ik_calls"] == 0
+    assert len(calls) == 1
+    assert len(calls[0][1]) == 43
+    assert calls[0][2] == "initial_state_diagnostic"

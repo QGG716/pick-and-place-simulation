@@ -10,6 +10,7 @@ from unloading_sim.fanuc_m710id70 import (
     wrist_load_at_pose,
 )
 from unloading_sim.identity import load_tool_config, normalize_robot_model_id
+from unloading_sim.m710_dynamics import load_m710id70_dynamics
 from unloading_sim.robot_load import load_robot_limits
 from unloading_sim.robot_load.vendor import load_fanuc_wrist_evidence
 
@@ -37,13 +38,25 @@ def test_20kg_tool_is_separate_and_combined_com_fails_70kg_curve():
     assert result["vendor_diagram_coordinates_m"]["axial_z"] > result["conservative_70kg_limits_m"]["axial_z"]
 
 
-def test_vendor_evidence_chain_is_verified_but_inverse_dynamics_is_blocked():
+def test_vendor_evidence_and_official_dynamics_inputs_keep_machine_qualification_separate():
     evidence = load_fanuc_wrist_evidence(ROOT / "configs/vendor/fanuc_m710id_70_load_evidence.yaml")
     assert evidence.reference.evidence_status.value == "VERIFIED"
     assert evidence.load_diagram_status.value == "VERIFIED"
     robot_document = yaml.safe_load((ROOT / "configs/robots/fanuc_m710id_70.yaml").read_text(encoding="utf-8"))
-    assert robot_document["joint_effort_limits_nm"]["values"] is None
-    assert robot_document["source_metadata"]["dynamics_inertial_status"] == "BLOCKED_BY_MISSING_INERTIAL_DATA"
+    assert robot_document["joint_effort_limits_nm"]["values"] == [
+        8000.0, 10000.0, 5000.0, 2000.0, 1000.0, 900.0
+    ]
+    assert robot_document["source_metadata"]["dynamics_inertial_status"] == "OFFICIAL_PUBLIC_MODEL_AVAILABLE"
+    assert robot_document["source_metadata"]["fixed_source_commit"] == (
+        "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2"
+    )
+    dynamics = load_m710id70_dynamics()
+    assert dynamics.data["qualification"]["simulation_input_accepted"] is True
+    assert dynamics.machine_qualified is False
+    assert dynamics.robot_links["J2_link"].inertia_tensor_com_kg_m2[1][2] == -1.14
+    assert [drive.effort_limit_nm for drive in dynamics.joint_drives.values()] == (
+        robot_document["joint_effort_limits_nm"]["values"]
+    )
 
 
 def test_payload_only_wrist_screen_uses_real_pose_and_dynamic_state():

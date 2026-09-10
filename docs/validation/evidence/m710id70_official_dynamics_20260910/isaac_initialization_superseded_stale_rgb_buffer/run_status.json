@@ -1,0 +1,332 @@
+{
+  "status": "INITIALIZATION_ONLY_NOT_PICK_SUCCESS",
+  "scope": "INITIALIZATION_ONLY_NOT_PICK_SUCCESS",
+  "physical_pick_success": false,
+  "attachment_count": 0,
+  "initial_state_audit": {
+    "schema": "m710id70_initial_state_audit_v1",
+    "layout_fingerprint": "82ec898fef66cde35ee88108828ef80ce45047d290eef19d77b84bfb38ae60ec",
+    "q_rad": [
+      3.1135901287083176,
+      0.7854566731593875,
+      0.6496218708958161,
+      0.06722349609001022,
+      -1.2117503086182402,
+      -1.9415185231007088
+    ],
+    "status": "FAIL",
+    "failures": [
+      {
+        "reason": "TOOL_SELF_COLLISION",
+        "pair": [
+          "tool_rigid_13",
+          "J5_link"
+        ]
+      }
+    ],
+    "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_58_rigid_tool_solids",
+    "complete_workcell_clearance": "KNOWN_GEOMETRY_EVALUATED_TRAILER_LENGTH_AND_HEIGHT_UNDEFINED"
+  },
+  "robot_pose_role": "diagnostic_pose_not_motion_qualified_home",
+  "contract_fingerprint": "ab0465e967ffee0d2b2a648e7fe077c8f37285a7be65f0bc1202b00906695933",
+  "generated_usd": {
+    "schema": "generated_usd_tree_identity_v1",
+    "entrypoint": "m710id_70_official_6/m710id_70_official.usda",
+    "files": [
+      {
+        "path": "m710id_70_official_6/m710id_70_official.usda",
+        "size_bytes": 1270,
+        "sha256": "714c1f3861927de1ecd3539a99e86911a1453c3113ffccfda12ec8f577b59a9e"
+      },
+      {
+        "path": "m710id_70_official_6/payloads/Physics/mujoco.usda",
+        "size_bytes": 6183,
+        "sha256": "a964449f1ab0a23dc8647d3cc395e54f295b9394e7e16449855dab2091894b95"
+      },
+      {
+        "path": "m710id_70_official_6/payloads/Physics/physics.usda",
+        "size_bytes": 11447,
+        "sha256": "b0d55f49afed2643312dd03ef96a5cf1d95525183dc806b61c91e353ea820e41"
+      },
+      {
+        "path": "m710id_70_official_6/payloads/Physics/physx.usda",
+        "size_bytes": 1765,
+        "sha256": "e04a88f2715309f021c6ae8cfea25d669a8f81d55f36dcaad5f28650a2c97277"
+      },
+      {
+        "path": "m710id_70_official_6/payloads/base.usda",
+        "size_bytes": 15634,
+        "sha256": "823a7ae41ccb34a3bb1f05e944850d29ff0dbb004602c259a2dea02816216bfb"
+      },
+      {
+        "path": "m710id_70_official_6/payloads/geometries.usd",
+        "size_bytes": 2577808,
+        "sha256": "e64ad091fa7f36a376d40336e6f0c0ad33dfa18e0ef9ac3b543f254687b04c71"
+      },
+      {
+        "path": "m710id_70_official_6/payloads/instances.usda",
+        "size_bytes": 16434,
+        "sha256": "e4624748da517719093fce3e4c71489a2d8e77e4e3e8410638fec43b9b328f5b"
+      },
+      {
+        "path": "m710id_70_official_6/payloads/materials.usda",
+        "size_bytes": 16699,
+        "sha256": "e780f6d51c06cd64374d13a583cc47e93860922f8f1c51ec592d38b59969ca28"
+      },
+      {
+        "path": "m710id_70_official_6/payloads/robot.usda",
+        "size_bytes": 3876,
+        "sha256": "7cc38e963fae3f62e17b1f4983385c790f0635102eb5a1996cb2aee2aaffcf66"
+      }
+    ],
+    "aggregate_sha256": "db95466cb2f74d1622fbe86691512dfb9bbc6f3b78ca08cf650ff282a40f1b2e"
+  },
+  "srdf_collision_filters": [
+    {
+      "link1": "base_link",
+      "link2": "J1_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/base_1/base_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1/j1_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J1_link",
+      "link2": "J2_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1/j1_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1/j2_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J2_link",
+      "link2": "J3_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1/j2_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1/j3_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J3_link",
+      "link2": "J4_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1/j3_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1/j4_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J4_link",
+      "link2": "J5_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1/j4_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1/j5_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J5_link",
+      "link2": "J6_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1/j5_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1/j6_1"
+        ]
+      ]
+    }
+  ],
+  "articulation_initialization": {
+    "method": "usd_physx_joint_state_before_world_reset",
+    "joint_state_position_units": "degrees",
+    "joint_state_velocity_units": "degrees_per_second",
+    "drive_target_position_units": "degrees",
+    "per_frame_teleport": false,
+    "bootstrap_physics_time_step_s": 0.0,
+    "runtime_physics_time_step_s": 0.004166666666666667,
+    "commanded_q_rad": [
+      3.1135902404785156,
+      0.785456657409668,
+      0.649621844291687,
+      0.06722349673509598,
+      -1.2117502689361572,
+      -1.9415185451507568
+    ],
+    "measured_q_after_reset_rad": [
+      3.1135902404785156,
+      0.785456657409668,
+      0.649621844291687,
+      0.06722349673509598,
+      -1.2117502689361572,
+      -1.9415185451507568
+    ],
+    "abs_q_error_after_reset_rad": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "max_abs_q_error_after_reset_rad": 0.0,
+    "acceptance_limit_rad": 1e-05,
+    "max_authored_carton_position_error_after_reset_m": 5.5710418180491744e-08
+  },
+  "joint_drive_limits": {
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "effort_limit_nm": [
+      8000.0,
+      10000.0,
+      5000.0,
+      2000.0,
+      1000.0,
+      900.0
+    ],
+    "velocity_limit_rad_s": [
+      3.1415927410125732,
+      3.1415927410125732,
+      3.1415927410125732,
+      4.537856101989746,
+      4.537856101989746,
+      6.457718372344971
+    ]
+  },
+  "render_synchronization": {
+    "method": "replicator_orchestrator_zero_delta_prewarm",
+    "delta_time_s": 0.0,
+    "rt_subframes": 4,
+    "discarded_annotator_buffers": 1
+  },
+  "backend_initialization_completed": true,
+  "carton_count": 40,
+  "mass_kg_each": 42.5,
+  "robot_plus_tool_mass_kg": 600.347,
+  "video_frame_count": 180,
+  "video_physical_time_scale": 1.0,
+  "render_size": [
+    1920,
+    1080
+  ],
+  "gravity_settling": "OBSERVED_NOT_FULL_PICK_VALIDATION",
+  "initialization_diagnostic_result": "RETAINED_AND_SETTLED_DIAGNOSTIC_ONLY",
+  "settling_observations": {
+    "classification": "RETAINED_AND_SETTLED_DIAGNOSTIC_ONLY",
+    "sample_period_s": 0.033333333333333215,
+    "final_window_s": 0.5333333333333314,
+    "final_window_peak_linear_speed_m_s": 0.0,
+    "final_window_peak_angular_speed_rad_s": 0.0,
+    "final_window_max_position_drift_m": 0.0,
+    "final_window_motion_stable": true,
+    "initial_configuration_retained_throughout": true,
+    "full_run_peak_linear_speed_m_s": 0.016987369374617572,
+    "full_run_peak_angular_speed_rad_s": 0.03591919719092328,
+    "max_authored_position_displacement_m": 8.799509588213154e-05,
+    "max_final_position_displacement_m": 8.076562736084768e-05,
+    "worst_displaced_carton": "carton_l07_c03",
+    "worst_displacement_time_s": 0.13333333333333333,
+    "full_run_max_joint_tracking_error_rad": 0.027163982391357422,
+    "final_max_joint_tracking_error_rad": 0.02455294132232666,
+    "penetration_gate": "NOT_EVALUATED_DIAGNOSTIC_ONLY"
+  },
+  "video": "initialization.mp4",
+  "actual_states": "actual_states.json",
+  "keyframes": [
+    "initial.png",
+    "final.png"
+  ],
+  "video_sha256": "a0b23cee9a35c5f213770eac229a1b85819df57c11eb9d7c8b6934d06f799ade",
+  "adapter_sha256": "fec854828e338ef9eebf8e152354f2a3675d7f4a2caedc0266a2567a8247fd85",
+  "recorded_state_count": 180
+}

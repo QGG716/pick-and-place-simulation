@@ -13,9 +13,11 @@ import io
 import json
 import math
 from pathlib import Path, PurePosixPath
+import re
 import struct
 from typing import Any, Mapping, Sequence
 import zipfile
+import xml.etree.ElementTree as ET
 
 import yaml
 
@@ -23,6 +25,85 @@ import yaml
 ROBOT_SCHEMA = "m710id70_cad_asset_manifest_v1"
 TOOL_SCHEMA = "shanghai_wantai_three_zone_asset_manifest_v1"
 LINK_MAPPING_SCHEMA = "m710id70_link_mapping_v1"
+OFFICIAL_M710ID70_SCHEMA = "fanuc_official_description_provenance_v1"
+
+OFFICIAL_M710ID70_REPOSITORY = "https://github.com/FANUC-CORPORATION/fanuc_description.git"
+OFFICIAL_M710ID70_COMMIT = "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2"
+OFFICIAL_M710ID70_PACKAGE_VERSION = "2.3.0"
+OFFICIAL_M710ID70_SOURCE_FILES: Mapping[str, tuple[int, str]] = {
+    "LICENSES/Apache-2.0.txt": (
+        10_280,
+        "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+    ),
+    "fanuc_m710_description/package.xml": (
+        986,
+        "3e172da46846c21ad46eecb86de0e1bcb09397a47b6d79c98c6103cf6fad8a71",
+    ),
+    "fanuc_m710_description/robot/m710id_70.urdf.xacro": (
+        371,
+        "d74ba41dd6f9bc97f4f7745e9bee0c0096d6880b12191e3ef6eebd5c70b835b6",
+    ),
+    "fanuc_m710_description/urdf/m710id_70_urdf_macro.xacro": (
+        11_581,
+        "ede96c55fd7ec665a259d6f09422e37d8b69a2d27e3adc412f313930f37ed28d",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/collision/base.stl": (
+        14_884,
+        "7335c642059e09de7f58d5f186b4dd5d9fb5e3ac22584434716f6b1eff3b8469",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/collision/j1.stl": (
+        316_484,
+        "af6c8411af44c282174a4ebcdd90d1ee2d2e716deff7f12ebba0466805fef7a1",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/collision/j2.stl": (
+        150_684,
+        "cde344ebf927e39110800b3e54e90f85826cbc21452e55d94abd5b22ba61db15",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/collision/j3.stl": (
+        262_984,
+        "49116b78b394c8e0b60ca6b23f4391438ab04e702854fe4a4468b4c132c4c080",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/collision/j4.stl": (
+        30_084,
+        "6b03fcd7ee9832f48e96570d10b30ae2dd9a9ccec4c0389c6308eeef86446d25",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/collision/j5.stl": (
+        96_084,
+        "516e34e9174b61464cb8a494d2c1ce5498e48acea8aaecadd41977d1e6d6e15a",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/collision/j6.stl": (
+        11_084,
+        "ed4fbf513eab9c8a8869a53e89f3d4f649ea586a3833d8e8c8e9096e4e0bbcfd",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/visual/base.dae": (
+        675_313,
+        "35ee039f1d466ea7f0229f34edeb6b47bc81768d4b4013e724edd26297c0b537",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/visual/j1.dae": (
+        965_072,
+        "4591de5f409f675f7e10736c6b6cf5bf6a7bc8bad9bb9856c5e1e11233c3fca7",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/visual/j2.dae": (
+        1_438_918,
+        "e899cbe3a1082e6a8c85dbac13711bba23ab158eb310126d914958bcc3713928",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/visual/j3.dae": (
+        1_311_883,
+        "ff35b1faba0b498915f01890887895fa7824dda213d3a60c6cef0c91ae344c88",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/visual/j4.dae": (
+        2_917_370,
+        "5bcefe962dbd6c7625a6b1b5be28442881e61745838d7865f3204d1d7923b80b",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/visual/j5.dae": (
+        329_365,
+        "1be4482d6f520c7babee25984e50cc2b8049360aa0013d61805b098a0546324a",
+    ),
+    "fanuc_m710_description/meshes/m710id_70/visual/j6.dae": (
+        113_916,
+        "d86c8fa173db6e4225d22b6be04c9a5082534b7ef30905c9c942d7772e159c3b",
+    ),
+}
 
 
 class AssetAuditError(ValueError):
@@ -47,6 +128,27 @@ class AssetAuditReport:
         result["missing_converted_outputs"] = list(self.missing_converted_outputs)
         result["unresolved"] = list(self.unresolved)
         return result
+
+
+@dataclass(frozen=True)
+class OfficialModelAuditReport:
+    """Fail-closed qualification report for the pinned official robot model."""
+
+    manifest_path: str
+    manifest_sha256: str
+    upstream_commit: str
+    package_version: str
+    source_integrity: bool
+    static_urdf_integrity: bool
+    model_semantics: bool
+    verified_source_file_count: int
+    verified_source_bytes: int
+    visual_mesh_count: int
+    collision_mesh_count: int
+    execution_qualified: bool
+
+    def to_mapping(self) -> dict[str, Any]:
+        return asdict(self)
 
 
 def _expect_mapping(value: Any, context: str) -> Mapping[str, Any]:
@@ -461,8 +563,11 @@ def load_and_audit_asset_manifest(
     root = _repository_root(path, repository_root)
     try:
         repository_manifest_path = path.relative_to(root).as_posix()
-    except ValueError as exc:
-        raise AssetAuditError(f"asset manifest must remain within the repository: {path}") from exc
+    except ValueError:
+        # Auditing a copied manifest is useful for tamper regressions.  Its
+        # referenced source paths are still resolved fail-closed against
+        # ``root`` by _audit_source_files(); only the report label is external.
+        repository_manifest_path = path.as_posix()
     document = _load_yaml(path)
     schema = document.get("schema_version")
     if schema not in {ROBOT_SCHEMA, TOOL_SCHEMA}:
@@ -510,3 +615,681 @@ def audit_m710id70_asset_set(repository_root: str | Path) -> dict[str, Any]:
         "robot": robot.to_mapping(),
         "tool": tool.to_mapping(),
     }
+
+
+_OFFICIAL_ROOT = PurePosixPath("assets/robots/fanuc_m710id_70/official")
+_XACRO_NAMESPACE = "http://wiki.ros.org/xacro"
+_XACRO = f"{{{_XACRO_NAMESPACE}}}"
+
+
+def _official_expected_format(upstream_path: str) -> str:
+    if upstream_path == "LICENSES/Apache-2.0.txt":
+        return "apache_2_0_text"
+    if upstream_path.endswith("package.xml"):
+        return "ros_package_xml"
+    if upstream_path.endswith(".xacro"):
+        return "xacro_xml"
+    if upstream_path.endswith(".dae"):
+        return "collada_metre_z_up"
+    if upstream_path.endswith(".stl"):
+        return "binary_stl"
+    raise AssetAuditError(f"unsupported official FANUC source format: {upstream_path}")
+
+
+def _validate_official_format(data: bytes, declared: str, path: Path) -> None:
+    if declared == "binary_stl":
+        _validate_format(data, declared, path)
+        return
+    if declared == "apache_2_0_text":
+        if not data.startswith(b"Apache License\nVersion 2.0, January 2004\n"):
+            raise AssetAuditError(f"official Apache-2.0 license text mismatch: {path}")
+        return
+    if declared in {"ros_package_xml", "xacro_xml", "collada_metre_z_up"}:
+        try:
+            root = ET.fromstring(data)
+        except ET.ParseError as exc:
+            raise AssetAuditError(f"invalid official XML asset {path}: {exc}") from exc
+        if declared == "ros_package_xml" and root.tag != "package":
+            raise AssetAuditError(f"official package.xml root mismatch: {path}")
+        if declared == "xacro_xml" and root.tag != "robot":
+            raise AssetAuditError(f"official xacro root mismatch: {path}")
+        if declared == "collada_metre_z_up":
+            if not root.tag.endswith("COLLADA"):
+                raise AssetAuditError(f"official DAE is not COLLADA: {path}")
+            asset = next((item for item in root if item.tag.endswith("asset")), None)
+            if asset is None:
+                raise AssetAuditError(f"official DAE has no asset metadata: {path}")
+            unit = next((item for item in asset if item.tag.endswith("unit")), None)
+            up_axis = next((item for item in asset if item.tag.endswith("up_axis")), None)
+            if unit is None or float(unit.attrib.get("meter", "nan")) != 1.0:
+                raise AssetAuditError(f"official DAE unit is not one metre: {path}")
+            if up_axis is None or (up_axis.text or "").strip() != "Z_UP":
+                raise AssetAuditError(f"official DAE is not Z-up: {path}")
+        return
+    raise AssetAuditError(f"unsupported official FANUC format declaration: {declared!r}")
+
+
+def _audit_official_source_files(
+    document: Mapping[str, Any], root: Path
+) -> tuple[Mapping[str, Path], int]:
+    records = document.get("source_files")
+    if not isinstance(records, list):
+        raise AssetAuditError("official source_files must be a list")
+    if len(records) != len(OFFICIAL_M710ID70_SOURCE_FILES):
+        raise AssetAuditError("official source_files must contain the pinned 18-file asset set")
+    by_upstream: dict[str, Path] = {}
+    seen_roles: set[str] = set()
+    total_bytes = 0
+    for index, raw_record in enumerate(records):
+        record = _expect_mapping(raw_record, f"official source_files[{index}]")
+        _expect_exact_keys(
+            record,
+            {"role", "path", "upstream_path", "bytes", "sha256", "format"},
+            f"official source_files[{index}]",
+        )
+        role = record["role"]
+        upstream_path = record["upstream_path"]
+        if not isinstance(role, str) or not role or role in seen_roles:
+            raise AssetAuditError(f"official source_files[{index}].role must be unique")
+        if not isinstance(upstream_path, str) or upstream_path in by_upstream:
+            raise AssetAuditError(f"official source_files[{index}].upstream_path must be unique")
+        if upstream_path not in OFFICIAL_M710ID70_SOURCE_FILES:
+            raise AssetAuditError(f"unrecognised pinned upstream file: {upstream_path!r}")
+        expected_bytes, expected_sha256 = OFFICIAL_M710ID70_SOURCE_FILES[upstream_path]
+        expected_path = (_OFFICIAL_ROOT / PurePosixPath(upstream_path)).as_posix()
+        if record["path"] != expected_path:
+            raise AssetAuditError(f"official source path is not canonical: {record['path']!r}")
+        if record["bytes"] != expected_bytes or record["sha256"] != expected_sha256:
+            raise AssetAuditError(f"pinned byte identity mismatch for {upstream_path}")
+        expected_format = _official_expected_format(upstream_path)
+        if record["format"] != expected_format:
+            raise AssetAuditError(f"format declaration mismatch for {upstream_path}")
+        source_path = _resolve_repository_path(root, record["path"], f"official source_files[{index}].path")
+        if not source_path.is_file():
+            raise AssetAuditError(f"required official source asset is missing: {record['path']}")
+        data = source_path.read_bytes()
+        if len(data) != expected_bytes:
+            raise AssetAuditError(f"byte count mismatch for official source {record['path']}")
+        if _sha256(data) != expected_sha256:
+            raise AssetAuditError(f"SHA-256 mismatch for official source {record['path']}")
+        _validate_official_format(data, expected_format, source_path)
+        seen_roles.add(role)
+        by_upstream[upstream_path] = source_path
+        total_bytes += expected_bytes
+    if set(by_upstream) != set(OFFICIAL_M710ID70_SOURCE_FILES):
+        raise AssetAuditError("official source asset set differs from the pinned commit")
+    if document.get("source_file_total_count") != len(by_upstream):
+        raise AssetAuditError("official source-file count does not match audited records")
+    if document.get("source_file_total_bytes") != total_bytes:
+        raise AssetAuditError("official source byte total does not match audited records")
+    return by_upstream, total_bytes
+
+
+def _float_vector(raw: Any, length: int, context: str) -> tuple[float, ...]:
+    if not isinstance(raw, Sequence) or isinstance(raw, (str, bytes)) or len(raw) != length:
+        raise AssetAuditError(f"{context} must contain {length} numeric values")
+    result = tuple(float(value) for value in raw)
+    if not all(math.isfinite(value) for value in result):
+        raise AssetAuditError(f"{context} must contain finite values")
+    return result
+
+
+def _xml_vector(element: ET.Element | None, attribute: str, context: str) -> tuple[float, ...]:
+    if element is None or attribute not in element.attrib:
+        raise AssetAuditError(f"{context}.{attribute} is missing")
+    values = element.attrib[attribute].split()
+    return _float_vector(values, 3, f"{context}.{attribute}")
+
+
+def _assert_vector_close(left: Sequence[Any], right: Sequence[Any], context: str) -> None:
+    lhs = _float_vector(left, len(right), context)
+    rhs = tuple(float(value) for value in right)
+    if any(abs(a - b) > 1e-12 for a, b in zip(lhs, rhs)):
+        raise AssetAuditError(f"{context} mismatch: {lhs!r} != {rhs!r}")
+
+
+def _unprefixed(raw: str, context: str) -> str:
+    prefix = "${prefix}"
+    if not raw.startswith(prefix):
+        raise AssetAuditError(f"{context} does not use the official prefix parameter")
+    return raw[len(prefix):]
+
+
+_RADIANS_EXPRESSION = re.compile(
+    r"^\$\{radians\(\s*([-+]?(?:\d+(?:\.\d*)?|\.\d+))\s*\)\}$"
+)
+_RADIANS_TOKEN = re.compile(
+    r"\$\{radians\(\s*([-+]?(?:\d+(?:\.\d*)?|\.\d+))\s*\)\}"
+)
+
+
+def _xacro_property_number(raw: str, context: str) -> float:
+    match = _RADIANS_EXPRESSION.fullmatch(raw.strip())
+    if match is not None:
+        return math.radians(float(match.group(1)))
+    try:
+        result = float(raw)
+    except ValueError as exc:
+        raise AssetAuditError(f"unsupported numeric xacro expression for {context}: {raw!r}") from exc
+    if not math.isfinite(result):
+        raise AssetAuditError(f"non-finite numeric xacro property for {context}")
+    return result
+
+
+def _manifest_by_name(raw: Any, expected_names: Sequence[str], context: str) -> Mapping[str, Mapping[str, Any]]:
+    if not isinstance(raw, list):
+        raise AssetAuditError(f"{context} must be a list")
+    records = [_expect_mapping(item, f"{context}[{index}]") for index, item in enumerate(raw)]
+    names = [record.get("name", record.get("link")) for record in records]
+    if names != list(expected_names):
+        raise AssetAuditError(f"{context} order mismatch: {names!r}")
+    return {str(name): record for name, record in zip(names, records)}
+
+
+def _inertia_matrix(element: ET.Element, context: str) -> tuple[tuple[float, ...], ...]:
+    try:
+        ixx = float(element.attrib["ixx"])
+        ixy = float(element.attrib["ixy"])
+        ixz = float(element.attrib["ixz"])
+        iyy = float(element.attrib["iyy"])
+        iyz = float(element.attrib["iyz"])
+        izz = float(element.attrib["izz"])
+    except (KeyError, ValueError) as exc:
+        raise AssetAuditError(f"invalid inertia tensor for {context}") from exc
+    return ((ixx, ixy, ixz), (ixy, iyy, iyz), (ixz, iyz, izz))
+
+
+def _audit_official_macro(model: Mapping[str, Any], macro_path: Path) -> None:
+    root = ET.parse(macro_path).getroot()
+    macro = root.find(f"{_XACRO}macro")
+    if macro is None or macro.attrib.get("name") != "m710id_70":
+        raise AssetAuditError("official M-710iD/70 macro declaration is missing")
+    params = " ".join(macro.attrib.get("params", "").split())
+    if params != "prefix='' parent *origin child":
+        raise AssetAuditError("official macro parameter contract mismatch")
+    properties = {
+        item.attrib["name"]: _xacro_property_number(item.attrib["value"], item.attrib["name"])
+        for item in macro.findall(f"{_XACRO}property")
+    }
+
+    expected_links = ["base_link", "J1_link", "J2_link", "J3_link", "J4_link", "J5_link", "J6_link"]
+    links = {_unprefixed(item.attrib["name"], "official link"): item for item in macro.findall("link")}
+    if list(links) != [*expected_links, "wbase", "flange", "fanuc_flange"]:
+        raise AssetAuditError("official macro link order or names changed")
+    if model.get("base_link") != "base_link" or model.get("moving_links") != expected_links[1:]:
+        raise AssetAuditError("official manifest link contract mismatch")
+    if model.get("wbase_link") != "wbase" or model.get("flange_link") != "flange":
+        raise AssetAuditError("official manifest flange/base frame contract mismatch")
+    if model.get("fanuc_flange_link") != "fanuc_flange" or model.get("sample_child_link") != "ee_link":
+        raise AssetAuditError("official manifest auxiliary-frame contract mismatch")
+
+    joint_names = [f"J{index}" for index in range(1, 7)]
+    manifest_joints = _manifest_by_name(model.get("joints"), joint_names, "official model.joints")
+    joints = {
+        _unprefixed(item.attrib["name"], "official joint"): item
+        for item in macro.findall("joint")
+        if item.attrib.get("type") == "revolute"
+    }
+    if list(joints) != joint_names or model.get("actuated_joint_order") != joint_names:
+        raise AssetAuditError("official actuated-joint order mismatch")
+    if macro.findall(".//mimic"):
+        raise AssetAuditError("official J3 must remain an independent revolute joint without mimic")
+    for name in joint_names:
+        element = joints[name]
+        record = manifest_joints[name]
+        expected_keys = {
+            "name", "type", "parent", "child", "origin_xyz_m", "origin_rpy_rad", "axis", "limit",
+        }
+        _expect_exact_keys(record, expected_keys, f"official model.joints.{name}")
+        if record["type"] != "revolute" or element.attrib.get("type") != "revolute":
+            raise AssetAuditError(f"official joint type mismatch for {name}")
+        parent = element.find("parent")
+        child = element.find("child")
+        if parent is None or child is None:
+            raise AssetAuditError(f"official joint link declaration missing for {name}")
+        if record["parent"] != _unprefixed(parent.attrib["link"], f"{name}.parent"):
+            raise AssetAuditError(f"official parent link mismatch for {name}")
+        if record["child"] != _unprefixed(child.attrib["link"], f"{name}.child"):
+            raise AssetAuditError(f"official child link mismatch for {name}")
+        origin = element.find("origin")
+        _assert_vector_close(record["origin_xyz_m"], _xml_vector(origin, "xyz", name), f"{name}.origin_xyz_m")
+        _assert_vector_close(record["origin_rpy_rad"], _xml_vector(origin, "rpy", name), f"{name}.origin_rpy_rad")
+        _assert_vector_close(record["axis"], _xml_vector(element.find("axis"), "xyz", name), f"{name}.axis")
+        limit = _expect_mapping(record["limit"], f"official model.joints.{name}.limit")
+        _expect_exact_keys(limit, {"lower_rad", "upper_rad", "velocity_rad_s", "effort_nm"}, f"{name}.limit")
+        source_limit = element.find("limit")
+        if source_limit is None:
+            raise AssetAuditError(f"official joint limit is missing for {name}")
+        property_names = {
+            "lower_rad": source_limit.attrib["lower"].strip("${}"),
+            "upper_rad": source_limit.attrib["upper"].strip("${}"),
+            "velocity_rad_s": source_limit.attrib["velocity"].strip("${}"),
+            "effort_nm": source_limit.attrib["effort"].strip("${}"),
+        }
+        for field, property_name in property_names.items():
+            actual = properties.get(property_name)
+            if actual is None or abs(float(limit[field]) - actual) > 1e-12:
+                raise AssetAuditError(f"official {name} {field} mismatch")
+
+    manifest_inertials = _manifest_by_name(model.get("inertials"), expected_links, "official model.inertials")
+    total_mass = 0.0
+    for link_name in expected_links:
+        inertial = links[link_name].find("inertial")
+        if inertial is None:
+            raise AssetAuditError(f"official inertial missing for {link_name}")
+        record = manifest_inertials[link_name]
+        _expect_exact_keys(
+            record,
+            {"link", "mass_kg", "origin_xyz_m", "origin_rpy_rad", "inertia_at_com_kg_m2"},
+            f"official model.inertials.{link_name}",
+        )
+        mass_element = inertial.find("mass")
+        origin = inertial.find("origin")
+        tensor = inertial.find("inertia")
+        if mass_element is None or origin is None or tensor is None:
+            raise AssetAuditError(f"official inertial fields missing for {link_name}")
+        mass = float(mass_element.attrib["value"])
+        if abs(float(record["mass_kg"]) - mass) > 1e-12:
+            raise AssetAuditError(f"official mass mismatch for {link_name}")
+        total_mass += mass
+        _assert_vector_close(record["origin_xyz_m"], _xml_vector(origin, "xyz", link_name), f"{link_name}.origin")
+        _assert_vector_close(record["origin_rpy_rad"], (0.0, 0.0, 0.0), f"{link_name}.origin_rpy_rad")
+        matrix = record["inertia_at_com_kg_m2"]
+        if not isinstance(matrix, list) or len(matrix) != 3:
+            raise AssetAuditError(f"official inertia matrix shape mismatch for {link_name}")
+        source_matrix = _inertia_matrix(tensor, link_name)
+        for row_index in range(3):
+            _assert_vector_close(matrix[row_index], source_matrix[row_index], f"{link_name}.inertia[{row_index}]")
+    if abs(float(model.get("total_mass_kg", math.nan)) - total_mass) > 1e-12:
+        raise AssetAuditError("official total link mass mismatch")
+
+    fixed_names = ["base_link-wbase", "J6-flange", "flange-fanuc_flange"]
+    manifest_fixed = _manifest_by_name(model.get("fixed_frames"), fixed_names, "official model.fixed_frames")
+    fixed = {
+        _unprefixed(item.attrib["name"], "official fixed joint"): item
+        for item in macro.findall("joint")
+        if item.attrib.get("type") == "fixed" and item.attrib.get("name") not in {"${prefix}base_joint", "${prefix}child_joint"}
+    }
+    if list(fixed) != fixed_names:
+        raise AssetAuditError("official internal fixed-frame set mismatch")
+    for name in fixed_names:
+        element = fixed[name]
+        record = manifest_fixed[name]
+        _expect_exact_keys(
+            record,
+            {"name", "parent", "child", "origin_xyz_m", "origin_rpy_rad"},
+            f"official model.fixed_frames.{name}",
+        )
+        parent = element.find("parent")
+        child = element.find("child")
+        origin = element.find("origin")
+        if parent is None or child is None or origin is None:
+            raise AssetAuditError(f"official fixed frame is incomplete: {name}")
+        if record["parent"] != _unprefixed(parent.attrib["link"], f"{name}.parent"):
+            raise AssetAuditError(f"official fixed-frame parent mismatch for {name}")
+        if record["child"] != _unprefixed(child.attrib["link"], f"{name}.child"):
+            raise AssetAuditError(f"official fixed-frame child mismatch for {name}")
+        _assert_vector_close(record["origin_xyz_m"], _xml_vector(origin, "xyz", name), f"{name}.origin_xyz_m")
+        raw_rpy = origin.attrib.get("rpy", "")
+        if name == "flange-fanuc_flange":
+            matches = list(_RADIANS_TOKEN.finditer(raw_rpy))
+            residue = _RADIANS_TOKEN.sub("", raw_rpy)
+            if len(matches) != 3 or residue.strip():
+                raise AssetAuditError("official FANUC flange rpy expression mismatch")
+            source_rpy = tuple(math.radians(float(match.group(1))) for match in matches)
+        else:
+            source_rpy = _xml_vector(origin, "rpy", name)
+        _assert_vector_close(record["origin_rpy_rad"], source_rpy, f"{name}.origin_rpy_rad")
+
+
+def _audit_integration_wrapper(integration: Mapping[str, Any], root: Path) -> Path:
+    wrapper = _audit_reference(root, integration.get("standalone_xacro"), "official integration.standalone_xacro")
+    wrapper_root = ET.parse(wrapper).getroot()
+    if wrapper_root.tag != "robot" or wrapper_root.attrib.get("name") != "fanuc_m710id_70":
+        raise AssetAuditError("official standalone wrapper robot identity mismatch")
+    include = wrapper_root.find(f"{_XACRO}include")
+    if include is None or include.attrib.get("filename") != "../urdf/m710id_70_urdf_macro.xacro":
+        raise AssetAuditError("official standalone wrapper must use the local pinned macro")
+    invocation = wrapper_root.find(f"{_XACRO}m710id_70")
+    if invocation is None or invocation.attrib != {"parent": "world", "child": "ee_link"}:
+        raise AssetAuditError("official standalone wrapper invocation mismatch")
+    invocation_origin = invocation.find("origin")
+    if _xml_vector(invocation_origin, "xyz", "wrapper origin") != (0.0, 0.0, 0.0):
+        raise AssetAuditError("official standalone wrapper base translation must remain zero")
+    if _xml_vector(invocation_origin, "rpy", "wrapper origin") != (0.0, 0.0, 0.0):
+        raise AssetAuditError("official standalone wrapper base rotation must remain zero")
+    direct_links = [element.attrib.get("name") for element in wrapper_root.findall("link")]
+    if direct_links != ["world", "ee_link", "tool0"]:
+        raise AssetAuditError("official standalone wrapper direct-link contract mismatch")
+    tool_joint = wrapper_root.find("joint[@name='flange-tool0']")
+    if tool_joint is None or tool_joint.attrib.get("type") != "fixed":
+        raise AssetAuditError("planner tool0 fixed adapter is missing")
+    if tool_joint.find("parent").attrib.get("link") != "flange" or tool_joint.find("child").attrib.get("link") != "tool0":
+        raise AssetAuditError("planner tool0 fixed adapter link mapping mismatch")
+    tool_origin = tool_joint.find("origin")
+    if _xml_vector(tool_origin, "xyz", "flange-tool0") != (0.0, 0.0, 0.0):
+        raise AssetAuditError("planner tool0 translation mismatch")
+    _assert_vector_close(
+        _xml_vector(tool_origin, "rpy", "flange-tool0"),
+        (0.0, math.pi / 2.0, 0.0),
+        "planner tool0 rotation",
+    )
+    return wrapper
+
+
+def _audit_static_official_urdf(model: Mapping[str, Any], integration: Mapping[str, Any], root: Path) -> Path:
+    urdf = _audit_reference(root, integration.get("expanded_urdf"), "official integration.expanded_urdf")
+    data = urdf.read_bytes()
+    if b"xacro:" in data or b"${" in data or b"$(" in data:
+        raise AssetAuditError("static official URDF contains unresolved xacro syntax")
+    robot = ET.fromstring(data)
+    if robot.tag != "robot" or robot.attrib.get("name") != "fanuc_m710id_70":
+        raise AssetAuditError("static official URDF identity mismatch")
+    link_names = [link.attrib["name"] for link in robot.findall("link")]
+    expected_links = [
+        "world", "ee_link", "tool0", "base_link", "J1_link", "J2_link", "J3_link", "J4_link",
+        "J5_link", "J6_link", "wbase", "flange", "fanuc_flange",
+    ]
+    if set(link_names) != set(expected_links) or len(link_names) != len(expected_links):
+        raise AssetAuditError("static official URDF link set mismatch")
+    if robot.findall(".//mimic"):
+        raise AssetAuditError("static official J3 must not acquire a mimic relation")
+    joints = {joint.attrib["name"]: joint for joint in robot.findall("joint")}
+    joint_names = [f"J{index}" for index in range(1, 7)]
+    manifest_joints = _manifest_by_name(model.get("joints"), joint_names, "official model.joints")
+    for name in joint_names:
+        element = joints.get(name)
+        if element is None or element.attrib.get("type") != "revolute":
+            raise AssetAuditError(f"static official revolute joint missing: {name}")
+        record = manifest_joints[name]
+        limit = element.find("limit")
+        if limit is None:
+            raise AssetAuditError(f"static official limit missing: {name}")
+        expected_limit = _expect_mapping(record["limit"], f"official model.joints.{name}.limit")
+        comparisons = {
+            "lower": "lower_rad", "upper": "upper_rad", "velocity": "velocity_rad_s", "effort": "effort_nm",
+        }
+        for xml_name, manifest_name in comparisons.items():
+            if abs(float(limit.attrib[xml_name]) - float(expected_limit[manifest_name])) > 1e-12:
+                raise AssetAuditError(f"static official {name} {manifest_name} mismatch")
+        _assert_vector_close(record["origin_xyz_m"], _xml_vector(element.find("origin"), "xyz", name), f"static {name}.origin")
+        _assert_vector_close(record["axis"], _xml_vector(element.find("axis"), "xyz", name), f"static {name}.axis")
+    manifest_inertials = _manifest_by_name(
+        model.get("inertials"),
+        ["base_link", "J1_link", "J2_link", "J3_link", "J4_link", "J5_link", "J6_link"],
+        "official model.inertials",
+    )
+    links = {link.attrib["name"]: link for link in robot.findall("link")}
+    for link_name, record in manifest_inertials.items():
+        inertial = links[link_name].find("inertial")
+        if inertial is None:
+            raise AssetAuditError(f"static official inertial missing: {link_name}")
+        mass = inertial.find("mass")
+        origin = inertial.find("origin")
+        tensor = inertial.find("inertia")
+        if mass is None or origin is None or tensor is None:
+            raise AssetAuditError(f"static official inertial fields missing: {link_name}")
+        if abs(float(mass.attrib["value"]) - float(record["mass_kg"])) > 1e-12:
+            raise AssetAuditError(f"static official mass mismatch: {link_name}")
+        _assert_vector_close(
+            _xml_vector(origin, "xyz", f"static {link_name}.inertial"),
+            record["origin_xyz_m"],
+            f"static {link_name}.inertial origin",
+        )
+        source_matrix = _inertia_matrix(tensor, f"static {link_name}")
+        for row_index in range(3):
+            _assert_vector_close(
+                source_matrix[row_index],
+                record["inertia_at_com_kg_m2"][row_index],
+                f"static {link_name}.inertia[{row_index}]",
+            )
+    expected_fixed = {
+        "base_link-wbase": ("base_link", "wbase", (0.0, 0.0, 0.565), (0.0, 0.0, 0.0)),
+        "J6-flange": ("J6_link", "flange", (0.175, 0.0, 0.0), (0.0, 0.0, 0.0)),
+        "flange-fanuc_flange": (
+            "flange", "fanuc_flange", (0.0, 0.0, 0.0), (math.pi, -math.pi / 2.0, 0.0),
+        ),
+        "base_joint": ("world", "base_link", (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+        "child_joint": ("flange", "ee_link", (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+        "flange-tool0": ("flange", "tool0", (0.0, 0.0, 0.0), (0.0, math.pi / 2.0, 0.0)),
+    }
+    for name, (parent, child, xyz, rpy) in expected_fixed.items():
+        joint = joints.get(name)
+        if joint is None or joint.attrib.get("type") != "fixed":
+            raise AssetAuditError(f"static official fixed joint missing: {name}")
+        if joint.find("parent").attrib.get("link") != parent or joint.find("child").attrib.get("link") != child:
+            raise AssetAuditError(f"static official fixed joint link mismatch: {name}")
+        _assert_vector_close(_xml_vector(joint.find("origin"), "xyz", name), xyz, f"static {name}.xyz")
+        _assert_vector_close(_xml_vector(joint.find("origin"), "rpy", name), rpy, f"static {name}.rpy")
+    mesh_uris = [mesh.attrib.get("filename") for mesh in robot.findall(".//mesh")]
+    expected_uris = {
+        f"package://fanuc_m710_description/meshes/m710id_70/{kind}/{link}.{suffix}"
+        for kind, suffix in (("visual", "dae"), ("collision", "stl"))
+        for link in ("base", "j1", "j2", "j3", "j4", "j5", "j6")
+    }
+    if set(mesh_uris) != expected_uris or len(mesh_uris) != 14:
+        raise AssetAuditError("static official URDF mesh references changed or use a proxy")
+    return urdf
+
+
+def _binary_stl_bounds(path: Path) -> tuple[tuple[float, ...], tuple[float, ...], int]:
+    data = path.read_bytes()
+    if len(data) < 84:
+        raise AssetAuditError(f"truncated official collision STL: {path}")
+    triangle_count = struct.unpack_from("<I", data, 80)[0]
+    minimum = [math.inf, math.inf, math.inf]
+    maximum = [-math.inf, -math.inf, -math.inf]
+    for triangle_index in range(triangle_count):
+        values = struct.unpack_from("<12f", data, 84 + 50 * triangle_index)
+        for vertex_index in range(3):
+            vertex = values[3 + 3 * vertex_index : 6 + 3 * vertex_index]
+            for axis, value in enumerate(vertex):
+                minimum[axis] = min(minimum[axis], value)
+                maximum[axis] = max(maximum[axis], value)
+    return tuple(minimum), tuple(maximum), triangle_count
+
+
+def audit_m710id70_official_model(
+    repository_root: str | Path,
+    manifest_path: str | Path | None = None,
+) -> OfficialModelAuditReport:
+    """Audit pinned official source, meshes, dynamics and deterministic URDF.
+
+    ``execution_qualified`` is scoped to the robot-description asset only.  It
+    does not qualify a gripper, path, workcell, controller, or physics replay.
+    """
+
+    root = Path(repository_root).resolve()
+    if manifest_path is None:
+        path = root / Path(*(_OFFICIAL_ROOT / "provenance.yaml").parts)
+    else:
+        candidate = Path(manifest_path)
+        path = (candidate if candidate.is_absolute() else root / candidate).resolve()
+    try:
+        repository_manifest_path = path.relative_to(root).as_posix()
+    except ValueError as exc:
+        raise AssetAuditError(f"official model manifest must remain within the repository: {path}") from exc
+    document = _load_yaml(path)
+    _expect_exact_keys(
+        document,
+        {
+            "schema_version", "asset_id", "manufacturer", "model_name", "upstream",
+            "source_file_total_count", "source_file_total_bytes", "source_files", "geometry",
+            "model", "integration", "qualification",
+        },
+        "official model manifest",
+    )
+    if document["schema_version"] != OFFICIAL_M710ID70_SCHEMA:
+        raise AssetAuditError(f"unsupported official model manifest schema: {document['schema_version']!r}")
+    if document["manufacturer"] != "FANUC" or document["model_name"] != "M-710iD/70":
+        raise AssetAuditError("official model manufacturer or name mismatch")
+    upstream = _expect_mapping(document["upstream"], "official upstream")
+    _expect_exact_keys(
+        upstream,
+        {"repository_url", "commit", "tag", "package_name", "package_version", "license_spdx", "license_path"},
+        "official upstream",
+    )
+    if upstream != {
+        "repository_url": OFFICIAL_M710ID70_REPOSITORY,
+        "commit": OFFICIAL_M710ID70_COMMIT,
+        "tag": "v2.3.0",
+        "package_name": "fanuc_m710_description",
+        "package_version": OFFICIAL_M710ID70_PACKAGE_VERSION,
+        "license_spdx": "Apache-2.0",
+        "license_path": "assets/robots/fanuc_m710id_70/official/LICENSES/Apache-2.0.txt",
+    }:
+        raise AssetAuditError("official upstream provenance is not the pinned FANUC release")
+    sources, total_bytes = _audit_official_source_files(document, root)
+    package = ET.parse(sources["fanuc_m710_description/package.xml"]).getroot()
+    package_name = package.findtext("name")
+    package_version = package.findtext("version")
+    package_license = package.findtext("license")
+    if (package_name, package_version, package_license) != (
+        "fanuc_m710_description", OFFICIAL_M710ID70_PACKAGE_VERSION, "Apache-2.0",
+    ):
+        raise AssetAuditError("official package identity/version/license mismatch")
+
+    geometry = _expect_mapping(document["geometry"], "official geometry")
+    _expect_exact_keys(
+        geometry,
+        {
+            "visual_meshes", "collision_meshes", "dae_unit_m", "dae_up_axis",
+            "base_collision_bounds_m", "collision_triangle_count_total", "collision_topology",
+            "collision_policy",
+        },
+        "official geometry",
+    )
+    expected_links = ["base_link", "J1_link", "J2_link", "J3_link", "J4_link", "J5_link", "J6_link"]
+    visual = _manifest_by_name(geometry["visual_meshes"], expected_links, "official visual_meshes")
+    collision = _manifest_by_name(geometry["collision_meshes"], expected_links, "official collision_meshes")
+    for kind, suffix, records in (("visual", "dae", visual), ("collision", "stl", collision)):
+        for link_name, record in records.items():
+            _expect_exact_keys(record, {"link", "path"}, f"official {kind} mesh {link_name}")
+            stem = "base" if link_name == "base_link" else link_name[:-5].lower()
+            expected_path = (
+                _OFFICIAL_ROOT
+                / "fanuc_m710_description"
+                / "meshes"
+                / "m710id_70"
+                / kind
+                / f"{stem}.{suffix}"
+            ).as_posix()
+            if record["path"] != expected_path:
+                raise AssetAuditError(f"official {kind} mesh mapping mismatch for {link_name}")
+    if geometry["dae_unit_m"] != 1.0 or geometry["dae_up_axis"] != "Z_UP":
+        raise AssetAuditError("official visual-mesh unit or up-axis mismatch")
+    bounds = _expect_mapping(geometry["base_collision_bounds_m"], "official base collision bounds")
+    _expect_exact_keys(bounds, {"min_xyz_m", "max_xyz_m"}, "official base collision bounds")
+    base_collision = root / collision["base_link"]["path"]
+    actual_minimum, actual_maximum, _ = _binary_stl_bounds(base_collision)
+    declared_minimum = _float_vector(bounds["min_xyz_m"], 3, "official base minimum")
+    declared_maximum = _float_vector(bounds["max_xyz_m"], 3, "official base maximum")
+    if any(abs(a - b) > 1e-6 for a, b in zip(actual_minimum, declared_minimum)):
+        raise AssetAuditError("official base collision minimum bound mismatch")
+    if any(abs(a - b) > 1e-6 for a, b in zip(actual_maximum, declared_maximum)):
+        raise AssetAuditError("official base collision maximum bound mismatch")
+    collision_triangles = sum(
+        _binary_stl_bounds(root / record["path"])[2] for record in collision.values()
+    )
+    if geometry["collision_triangle_count_total"] != collision_triangles or collision_triangles != 17_634:
+        raise AssetAuditError("official collision-mesh triangle total mismatch")
+    if geometry["collision_topology"] != "manufacturer_per_link_triangle_mesh_not_asserted_convex":
+        raise AssetAuditError("official collision topology must not be misrepresented as convex")
+    if geometry["collision_policy"] != "official_per_link_meshes_no_proxy_substitution":
+        raise AssetAuditError("official collision policy must forbid proxy substitution")
+
+    model = _expect_mapping(document["model"], "official model")
+    _expect_exact_keys(
+        model,
+        {
+            "base_link", "wbase_link", "flange_link", "fanuc_flange_link", "sample_child_link",
+            "task_tool_link", "task_tool_frame", "moving_links", "massless_fixed_links", "actuated_joint_order", "joints",
+            "fixed_frames", "inertials", "total_mass_kg", "zero_pose",
+        },
+        "official model",
+    )
+    if model["task_tool_link"] != "tool0":
+        raise AssetAuditError("planner task tool link must remain explicit and separate from fanuc_flange")
+    task_tool_frame = _expect_mapping(model["task_tool_frame"], "official model.task_tool_frame")
+    if task_tool_frame != {
+        "name": "flange-tool0",
+        "parent": "flange",
+        "child": "tool0",
+        "origin_xyz_m": [0.0, 0.0, 0.0],
+        "origin_rpy_rad": [0.0, math.pi / 2.0, 0.0],
+        "source": "project_integration_wrapper",
+    }:
+        raise AssetAuditError("planner task tool frame contract mismatch")
+    if model["massless_fixed_links"] != ["wbase", "flange", "fanuc_flange", "ee_link", "tool0"]:
+        raise AssetAuditError("official massless fixed-link policy mismatch")
+    zero_pose = _expect_mapping(model["zero_pose"], "official model.zero_pose")
+    _expect_exact_keys(
+        zero_pose,
+        {"flange_xyz_m", "flange_rpy_rad", "fanuc_flange_xyz_m", "fanuc_flange_rpy_rad", "tool0_xyz_m", "tool0_rpy_rad"},
+        "official model.zero_pose",
+    )
+    _assert_vector_close(zero_pose["flange_xyz_m"], (1.370, 0.0, 1.630), "zero flange xyz")
+    _assert_vector_close(zero_pose["flange_rpy_rad"], (0.0, 0.0, 0.0), "zero flange rpy")
+    _assert_vector_close(zero_pose["fanuc_flange_xyz_m"], (1.370, 0.0, 1.630), "zero FANUC flange xyz")
+    _assert_vector_close(
+        zero_pose["fanuc_flange_rpy_rad"], (math.pi, -math.pi / 2.0, 0.0), "zero FANUC flange rpy",
+    )
+    _assert_vector_close(zero_pose["tool0_xyz_m"], (1.370, 0.0, 1.630), "zero tool0 xyz")
+    _assert_vector_close(zero_pose["tool0_rpy_rad"], (0.0, math.pi / 2.0, 0.0), "zero tool0 rpy")
+    _audit_official_macro(model, sources["fanuc_m710_description/urdf/m710id_70_urdf_macro.xacro"])
+
+    integration = _expect_mapping(document["integration"], "official integration")
+    _expect_exact_keys(
+        integration,
+        {"official_sample_xacro", "standalone_xacro", "expanded_urdf", "expansion_script", "generator"},
+        "official integration",
+    )
+    if integration["official_sample_xacro"] != (
+        "assets/robots/fanuc_m710id_70/official/fanuc_m710_description/robot/m710id_70.urdf.xacro"
+    ):
+        raise AssetAuditError("official sample xacro path mismatch")
+    _audit_integration_wrapper(integration, root)
+    _audit_reference(root, integration["expansion_script"], "official integration.expansion_script")
+    generator = _expect_mapping(integration["generator"], "official integration.generator")
+    _expect_exact_keys(generator, {"name", "version", "canonicalization"}, "official integration.generator")
+    if generator["name"] != "xacro" or generator["canonicalization"] != (
+        "xml.etree.ElementTree.canonicalize(strip_text=true,with_comments=false)"
+    ):
+        raise AssetAuditError("official static-URDF generator contract mismatch")
+    if not isinstance(generator["version"], str) or not generator["version"]:
+        raise AssetAuditError("official xacro generator version must be recorded")
+    _audit_static_official_urdf(model, integration, root)
+
+    qualification = _expect_mapping(document["qualification"], "official qualification")
+    _expect_exact_keys(
+        qualification,
+        {"scope", "execution_qualified", "system_execution_qualified", "required_checks", "policy"},
+        "official qualification",
+    )
+    required_checks = {
+        "pinned_source_hashes", "package_identity", "unmodified_official_macro", "seven_visual_meshes",
+        "seven_collision_meshes", "joint_and_frame_semantics", "complete_official_inertials",
+        "deterministic_static_urdf", "no_proxy_collision",
+    }
+    if set(qualification["required_checks"]) != required_checks:
+        raise AssetAuditError("official qualification check set mismatch")
+    if qualification["scope"] != "robot_description_asset_only":
+        raise AssetAuditError("official qualification scope must remain asset-only")
+    if qualification["execution_qualified"] is not True or qualification["system_execution_qualified"] is not False:
+        raise AssetAuditError("official asset/system qualification flags are inconsistent")
+    if qualification["policy"] != "robot_asset_qualification_does_not_qualify_tool_path_workcell_or_replay":
+        raise AssetAuditError("official qualification policy mismatch")
+    return OfficialModelAuditReport(
+        manifest_path=repository_manifest_path,
+        manifest_sha256=_sha256(path.read_bytes()),
+        upstream_commit=OFFICIAL_M710ID70_COMMIT,
+        package_version=OFFICIAL_M710ID70_PACKAGE_VERSION,
+        source_integrity=True,
+        static_urdf_integrity=True,
+        model_semantics=True,
+        verified_source_file_count=len(sources),
+        verified_source_bytes=total_bytes,
+        visual_mesh_count=len(visual),
+        collision_mesh_count=len(collision),
+        execution_qualified=True,
+    )

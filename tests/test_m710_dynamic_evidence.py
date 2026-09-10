@@ -9,6 +9,7 @@ import sys
 from tempfile import TemporaryDirectory
 
 import pytest
+import tools.archive_m710id70_dynamic_execution_evidence as archive_module
 
 from tools.archive_m710id70_dynamic_execution_evidence import (
     SUMMARY_SCHEMA,
@@ -17,54 +18,48 @@ from tools.archive_m710id70_dynamic_execution_evidence import (
     verify_run_summary,
 )
 from unloading_sim.layout_single_carton import (
-    RESULT_SCHEMA as MOTION_RESULT_SCHEMA,
-    build_verified_motion_input,
-    load_layout_motion_policy,
-    motion_implementation_identity,
+    run_layout_single_carton_audit,
 )
 from unloading_sim.m710_execution import (
     DEFAULT_CONFIG_PATH,
     build_m710_execution_preflight,
     load_m710_execution_config,
 )
-from unloading_sim.m710_replay_contract import build_replay_input_binding
 from unloading_sim.workcell_layout import canonical_digest, sha256_file
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SOURCE_COPY_BASE_HEAD = "a372c7f117e61509229b2c15eef344cd7908d499"
+SOURCE_COPY_BRANCH = "feat/v0.5-feasibility-core"
+
+
+def _source_identity_arguments():
+    # A full checkout follows its actual HEAD after future commits. The remote
+    # upload has no complete Git database and explicitly declares its base.
+    try:
+        head = subprocess.run(
+            ["git", "rev-parse", "--verify", "HEAD^{commit}"], cwd=ROOT,
+            check=True, capture_output=True, text=True,
+        ).stdout.strip()
+        branch = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=ROOT,
+            check=True, capture_output=True, text=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        head, branch = SOURCE_COPY_BASE_HEAD, SOURCE_COPY_BRANCH
+    return {"source_base_head": head, "source_branch": branch}
 
 
 def _motion_result() -> dict:
     execution = load_m710_execution_config(DEFAULT_CONFIG_PATH)
-    policy = load_layout_motion_policy(execution.motion_policy_path)
-    scene = build_verified_motion_input(policy, ROOT)
-    result = {
-        "schema": MOTION_RESULT_SCHEMA,
-        "run_status": "COMPLETED",
-        "layout_id": scene.snapshot["layout_id"],
-        "layout_fingerprint": scene.snapshot["layout_fingerprint"],
-        "scene_fingerprint": scene.snapshot["scene_fingerprint"],
-        "policy_fingerprint": policy.policy_fingerprint,
-        "implementation_identity": motion_implementation_identity(ROOT),
-        "task_population": {"carton_ids": list(scene.removable_cartons)},
-        "statistics": {
-            "task_count": 5,
-            "task_success_count": 0,
-            "candidate_pose_attempts": 48,
-            "coverage_rejected": 34,
-            "ik_calls": 14,
-            "complete_trajectory_success_count": 0,
-        },
-        "complete_trajectory_status": "FAIL_CLOSED",
-        "complete_trajectory_failure_reason": "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED",
-    }
-    result["evidence_fingerprint"] = canonical_digest(result)
-    return result
+    return run_layout_single_carton_audit(execution.motion_policy_path, project_root=ROOT)
 
 
 @pytest.fixture(scope="module")
 def evidence_pair() -> tuple[dict, dict]:
     motion = _motion_result()
+    assert motion["run_status"] == "BLOCKED"
+    assert motion["complete_trajectory_failure_reason"] == "INITIAL_STATE_INVALID"
     preflight = build_m710_execution_preflight(
         DEFAULT_CONFIG_PATH,
         motion_result=motion,
@@ -93,7 +88,7 @@ def test_archive_writes_portable_content_addressed_summary_with_git_and_runtime(
         motion_path.write_text(json.dumps(motion, ensure_ascii=False, indent=2), encoding="utf-8")
         preflight_path.write_text(json.dumps(preflight, ensure_ascii=False, indent=2), encoding="utf-8")
 
-        summary = archive_dynamic_execution_evidence(motion_path, preflight_path, output_path)
+        summary = archive_dynamic_execution_evidence(motion_path, preflight_path, output_path, **_source_identity_arguments())
         persisted = json.loads(output_path.read_text(encoding="utf-8"))
 
         assert summary == persisted
@@ -103,6 +98,13 @@ def test_archive_writes_portable_content_addressed_summary_with_git_and_runtime(
         assert summary["environment"]["platform"]
         assert len(summary["git"]["head"]) in {40, 64}
         assert isinstance(summary["git"]["dirty"], bool)
+        assert summary["git"]["metadata_source"] in {"local_git", "declared_source_copy"}
+        if summary["git"]["metadata_source"] == "declared_source_copy":
+            assert summary["git"]["dirty"] is True
+            identity = summary["implementation_identity"]
+            assert summary["git"]["changed_paths"] == sorted(
+                set(identity["motion_source_sha256"]) | set(identity["execution_source_sha256"]) | set(identity["archive_source_sha256"])
+            )
         assert summary["git"]["changed_paths"] == sorted(summary["git"]["changed_paths"])
         assert all(not Path(item).is_absolute() for item in summary["git"]["changed_paths"])
         assert summary["evidence"]["motion"]["sha256"] == sha256_file(motion_path)
@@ -147,24 +149,8 @@ def test_pair_validation_rejects_stale_source_even_when_both_fingerprints_are_re
     motion.pop("evidence_fingerprint")
     motion["evidence_fingerprint"] = canonical_digest(motion)
     preflight["input_identity"]["motion_evidence_fingerprint"] = motion["evidence_fingerprint"]
-    preflight["motion"]["evidence_fingerprint"] = motion["evidence_fingerprint"]
-    preflight["execution_asset_fingerprint_sha256"] = canonical_digest(preflight["input_identity"])
-    adapter = preflight["replay_adapter_inputs"]
-    adapter["plan_common"]["motion_evidence_fingerprint"] = motion["evidence_fingerprint"]
-    adapter["plan_common"]["execution_asset_fingerprint_sha256"] = preflight[
-        "execution_asset_fingerprint_sha256"
-    ]
-    adapter["input_binding"] = build_replay_input_binding(
-        plan_common=adapter["plan_common"],
-        configuration=adapter["configuration"],
-        scene_primitives=preflight["scene"]["primitives"],
-        trajectory_segment=adapter["trajectory_segment"],
-        trajectory_segment_status=adapter["trajectory_segment_status"],
-        input_identity=preflight["input_identity"],
-        execution_asset_fingerprint_sha256=preflight[
-            "execution_asset_fingerprint_sha256"
-        ],
-    )
+    preflight["motion"] = copy.deepcopy(motion)
+    assert preflight["replay_adapter_inputs"] is None
     preflight.pop("preflight_fingerprint")
     preflight["preflight_fingerprint"] = canonical_digest(preflight)
 
@@ -190,6 +176,8 @@ def test_archive_cli_writes_once_without_starting_isaac_or_video(evidence_pair):
             str(preflight_path),
             "--output",
             str(output_path),
+            "--source-base-head", _source_identity_arguments()["source_base_head"],
+            "--source-branch", _source_identity_arguments()["source_branch"],
         ]
         completed = subprocess.run(command, cwd=ROOT, check=True, capture_output=True, text=True)
         result = json.loads(completed.stdout)
@@ -202,3 +190,63 @@ def test_archive_cli_writes_once_without_starting_isaac_or_video(evidence_pair):
         repeated = subprocess.run(command, cwd=ROOT, check=False, capture_output=True, text=True)
         assert repeated.returncode == 1
         assert "refusing to overwrite" in json.loads(repeated.stdout)["reason"]
+
+
+def test_source_copy_requires_both_fields_and_cannot_claim_clean(monkeypatch):
+    def unavailable(*args, **kwargs):
+        raise subprocess.CalledProcessError(128, "git")
+    monkeypatch.setattr(archive_module, "_run_git", unavailable)
+    with pytest.raises(ValueError, match="declare both"):
+        archive_module._git_metadata(ROOT)
+    for incomplete in (
+        {"source_base_head": SOURCE_COPY_BASE_HEAD},
+        {"source_branch": SOURCE_COPY_BRANCH},
+    ):
+        with pytest.raises(ValueError, match="requires both"):
+            archive_module._git_metadata(ROOT, **incomplete)
+    path = "tools/archive_m710id70_dynamic_execution_evidence.py"
+    metadata = archive_module._git_metadata(
+        ROOT, source_base_head=SOURCE_COPY_BASE_HEAD, source_branch=SOURCE_COPY_BRANCH,
+        participating_source_paths=[path],
+    )
+    assert metadata["metadata_source"] == "declared_source_copy"
+    assert metadata["head"] == SOURCE_COPY_BASE_HEAD
+    assert metadata["branch"] == SOURCE_COPY_BRANCH
+    assert metadata["dirty"] is True
+    assert metadata["changed_paths"] == [path]
+
+
+def test_declared_source_head_cannot_override_readable_git_head(monkeypatch):
+    monkeypatch.setattr(archive_module, "_run_git", lambda *args, **kwargs: "b" * 40)
+    with pytest.raises(ValueError, match="does not match actual Git HEAD"):
+        archive_module._git_metadata(
+            ROOT, source_base_head=SOURCE_COPY_BASE_HEAD, source_branch=SOURCE_COPY_BRANCH,
+            participating_source_paths=["tools/archive_m710id70_dynamic_execution_evidence.py"],
+        )
+
+
+def test_complete_git_metadata_remains_authoritative(monkeypatch):
+    monkeypatch.setattr(archive_module, "_run_git", lambda *args, **kwargs: SOURCE_COPY_BASE_HEAD)
+    metadata = {"metadata_source": "local_git", "head": SOURCE_COPY_BASE_HEAD,
+                "branch": SOURCE_COPY_BRANCH, "dirty": False, "changed_paths": []}
+    monkeypatch.setattr(archive_module, "_local_git_metadata", lambda root: metadata)
+    assert archive_module._git_metadata(
+        ROOT, source_base_head=SOURCE_COPY_BASE_HEAD, source_branch=SOURCE_COPY_BRANCH,
+    ) == metadata
+    with pytest.raises(ValueError, match="does not match actual Git branch"):
+        archive_module._git_metadata(ROOT, source_base_head=SOURCE_COPY_BASE_HEAD, source_branch="wrong-branch")
+
+
+def test_incomplete_git_index_requires_explicit_source_copy_identity(monkeypatch):
+    monkeypatch.setattr(archive_module, "_run_git", lambda *args, **kwargs: SOURCE_COPY_BASE_HEAD)
+    def incomplete(*args, **kwargs):
+        raise subprocess.CalledProcessError(128, "git diff")
+    monkeypatch.setattr(archive_module, "_local_git_metadata", incomplete)
+    with pytest.raises(ValueError, match="declare both"):
+        archive_module._git_metadata(ROOT)
+    metadata = archive_module._git_metadata(
+        ROOT, source_base_head=SOURCE_COPY_BASE_HEAD, source_branch=SOURCE_COPY_BRANCH,
+        participating_source_paths=["tools/archive_m710id70_dynamic_execution_evidence.py"],
+    )
+    assert metadata["metadata_source"] == "declared_source_copy"
+    assert metadata["dirty"] is True

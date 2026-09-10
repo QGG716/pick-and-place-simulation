@@ -88,6 +88,58 @@ def _pose(xyz: Iterable[float], rpy: Iterable[float]) -> np.ndarray:
     return make_transform(rotation_matrix_from_rpy(*np.asarray(rpy, dtype=float)), xyz)
 
 
+def _rigid_tool_compound_boxes(geometry_config: Mapping[str, Any], project_root: Path) -> np.ndarray:
+    """Return the 58 CAD-derived rigid-solid AABBs in virtual-TCP coordinates.
+
+    The STEP assembly coordinates are an axis permutation/reflection of the
+    flange-aligned tool coordinates, so transforming all eight corners keeps
+    each component an exact OBB (represented as an axis-aligned box in the
+    virtual TCP frame).  Flexible cup/insert solids are deliberately absent;
+    their full-ring contact geometry is evaluated independently.
+    """
+
+    geometry = _mapping(geometry_config.get("geometry"), "tool geometry")
+    analysis_path = (project_root / str(geometry["mass_properties_path"])).resolve()
+    if not analysis_path.is_file():
+        raise FileNotFoundError(f"tool mass/contact analysis is missing: {analysis_path}")
+    analysis = _mapping(json.loads(analysis_path.read_text(encoding="utf-8")), "tool analysis")
+    bounds = np.asarray(analysis.get("rigid_collision_bounding_boxes_step_mm"), dtype=float)
+    if bounds.shape != (58, 6) or not np.all(np.isfinite(bounds)):
+        raise ValueError("tool analysis must contain exactly 58 finite rigid-solid bounds")
+    rotation_step_from_tool = np.asarray(analysis.get("rotation_step_from_tool"), dtype=float)
+    flange_step_mm = np.asarray(analysis.get("flange_origin_step_mm"), dtype=float)
+    if (
+        rotation_step_from_tool.shape != (3, 3)
+        or flange_step_mm.shape != (3,)
+        or not np.allclose(rotation_step_from_tool.T @ rotation_step_from_tool, np.eye(3), atol=1e-12)
+    ):
+        raise ValueError("tool STEP-to-flange transform is invalid")
+    flange_from_virtual = np.eye(4)
+    flange_from_virtual[:3, :3] = rotation_matrix_from_rpy(0.0, np.pi / 2.0, 0.0)
+    flange_from_virtual[0, 3] = 0.250
+    virtual_from_flange = np.linalg.inv(flange_from_virtual)
+    rows: list[np.ndarray] = []
+    for lower_x, lower_y, lower_z, upper_x, upper_y, upper_z in bounds:
+        corners_step = np.array(
+            [
+                [x, y, z]
+                for x in (lower_x, upper_x)
+                for y in (lower_y, upper_y)
+                for z in (lower_z, upper_z)
+            ],
+            dtype=float,
+        )
+        corners_flange = (corners_step - flange_step_mm) @ rotation_step_from_tool * 0.001
+        corners_virtual = (
+            corners_flange @ virtual_from_flange[:3, :3].T
+            + virtual_from_flange[:3, 3]
+        )
+        low = np.min(corners_virtual, axis=0)
+        high = np.max(corners_virtual, axis=0)
+        rows.append(np.concatenate((0.5 * (low + high), high - low)))
+    return np.asarray(rows, dtype=float)
+
+
 def _obb_record(box: OBB, *, shape: str = "box", **extra: Any) -> dict[str, Any]:
     return {
         "name": box.name,
@@ -98,6 +150,31 @@ def _obb_record(box: OBB, *, shape: str = "box", **extra: Any) -> dict[str, Any]
         "half_extents_m": box.half_extents.tolist(),
         **extra,
     }
+
+
+def _tool_compound_envelope(robot: URDFRobot, q: np.ndarray) -> OBB:
+    """Return a display/snapshot envelope, never an execution collision proxy."""
+
+    components = robot.tool_collision_obbs(q)
+    if not components:
+        legacy = robot.tool_collision_obb(q)
+        if legacy is None:
+            raise ValueError("robot has no configured tool collision geometry")
+        return legacy
+    frame = robot.fk(q)
+    local_corners = np.concatenate(
+        [(component.corners() - frame[:3, 3]) @ frame[:3, :3] for component in components]
+    )
+    lower = np.min(local_corners, axis=0)
+    upper = np.max(local_corners, axis=0)
+    center_local = 0.5 * (lower + upper)
+    return OBB(
+        frame[:3, :3] @ center_local + frame[:3, 3],
+        0.5 * (upper - lower),
+        frame[:3, :3],
+        "tool_compound_display_envelope",
+        "robot",
+    )
 
 
 @dataclass(frozen=True)
@@ -173,15 +250,16 @@ class WorkcellLayout:
         tool_data = self.data["tool"]
         tool = load_tool_config(_resolve(self.config_path, str(tool_data["load_config"])))
         geometry = load_tool_config(_resolve(self.config_path, str(tool_data["geometry_config"])))
-        outer = np.asarray(geometry.data["geometry"]["outer_size_m"], dtype=float)[[1, 0, 2]]
+        rigid_tool_boxes = _rigid_tool_compound_boxes(geometry.data, self.config_path.parents[2])
         base = self.robot_base_transform()
         robot = URDFRobot.fanuc_m710id_70(
             urdf_path=_resolve(self.config_path, str(robot_data["urdf_path"])),
             base_position=base[:3, 3],
             base_rpy=self.data["assembly"]["world_rpy_rad"],
             tool_length=float(tool.tcp_translation_xyz_m[0]),
-            tool_collision_size=outer,
-            tool_collision_center_offset=0.5 * outer[2],
+            tool_collision_size=None,
+            tool_collision_center_offset=None,
+            tool_collision_local_boxes=rigid_tool_boxes,
         )
         mechanical_tcp = make_transform(tool.tcp_rotation_matrix, tool.tcp_translation_xyz_m)
         task_axes = make_transform(rotation_matrix_from_rpy(0.0, np.pi / 2.0, 0.0))
@@ -274,12 +352,14 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
         _vector(entry["size_xy_m"], 2, f"conveyors.{name}.size_xy_m", positive=True)
         _vector(entry["center_xy_a_m"], 2, f"conveyors.{name}.center_xy_a_m")
     robot = _mapping(data["robot"], "robot")
-    _keys(robot, {"model", "model_config", "urdf_path", "mounting_surface_z_a_m", "base_origin_xy_a_m", "base_proxy_radius_m", "base_proxy_height_m", "base_front_edge_x_world_m", "positioning_basis", "positioning_status"}, "robot")
+    _keys(robot, {"model", "model_config", "urdf_path", "mounting_surface_z_a_m", "base_origin_xy_a_m", "base_support_bbox_min_xyz_m", "base_support_bbox_max_xyz_m", "base_front_edge_x_world_m", "positioning_basis", "positioning_status"}, "robot")
     if robot["model"] != "fanuc_m710id_70":
         raise ValueError("layout robot must be fanuc_m710id_70")
     _vector(robot["base_origin_xy_a_m"], 2, "robot.base_origin_xy_a_m")
-    _positive(robot["base_proxy_radius_m"], "robot.base_proxy_radius_m")
-    _positive(robot["base_proxy_height_m"], "robot.base_proxy_height_m")
+    base_min = _vector(robot["base_support_bbox_min_xyz_m"], 3, "robot.base_support_bbox_min_xyz_m")
+    base_max = _vector(robot["base_support_bbox_max_xyz_m"], 3, "robot.base_support_bbox_max_xyz_m")
+    if np.any(base_max <= base_min) or abs(float(base_min[2])) > 1e-12:
+        raise ValueError("official base support bounds must be ordered and start at mounting Z=0")
     tool = _mapping(data["tool"], "tool")
     _keys(tool, {"load_config", "geometry_config", "geometry_status", "physical_step_length_m", "planning_tcp_status"}, "tool")
     _positive(tool["physical_step_length_m"], "tool.physical_step_length_m")
@@ -362,7 +442,9 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         for axis, index in (("x", 0), ("y", 1), ("z", 2))
     }
     base = layout.robot_base_transform()[:3, 3]
-    base_front = float(base[0] + float(robot["base_proxy_radius_m"]))
+    base_min = np.asarray(robot["base_support_bbox_min_xyz_m"], dtype=float)
+    base_max = np.asarray(robot["base_support_bbox_max_xyz_m"], dtype=float)
+    base_front = float(base[0] + base_max[0])
     stack_corners = np.concatenate([box.corners() for box in stack])
 
     def scalar(actual: float, expected: float) -> dict[str, Any]:
@@ -396,10 +478,11 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         "transverse_longitudinal_join": _contact_check(transverse, longitudinal, 1, -1, tolerance),
         "chassis_floor_contact": {"status": "PASS" if abs(_interval(world["chassis"], 2)[0]) <= tolerance else "FAIL", "gap_m": _interval(world["chassis"], 2)[0]},
         "robot_mount_surface": {"status": "PASS" if abs(base[2] - _interval(world["chassis"], 2)[1]) <= tolerance else "FAIL", "gap_m": float(base[2] - _interval(world["chassis"], 2)[1])},
-        "robot_base_origin_world": vector(base, [-1.41, 0.35, 0.6]),
-        "robot_base_proxy_radius": scalar(robot["base_proxy_radius_m"], 0.31),
+        "robot_base_origin_world": vector(base, [-1.325, 0.35, 0.6]),
+        "robot_base_official_bbox_min": vector(base_min, [-0.3385, -0.275, 0.0]),
+        "robot_base_official_bbox_max": vector(base_max, [0.225, 0.275, 0.245]),
         "robot_base_front_edge": {"status": "PASS" if abs(base_front - float(robot["base_front_edge_x_world_m"])) <= tolerance else "FAIL", "actual_x_m": base_front},
-        "robot_base_support_footprint": {"status": "PASS" if all(abs(base[i] - world["chassis"].center[i]) + float(robot["base_proxy_radius_m"]) <= world["chassis"].half_extents[i] + tolerance for i in (0, 1)) else "FAIL"},
+        "robot_base_support_footprint": {"status": "PASS" if all(base[i] + base_min[i] >= world["chassis"].center[i] - world["chassis"].half_extents[i] - tolerance and base[i] + base_max[i] <= world["chassis"].center[i] + world["chassis"].half_extents[i] + tolerance for i in (0, 1)) else "FAIL"},
         "left_side_clearance": {"status": "PASS" if abs(float(trailer["left_wall_y_m"]) - assembly_bounds["y"][1] - 0.05) <= tolerance else "FAIL", "clearance_m": float(trailer["left_wall_y_m"]) - assembly_bounds["y"][1]},
         "right_side_clearance": {"status": "PASS" if abs(assembly_bounds["y"][0] - float(trailer["right_wall_y_m"]) - 0.05) <= tolerance else "FAIL", "clearance_m": assembly_bounds["y"][0] - float(trailer["right_wall_y_m"])},
         "trailer_inner_width": scalar(trailer["inner_width_m"], 2.3),
@@ -469,8 +552,11 @@ def _audit_initial_state_prepared(
                 if link.name in {"base_link", "J1_link"} and obstacle.name == "chassis" and robot_chassis_support_contact_allowed(link, chassis, tolerance):
                     continue
                 failures.append({"reason": "ROBOT_COLLISION", "pair": [link.name, obstacle.name]})
-        tool = robot.tool_collision_obb(q)
-        if tool is not None:
+        tools = robot.tool_collision_obbs(q)
+        legacy_tool = robot.tool_collision_obb(q)
+        if not tools and legacy_tool is not None:
+            tools = [legacy_tool]
+        for tool in tools:
             for obstacle in obstacles:
                 if tool.intersects_obb(obstacle, margin=margin):
                     failures.append({"reason": "TOOL_COLLISION", "pair": [tool.name, obstacle.name]})
@@ -479,7 +565,7 @@ def _audit_initial_state_prepared(
                     failures.append({"reason": "TOOL_SELF_COLLISION", "pair": [tool.name, link.name]})
         y_min = float(layout.data["trailer"]["right_wall_y_m"])
         y_max = float(layout.data["trailer"]["left_wall_y_m"])
-        for body in [*links, *([] if tool is None else [tool])]:
+        for body in [*links, *tools]:
             corners = body.corners()
             if float(np.min(corners[:, 1])) < y_min + margin or float(np.max(corners[:, 1])) > y_max - margin:
                 failures.append({"reason": "TRAILER_SIDE_CLEARANCE", "body": body.name, "y_bounds_m": [float(np.min(corners[:, 1])), float(np.max(corners[:, 1]))]})
@@ -490,8 +576,8 @@ def _audit_initial_state_prepared(
         "q_rad": q.tolist(),
         "status": "PASS" if not unique else "FAIL",
         "failures": unique,
-        "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_robot_and_tool_proxies",
-        "complete_workcell_clearance": "NOT_EVALUATED_TRAILER_LENGTH_HEIGHT_AND_FULL_CAD_MISSING",
+        "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_58_rigid_tool_solids",
+        "complete_workcell_clearance": "KNOWN_GEOMETRY_EVALUATED_TRAILER_LENGTH_AND_HEIGHT_UNDEFINED",
     }
 
 
@@ -555,6 +641,8 @@ def build_scene_snapshot(config: LayoutValidationConfig, q: np.ndarray | None = 
         raise ValueError(f"refusing to snapshot invalid initial state: {initial['failures']}")
     robot = layout.robot()
     robot_link_obbs = world_link_boxes(robot, q, urdf_collision_shapes(robot))
+    rigid_tool_obbs = robot.tool_collision_obbs(q)
+    tool_display_envelope = _tool_compound_envelope(robot, q)
     fixed = [_obb_record(box) for box in layout.fixed_components()]
     cartons = [_obb_record(box) for box in layout.cartons()]
     mounting = layout.data["robot"]
@@ -585,7 +673,8 @@ def build_scene_snapshot(config: LayoutValidationConfig, q: np.ndarray | None = 
             "q_rad": q.tolist(),
             "world_from_mount": layout.robot_base_transform().tolist(),
             "mounting_reference": {
-                "base_proxy_radius_m": mounting["base_proxy_radius_m"],
+                "base_support_bbox_min_xyz_m": mounting["base_support_bbox_min_xyz_m"],
+                "base_support_bbox_max_xyz_m": mounting["base_support_bbox_max_xyz_m"],
                 "base_front_edge_x_world_m": mounting["base_front_edge_x_world_m"],
                 "positioning_basis": mounting["positioning_basis"],
                 "status": mounting["positioning_status"],
@@ -601,7 +690,12 @@ def build_scene_snapshot(config: LayoutValidationConfig, q: np.ndarray | None = 
             "mass_kg": tool_load.mass_kg,
             "tcp_transform": tool_load.tcp_transform,
             "task_tcp_pose_world": robot.fk(q).tolist(),
-            "collision_obb": _obb_record(robot.tool_collision_obb(q)),
+            "collision_obb": _obb_record(
+                tool_display_envelope,
+                role="DISPLAY_AND_SNAPSHOT_ENVELOPE_NOT_EXECUTION_COLLISION",
+            ),
+            "rigid_collision_obbs": [_obb_record(box) for box in rigid_tool_obbs],
+            "execution_collision_representation": "58_CAD_DERIVED_RIGID_SOLID_COMPOUND_OBBS_PLUS_SEPARATE_FLEXIBLE_CUP_CONTACTS",
             "geometry": tool_geometry.data["geometry"],
             "geometry_status": layout.data["tool"]["geometry_status"],
             "planning_tcp_status": layout.data["tool"]["planning_tcp_status"],
@@ -658,12 +752,11 @@ def audit_snapshot_consistency(config: LayoutValidationConfig, snapshot: Mapping
         "flange_pose_max_abs": float(np.max(np.abs(np.asarray(snapshot["robot"]["flange_pose_world"]) - robot.named_link_frames(q)["flange"]))),
         "tcp_pose_max_abs": float(np.max(np.abs(np.asarray(snapshot["robot"]["tcp_pose_world"]) - robot.fk(q)))),
         "tool_collision_pose_max_abs": float(
-            np.max(
-                np.abs(
-                    np.asarray(snapshot["tool"]["collision_obb"]["pose_world"])
-                    - robot.tool_collision_obb(q).world_from_local
-                )
-            )
+            np.max(np.abs(np.asarray(snapshot["tool"]["collision_obb"]["pose_world"]) - _tool_compound_envelope(robot, q).world_from_local))
+        ),
+        "tool_rigid_compound_pose_max_abs": max(
+            float(np.max(np.abs(np.asarray(actual["pose_world"]) - expected.world_from_local)))
+            for actual, expected in zip(snapshot["tool"]["rigid_collision_obbs"], robot.tool_collision_obbs(q))
         ),
         "robot_link_pose_max_abs": max(
             float(np.max(np.abs(link_actual[name] - pose)))

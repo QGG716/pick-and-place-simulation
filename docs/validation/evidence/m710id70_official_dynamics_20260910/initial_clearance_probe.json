@@ -1,0 +1,1320 @@
+{
+  "schema": "m710id70_layout_initial_state_probe_v1",
+  "layout_fingerprint": "82ec898fef66cde35ee88108828ef80ce45047d290eef19d77b84bfb38ae60ec",
+  "scope": "read_only_diagnostic_no_state_or_layout_changes",
+  "backend": {
+    "schema": "m710id70_exact_layout_trajectory_backend_v1",
+    "collision_contract": {
+      "robot": "official_urdf_per_link_triangle_mesh_via_pinocchio_coal",
+      "tool": "58_step_rigid_solid_bounds_as_compound_obbs",
+      "payload": "actual_fk_physical_contact_rigid_attachment",
+      "fixed_body_aggregation_pairs": {
+        "base_mount": [
+          "base_link",
+          "chassis"
+        ],
+        "tool_mount": [
+          "J6_link",
+          "tool_rigid_*"
+        ]
+      },
+      "target_rigid_geometry_deleted": false,
+      "engineering_margin_reduced": false
+    },
+    "urdf_path": "/root/autodl-tmp/m710-official-dynamics-20260910/repo/assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+    "srdf_path": "/root/autodl-tmp/m710-official-dynamics-20260910/repo/assets/robots/fanuc_m710id_70/official/m710id_70_official.srdf",
+    "package_dirs": [
+      "/root/autodl-tmp/m710-official-dynamics-20260910/repo/assets/robots/fanuc_m710id_70/official"
+    ],
+    "kinematic_consistency_probes": [
+      {
+        "index": 0,
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flange_pose_max_abs": 5.551115123125783e-17,
+        "virtual_tcp_pose_max_abs": 1.6081226496766364e-16,
+        "virtual_tcp_geometric_jacobian_max_abs": 5.551115123125783e-17,
+        "flange_contract_tcp_pose_max_abs": 6.123233995736766e-17
+      },
+      {
+        "index": 1,
+        "q_rad": [
+          0.17,
+          -0.31,
+          0.24,
+          0.19,
+          -0.22,
+          0.27
+        ],
+        "flange_pose_max_abs": 4.440892098500626e-16,
+        "virtual_tcp_pose_max_abs": 4.440892098500626e-16,
+        "virtual_tcp_geometric_jacobian_max_abs": 4.440892098500626e-16,
+        "flange_contract_tcp_pose_max_abs": 5.551115123125783e-17
+      },
+      {
+        "index": 2,
+        "q_rad": [
+          -0.23,
+          0.18,
+          -0.27,
+          -0.31,
+          0.25,
+          -0.19
+        ],
+        "flange_pose_max_abs": 1.1102230246251565e-16,
+        "virtual_tcp_pose_max_abs": 2.220446049250313e-16,
+        "virtual_tcp_geometric_jacobian_max_abs": 2.220446049250313e-16,
+        "flange_contract_tcp_pose_max_abs": 5.551115123125783e-17
+      }
+    ],
+    "tool_frame_contract": {
+      "T_flange_virtual_task_tcp": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.25
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_flange_nominal_compressed_contact": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.2125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "virtual_to_physical_offset_m": 0.0375
+    },
+    "repository_root": "/root/autodl-tmp/m710-official-dynamics-20260910/repo",
+    "official_model_audit": {
+      "manifest_path": "assets/robots/fanuc_m710id_70/official/provenance.yaml",
+      "manifest_sha256": "adf419aed06c1b1ed8874dea98246ca25795e268fdd71515ff441d400dc72af6",
+      "upstream_commit": "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2",
+      "package_version": "2.3.0",
+      "source_integrity": true,
+      "static_urdf_integrity": true,
+      "model_semantics": true,
+      "verified_source_file_count": 18,
+      "verified_source_bytes": 8657343,
+      "visual_mesh_count": 7,
+      "collision_mesh_count": 7,
+      "execution_qualified": true
+    },
+    "official_srdf_policy": {
+      "sha256": "5991658df1a6035019b2f9bf3e0e8eccef3c4da201d472b25783301b13a5812a",
+      "group": {
+        "name": "manipulator",
+        "base_link": "base_link",
+        "tip_link": "tool0"
+      },
+      "disabled_self_collision_pairs": [
+        [
+          "base_link",
+          "J1_link"
+        ],
+        [
+          "J1_link",
+          "J2_link"
+        ],
+        [
+          "J2_link",
+          "J3_link"
+        ],
+        [
+          "J3_link",
+          "J4_link"
+        ],
+        [
+          "J4_link",
+          "J5_link"
+        ],
+        [
+          "J5_link",
+          "J6_link"
+        ]
+      ],
+      "non_adjacent_exclusions_allowed": false
+    },
+    "status": "AVAILABLE",
+    "failure_reason": null,
+    "source_identity": {
+      "urdf_sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+      "srdf_sha256": "5991658df1a6035019b2f9bf3e0e8eccef3c4da201d472b25783301b13a5812a",
+      "official_manifest_sha256": "adf419aed06c1b1ed8874dea98246ca25795e268fdd71515ff441d400dc72af6",
+      "official_upstream_commit": "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2",
+      "collision_geometry_count": 7,
+      "collision_link_names": [
+        "base_link",
+        "J1_link",
+        "J2_link",
+        "J3_link",
+        "J4_link",
+        "J5_link",
+        "J6_link"
+      ],
+      "rigid_tool_solid_count": 58,
+      "rigid_tool_compound_q0_sha256": "eaaf848bae068f0703710a13a4a46477a1b9b3ee22f74f35419802edc23e8473",
+      "tip_from_tcp": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          1.5308084989341915e-17
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "base_transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.325
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.6
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "flange_from_virtual_task_tcp": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.25
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "flange_from_physical_contact": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.2125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "collision_margin_m": 0.01,
+      "contact_tolerance_m": 0.0002,
+      "joint_margin_rad": 0.0174532925199433,
+      "maximum_jacobian_condition": 10000.0,
+      "official_radial_reach_m": 2.104,
+      "radial_guard_tolerance_m": 0.002,
+      "floor_z_m": 0.0,
+      "right_wall_y_m": -1.15,
+      "left_wall_y_m": 1.15
+    },
+    "validator_identity": "m710id70_exact_mesh_tool:80667e33189490e8ebbdadaed75e78405a4a6216c9b07d57449ba12c394010c9",
+    "search_budget": {
+      "task_pose_connection_attempts": 12,
+      "task_pose_scope": "shared_by_one_task_across_faces_rolls_and_task_set_variants",
+      "grasp_branches_per_pose": 4,
+      "stage_ik_candidates": 3,
+      "stage_connection_attempts": 3,
+      "stage_connection_iterations": 600,
+      "stage_connection_scope": "shared_across_lazy_ik_candidates_for_one_stage_endpoint",
+      "cartesian_policy": "one_continuation_seed_per_bounded_cartesian_sample",
+      "cartesian_max_samples_per_stage": 80,
+      "extraction_direction_attempts": 5,
+      "maximum_extraction_m": 0.8
+    }
+  },
+  "broadphase_initial": {
+    "schema": "m710id70_initial_state_audit_v1",
+    "layout_fingerprint": "82ec898fef66cde35ee88108828ef80ce45047d290eef19d77b84bfb38ae60ec",
+    "q_rad": [
+      3.1135901287083176,
+      0.7854566731593875,
+      0.6496218708958161,
+      0.06722349609001022,
+      -1.2117503086182402,
+      -1.9415185231007088
+    ],
+    "status": "FAIL",
+    "failures": [
+      {
+        "reason": "TOOL_SELF_COLLISION",
+        "pair": [
+          "tool_rigid_13",
+          "J5_link"
+        ]
+      }
+    ],
+    "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_58_rigid_tool_solids",
+    "complete_workcell_clearance": "KNOWN_GEOMETRY_EVALUATED_TRAILER_LENGTH_AND_HEIGHT_UNDEFINED"
+  },
+  "seed": 71070,
+  "collision_margin_m": 0.01,
+  "initial_failure": {
+    "reason": "ROBOT_RIGID_TOOL_COLLISION",
+    "collision_kind": "robot_obstacle",
+    "pair": [
+      "J5_link",
+      "tool_rigid_13"
+    ],
+    "stage": "home_probe"
+  },
+  "wrist_sweep": [
+    {
+      "j6_rad": -3.141592653589793,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -3.0106929596902186,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -2.8797932657906435,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -2.748893571891069,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -2.6179938779914944,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -2.4870941840919194,
+      "j5_plate_distance_m": 0.01882109243945594
+    },
+    {
+      "j6_rad": -2.356194490192345,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": -2.2252947962927703,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": -2.0943951023931957,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -1.9634954084936207,
+      "j5_plate_distance_m": 0.01882109243945594
+    },
+    {
+      "j6_rad": -1.8325957145940461,
+      "j5_plate_distance_m": 0.01882109243945594
+    },
+    {
+      "j6_rad": -1.7016960206944713,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": -1.5707963267948966,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -1.439896632895322,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -1.3089969389957472,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -1.1780972450961726,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -1.0471975511965979,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -0.9162978572970233,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -0.7853981633974483,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": -0.6544984694978737,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": -0.5235987755982991,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": -0.39269908169872414,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": -0.2617993877991496,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": -0.130899693899575,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 0.0,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": 0.13089969389957457,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": 0.26179938779914913,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": 0.3926990816987237,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 0.5235987755982987,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 0.6544984694978733,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 0.7853981633974478,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 0.9162978572970228,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": 1.0471975511965974,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": 1.178097245096172,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": 1.3089969389957465,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 1.439896632895321,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 1.5707963267948966,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": 1.7016960206944711,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 1.8325957145940457,
+      "j5_plate_distance_m": 0.01882109243945594
+    },
+    {
+      "j6_rad": 1.9634954084936203,
+      "j5_plate_distance_m": 0.018821092439455945
+    },
+    {
+      "j6_rad": 2.094395102393195,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 2.2252947962927694,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": 2.356194490192345,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 2.4870941840919194,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 2.617993877991494,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 2.7488935718910685,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 2.879793265790643,
+      "j5_plate_distance_m": 0.018821092439455917
+    },
+    {
+      "j6_rad": 3.0106929596902177,
+      "j5_plate_distance_m": 0.018821092439455914
+    },
+    {
+      "j6_rad": 3.141592653589793,
+      "j5_plate_distance_m": 0.018821092439455914
+    }
+  ],
+  "full_tool_mesh_clearance": {
+    "geometry": "official_J5_mesh_vs_complete_hash_bound_tool_STL",
+    "source": {
+      "declared_path": "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+      "repository_path": "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+      "sha256": "4113746138501efde8748f8c77d82612590fba1b6baca7c7e24127c66b2c5ce8"
+    },
+    "complete_tool_stl_includes_compliant_cups": true,
+    "step_to_flange_transform_source": {
+      "declared_path": "assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+      "repository_path": "assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+      "sha256": "2596f20270848f8874cf8e766602be7985da8dd047d769889b83f690009f13f0"
+    },
+    "samples": [
+      {
+        "j6_rad": -3.141592653589793,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.1617821982468977,
+          0.40111854500803396,
+          1.663362834990651
+        ],
+        "tool_nearest_point_world_m": [
+          -3.165986245765961,
+          0.4024396332599333,
+          1.6447507946986861
+        ]
+      },
+      {
+        "j6_rad": -3.0106929596902186,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.160598012445988,
+          0.4063258258449198,
+          1.663464968025488
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1648020599650515,
+          0.4076469140968192,
+          1.644852927733523
+        ]
+      },
+      {
+        "j6_rad": -2.8797932657906435,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.1600862788917694,
+          0.41163603636046253,
+          1.6637262991032131
+        ],
+        "tool_nearest_point_world_m": [
+          -3.164290326410833,
+          0.41295712461236195,
+          1.6451142588112482
+        ]
+      },
+      {
+        "j6_rad": -2.748893571891069,
+        "distance_m": 0.019126613227165357,
+        "j5_nearest_point_world_m": [
+          -3.1602557534872338,
+          0.4169583173804727,
+          1.6641423567766316
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1644598010062968,
+          0.41827940563237204,
+          1.6455303164846666
+        ]
+      },
+      {
+        "j6_rad": -2.6179938779914944,
+        "distance_m": 0.019126613227165412,
+        "j5_nearest_point_world_m": [
+          -3.1611035364750646,
+          0.4222016032010829,
+          1.6647060221835985
+        ],
+        "tool_nearest_point_world_m": [
+          -3.165307583994128,
+          0.42352269145298227,
+          1.6460939818916334
+        ]
+      },
+      {
+        "j6_rad": -2.4870941840919194,
+        "distance_m": 0.01912661322716533,
+        "j5_nearest_point_world_m": [
+          -3.162615122053291,
+          0.427276179748189,
+          1.665407650852723
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1668191695723547,
+          0.42859726800008835,
+          1.646795610560758
+        ]
+      },
+      {
+        "j6_rad": -2.356194490192345,
+        "distance_m": 0.01912661322716519,
+        "j5_nearest_point_world_m": [
+          -3.164764646573579,
+          0.43209521961013153,
+          1.666235237722948
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1689686940926425,
+          0.4334163078620309,
+          1.6476231974309832
+        ]
+      },
+      {
+        "j6_rad": -2.2252947962927703,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.1675153310754256,
+          0.4365762676787825,
+          1.6671746225534736
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1717193785944886,
+          0.43789735593068185,
+          1.6485625822615086
+        ]
+      },
+      {
+        "j6_rad": -2.0943951023931957,
+        "distance_m": 0.0191266132271653,
+        "j5_nearest_point_world_m": [
+          -3.1708201105843696,
+          0.44064265197930597,
+          1.668209732209403
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1750241581034326,
+          0.4419637402312053,
+          1.649597691917438
+        ]
+      },
+      {
+        "j6_rad": -1.9634954084936207,
+        "distance_m": 0.019126613227165384,
+        "j5_nearest_point_world_m": [
+          -3.1746224394067557,
+          0.44422479554890526,
+          1.6693228556775361
+        ],
+        "tool_nearest_point_world_m": [
+          -3.178826486925819,
+          0.4455458838008046,
+          1.6507108153855712
+        ]
+      },
+      {
+        "j6_rad": -1.8325957145940461,
+        "distance_m": 0.019126613227165273,
+        "j5_nearest_point_world_m": [
+          -3.178857258642228,
+          0.44726140691794675,
+          1.6704949471067176
+        ],
+        "tool_nearest_point_world_m": [
+          -3.183061306161291,
+          0.4485824951698461,
+          1.6518829068147527
+        ]
+      },
+      {
+        "j6_rad": -1.7016960206944713,
+        "distance_m": 0.019126613227165412,
+        "j5_nearest_point_world_m": [
+          -3.183452109359554,
+          0.44970052882399836,
+          1.671705951687629
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1876561568786173,
+          0.4510216170758978,
+          1.653093911395664
+        ]
+      },
+      {
+        "j6_rad": -1.5707963267948966,
+        "distance_m": 0.019126613227165357,
+        "j5_nearest_point_world_m": [
+          -3.1883283723890266,
+          0.4515004272149953,
+          1.6729351487961368
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1925324199080896,
+          0.45282151546689464,
+          1.6543231085041719
+        ]
+      },
+      {
+        "j6_rad": -1.439896632895322,
+        "distance_m": 0.0191266132271653,
+        "j5_nearest_point_world_m": [
+          -3.193402613518256,
+          0.4526303053304413,
+          1.6741615065289166
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1976066610373195,
+          0.4539513935823407,
+          1.6555494662369517
+        ]
+      },
+      {
+        "j6_rad": -1.3089969389957472,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.198588011074676,
+          0.45307083064251996,
+          1.67536404156515
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2027920585937393,
+          0.4543919188944193,
+          1.6567520012731851
+        ]
+      },
+      {
+        "j6_rad": -1.1780972450961726,
+        "distance_m": 0.019126613227165357,
+        "j5_nearest_point_world_m": [
+          -3.203795841468432,
+          0.4528144656410047,
+          1.6765221781969615
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2079998889874957,
+          0.45413555389290405,
+          1.6579101379049965
+        ]
+      },
+      {
+        "j6_rad": -1.0471975511965979,
+        "distance_m": 0.01912661322716519,
+        "j5_nearest_point_world_m": [
+          -3.2089369972776045,
+          0.45186559680214927,
+          1.6776161003854844
+        ],
+        "tool_nearest_point_world_m": [
+          -3.213141044796668,
+          0.45318668505404863,
+          1.6590040600935196
+        ]
+      },
+      {
+        "j6_rad": -0.9162978572970233,
+        "distance_m": 0.0191266132271653,
+        "j5_nearest_point_world_m": [
+          -3.2139235119009,
+          0.45024045953486275,
+          1.6786270908187808
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2181275594199636,
+          0.4515615477867621,
+          1.6600150505268159
+        ]
+      },
+      {
+        "j6_rad": -0.7853981633974483,
+        "distance_m": 0.01912661322716519,
+        "j5_nearest_point_world_m": [
+          -3.218670064690591,
+          0.44796686038836153,
+          1.6795378511702372
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2228741122096545,
+          0.4492879486402609,
+          1.6609258108782723
+        ]
+      },
+      {
+        "j6_rad": -0.6544984694978737,
+        "distance_m": 0.01912661322716519,
+        "j5_nearest_point_world_m": [
+          -3.223095440812453,
+          0.445083701274403,
+          1.68033279807773
+        ],
+        "tool_nearest_point_world_m": [
+          -3.227299488331516,
+          0.44640478952630236,
+          1.6617207577857651
+        ]
+      },
+      {
+        "j6_rad": -0.5235987755982991,
+        "distance_m": 0.0191266132271653,
+        "j5_nearest_point_world_m": [
+          -3.227123920854094,
+          0.44164031384478974,
+          1.6809983297792708
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2313279683731575,
+          0.4429614020966891,
+          1.6623862894873058
+        ]
+      },
+      {
+        "j6_rad": -0.39269908169872414,
+        "distance_m": 0.019126613227165357,
+        "j5_nearest_point_world_m": [
+          -3.2306865764050974,
+          0.4376956154131297,
+          1.6815230588429262
+        ],
+        "tool_nearest_point_world_m": [
+          -3.234890623924161,
+          0.4390167036650291,
+          1.6629110185509612
+        ]
+      },
+      {
+        "j6_rad": -0.2617993877991496,
+        "distance_m": 0.019126613227165135,
+        "j5_nearest_point_world_m": [
+          -3.2337224494412298,
+          0.43331710086326575,
+          1.6818980070089347
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2379264969602928,
+          0.4346381891151651,
+          1.66328596671697
+        ]
+      },
+      {
+        "j6_rad": -0.130899693899575,
+        "distance_m": 0.019126613227165357,
+        "j5_nearest_point_world_m": [
+          -3.23617959533314,
+          0.4285796877930995,
+          1.6821167588102206
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2403836428522035,
+          0.4299007760449989,
+          1.6635047185182554
+        ]
+      },
+      {
+        "j6_rad": 0.0,
+        "distance_m": 0.0191266132271653,
+        "j5_nearest_point_world_m": [
+          -3.238015971633368,
+          0.4235644346537207,
+          1.6821755713428141
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2422200191524313,
+          0.42488552290562004,
+          1.6635635310508492
+        ]
+      },
+      {
+        "j6_rad": 0.13089969389957457,
+        "distance_m": 0.019126613227165357,
+        "j5_nearest_point_world_m": [
+          -3.2392001574342775,
+          0.4183571538168348,
+          1.6820734383079772
+        ],
+        "tool_nearest_point_world_m": [
+          -3.243404204953341,
+          0.4196782420687342,
+          1.663461398016012
+        ]
+      },
+      {
+        "j6_rad": 0.26179938779914913,
+        "distance_m": 0.019126613227165357,
+        "j5_nearest_point_world_m": [
+          -3.239711890988496,
+          0.4130469433012921,
+          1.681812107230252
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2439159385075595,
+          0.41436803155319146,
+          1.6632000669382871
+        ]
+      },
+      {
+        "j6_rad": 0.3926990816987237,
+        "distance_m": 0.01912661322716519,
+        "j5_nearest_point_world_m": [
+          -3.239542416393032,
+          0.4077246622812819,
+          1.6813960495568334
+        ],
+        "tool_nearest_point_world_m": [
+          -3.243746463912095,
+          0.40904575053318126,
+          1.6627840092648687
+        ]
+      },
+      {
+        "j6_rad": 0.5235987755982987,
+        "distance_m": 0.019126613227165412,
+        "j5_nearest_point_world_m": [
+          -3.238694633405201,
+          0.4024813764606717,
+          1.6808323841498667
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2428986809242644,
+          0.40380246471257114,
+          1.6622203438579015
+        ]
+      },
+      {
+        "j6_rad": 0.6544984694978733,
+        "distance_m": 0.01912661322716519,
+        "j5_nearest_point_world_m": [
+          -3.2371830478269743,
+          0.39740679991356564,
+          1.680130755480742
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2413870953460373,
+          0.39872788816546506,
+          1.6615187151887774
+        ]
+      },
+      {
+        "j6_rad": 0.7853981633974478,
+        "distance_m": 0.019126613227165412,
+        "j5_nearest_point_world_m": [
+          -3.2350335233066865,
+          0.3925877600516231,
+          1.679303168610517
+        ],
+        "tool_nearest_point_world_m": [
+          -3.23923757082575,
+          0.39390884830352246,
+          1.6606911283185521
+        ]
+      },
+      {
+        "j6_rad": 0.9162978572970228,
+        "distance_m": 0.019126613227165357,
+        "j5_nearest_point_world_m": [
+          -3.2322828388048404,
+          0.38810671198297214,
+          1.6783637837799916
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2364868863239034,
+          0.3894278002348715,
+          1.6597517434880265
+        ]
+      },
+      {
+        "j6_rad": 1.0471975511965974,
+        "distance_m": 0.0191266132271653,
+        "j5_nearest_point_world_m": [
+          -3.2289780592958963,
+          0.38404032768244867,
+          1.6773286741240623
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2331821068149598,
+          0.38536141593434803,
+          1.6587166338320973
+        ]
+      },
+      {
+        "j6_rad": 1.178097245096172,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.2251757304735102,
+          0.38045818411284943,
+          1.6762155506559289
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2293797779925733,
+          0.3817792723647488,
+          1.657603510363964
+        ]
+      },
+      {
+        "j6_rad": 1.3089969389957465,
+        "distance_m": 0.019126613227165357,
+        "j5_nearest_point_world_m": [
+          -3.220940911238038,
+          0.3774215727438079,
+          1.6750434592267474
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2251449587571015,
+          0.37874266099570725,
+          1.6564314189347824
+        ]
+      },
+      {
+        "j6_rad": 1.439896632895321,
+        "distance_m": 0.01912661322716519,
+        "j5_nearest_point_world_m": [
+          -3.216346060520712,
+          0.3749824508377563,
+          1.673832454645836
+        ],
+        "tool_nearest_point_world_m": [
+          -3.220550108039775,
+          0.37630353908965564,
+          1.6552204143538711
+        ]
+      },
+      {
+        "j6_rad": 1.5707963267948966,
+        "distance_m": 0.01912661322716519,
+        "j5_nearest_point_world_m": [
+          -3.2114697974912394,
+          0.37318255244675935,
+          1.6726032575373282
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2156738450103024,
+          0.3745036406986587,
+          1.6539912172453635
+        ]
+      },
+      {
+        "j6_rad": 1.7016960206944711,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.2063955563620095,
+          0.3720526743313133,
+          1.6713768998045484
+        ],
+        "tool_nearest_point_world_m": [
+          -3.210599603881073,
+          0.3733737625832127,
+          1.6527648595125837
+        ]
+      },
+      {
+        "j6_rad": 1.8325957145940457,
+        "distance_m": 0.019126613227165273,
+        "j5_nearest_point_world_m": [
+          -3.2012101588055892,
+          0.37161214901923467,
+          1.670174364768315
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2054142063246527,
+          0.3729332372711341,
+          1.65156232447635
+        ]
+      },
+      {
+        "j6_rad": 1.9634954084936203,
+        "distance_m": 0.019126613227165273,
+        "j5_nearest_point_world_m": [
+          -3.1960023284118333,
+          0.37186851402074994,
+          1.6690162281365037
+        ],
+        "tool_nearest_point_world_m": [
+          -3.2002063759308967,
+          0.3731896022726493,
+          1.6504041878445388
+        ]
+      },
+      {
+        "j6_rad": 2.094395102393195,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.1908611726026606,
+          0.3728173828596053,
+          1.6679223059479806
+        ],
+        "tool_nearest_point_world_m": [
+          -3.195065220121724,
+          0.37413847111150467,
+          1.6493102656560157
+        ]
+      },
+      {
+        "j6_rad": 2.2252947962927694,
+        "distance_m": 0.0191266132271653,
+        "j5_nearest_point_world_m": [
+          -3.1858746579793653,
+          0.37444252012689183,
+          1.6669113155146844
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1900787054984288,
+          0.3757636083787912,
+          1.6482992752227195
+        ]
+      },
+      {
+        "j6_rad": 2.356194490192345,
+        "distance_m": 0.019126613227165412,
+        "j5_nearest_point_world_m": [
+          -3.1811281051896745,
+          0.3767161192733931,
+          1.666000555163228
+        ],
+        "tool_nearest_point_world_m": [
+          -3.185332152708738,
+          0.37803720752529246,
+          1.6473885148712628
+        ]
+      },
+      {
+        "j6_rad": 2.4870941840919194,
+        "distance_m": 0.019126613227165218,
+        "j5_nearest_point_world_m": [
+          -3.176702729067813,
+          0.37959927838735164,
+          1.6652056082557352
+        ],
+        "tool_nearest_point_world_m": [
+          -3.180906776586876,
+          0.38092036663925105,
+          1.6465935679637704
+        ]
+      },
+      {
+        "j6_rad": 2.617993877991494,
+        "distance_m": 0.019126613227165218,
+        "j5_nearest_point_world_m": [
+          -3.172674249026171,
+          0.3830426658169649,
+          1.6645400765541942
+        ],
+        "tool_nearest_point_world_m": [
+          -3.1768782965452345,
+          0.3843637540688643,
+          1.6459280362622293
+        ]
+      },
+      {
+        "j6_rad": 2.7488935718910685,
+        "distance_m": 0.019126613227165135,
+        "j5_nearest_point_world_m": [
+          -3.169111593475168,
+          0.38698736424862495,
+          1.6640153474905388
+        ],
+        "tool_nearest_point_world_m": [
+          -3.173315640994231,
+          0.3883084525005243,
+          1.645403307198574
+        ]
+      },
+      {
+        "j6_rad": 2.879793265790643,
+        "distance_m": 0.0191266132271653,
+        "j5_nearest_point_world_m": [
+          -3.1660757204390357,
+          0.3913658787984889,
+          1.6636403993245303
+        ],
+        "tool_nearest_point_world_m": [
+          -3.170279767958099,
+          0.3926869670503883,
+          1.6450283590325654
+        ]
+      },
+      {
+        "j6_rad": 3.0106929596902177,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.1636185745471255,
+          0.3961032918686551,
+          1.6634216475232446
+        ],
+        "tool_nearest_point_world_m": [
+          -3.167822622066189,
+          0.3974243801205545,
+          1.6448096072312797
+        ]
+      },
+      {
+        "j6_rad": 3.141592653589793,
+        "distance_m": 0.019126613227165246,
+        "j5_nearest_point_world_m": [
+          -3.1617821982468977,
+          0.40111854500803396,
+          1.663362834990651
+        ],
+        "tool_nearest_point_world_m": [
+          -3.165986245765961,
+          0.4024396332599333,
+          1.6447507946986861
+        ]
+      }
+    ],
+    "sample_count": 49,
+    "j6_sample_range_rad": [
+      -3.141592653589793,
+      3.141592653589793
+    ],
+    "minimum_distance_m": 0.019126613227165135,
+    "maximum_distance_m": 0.019126613227165412,
+    "required_pairwise_clearance_m": 0.02,
+    "maximum_clearance_shortfall_m": 0.0008733867728345883,
+    "continuous_exhaustiveness": false,
+    "changes_collision_policy": false
+  },
+  "random_draws_requested": 256,
+  "random_draws_used": 256,
+  "failure_counts": {
+    "{\"collision_kind\": \"self_collision\", \"pair\": [\"base_link_0\", \"J4_link_0\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 9,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J2_link\", \"chassis\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 13,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J5_link\", \"chassis\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 2,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J5_link\", \"tool_rigid_13\"], \"reason\": \"ROBOT_RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 144,
+    "{\"collision_kind\": \"self_collision\", \"pair\": [\"base_link_0\", \"J2_link_0\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 17,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J3_link\", \"conveyor_transverse\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 2,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"chassis\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 10,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"carton_l06_c02\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"self_collision\", \"pair\": [\"J2_link_0\", \"J4_link_0\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 2,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J3_link\", \"chassis\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 4,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"carton_l05_c01\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"carton_l01_c04\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J2_link\", \"conveyor_transverse\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 5,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"tool_rigid_13\"], \"reason\": \"ROBOT_RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 5,
+    "{\"pair\": [\"tool_rigid_0\", \"carton_l06_c04\"], \"reason\": \"RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"conveyor_transverse\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 3,
+    "{\"pair\": [\"tool_rigid_0\", \"carton_l07_c01\"], \"reason\": \"RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J5_link\", \"conveyor_transverse\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"pair\": [\"tool_rigid_0\", \"carton_l03_c02\"], \"reason\": \"RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"pair\": [\"tool_rigid_0\", \"chassis\"], \"reason\": \"RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 7,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"tool_rigid_12\"], \"reason\": \"ROBOT_RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 2,
+    "{\"pair\": [\"tool_rigid_0\", \"carton_l03_c03\"], \"reason\": \"RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"carton_l03_c00\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"conveyor_longitudinal\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 4,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"tool_rigid_11\"], \"reason\": \"ROBOT_RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 3,
+    "{\"limit_m\": 2.106, \"radial_m\": 2.1562590056012745, \"reason\": \"RADIAL_REACH\", \"stage\": \"home_probe\"}": 1,
+    "{\"limit_m\": 2.106, \"radial_m\": 2.2276309247104065, \"reason\": \"RADIAL_REACH\", \"stage\": \"home_probe\"}": 1,
+    "{\"limit_m\": 2.106, \"radial_m\": 2.1924646024762486, \"reason\": \"RADIAL_REACH\", \"stage\": \"home_probe\"}": 1,
+    "{\"limit_m\": 2.106, \"radial_m\": 2.12429979699809, \"reason\": \"RADIAL_REACH\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J3_link\", \"carton_l04_c02\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J3_link\", \"carton_l03_c02\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J3_link\", \"conveyor_longitudinal\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"carton_l03_c03\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"pair\": [\"tool_rigid_0\", \"carton_l06_c00\"], \"reason\": \"RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J1_link\", \"tool_rigid_0\"], \"reason\": \"ROBOT_RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"carton_l06_c03\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J4_link\", \"carton_l02_c04\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J3_link\", \"carton_l02_c02\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"collision_kind\": \"robot_obstacle\", \"pair\": [\"J5_link\", \"carton_l03_c03\"], \"reason\": \"ROBOT_MESH_COLLISION\", \"stage\": \"home_probe\"}": 1,
+    "{\"pair\": [\"tool_rigid_0\", \"conveyor_transverse\"], \"reason\": \"RIGID_TOOL_COLLISION\", \"stage\": \"home_probe\"}": 1
+  },
+  "witness": null
+}

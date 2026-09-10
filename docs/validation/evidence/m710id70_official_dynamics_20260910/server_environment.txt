@@ -1,0 +1,22 @@
+captured_utc=2026-09-10T06:18:11Z
+Linux autodl-container-qms6hzyhpm-32041050 5.15.0-78-generic #85-Ubuntu SMP Fri Jul 7 15:25:09 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+CPU(s):                          208
+On-line CPU(s) list:             0-207
+Model name:                      Intel(R) Xeon(R) Platinum 8470Q
+Thread(s) per core:              2
+Core(s) per socket:              52
+Socket(s):                       2
+NUMA node0 CPU(s):               0-51,104-155
+NUMA node1 CPU(s):               52-103,156-207
+Python 3.12.3
+numpy=2.3.2
+scipy=NOT_INSTALLED
+pin=4.1.0
+coal=3.0.3
+pytest=9.1.1
+Name: isaacsim
+Version: 6.0.1.0
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 595.71.05, 97887 MiB
+isolated_root=/root/autodl-tmp/m710-official-dynamics-20260910
+base_head=a372c7f117e61509229b2c15eef344cd7908d499
+branch=feat/v0.5-feasibility-core

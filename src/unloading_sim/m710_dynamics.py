@@ -1,9 +1,9 @@
 """Strict CPU-side dynamics contract for the FANUC M-710iD/70 workcell.
 
-The module deliberately contains no simulator-backend imports.  It validates
-the separate engineering-estimate document, anchors it to the confirmed
-layout/model/tool inputs, and exposes immutable SI-unit values to replay
-adapters.  These values are simulation inputs, never machine qualification.
+The module deliberately contains no simulator-backend imports. It selects the
+official public model by default and retains explicit historical proxy-estimate
+validation. Both loaders bind layout/model/tool sources and expose immutable
+SI-unit values to replay adapters, independently of machine qualification.
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ DEFAULT_CONFIG_PATH = (
     Path(__file__).resolve().parents[2]
     / "configs"
     / "simulation"
-    / "m710id70_engineering_dynamics_v1.yaml"
+    / "m710id70_official_dynamics_v2.yaml"
 )
 ROBOT_LINK_NAMES = ("base_link", "J1_link", "J2_link", "J3_link", "J4_link", "J5_link", "J6_link")
 ACTIVE_JOINT_NAMES = ("J1", "J2", "J3", "J4", "J5", "J6")
@@ -442,7 +442,7 @@ class M710EngineeringDynamicsConfig:
     def cache_identity(self) -> Mapping[str, Any]:
         return _freeze(
             {
-                "schema_version": SCHEMA_VERSION,
+                "schema_version": str(self.data["schema_version"]),
                 "fingerprint": self.fingerprint,
                 "source_file_hashes": dict(self.source_file_hashes),
                 "components": _thaw(self.data["cache_identity_components"]),
@@ -1117,12 +1117,17 @@ def _validate_metadata(data: Mapping[str, Any]) -> tuple[str, float, Mapping[str
 def load_m710id70_engineering_dynamics(path: str | Path | None = None) -> M710EngineeringDynamicsConfig:
     """Load and fail-closed validate the independent M-710 dynamics input.
 
-    ``None`` loads the repository default.  Relative source paths are always
-    resolved against the chosen dynamics document, which makes copied or
+    ``None`` loads the selected official repository default. Explicit v1
+    documents retain the strict historical proxy-estimate validation. Relative
+    source paths are always resolved against the chosen document, making copied or
     archived configs deterministic and prevents dependence on the process CWD.
     """
     config_path = DEFAULT_CONFIG_PATH if path is None else Path(path).resolve()
     data = _read_yaml(config_path, "M-710 engineering dynamics config")
+    if data.get("schema_version") == "m710id70_official_dynamics_v2":
+        from .m710_official_dynamics import load_m710id70_official_dynamics
+
+        return load_m710id70_official_dynamics(config_path)
     _strict_keys(
         data,
         {
@@ -1202,6 +1207,20 @@ def load_m710id70_engineering_dynamics(path: str | Path | None = None) -> M710En
     )
 
 
+def load_m710id70_dynamics(path: str | Path | None = None) -> M710EngineeringDynamicsConfig:
+    """Load either the retained legacy estimate or the selected official model."""
+
+    config_path = DEFAULT_CONFIG_PATH if path is None else Path(path).resolve()
+    document = _read_yaml(config_path, "M-710 dynamics config")
+    if document.get("schema_version") == SCHEMA_VERSION:
+        return load_m710id70_engineering_dynamics(config_path)
+    if document.get("schema_version") == "m710id70_official_dynamics_v2":
+        from .m710_official_dynamics import load_m710id70_official_dynamics
+
+        return load_m710id70_official_dynamics(config_path)
+    raise ValueError(f"unsupported M-710 dynamics schema: {document.get('schema_version')!r}")
+
+
 __all__ = [
     "ACTIVE_JOINT_NAMES",
     "CONVEYOR_SURFACE_NAMES",
@@ -1222,4 +1241,5 @@ __all__ = [
     "ToolDynamics",
     "VacuumAttachment",
     "load_m710id70_engineering_dynamics",
+    "load_m710id70_dynamics",
 ]

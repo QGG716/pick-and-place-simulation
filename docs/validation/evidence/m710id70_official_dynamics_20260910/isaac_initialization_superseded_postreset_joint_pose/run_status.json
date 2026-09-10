@@ -1,0 +1,238 @@
+{
+  "status": "INITIALIZATION_ONLY_NOT_PICK_SUCCESS",
+  "scope": "INITIALIZATION_ONLY_NOT_PICK_SUCCESS",
+  "physical_pick_success": false,
+  "attachment_count": 0,
+  "initial_state_audit": {
+    "schema": "m710id70_initial_state_audit_v1",
+    "layout_fingerprint": "240f91728870edb2c073d38b4d9465fe1d20d6c5222fd24d057f5e5f6d6caada",
+    "q_rad": [
+      3.1135901287083176,
+      0.7854566731593875,
+      0.6496218708958161,
+      0.06722349609001022,
+      -1.2117503086182402,
+      -1.9415185231007088
+    ],
+    "status": "FAIL",
+    "failures": [
+      {
+        "reason": "TOOL_SELF_COLLISION",
+        "pair": [
+          "tool_rigid_13",
+          "J5_link"
+        ]
+      }
+    ],
+    "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_58_rigid_tool_solids",
+    "complete_workcell_clearance": "KNOWN_GEOMETRY_EVALUATED_TRAILER_LENGTH_AND_HEIGHT_UNDEFINED"
+  },
+  "robot_pose_role": "diagnostic_pose_not_motion_qualified_home",
+  "contract_fingerprint": "bbd3ae573c9c7dcd57beffc439cf9e2c5be51c2d703a449f005737659d789e29",
+  "srdf_collision_filters": [
+    {
+      "link1": "base_link",
+      "link2": "J1_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/base_1/base_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1/j1_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J1_link",
+      "link2": "J2_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1/j1_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1/j2_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J2_link",
+      "link2": "J3_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1/j2_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1/j3_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J3_link",
+      "link2": "J4_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1/j3_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1/j4_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J4_link",
+      "link2": "J5_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1/j4_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1/j5_1"
+        ]
+      ]
+    },
+    {
+      "link1": "J5_link",
+      "link2": "J6_link",
+      "actor1": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link",
+      "actor2": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link",
+      "reason": "Adjacent",
+      "scope": "OFFICIAL_ROBOT_COLLIDERS_ONLY",
+      "materialized_collision_instances": [
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1",
+        "/fanuc_m710id_70/Geometry/world/base_link/base_1"
+      ],
+      "collider_pairs": [
+        [
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1/j5_1",
+          "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1/j6_1"
+        ]
+      ]
+    }
+  ],
+  "joint_drive_limits": {
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "effort_limit_nm": [
+      8000.0,
+      10000.0,
+      5000.0,
+      2000.0,
+      1000.0,
+      900.0
+    ],
+    "velocity_limit_rad_s": [
+      3.1415927410125732,
+      3.1415927410125732,
+      3.1415927410125732,
+      4.537856101989746,
+      4.537856101989746,
+      6.457718372344971
+    ]
+  },
+  "backend_initialization_completed": true,
+  "carton_count": 40,
+  "mass_kg_each": 42.5,
+  "robot_plus_tool_mass_kg": 600.347,
+  "video_frame_count": 180,
+  "video_physical_time_scale": 1.0,
+  "render_size": [
+    1920,
+    1080
+  ],
+  "gravity_settling": "OBSERVED_NOT_FULL_PICK_VALIDATION",
+  "initialization_diagnostic_result": "INITIAL_CONFIGURATION_DISPERSED",
+  "settling_observations": {
+    "classification": "INITIAL_CONFIGURATION_DISPERSED",
+    "sample_period_s": 0.033333333333333215,
+    "final_window_s": 0.5333333333333314,
+    "final_window_peak_linear_speed_m_s": 0.0,
+    "final_window_peak_angular_speed_rad_s": 0.0,
+    "final_window_max_position_drift_m": 0.0,
+    "final_window_motion_stable": true,
+    "initial_configuration_retained_throughout": false,
+    "full_run_peak_linear_speed_m_s": 3.1835353134512068,
+    "full_run_peak_angular_speed_rad_s": 7.20573065729338,
+    "max_authored_position_displacement_m": 0.8850764403572291,
+    "max_final_position_displacement_m": 0.8849935343218415,
+    "worst_displaced_carton": "carton_l07_c02",
+    "worst_displacement_time_s": 0.4666666666666667,
+    "full_run_max_joint_tracking_error_rad": 0.028319597244262695,
+    "final_max_joint_tracking_error_rad": 0.02454376220703125,
+    "penetration_gate": "NOT_EVALUATED_DIAGNOSTIC_ONLY"
+  },
+  "video": "initialization.mp4",
+  "actual_states": "actual_states.json",
+  "keyframes": [
+    "initial.png",
+    "final.png"
+  ],
+  "video_sha256": "63340ed19bfe8e7ffbb144fe1f15b95ba698997ae4344f87c5d3eba1acd4a1b8",
+  "adapter_sha256": "80892a160333da23b500b60cae0b402347efae64c453fc0449478eec3307c825",
+  "recorded_state_count": 180
+}
