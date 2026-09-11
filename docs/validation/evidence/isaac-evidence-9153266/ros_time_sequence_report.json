@@ -1,0 +1,43 @@
+{
+  "claim_boundary": "the external adapter is the simulation-clock authority and therefore uses a wall timer; consuming perception/world nodes use use_sim_time=true",
+  "clock_progressed": true,
+  "keyframes": [
+    {
+      "frame_sequence": 0,
+      "simulation_epoch": "sim-epoch-a",
+      "stamp_ns": 0
+    },
+    {
+      "frame_sequence": 50,
+      "simulation_epoch": "sim-epoch-a",
+      "stamp_ns": 833333333
+    },
+    {
+      "frame_sequence": 100,
+      "simulation_epoch": "sim-epoch-a",
+      "stamp_ns": 1666666667
+    },
+    {
+      "frame_sequence": 150,
+      "simulation_epoch": "sim-epoch-a",
+      "stamp_ns": 2500000000
+    },
+    {
+      "frame_sequence": 200,
+      "simulation_epoch": "sim-epoch-a",
+      "stamp_ns": 3333333333
+    },
+    {
+      "frame_sequence": 0,
+      "simulation_epoch": "sim-epoch-camera-b",
+      "stamp_ns": 0
+    }
+  ],
+  "missing_clock_bindings": [],
+  "missing_sensor_or_tf_stamp_bindings": {},
+  "pause_duplicate_clock_samples": 7,
+  "restart_created_new_epoch_and_reset_clock": true,
+  "schema_version": "isaac_ros_time_probe_v1",
+  "status": "PASS",
+  "use_sim_time": true
+}

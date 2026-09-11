@@ -9,6 +9,7 @@ __pycache__/
 htmlcov/
 *.egg-info/
 build/
+/log/
 dist/
 outputs/
 results/

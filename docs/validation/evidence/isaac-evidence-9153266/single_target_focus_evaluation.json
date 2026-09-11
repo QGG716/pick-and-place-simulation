@@ -1,0 +1,1185 @@
+{
+  "bbox_claim_boundary": "proposal bbox IoU evaluates injected oracle proposals; estimated mask bbox IoU evaluates the vision output",
+  "capture_time": 0.8333333333333334,
+  "claim_boundary": "Isaac rendered-image evaluation is not real-camera accuracy",
+  "depth": {
+    "absolute_metric_mae_m": 0.5130548409626742,
+    "absolute_metric_rmse_m": 0.5490126606995009,
+    "claim_boundary": "scale-aligned error is not absolute metric accuracy",
+    "scale_aligned_mae_m": 0.07369385718764761,
+    "scale_aligned_rmse_m": 0.1618215506738176,
+    "scale_alignment_factor": 1.546196489264829,
+    "status": "PASS",
+    "valid_fraction": 1.0,
+    "valid_pixel_count": 307200
+  },
+  "evaluation_fingerprint": "3bb923eb128610b25903d692d22618aa96e66f3bc22974c6fe00fdf35fd5c4ec",
+  "frame_sequence": 50,
+  "ground_truth_object_count": 40,
+  "mean_bbox_iou": 1.0,
+  "mean_center_translation_error_m": 0.782861252808974,
+  "mean_estimated_mask_bbox_iou": 0.7447135120170748,
+  "mean_full_dimension_abs_error_m": [
+    0.4920576470588235,
+    0.2023732352941177,
+    0.06323294117647058
+  ],
+  "mean_mask_iou": 0.6144076762305654,
+  "mean_orientation_angular_error_deg": 134.91966315176805,
+  "mean_per_axis_dimension_relative_error": [
+    0.8200960784313726,
+    0.5059330882352941,
+    0.21077647058823526
+  ],
+  "mean_proposal_bbox_iou": 1.0,
+  "missed_object_ids": [
+    "carton_l06_c00",
+    "carton_l06_c03",
+    "carton_l06_c04",
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c04"
+  ],
+  "mode": "ISAAC_SENSOR_WITH_ORACLE_PROPOSALS",
+  "per_object": [
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 1.0022483531856796,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7232142857142857,
+      "full_dimension_abs_error_m": [
+        0.50241,
+        0.23289,
+        0.06101999999999999
+      ],
+      "mask_iou": 0.6716608224418233,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.68065450187005,
+      "per_axis_dimension_relative_error": [
+        0.83735,
+        0.582225,
+        0.20339999999999997
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "1",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l00_c00",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.9993849380972418,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8382229673093042,
+      "full_dimension_abs_error_m": [
+        0.48169999999999996,
+        0.18443,
+        0.026839999999999975
+      ],
+      "mask_iou": 0.5401579090661585,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.52855458521752,
+      "per_axis_dimension_relative_error": [
+        0.8028333333333333,
+        0.461075,
+        0.08946666666666658
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "2",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l00_c01",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.9798776221719799,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8600723763570567,
+      "full_dimension_abs_error_m": [
+        0.50669,
+        0.26306,
+        0.04242999999999997
+      ],
+      "mask_iou": 0.8884083044982699,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.75588484997866,
+      "per_axis_dimension_relative_error": [
+        0.8444833333333334,
+        0.65765,
+        0.14143333333333324
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "3",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l00_c02",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.9676719963159425,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8577680525164114,
+      "full_dimension_abs_error_m": [
+        0.47267,
+        0.16253000000000004,
+        0.012940000000000007
+      ],
+      "mask_iou": 0.517927244176917,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 173.78645312949132,
+      "per_axis_dimension_relative_error": [
+        0.7877833333333333,
+        0.40632500000000005,
+        0.04313333333333336
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "4",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l00_c03",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.933340316850708,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8083832335329342,
+      "full_dimension_abs_error_m": [
+        0.49294,
+        0.23379000000000003,
+        0.016059999999999963
+      ],
+      "mask_iou": 0.6969394544244844,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.30989650814617,
+      "per_axis_dimension_relative_error": [
+        0.8215666666666667,
+        0.5844750000000001,
+        0.05353333333333321
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "5",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l00_c04",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.9077881654481792,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.5129484438108814,
+      "full_dimension_abs_error_m": [
+        0.47884,
+        0.12380000000000002,
+        0.07546999999999998
+      ],
+      "mask_iou": 0.6281720430107527,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 176.24263203982082,
+      "per_axis_dimension_relative_error": [
+        0.7980666666666667,
+        0.30950000000000005,
+        0.2515666666666666
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "6",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l01_c00",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.893842384109502,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.6009009009009009,
+      "full_dimension_abs_error_m": [
+        0.45657,
+        0.028610000000000024,
+        0.05215
+      ],
+      "mask_iou": 0.43895040194145307,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.48748932360834,
+      "per_axis_dimension_relative_error": [
+        0.76095,
+        0.07152500000000006,
+        0.17383333333333334
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "7",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l01_c01",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.881379003538042,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.6427962489343564,
+      "full_dimension_abs_error_m": [
+        0.46177999999999997,
+        0.14839000000000002,
+        0.019479999999999997
+      ],
+      "mask_iou": 0.7091399166870865,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 175.0605078189579,
+      "per_axis_dimension_relative_error": [
+        0.7696333333333333,
+        0.37097500000000005,
+        0.06493333333333333
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "8",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l01_c02",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.859192482296159,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.6589595375722543,
+      "full_dimension_abs_error_m": [
+        0.45702999999999994,
+        0.09967000000000004,
+        0.020559999999999967
+      ],
+      "mask_iou": 0.4852091125467528,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 173.6545731922281,
+      "per_axis_dimension_relative_error": [
+        0.7617166666666666,
+        0.2491750000000001,
+        0.06853333333333322
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "9",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l01_c03",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.8365081618002658,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.6057471264367816,
+      "full_dimension_abs_error_m": [
+        0.48968,
+        0.16576000000000002,
+        0.06270999999999999
+      ],
+      "mask_iou": 0.6286518069681887,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 172.58430484546074,
+      "per_axis_dimension_relative_error": [
+        0.8161333333333334,
+        0.41440000000000005,
+        0.2090333333333333
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "10",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l01_c04",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.8612105140953585,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.712280701754386,
+      "full_dimension_abs_error_m": [
+        0.50306,
+        0.19523000000000001,
+        0.08068999999999998
+      ],
+      "mask_iou": 0.7176170522863909,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 177.14743623468132,
+      "per_axis_dimension_relative_error": [
+        0.8384333333333333,
+        0.48807500000000004,
+        0.26896666666666663
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "11",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l02_c00",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.8703339809539706,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.3339445438282648,
+      "full_dimension_abs_error_m": [
+        0.46880999999999995,
+        0.11747000000000002,
+        0.0368
+      ],
+      "mask_iou": 0.4729533929002656,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 174.85426652602382,
+      "per_axis_dimension_relative_error": [
+        0.78135,
+        0.293675,
+        0.12266666666666667
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "12",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l02_c01",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.8331869364390507,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7217130771942193,
+      "full_dimension_abs_error_m": [
+        0.494,
+        0.22275000000000003,
+        0.025219999999999965
+      ],
+      "mask_iou": 0.8692461641094062,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.3910894964964,
+      "per_axis_dimension_relative_error": [
+        0.8233333333333334,
+        0.556875,
+        0.08406666666666655
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "13",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l02_c02",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.8308629975972253,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8277739959155889,
+      "full_dimension_abs_error_m": [
+        0.47920999999999997,
+        0.17718000000000003,
+        0.024519999999999986
+      ],
+      "mask_iou": 0.5435889972347547,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.39447173930886,
+      "per_axis_dimension_relative_error": [
+        0.7986833333333333,
+        0.44295000000000007,
+        0.0817333333333333
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "14",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l02_c03",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.804887631684399,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7592307692307693,
+      "full_dimension_abs_error_m": [
+        0.50034,
+        0.24600000000000002,
+        0.04626999999999998
+      ],
+      "mask_iou": 0.8498086016662914,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 172.19718451297476,
+      "per_axis_dimension_relative_error": [
+        0.8339000000000001,
+        0.615,
+        0.15423333333333328
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "15",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l02_c04",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.799864392790677,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7212408444635933,
+      "full_dimension_abs_error_m": [
+        0.50086,
+        0.22778,
+        0.07229
+      ],
+      "mask_iou": 0.7418833790986916,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 175.06793908503425,
+      "per_axis_dimension_relative_error": [
+        0.8347666666666667,
+        0.56945,
+        0.24096666666666666
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "16",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l03_c00",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.7912050968140711,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.6972928630024611,
+      "full_dimension_abs_error_m": [
+        0.48107999999999995,
+        0.17897000000000002,
+        0.018689999999999984
+      ],
+      "mask_iou": 0.526953125,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 174.1104058341318,
+      "per_axis_dimension_relative_error": [
+        0.8018,
+        0.447425,
+        0.06229999999999995
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "17",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l03_c01",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.7874605597918987,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7577791336180598,
+      "full_dimension_abs_error_m": [
+        0.48368,
+        0.22213000000000002,
+        0.01199
+      ],
+      "mask_iou": 0.8760657734470159,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.38155850908385,
+      "per_axis_dimension_relative_error": [
+        0.8061333333333334,
+        0.5553250000000001,
+        0.03996666666666667
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "18",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l03_c02",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.7616318066490356,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7894039735099337,
+      "full_dimension_abs_error_m": [
+        0.48022,
+        0.19425000000000003,
+        0.007500000000000007
+      ],
+      "mask_iou": 0.5346668048502435,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 174.24089224865043,
+      "per_axis_dimension_relative_error": [
+        0.8003666666666667,
+        0.4856250000000001,
+        0.025000000000000022
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "19",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l03_c03",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.7646808018205294,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8075253256150506,
+      "full_dimension_abs_error_m": [
+        0.50257,
+        0.21927000000000002,
+        0.05992999999999998
+      ],
+      "mask_iou": 0.6616359794747962,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 173.61761946531473,
+      "per_axis_dimension_relative_error": [
+        0.8376166666666667,
+        0.548175,
+        0.19976666666666662
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "20",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l03_c04",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.7696767225604281,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.673404773502192,
+      "full_dimension_abs_error_m": [
+        0.50147,
+        0.23497,
+        0.152
+      ],
+      "mask_iou": 0.593607305936073,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 176.59683135321356,
+      "per_axis_dimension_relative_error": [
+        0.8357833333333333,
+        0.587425,
+        0.5066666666666667
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "21",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l04_c00",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.7227297058852094,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7361647361647362,
+      "full_dimension_abs_error_m": [
+        0.49782,
+        0.23399000000000003,
+        0.038370000000000015
+      ],
+      "mask_iou": 0.5933166248955722,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.45601612929389,
+      "per_axis_dimension_relative_error": [
+        0.8297,
+        0.584975,
+        0.12790000000000007
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "22",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l04_c01",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.7107206958291098,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8384078924987243,
+      "full_dimension_abs_error_m": [
+        0.47189,
+        0.22627000000000003,
+        0.04524
+      ],
+      "mask_iou": 0.8590876765213857,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.61032570263798,
+      "per_axis_dimension_relative_error": [
+        0.7864833333333333,
+        0.565675,
+        0.15080000000000002
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "23",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l04_c02",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.7033330061464518,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8272785213511791,
+      "full_dimension_abs_error_m": [
+        0.48799,
+        0.20517000000000002,
+        0.008890000000000009
+      ],
+      "mask_iou": 0.5413995174077905,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.38193795381868,
+      "per_axis_dimension_relative_error": [
+        0.8133166666666667,
+        0.512925,
+        0.029633333333333366
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "24",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l04_c03",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.7186913350237316,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7628992628992629,
+      "full_dimension_abs_error_m": [
+        0.52396,
+        0.21216000000000002,
+        0.17248999999999998
+      ],
+      "mask_iou": 0.6045310677994337,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.69913250541067,
+      "per_axis_dimension_relative_error": [
+        0.8732666666666666,
+        0.5304,
+        0.5749666666666666
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "25",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l04_c04",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.733134141998675,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.9171474358974359,
+      "full_dimension_abs_error_m": [
+        0.56996,
+        0.27432,
+        0.28948999999999997
+      ],
+      "mask_iou": 0.1891654465592972,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 168.44833902772078,
+      "per_axis_dimension_relative_error": [
+        0.9499333333333334,
+        0.6858,
+        0.9649666666666666
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "26",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l05_c00",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.6702158990024601,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7459223892075496,
+      "full_dimension_abs_error_m": [
+        0.48399,
+        0.17332000000000003,
+        0.03858
+      ],
+      "mask_iou": 0.5938406605668377,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 176.6111589330348,
+      "per_axis_dimension_relative_error": [
+        0.80665,
+        0.4333000000000001,
+        0.12860000000000002
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "27",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l05_c01",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.6367531968300661,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8380675927845739,
+      "full_dimension_abs_error_m": [
+        0.49781,
+        0.2695,
+        0.006840000000000013
+      ],
+      "mask_iou": 0.6910156486012929,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 174.8297616353524,
+      "per_axis_dimension_relative_error": [
+        0.8296833333333333,
+        0.67375,
+        0.022800000000000042
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "28",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l05_c02",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.6504120432519143,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7673611111111112,
+      "full_dimension_abs_error_m": [
+        0.43409,
+        0.10939000000000004,
+        0.12239
+      ],
+      "mask_iou": 0.007434733257661748,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.34577354009508,
+      "per_axis_dimension_relative_error": [
+        0.7234833333333334,
+        0.2734750000000001,
+        0.4079666666666667
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "29",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l05_c03",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.6867786571501026,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.7559107119270903,
+      "full_dimension_abs_error_m": [
+        0.5659,
+        0.25454,
+        0.2903
+      ],
+      "mask_iou": 0.16961736150770987,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.46472650114191,
+      "per_axis_dimension_relative_error": [
+        0.9431666666666666,
+        0.63635,
+        0.9676666666666667
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "30",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l05_c04",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.5953084328891024,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.8735417638824078,
+      "full_dimension_abs_error_m": [
+        0.47117,
+        0.14728000000000002,
+        0.0009299999999999864
+      ],
+      "mask_iou": 0.7466441512350096,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 176.28506093867784,
+      "per_axis_dimension_relative_error": [
+        0.7852833333333333,
+        0.3682,
+        0.003099999999999955
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "31",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l06_c01",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.5963166581014602,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.896256598944169,
+      "full_dimension_abs_error_m": [
+        0.47878,
+        0.20846000000000003,
+        0.025510000000000033
+      ],
+      "mask_iou": 0.8065359899247586,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 90.07765170965382,
+      "per_axis_dimension_relative_error": [
+        0.7979666666666667,
+        0.52115,
+        0.08503333333333345
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "32",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l06_c02",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.5244275526907147,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.9888059701492538,
+      "full_dimension_abs_error_m": [
+        0.50762,
+        0.35826,
+        0.038260000000000016
+      ],
+      "mask_iou": 0.9950364667747164,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 91.22783939876743,
+      "per_axis_dimension_relative_error": [
+        0.8460333333333333,
+        0.8956500000000001,
+        0.1275333333333334
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "33",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l07_c02",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.5322264056957788,
+      "depth_evidence": "MODEL_ESTIMATED",
+      "eligibility_reasons": [
+        "MONOCULAR_SCALE_UNVERIFIED",
+        "CAMERA_EXTRINSICS_MISSING",
+        "GEOMETRY_UNCERTAINTY_MISSING"
+      ],
+      "estimated_mask_bbox_iou": 0.461892247043364,
+      "full_dimension_abs_error_m": [
+        0.54337,
+        0.3291,
+        0.14706999999999998
+      ],
+      "mask_iou": 0.4989920550219376,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 173.74017738481487,
+      "per_axis_dimension_relative_error": [
+        0.9056166666666667,
+        0.82275,
+        0.4902333333333333
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "34",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "MODEL_ESTIMATED",
+      "simulation_object_id": "carton_l07_c03",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": true
+    }
+  ],
+  "prediction_object_count": 34,
+  "prediction_processed_time": 13.675256855397796,
+  "processed_object_count": 34,
+  "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+  "raw_image_automatic": false,
+  "schema_version": "isaac_perception_evaluation_v1",
+  "sensor_to_result_latency_s": 12.841923522064462,
+  "source_epoch": "sim-epoch-a",
+  "unknown_region_count": 34,
+  "unmatched_prediction_ids": [],
+  "world_transform_evaluation": {
+    "T_W_C_supplied": true,
+    "claim_boundary": "world-frame errors are absolute mismatches of monocular pseudo-3D and are not metric accuracy",
+    "metric_scale_valid": false,
+    "prediction_camera_frame": "camera_optical_model",
+    "transform": "T_W_object_prediction = T_W_C @ T_C_object_prediction"
+  }
+}

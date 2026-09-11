@@ -233,7 +233,7 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 当前没有完整模拟或认证纸箱柔性/坍塌、真空密封与剥离、真实控制器插补、完整关节动力学、安全 PLC、工业节拍和现场风险。进入真机前必须使用厂商精确模型、实测工具质量属性、FANUC 负载设定软件或 ROBOGUIDE、控制器日志及吸具试验重新验证全部轨迹。
 
-机器人模型证据边界见 [`assets/robots/fanuc_m710id_70/SOURCE.md`](assets/robots/fanuc_m710id_70/SOURCE.md)。Isaac Sim 服务器和导出说明见 [`docs/isaacsim_server.md`](docs/isaacsim_server.md)，后端边界见 [`docs/digital_twin_backend.md`](docs/digital_twin_backend.md)。
+机器人模型证据边界见 [`assets/robots/fanuc_m710id_70/SOURCE.md`](assets/robots/fanuc_m710id_70/SOURCE.md)。Isaac Sim 服务器和导出说明见 [`docs/isaacsim_server.md`](docs/isaacsim_server.md)，本轮感知/ROS 数字孪生实跑证据见 [`docs/validation/isaac_perception_validation.md`](docs/validation/isaac_perception_validation.md)，后端边界见 [`docs/digital_twin_backend.md`](docs/digital_twin_backend.md)。
 
 ## 版本历史
 

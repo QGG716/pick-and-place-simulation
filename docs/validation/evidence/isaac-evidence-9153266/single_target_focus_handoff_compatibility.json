@@ -1,0 +1,10 @@
+{
+  "actual_feasibility_reference_commit": "f84578a3c9a91364b747560b994f2e6e9b5d65a2",
+  "differences": [],
+  "feasibility_reference_commit": "f84578a3c9a91364b747560b994f2e6e9b5d65a2",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "recorded_feasibility_reference_commit": "f84578a3c9a91364b747560b994f2e6e9b5d65a2",
+  "schema_version": "isaac_feasibility_compatibility_report_v1",
+  "status": "PASS",
+  "tolerance": 1e-09
+}
