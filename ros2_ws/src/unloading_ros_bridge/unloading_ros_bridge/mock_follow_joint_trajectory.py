@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-import asyncio
+import time
 from uuid import uuid4
 
 import rclpy
 from control_msgs.action import FollowJointTrajectory
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from unloading_interfaces.msg import ControllerStopFact
 
@@ -19,8 +21,13 @@ class MockTrajectoryServer(Node):
         self.declare_parameter("controller_epoch", str(uuid4()))
         self.sequence = 0
         self.cancel_times = {}
+        self.callback_group = ReentrantCallbackGroup()
         self.stop_publisher = self.create_publisher(ControllerStopFact, "/unloading/controller_stop_facts", 10)
-        self.server = ActionServer(self, FollowJointTrajectory, "/mock_controller/follow_joint_trajectory", execute_callback=self.execute, goal_callback=self.goal, cancel_callback=self.cancel)
+        self.server = ActionServer(
+            self, FollowJointTrajectory, "/mock_controller/follow_joint_trajectory",
+            execute_callback=self.execute, goal_callback=self.goal,
+            cancel_callback=self.cancel, callback_group=self.callback_group,
+        )
 
     def goal(self, request):
         points = request.trajectory.points
@@ -34,7 +41,7 @@ class MockTrajectoryServer(Node):
         self.cancel_times[bytes(goal_handle.goal_id.uuid).hex()] = self.get_clock().now().to_msg()
         return CancelResponse.ACCEPT
 
-    async def execute(self, goal_handle):
+    def execute(self, goal_handle):
         result = FollowJointTrajectory.Result()
         last_positions = list(goal_handle.request.trajectory.points[0].positions)
         for point in goal_handle.request.trajectory.points:
@@ -63,7 +70,7 @@ class MockTrajectoryServer(Node):
             feedback.actual.velocities = list(point.velocities) if point.velocities else [0.0] * len(point.positions)
             goal_handle.publish_feedback(feedback)
             last_positions = list(point.positions)
-            await asyncio.sleep(0.01)
+            time.sleep(0.01)
         goal_handle.succeed()
         result.error_code = FollowJointTrajectory.Result.SUCCESSFUL
         result.error_string = "mock trajectory complete"
@@ -74,8 +81,12 @@ def main(args=None) -> None:
     require_humble_python310()
     rclpy.init(args=args)
     node = MockTrajectoryServer()
+    executor = MultiThreadedExecutor(num_threads=2)
+    executor.add_node(node)
     try:
-        rclpy.spin(node)
+        executor.spin()
     finally:
+        executor.shutdown()
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()

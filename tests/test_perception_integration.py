@@ -10,7 +10,7 @@ from unloading_contracts import (
     UnknownRegion, Validity,
 )
 from unloading_perception.backends import CargoJsonReplayBackend, CargoPipelineBackend, resolve_controlled_reference
-from unloading_perception.execution import DuplicateCallbackError, ExecutionGate
+from unloading_perception.execution import DuplicateCallbackError, ExecutionGate, StaleCallbackError
 from unloading_perception.geometry import transform_pose
 from unloading_perception.scene import (
     ObservationTracker, SnapshotAssembler, SourceEpochGuard,
@@ -312,8 +312,12 @@ def test_late_result_and_duplicate_stop_do_not_touch_new_active_command():
     second = command(snapshot, command_id="cmd-new")
     gate.register_grant(grant(second))
     gate.authorize(second, snapshot, epoch="epoch-a", generation=2, now=2.2)
+    with pytest.raises(StaleCallbackError):
+        gate.complete(first.command_id, ExecutionEventKind.SUCCEEDED, "late success", event_time=2.3)
+    late = gate.complete(first.command_id, ExecutionEventKind.CANCELED, "late cancel", event_time=2.4)
+    assert late.kind is ExecutionEventKind.CANCELED
     with pytest.raises(DuplicateCallbackError):
-        gate.complete(first.command_id, ExecutionEventKind.CANCELED, "late", event_time=2.3)
+        gate.complete(first.command_id, ExecutionEventKind.CANCELED, "duplicate", event_time=2.5)
     assert gate.confirm_stop(fact, now=2.3, max_age_seconds=1.0) == acknowledgement
     assert gate.active_command.command_id == second.command_id
 

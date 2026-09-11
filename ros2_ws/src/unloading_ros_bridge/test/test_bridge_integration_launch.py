@@ -11,6 +11,7 @@ from launch_testing.actions import ReadyToTest
 import launch_testing.markers
 import pytest
 import rclpy
+from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectoryPoint
 from unloading_contracts import ExecutionCommand, PlanArtifactKind, TimedJointPoint, TimedJointTrajectory
@@ -66,7 +67,7 @@ class TestBridgeIntegration(unittest.TestCase):
         self.node.create_subscription(PlanningWorldSnapshot, "/unloading/world_snapshot", snapshots.append, 10)
         self.node.create_subscription(ExecutionEvent, "/unloading/execution_events", events.append, 10)
         self.node.create_subscription(StopAcknowledgement, "/unloading/stop_acknowledgements", stops.append, 10)
-        joints_pub = self.node.create_publisher(JointState, "/joint_states", 10)
+        joints_pub = self.node.create_publisher(JointState, "/joint_states", qos_profile_sensor_data)
         mechanism_pub = self.node.create_publisher(MechanismState, "/unloading/mechanism_state", 10)
         perception_pub = self.node.create_publisher(PerceptionObservation, "/unloading/perception", 10)
         context_pub = self.node.create_publisher(ExecutionContext, "/unloading/execution_context", 10)
@@ -110,7 +111,7 @@ class TestBridgeIntegration(unittest.TestCase):
         robot_world = self.wait_for(
             snapshots,
             lambda item: item.world_fingerprint != initial_world.world_fingerprint
-            and item.actual_joint_positions == [0.01] * 6,
+            and list(item.actual_joint_positions) == [0.01] * 6,
         )
         assert robot_world.scene_fingerprint == initial_world.scene_fingerprint
         assert robot_world.source_capture_time == initial_world.source_capture_time

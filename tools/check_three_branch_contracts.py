@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -17,12 +18,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def run(command: list[str], *, cwd: Path, capture: bool = False) -> subprocess.CompletedProcess[str]:
+    environment = os.environ.copy()
+    environment.pop("PYTHONHOME", None)
+    environment.pop("PYTHONPATH", None)
     return subprocess.run(
         command,
         cwd=cwd,
         check=True,
         text=True,
         capture_output=capture,
+        env=environment,
     )
 
 

@@ -57,6 +57,7 @@ class ExecutionGate:
         self._cancel_accepted_time: float | None = None
         self._cancel_clock_domain: str | None = None
         self._result_seen: set[str] = set()
+        self._terminal_context: dict[str, ExecutionCommand] = {}
         self._last_stop_sequence: dict[tuple[str, str], int] = {}
 
     @property
@@ -76,6 +77,7 @@ class ExecutionGate:
         while self._history and (next(iter(self._history.values()))[0] < cutoff or len(self._history) > self.history_capacity):
             command_id, _ = self._history.popitem(last=False)
             self._result_seen.discard(command_id)
+            self._terminal_context.pop(command_id, None)
         while self._stop_cache and (next(iter(self._stop_cache.values()))[0] < cutoff or len(self._stop_cache) > self.history_capacity):
             self._stop_cache.popitem(last=False)
 
@@ -205,8 +207,20 @@ class ExecutionGate:
                  clock_domain: str = "monotonic") -> ExecutionEvent:
         current_time = monotonic() if event_time is None else float(event_time)
         self._prune(current_time)
-        if command_id in self._history or command_id in self._result_seen:
+        if command_id in self._result_seen:
             raise DuplicateCallbackError("terminal callback already applied")
+        if command_id in self._history:
+            command = self._terminal_context.get(command_id)
+            if command is None:
+                raise DuplicateCallbackError("terminal callback already applied")
+            if kind is not ExecutionEventKind.CANCELED:
+                raise StaleCallbackError("a stop-confirmed command cannot complete with a non-canceled result")
+            event = self._event(command, kind, message, current_time, clock_domain)
+            self._result_seen.add(command_id)
+            self._terminal_context.pop(command_id, None)
+            self._history[command_id] = (current_time, event)
+            self._history.move_to_end(command_id)
+            return event
         if self._active is None or self._active.command_id != command_id:
             raise StaleCallbackError("terminal event belongs to a stale command")
         if kind not in (ExecutionEventKind.SUCCEEDED, ExecutionEventKind.CANCELED, ExecutionEventKind.FAILED):
@@ -250,6 +264,8 @@ class ExecutionGate:
         command_id = self._active.command_id
         self._last_stop_sequence[sequence_key] = fact.sequence
         self._stop_cache[key] = (float(now), acknowledgement)
+        if command_id not in self._result_seen:
+            self._terminal_context[command_id] = self._active
         self._remember(command_id, float(now), None)
         self._clear_active()
         self._prune(now)
