@@ -279,7 +279,8 @@ try:
         rgb = rep.AnnotatorRegistry.get_annotator("rgb")
         depth = rep.AnnotatorRegistry.get_annotator("distance_to_image_plane")
         instance = rep.AnnotatorRegistry.get_annotator(
-            "instance_segmentation", init_params={"colorize": False}
+            "instance_segmentation",
+            init_params={"colorize": False, "semanticTypes": ["class", "simulation_object_id"]},
         )
         rgb.attach(product)
         depth.attach(product)
