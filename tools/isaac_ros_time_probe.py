@@ -33,7 +33,7 @@ class Probe(Node):
         self.sensor_stamps = {name: set() for name in ("rgb", "depth", "camera_info", "pointcloud", "tf")}
         self.observations: list[tuple[str, int, int]] = []
         self.observation_keys: set[tuple[str, int]] = set()
-        self.create_subscription(Clock, "/clock", self._clock, qos)
+        self.create_subscription(Clock, "/clock", self._clock_message, qos)
         self.create_subscription(Image, "/isaac/front_camera/rgb", lambda msg: self._sensor("rgb", msg.header.stamp), qos)
         self.create_subscription(Image, "/isaac/front_camera/depth", lambda msg: self._sensor("depth", msg.header.stamp), qos)
         self.create_subscription(CameraInfo, "/isaac/front_camera/camera_info", lambda msg: self._sensor("camera_info", msg.header.stamp), qos)
@@ -41,7 +41,7 @@ class Probe(Node):
         self.create_subscription(TFMessage, "/tf", self._tf, qos)
         self.create_subscription(PerceptionObservation, "/unloading/perception", self._observation, qos)
 
-    def _clock(self, message: Clock) -> None:
+    def _clock_message(self, message: Clock) -> None:
         self.clock_stamps.append(stamp_ns(message.clock))
 
     def _sensor(self, name: str, stamp) -> None:
