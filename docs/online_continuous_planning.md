@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev8)
+# Online continuous planning control plane (0.5.2.dev9)
 
 ## Acceptance scope
 
@@ -150,6 +150,43 @@ fault. Stop rejection, exception, or timeout cannot fabricate a boundary or
 claim hardware emergency-stop capability. The step loop services the mandatory
 stop epilogue even when ordinary ingress/error handling returns early, preventing
 continuous conflicting input from starving the one-shot stop command.
+
+### dev9 received-feedback handoff gate
+
+The execution-feedback receive boundary is the moment
+`ExecutionBackend.poll()` returns an immutable feedback object and the runtime
+places it in its bounded pending queue. Receipt is distinct from owner-thread
+processing. Before a READY successor can start, every message already inside
+that queue must be processed or classified under the configured per-step
+budget. The runtime does not infer feedback that has not yet crossed this
+boundary, including messages still in a controller, network, adapter, or an
+upstream backend queue that could not be polled because runtime capacity was
+already full.
+
+The fixed handoff order is:
+
+1. poll into the bounded runtime queue up to its configured capacity;
+2. process at most `max_execution_feedback_per_step` messages;
+3. if any received message remains, keep the READY plan non-executing;
+4. on later steps, finish duplicate/stale/conflict classification;
+5. with the queue empty, recheck scene freshness, revision, complete boundary,
+   lineage, backend health, UNKNOWN-start state, and recovery evidence version;
+6. retire prior stop evidence only after successor start returns ACCEPTED.
+
+No unlimited drain, busy wait, or capacity increase is used. A finite duplicate
+backlog eventually clears and permits exactly one start. If accepted input is
+sustained above the processing rate, the runtime remains READY and gated while
+its own queue stays bounded; it reports backpressure at capacity instead of
+starting around the backlog. An external adapter remains responsible for
+bounding any queue it owns outside this receive boundary.
+
+Snapshots expose `execution_start_feedback_gate` with active state, received
+unprocessed count, capacity, per-step budget, and the receive-boundary wording.
+`execution_start_feedback_gated_count` counts control-plane gate decisions.
+The regression matrix covers same/higher-sequence conflicts, limits one/eight,
+same-step READY transitions, finite duplicate drain, capacity pressure, and
+late feedback after accepted handoff. It is a finite acceptance suite, not an
+exhaustive model of every asynchronous ordering.
 
 ### dev8 stop-evidence authorization lifetime
 

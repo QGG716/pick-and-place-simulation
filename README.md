@@ -1,4 +1,13 @@
-# Trailer Unloading Geometric Simulator v0.5.2.dev8
+# Trailer Unloading Geometric Simulator v0.5.2.dev9
+
+v0.5.2.dev9 closes the handoff ordering gap between feedback receipt and
+processing. A READY successor cannot start while the runtime's bounded feedback
+queue contains already-received, unprocessed messages. The configured per-step
+budget remains intact: finite backlog is classified over later steps, sustained
+backlog keeps execution gated, and stop evidence retires only after the queue is
+clear, all existing safety checks pass, and successor start returns ACCEPTED.
+This guarantee begins at `ExecutionBackend.poll()` receipt; it cannot predict
+feedback still outside the runtime.
 
 v0.5.2.dev8 retains correlated stop evidence until an accepted successor
 execution explicitly retires it. Reconciliation alone no longer makes evidence
@@ -308,6 +317,7 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
+- v0.5.2.dev9: bounded received-feedback handoff gate and backlog ordering regressions.
 - v0.5.2.dev8: stop-evidence retirement at accepted handoff, version-bound recovery grants, and finite event-ordering acceptance matrix.
 - v0.5.2.dev7: strict correlated STOPPED authority, contained ambiguous starts, and latched active-stop evidence conflicts.
 - v0.5.2.dev6: correlated stop-attempt lifecycle, independent task-terminal/STOPPED evidence, and explicit recovery authorization.
@@ -324,4 +334,4 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev8`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev9`。
