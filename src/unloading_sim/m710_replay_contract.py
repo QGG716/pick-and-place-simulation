@@ -390,12 +390,12 @@ def verify_m710_preflight_contract(
         primitive for primitive in primitives
         if isinstance(primitive, Mapping) and primitive.get("category") == "carton"
     ]
-    if len(cartons) != 40 or any(primitive.get("dynamic") is not True for primitive in cartons):
-        raise M710ReplayContractError("M-710 replay requires all 40 cartons to remain dynamic")
+    if not cartons or any(primitive.get("dynamic") is not True for primitive in cartons):
+        raise M710ReplayContractError("M-710 replay requires all remaining cartons to remain dynamic")
     carton_names = [primitive.get("name") for primitive in cartons]
     if any(not isinstance(name, str) or not name for name in carton_names) or len(
         set(carton_names)
-    ) != 40:
+    ) != len(cartons):
         raise M710ReplayContractError("M-710 dynamic carton identities must be unique")
 
     expected_plan_fields = {

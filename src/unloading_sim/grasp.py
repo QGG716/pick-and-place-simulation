@@ -1186,6 +1186,7 @@ def post_release_escape_target(
     *,
     normal_disengage_distance_m: float,
     vertical_lift_distance_m: float,
+    tool_collision_obbs_provider: Callable[[np.ndarray], Sequence[OBB]] | None = None,
 ) -> tuple[np.ndarray, dict[str, object]]:
     """Derive a belt-aware empty-tool escape target after payload release.
 
@@ -1235,7 +1236,10 @@ def post_release_escape_target(
     belt_direction /= direction_norm
     escape_direction = -belt_direction
 
-    tool_obbs = list(getattr(robot, "tool_collision_obbs", lambda _q: [])(release_q))
+    provider = tool_collision_obbs_provider or getattr(
+        robot, "tool_collision_obbs", lambda _q: []
+    )
+    tool_obbs = list(provider(release_q))
     if not tool_obbs:
         legacy_obb = getattr(robot, "tool_collision_obb", lambda _q: None)(release_q)
         if legacy_obb is not None:

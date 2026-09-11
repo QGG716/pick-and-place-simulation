@@ -41,8 +41,8 @@ def _m710_frame_contract() -> dict:
         "active_physical_contact_frame": "nominal_compressed_contact",
         "T_flange_virtual_task_tcp": transform(0.2500),
         "T_flange_uncompressed_cup_plane": transform(0.2275),
-        "T_flange_nominal_compressed_contact": transform(0.2125),
-        "virtual_to_physical_contact_offset_m": 0.0375,
+        "T_flange_nominal_compressed_contact": transform(0.2175),
+        "virtual_to_physical_contact_offset_m": 0.0325,
         "virtual_task_tcp_role": "strict_ik_fk_residual_only_never_attachment",
         "attachment_frame_role": "actual_physical_contact_only",
         "tool0_clocking_status": "PROVISIONAL_180_DEGREE_DISCREPANCY_UNRESOLVED",
@@ -138,14 +138,18 @@ def _m710_config() -> dict:
             "joint_effort_limits_nm": [8000.0, 9000.0, 5000.0, 1000.0, 800.0, 450.0],
             "joint_drive_stiffness_nm_rad": [80000.0, 80000.0, 60000.0, 12000.0, 8000.0, 5000.0],
             "joint_drive_damping_nm_s_rad": [5000.0, 5000.0, 4000.0, 800.0, 500.0, 300.0],
+            "joint_gravity_feedforward_enabled": True,
+            "joint_velocity_feedforward_enabled": True,
+            "attached_payload_gravity_feedforward_enabled": True,
             "post_release_settle_seconds": 1.0,
         }
     )
     cfg["simulation_validation"].update(
         {
+            "vacuum_cup_compression_m": 0.010,
             "vacuum_task_tcp_from_flange_m": 0.250,
             "vacuum_physical_uncompressed_face_from_flange_m": 0.2275,
-            "vacuum_compressed_contact_plane_from_flange_m": 0.2125,
+            "vacuum_compressed_contact_plane_from_flange_m": 0.2175,
             "vacuum_frame_contract": copy.deepcopy(frame_contract),
             "vacuum_max_grip_distance_m": 0.002,
             "vacuum_surface_gripper_capture_tolerance_m": 0.002,
@@ -167,6 +171,16 @@ def _m710_config() -> dict:
                 "parameter_status": "ENGINEERING_ESTIMATE_NOT_MACHINE_QUALIFIED",
                 "gravity_world_m_s2": [0.0, 0.0, -9.81],
                 "physics_time_step_s": 1.0 / 240.0,
+                "contact_offset_m": 0.010,
+                "rest_offset_m": 0.0,
+                "execution_backend": {
+                    "mode": "physx_cpu",
+                    "device": "cpu",
+                    "broadphase_type": "MBP",
+                    "gpu_dynamics_enabled": False,
+                    "fabric_enabled": True,
+                    "ccd_enabled": True,
+                },
                 "materials": {
                     "carton": {
                         "static_friction": 0.55,
@@ -225,7 +239,17 @@ def _m710_config() -> dict:
                     "height_px": 1080,
                     "fps": 30,
                     "camera_mode": "fixed_overview_with_contact_and_place_keyframes",
-                }
+                },
+                "material_palette": {
+                    "chassis_rgb": [0.10, 0.12, 0.16],
+                    "conveyor_rgb": [0.035, 0.22, 0.62],
+                    "conveyor_motion_marker_rgb": [1.0, 0.58, 0.03],
+                },
+                "conveyor_visual_motion": {
+                    "model": "collision_free_wrapped_surface_markers_v1",
+                    "markers_have_collision": False,
+                    "markers_follow_active_physx_surface_velocity": True,
+                },
             },
         }
     )
@@ -542,11 +566,16 @@ def test_m710_bundle_binds_explicit_dynamics_full_stack_and_physical_cup_face():
     assert metadata["joint_effort_limits_nm"] == cfg["execution"]["joint_effort_limits_nm"]
     assert metadata["gripper"]["task_tcp_from_flange_m"] == pytest.approx(0.250)
     assert metadata["gripper"]["physical_uncompressed_face_from_flange_m"] == pytest.approx(0.2275)
-    assert metadata["gripper"]["compressed_contact_plane_from_flange_m"] == pytest.approx(0.2125)
+    assert metadata["gripper"]["compressed_contact_plane_from_flange_m"] == pytest.approx(0.2175)
     assert metadata["gripper"]["virtual_tcp_beyond_uncompressed_face_m"] == pytest.approx(0.0225)
     assert metadata["gripper"]["max_grip_distance_m"] == pytest.approx(0.002)
     assert metadata["gripper"]["maximum_contact_penetration_m"] == pytest.approx(0.0002)
     assert metadata["physics"]["physics_time_step_s"] == pytest.approx(1.0 / 240.0)
+    assert metadata["physics"]["contact_offset_m"] == pytest.approx(0.010)
+    assert metadata["physics"]["rest_offset_m"] == pytest.approx(0.0)
+    assert metadata["joint_velocity_feedforward_enabled"] is True
+    assert metadata["attached_payload_gravity_feedforward_enabled"] is True
+    assert metadata["actual_state_gates"]["maximum_free_transit_wait_s"] == pytest.approx(1.0)
     assert metadata["physics"]["friction_combine_mode"] == "min"
     assert metadata["physics"]["solver_position_iterations"] == 32
     assert metadata["rendering"]["required_output"] == {
@@ -556,6 +585,15 @@ def test_m710_bundle_binds_explicit_dynamics_full_stack_and_physical_cup_face():
         "camera_mode": "fixed_overview_with_contact_and_place_keyframes",
         "render_every_physics_steps": 8,
     }
+    assert metadata["rendering"]["material_palette"]["chassis_rgb"] == [
+        0.10, 0.12, 0.16
+    ]
+    assert metadata["rendering"]["material_palette"]["conveyor_rgb"] == [
+        0.035, 0.22, 0.62
+    ]
+    assert metadata["rendering"]["conveyor_visual_motion"][
+        "markers_have_collision"
+    ] is False
     assert metadata["required_post_release_settle_seconds"] == pytest.approx(1.0)
     assert metadata["simulation_execution_ready"] is True
     assert metadata["execution_qualified"] is False
@@ -688,7 +726,7 @@ def test_replay_adapter_source_keeps_m710_fail_closed_and_avoids_duplicate_groun
     assert "synthetic_ground_created = not explicit_floor_declared" in source
     assert '"surface_gripper_torque_limit_applied": False' in source
     assert "physics_materials" in source
-    assert "initial-state settling requires all 40 dynamic cartons" in source
+    assert "initial-state settling requires all snapshot dynamic cartons" in source
     assert "peak_penetration <= max_penetration" in source
     assert '"peak_position_drift_from_configured_m"' in source
     assert source.index("contract_module.verify_m710_replay_bundle(") < source.index(

@@ -75,6 +75,7 @@ def evaluate_replay_qualification(
     conveyor_transport_expected: bool = False,
     conveyor_transport_engaged: bool | None = None,
     conveyor_transport_speed_within_tolerance: bool | None = None,
+    machine_certification_status: str = "NOT_EVALUATED",
 ) -> dict[str, Any]:
     """Evaluate a payload replay and retain causal dependencies in the result."""
     checks: dict[str, dict[str, Any]] = {}
@@ -315,4 +316,11 @@ def evaluate_replay_qualification(
         "qualification_check_details": checks,
         "qualification_failures": failures,
         "qualification_passed": not failures,
+        "simulation_qualification_passed": not failures,
+        "machine_certification_status": str(machine_certification_status),
+        "machine_certification_gates_simulation": False,
+        "simulation_assumptions": (
+            ["ideal_independent_cups_holding_capacity"]
+            if ideal_holding_capacity_assumption else []
+        ),
     }

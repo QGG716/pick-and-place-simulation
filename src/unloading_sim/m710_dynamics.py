@@ -326,6 +326,14 @@ class SimulationSettings:
     physics_time_step_s: float
     solver_position_iterations: int
     solver_velocity_iterations: int
+    execution_backend: str = "physx_cpu"
+    device: str = "cpu"
+    broadphase_type: str = "MBP"
+    gpu_dynamics_enabled: bool = False
+    fabric_enabled: bool = True
+    ccd_enabled: bool = True
+    contact_offset_m: float = 0.010
+    rest_offset_m: float = 0.0
 
 
 @dataclass(frozen=True)

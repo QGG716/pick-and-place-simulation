@@ -15,6 +15,20 @@ receiver:
   name: conveyor_transverse
   fixed: true
 
+search_strategy:
+  grasp_poses_per_task: 48
+  face_height_transition_m: 0.35
+  placement_candidates: 12
+  coarse_place_samples_per_axis: 3
+  fine_place_samples_per_axis: 7
+  row_height_fraction: 0.05
+  # Planning and PhysX consume the same immutable transport directions.  They
+  # are needed before belt start to place the empty tool outside the carton's
+  # future swept path; they do not alter receiver geometry or collision rules.
+  surface_directions_world:
+    conveyor_transverse: [0.0, -1.0, 0.0]
+    conveyor_longitudinal: [-1.0, 0.0, 0.0]
+
 # Layout v1 has one accepted, rigid assembly state.  These switches are
 # contracts, rather than optimization options.
 fixed_cell:
@@ -45,7 +59,8 @@ tool_frame_contract:
     - [-1.0, 0.0, 0.0, 0.0]
     - [0.0, 0.0, 0.0, 1.0]
   T_flange_nominal_compressed_contact:
-    - [0.0, 0.0, 1.0, 0.2125]
+    # 10 mm cup compression leaves >20 mm between rigid inserts and carton.
+    - [0.0, 0.0, 1.0, 0.2175]
     - [0.0, 1.0, 0.0, 0.0]
     - [-1.0, 0.0, 0.0, 0.0]
     - [0.0, 0.0, 0.0, 1.0]

@@ -17,6 +17,7 @@ import numpy as np
 import yaml
 
 from .geometry import OBB, make_transform, rotation_matrix_from_rpy
+from .collision_policy import SimulationCollisionPolicy
 from .identity import load_tool_config
 from .robot import URDFRobot
 from .validation_physics import contact_separated, urdf_collision_shapes, world_link_boxes
@@ -88,14 +89,16 @@ def _pose(xyz: Iterable[float], rpy: Iterable[float]) -> np.ndarray:
     return make_transform(rotation_matrix_from_rpy(*np.asarray(rpy, dtype=float)), xyz)
 
 
-def _rigid_tool_compound_boxes(geometry_config: Mapping[str, Any], project_root: Path) -> np.ndarray:
-    """Return the 58 CAD-derived rigid-solid AABBs in virtual-TCP coordinates.
+def _tool_compound_boxes(
+    geometry_config: Mapping[str, Any], project_root: Path, bounds_key: str
+) -> np.ndarray:
+    """Transform one audited STEP-bound group into virtual-TCP coordinates.
 
     The STEP assembly coordinates are an axis permutation/reflection of the
     flange-aligned tool coordinates, so transforming all eight corners keeps
     each component an exact OBB (represented as an axis-aligned box in the
-    virtual TCP frame).  Flexible cup/insert solids are deliberately absent;
-    their full-ring contact geometry is evaluated independently.
+    virtual TCP frame). Only the source-identified flexible bellows use the
+    separate compliant contact representation; rigid inserts remain present.
     """
 
     geometry = _mapping(geometry_config.get("geometry"), "tool geometry")
@@ -103,9 +106,9 @@ def _rigid_tool_compound_boxes(geometry_config: Mapping[str, Any], project_root:
     if not analysis_path.is_file():
         raise FileNotFoundError(f"tool mass/contact analysis is missing: {analysis_path}")
     analysis = _mapping(json.loads(analysis_path.read_text(encoding="utf-8")), "tool analysis")
-    bounds = np.asarray(analysis.get("rigid_collision_bounding_boxes_step_mm"), dtype=float)
-    if bounds.shape != (58, 6) or not np.all(np.isfinite(bounds)):
-        raise ValueError("tool analysis must contain exactly 58 finite rigid-solid bounds")
+    from .tool_geometry import audit_tool_geometry
+    coverage = audit_tool_geometry(project_root)
+    bounds = np.asarray(coverage[bounds_key], dtype=float)
     rotation_step_from_tool = np.asarray(analysis.get("rotation_step_from_tool"), dtype=float)
     flange_step_mm = np.asarray(analysis.get("flange_origin_step_mm"), dtype=float)
     if (
@@ -138,6 +141,26 @@ def _rigid_tool_compound_boxes(geometry_config: Mapping[str, Any], project_root:
         high = np.max(corners_virtual, axis=0)
         rows.append(np.concatenate((0.5 * (low + high), high - low)))
     return np.asarray(rows, dtype=float)
+
+
+def _rigid_tool_compound_boxes(
+    geometry_config: Mapping[str, Any], project_root: Path
+) -> np.ndarray:
+    """Return all audited rigid structures and inserts in virtual-TCP coordinates."""
+
+    return _tool_compound_boxes(
+        geometry_config, project_root, "rigid_collision_bounding_boxes_step_mm"
+    )
+
+
+def _compliant_tool_compound_boxes(
+    geometry_config: Mapping[str, Any], project_root: Path
+) -> np.ndarray:
+    """Return conservative uncompressed FG42 bounds for swept-path audits."""
+
+    return _tool_compound_boxes(
+        geometry_config, project_root, "compliant_bellows_bounds_step_mm"
+    )
 
 
 def _obb_record(box: OBB, *, shape: str = "box", **extra: Any) -> dict[str, Any]:
@@ -251,6 +274,9 @@ class WorkcellLayout:
         tool = load_tool_config(_resolve(self.config_path, str(tool_data["load_config"])))
         geometry = load_tool_config(_resolve(self.config_path, str(tool_data["geometry_config"])))
         rigid_tool_boxes = _rigid_tool_compound_boxes(geometry.data, self.config_path.parents[2])
+        compliant_tool_boxes = _compliant_tool_compound_boxes(
+            geometry.data, self.config_path.parents[2]
+        )
         base = self.robot_base_transform()
         robot = URDFRobot.fanuc_m710id_70(
             urdf_path=_resolve(self.config_path, str(robot_data["urdf_path"])),
@@ -266,6 +292,11 @@ class WorkcellLayout:
         frames = robot.named_link_frames(np.zeros(6))
         flange_from_tip = np.linalg.inv(frames["flange"]) @ frames["tool0"]
         robot.tip_from_tcp = np.linalg.inv(flange_from_tip) @ mechanical_tcp @ task_axes
+        # These conservative, source-audited uncompressed bellows bounds are
+        # not promoted into rigid planning collisions. They are consumed by
+        # the post-release swept-path certificate so all 202 physical tool
+        # entities, including inactive compliant cups, clear the moving box.
+        robot.tool_compliant_collision_local_boxes = compliant_tool_boxes
         return robot
 
 
@@ -386,7 +417,8 @@ def load_layout_validation_config(path: str | Path) -> LayoutValidationConfig:
     config_path = Path(path).resolve()
     data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     data = _mapping(data, "layout validation config")
-    _keys(data, {"schema", "layout_config", "initial_state", "collision", "render"}, "layout validation config")
+    _keys(data, {"schema", "layout_config", "initial_state", "collision", "render", "collision_policy"}, "layout validation config")
+    SimulationCollisionPolicy.from_mapping(data["collision_policy"])
     if data["schema"] != VALIDATION_SCHEMA:
         raise ValueError("unsupported layout validation schema")
     initial = _mapping(data["initial_state"], "initial_state")
@@ -396,6 +428,8 @@ def load_layout_validation_config(path: str | Path) -> LayoutValidationConfig:
     if isinstance(initial["seed"], bool) or int(initial["seed"]) != initial["seed"]:
         raise ValueError("initial_state.seed must be an integer")
     for key in ("search_maximum_random_draws", "selected_random_draw_1_based"):
+        if key == "selected_random_draw_1_based" and initial[key] is None:
+            continue  # A task-derived validated home is not a random draw.
         if isinstance(initial[key], bool) or int(initial[key]) != initial[key] or int(initial[key]) <= 0:
             raise ValueError(f"initial_state.{key} must be a positive integer")
     collision = _mapping(data["collision"], "collision")
@@ -493,7 +527,7 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
             "height_m": trailer["height_m"],
         },
         "stack_to_conveyor_clearance": {"status": "PASS" if abs(float(layout.data["carton_stack"]["front_face_x_m"]) - assembly_bounds["x"][1] - 0.2) <= tolerance else "FAIL", "clearance_m": float(layout.data["carton_stack"]["front_face_x_m"]) - assembly_bounds["x"][1]},
-        "stack_count": {"status": "PASS" if len(stack) == 40 else "FAIL", "count": len(stack)},
+        "stack_count": {"status": "PASS" if len(stack) == int(layout.data["carton_stack"]["width_columns"]) * int(layout.data["carton_stack"]["height_layers"]) else "FAIL", "count": len(stack)},
         "carton_size_xyz": vector(2.0 * stack[0].half_extents, [0.6, 0.4, 0.3]),
         "stack_width": scalar(float(np.ptp(stack_corners[:, 1])), 2.08),
         "stack_height": scalar(float(np.ptp(stack_corners[:, 2])), 2.4),
@@ -530,6 +564,7 @@ def _audit_initial_state_prepared(
 ) -> dict[str, Any]:
     layout = config.layout
     failures: list[dict[str, Any]] = []
+    effective = SimulationCollisionPolicy.from_mapping(config.data.get("collision_policy"))
     if q.shape != (6,) or not np.all(np.isfinite(q)) or not robot.within_limits(q):
         failures.append({"reason": "JOINT_LIMIT_OR_NONFINITE"})
     else:
@@ -561,7 +596,7 @@ def _audit_initial_state_prepared(
                 if tool.intersects_obb(obstacle, margin=margin):
                     failures.append({"reason": "TOOL_COLLISION", "pair": [tool.name, obstacle.name]})
             for link in links:
-                if link.name != "J6_link" and tool.intersects_obb(link, margin=margin):
+                if link.name not in effective.wrist_tool_exempt_links and tool.intersects_obb(link, margin=margin):
                     failures.append({"reason": "TOOL_SELF_COLLISION", "pair": [tool.name, link.name]})
         y_min = float(layout.data["trailer"]["right_wall_y_m"])
         y_max = float(layout.data["trailer"]["left_wall_y_m"])
@@ -574,9 +609,10 @@ def _audit_initial_state_prepared(
         "schema": "m710id70_initial_state_audit_v1",
         "layout_fingerprint": layout.layout_fingerprint,
         "q_rad": q.tolist(),
+        "collision_policy": effective.to_mapping(),
         "status": "PASS" if not unique else "FAIL",
         "failures": unique,
-        "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_58_rigid_tool_solids",
+        "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_source_audited_rigid_tool_solids",
         "complete_workcell_clearance": "KNOWN_GEOMETRY_EVALUATED_TRAILER_LENGTH_AND_HEIGHT_UNDEFINED",
     }
 
@@ -648,6 +684,8 @@ def build_scene_snapshot(config: LayoutValidationConfig, q: np.ndarray | None = 
     mounting = layout.data["robot"]
     tool_load = load_tool_config(_resolve(layout.config_path, str(layout.data["tool"]["load_config"])))
     tool_geometry = load_tool_config(_resolve(layout.config_path, str(layout.data["tool"]["geometry_config"])))
+    from .tool_geometry import audit_tool_geometry
+    tool_coverage = audit_tool_geometry(layout.config_path.parents[2])
     snapshot = {
         "schema": SNAPSHOT_SCHEMA,
         "layout_id": layout.data["layout_id"],
@@ -695,13 +733,14 @@ def build_scene_snapshot(config: LayoutValidationConfig, q: np.ndarray | None = 
                 role="DISPLAY_AND_SNAPSHOT_ENVELOPE_NOT_EXECUTION_COLLISION",
             ),
             "rigid_collision_obbs": [_obb_record(box) for box in rigid_tool_obbs],
-            "execution_collision_representation": "58_CAD_DERIVED_RIGID_SOLID_COMPOUND_OBBS_PLUS_SEPARATE_FLEXIBLE_CUP_CONTACTS",
+            "execution_collision_representation": "CAD_RIGID_STRUCTURES_AND_INSERTS_WITH_SEPARATE_FLEXIBLE_BELLOWS",
             "geometry": tool_geometry.data["geometry"],
-            "geometry_status": layout.data["tool"]["geometry_status"],
+            "geometry_status": "CONSERVATIVE_RIGID_SOLID_COVERAGE_PROVEN" if tool_coverage["coverage_verified"] else "COVERAGE_FAILED",
+            "geometry_coverage": tool_coverage,
             "planning_tcp_status": layout.data["tool"]["planning_tcp_status"],
             "assets": {name: value for name, value in layout.assets.items() if name.startswith("tool_")},
         },
-        "receiver": {"state": "EMPTY", "transport_capability": "NOT_IMPLEMENTED_FOR_LAYOUT_V1"},
+        "receiver": {"state": "EMPTY", "transport_capability": "PHYSICAL_CONVEYOR_SURFACES"},
         "attachments": [],
         "initial_state_audit": initial,
         "evidence": {

@@ -158,3 +158,22 @@ def test_missing_shear_or_moment_blocks_attachment_qualification():
     assert result["qualification_check_details"]["gripper_wrench_envelope_complete"]["status"] == FAIL
     assert result["qualification_check_details"]["payload_attachment_intact"]["status"] == NOT_EVALUATED
     assert result["qualification_check_details"]["placement_within_tolerance"]["status"] == BLOCKED_BY
+
+
+def test_explicit_ideal_cups_simulation_is_independent_from_machine_certification():
+    inputs = _passing_inputs()
+    inputs.update(
+        ideal_holding_capacity_assumption=True,
+        gripper_wrench_envelope_complete=False,
+        gripper_limits_from_configuration=False,
+        gripper_limits_calibrated=False,
+        machine_certification_status="NOT_EVALUATED",
+    )
+    result = evaluate_replay_qualification(**inputs)
+    assert result["simulation_qualification_passed"]
+    assert not result["machine_certification_gates_simulation"]
+    assert result["machine_certification_status"] == "NOT_EVALUATED"
+    inputs["unexpected_contact_count"] = 1
+    result = evaluate_replay_qualification(**inputs)
+    assert not result["simulation_qualification_passed"]
+    assert result["qualification_check_details"]["unexpected_contacts_clear"]["status"] == FAIL

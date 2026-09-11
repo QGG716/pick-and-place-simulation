@@ -32,6 +32,14 @@ def test_official_dynamics_preserves_exact_link_inertials_and_finite_drives():
     ]
     assert config.robot_with_fixed_tool_mass_kg == pytest.approx(600.347)
     assert config.total_configured_mass_kg == pytest.approx(2300.347)
+    assert config.simulation.execution_backend == "physx_cpu"
+    assert config.simulation.device == "cpu"
+    assert config.simulation.broadphase_type == "MBP"
+    assert config.simulation.gpu_dynamics_enabled is False
+    assert config.simulation.fabric_enabled is True
+    assert config.simulation.ccd_enabled is True
+    assert config.simulation.contact_offset_m == pytest.approx(0.010, abs=1e-12)
+    assert config.simulation.rest_offset_m == pytest.approx(0.0, abs=1e-12)
 
 
 def test_ideal_independent_cups_is_explicit_and_does_not_add_a_capacity_gate():

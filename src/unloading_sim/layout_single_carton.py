@@ -11,7 +11,7 @@ geometry to an executable trajectory.
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import copy
 import json
 import platform
@@ -24,6 +24,12 @@ import yaml
 
 from .fanuc_m710id70 import target_pose
 from .geometry import OBB
+from .collision_policy import SimulationCollisionPolicy
+from .unloading_sequence import (
+    RowUnloadingState, RowSequencePolicy, height_face_prior, fair_face_candidates,
+    actual_tcp_approach_costs,
+)
+from .conveyor_placement import PlacementPolicy
 from .independent_cups import (
     HOLDING_CAPACITY_ASSUMPTION,
     IDEAL_INDEPENDENT_CUPS_MODE,
@@ -34,6 +40,7 @@ from .independent_cups import (
 )
 from .ik import IKCandidateStream, iter_ik_solutions
 from .layout_trajectory import (
+    LayoutTrajectoryBudget,
     LayoutTrajectoryConnector,
     LayoutTrajectoryConnectorBuildResult,
     build_m710_layout_trajectory_connector,
@@ -57,12 +64,15 @@ from .workcell_layout import (
 MOTION_SCHEMA = "m710id70_layout_single_carton_motion_v1"
 RESULT_SCHEMA = "m710id70_layout_single_carton_motion_audit_v1"
 EXPECTED_LAYOUT_ID = "m710id70_unloading_layout_v1"
-EXPECTED_TOP_CARTONS = tuple(f"carton_l07_c{column:02d}" for column in range(5))
 NO_IK_SEARCH_STATUS = "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF"
 EXECUTION_GATE_REASON = "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED"
 PATH_BACKEND_UNAVAILABLE_REASON = "EXECUTION_PATH_BACKEND_UNAVAILABLE"
 TOOL_FRAME_SCHEMA = "m710id70_planner_tool_frames_v1"
 MOTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/collision_policy.py",
+    "src/unloading_sim/conveyor_placement.py",
+    "src/unloading_sim/unloading_sequence.py",
+    "src/unloading_sim/tool_geometry.py",
     "src/unloading_sim/depalletizing.py",
     "src/unloading_sim/fanuc_m710id70.py",
     "src/unloading_sim/geometry.py",
@@ -78,6 +88,7 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/robot_load/spatial.py",
     "src/unloading_sim/robot_load/task.py",
     "src/unloading_sim/scene.py",
+    "src/unloading_sim/serial_unloading.py",
     "src/unloading_sim/support.py",
     "src/unloading_sim/timing.py",
     "src/unloading_sim/validation_motion.py",
@@ -272,13 +283,16 @@ def _load_tool_frame_contract(value: Any) -> ToolFrameContract:
     expected_literals = {
         "T_flange_virtual_task_tcp": 0.2500,
         "T_flange_uncompressed_cup_plane": 0.2275,
-        "T_flange_nominal_compressed_contact": 0.2125,
+        "T_flange_nominal_compressed_contact": float(np.asarray(frame["T_flange_nominal_compressed_contact"])[0, 3]),
     }
     flange_from_planner_rotation = np.asarray(
         [[0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [-1.0, 0.0, 0.0]],
         dtype=float,
     )
     transforms: dict[str, np.ndarray] = {}
+    compression = expected_literals["T_flange_uncompressed_cup_plane"] - expected_literals["T_flange_nominal_compressed_contact"]
+    if not 0.0 <= compression <= 0.015:
+        raise ValueError("physical contact must lie within the 15 mm flexible cup compression range")
     for name, distance in expected_literals.items():
         transform = _se3(frame[name], f"tool_frame_contract.{name}")
         expected = np.eye(4)
@@ -334,6 +348,15 @@ class FrozenLayoutMotionInput:
     receiver: OBB
     support_graph: SupportRelationGraph
     removable_cartons: tuple[str, ...]
+    remaining_stack_names: tuple[str, ...] | None = None
+
+    @property
+    def occupied(self) -> tuple[OBB, ...]:
+        """Completed cartons still physically present remain receiver obstacles."""
+        if self.remaining_stack_names is None:
+            return ()
+        remaining = set(self.remaining_stack_names)
+        return tuple(box for box in self.cartons if box.name not in remaining)
 
     @property
     def all_obstacles(self) -> tuple[OBB, ...]:
@@ -359,6 +382,7 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
             "ik",
             "state_validity",
             "execution_collision",
+            "search_strategy",
         },
         "motion config",
     )
@@ -380,10 +404,8 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
     )
     if population["selector"] != "support_relation_graph_removable":
         raise ValueError("layout task population must use SupportRelationGraph removability")
-    if _integer(population["expected_scene_cartons"], "expected_scene_cartons", minimum=1) != 40:
-        raise ValueError("layout v1 motion audit must retain all 40 cartons")
-    if _integer(population["expected_removable_cartons"], "expected_removable_cartons", minimum=1) != 5:
-        raise ValueError("layout v1 initial task population must be the five removable top cartons")
+    _integer(population["expected_scene_cartons"], "expected_scene_cartons", minimum=1)
+    _integer(population["expected_removable_cartons"], "expected_removable_cartons", minimum=1)
     face_modes = tuple(population["face_modes"])
     if face_modes != ("front", "top", "side"):
         raise ValueError("layout v1 audit face_modes must be [front, top, side]")
@@ -394,8 +416,8 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
 
     receiver = _mapping(data["receiver"], "receiver")
     _keys(receiver, {"name", "fixed"}, "receiver")
-    if receiver != {"name": "conveyor_transverse", "fixed": True}:
-        raise ValueError("layout v1 receiver must be the fixed conveyor_transverse")
+    if not isinstance(receiver["name"], str) or receiver["fixed"] is not True:
+        raise ValueError("receiver must identify a fixed supported conveyor surface")
 
     fixed = _mapping(data["fixed_cell"], "fixed_cell")
     forbidden = {
@@ -407,6 +429,24 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
     _keys(fixed, forbidden, "fixed_cell")
     if any(fixed[name] is not False for name in forbidden):
         raise ValueError("layout v1 forbids lift, conveyor extension/Z optimization, and base scans")
+
+    strategy = _mapping(data["search_strategy"], "search_strategy")
+    directions = _mapping(
+        strategy.get("surface_directions_world"),
+        "search_strategy.surface_directions_world",
+    )
+    expected_directions = {
+        "conveyor_transverse": np.array([0.0, -1.0, 0.0]),
+        "conveyor_longitudinal": np.array([-1.0, 0.0, 0.0]),
+    }
+    if set(directions) != set(expected_directions):
+        raise ValueError("both physical conveyor surface directions must be explicit")
+    for name, expected in expected_directions.items():
+        direction = np.asarray(directions[name], dtype=float)
+        if direction.shape != (3,) or not np.allclose(
+            direction, expected, atol=1e-12, rtol=0.0
+        ):
+            raise ValueError(f"{name} transport direction disagrees with the dynamics contract")
 
     tool_frames = _load_tool_frame_contract(data["tool_frame_contract"])
 
@@ -572,8 +612,6 @@ def build_verified_motion_input(
     fixed = tuple(_obb_from_snapshot(item) for item in snapshot["assembly"]["fixed_components"])
     cartons = tuple(_obb_from_snapshot(item) for item in snapshot["cartons"])
     population = policy.data["task_population"]
-    if len(cartons) != int(population["expected_scene_cartons"]):
-        raise ValueError("frozen layout motion scene must retain exactly 40 cartons")
     receiver_name = str(policy.data["receiver"]["name"])
     receiver = next((box for box in fixed if box.name == receiver_name), None)
     if receiver is None:
@@ -585,10 +623,9 @@ def build_verified_motion_input(
         minimum_overlap_ratio=float(population["support_minimum_overlap_ratio"]),
     )
     removable = tuple(graph.removable_cartons(face_modes=tuple(population["face_modes"])))
-    if len(removable) != int(population["expected_removable_cartons"]):
-        raise ValueError(f"expected five removable cartons, got {list(removable)}")
-    if tuple(sorted(removable)) != EXPECTED_TOP_CARTONS:
-        raise ValueError(f"initial removable population is not the literal top layer: {list(removable)}")
+    row = RowUnloadingState(config=RowSequencePolicy(row_height_fraction=float(
+        policy.data.get("search_strategy", {}).get("row_height_fraction", 0.05)))).rank(cartons, support_graph=graph)
+    removable = tuple(candidate.name for candidate in row.candidates if candidate.name in removable)
     return FrozenLayoutMotionInput(
         policy,
         snapshot,
@@ -780,7 +817,7 @@ def _state_failure(
             if tool.intersects_obb(obstacle, margin=collision_margin):
                 return {"reason": "TOOL_COLLISION", "pair": [tool.name, obstacle.name]}
         for link in links:
-            if link.name != "J6_link" and tool.intersects_obb(link, margin=collision_margin):
+            if link.name not in scene.policy.layout_validation.data.get("collision_policy", {}).get("wrist_tool_exempt_links", []) and tool.intersects_obb(link, margin=collision_margin):
                 return {"reason": "TOOL_SELF_COLLISION", "pair": [tool.name, link.name]}
 
     right = float(scene.snapshot["trailer"]["right_wall_y_m"])
@@ -794,6 +831,53 @@ def _state_failure(
         if float(np.min(corners[:, 2])) < floor + collision_margin:
             return {"reason": "FLOOR_CLEARANCE", "body": body.name}
     return None
+
+
+def _scheduled_contact_poses(scene, target, faces):
+    robot = scene.policy.layout_validation.layout.robot()
+    shoulder = robot.named_link_frames(np.zeros(robot.dof))["J2_link"][2, 3]
+    strategy = scene.policy.data.get("search_strategy", {})
+    scores = height_face_prior(target, faces, shoulder_height_m=float(shoulder),
+        transition_halfwidth_m=float(strategy.get("face_height_transition_m", 0.35)))
+    by_face = {}
+    reference_q = np.zeros(robot.dof)
+    reference_virtual = robot.fk(reference_q)
+    rigid_vertices_virtual = np.concatenate([
+        (box.corners() - reference_virtual[:3, 3]) @ reference_virtual[:3, :3]
+        for box in robot.tool_collision_obbs(reference_q)])
+    physical_from_virtual = (np.linalg.inv(scene.policy.tool_frames.flange_from_physical_contact)
+                             @ scene.policy.tool_frames.flange_from_virtual_task_tcp)
+    target_bottom = float(np.min(target.corners()[:, 2]))
+    required_margin = 2.0 * float(scene.policy.data["state_validity"]["collision_margin_m"])
+    for face in faces:
+        rolls = []
+        for roll in scene.policy.data["ik"]["roll_candidates_deg"]:
+            nominal, _ = target_pose(-float(target.half_extents[0]), 0.0, 0.0,
+                                    2.0 * target.half_extents, face, int(roll))
+            variants = grasp_task_set(nominal, scene.policy.data["ik"]["grasp_face_offset_candidates_m"],
+                                     scene.policy.data["ik"]["grasp_tilt_candidates_rad"])
+            rolls.append([(int(roll), target.world_from_local @ pose,
+                           {**dict(info), "height_face_prior": scores.get(face, 0.0)}) for pose, info in variants])
+        interleaved = [items[i] for i in range(max(map(len, rolls), default=0))
+                       for items in rolls if i < len(items)]
+        ranked = []
+        for original_index, (roll, physical_pose, info) in enumerate(interleaved):
+            virtual_pose = physical_pose @ physical_from_virtual
+            vertices = rigid_vertices_virtual @ virtual_pose[:3, :3].T + virtual_pose[:3, 3]
+            clearance = float(np.min(vertices[:, 2]) - target_bottom)
+            # A whole-action soft prior: tools protruding below a box's base
+            # tend to hit receiving structures. Do not discard them globally
+            # (overhang may be legal); prefer existing offsets/rolls that keep
+            # every rigid part above a horizontal receiving plane's margin.
+            info = {**info, "rigid_tool_bottom_above_box_bottom_m": clearance,
+                    "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"}
+            roll_preference = list(scene.policy.data["ik"]["roll_candidates_deg"]).index(roll)
+            offset_radius = float(np.linalg.norm(info["face_offset_local_xy_m"]))
+            tilt_radius = float(np.linalg.norm(info["orientation_offset_local_xy_rad"]))
+            ranked.append(((clearance < required_margin, tilt_radius, offset_radius,
+                            roll_preference, original_index), (roll, physical_pose, info)))
+        by_face[face] = [candidate for _, candidate in sorted(ranked, key=lambda item: item[0])]
+    return fair_face_candidates(by_face, scores, int(strategy.get("grasp_poses_per_task", 48)))
 
 
 def _independent_cup_selection_at_pose(
@@ -1083,6 +1167,10 @@ def _build_automatic_trajectory_connector(
         left_wall_y_m=float(layout.data["trailer"]["left_wall_y_m"]),
         official_radial_reach_m=float(validity["official_radial_reach_m"]),
         radial_guard_tolerance_m=float(validity["radial_guard_tolerance_m"]),
+        collision_policy=policy.layout_validation.data.get("collision_policy"),
+        surface_directions_world=policy.data.get("search_strategy", {}).get(
+            "surface_directions_world", {}
+        ),
     )
 
 
@@ -1170,7 +1258,7 @@ def _blocked_initial_state_result(
         "task_population": {
             "selector": "SupportRelationGraph.removable_cartons",
             "carton_ids": list(removable),
-            "literal_expected_top_layer": list(EXPECTED_TOP_CARTONS),
+            "population_source": "actual_highest_remaining_row_and_support_graph",
             "legacy_104_and_129_denominators_used": False,
             "support_graph": graph.audit(),
         },
@@ -1202,6 +1290,9 @@ def run_layout_single_carton_audit(
     *,
     project_root: str | Path | None = None,
     trajectory_connector: LayoutTrajectoryConnector | None = None,
+    progress_callback: Callable[[Mapping[str, Any]], None] | None = None,
+    motion_input: FrozenLayoutMotionInput | None = None,
+    row_state: RowUnloadingState | None = None,
 ) -> dict[str, Any]:
     """Search the initial top layer and expose one replay-ready full segment.
 
@@ -1215,11 +1306,34 @@ def run_layout_single_carton_audit(
         if isinstance(config_path, LayoutMotionPolicy)
         else load_layout_motion_policy(config_path)
     )
+    if motion_input is not None:
+        if motion_input.policy.policy_fingerprint != policy.policy_fingerprint:
+            raise ValueError("actual motion input belongs to a different search policy")
+        policy = motion_input.policy
     root = policy.project_root if project_root is None else Path(project_root).resolve()
-    initial = audit_initial_state(policy.layout_validation)
-    if initial["status"] != "PASS":
+    initial = (audit_initial_state(policy.layout_validation) if motion_input is None
+               else dict(motion_input.snapshot["initial_state_audit"]))
+    if motion_input is None and initial["status"] != "PASS":
         return _blocked_initial_state_result(policy, root, initial)
-    scene = build_verified_motion_input(policy, root)
+    scene = motion_input or build_verified_motion_input(policy, root)
+    strategy = policy.data.get("search_strategy", {})
+    sequence = row_state or RowUnloadingState(config=RowSequencePolicy(
+        row_height_fraction=float(strategy.get("row_height_fraction", 0.05)),
+        actual_cost_weight=float(strategy.get("actual_cost_weight", 0.15))))
+    remaining = scene.cartons if scene.remaining_stack_names is None else tuple(
+        box for box in scene.cartons if box.name in scene.remaining_stack_names)
+    approach_budget = getattr(trajectory_connector, "budget", None) or LayoutTrajectoryBudget()
+    approach_cost_evidence = actual_tcp_approach_costs(
+        remaining, np.asarray(scene.snapshot["robot"]["tcp_pose_world"]),
+        {box.name: _exposed_faces(scene, box.name) for box in remaining},
+        pregrasp_standoff_m=approach_budget.pregrasp_standoff_m,
+        virtual_contact_offset_m=policy.tool_frames.virtual_to_physical_contact_offset_m)
+    row_selection = sequence.rank(remaining, support_graph=scene.support_graph,
+        candidate_costs={name: item["normalized_cost"]
+                         for name, item in approach_cost_evidence["candidates"].items()},
+        scene_context={"q_rad": policy.layout_validation.initial_q.tolist(),
+                       "receiver_occupancy": [box.name for box in scene.occupied]})
+    scene = replace(scene, removable_cartons=tuple(item.name for item in row_selection.candidates))
     execution = audit_execution_collision_geometry(scene, root)
     lightweight_robot = policy.layout_validation.layout.robot()
     if trajectory_connector is None and execution["qualified"]:
@@ -1250,6 +1364,25 @@ def run_layout_single_carton_audit(
         if trajectory_connector is not None
         else lightweight_robot
     )
+    if trajectory_connector is not None:
+        trajectory_connector.progress_callback = progress_callback
+        strategy = policy.data.get("search_strategy", {})
+        trajectory_connector.placement_policy = PlacementPolicy(
+            maximum_candidates=int(strategy.get("placement_candidates", 12)),
+            coarse_samples_per_axis=int(strategy.get("coarse_place_samples_per_axis", 3)),
+            fine_samples_per_axis=int(strategy.get("fine_place_samples_per_axis", 7)),
+            contact_tolerance_m=float(policy.data["state_validity"]["contact_tolerance_m"]),
+            occupancy_clearance_m=2.0 * float(policy.data["state_validity"]["collision_margin_m"]))
+    if motion_input is not None:
+        if trajectory_connector is None:
+            raise ValueError("actual-state continuation requires the exact state validator")
+        initial_failure = trajectory_connector.validate_unloaded_state(
+            policy.layout_validation.initial_q, scene.all_obstacles, stage="actual_task_start")
+        if initial_failure is not None:
+            raise ValueError(f"ACTUAL_TASK_START_INVALID: {initial_failure}")
+        initial = {"status": "PASS", "source": "ACTUAL_RIGID_BODY_STATE",
+                   "validator_identity": trajectory_connector.validator_identity,
+                   "q_rad": policy.layout_validation.initial_q.tolist()}
     shapes = (
         []
         if trajectory_connector is not None
@@ -1265,8 +1398,6 @@ def run_layout_single_carton_audit(
     pose_index = 0
     for task_index, target_name in enumerate(scene.removable_cartons):
         target = cartons_by_name[target_name]
-        if not np.allclose(target.rotation, np.eye(3), atol=1e-12, rtol=0.0):
-            raise ValueError("layout v1 target_pose adapter requires the frozen axis-aligned cartons")
         attempts: list[dict[str, Any]] = []
         trajectory_pose_attempts = 0
         task_search_budget_exhausted = False
@@ -1286,140 +1417,131 @@ def run_layout_single_carton_audit(
                 }
             )
             continue
-        for face in faces:
-            for roll in policy.data["ik"]["roll_candidates_deg"]:
-                nominal_physical_contact, _ = target_pose(
-                    float(target.center[0] - target.half_extents[0]),
-                    float(target.center[1]),
-                    float(target.center[2]),
-                    2.0 * target.half_extents,
+        for face, (roll, requested_physical_contact, task_set) in _scheduled_contact_poses(scene, target, faces):
+            requested_virtual_task_tcp = virtual_tcp_from_physical_contact(
+                requested_physical_contact,
+                policy.tool_frames.flange_from_virtual_task_tcp,
+                policy.tool_frames.flange_from_physical_contact,
+            )
+            rng_seed = base_seed + task_index * 10000 + pose_index * 101
+            attempt = _audit_pose(
+                    scene,
+                    target,
                     face,
                     int(roll),
-                )
-                variants = grasp_task_set(
-                    nominal_physical_contact,
-                    policy.data["ik"]["grasp_face_offset_candidates_m"],
-                    policy.data["ik"]["grasp_tilt_candidates_rad"],
-                )
-                for requested_physical_contact, task_set in variants:
-                    requested_virtual_task_tcp = virtual_tcp_from_physical_contact(
-                        requested_physical_contact,
-                        policy.tool_frames.flange_from_virtual_task_tcp,
-                        policy.tool_frames.flange_from_physical_contact,
-                    )
-                    rng_seed = base_seed + task_index * 10000 + pose_index * 101
-                    attempt = _audit_pose(
-                            scene,
-                            target,
-                            face,
-                            int(roll),
-                            requested_physical_contact,
-                            requested_virtual_task_tcp,
-                            task_set,
-                            rng_seed,
-                            bool(execution["qualified"]),
-                            robot,
-                            shapes,
-                            (
-                                lambda q, current_target=target: (
-                                    trajectory_connector.validate_unloaded_state(
-                                        q,
-                                        scene.all_obstacles,
-                                        target_contact=current_target,
-                                        stage="grasp_contact_endpoint",
-                                    )
-                                )
-                                if trajectory_connector is not None
-                                else None
-                            ),
+                    requested_physical_contact,
+                    requested_virtual_task_tcp,
+                    task_set,
+                    rng_seed,
+                    bool(execution["qualified"]),
+                    robot,
+                    shapes,
+                    (
+                        lambda q, current_target=target: (
+                            trajectory_connector.validate_unloaded_state(
+                                q,
+                                scene.all_obstacles,
+                                target_contact=current_target,
+                                stage="grasp_contact_endpoint",
+                            )
                         )
-                    attempts.append(attempt)
-                    if attempt["strict_grasp_candidates"] and execution["qualified"]:
-                        if trajectory_connector is None:
-                            attempt.update(
-                                complete_trajectory=False,
-                                failure_stage="trajectory_backend",
-                                failure_reason=trajectory_backend_failure,
-                                search_status="STRICT_GRASP_FOUND_PATH_BACKEND_UNAVAILABLE",
-                                path_search="NOT_RUN_NO_EXECUTION_QUALIFIED_CONNECTOR",
-                            )
-                        else:
-                            if trajectory_pose_attempts >= (
-                                trajectory_connector.budget.task_pose_connection_attempts
-                            ):
-                                task_search_budget_exhausted = True
-                                attempt.update(
-                                    complete_trajectory=False,
-                                    failure_stage="task_search_budget",
-                                    failure_reason="TASK_POSE_CONNECTION_BUDGET_EXHAUSTED",
-                                    search_status="TASK_POSE_CONNECTION_BUDGET_EXHAUSTED",
-                                    path_search="NOT_RUN_SHARED_TASK_BUDGET_EXHAUSTED",
-                                )
-                                pose_index += 1
-                                break
-                            trajectory_pose_attempts += 1
-                            support_names = sorted(
-                                scene.support_graph.supported_by[target.name]
-                            )
-                            outcome = trajectory_connector.plan(
-                                target=target,
-                                face=face,
-                                requested_virtual_contact=requested_virtual_task_tcp,
-                                grasp_candidates=attempt["strict_grasp_candidates"],
-                                home_q=policy.layout_validation.initial_q,
-                                all_obstacles=scene.all_obstacles,
-                                receiver=scene.receiver,
-                                support_names=support_names,
-                                suction=policy.data["suction"],
-                                seed=rng_seed + 50000,
-                            )
-                            attempt["trajectory_search"] = {
-                                "attempts": list(outcome.attempts),
-                                "statistics": dict(outcome.statistics),
-                                "failure": outcome.failure,
-                            }
-                            attempt["path_connection_attempts"] = int(
-                                outcome.statistics.get("connection_attempts", 0)
-                            )
-                            if outcome.success:
-                                if outcome.segment is None:
-                                    raise RuntimeError(
-                                        "successful trajectory search did not return a segment"
-                                    )
-                                selected_trajectory_segment = copy.deepcopy(
-                                    dict(outcome.segment)
-                                )
-                                attempt.update(
-                                    complete_trajectory=True,
-                                    failure_stage="complete",
-                                    failure_reason=None,
-                                    search_status="COMPLETE_TRAJECTORY_FOUND",
-                                    path_search="PASS",
-                                )
-                            else:
-                                failure = dict(outcome.failure or {})
-                                attempt.update(
-                                    complete_trajectory=False,
-                                    failure_stage=str(
-                                        failure.get("stage", "trajectory_search")
-                                    ),
-                                    failure_reason=str(
-                                        failure.get(
-                                            "reason", "NO_COMPLETE_LAYOUT_BOUND_PATH"
-                                        )
-                                    ),
-                                    search_status=str(
-                                        outcome.statistics.get(
-                                            "termination", "TRAJECTORY_SEARCH_EXHAUSTED"
-                                        )
-                                    ),
-                                    path_search="FAIL",
-                                )
-                    pose_index += 1
-                    if selected_trajectory_segment is not None:
+                        if trajectory_connector is not None
+                        else None
+                    ),
+                )
+            attempts.append(attempt)
+            if progress_callback is not None:
+                progress_callback({"target": target_name, "face": face, "roll": roll,
+                    "pose": pose_index, "valid_grasps": len(attempt["strict_grasp_candidates"]),
+                    "failure": attempt.get("failure_reason"), "ik": attempt.get("ik_stream")})
+            if attempt["strict_grasp_candidates"] and execution["qualified"]:
+                if trajectory_connector is None:
+                    attempt.update(
+                        complete_trajectory=False,
+                        failure_stage="trajectory_backend",
+                        failure_reason=trajectory_backend_failure,
+                        search_status="STRICT_GRASP_FOUND_PATH_BACKEND_UNAVAILABLE",
+                        path_search="NOT_RUN_NO_EXECUTION_QUALIFIED_CONNECTOR",
+                    )
+                else:
+                    if trajectory_pose_attempts >= (
+                        trajectory_connector.budget.task_pose_connection_attempts
+                    ):
+                        task_search_budget_exhausted = True
+                        attempt.update(
+                            complete_trajectory=False,
+                            failure_stage="task_search_budget",
+                            failure_reason="TASK_POSE_CONNECTION_BUDGET_EXHAUSTED",
+                            search_status="TASK_POSE_CONNECTION_BUDGET_EXHAUSTED",
+                            path_search="NOT_RUN_SHARED_TASK_BUDGET_EXHAUSTED",
+                        )
+                        pose_index += 1
                         break
-                if selected_trajectory_segment is not None or task_search_budget_exhausted:
-                    break
+                    trajectory_pose_attempts += 1
+                    support_names = sorted(
+                        scene.support_graph.supported_by[target.name]
+                    )
+                    outcome = trajectory_connector.plan(
+                        target=target,
+                        face=face,
+                        requested_virtual_contact=requested_virtual_task_tcp,
+                        grasp_candidates=attempt["strict_grasp_candidates"],
+                        home_q=policy.layout_validation.initial_q,
+                        all_obstacles=scene.all_obstacles,
+                        receiver=scene.receiver,
+                        support_names=support_names,
+                        suction=policy.data["suction"],
+                        seed=rng_seed + 50000,
+                    )
+                    attempt["trajectory_search"] = {
+                        "attempts": list(outcome.attempts),
+                        "statistics": dict(outcome.statistics),
+                        "failure": outcome.failure,
+                    }
+                    if progress_callback is not None:
+                        progress_callback({"target": target_name, "face": face, "roll": roll,
+                            "trajectory_success": outcome.success, "failure": outcome.failure,
+                            "statistics": outcome.statistics})
+                    attempt["path_connection_attempts"] = int(
+                        outcome.statistics.get("connection_attempts", 0)
+                    )
+                    if outcome.success:
+                        if outcome.segment is None:
+                            raise RuntimeError(
+                                "successful trajectory search did not return a segment"
+                            )
+                        selected_trajectory_segment = copy.deepcopy(
+                            dict(outcome.segment)
+                        )
+                        attempt.update(
+                            complete_trajectory=True,
+                            failure_stage="complete",
+                            failure_reason=None,
+                            search_status="COMPLETE_TRAJECTORY_FOUND",
+                            path_search="PASS",
+                        )
+                    else:
+                        failure = dict(outcome.failure or {})
+                        attempt.update(
+                            complete_trajectory=False,
+                            failure_stage=str(
+                                failure.get("stage", "trajectory_search")
+                            ),
+                            failure_reason=str(
+                                failure.get(
+                                    "reason", "NO_COMPLETE_LAYOUT_BOUND_PATH"
+                                )
+                            ),
+                            search_status=str(
+                                outcome.statistics.get(
+                                    "termination", "TRAJECTORY_SEARCH_EXHAUSTED"
+                                )
+                            ),
+                            path_search="FAIL",
+                        )
+            pose_index += 1
+            if selected_trajectory_segment is not None:
+                break
             if selected_trajectory_segment is not None or task_search_budget_exhausted:
                 break
         strict_candidates = sum(len(item["strict_grasp_candidates"]) for item in attempts)
@@ -1473,6 +1595,8 @@ def run_layout_single_carton_audit(
                 "failure_reason": task_reason,
             }
         )
+        if not task_complete:
+            sequence.record_failure(target_name, row_selection.scene_fingerprint, task_reason)
 
     attempts = [attempt for task in tasks for attempt in task["attempts"]]
     streams = [attempt["ik_stream"] for attempt in attempts if attempt["ik_stream"] is not None]
@@ -1555,6 +1679,7 @@ def run_layout_single_carton_audit(
         "implementation_identity": motion_implementation_identity(root),
         "snapshot_verification": scene.snapshot_verification,
         "snapshot_consistency_status": scene.snapshot_consistency["status"],
+        "initial_state_audit": initial,
         "scene": {
             "source": "build_then_verify_content_addressed_snapshot",
             "carton_count": len(scene.cartons),
@@ -1565,9 +1690,11 @@ def run_layout_single_carton_audit(
         "task_population": {
             "selector": "SupportRelationGraph.removable_cartons",
             "carton_ids": list(scene.removable_cartons),
-            "literal_expected_top_layer": list(EXPECTED_TOP_CARTONS),
+            "population_source": "actual_highest_remaining_row_and_support_graph",
             "legacy_104_and_129_denominators_used": False,
             "support_graph": scene.support_graph.audit(),
+            "row_selection": {**row_selection.as_dict(), "actual_cost_evidence": approach_cost_evidence,
+                              "actual_cost_weight": sequence.config.actual_cost_weight},
         },
         "fixed_cell_contract": {
             "receiver": scene.receiver.name,

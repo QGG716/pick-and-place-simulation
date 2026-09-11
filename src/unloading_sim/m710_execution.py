@@ -27,7 +27,6 @@ from .independent_cups import (
     M710_CUP_ZONE_COUNT,
 )
 from .layout_single_carton import (
-    EXPECTED_TOP_CARTONS,
     RESULT_SCHEMA as MOTION_RESULT_SCHEMA,
     FrozenLayoutMotionInput,
     build_verified_motion_input,
@@ -48,6 +47,7 @@ from .m710_replay_contract import (
     verify_m710_preflight_contract,
 )
 from .workcell_layout import audit_initial_state, canonical_digest, sha256_file
+from .collision_policy import SimulationCollisionPolicy
 
 
 EXECUTION_CONFIG_SCHEMA = "m710id70_dynamic_execution_v1"
@@ -56,11 +56,6 @@ INITIALIZATION_DIAGNOSTIC_SCHEMA = "m710id70_initialization_diagnostic_preflight
 TOOL_RIGID_COLLISION_COVERAGE_REASON = "TOOL_RIGID_COLLISION_COVERAGE_NOT_PROVEN"
 ROBOT_TOOL_MOUNT_CONTACT_SCOPE_REASON = "ROBOT_TOOL_MOUNT_CONTACT_SCOPE_NOT_QUALIFIED"
 TOOL_RIGID_COLLISION_COVERAGE_PROVEN_STATUS = "CONSERVATIVE_RIGID_SOLID_COVERAGE_PROVEN"
-# The current exact validator ignores J6_link against all 58 tool boxes.  This
-# stays false until that rule is replaced by a dimensioned mounting-interface
-# contact check; initialization preflight must expose the blocker even though
-# it cannot create a valid scene snapshot.
-ROBOT_TOOL_MOUNT_CONTACT_SCOPE_QUALIFIED = False
 DEFAULT_CONFIG_PATH = (
     Path(__file__).resolve().parents[2]
     / "configs"
@@ -68,6 +63,11 @@ DEFAULT_CONFIG_PATH = (
     / "m710id70_dynamic_execution_v1.yaml"
 )
 EXECUTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/collision_policy.py",
+    "src/unloading_sim/conveyor_placement.py",
+    "src/unloading_sim/tool_geometry.py",
+    "src/unloading_sim/isaac_collision_policy.py",
+    "src/unloading_sim/isaac_usd_cache.py",
     "src/unloading_sim/asset_audit.py",
     "src/unloading_sim/independent_cups.py",
     "src/unloading_sim/isaac_bridge.py",
@@ -219,6 +219,7 @@ def load_m710_execution_config(path: str | Path | None = None) -> M710ExecutionC
             "pre_grasp_controller_settle_s",
             "vacuum_establish_s",
             "release_hold_s",
+            "release_clearance_wait_s",
             "post_release_settle_s",
             "normal_time_scale",
             "output_width_px",
@@ -226,6 +227,7 @@ def load_m710_execution_config(path: str | Path | None = None) -> M710ExecutionC
             "output_fps",
             "camera_mode",
             "command_mode",
+            "camera",
         },
         "replay",
     )
@@ -233,6 +235,7 @@ def load_m710_execution_config(path: str | Path | None = None) -> M710ExecutionC
         "controller_period_s",
         "motion_limit_scale",
         "vacuum_establish_s",
+        "release_clearance_wait_s",
         "normal_time_scale",
     ):
         _positive(replay[name], f"replay.{name}")
@@ -246,6 +249,24 @@ def load_m710_execution_config(path: str | Path | None = None) -> M710ExecutionC
         raise ValueError("replay command mode may not reset positions during motion")
     if replay["camera_mode"] != "fixed_overview_with_contact_and_place_keyframes":
         raise ValueError("replay camera mode must preserve the required overview and keyframes")
+    camera = _mapping(replay["camera"], "replay.camera")
+    _keys(
+        camera,
+        {"eye_m", "target_m", "horizontal_fov_rad", "horizontal_aperture_mm", "near_m", "far_m"},
+        "replay.camera",
+    )
+    for name in ("eye_m", "target_m"):
+        vector = np.asarray(camera[name], dtype=float)
+        if vector.shape != (3,) or not np.all(np.isfinite(vector)):
+            raise ValueError(f"replay.camera.{name} must be a finite xyz vector")
+    fov = _positive(camera["horizontal_fov_rad"], "replay.camera.horizontal_fov_rad")
+    if fov >= np.pi:
+        raise ValueError("replay camera horizontal FOV must be less than pi")
+    _positive(camera["horizontal_aperture_mm"], "replay.camera.horizontal_aperture_mm")
+    near = _positive(camera["near_m"], "replay.camera.near_m")
+    far = _positive(camera["far_m"], "replay.camera.far_m")
+    if far <= near:
+        raise ValueError("replay camera far plane must exceed its near plane")
 
     qualification = _mapping(data["qualification"], "qualification")
     required_true = {
@@ -397,8 +418,8 @@ def _scene_primitives(
     ]
     primitives = [*fixed, *cartons, *_boundary_primitives(scene, dynamics, execution)]
     names = [item["name"] for item in primitives]
-    if len(names) != len(set(names)) or len(cartons) != 40:
-        raise ValueError("dynamic scene must contain unique primitives and exactly 40 cartons")
+    if len(names) != len(set(names)) or not cartons:
+        raise ValueError("dynamic scene must contain unique primitives and remaining cartons")
     return primitives
 
 
@@ -494,8 +515,21 @@ def _bridge_configuration(
         rtol=0.0,
     ):
         raise ValueError("planner frame contract and dynamics cup compression disagree")
+    flange_from_world = np.linalg.inv(np.asarray(scene.snapshot["robot"]["flange_pose_world"]))
+    qualified_boxes = []
+    for item in scene.snapshot["tool"]["rigid_collision_obbs"]:
+        pose = flange_from_world @ np.asarray(item["pose_world"], dtype=float)
+        qualified_boxes.append({"name": item["name"], "frame": "flange",
+            "center_m": pose[:3, 3].tolist(), "size_m": (2 * np.asarray(item["half_extents_m"])).tolist(),
+            "rotation_matrix": pose[:3, :3].tolist()})
     return {
         "execution": {
+            "joint_gravity_feedforward_enabled": True,
+            # Both terms stay inside the existing finite PhysX drives.  The
+            # velocity term removes Kd*qdot/Kp tracking lag; the attached-load
+            # term accounts for the live 42.5 kg carton after real attachment.
+            "joint_velocity_feedforward_enabled": True,
+            "attached_payload_gravity_feedforward_enabled": True,
             "limits_source": model_source.relative_to(execution.project_root).as_posix(),
             "joint_velocity_limits_rad_s": [item.velocity_limit_rad_s for item in ordered_drives],
             "joint_acceleration_limits_rad_s2": list(acceleration),
@@ -513,6 +547,7 @@ def _bridge_configuration(
         },
         "planning": {"trajectory_waypoint_period_seconds": float(replay["controller_period_s"])},
         "tool": {
+            "qualified_rigid_collision_boxes_tool_frame": qualified_boxes,
             "mass_kg": dynamics.tool.mass_kg,
             "com_xyz_m": list(dynamics.tool.com_xyz_m),
             "inertia_tensor_com_kg_m2": [list(row) for row in dynamics.tool.inertia_tensor_com_kg_m2],
@@ -530,6 +565,18 @@ def _bridge_configuration(
             "geometry": tool_geometry,
         },
         "simulation_validation": {
+            "actual_state_gates": {
+                # Pause the trajectory clock at the extraction/free-transit
+                # boundary.  The original 20.2 mm clearance still has to be
+                # observed; this only gives the finite drive time to converge.
+                "maximum_free_transit_wait_s": 1.0,
+                # Independent of support acquisition: continue the already
+                # verified withdrawal until every exact target/cup proximity
+                # header reports LOST at the unchanged engineering margin.
+                "maximum_release_clearance_wait_s": float(
+                    replay["release_clearance_wait_s"]
+                ),
+            },
             "vacuum_product_model": vacuum_product_model,
             "vacuum_cup_model": vacuum_cup_model,
             "vacuum_suction_mode": suction_mode,
@@ -600,6 +647,16 @@ def _bridge_configuration(
                 "parameter_status": dynamics.qualification_status,
                 "gravity_world_m_s2": list(dynamics.simulation.gravity_world_m_s2),
                 "physics_time_step_s": dynamics.simulation.physics_time_step_s,
+                "execution_backend": {
+                    "mode": dynamics.simulation.execution_backend,
+                    "device": dynamics.simulation.device,
+                    "broadphase_type": dynamics.simulation.broadphase_type,
+                    "gpu_dynamics_enabled": dynamics.simulation.gpu_dynamics_enabled,
+                    "fabric_enabled": dynamics.simulation.fabric_enabled,
+                    "ccd_enabled": dynamics.simulation.ccd_enabled,
+                },
+                "contact_offset_m": dynamics.simulation.contact_offset_m,
+                "rest_offset_m": dynamics.simulation.rest_offset_m,
                 "materials": materials,
                 "material_by_category": {
                     "carton": "carton",
@@ -624,8 +681,19 @@ def _bridge_configuration(
                     "height_px": int(replay["output_height_px"]),
                     "fps": int(replay["output_fps"]),
                     "camera_mode": str(replay["camera_mode"]),
-                }
+                },
+                "material_palette": {
+                    "chassis_rgb": [0.10, 0.12, 0.16],
+                    "conveyor_rgb": [0.035, 0.22, 0.62],
+                    "conveyor_motion_marker_rgb": [1.0, 0.58, 0.03],
+                },
+                "conveyor_visual_motion": {
+                    "model": "collision_free_wrapped_surface_markers_v1",
+                    "markers_have_collision": False,
+                    "markers_follow_active_physx_surface_velocity": True,
+                },
             },
+            "camera": copy.deepcopy(dict(replay["camera"])),
             "conveyor": {
                 "enabled": True,
                 "speed_m_s": next(iter(speeds)),
@@ -642,6 +710,52 @@ def _audited_execution_assets(
     scene: FrozenLayoutMotionInput,
     dynamics: M710EngineeringDynamicsConfig,
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    vacuum = dynamics.vacuum_attachment
+    return audit_m710_execution_asset_inputs(
+        project_root=execution.project_root,
+        robot_manifest_path=execution.robot_manifest_path,
+        tool_manifest_path=execution.tool_manifest_path,
+        frame_contract=scene.policy.tool_frames.evidence(),
+        rigid_collision_obb_count=len(scene.snapshot["tool"]["rigid_collision_obbs"]),
+        collision_representation=scene.snapshot["tool"]["execution_collision_representation"],
+        vacuum={"suction_mode": str(vacuum.suction_mode), "physical_cup_count": int(vacuum.physical_cup_count),
+                "cup_rows": int(vacuum.cup_rows), "cup_columns": int(vacuum.cup_columns)},
+        collision_policy=scene.policy.layout_validation.data.get("collision_policy"),
+    )
+
+
+def audit_m710_replay_assets(project_root: str | Path, metadata: Mapping[str, Any]) -> dict[str, Any]:
+    """Re-audit the official/CAD inputs used by the CPU preflight, without IK.
+
+    Metadata supplies bound physical inputs, never an audit PASS boolean.
+    Source manifests, official mesh/URDF bytes and CAD coverage are reread by
+    the same implementation that the CPU preflight uses.
+    """
+    root = Path(project_root).resolve()
+    assets = metadata["m710_execution_preflight"]["asset_audit"]
+    paths = [(root / assets[name]["manifest_path"]).resolve() for name in ("robot", "tool")]
+    if any(not path.is_relative_to(root) for path in paths):
+        raise ValueError("replay asset manifest escapes project root")
+    gripper = _mapping(metadata["gripper"], "replay gripper")
+    boxes = gripper["qualified_rigid_collision_boxes_tool_frame"]
+    if not isinstance(boxes, list) or any(item.get("frame") != "flange" for item in boxes):
+        raise ValueError("replay rigid tool boxes must use the audited flange frame")
+    result, _, _ = audit_m710_execution_asset_inputs(
+        project_root=root, robot_manifest_path=paths[0], tool_manifest_path=paths[1],
+        frame_contract=_mapping(gripper["frame_contract"], "replay tool frame contract"),
+        rigid_collision_obb_count=len(boxes),
+        collision_representation="CAD_RIGID_STRUCTURES_AND_INSERTS_WITH_SEPARATE_FLEXIBLE_BELLOWS",
+        vacuum={key: gripper[key] for key in ("suction_mode", "physical_cup_count", "cup_rows", "cup_columns")},
+        collision_policy=metadata["collision_policy"],
+    )
+    return result
+
+
+def audit_m710_execution_asset_inputs(
+    *, project_root: str | Path, robot_manifest_path: Path, tool_manifest_path: Path,
+    frame_contract: Mapping[str, Any], rigid_collision_obb_count: int,
+    collision_representation: str, vacuum: Mapping[str, Any], collision_policy: Mapping[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     """Audit and inline the exact official robot and supplied tool inputs.
 
     The official robot report deliberately has a narrower schema than the
@@ -651,20 +765,21 @@ def _audited_execution_assets(
     absent from this asset-scoped qualification.
     """
 
+    project_root = Path(project_root).resolve()
     official_document = _mapping(
-        yaml.safe_load(execution.robot_manifest_path.read_text(encoding="utf-8")),
+        yaml.safe_load(robot_manifest_path.read_text(encoding="utf-8")),
         "official robot provenance manifest",
     )
     official_report = audit_m710id70_official_model(
-        execution.project_root,
-        execution.robot_manifest_path,
+        project_root,
+        robot_manifest_path,
     )
     tool_report = load_and_audit_asset_manifest(
-        execution.tool_manifest_path,
-        repository_root=execution.project_root,
+        tool_manifest_path,
+        repository_root=project_root,
     )
     tool_document = _mapping(
-        yaml.safe_load(execution.tool_manifest_path.read_text(encoding="utf-8")),
+        yaml.safe_load(tool_manifest_path.read_text(encoding="utf-8")),
         "tool asset manifest",
     )
     source_records = tool_document.get("source_files")
@@ -680,7 +795,7 @@ def _audited_execution_assets(
         raise ValueError("tool asset manifest must bind one mass/contact analysis")
     analysis_record = analysis_records[0]
     analysis_path = (
-        execution.project_root / str(analysis_record["path"])
+        project_root / str(analysis_record["path"])
     ).resolve()
     analysis = _mapping(
         json.loads(analysis_path.read_text(encoding="utf-8")),
@@ -690,8 +805,6 @@ def _audited_execution_assets(
         analysis.get("rigid_collision_bounding_boxes_step_mm"), dtype=float
     )
     tool_frames = _mapping(tool_document.get("frames"), "tool asset frames")
-    frame_contract = scene.policy.tool_frames.evidence()
-    vacuum_model = dynamics.vacuum_attachment
     geometry_qualification = {
         "schema": "m710id70_tool_execution_geometry_qualification_v1",
         "source_manifest_sha256": tool_report.manifest_sha256,
@@ -701,12 +814,8 @@ def _audited_execution_assets(
             sha256_file(analysis_path) == analysis_record.get("sha256")
         ),
         "rigid_solid_compound_count": int(rigid_bounds.shape[0]) if rigid_bounds.ndim == 2 else 0,
-        "snapshot_rigid_collision_obb_count": len(
-            scene.snapshot["tool"]["rigid_collision_obbs"]
-        ),
-        "snapshot_collision_representation": scene.snapshot["tool"][
-            "execution_collision_representation"
-        ],
+        "snapshot_rigid_collision_obb_count": rigid_collision_obb_count,
+        "snapshot_collision_representation": collision_representation,
         "step_frame_matches_analysis": (
             tool_frames.get("flange_origin_step_mm")
             == analysis.get("flange_origin_step_mm")
@@ -714,49 +823,38 @@ def _audited_execution_assets(
             == analysis.get("rotation_step_from_tool")
         ),
         "tool_frame_contract": copy.deepcopy(frame_contract),
-        "suction_mode": str(getattr(vacuum_model, "suction_mode", "")),
-        "physical_cup_count": int(vacuum_model.physical_cup_count),
-        "cup_rows": int(getattr(vacuum_model, "cup_rows", 0)),
-        "cup_columns": int(getattr(vacuum_model, "cup_columns", 0)),
+        "suction_mode": str(vacuum["suction_mode"]),
+        "physical_cup_count": int(vacuum["physical_cup_count"]),
+        "cup_rows": int(vacuum["cup_rows"]),
+        "cup_columns": int(vacuum["cup_columns"]),
     }
+    from .tool_geometry import audit_tool_geometry
+    coverage = audit_tool_geometry(project_root)
+    effective_policy = SimulationCollisionPolicy.from_mapping(collision_policy)
     structural_integration_checks_passed = bool(
         tool_report.source_integrity
         and geometry_qualification["mass_contact_analysis_hash_matches_manifest"]
-        and rigid_bounds.shape == (58, 6)
-        and np.all(np.isfinite(rigid_bounds))
-        and int(analysis.get("solid_occurrence_count", -1)) == 202
-        and len(analysis.get("deformable_cup_solid_indices", [])) == 144
-        and geometry_qualification["snapshot_rigid_collision_obb_count"] == 58
-        and geometry_qualification["snapshot_collision_representation"]
-        == "58_CAD_DERIVED_RIGID_SOLID_COMPOUND_OBBS_PLUS_SEPARATE_FLEXIBLE_CUP_CONTACTS"
         and geometry_qualification["step_frame_matches_analysis"]
         and frame_contract.get("execution_qualified") is True
-        and frame_contract.get("tool0_clocking_status")
-        == "OFFICIAL_FLANGE_TO_PROJECT_TOOL0_ADAPTER_RESOLVED"
+        and rigid_collision_obb_count == coverage["rigid_solid_count"]
         and geometry_qualification["suction_mode"] == IDEAL_INDEPENDENT_CUPS_MODE
-        and geometry_qualification["physical_cup_count"] == 72
-        and geometry_qualification["cup_rows"] == 6
-        and geometry_qualification["cup_columns"] == 12
-    )
-    # These checks bind the representation to the supplied source and selected
-    # frame, but they do not prove that the heuristic 58/144 solid
-    # classification is physically correct or that every serialized box is an
-    # outward enclosure of its source rigid solid.  Until a per-solid semantic
-    # and containment certificate is archived, this representation may reject
-    # states conservatively but may not accept an execution path.
-    geometry_qualification.update(
-        {
-            "structural_integration_checks_passed": structural_integration_checks_passed,
-            "rigid_solid_semantic_classification_verified": False,
-            "outward_containment_certificate_present": False,
-            "no_false_negative_rigid_solid_coverage_proven": False,
-            "robot_tool_mount_contact_scope_verified": False,
-            "broad_j6_tool_collision_exception_present": True,
-            "planning_collision_acceptance_qualified": False,
-            "dynamic_collision_qualified": False,
-            "execution_qualified": False,
-        }
-    )
+        and geometry_qualification["physical_cup_count"] == geometry_qualification["cup_rows"] * geometry_qualification["cup_columns"])
+    exempt = set(effective_policy.wrist_tool_exempt_links) == {"J5_link", "J6_link"}
+    geometry_qualified = structural_integration_checks_passed and coverage["coverage_verified"]
+    geometry_qualification.update({
+        "structural_integration_checks_passed": structural_integration_checks_passed,
+        "coverage_evidence": coverage,
+        "rigid_solid_compound_count": coverage["rigid_solid_count"],
+        "rigid_solid_semantic_classification_verified": coverage["coverage_verified"],
+        "outward_containment_certificate_present": coverage["coverage_verified"],
+        "no_false_negative_rigid_solid_coverage_proven": coverage["coverage_verified"],
+        "robot_tool_mount_contact_scope_verified": exempt,
+        "robot_tool_mount_contact_scope_status": "USER_APPROVED_SIMULATION_EXEMPTION" if exempt else "NOT_EXEMPT",
+        "planning_collision_acceptance_qualified": geometry_qualified,
+        "dynamic_collision_qualified": geometry_qualified,
+        "execution_qualified": geometry_qualified,
+        "effective_collision_policy": effective_policy.to_mapping(),
+    })
     robot = {
         **official_report.to_mapping(),
         "schema_version": str(official_document["schema_version"]),
@@ -772,15 +870,11 @@ def _audited_execution_assets(
             "selected official flange-to-project-tool0 engineering adapter; source metrology status unchanged"
         ),
     }
-    integration_blocking_issues = {
-        TOOL_RIGID_COLLISION_COVERAGE_REASON: (
-            "the 58/144 solid classification and outward OBB containment are not certified"
-        ),
-        ROBOT_TOOL_MOUNT_CONTACT_SCOPE_REASON: (
-            "current exact validator ignores J6_link against every tool rigid box; "
-            "a dimensioned mounting-interface-only contact rule is not available"
-        )
-    }
+    integration_blocking_issues = {}
+    if not geometry_qualified:
+        integration_blocking_issues[TOOL_RIGID_COLLISION_COVERAGE_REASON] = "active tool source/coverage checks failed"
+    if not exempt:
+        integration_blocking_issues[ROBOT_TOOL_MOUNT_CONTACT_SCOPE_REASON] = "no active wrist/tool scope policy"
     tool = {
         **source_tool,
         "source_execution_qualified": source_tool["execution_qualified"],
@@ -792,16 +886,19 @@ def _audited_execution_assets(
             + list(integration_blocking_issues)
         ),
         "execution_geometry_qualification": geometry_qualification,
-        "execution_qualified": False,
+        "execution_qualified": bool(geometry_qualified and exempt),
     }
     assets = {
-        "status": "OFFICIAL_ROBOT_PASS_TOOL_SOURCE_PASS_COLLISION_ACCEPTANCE_BLOCKED",
+        "status": "PASS" if geometry_qualified and exempt else "BLOCKED",
         "execution_qualified": bool(
             official_report.execution_qualified and tool["execution_qualified"]
         ),
         "robot": robot,
         "tool": tool,
     }
+    # This report is a JSON contract. Normalize policy tuples at both entry
+    # points, so a JSON-loaded preflight compares exactly to a live re-audit.
+    assets = json.loads(json.dumps(assets, allow_nan=False))
     return assets, copy.deepcopy(dict(official_document)), official_report.to_mapping()
 
 
@@ -831,8 +928,7 @@ def _initialization_blocked_preflight(execution, policy, dynamics, motion, backe
         motion.get("scene_fingerprint") is not None
         or motion.get("selected_trajectory_segment") is not None
         or motion.get("complete_trajectory_status") != "FAIL_CLOSED"
-        or sorted(motion.get("task_population", {}).get("carton_ids", [])) != list(EXPECTED_TOP_CARTONS)
-        or motion.get("statistics", {}).get("task_count") != 5
+        or motion.get("statistics", {}).get("task_count") != len(motion.get("task_population", {}).get("carton_ids", []))
         or motion.get("statistics", {}).get("ik_calls") != 0
         or motion.get("statistics", {}).get("path_connection_attempts") != 0
     ):
@@ -844,12 +940,13 @@ def _initialization_blocked_preflight(execution, policy, dynamics, motion, backe
         execution.tool_manifest_path, repository_root=execution.project_root
     ).to_mapping()
     blockers = ["INITIAL_STATE_INVALID"]
-    tool_geometry_status = str(
-        policy.layout_validation.layout.data["tool"]["geometry_status"]
-    )
+    from .tool_geometry import audit_tool_geometry
+    coverage = audit_tool_geometry(execution.project_root)
+    tool_geometry_status = TOOL_RIGID_COLLISION_COVERAGE_PROVEN_STATUS if coverage["coverage_verified"] else "FAILED"
+    mounting_scope_qualified = set(SimulationCollisionPolicy.from_mapping(policy.layout_validation.data.get("collision_policy")).wrist_tool_exempt_links) == {"J5_link", "J6_link"}
     if tool_geometry_status != TOOL_RIGID_COLLISION_COVERAGE_PROVEN_STATUS:
         blockers.append(TOOL_RIGID_COLLISION_COVERAGE_REASON)
-    if not ROBOT_TOOL_MOUNT_CONTACT_SCOPE_QUALIFIED:
+    if not mounting_scope_qualified:
         blockers.append(ROBOT_TOOL_MOUNT_CONTACT_SCOPE_REASON)
     if robot.get("execution_qualified") is not True:
         blockers.append("OFFICIAL_MODEL_ASSET_AUDIT_FAILED")
@@ -891,7 +988,7 @@ def _initialization_blocked_preflight(execution, policy, dynamics, motion, backe
                 "layout_geometry_status": tool_geometry_status,
                 "required_coverage_status": TOOL_RIGID_COLLISION_COVERAGE_PROVEN_STATUS,
                 "robot_tool_mount_contact_scope_qualified": (
-                    ROBOT_TOOL_MOUNT_CONTACT_SCOPE_QUALIFIED
+                    mounting_scope_qualified
                 ),
             },
         },
@@ -912,7 +1009,7 @@ def _initialization_blocked_preflight(execution, policy, dynamics, motion, backe
             "layout_fingerprint": policy.layout_validation.layout.layout_fingerprint,
             "scene_fingerprint": None,
             "snapshot_status": "NOT_CREATED_INVALID_INITIAL_STATE",
-            "carton_count": 40,
+            "carton_count": len(policy.layout_validation.layout.cartons()),
             "carton_ids": [box.name for box in policy.layout_validation.layout.cartons()],
             "configured_dynamic_carton_count": dynamics.cartons.count,
             "dynamic_carton_count": 0,
@@ -936,9 +1033,14 @@ def build_m710_execution_preflight(
     motion_result: Mapping[str, Any] | None = None,
     backend_execution_status: str = "NOT_RUN",
     trajectory_connector: LayoutTrajectoryConnector | None = None,
+    motion_input: FrozenLayoutMotionInput | None = None,
 ) -> dict[str, Any]:
     execution = config if isinstance(config, M710ExecutionConfig) else load_m710_execution_config(config)
     policy = load_layout_motion_policy(execution.motion_policy_path)
+    if motion_input is not None:
+        if motion_input.policy.policy_fingerprint != policy.policy_fingerprint:
+            raise ValueError("actual motion input policy mismatch")
+        policy = motion_input.policy
     dynamics = load_m710id70_dynamics(execution.dynamics_path)
     motion = (
         dict(motion_result)
@@ -947,6 +1049,7 @@ def build_m710_execution_preflight(
             policy,
             project_root=execution.project_root,
             trajectory_connector=trajectory_connector,
+            motion_input=motion_input,
         )
     )
     if motion.get("schema") != MOTION_RESULT_SCHEMA:
@@ -970,12 +1073,12 @@ def build_m710_execution_preflight(
         and motion.get("complete_trajectory_failure_reason") == "INITIAL_STATE_INVALID"
     ):
         return _initialization_blocked_preflight(execution, policy, dynamics, motion, backend_execution_status)
-    scene = build_verified_motion_input(policy, execution.project_root)
+    scene = motion_input or build_verified_motion_input(policy, execution.project_root)
     assets, official_manifest, official_model_audit = _audited_execution_assets(execution, scene, dynamics)
     if motion.get("scene_fingerprint") != scene.snapshot["scene_fingerprint"]:
         raise ValueError("motion result belongs to a different frozen scene")
-    if motion.get("statistics", {}).get("task_count") != 5:
-        raise ValueError("motion result must preserve the five-carton task population")
+    if motion.get("statistics", {}).get("task_count") != len(scene.removable_cartons):
+        raise ValueError("motion task count must match the actual remaining scene")
     if motion.get("task_population", {}).get("carton_ids") != list(scene.removable_cartons):
         raise ValueError("motion result task population does not match the frozen support graph")
     if backend_execution_status not in {"NOT_RUN", "NOT_RUN_PER_USER_REQUEST", "PASS", "FAIL"}:
@@ -1070,6 +1173,11 @@ def build_m710_execution_preflight(
         "official_model_manifest_sha256": assets["robot"]["manifest_sha256"],
         "official_model_audit": copy.deepcopy(official_model_audit),
         "official_model_required": True,
+        "collision_policy": SimulationCollisionPolicy.from_mapping(policy.layout_validation.data.get("collision_policy")).to_mapping(),
+        "stack_carton_names": list(scene.remaining_stack_names) if scene.remaining_stack_names is not None else [box.name for box in scene.cartons],
+        "row_selection": copy.deepcopy(motion.get("task_population", {}).get("row_selection", {})),
+        "completed_carton_ids": list(scene.snapshot.get("actual_state_context", {}).get("completed_carton_ids", [])),
+        "handed_off_ids": list(scene.snapshot.get("actual_state_context", {}).get("handed_off_ids", [])),
         "scene_primitives": primitives,
         "layout_fingerprint": scene.snapshot["layout_fingerprint"],
         "scene_fingerprint": scene.snapshot["scene_fingerprint"],
@@ -1135,12 +1243,12 @@ def build_m710_execution_preflight(
             "trailer_length_m": None,
             "trailer_height_m": None,
             "trailer_extent_claim": "NOT_DEFINED",
-            "carton_count": 40,
+            "carton_count": len(scene.cartons),
             "dynamic_carton_count": sum(
                 item["category"] == "carton" and item["dynamic"] for item in primitives
             ),
             "primitives": primitives,
-            "receiver": "conveyor_transverse",
+            "receiver": None if trajectory_segment is None else trajectory_segment["place"]["receiver"],
         },
         "replay_adapter_inputs": {
             "plan_common": plan_common,
@@ -1158,12 +1266,12 @@ def build_m710_execution_preflight(
             # Compatibility boolean retained for downstream readers.  It must
             # remain false until both conservative rigid-solid coverage and
             # the backend dynamic checks have their own evidence.
-            "real_tool_dynamic_collision_qualified": False,
+            "real_tool_dynamic_collision_qualified": bool(assets["tool"]["execution_qualified"]),
             "tool_planning_collision_representation_status": (
-                "BLOCKED_NO_FALSE_NEGATIVE_RIGID_SOLID_COVERAGE_CERTIFICATE"
+                scene.snapshot["tool"]["geometry_status"]
             ),
             "tool_collision_qualification_scope": (
-                "SOURCE_INTEGRITY_AND_STRUCTURAL_INTEGRATION_ONLY"
+                "SOURCE_AND_COVERAGE_CHECKED_WITH_USER_APPROVED_SIMULATION_POLICY"
             ),
             "engineering_dynamics_input_validated": True,
             "manufacturer_link_inertials_or_drive_limits_confirmed": True,

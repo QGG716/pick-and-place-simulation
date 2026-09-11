@@ -40,6 +40,71 @@ def _transform(coal, rotation: np.ndarray, translation: np.ndarray):
     return transform_type(np.asarray(rotation, dtype=float), np.asarray(translation, dtype=float))
 
 
+def _local_geometry_aabb(geometry) -> tuple[np.ndarray, np.ndarray] | None:
+    """Read the exact geometry's enclosing Coal bounds, or disable broadphase.
+
+    Some supported hpp-fcl builds do not expose these fields.  Missing,
+    invalid, or infinite bounds must fall back to the original exact query.
+    URDF geometry is immutable after backend construction.
+    """
+    try:
+        geometry.computeLocalAABB()
+        lower = np.asarray(geometry.aabb_local.min_, dtype=float).reshape(3)
+        upper = np.asarray(geometry.aabb_local.max_, dtype=float).reshape(3)
+    except (AttributeError, TypeError, ValueError, RuntimeError):
+        return None
+    if not np.all(np.isfinite(lower)) or not np.all(np.isfinite(upper)) or np.any(lower > upper):
+        return None
+    return lower.copy(), upper.copy()
+
+
+def _world_aabb(
+    local_bounds: tuple[np.ndarray, np.ndarray], rotation: np.ndarray, translation: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Enclose all eight transformed corners, including rounding allowance."""
+    lower, upper = local_bounds
+    center = rotation @ (0.5 * (lower + upper)) + translation
+    half = np.abs(rotation) @ (0.5 * (upper - lower))
+    # This expands the broadphase only; exact collision distance is untouched.
+    pad = 32.0 * np.finfo(float).eps * (1.0 + np.max(np.abs(center)) + np.max(half))
+    return np.nextafter(center - half - pad, -np.inf), np.nextafter(center + half + pad, np.inf)
+
+
+def _local_geometry_vertices(geometry) -> np.ndarray | None:
+    """Copy vertices of the very Coal mesh used by the collision backend.
+
+    Coal has already applied the URDF mesh scale. Geometry placements contain
+    its collision origin, so neither scale nor origin is applied a second time.
+    Unsupported hpp-fcl bindings/primitives retain the conservative AABB path.
+    """
+    try:
+        accessor = getattr(geometry, "vertices")
+        vertices = np.asarray(accessor() if callable(accessor) else accessor, dtype=float)
+        count = int(geometry.num_vertices)
+    except (AttributeError, TypeError, ValueError, RuntimeError):
+        return None
+    if vertices.shape != (count, 3) or count == 0 or not np.all(np.isfinite(vertices)):
+        return None
+    vertices = np.ascontiguousarray(vertices).copy()
+    vertices.setflags(write=False)
+    return vertices
+
+
+def _world_vertex_extrema(vertices, rotation, translation):
+    """Plane extrema of every mesh triangle, outward-rounded in world axes.
+
+    A linear functional reaches its extrema at triangle vertices, making this
+    exact for the piecewise-linear collision surface without enclosing empty
+    rotated local-AABB corners. The pad covers the floating-point transforms.
+    """
+    points = vertices @ rotation.T + translation
+    magnitude = (1.0 + float(np.max(np.abs(translation)))
+                 + float(np.max(np.abs(vertices))) * float(np.max(np.sum(np.abs(rotation), axis=1))))
+    pad = 64.0 * np.finfo(float).eps * magnitude
+    return (np.nextafter(np.min(points, axis=0) - pad, -np.inf),
+            np.nextafter(np.max(points, axis=0) + pad, np.inf))
+
+
 class PinocchioHppFclBackend:
     """Fixed-base serial/tree robot using URDF collision meshes and Pinocchio FK."""
 
@@ -86,6 +151,14 @@ class PinocchioHppFclBackend:
             self._remove_kinematic_neighbor_pairs()
             self.collision_pair_filter = "automatic_direct_kinematic_neighbors"
         self.geometry_data = self.pin.GeometryData(self.geometry_model)
+        self._geometry_local_aabbs = tuple(
+            _local_geometry_aabb(item.geometry)
+            for item in self.geometry_model.geometryObjects
+        )
+        self._geometry_local_vertices = tuple(
+            _local_geometry_vertices(item.geometry)
+            for item in self.geometry_model.geometryObjects
+        )
         if not self.model.existFrame(tip_frame):
             raise ValueError(f"URDF has no tip frame {tip_frame!r}")
         self.tip_frame = tip_frame
@@ -277,6 +350,18 @@ class PinocchioHppFclBackend:
         minimum_distance: float,
         ignored_pairs: set[tuple[str, str]],
     ) -> CollisionResult:
+        active_obstacles = [obstacle for obstacle in obstacles if obstacle.name not in ignored]
+        if not active_obstacles:
+            return CollisionResult(False)
+        obstacle_aabbs = [
+            _world_aabb((-obstacle.half_extents, obstacle.half_extents), obstacle.rotation, obstacle.center)
+            for obstacle in active_obstacles
+        ]
+        obstacle_lower = np.asarray([bounds[0] for bounds in obstacle_aabbs])
+        obstacle_upper = np.asarray([bounds[1] for bounds in obstacle_aabbs])
+        # Construct exact Coal boxes lazily and reuse them across robot links.
+        # A skipped pair never changes first-collision ordering among queries.
+        obstacle_exact: dict[int, tuple[object, object]] = {}
         for geometry_index, geometry_object in enumerate(self.geometry_model.geometryObjects):
             parent_frame = int(getattr(geometry_object, "parentFrame", -1))
             link_name = (
@@ -285,16 +370,32 @@ class PinocchioHppFclBackend:
                 else str(geometry_object.name)
             )
             placement = self.base_transform @ self._matrix(self.geometry_data.oMg[geometry_index])
+            local_bounds = self._geometry_local_aabbs[geometry_index]
+            if local_bounds is None:
+                near_indices = range(len(active_obstacles))
+            else:
+                lower, upper = _world_aabb(local_bounds, placement[:3, :3], placement[:3, 3])
+                # Axis separation is a lower bound on Euclidean surface
+                # distance.  Only provably farther pairs skip Coal; the 2x
+                # per-body margin comparison below remains unchanged.
+                separated = np.any(
+                    (obstacle_lower - upper > minimum_distance + 1e-12)
+                    | (lower - obstacle_upper > minimum_distance + 1e-12), axis=1,
+                )
+                near_indices = np.flatnonzero(~separated)
             robot_tf = _transform(self.coal, placement[:3, :3], placement[:3, 3])
-            for obstacle in obstacles:
-                if obstacle.name in ignored:
-                    continue
+            for obstacle_index in near_indices:
+                obstacle = active_obstacles[obstacle_index]
                 if (link_name, obstacle.name) in ignored_pairs or (
                     str(geometry_object.name), obstacle.name
                 ) in ignored_pairs:
                     continue
-                box = self.coal.Box(*(2.0 * obstacle.half_extents).tolist())
-                box_tf = _transform(self.coal, obstacle.rotation, obstacle.center)
+                if obstacle_index not in obstacle_exact:
+                    obstacle_exact[obstacle_index] = (
+                        self.coal.Box(*(2.0 * obstacle.half_extents).tolist()),
+                        _transform(self.coal, obstacle.rotation, obstacle.center),
+                    )
+                box, box_tf = obstacle_exact[obstacle_index]
                 if self._distance(geometry_object.geometry, robot_tf, box, box_tf) <= minimum_distance:
                     return CollisionResult(True, "robot_obstacle", link_name, obstacle.name)
         return CollisionResult(False)
@@ -314,6 +415,47 @@ class PinocchioHppFclBackend:
             if name not in names:
                 names.append(name)
         return tuple(names)
+
+    def collision_world_axis_extrema(self, q: np.ndarray) -> dict[str, dict]:
+        """World-axis bounds of the actual collision geometry, grouped by link.
+
+        This provider is for plane tests only. Pairwise mesh collision queries
+        and their engineering margins stay unchanged. Mesh vertices are cached
+        once from the same immutable Coal objects, never loaded per query.
+        """
+        q = np.asarray(q, dtype=float)
+        if q.shape != (self.dof,) or not np.all(np.isfinite(q)):
+            raise ValueError(f"q must contain {self.dof} finite joint values")
+        self.pin.updateGeometryPlacements(self.model, self.data, self.geometry_model, self.geometry_data, q)
+        result: dict[str, dict] = {}
+        for index, geometry_object in enumerate(self.geometry_model.geometryObjects):
+            parent_frame = int(getattr(geometry_object, "parentFrame", -1))
+            link = (str(self.model.frames[parent_frame].name)
+                    if 0 <= parent_frame < len(self.model.frames) else str(geometry_object.name))
+            placement = self.base_transform @ self._matrix(self.geometry_data.oMg[index])
+            vertices = self._geometry_local_vertices[index]
+            if vertices is not None:
+                lower, upper = _world_vertex_extrema(vertices, placement[:3, :3], placement[:3, 3])
+                source = "SAME_COAL_COLLISION_MESH_VERTICES"
+            else:
+                local_bounds = self._geometry_local_aabbs[index]
+                if local_bounds is None:
+                    raise RuntimeError(f"collision geometry has no safe plane-bound provider: {geometry_object.name}")
+                lower, upper = _world_aabb(local_bounds, placement[:3, :3], placement[:3, 3])
+                source = "CONSERVATIVE_SAME_COAL_LOCAL_AABB_FALLBACK"
+            if link not in result:
+                result[link] = {"lower_m": lower.copy(), "upper_m": upper.copy(),
+                                "exact_mesh": vertices is not None, "geometry_names": [],
+                                "vertex_count": 0, "sources": [],
+                                "numeric_padding": "OUTWARD_64_EPS_TRANSFORM_BOUND_AND_NEXTAFTER"}
+            else:
+                result[link]["lower_m"] = np.minimum(result[link]["lower_m"], lower)
+                result[link]["upper_m"] = np.maximum(result[link]["upper_m"], upper)
+                result[link]["exact_mesh"] &= vertices is not None
+            result[link]["geometry_names"].append(str(geometry_object.name))
+            result[link]["vertex_count"] += 0 if vertices is None else len(vertices)
+            result[link]["sources"].append(source)
+        return result
 
     def _self_clearance_failure(self, minimum_distance: float) -> CollisionResult:
         for pair in self.geometry_model.collisionPairs:

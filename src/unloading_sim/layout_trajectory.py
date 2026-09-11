@@ -19,6 +19,13 @@ import xml.etree.ElementTree as ET
 import numpy as np
 
 from .depalletizing import minimum_clearance_extraction_distance
+from .collision_policy import SimulationCollisionPolicy, PhysicsCheckedStackTracker
+from .conveyor_placement import (
+    ConveyorSupport,
+    PlacementPolicy,
+    generate_conveyor_placements,
+    support_union_audit,
+)
 from .geometry import OBB, rotation_matrix_from_rotation_vector, rotation_vector_from_matrix
 from .ik import iter_ik_solutions, pose_error, solve_ik_multistart
 from .planner import RRTConnectPlanner
@@ -50,6 +57,25 @@ class LayoutTrajectoryRobot(Protocol):
 
 
 RobotStateValidator = Callable[..., Mapping[str, Any] | None]
+
+
+def possible_inflated_obb_pairs(first: Sequence[OBB], second: Sequence[OBB],
+                                margin: float) -> list[tuple[int, int]]:
+    """Conservative broad phase preserving per-body local-axis inflation."""
+    if not first or not second:
+        return []
+    def arrays(boxes):
+        centers = np.asarray([box.center for box in boxes])
+        extents = np.asarray([np.abs(box.rotation) @ (box.half_extents + margin)
+                              for box in boxes])
+        return centers, extents
+    centers_a, extents_a = arrays(first)
+    centers_b, extents_b = arrays(second)
+    overlap = np.all(np.abs(centers_a[:, None, :] - centers_b[None, :, :]) <=
+                     extents_a[:, None, :] + extents_b[None, :, :] + 1e-10, axis=2)
+    return [tuple(map(int, pair)) for pair in np.argwhere(overlap)]
+
+
 TRAJECTORY_SEGMENT_SCHEMA = "m710id70_layout_complete_trajectory_segment_v1"
 TRAJECTORY_STAGES = (
     "home",
@@ -257,9 +283,13 @@ class LayoutTrajectoryBudget:
     pregrasp_standoff_m: float = 0.10
     preplace_standoff_m: float = 0.10
     withdrawal_distance_m: float = 0.10
+    post_release_vertical_lift_m: float = 0.30
     extraction_scan_step_m: float = 0.01
     maximum_extraction_m: float = 0.80
     extraction_direction_attempts: int = 5
+    local_transit_cartesian_sample_budget: int = 240
+    local_transit_outward_step_m: float = 0.03
+    local_transit_outward_attempts: int = 3
 
     def __post_init__(self) -> None:
         integer_names = (
@@ -270,11 +300,16 @@ class LayoutTrajectoryBudget:
             "stage_connection_iterations",
             "extraction_direction_attempts",
             "cartesian_max_samples_per_stage",
+            "local_transit_outward_attempts",
         )
         for name in integer_names:
             value = getattr(self, name)
             if isinstance(value, bool) or int(value) != value or int(value) <= 0:
                 raise ValueError(f"{name} must be a positive integer")
+        if (isinstance(self.local_transit_cartesian_sample_budget, bool)
+                or int(self.local_transit_cartesian_sample_budget) != self.local_transit_cartesian_sample_budget
+                or self.local_transit_cartesian_sample_budget < 0):
+            raise ValueError("local transit sample budget must be a nonnegative integer")
         positive_names = (
             "rrt_step_rad",
             "edge_resolution_rad",
@@ -284,8 +319,10 @@ class LayoutTrajectoryBudget:
             "pregrasp_standoff_m",
             "preplace_standoff_m",
             "withdrawal_distance_m",
+            "post_release_vertical_lift_m",
             "extraction_scan_step_m",
             "maximum_extraction_m",
+            "local_transit_outward_step_m",
         )
         for name in positive_names:
             value = float(getattr(self, name))
@@ -408,7 +445,7 @@ def _audit_official_srdf_policy(path: Path) -> dict[str, Any]:
 
 
 class ExactM710LayoutStateValidator:
-    """Compose official robot meshes with the 58-solid rigid-tool compound.
+    """Compose official robot meshes with the source-audited rigid-tool compound.
 
     The official robot backend owns robot self/environment and robot/payload
     tests.  The lightweight URDF instance is used only to transform the
@@ -428,6 +465,7 @@ class ExactM710LayoutStateValidator:
         robot_world_boxes: Callable[[np.ndarray], Sequence[OBB]],
         base_support_obstacle_name: str = "chassis",
         tool_mount_link_name: str = "J6_link",
+        collision_policy: Mapping[str, Any] | None = None,
     ) -> None:
         self.mesh_robot = mesh_robot
         self.tool_transform_robot = tool_transform_robot
@@ -438,6 +476,7 @@ class ExactM710LayoutStateValidator:
         self.robot_world_boxes = robot_world_boxes
         self.base_support_obstacle_name = str(base_support_obstacle_name)
         self.tool_mount_link_name = str(tool_mount_link_name)
+        self.collision_policy = SimulationCollisionPolicy.from_mapping(collision_policy)
         scalars = np.asarray(
             [
                 self.collision_margin_m,
@@ -455,9 +494,10 @@ class ExactM710LayoutStateValidator:
             raise ValueError("fixed-contact pair names must be non-empty")
         zero = np.zeros(int(mesh_robot.dof), dtype=float)
         tool_boxes = list(tool_transform_robot.tool_collision_obbs(zero))
-        if len(tool_boxes) != 58:
+        self.required_tool_names = frozenset(box.name for box in tool_boxes)
+        if not tool_boxes or len(self.required_tool_names) != len(tool_boxes):
             raise ValueError(
-                "execution validator requires all 58 CAD-derived rigid-tool solids"
+                "execution validator requires a nonempty uniquely named audited tool compound"
             )
 
     @staticmethod
@@ -471,29 +511,39 @@ class ExactM710LayoutStateValidator:
         }
 
     def _plane_failure(
-        self, q: np.ndarray, payload: OBB | None
+        self, q: np.ndarray, payload: OBB | None, stage: str
     ) -> Mapping[str, Any] | None:
-        bodies = [*self.robot_world_boxes(q), *self.tool_transform_robot.tool_collision_obbs(q)]
+        robot_bounds_provider = getattr(self.mesh_robot, "collision_world_axis_extrema", None)
+        robot_bounds = robot_bounds_provider(q) if robot_bounds_provider is not None else {}
+        robot_boxes = list(self.robot_world_boxes(q))
+        body_bounds = [(box.name, *(
+            (np.asarray(robot_bounds[box.name]["lower_m"]), np.asarray(robot_bounds[box.name]["upper_m"]))
+            if box.name in robot_bounds else (box.corners().min(axis=0), box.corners().max(axis=0))))
+            for box in robot_boxes]
+        bodies = [*self.tool_transform_robot.tool_collision_obbs(q)]
         if payload is not None:
             bodies.append(payload)
         for body in bodies:
             corners = body.corners()
-            y_min = float(np.min(corners[:, 1]))
-            y_max = float(np.max(corners[:, 1]))
-            z_min = float(np.min(corners[:, 2]))
+            body_bounds.append((body.name, corners.min(axis=0), corners.max(axis=0)))
+        for name, lower, upper in body_bounds:
+            y_min, y_max, z_min = float(lower[1]), float(upper[1]), float(lower[2])
             if (
                 y_min < self.right_wall_y_m + self.collision_margin_m
                 or y_max > self.left_wall_y_m - self.collision_margin_m
             ):
                 return {
                     "reason": "TRAILER_SIDE_CLEARANCE",
-                    "body": body.name,
+                    "body": name,
                     "y_bounds_m": [y_min, y_max],
                 }
-            if z_min < self.floor_z_m + self.collision_margin_m:
+            floor_margin = self.collision_margin_m
+            if payload is not None and name == payload.name and self.collision_policy.allows_stack_planning_contact(stage):
+                floor_margin = -0.0002
+            if z_min < self.floor_z_m + floor_margin:
                 return {
                     "reason": "FLOOR_CLEARANCE",
-                    "body": body.name,
+                    "body": name,
                     "minimum_z_m": z_min,
                 }
         return None
@@ -507,7 +557,7 @@ class ExactM710LayoutStateValidator:
         target_contact: OBB | None,
         stage: str,
     ) -> Mapping[str, Any] | None:
-        del target_contact, stage  # A named contact never deletes rigid geometry.
+        del target_contact  # A named contact never deletes rigid geometry.
         q = np.asarray(q, dtype=float)
         names = [box.name for box in obstacles]
         if len(names) != len(set(names)):
@@ -529,35 +579,37 @@ class ExactM710LayoutStateValidator:
             return failure
 
         tool_boxes = list(self.tool_transform_robot.tool_collision_obbs(q))
-        if len(tool_boxes) != 58:
+        if frozenset(box.name for box in tool_boxes) != self.required_tool_names:
             return {
                 "reason": "RIGID_TOOL_COMPOUND_INCOMPLETE",
                 "actual_solid_count": len(tool_boxes),
-                "required_solid_count": 58,
+                "required_solid_count": len(self.required_tool_names),
             }
-        for tool in tool_boxes:
-            for obstacle in environment:
-                if tool.intersects_obb(obstacle, margin=self.collision_margin_m):
-                    return {
-                        "reason": "RIGID_TOOL_COLLISION",
-                        "pair": [tool.name, obstacle.name],
-                    }
+        # Conservative broad phase around the *locally inflated* OBBs.  It
+        # only skips disjoint world AABBs; the unchanged SAT remains final.
+        for tool_index, obstacle_index in possible_inflated_obb_pairs(
+            tool_boxes, environment, self.collision_margin_m
+        ):
+            tool, obstacle = tool_boxes[tool_index], environment[obstacle_index]
+            if tool.intersects_obb(obstacle, margin=self.collision_margin_m):
+                return {
+                    "reason": "RIGID_TOOL_COLLISION",
+                    "pair": [tool.name, obstacle.name],
+                }
 
-        # The only robot/tool exception is the immutable mounting pair.  All
-        # other official link meshes retain the normal engineering margin.
+        # Pair identities come from the common user-approved simulation policy.
         result = self.mesh_robot.collision_result(
             q,
             tool_boxes,
             margin=self.collision_margin_m,
-            ignored_geometry_obstacle_pairs={
-                (self.tool_mount_link_name, box.name) for box in tool_boxes
-            },
+            ignored_geometry_obstacle_pairs=self.collision_policy.wrist_tool_pairs(
+                [box.name for box in tool_boxes]),
             check_self=False,
         )
         failure = self._collision_failure(result, "ROBOT_RIGID_TOOL_COLLISION")
         if failure is not None:
             return failure
-        return self._plane_failure(q, payload)
+        return self._plane_failure(q, payload, stage)
 
 
 class LayoutTrajectoryConnector:
@@ -585,8 +637,12 @@ class LayoutTrajectoryConnector:
         budget: LayoutTrajectoryBudget | None = None,
         official_radial_reach_m: float | None = None,
         radial_guard_tolerance_m: float = 0.0,
+        collision_policy: Mapping[str, Any] | None = None,
+        surface_directions_world: Mapping[str, Sequence[float]] | None = None,
+        tool_collision_obbs_provider: Callable[[np.ndarray], Sequence[OBB]] | None = None,
     ) -> None:
         self.robot = robot
+        self.collision_policy = SimulationCollisionPolicy.from_mapping(collision_policy)
         self.robot_state_validator = robot_state_validator
         self.flange_from_virtual_task_tcp = self._se3(
             flange_from_virtual_task_tcp, "flange_from_virtual_task_tcp"
@@ -623,7 +679,21 @@ class LayoutTrajectoryConnector:
         self.radial_guard_tolerance_m = self._nonnegative(
             radial_guard_tolerance_m, "radial_guard_tolerance_m"
         )
+        self.surface_directions_world: dict[str, tuple[float, float, float]] = {}
+        for name, raw_direction in dict(surface_directions_world or {}).items():
+            direction = np.asarray(raw_direction, dtype=float)
+            if direction.shape != (3,) or not np.all(np.isfinite(direction)):
+                raise ValueError(f"surface direction for {name!r} must have three finite values")
+            norm = float(np.linalg.norm(direction))
+            if norm <= 1e-12:
+                raise ValueError(f"surface direction for {name!r} must be non-zero")
+            self.surface_directions_world[str(name)] = tuple((direction / norm).tolist())
+        self.tool_collision_obbs_provider = (
+            tool_collision_obbs_provider
+            or getattr(self.robot, "tool_collision_obbs", lambda _q: ())
+        )
         self.budget = budget or LayoutTrajectoryBudget()
+        self.placement_policy = PlacementPolicy(maximum_candidates=12)
         self._statistics = {
             "state_validations": 0,
             "edge_validation_calls": 0,
@@ -675,7 +745,16 @@ class LayoutTrajectoryConnector:
             "cartesian_policy": "one_continuation_seed_per_bounded_cartesian_sample",
             "cartesian_max_samples_per_stage": self.budget.cartesian_max_samples_per_stage,
             "extraction_direction_attempts": self.budget.extraction_direction_attempts,
+            "local_transit_cartesian_sample_budget": self.budget.local_transit_cartesian_sample_budget,
+            "local_transit_budget_scope": "shared_by_all_placement_candidates_of_one_grasp_prefix",
+            "local_transit_outward_step_m": self.budget.local_transit_outward_step_m,
+            "local_transit_outward_attempts": self.budget.local_transit_outward_attempts,
             "maximum_extraction_m": self.budget.maximum_extraction_m,
+            "withdrawal_distance_m": self.budget.withdrawal_distance_m,
+            "post_release_vertical_lift_m": self.budget.post_release_vertical_lift_m,
+            "post_release_conveyor_escape_clearance_m": (
+                2.0 * self.collision_margin_m + self.contact_tolerance_m
+            ),
         }
 
     def virtual_from_physical(self, physical_pose: np.ndarray) -> np.ndarray:
@@ -770,7 +849,10 @@ class LayoutTrajectoryConnector:
 
         if payload is None:
             return None
-        if initial_proximity is not None:
+        if initial_proximity is not None and (
+            not isinstance(initial_proximity, PhysicsCheckedStackTracker)
+            or self.collision_policy.allows_stack_planning_contact(stage)
+        ):
             proximity_failure = initial_proximity.state_failure(
                 payload, list(obstacles), support_names
             )
@@ -867,6 +949,10 @@ class LayoutTrajectoryConnector:
             target_contact=target_contact,
             stage=stage,
         ) is None
+        callback = getattr(self, "progress_callback", None)
+        if callback is not None:
+            callback({"event": "connection_started", "stage": stage,
+                      "iteration_budget": int(iteration_budget), "seed": int(seed)})
         planner = RRTConnectPlanner(
             np.asarray(self.robot.joint_limits)[:, 0],
             np.asarray(self.robot.joint_limits)[:, 1],
@@ -878,6 +964,10 @@ class LayoutTrajectoryConnector:
             rng=np.random.default_rng(seed),
         )
         result = planner.plan(np.asarray(start, dtype=float), np.asarray(goal, dtype=float))
+        if callback is not None:
+            callback({"event": "connection_finished", "stage": stage,
+                      "success": bool(result.success), "iterations": int(result.iterations),
+                      "statistics": dict(self._statistics)})
         self._statistics["connection_attempts"] += 1
         self._statistics["rrt_iterations_consumed"] += int(result.iterations)
         evidence = {
@@ -974,7 +1064,9 @@ class LayoutTrajectoryConnector:
             stage=stage,
         )
         attempts: list[dict[str, Any]] = []
-        remaining = self.budget.stage_connection_iterations
+        remaining = (min(getattr(self, "_placement_remaining", self.budget.stage_connection_iterations),
+                         getattr(self, "_placement_candidate_allowance", self.budget.stage_connection_iterations))
+                     if stage == "transit" else self.budget.stage_connection_iterations)
         selected: np.ndarray | None = None
         selected_path: list[np.ndarray] = []
         failure: Mapping[str, Any] | None = None
@@ -1000,6 +1092,8 @@ class LayoutTrajectoryConnector:
             )
             consumed = int(connection.get("planning_iterations_consumed", connection.get("iterations", 0)))
             remaining = max(0, remaining - consumed)
+            if stage == "transit":
+                self._placement_remaining = max(0, self._placement_remaining - consumed)
             attempts.append(
                 {
                     "candidate_index": index,
@@ -1023,6 +1117,9 @@ class LayoutTrajectoryConnector:
         self._statistics["ik_iterations_consumed"] += int(stream_evidence.get("iterations_consumed", 0))
         if selected is not None:
             termination = "SUCCESS"
+        elif remaining <= 0 and not attempts:
+            termination = "SHARED_CONNECTION_BUDGET_EXHAUSTED"
+            failure = {"reason": termination, "stage": stage}
         elif not attempts:
             termination = "NO_VALID_IK"
             failure = {"reason": f"{stage.upper()}_NO_IK", "stage": stage}
@@ -1179,6 +1276,10 @@ class LayoutTrajectoryConnector:
         obstacles: Sequence[OBB],
         support_names: Sequence[str],
     ) -> tuple[InitialProximityTracker, Mapping[str, Any] | None]:
+        if self.collision_policy.stack_contact_mode == "planner_relaxed_physics_checked":
+            return PhysicsCheckedStackTracker(
+                target, [o for o in obstacles if o.category == "carton"], self.collision_policy,
+                self.collision_margin_m, self.contact_tolerance_m), None
         supports = set(support_names)
         neighbors = [
             obstacle
@@ -1206,6 +1307,10 @@ class LayoutTrajectoryConnector:
         seed: int,
     ) -> tuple[list[np.ndarray], Mapping[str, Any] | None, Mapping[str, Any]]:
         names = tuple(dict.fromkeys(str(name) for name in support_names if name))
+        if self.collision_policy.allows_stack_planning_contact("support-release"):
+            return [start.copy()], None, {"stage": "support-release", "required": False,
+                "lift_m": 0.0, "support_names": list(names),
+                "motion_policy": "allow_supported_sliding_or_lift_in_extraction"}
         if not names:
             return [start.copy()], None, {
                 "stage": "support-release",
@@ -1300,13 +1405,20 @@ class LayoutTrajectoryConnector:
             if obstacle.category == "carton" and obstacle.name != box.name
         ]
         attempts: list[dict[str, Any]] = []
-        free_clearance = 2.0 * self.collision_margin_m + self.contact_tolerance_m
+        free_clearance = max(2.0 * self.collision_margin_m + self.contact_tolerance_m,
+                             self.collision_policy.free_space_clearance_m)
+        # Search beyond, not exactly on, the acceptance boundary. A strict
+        # but nonzero FK residual can otherwise leave every successful path
+        # a fraction of a micron short of the unchanged physical clearance.
+        fk_boundary_guard = (2.0 * float(self.ik["position_tolerance_m"])
+            + 2.0 * float(np.linalg.norm(box.half_extents)) * float(self.ik["orientation_tolerance_rad"])
+            + self.contact_tolerance_m)
         for index, direction in enumerate(unique[: self.budget.extraction_direction_attempts]):
             distance = minimum_clearance_extraction_distance(
                 box,
                 direction,
                 constraints,
-                free_space_clearance_m=free_clearance,
+                free_space_clearance_m=free_clearance + fk_boundary_guard,
                 scan_step_m=self.budget.extraction_scan_step_m,
                 maximum_distance_m=self.budget.maximum_extraction_m,
             )
@@ -1332,10 +1444,14 @@ class LayoutTrajectoryConnector:
                 stage="extraction",
             )
             released = failure is None and branch_tracker.fully_released
+            if failure is None and not released:
+                failure = {"reason": "ACTUAL_EXTRACTION_CLEARANCE_NOT_REACHED", "stage": "extraction"}
             attempt = {
                 "index": index,
                 "direction_world": direction.tolist(),
                 "distance_m": float(distance),
+                "free_clearance_m": free_clearance,
+                "fk_boundary_guard_m": fk_boundary_guard,
                 "search": search,
                 "initial_proximity": branch_tracker.evidence(),
                 "status": "ACCEPTED" if released else "REJECTED",
@@ -1501,26 +1617,163 @@ class LayoutTrajectoryConnector:
         if failure is not None:
             return None, failure, trace
 
-        desired_box = target.world_from_local.copy()
-        desired_box[:3, 3] = [
-            receiver.center[0],
-            receiver.center[1],
-            receiver.center[2] + receiver.half_extents[2] + target.half_extents[2],
-        ]
+        supports = tuple(
+            ConveyorSupport(box, self.surface_directions_world.get(box.name))
+            for box in all_obstacles
+            if box.category == "conveyor"
+        ) or (ConveyorSupport(receiver, self.surface_directions_world.get(receiver.name)),)
+        support_bodies = tuple(item.body for item in supports)
+        occupied = [box for box in payload_obstacles if box.category == "carton"
+                    and any(contact_separated(box, surface, self.contact_tolerance_m)
+                            and support_union_audit(box, support_bodies)["supported"]
+                            for surface in support_bodies)]
+        placements = generate_conveyor_placements(target, supports or (receiver,),
+            occupied=occupied, preferred_point_world=attachment.box_at(extraction[-1]).center,
+            policy=self.placement_policy)
+        self._placement_remaining = self.budget.stage_connection_iterations
+        self._local_transit_remaining = self.budget.local_transit_cartesian_sample_budget
+        placement_attempts = []
+        for placement_index, placement in enumerate(placements):
+            # One shared downstream budget; reserve real connection work for
+            # alternate supports instead of allowing the first location to
+            # consume all of it. Unused direct-edge budget remains available.
+            self._placement_candidate_allowance = max(1, int(np.ceil(
+                self._placement_remaining / (len(placements) - placement_index))))
+            branch_trace = {**trace, "stages": dict(trace["stages"])}
+            segment, failure, branch_trace = self._finish_place_branch(
+                target=target, face=face, requested_virtual_contact=requested_virtual_contact,
+                home_q=home_q, contact_q=contact_q, physical_contact=physical_contact,
+                rigid=rigid, attachment=attachment, selection=selection, pregrasp=pregrasp,
+                contact=contact, support_release=support_release, extraction=extraction,
+                released_tracker=released_tracker, payload_obstacles=payload_obstacles,
+                placement=placement, selected_supports=[box for box in support_bodies if box.name in placement.receiver_names],
+                trace=branch_trace, seed=seed + placement_index * 1000)
+            placement_attempts.append({"candidate": placement.as_dict(), "failure": failure,
+                "allocated_connection_iterations": self._placement_candidate_allowance,
+                "shared_remaining_connection_iterations": self._placement_remaining,
+                "downstream_stages": {key: value for key, value in branch_trace["stages"].items()
+                                      if key in {"local_transit", "transit", "place", "withdrawal"}}})
+            if segment is not None:
+                branch_trace["placement_attempts"] = placement_attempts
+                return segment, None, branch_trace
+        trace["placement_attempts"] = placement_attempts
+        return None, {"reason": "PLACEMENT_CANDIDATES_EXHAUSTED", "stage": "place",
+                      "attempts": placement_attempts}, trace
+
+    def _local_cartesian_transit(self, start, destination, obstacles, attachment, *, seed):
+        """Reuse strict Cartesian continuation with a shared finite sample pool.
+
+        First try the direct SE(3) edge. If its first turn/descending edge cannot
+        leave the stack safely, test small *normally collision-checked* outward
+        motions before retrying. No attached-neighbor exception applies here.
+        """
+        evidence = {"stage": "transit", "method": "BOUNDED_EXISTING_CARTESIAN_WITH_OUTWARD_ESCAPE",
+                    "attempts": [], "shared_sample_budget": self.budget.local_transit_cartesian_sample_budget}
+        prefix = [np.asarray(start, dtype=float).copy()]
+
+        def connect(origin_q, goal, attempt_seed):
+            origin = self.robot.fk(origin_q)
+            _, distance, angle = pose_error(origin, goal)
+            needed = max(1, int(np.ceil(distance / self.budget.cartesian_step_m)),
+                         int(np.ceil(angle / self.budget.cartesian_orientation_step_rad)))
+            if needed > self._local_transit_remaining:
+                return [], {"reason": "SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET", "required": needed}, []
+            # Leave one sample of headroom for the previous strict FK residual
+            # when determining the next chunk's actual required sample count.
+            capacity = max(1, self.budget.cartesian_max_samples_per_stage - 1)
+            chunks = max(1, int(np.ceil(needed / capacity)))
+            omega = rotation_vector_from_matrix(goal[:3, :3] @ origin[:3, :3].T)
+            full, searches = [origin_q.copy()], []
+            for chunk in range(1, chunks + 1):
+                fraction = chunk / chunks
+                waypoint = origin.copy()
+                waypoint[:3, 3] += fraction * (goal[:3, 3] - origin[:3, 3])
+                waypoint[:3, :3] = rotation_matrix_from_rotation_vector(fraction * omega) @ origin[:3, :3]
+                _, chunk_distance, chunk_angle = pose_error(self.robot.fk(full[-1]), waypoint)
+                chunk_needed = max(1, int(np.ceil(chunk_distance / self.budget.cartesian_step_m)),
+                                   int(np.ceil(chunk_angle / self.budget.cartesian_orientation_step_rad)))
+                if chunk_needed > self._local_transit_remaining:
+                    return [], {"reason": "SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET", "required": chunk_needed}, searches
+                before = self._statistics["cartesian_samples"]
+                path, failure, search = self._cartesian(full[-1], waypoint, obstacles,
+                    attachment=attachment, seed=attempt_seed + chunk, stage="transit")
+                self._local_transit_remaining -= self._statistics["cartesian_samples"] - before
+                searches.append(search)
+                if failure is not None:
+                    return [], failure, searches
+                full.extend(path[1:])
+            return full, None, searches
+
+        last_failure = {"reason": "LOCAL_TRANSIT_NOT_RUN"}
+        for index in range(self.budget.local_transit_outward_attempts + 1):
+            path, last_failure, searches = connect(prefix[-1], destination, seed + index * 1000)
+            evidence["attempts"].append({"outward_steps": index, "failure": last_failure,
+                                         "searches": searches})
+            if last_failure is None:
+                evidence["remaining_samples"] = self._local_transit_remaining
+                return [*prefix, *path[1:]], None, evidence
+            if index == self.budget.local_transit_outward_attempts or self._local_transit_remaining <= 0:
+                break
+            collision_pair = last_failure.get("pair", [])
+            stack_names = {box.name for box in obstacles if box.category == "carton"}
+            if (last_failure.get("reason") != "PAYLOAD_COLLISION"
+                    or not stack_names.intersection(collision_pair)):
+                # Outward buffering addresses the nearby stack, not a failed
+                # robot posture at a distant placement. Preserve local work
+                # for a different receiving position instead of repeating it.
+                break
+            outward = -attachment.physical_contact_pose(prefix[-1])[:3, 2]
+            waypoint = self.robot.fk(prefix[-1]).copy()
+            waypoint[:3, 3] += outward * self.budget.local_transit_outward_step_m
+            step, failure, searches = connect(prefix[-1], waypoint, seed + index * 1000 + 500)
+            evidence["attempts"].append({"outward_step_m": self.budget.local_transit_outward_step_m,
+                                         "failure": failure, "searches": searches})
+            if failure is not None:
+                last_failure = failure
+                break
+            prefix.extend(step[1:])
+        evidence["remaining_samples"] = self._local_transit_remaining
+        return [], last_failure, evidence
+
+    def _finish_place_branch(self, *, target, face, requested_virtual_contact, home_q,
+            contact_q, physical_contact, rigid, attachment, selection, pregrasp, contact,
+            support_release, extraction, released_tracker, payload_obstacles, placement,
+            selected_supports, trace, seed):
+        desired_box = placement.payload.world_from_local.copy()
+        support_z = float(np.min(placement.payload.corners()[:, 2]))
+        # A footprint may end exactly at an adjoining conveyor seam. Its
+        # zero-area contact with that second coplanar top is still a legal
+        # support-face contact, even though it bears none of the bottom area.
+        # Keep both real bodies and contact_separated's bottom-plane test;
+        # robot/tool margins and support-side penetration remain unchanged.
+        contact_supports = tuple(box for box in payload_obstacles
+            if box.category == "conveyor"
+            and np.allclose(box.rotation[:, 2], [0., 0., 1.], atol=1e-9, rtol=0)
+            and abs(float(np.max(box.corners()[:, 2])) - support_z) <= self.contact_tolerance_m)
+        selected_supports = contact_supports or tuple(selected_supports)
+        support_contact_names = tuple(box.name for box in selected_supports)
         desired_physical = desired_box @ np.linalg.inv(rigid.tcp_from_box)
         preplace_physical = desired_physical.copy()
         preplace_physical[2, 3] += self.budget.preplace_standoff_m
         preplace_virtual = self.virtual_from_physical(preplace_physical)
-        preplace_q, transit, failure, evidence = self._connect_pose(
-            preplace_virtual,
-            [extraction[-1], contact_q, home_q],
-            extraction[-1],
-            payload_obstacles,
-            ik_seed=seed + 60,
-            connection_seed=seed + 70,
-            attachment=attachment,
-            stage="transit",
-        )
+        transit = []
+        if getattr(self, "_local_transit_remaining", 0) > 0:
+            transit, local_failure, local_evidence = self._local_cartesian_transit(
+                extraction[-1], preplace_virtual, payload_obstacles, attachment, seed=seed + 55)
+            trace["stages"]["local_transit"] = local_evidence
+        if transit:
+            preplace_q, failure, evidence = transit[-1], None, local_evidence
+        else:
+            preplace_q, transit, failure, evidence = self._connect_pose(
+                preplace_virtual,
+                [extraction[-1], contact_q, home_q],
+                extraction[-1],
+                payload_obstacles,
+                ik_seed=seed + 60,
+                connection_seed=seed + 70,
+                attachment=attachment,
+                stage="transit",
+            )
         trace["stages"]["transit"] = evidence
         if preplace_q is None or failure is not None:
             return None, failure, trace
@@ -1532,19 +1785,14 @@ class LayoutTrajectoryConnector:
             payload_obstacles,
             seed=seed + 80,
             attachment=attachment,
-            support_names=[receiver.name],
+            support_names=support_contact_names,
             stage="place",
         )
         trace["stages"]["place"] = evidence
         if failure is not None:
             return None, failure, trace
         placed = attachment.box_at(place[-1])
-        support = support_audit(
-            placed,
-            receiver,
-            self.contact_tolerance_m,
-            self.collision_margin_m,
-        )
+        support = support_union_audit(placed, selected_supports, contact_tolerance_m=self.contact_tolerance_m)
         if not support["supported"]:
             return None, {
                 "reason": "ACTUAL_FK_SUPPORT_FAILED",
@@ -1558,7 +1806,7 @@ class LayoutTrajectoryConnector:
             place_physical[:3, 2] * self.budget.withdrawal_distance_m
         )
         withdrawal_obstacles = [*payload_obstacles, placed]
-        withdrawal, failure, evidence = self._cartesian(
+        normal_withdrawal, failure, normal_evidence = self._cartesian(
             place[-1],
             withdrawal_virtual,
             withdrawal_obstacles,
@@ -1566,9 +1814,90 @@ class LayoutTrajectoryConnector:
             target_contact=placed,
             stage="withdrawal",
         )
+        if failure is not None:
+            trace["stages"]["withdrawal"] = {
+                "model": "normal_then_belt_aware_safe_residence_v1",
+                "normal_disengage": normal_evidence,
+            }
+            return None, failure, trace
+
+        place_surface = placement.receiver_names[0]
+        direction_map = {
+            str(name): placement.outlet_directions.get(name)
+            for name in placement.receiver_names
+        }
+        configured_direction = direction_map.get(place_surface)
+        if configured_direction is None:
+            failure = {
+                "reason": "POST_RELEASE_CONVEYOR_DIRECTION_UNAVAILABLE",
+                "stage": "withdrawal",
+                "surface": place_surface,
+            }
+            trace["stages"]["withdrawal"] = {
+                "model": "normal_then_vertical_swept_path_separation_v2",
+                "normal_disengage": normal_evidence,
+                "failure": failure,
+            }
+            return None, failure, trace
+        belt_direction = np.asarray(configured_direction, dtype=float)
+        if abs(float(belt_direction[2])) > 1e-12:
+            raise ValueError("conveyor swept-path separation requires horizontal belt motion")
+        tool_obbs = list(self.tool_collision_obbs_provider(normal_withdrawal[-1]))
+        if not tool_obbs:
+            failure = {
+                "reason": "POST_RELEASE_TOOL_ENVELOPE_UNAVAILABLE",
+                "stage": "withdrawal",
+                "surface": place_surface,
+            }
+            trace["stages"]["withdrawal"] = {
+                "model": "normal_then_vertical_swept_path_separation_v2",
+                "normal_disengage": normal_evidence,
+                "failure": failure,
+            }
+            return None, failure, trace
+        tool_minimum_z = min(float(np.min(box.corners()[:, 2])) for box in tool_obbs)
+        payload_maximum_z = float(np.max(placed.corners()[:, 2]))
+        swept_path_clearance = 2.0 * self.collision_margin_m + self.contact_tolerance_m
+        derived_lift = max(
+            0.0,
+            payload_maximum_z + swept_path_clearance - tool_minimum_z,
+        )
+        residence_lift = max(self.budget.post_release_vertical_lift_m, derived_lift)
+        escape_audit = {
+            "model": "normal_then_vertical_swept_path_separation_v2",
+            "conveyor_escape_enabled": True,
+            "conveyor_surface": place_surface,
+            "conveyor_direction_world": belt_direction.tolist(),
+            "separation_axis_world": [0.0, 0.0, 1.0],
+            "tool_solid_count": len(tool_obbs),
+            "tool_minimum_z_before_lift_m": tool_minimum_z,
+            "payload_maximum_z_m": payload_maximum_z,
+            "unchanged_pair_clearance_m": swept_path_clearance,
+            "minimum_derived_vertical_lift_m": derived_lift,
+            "configured_minimum_vertical_lift_m": self.budget.post_release_vertical_lift_m,
+            "actual_vertical_lift_m": residence_lift,
+            "future_horizontal_translation_cannot_reduce_vertical_separation": True,
+        }
+        residence_virtual = self.robot.fk(normal_withdrawal[-1]).copy()
+        residence_virtual[2, 3] += residence_lift
+        safe_residence, failure, residence_evidence = self._cartesian(
+            normal_withdrawal[-1],
+            residence_virtual,
+            withdrawal_obstacles,
+            seed=seed + 91,
+            target_contact=placed,
+            stage="withdrawal",
+        )
+        evidence = {
+            "model": "normal_then_belt_aware_safe_residence_v1",
+            "normal_disengage": normal_evidence,
+            "safe_residence": residence_evidence,
+            "safe_residence_target": escape_audit,
+        }
         trace["stages"]["withdrawal"] = evidence
         if failure is not None:
             return None, failure, trace
+        withdrawal = [*normal_withdrawal, *safe_residence[1:]]
 
         full = [home_q.copy()]
         stages: dict[str, list[int]] = {"home": [0, 0]}
@@ -1613,16 +1942,21 @@ class LayoutTrajectoryConnector:
             "place": {
                 "actual_box_pose_world": placed.world_from_local.tolist(),
                 "release_center_world_m": placed.center.tolist(),
-                "place_surface": receiver.name,
+                "place_surface": placement.receiver_names[0],
+                "support_names": list(support_contact_names),
+                "load_bearing_support_names": list(placement.receiver_names),
+                "selection": placement.as_dict(),
                 "support": support,
-                "receiver": receiver.name,
+                "receiver": placement.receiver_names[0],
             },
+            "post_release_safe_residence": escape_audit,
             "validation": {
                 "validator_identity": self.validator_identity,
                 "execution_qualified": True,
                 "collision_margin_per_body_m": self.collision_margin_m,
                 "contact_tolerance_m": self.contact_tolerance_m,
                 "initial_proximity": released_tracker.evidence(),
+                "collision_policy": self.collision_policy.to_mapping(),
             },
         }
         trace["selected"] = {
@@ -1731,6 +2065,8 @@ def build_m710_layout_trajectory_connector(
     official_radial_reach_m: float,
     radial_guard_tolerance_m: float,
     budget: LayoutTrajectoryBudget | None = None,
+    collision_policy: Mapping[str, Any] | None = None,
+    surface_directions_world: Mapping[str, Sequence[float]] | None = None,
 ) -> LayoutTrajectoryConnectorBuildResult:
     """Build the exact optional connector and prove its FK-frame agreement.
 
@@ -1745,7 +2081,7 @@ def build_m710_layout_trajectory_connector(
         "schema": "m710id70_exact_layout_trajectory_backend_v1",
         "collision_contract": {
             "robot": "official_urdf_per_link_triangle_mesh_via_pinocchio_coal",
-            "tool": "58_step_rigid_solid_bounds_as_compound_obbs",
+            "tool": "source_audited_rigid_structures_and_inserts_as_compound_obbs",
             "payload": "actual_fk_physical_contact_rigid_attachment",
             "fixed_body_aggregation_pairs": {
                 "base_mount": ["base_link", "chassis"],
@@ -1795,21 +2131,21 @@ def build_m710_layout_trajectory_connector(
     expected_virtual[0, 3] = 0.2500
     expected_physical = np.eye(4)
     expected_physical[:3, :3] = planner_rotation
-    expected_physical[0, 3] = 0.2125
+    expected_physical[0, 3] = flange_from_physical[0, 3]
     if not np.allclose(flange_from_virtual, expected_virtual, atol=1e-12, rtol=0.0):
         return unavailable(
             "VIRTUAL_TASK_TCP_IDENTITY_MISMATCH",
             "the fixed virtual task TCP must remain 0.250 m along the resolved planner axis",
         )
-    if not np.allclose(flange_from_physical, expected_physical, atol=1e-12, rtol=0.0):
+    if not np.allclose(flange_from_physical, expected_physical, atol=1e-12, rtol=0.0) or not 0.2125 <= flange_from_physical[0, 3] <= 0.2275:
         return unavailable(
             "PHYSICAL_CONTACT_FRAME_IDENTITY_MISMATCH",
-            "the nominal compressed physical plane must remain 0.2125 m along the resolved planner axis",
+            "the physical plane must remain within the source-defined 0-15 mm cup compression range on the resolved axis",
         )
     evidence["tool_frame_contract"] = {
         "T_flange_virtual_task_tcp": flange_from_virtual.tolist(),
         "T_flange_nominal_compressed_contact": flange_from_physical.tolist(),
-        "virtual_to_physical_offset_m": 0.0375,
+        "virtual_to_physical_offset_m": float(flange_from_virtual[0, 3] - flange_from_physical[0, 3]),
     }
     repository_root = _repository_root_from(urdf)
     if repository_root is None:
@@ -1971,6 +2307,7 @@ def build_m710_layout_trajectory_connector(
             robot_world_boxes=lambda q: world_link_boxes(
                 lightweight_robot, np.asarray(q, dtype=float), shapes
             ),
+            collision_policy=collision_policy,
         )
     except (AttributeError, FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
         return unavailable("EXACT_STATE_VALIDATOR_CONSTRUCTION_FAILED", str(exc))
@@ -2009,10 +2346,15 @@ def build_m710_layout_trajectory_connector(
         ).tolist(),
         "collision_margin_m": float(collision_margin_m),
         "contact_tolerance_m": float(contact_tolerance_m),
+        "collision_policy": SimulationCollisionPolicy.from_mapping(collision_policy).to_mapping(),
         "joint_margin_rad": float(joint_margin_rad),
         "maximum_jacobian_condition": float(maximum_jacobian_condition),
         "official_radial_reach_m": float(official_radial_reach_m),
         "radial_guard_tolerance_m": float(radial_guard_tolerance_m),
+        "surface_directions_world": {
+            str(name): list(direction)
+            for name, direction in dict(surface_directions_world or {}).items()
+        },
         "floor_z_m": float(floor_z_m),
         "right_wall_y_m": float(right_wall_y_m),
         "left_wall_y_m": float(left_wall_y_m),
@@ -2035,6 +2377,9 @@ def build_m710_layout_trajectory_connector(
         budget=budget,
         official_radial_reach_m=official_radial_reach_m,
         radial_guard_tolerance_m=radial_guard_tolerance_m,
+        collision_policy=collision_policy,
+        surface_directions_world=surface_directions_world,
+        tool_collision_obbs_provider=lightweight_robot.tool_all_physical_obbs,
     )
     evidence.update(
         status="AVAILABLE",

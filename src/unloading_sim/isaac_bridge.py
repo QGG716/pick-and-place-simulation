@@ -163,7 +163,79 @@ def _validated_ideal_cup_selection(
     }
 
 
-def _validated_place_evidence(segment: Mapping[str, Any]) -> dict[str, Any]:
+def _validated_union_support_evidence(support: Mapping[str, Any], place: Mapping[str, Any],
+                                      pose: np.ndarray, segment: Mapping[str, Any],
+                                      scene_primitives: Sequence[Mapping[str, Any]] | None) -> None:
+    """Recompute a full footprint union, without inventing single-deck clearance."""
+    from .conveyor_placement import support_union_audit
+
+    actual_pose = np.asarray(support.get("actual_box_pose", []), dtype=float)
+    half = np.asarray(support.get("payload_half_extents_m", []), dtype=float)
+    if (actual_pose.shape != (4, 4) or not np.allclose(actual_pose, pose, atol=1e-12, rtol=0.)
+            or half.shape != (3,) or not np.all(np.isfinite(half)) or np.any(half <= 0.)):
+        raise ValueError("union support audit does not prove the selected actual box pose")
+    records = support.get("support_obbs")
+    if not isinstance(records, list) or not records:
+        raise ValueError("union support audit requires its real support geometry")
+    bodies = []
+    for record in records:
+        if not isinstance(record, Mapping):
+            raise ValueError("union support geometry must be mappings")
+        support_pose = np.asarray(record.get("pose_world", []), dtype=float)
+        extent = np.asarray(record.get("half_extents_m", []), dtype=float)
+        name = record.get("name")
+        if (not isinstance(name, str) or not name or support_pose.shape != (4, 4)
+                or not np.all(np.isfinite(support_pose))
+                or not np.allclose(support_pose[3], [0., 0., 0., 1.], atol=1e-12, rtol=0.)
+                or not np.allclose(support_pose[:3, :3].T @ support_pose[:3, :3], np.eye(3), atol=1e-12, rtol=0.)
+                or not np.isclose(np.linalg.det(support_pose[:3, :3]), 1., atol=1e-12, rtol=0.)
+                or extent.shape != (3,) or not np.all(np.isfinite(extent)) or np.any(extent <= 0.)):
+            raise ValueError("union support geometry must contain finite rigid OBBs")
+        bodies.append(OBB(support_pose[:3, 3], extent, support_pose[:3, :3], name,
+                          str(record.get("category", "conveyor"))))
+    names = [body.name for body in bodies]
+    declared_names = place.get("support_names")
+    if (len(names) != len(set(names)) or not isinstance(declared_names, list)
+            or len(declared_names) != len(set(declared_names)) or set(names) != set(declared_names)):
+        raise ValueError("union support geometry must match the retained contact-support identities")
+    tolerance = float(support.get("tolerance_m", float("nan")))
+    policy_tolerance = segment.get("validation", {}).get("contact_tolerance_m")
+    if policy_tolerance is not None and not np.isclose(tolerance, float(policy_tolerance), atol=1e-12, rtol=0.):
+        raise ValueError("union support tolerance differs from trajectory validation policy")
+    payload = OBB(pose[:3, 3], half, pose[:3, :3], str(segment.get("target", "payload")), "carton")
+    if scene_primitives is not None:
+        scene = {item["name"]: item for item in scene_primitives}
+        original_target = scene.get(payload.name)
+        if original_target is None or not np.allclose(
+                np.asarray(original_target["size_m"]), 2. * half, atol=1e-12, rtol=0.):
+            raise ValueError("union support payload dimensions differ from frozen scene")
+        for body in bodies:
+            original = scene.get(body.name)
+            if (original is None or original.get("dynamic") is not False
+                    or not np.allclose(original["center_m"], body.center, atol=1e-12, rtol=0.)
+                    or not np.allclose(original["size_m"], 2. * body.half_extents, atol=1e-12, rtol=0.)
+                    or not np.allclose(original["rotation_matrix"], body.rotation, atol=1e-12, rtol=0.)):
+                raise ValueError("union support geometry differs from frozen scene")
+    recomputed = support_union_audit(payload, bodies, contact_tolerance_m=tolerance,
+        edge_tolerance_m=float(support.get("edge_tolerance_m", float("nan"))),
+        engineering_edge_margin_m=float(support.get("engineering_edge_margin_m", float("nan"))))
+    if support.get("supported") is not True or recomputed["supported"] is not True:
+        raise ValueError("union support geometry does not cover the actual full bottom footprint")
+    for key in ("schema", "reason", "receiver_names", "coverage_method"):
+        if support.get(key) != recomputed[key]:
+            raise ValueError(f"union support audit {key} differs from recomputed geometry")
+    for key in ("footprint_area_m2", "unsupported_area_m2", "bottom_z_range_m", "support_z_m", "plane_error_m"):
+        value = np.asarray(support.get(key), dtype=float)
+        expected = np.asarray(recomputed[key], dtype=float)
+        if value.shape != expected.shape or not np.allclose(value, expected, atol=1e-12, rtol=0.):
+            raise ValueError(f"union support audit {key} differs from recomputed geometry")
+    bearing = place.get("load_bearing_support_names", [place["receiver"]])
+    if (place["receiver"] not in bearing or not set(bearing).issubset(recomputed["receiver_names"])):
+        raise ValueError("selected load-bearing receivers lack actual support area")
+
+
+def _validated_place_evidence(segment: Mapping[str, Any], *,
+                              scene_primitives: Sequence[Mapping[str, Any]] | None = None) -> dict[str, Any]:
     """Prefer the stage contract's real box pose and support evidence.
 
     Older replay fixtures expose three flat aliases.  When the structured
@@ -203,23 +275,28 @@ def _validated_place_evidence(segment: Mapping[str, Any]) -> dict[str, Any]:
     support = raw.get("support")
     if not isinstance(support, Mapping):
         raise ValueError("place evidence requires a support audit mapping")
-    edge_clearance = np.asarray(support.get("edge_clearance_xy_m", []), dtype=float)
-    support_pose = np.asarray(support.get("actual_box_pose", []), dtype=float)
-    bottom_gap = float(support.get("bottom_gap_m", float("nan")))
-    penetration = float(support.get("penetration_m", float("nan")))
-    if (
-        support.get("supported") is not True
-        or support.get("bottom_face_coplanar") is not True
-        or edge_clearance.shape != (2,)
-        or np.any(edge_clearance < 0.0)
-        or not np.all(np.isfinite(edge_clearance))
-        or not np.isfinite(bottom_gap)
-        or not np.isfinite(penetration)
-        or penetration < 0.0
-        or support_pose.shape != (4, 4)
-        or not np.allclose(support_pose, pose, atol=1e-12, rtol=0.0)
-    ):
-        raise ValueError("place support audit does not prove the selected actual box pose")
+    if support.get("schema") == "complete_bottom_support_union_v1":
+        _validated_union_support_evidence(support, raw, pose, segment, scene_primitives)
+    else:
+        # Historical single-deck evidence keeps its exact old contract. A union
+        # is deliberately not forced into fictional per-axis edge clearances.
+        edge_clearance = np.asarray(support.get("edge_clearance_xy_m", []), dtype=float)
+        support_pose = np.asarray(support.get("actual_box_pose", []), dtype=float)
+        bottom_gap = float(support.get("bottom_gap_m", float("nan")))
+        penetration = float(support.get("penetration_m", float("nan")))
+        if (
+            support.get("supported") is not True
+            or support.get("bottom_face_coplanar") is not True
+            or edge_clearance.shape != (2,)
+            or np.any(edge_clearance < 0.0)
+            or not np.all(np.isfinite(edge_clearance))
+            or not np.isfinite(bottom_gap)
+            or not np.isfinite(penetration)
+            or penetration < 0.0
+            or support_pose.shape != (4, 4)
+            or not np.allclose(support_pose, pose, atol=1e-12, rtol=0.0)
+        ):
+            raise ValueError("place support audit does not prove the selected actual box pose")
     for alias, expected in (
         ("place_surface", surface),
         ("place_center", release_center.tolist()),
@@ -654,6 +731,9 @@ def _validated_physics_contract(
         "parameter_status",
         "gravity_world_m_s2",
         "physics_time_step_s",
+        "execution_backend",
+        "contact_offset_m",
+        "rest_offset_m",
         "materials",
         "material_by_category",
         "damping",
@@ -673,6 +753,32 @@ def _validated_physics_contract(
         or time_step <= 0.0
     ):
         raise ValueError("M-710 gravity and physics time step must be explicit and finite")
+
+    backend = value["execution_backend"]
+    backend_keys = {
+        "mode", "device", "broadphase_type", "gpu_dynamics_enabled", "fabric_enabled",
+        "ccd_enabled",
+    }
+    if not isinstance(backend, dict) or set(backend) != backend_keys:
+        raise ValueError("M-710 physics execution backend contract is incomplete")
+    backend_tuple = (
+        backend["mode"], backend["device"], backend["broadphase_type"],
+        backend["gpu_dynamics_enabled"], backend["fabric_enabled"], backend["ccd_enabled"],
+    )
+    if backend_tuple != ("physx_cpu", "cpu", "MBP", False, True, True):
+        raise ValueError("M-710 physics execution backend contract is inconsistent")
+
+    contact_offset_m = float(value["contact_offset_m"])
+    rest_offset_m = float(value["rest_offset_m"])
+    if (
+        not np.isfinite(contact_offset_m)
+        or not np.isfinite(rest_offset_m)
+        or contact_offset_m != 0.010
+        or rest_offset_m != 0.0
+    ):
+        raise ValueError(
+            "M-710 physics requires an explicit 10 mm contact offset and zero rest offset"
+        )
 
     materials = value["materials"]
     if not isinstance(materials, dict) or not materials:
@@ -758,6 +864,9 @@ def _validated_physics_contract(
         "parameter_status": value["parameter_status"],
         "gravity_world_m_s2": gravity.tolist(),
         "physics_time_step_s": time_step,
+        "execution_backend": dict(backend),
+        "contact_offset_m": contact_offset_m,
+        "rest_offset_m": rest_offset_m,
         "solver_position_iterations": int(solver_position_iterations),
         "solver_velocity_iterations": int(solver_velocity_iterations),
         "friction_combine_mode": "min",
@@ -772,8 +881,15 @@ def _validated_physics_contract(
 def _validated_rendering_contract(value: Any, *, physics_time_step_s: float) -> dict[str, Any]:
     """Validate the content-addressed recording contract used by M-710 replay."""
 
-    if not isinstance(value, dict) or set(value) != {"required_output"}:
-        raise ValueError("M-710 rendering contract must contain required_output")
+    expected_contract_keys = {
+        "required_output",
+        "material_palette",
+        "conveyor_visual_motion",
+    }
+    if not isinstance(value, dict) or set(value) != expected_contract_keys:
+        raise ValueError(
+            "M-710 rendering contract must contain output, palette, and conveyor motion"
+        )
     required = value["required_output"]
     expected_keys = {"width_px", "height_px", "fps", "camera_mode"}
     if not isinstance(required, dict) or set(required) != expected_keys:
@@ -800,6 +916,30 @@ def _validated_rendering_contract(value: Any, *, physics_time_step_s: float) -> 
     render_stride = physics_hz / fps
     if not np.isclose(render_stride, round(render_stride), atol=1e-9, rtol=0.0):
         raise ValueError("M-710 output FPS must divide the physics rate into an integer render stride")
+    palette = value["material_palette"]
+    expected_palette = {
+        "chassis_rgb": [0.10, 0.12, 0.16],
+        "conveyor_rgb": [0.035, 0.22, 0.62],
+        "conveyor_motion_marker_rgb": [1.0, 0.58, 0.03],
+    }
+    if not isinstance(palette, dict) or set(palette) != set(expected_palette):
+        raise ValueError("M-710 rendering palette is incomplete")
+    audited_palette = {}
+    for name, expected in expected_palette.items():
+        color = np.asarray(palette[name], dtype=float)
+        if color.shape != (3,) or not np.all(np.isfinite(color)) or not np.allclose(
+            color, expected, atol=1e-12, rtol=0.0
+        ):
+            raise ValueError(f"M-710 rendering color {name} changed from the reviewed palette")
+        audited_palette[name] = color.tolist()
+    visual_motion = value["conveyor_visual_motion"]
+    expected_visual_motion = {
+        "model": "collision_free_wrapped_surface_markers_v1",
+        "markers_have_collision": False,
+        "markers_follow_active_physx_surface_velocity": True,
+    }
+    if visual_motion != expected_visual_motion:
+        raise ValueError("M-710 conveyor visual motion contract is invalid")
     return {
         "required_output": {
             "width_px": width,
@@ -807,7 +947,9 @@ def _validated_rendering_contract(value: Any, *, physics_time_step_s: float) -> 
             "fps": fps,
             "camera_mode": camera_mode,
             "render_every_physics_steps": int(round(render_stride)),
-        }
+        },
+        "material_palette": audited_palette,
+        "conveyor_visual_motion": dict(expected_visual_motion),
     }
 
 
@@ -1341,8 +1483,8 @@ def build_fanuc_isaac_replay_bundle(
         if scene_primitives is None:
             raise ValueError("M-710 replay requires frozen layout-bound scene primitives")
         cartons = [item for item in scene_primitives if item["category"] == "carton"]
-        if len(cartons) != 40 or not all(item["dynamic"] for item in cartons):
-            raise ValueError("M-710 replay requires all 40 cartons as dynamic rigid bodies")
+        if not cartons or not all(item["dynamic"] for item in cartons):
+            raise ValueError("M-710 replay requires all current cartons as dynamic rigid bodies")
         if sum(item["name"] == str(segment.get("target", "")) for item in cartons) != 1:
             raise ValueError("M-710 replay target must identify exactly one dynamic carton")
 
@@ -1822,6 +1964,8 @@ def build_fanuc_isaac_replay_bundle(
     actual_state_gate_defaults = {
         "maximum_contact_wait_s": 0.50,
         "maximum_support_wait_s": 0.75,
+        "maximum_free_transit_wait_s": 1.0,
+        "maximum_release_clearance_wait_s": 1.0,
         "support_max_gap_m": 0.003,
         "support_maximum_penetration_m": 0.001,
         "support_minimum_footprint_overlap_ratio": 0.90,
@@ -1837,7 +1981,8 @@ def build_fanuc_isaac_replay_bundle(
     if not 0.0 < actual_state_gates["support_minimum_footprint_overlap_ratio"] <= 1.0:
         raise ValueError("support footprint overlap ratio must be in (0, 1]")
 
-    place_evidence = _validated_place_evidence(segment)
+    place_evidence = _validated_place_evidence(segment,
+        scene_primitives=scene_primitives if robot_model_id == "fanuc_m710id_70" else None)
 
     metadata = {
         "robot_model": robot_model_id,
@@ -1917,6 +2062,29 @@ def build_fanuc_isaac_replay_bundle(
         "place_center_m": place_evidence["place_center_m"],
         "release_center_m": place_evidence["release_center_m"],
         "place_surface": place_evidence["place_surface"],
+        "selected_place_support_names": list(segment.get("place", {}).get("support_names", [place_evidence["place_surface"]])),
+        "collision_policy": dict(plan.get("collision_policy", {})),
+        "stack_carton_names": list(plan.get("stack_carton_names", [])),
+        "row_selection": dict(plan.get("row_selection", {})),
+        "completed_carton_ids": list(plan.get("completed_carton_ids", [])),
+        "handed_off_ids": list(plan.get("handed_off_ids", [])),
+        "trajectory_stage_ranges": dict(segment.get("stage_ranges", {})),
+        "free_transit_start_time_seconds": (
+            float(replay_motion_times[segment["stage_ranges"]["extraction"][1]])
+            + pre_grasp_settle_seconds + vacuum_establish_seconds
+            if "extraction" in segment.get("stage_ranges", {}) else None),
+        "stage_windows": [
+            {"stage": name,
+             "start_time_s": float(replay_motion_times[interval[0]])
+                + (pre_grasp_settle_seconds + vacuum_establish_seconds if interval[0] > segment.get("grasp_index", len(path)) else 0)
+                + (release_seconds if interval[0] > segment.get("release_index", len(path)) else 0),
+             "end_time_s": float(replay_motion_times[interval[1]])
+                + (pre_grasp_settle_seconds + vacuum_establish_seconds if interval[1] > segment.get("grasp_index", len(path)) else 0)
+                + (release_seconds if interval[1] > segment.get("release_index", len(path)) else 0)}
+            for name, interval in segment.get("stage_ranges", {}).items()],
+        "joint_gravity_feedforward_enabled": bool(cfg.get("execution", {}).get("joint_gravity_feedforward_enabled", False)),
+        "joint_velocity_feedforward_enabled": bool(cfg.get("execution", {}).get("joint_velocity_feedforward_enabled", False)),
+        "attached_payload_gravity_feedforward_enabled": bool(cfg.get("execution", {}).get("attached_payload_gravity_feedforward_enabled", False)),
         "planned_place_support_audit": place_evidence["planned_support_audit"],
         "planned_actual_box_pose_world": place_evidence["actual_box_pose_world"],
         "free_fall_height_m": float(segment.get("free_fall_height_m", 0.0)),
@@ -1927,6 +2095,7 @@ def build_fanuc_isaac_replay_bundle(
         "conveyor": conveyor_contract,
         "actual_state_gates": actual_state_gates,
         "gripper": {
+            "qualified_rigid_collision_boxes_tool_frame": list(cfg.get("tool", {}).get("qualified_rigid_collision_boxes_tool_frame", [])),
             "suction_mode": suction_mode,
             "holding_capacity_assumption": (
                 HOLDING_CAPACITY_ASSUMPTION if ideal_independent_mode else None

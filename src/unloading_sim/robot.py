@@ -700,6 +700,30 @@ class URDFRobot:
             for index, row in enumerate(self.tool_collision_local_boxes)
         ]
 
+    def tool_compliant_collision_obbs(self, q: np.ndarray) -> list[OBB]:
+        """Return conservative audited bellows bounds for swept-path proofs."""
+
+        tool = self.fk(q)
+        rows = np.asarray(
+            getattr(self, "tool_compliant_collision_local_boxes", np.empty((0, 6))),
+            dtype=float,
+        )
+        return [
+            OBB(
+                center=tool[:3, :3] @ row[:3] + tool[:3, 3],
+                half_extents=0.5 * row[3:],
+                rotation=tool[:3, :3],
+                name=f"tool_compliant_bellows_{index}",
+                category="robot",
+            )
+            for index, row in enumerate(rows)
+        ]
+
+    def tool_all_physical_obbs(self, q: np.ndarray) -> list[OBB]:
+        """Return rigid and compliant source-audited tool bounds together."""
+
+        return [*self.tool_collision_obbs(q), *self.tool_compliant_collision_obbs(q)]
+
     def collision_result(
         self,
         q: np.ndarray,

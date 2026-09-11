@@ -279,11 +279,44 @@ def load_m710id70_official_dynamics(path: str | Path) -> M710EngineeringDynamics
         raise ValueError("official execution must retain all 40 cartons at 42.5 kg")
 
     simulation_data = _mapping(data.get("simulation"), "simulation")
+    backend = str(simulation_data.get("execution_backend", "physx_cpu"))
+    device = str(simulation_data.get("device", "cpu"))
+    broadphase = str(simulation_data.get("broadphase_type", "MBP"))
+    gpu_dynamics = simulation_data.get("gpu_dynamics_enabled", False)
+    fabric = simulation_data.get("fabric_enabled", True)
+    ccd = simulation_data.get("ccd_enabled", True)
+    contact_offset_m = _finite(
+        simulation_data.get("contact_offset_m"), "simulation contact offset", positive=True
+    )
+    rest_offset_m = _finite(
+        simulation_data.get("rest_offset_m"), "simulation rest offset"
+    )
+    if not all(isinstance(value, bool) for value in (gpu_dynamics, fabric, ccd)):
+        raise ValueError("simulation GPU dynamics, Fabric, and CCD flags must be boolean")
+    valid_backend = (
+        (backend, device, broadphase, gpu_dynamics, fabric, ccd)
+        == ("physx_cpu", "cpu", "MBP", False, True, True)
+    )
+    if not valid_backend:
+        raise ValueError("simulation execution backend fields are inconsistent")
+    if contact_offset_m != 0.010 or rest_offset_m != 0.0:
+        raise ValueError(
+            "official execution requires the explicit 10 mm predictive contact offset "
+            "and zero physical rest offset"
+        )
     simulation = SimulationSettings(
         _vector(simulation_data["gravity_world_m_s2"], 3, "gravity"),  # type: ignore[arg-type]
         _finite(simulation_data["physics_time_step_s"], "physics dt", positive=True),
         int(simulation_data["solver_position_iterations"]),
         int(simulation_data["solver_velocity_iterations"]),
+        backend,
+        device,
+        broadphase,
+        gpu_dynamics,
+        fabric,
+        ccd,
+        contact_offset_m,
+        rest_offset_m,
     )
     environment_data = _mapping(data.get("environment"), "environment")
     environment = PhysicalEnvironment(

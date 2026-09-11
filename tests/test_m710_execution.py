@@ -5,18 +5,16 @@ import json
 from pathlib import Path
 import subprocess
 import sys
-from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from unloading_sim.isaac_bridge import build_fanuc_isaac_replay_bundle
 from unloading_sim.layout_single_carton import (
-    EXPECTED_TOP_CARTONS,
+    build_verified_motion_input,
     load_layout_motion_policy,
     run_layout_single_carton_audit,
 )
-from unloading_sim.identity import load_tool_config
 from unloading_sim.m710_dynamics import load_m710id70_dynamics
 from unloading_sim.m710_execution import (
     DEFAULT_CONFIG_PATH,
@@ -40,28 +38,11 @@ def _compact_motion_result() -> dict:
 
 @pytest.fixture(scope="module")
 def geometry_adapter_input():
-    """Unverified records for pure adapter tests; never a planning snapshot.
-
-    No validity booleans or fingerprint are fabricated. These records are
-    passed only to geometry/configuration formatters, not the execution gate.
-    """
+    """Use the current verified snapshot for pure adapter-format tests."""
     execution = load_m710_execution_config(DEFAULT_CONFIG_PATH)
     policy = load_layout_motion_policy(execution.motion_policy_path)
-    layout = policy.layout_validation.layout
     dynamics = load_m710id70_dynamics(execution.dynamics_path)
-    def record(box):
-        return {"name": box.name, "category": box.category,
-                "pose_world": box.world_from_local.tolist(), "half_extents_m": box.half_extents.tolist()}
-    geometry = load_tool_config((layout.config_path.parent / layout.data["tool"]["geometry_config"]).resolve())
-    scene = SimpleNamespace(
-        policy=policy, fixed_components=layout.fixed_components(), cartons=layout.cartons(),
-        snapshot={
-            "assembly": {"fixed_components": [record(box) for box in layout.fixed_components()]},
-            "cartons": [record(box) for box in layout.cartons()],
-            "robot": {"world_from_mount": layout.robot_base_transform().tolist()},
-            "tool": {"geometry": geometry.data["geometry"]},
-        },
-    )
+    scene = build_verified_motion_input(policy, ROOT)
     return scene, dynamics, execution
 
 
@@ -74,7 +55,7 @@ def preflight() -> dict:
     )
 
 
-def test_adapter_preserves_carton_mass_inertia_and_blocked_preflight_has_no_scene(preflight, geometry_adapter_input):
+def test_adapter_preserves_carton_mass_inertia_and_ready_preflight_scene(preflight, geometry_adapter_input):
     primitives = _scene_primitives(*geometry_adapter_input)
     cartons = [item for item in primitives if item["category"] == "carton"]
     fixed = [
@@ -84,9 +65,8 @@ def test_adapter_preserves_carton_mass_inertia_and_blocked_preflight_has_no_scen
     ]
     assert len(primitives) == 46  # 3 fixed + 40 cartons + 3 finite boundary patches
     assert preflight["scene"]["carton_count"] == 40
-    assert preflight["scene"]["dynamic_carton_count"] == 0
-    assert preflight["scene"]["configured_dynamic_carton_count"] == 40
-    assert preflight["scene"]["primitives"] == []
+    assert preflight["scene"]["dynamic_carton_count"] == 40
+    assert len(preflight["scene"]["primitives"]) == 46
     assert len(cartons) == 40
     assert {item["name"] for item in cartons} == {
         f"carton_l{layer:02d}_c{column:02d}" for layer in range(8) for column in range(5)
@@ -103,14 +83,13 @@ def test_adapter_preserves_carton_mass_inertia_and_blocked_preflight_has_no_scen
         "conveyor_longitudinal",
     }
     assert all(item["dynamic"] is False for item in fixed)
-    assert preflight["motion"]["task_population"]["carton_ids"] == [
-        "carton_l07_c02",
-        "carton_l07_c01",
-        "carton_l07_c03",
-        "carton_l07_c00",
-        "carton_l07_c04",
+    population = preflight["motion"]["task_population"]
+    row_selection = preflight["replay_adapter_inputs"]["plan_common"]["row_selection"]
+    assert row_selection["status"] == "READY"
+    assert row_selection["row_id"] is not None
+    assert population == [
+        item["carton_name"] for item in row_selection["candidates"]
     ]
-    assert sorted(preflight["motion"]["task_population"]["carton_ids"]) == list(EXPECTED_TOP_CARTONS)
 
 
 def test_boundary_patches_are_finite_solver_extents_not_trailer_dimension_claims(geometry_adapter_input):
@@ -143,7 +122,7 @@ def test_boundary_patches_are_finite_solver_extents_not_trailer_dimension_claims
     assert by_name["physical_left_sidewall_reachable_patch"]["boundary"]["value_m"] == 1.15
 
 
-def test_conveyor_transport_and_fail_closed_no_isaac_no_video_contract(preflight, geometry_adapter_input):
+def test_conveyor_transport_and_ready_but_not_yet_executed_contract(preflight, geometry_adapter_input):
     configuration = _bridge_configuration(*geometry_adapter_input)
     simulation = configuration["simulation_validation"]
     conveyor = simulation["conveyor"]
@@ -170,70 +149,57 @@ def test_conveyor_transport_and_fail_closed_no_isaac_no_video_contract(preflight
         "fps": 30,
         "camera_mode": "fixed_overview_with_contact_and_place_keyframes",
     }
+    assert simulation["rendering"]["material_palette"] == {
+        "chassis_rgb": [0.10, 0.12, 0.16],
+        "conveyor_rgb": [0.035, 0.22, 0.62],
+        "conveyor_motion_marker_rgb": [1.0, 0.58, 0.03],
+    }
+    assert simulation["rendering"]["conveyor_visual_motion"] == {
+        "model": "collision_free_wrapped_surface_markers_v1",
+        "markers_have_collision": False,
+        "markers_follow_active_physx_surface_velocity": True,
+    }
     assert configuration["execution"][
         "post_release_settle_seconds"
     ] == pytest.approx(1.0)
-    assert preflight["status"] == "BLOCKED"
-    assert preflight["simulation_execution_ready"] is False
-    assert preflight["execution_qualified"] is False
+    assert simulation["physics"]["contact_offset_m"] == pytest.approx(0.010)
+    assert simulation["physics"]["rest_offset_m"] == pytest.approx(0.0)
+    assert configuration["execution"]["joint_velocity_feedforward_enabled"] is True
+    assert configuration["execution"]["attached_payload_gravity_feedforward_enabled"] is True
+    assert simulation["actual_state_gates"]["maximum_free_transit_wait_s"] == pytest.approx(1.0)
+    assert simulation["actual_state_gates"]["maximum_release_clearance_wait_s"] == pytest.approx(1.0)
+    assert simulation["camera"]["eye_m"] == pytest.approx([-3.8, 0.0, 2.7])
+    assert simulation["camera"]["target_m"] == pytest.approx([-0.2, 0.0, 1.25])
+    assert preflight["status"] == "READY"
+    assert preflight["simulation_execution_ready"] is True
+    assert preflight["execution_qualified"] is True
     assert preflight["machine_qualified"] is False
-    assert preflight["simulation_readiness_blockers"] == [
-        "INITIAL_STATE_INVALID",
-        "ROBOT_TOOL_MOUNT_CONTACT_SCOPE_NOT_QUALIFIED",
-        "TOOL_RIGID_COLLISION_COVERAGE_NOT_PROVEN",
-    ]
-    assert preflight["model_initialization"]["deferred_tool_collision_qualification"] == {
-        "layout_geometry_status": "CAD_DERIVED_COMPOUND_OBB_COVERAGE_UNVERIFIED",
-        "required_coverage_status": "CONSERVATIVE_RIGID_SOLID_COVERAGE_PROVEN",
-        "robot_tool_mount_contact_scope_qualified": False,
-    }
-    assert preflight["model_initialization"]["model_load_ready"] is True
-    assert preflight["motion"]["statistics"]["ik_calls"] == 0
+    assert preflight["simulation_readiness_blockers"] == []
+    assert preflight["motion"]["statistics"]["ik_calls"] > 0
     assert preflight["backend_execution_status"] == "NOT_RUN_PER_USER_REQUEST"
     assert preflight["isaac_validation_performed"] is False
-    assert preflight["replay_adapter_inputs"] is None
+    assert preflight["replay_adapter_inputs"] is not None
     assert preflight["claims"]["physical_simulation_execution"] == "NOT_RUN_PER_USER_REQUEST"
     assert preflight["claims"]["video"] == "NOT_PRODUCED_WITHOUT_A_PHYSICAL_EXECUTION"
 
 
-def test_tool_source_integrity_does_not_promote_unproven_obb_coverage(geometry_adapter_input):
+def test_tool_source_and_coverage_certificate_promote_only_the_scoped_execution_geometry(geometry_adapter_input):
     scene, dynamics, execution = geometry_adapter_input
-    audit_scene = SimpleNamespace(
-        policy=scene.policy,
-        snapshot={
-            "tool": {
-                "rigid_collision_obbs": [{} for _ in range(58)],
-                "execution_collision_representation": (
-                    "58_CAD_DERIVED_RIGID_SOLID_COMPOUND_OBBS_PLUS_SEPARATE_FLEXIBLE_CUP_CONTACTS"
-                ),
-            }
-        },
-    )
-    assets, _, _ = _audited_execution_assets(execution, audit_scene, dynamics)
+    assets, _, _ = _audited_execution_assets(execution, scene, dynamics)
     tool = assets["tool"]
     geometry = tool["execution_geometry_qualification"]
     assert geometry["structural_integration_checks_passed"] is True
-    assert geometry["rigid_solid_semantic_classification_verified"] is False
-    assert geometry["outward_containment_certificate_present"] is False
-    assert geometry["no_false_negative_rigid_solid_coverage_proven"] is False
-    assert geometry["robot_tool_mount_contact_scope_verified"] is False
-    assert geometry["broad_j6_tool_collision_exception_present"] is True
-    assert geometry["planning_collision_acceptance_qualified"] is False
-    assert geometry["dynamic_collision_qualified"] is False
-    assert tool["source_execution_qualified"] is False
-    assert tool["execution_qualified"] is False
-    assert assets["execution_qualified"] is False
-    assert "DYNAMIC_COLLISION_REPRESENTATION_NOT_QUALIFIED" in tool["unresolved"]
-    assert "DYNAMIC_COLLISION_REPRESENTATION_NOT_QUALIFIED" not in tool[
-        "resolved_by_execution_integration"
-    ]
-    mount_reason = "ROBOT_TOOL_MOUNT_CONTACT_SCOPE_NOT_QUALIFIED"
-    assert mount_reason in tool["unresolved"]
-    assert mount_reason in tool["integration_blocking_issues"]
-    assert "every tool rigid box" in tool["integration_blocking_issues"][mount_reason]
-    assert "TOOL_RIGID_COLLISION_COVERAGE_NOT_PROVEN" in tool[
-        "integration_blocking_issues"
-    ]
+    assert geometry["rigid_solid_compound_count"] == 130
+    assert geometry["rigid_solid_semantic_classification_verified"] is True
+    assert geometry["outward_containment_certificate_present"] is True
+    assert geometry["no_false_negative_rigid_solid_coverage_proven"] is True
+    assert geometry["robot_tool_mount_contact_scope_verified"] is True
+    assert geometry["planning_collision_acceptance_qualified"] is True
+    assert geometry["dynamic_collision_qualified"] is True
+    assert tool["source_execution_qualified"] is True
+    assert tool["execution_qualified"] is True
+    assert assets["execution_qualified"] is True
+    assert tool["integration_blocking_issues"] == {}
 
 
 def test_motion_and_preflight_content_fingerprints_reject_tampering(preflight):
@@ -266,7 +232,7 @@ def test_motion_and_preflight_content_fingerprints_reject_tampering(preflight):
         )
 
 
-def test_prepare_cli_writes_verified_blocked_preflight_without_running_isaac(tmp_path):
+def test_prepare_cli_writes_verified_ready_preflight_without_claiming_isaac(tmp_path):
     motion_path = tmp_path / "motion.json"
     output_path = tmp_path / "preflight.json"
     motion_path.write_text(json.dumps(_compact_motion_result(), indent=2), encoding="utf-8")
@@ -288,38 +254,26 @@ def test_prepare_cli_writes_verified_blocked_preflight_without_running_isaac(tmp
     )
     summary = json.loads(completed.stdout)
     result = json.loads(output_path.read_text(encoding="utf-8"))
-    assert summary["status"] == result["status"] == "BLOCKED"
+    assert summary["status"] == result["status"] == "READY"
     assert summary["backend_execution_status"] == "NOT_RUN"
     assert summary["isaac_validation_performed"] is False
     assert summary["video"] == "NOT_PRODUCED_WITHOUT_A_PHYSICAL_EXECUTION"
-    assert summary["dynamic_carton_count"] == 0
+    assert summary["dynamic_carton_count"] == 40
     assert verify_m710_execution_preflight(result)["status"] == "PASS"
     assert not list(tmp_path.glob("*.mp4"))
 
 
-def test_real_blocked_preflight_cannot_export_an_m710_bundle(preflight):
-    assert preflight["replay_adapter_inputs"] is None
-    plan = {"robot": {"model": "fanuc_m710id_70"}}
-    plan["segments"] = [
-        {
-            "pick_index": 0,
-            "target": preflight["motion"]["task_population"]["carton_ids"][0],
-            "path": [
-                [0.0] * 6,
-                [0.01] * 6,
-                [0.0] * 6,
-            ],
-                "grasp_index": 1,
-                "release_index": 2,
-                "release_retreat_index": 2,
-            "sealed_cup_indices": list(range(60)),
-            "sealed_cup_count": 60,
-            "sealed_cups_per_zone": [20, 20, 20],
-        }
-    ]
-    with pytest.raises(ValueError, match="schema"):
+def test_ready_preflight_exports_and_tampering_still_fails_closed(preflight):
+    inputs = preflight["replay_adapter_inputs"]
+    plan = copy.deepcopy(inputs["plan_common"])
+    plan["segments"] = [copy.deepcopy(inputs["trajectory_segment"])]
+    bundle = build_fanuc_isaac_replay_bundle(
+        plan, inputs["configuration"], preflight=copy.deepcopy(preflight)
+    )
+    assert bundle.metadata["simulation_execution_ready"] is True
+    changed = copy.deepcopy(preflight)
+    changed["simulation_execution_ready"] = False
+    with pytest.raises(ValueError, match="preflight fingerprint mismatch"):
         build_fanuc_isaac_replay_bundle(
-            plan,
-            {},
-            preflight=copy.deepcopy(preflight),
+            plan, inputs["configuration"], preflight=changed
         )

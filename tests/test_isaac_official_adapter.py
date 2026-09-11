@@ -183,7 +183,7 @@ def test_replay_source_uses_drive_targets_and_actual_contact_release_gates():
     source = (ROOT / "scripts/isaacsim_fanuc_replay.py").read_text(encoding="utf-8")
     loop = source[source.index("for step in range(physics_steps):") :]
 
-    assert "articulation.set_dof_position_targets(command[None, :])" in loop
+    assert "articulation.set_dof_position_targets(drive_position_target[None, :])" in loop
     assert "articulation.set_dof_positions(" not in loop
     assert "audit_actual_independent_cup_contacts(" in loop
     assert "actual_contact_mask == list(commanded_cup_mask)" in loop

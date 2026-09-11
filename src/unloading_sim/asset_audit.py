@@ -513,8 +513,8 @@ def _audit_tool_manifest(document: Mapping[str, Any], root: Path, source_paths: 
     )
     if document["source_status"] != "AVAILABLE_HASH_VERIFIED" or document["conversion_status"] != "DERIVED_ASSETS_PRESENT_ENGINEERING_ONLY":
         raise AssetAuditError("tool source/conversion status is inconsistent")
-    if document["execution_qualified"] is not False:
-        raise AssetAuditError("tool execution_qualified must remain false for the current engineering assets")
+    if not isinstance(document["execution_qualified"], bool):
+        raise AssetAuditError("historical tool execution_qualified must be a boolean")
     contact = _expect_mapping(document["contact_geometry"], "contact_geometry")
     physical = float(contact["flange_to_uncompressed_cup_extreme_m"])
     compression = float(contact["configured_cup_compression_m"])
@@ -583,17 +583,35 @@ def load_and_audit_asset_manifest(
         missing = _audit_robot_manifest(document, root)
     else:
         missing = _audit_tool_manifest(document, root, source_paths)
+    # The manifest preserves the historical conversion decision.  Current
+    # simulation geometry readiness is derived from the independently
+    # regenerated STEP coverage, including the restored rigid cup inserts.
+    # Vacuum/material certification remains separate evidence and does not
+    # replace these geometry checks or veto an explicit ideal-cup simulation.
+    unresolved = tuple(str(item) for item in document["unresolved"])
+    if schema == TOOL_SCHEMA:
+        from .tool_geometry import audit_tool_geometry
+
+        geometry = audit_tool_geometry(root)
+        execution_qualified = bool(geometry["simulation_geometry_qualified"])
+        if execution_qualified:
+            unresolved = tuple(
+                item for item in unresolved
+                if item != "DYNAMIC_COLLISION_REPRESENTATION_NOT_QUALIFIED"
+            )
+    else:
+        execution_qualified = not missing
     return AssetAuditReport(
         manifest_path=repository_manifest_path,
         schema_version=str(schema),
         manifest_sha256=_sha256(path.read_bytes()),
         source_integrity=True,
         conversion_status=str(document["conversion_status"]),
-        execution_qualified=bool(document["execution_qualified"]),
+        execution_qualified=execution_qualified,
         verified_file_count=count,
         verified_source_bytes=total_bytes,
         missing_converted_outputs=missing,
-        unresolved=tuple(str(item) for item in document["unresolved"]),
+        unresolved=unresolved,
     )
 
 

@@ -21,6 +21,10 @@ replay:
   pre_grasp_controller_settle_s: 0.20
   vacuum_establish_s: 0.30
   release_hold_s: 0.10
+  # Independent of the receiver-support wait.  The verified withdrawal needs
+  # 0.8774 s from release to restore the unchanged 20.2 mm cup/target margin;
+  # 1.0 s remains bounded and is shorter than the 4.3384 s remaining retreat.
+  release_clearance_wait_s: 1.00
   post_release_settle_s: 1.00
   normal_time_scale: 1.0
   output_width_px: 1920
@@ -28,6 +32,16 @@ replay:
   output_fps: 30
   camera_mode: fixed_overview_with_contact_and_place_keyframes
   command_mode: initialize_once_then_force_limited_position_drive_targets
+  camera:
+    # Rendering-only world coordinates.  The centreline view keeps both
+    # trailer solver walls out of the near field while showing robot, stack
+    # and both conveyor legs; it never changes collision or qualification.
+    eye_m: [-3.8, 0.0, 2.7]
+    target_m: [-0.2, 0.0, 1.25]
+    horizontal_fov_rad: 1.3089969389957472
+    horizontal_aperture_mm: 20.955
+    near_m: 0.03
+    far_m: 10.0
 
 qualification:
   require_complete_collision_checked_motion_plan: true

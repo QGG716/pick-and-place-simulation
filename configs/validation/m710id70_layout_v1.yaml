@@ -3,15 +3,36 @@ layout_config: ../workcells/m710id70_unloading_layout_v1.yaml
 initial_state:
   seed: 71070
   search_maximum_random_draws: 3000
-  selected_random_draw_1_based: 4
+  selected_random_draw_1_based: null
   previous_v3_q_rad: [-1.2535046523103328, -0.9321730956021104, -1.186652413419966, -0.21179524367224456, -0.2394417658165151, -1.6893308052919531]
-  # First valid random witness: draw 4 / 3000 from seed 71070. The previous V3
-  # home crosses the known left-wall plane in this confirmed layout.
-  q_rad: [3.1135901287083176, 0.7854566731593875, 0.6496218708958161, 0.06722349609001022, -1.2117503086182402, -1.9415185231007088]
+  # Derived by tools/find_m710_contact_home.py: actual highest-row centre,
+  # front-face 0.25 m unloaded standoff. Exact full-scene validation and
+  # Cartesian pregrasp/contact continuation passed; minimum joint margin
+  # 0.842571 rad. This changes only initial joints, not the fixed assembly.
+  q_rad: [-0.4738507840476061, -0.46642585435191586, -0.35455135903520246, 1.7851535539041579, 0.48589729025839207, -3.3829904117272847]
 collision:
   margin_m: 0.010
   assembly_contact_tolerance_m: 0.0002
   joint_margin_rad: 0.0174532925199433
+collision_policy:
+  schema: m710_simulation_collision_policy_v3
+  wrist_tool_exempt_links: [J5_link, J6_link]
+  stack_contact_mode: planner_relaxed_physics_checked
+  stack_contact_stages: [support-release, extraction]
+  maximum_planned_stack_penetration_m: 0.010
+  free_space_clearance_m: 0.0202
+  maximum_actual_penetration_m: 0.010
+  maximum_neighbor_displacement_m: 0.060
+  maximum_neighbor_tilt_rad: 0.20
+  progress_timeout_s: 3.0
+  minimum_progress_m: 0.002
+  # Inactive bellows remain physical.  Only their stage-scoped compression
+  # against an original stack carton is classified as expected; rigid inserts,
+  # robot links and over-compression remain failures.
+  inactive_compliant_cup_stack_contact_mode: physical_contact_within_compression
+  # The runtime bellows shape is already at 10 mm nominal compression; the
+  # immutable tool manifest records 15 mm total travel, leaving 5 mm only.
+  maximum_compliant_cup_additional_compression_m: 0.005
 render:
   png_long_edge_px: 7200
   dpi: 300

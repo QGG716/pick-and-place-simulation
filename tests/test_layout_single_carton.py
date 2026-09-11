@@ -17,7 +17,6 @@ from unloading_sim.independent_cups import (
     select_ideal_independent_cups,
 )
 from unloading_sim.layout_single_carton import (
-    EXPECTED_TOP_CARTONS,
     audit_execution_collision_geometry,
     build_verified_motion_input,
     load_layout_motion_policy,
@@ -33,6 +32,9 @@ from unloading_sim.workcell_layout import audit_initial_state, canonical_digest
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "configs/validation/m710id70_layout_v1_single_carton.yaml"
+# Literal regression expectation for this fixed 5 x 8 fixture.  Production
+# selection derives the row from poses/supports and exports no top-ID constant.
+EXPECTED_TOP_CARTONS = tuple(f"carton_l07_c{column:02d}" for column in range(5))
 
 
 def _quick_policy():
@@ -73,8 +75,8 @@ def test_tool_frame_contract_retains_literal_physical_dimensions():
         rtol=0.0,
     )
     assert frames.flange_from_uncompressed_cup_plane[0, 3] == 0.2275
-    assert frames.flange_from_physical_contact[0, 3] == 0.2125
-    assert frames.virtual_to_physical_contact_offset_m == pytest.approx(0.0375, abs=1e-15)
+    assert frames.flange_from_physical_contact[0, 3] == 0.2175
+    assert frames.virtual_to_physical_contact_offset_m == pytest.approx(0.0325, abs=1e-15)
     assert frames.tool0_clocking_status == "OFFICIAL_FLANGE_TO_PROJECT_TOOL0_ADAPTER_RESOLVED"
     assert frames.execution_qualified is True
 

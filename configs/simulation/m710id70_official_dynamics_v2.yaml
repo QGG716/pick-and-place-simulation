@@ -89,6 +89,19 @@ simulation:
   physics_time_step_s: 0.004166666666666667
   solver_position_iterations: 16
   solver_velocity_iterations: 4
+  execution_backend: physx_cpu
+  device: cpu
+  broadphase_type: MBP
+  gpu_dynamics_enabled: false
+  fabric_enabled: true
+  ccd_enabled: true
+  # Explicit per-shape PhysX offsets.  Leaving these automatic produced a
+  # runtime value of 19.62 m when the World was initialized through the safe
+  # zero-dt reset path.  A 10 mm contact offset preserves the existing 10 mm
+  # per-body engineering margin (20 mm pairwise predictive contact); rest at
+  # zero retains exact physical surface contact.
+  contact_offset_m: 0.010
+  rest_offset_m: 0.0
 
 environment:
   floor_z_m: 0.0
@@ -131,7 +144,10 @@ vacuum_attachment:
   cup_columns: 12
   cup_pitch_m: [0.048, 0.048]
   cup_radius_m: 0.0215
-  cup_compression_m: 0.015
+  # Planned nominal working compression.  This stays within the 15 mm CAD/
+  # catalogue travel recorded by the immutable tool asset manifest; it does
+  # not change the cup geometry or its physical maximum travel.
+  cup_compression_m: 0.010
   require_nonempty_geometric_contact: true
   require_validated_contact_endpoint: true
   require_actual_fk_contact_recheck: true

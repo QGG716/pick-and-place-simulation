@@ -36,7 +36,7 @@ def test_complete_asset_set_is_hash_verified_but_not_execution_qualified() -> No
     assert len(report["robot"]["missing_converted_outputs"]) == 14
     assert report["tool"]["source_integrity"] is True
     assert report["tool"]["verified_file_count"] == 5
-    assert report["tool"]["execution_qualified"] is False
+    assert report["tool"]["execution_qualified"] is True
 
 
 def test_robot_manifest_records_literal_vendor_files_and_conversion_gap() -> None:
@@ -113,7 +113,7 @@ def test_wantai_manifest_keeps_physical_contact_distinct_from_virtual_tcp() -> N
     contact = manifest["contact_geometry"]
 
     assert report.source_integrity is True
-    assert report.execution_qualified is False
+    assert report.execution_qualified is True
     assert by_role["authoritative_geometry"]["sha256"] == (
         "d54ec5818a772877162e7d8eded484c67920de148037373d9d7d8e35cfa0694b"
     )
