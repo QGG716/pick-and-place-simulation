@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import json
 
 import pytest
 
@@ -147,6 +148,7 @@ def test_feasibility_handoff_contains_existing_planning_world_snapshot():
     report = check_feasibility_handoff(handoff, manifest, contract)
     assert report["status"] == "PASS"
     assert handoff["planning_world_snapshot"]["__type__"] == "PlanningWorldSnapshot"
+    json.dumps(handoff)
 
 
 def test_capture_binding_rejects_hash_mismatch_shape():

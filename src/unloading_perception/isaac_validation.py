@@ -619,7 +619,7 @@ def build_feasibility_handoff(
     scene = snapshot.scene_snapshot
     unknown = list(scene.get("unknown_regions", ())) if isinstance(scene, Mapping) else []
     objects = list(scene.get("obstacles", ())) if isinstance(scene, Mapping) else []
-    payload = {
+    payload = to_wire({
         "schema_version": ISAAC_FEASIBILITY_HANDOFF_SCHEMA,
         "planning_world_snapshot": to_wire(snapshot),
         "isaac_scene_manifest": {
@@ -646,7 +646,7 @@ def build_feasibility_handoff(
         "unknown_regions": unknown,
         "objects": objects,
         "asset_manifest_fingerprint": manifest.layout["asset_manifest_fingerprint"],
-    }
+    })
     payload["handoff_fingerprint"] = canonical_digest(payload)
     return payload
 
