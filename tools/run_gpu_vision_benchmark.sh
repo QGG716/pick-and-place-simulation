@@ -8,12 +8,15 @@ ARTIFACT_ROOT=${ARTIFACT_ROOT:-/root/autodl-tmp/v05-acceptance}
 MODEL_MANIFEST=${MODEL_MANIFEST:-$ARTIFACT_ROOT/model-manifest.json}
 WARMUPS=${WARMUPS:-3}
 MEASUREMENTS=${MEASUREMENTS:-10}
+RESIDENT=${RESIDENT:-0}
 RUN_ID=${RUN_ID:-benchmark-$(date -u +%Y%m%dT%H%M%SZ)}
 RUN="$ARTIFACT_ROOT/gpu/$RUN_ID"
 
 mkdir -p "$RUN"
+ARGS=()
+if [[ $RESIDENT == 1 ]]; then ARGS+=(--resident); fi
 timeout --signal=TERM 7200 "$GPU_VENV/bin/python" "$ROOT/tools/run_gpu_vision_benchmark.py" \
   --gpu-python "$GPU_VENV/bin/python" --vision-root "$VISION_ROOT" \
   --model-manifest "$MODEL_MANIFEST" --output-root "$RUN" \
-  --warmups "$WARMUPS" --measurements "$MEASUREMENTS" \
+  --warmups "$WARMUPS" --measurements "$MEASUREMENTS" "${ARGS[@]}" \
   2>&1 | tee "$RUN/benchmark.log"

@@ -40,6 +40,7 @@ class PerceptionNode(Node):
         self.declare_parameter("worker_cwd", "")
         self.declare_parameter("worker_allowed_roots", [""])
         self.declare_parameter("worker_timeout_seconds", 1800.0)
+        self.declare_parameter("worker_resident", False)
         self.declare_parameter("publish_period_seconds", 0.1)
         self.declare_parameter("upstream_commit", "1d208f2ed380a207e6e46b4a62d2ac640edfe477")
         self.mode = str(self.get_parameter("backend").value)
@@ -77,6 +78,7 @@ class PerceptionNode(Node):
                 timeout_seconds=float(self.get_parameter("worker_timeout_seconds").value),
                 worker_epoch=str(uuid4()),
                 allowed_roots=(self.path.parent, cwd, *configured_roots),
+                resident=bool(self.get_parameter("worker_resident").value),
             )
         else:
             raise RuntimeError("backend must be exactly 'replay' or 'pipeline'; simulation truth is never an implicit fallback")

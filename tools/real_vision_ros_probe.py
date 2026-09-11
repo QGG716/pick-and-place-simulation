@@ -24,7 +24,10 @@ class Probe(Node):
 
     def _observation(self, message) -> None:
         observation = observation_from_msg(message)
-        if observation.provider == "cargo-real-image-gpu-worker":
+        if observation.provider in (
+            "cargo-real-image-gpu-worker",
+            "cargo-real-image-gpu-resident-worker",
+        ):
             self.observation = observation
 
     def _world(self, message) -> None:

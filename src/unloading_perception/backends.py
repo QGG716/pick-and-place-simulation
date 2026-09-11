@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from collections import deque
 import hashlib
 import json
 import os
 from pathlib import Path
+from queue import Empty, Queue
 import subprocess
+from threading import Lock, Thread
 from typing import Any, Mapping, Sequence
 from urllib.parse import unquote, urlparse
 from urllib.request import url2pathname
@@ -195,7 +198,9 @@ class SimGroundTruthBackend:
 class CargoPipelineBackend:
     """Bounded JSON-lines subprocess adapter for a separately managed worker."""
 
-    def __init__(self, command: Sequence[str], *, cwd: Path, timeout_seconds: float = 60.0, worker_epoch: str | None = None, allowed_roots: Sequence[Path] = ()) -> None:
+    def __init__(self, command: Sequence[str], *, cwd: Path, timeout_seconds: float = 60.0,
+                 worker_epoch: str | None = None, allowed_roots: Sequence[Path] = (),
+                 resident: bool = False) -> None:
         if not command or timeout_seconds <= 0.0:
             raise ValueError("worker command and positive timeout are required")
         self.command = tuple(str(item) for item in command)
@@ -205,7 +210,11 @@ class CargoPipelineBackend:
         self.allowed_roots = tuple(path.resolve() for path in (allowed_roots or (self.cwd,)))
         self.latest_epoch: str | None = None
         self.latest_sequence = -1
+        self.resident = bool(resident)
         self._process: subprocess.Popen[str] | None = None
+        self._stdout_lines: Queue[str] | None = None
+        self._stderr_tail: deque[str] = deque(maxlen=64)
+        self._request_lock = Lock()
 
     def capability(self) -> tuple[bool, str]:
         if not self.cwd.is_dir():
@@ -236,20 +245,27 @@ class CargoPipelineBackend:
                 "rgb_sha256": frame.rgb.sha256,
             },
         }, sort_keys=True) + "\n"
+        if not self._request_lock.acquire(blocking=False):
+            return self._failure(frame, "WORKER_BUSY", "resident worker queue capacity is one", ObservationStatus.FAILED)
         try:
-            self._process = subprocess.Popen(self.command, cwd=self.cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            stdout, stderr = self._process.communicate(request, timeout=self.timeout_seconds)
-            returncode = self._process.returncode
-        except subprocess.TimeoutExpired:
-            assert self._process is not None
-            self._process.kill()
-            self._process.communicate()
-            return self._failure(frame, "WORKER_TIMEOUT", "vision worker exceeded configured timeout", ObservationStatus.FAILED)
-        except OSError as exc:
-            return self._failure(frame, "WORKER_START_FAILED", str(exc), ObservationStatus.BACKEND_UNAVAILABLE)
+            try:
+                returncode, stdout, stderr = self._exchange(request)
+            except subprocess.TimeoutExpired:
+                self._stop_process(force=True)
+                if self.resident:
+                    self.worker_epoch = str(uuid4())
+                return self._failure(frame, "WORKER_TIMEOUT", "vision worker exceeded configured timeout", ObservationStatus.FAILED)
+            except (OSError, ValueError) as exc:
+                self._stop_process(force=True)
+                if self.resident:
+                    self.worker_epoch = str(uuid4())
+                return self._failure(frame, "WORKER_START_FAILED", str(exc), ObservationStatus.BACKEND_UNAVAILABLE)
         finally:
-            self._process = None
+            self._request_lock.release()
         if returncode != 0:
+            if self.resident:
+                self._stop_process(force=True)
+                self.worker_epoch = str(uuid4())
             try:
                 response = json.loads(stdout.strip().splitlines()[-1])
             except (ValueError, IndexError, json.JSONDecodeError):
@@ -263,6 +279,9 @@ class CargoPipelineBackend:
                 raise ValueError("worker response envelope identity mismatch")
             if response.get("input_sha256") != frame.rgb.sha256:
                 raise ValueError("worker response input hash mismatch")
+            if self.resident and bool(response.get("fatal", False)):
+                self._stop_process(force=True)
+                self.worker_epoch = str(uuid4())
             if response.get("status") != "COMPLETE":
                 code = str(response.get("error_code") or "WORKER_FAILED")
                 status = ObservationStatus.BACKEND_UNAVAILABLE if code in ("MODEL_MISSING", "GPU_UNAVAILABLE") else ObservationStatus.FAILED
@@ -293,7 +312,104 @@ class CargoPipelineBackend:
 
     def shutdown(self) -> None:
         process = self._process
-        if process is not None and process.poll() is None:
+        if self.resident and process is not None and process.poll() is None and process.stdin is not None:
+            try:
+                process.stdin.write(json.dumps({
+                    "schema_version": SCHEMA_VERSION, "op": "shutdown",
+                    "worker_epoch": self.worker_epoch,
+                }, sort_keys=True) + "\n")
+                process.stdin.flush()
+            except OSError:
+                pass
+        self._stop_process(force=False)
+
+    def _exchange(self, request: str) -> tuple[int, str, str]:
+        if not self.resident:
+            process = subprocess.Popen(
+                self.command, cwd=self.cwd, stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            )
+            self._process = process
+            stdout, stderr = process.communicate(request, timeout=self.timeout_seconds)
+            self._process = None
+            return int(process.returncode), stdout, stderr
+        self._ensure_resident()
+        assert self._process is not None and self._process.stdin is not None
+        assert self._stdout_lines is not None
+        self._process.stdin.write(request)
+        self._process.stdin.flush()
+        try:
+            response = self._stdout_lines.get(timeout=self.timeout_seconds)
+        except Empty as exc:
+            raise subprocess.TimeoutExpired(self.command, self.timeout_seconds) from exc
+        returncode = self._process.poll()
+        if response == "" and returncode is not None:
+            return int(returncode or 1), "", "".join(self._stderr_tail)
+        if response == "":
+            try:
+                returncode = self._process.wait(timeout=1.0)
+            except subprocess.TimeoutExpired:
+                returncode = 1
+            return int(returncode), "", "".join(self._stderr_tail)
+        return 0, response, "".join(self._stderr_tail)
+
+    def _ensure_resident(self) -> None:
+        if self._process is not None and self._process.poll() is None:
+            return
+        self._stderr_tail.clear()
+        process = subprocess.Popen(
+            self.command, cwd=self.cwd, stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1,
+        )
+        self._process = process
+        stdout_lines: Queue[str] = Queue(maxsize=2)
+        self._stdout_lines = stdout_lines
+        assert process.stdout is not None and process.stderr is not None and process.stdin is not None
+
+        def read_stdout() -> None:
+            for line in process.stdout:
+                stdout_lines.put(line)
+            stdout_lines.put("")
+
+        def read_stderr() -> None:
+            for line in process.stderr:
+                self._stderr_tail.append(line)
+
+        Thread(target=read_stdout, name="cargo-worker-stdout", daemon=True).start()
+        Thread(target=read_stderr, name="cargo-worker-stderr", daemon=True).start()
+        process.stdin.write(json.dumps({
+            "schema_version": SCHEMA_VERSION, "op": "hello",
+            "worker_epoch": self.worker_epoch,
+        }, sort_keys=True) + "\n")
+        process.stdin.flush()
+        try:
+            line = self._stdout_lines.get(timeout=self.timeout_seconds)
+        except Empty as exc:
+            raise subprocess.TimeoutExpired(self.command, self.timeout_seconds) from exc
+        try:
+            ready = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ValueError("resident worker returned an invalid ready envelope") from exc
+        if (
+            ready.get("schema_version") != SCHEMA_VERSION
+            or ready.get("op") != "ready"
+            or ready.get("worker_epoch") != self.worker_epoch
+        ):
+            raise ValueError("resident worker ready envelope identity mismatch")
+
+    def _stop_process(self, *, force: bool) -> None:
+        process = self._process
+        self._process = None
+        self._stdout_lines = None
+        if process is None or process.poll() is not None:
+            return
+        if force:
+            process.kill()
+            process.wait()
+            return
+        try:
+            process.wait(timeout=5.0)
+        except subprocess.TimeoutExpired:
             process.terminate()
             try:
                 process.wait(timeout=5.0)

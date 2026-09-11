@@ -26,16 +26,8 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--gpu-python", type=Path, required=True)
-    parser.add_argument("--vision-root", type=Path, required=True)
-    parser.add_argument("--model-manifest", type=Path, required=True)
-    parser.add_argument("--output-root", type=Path, required=True)
-    parser.add_argument("--result", type=Path, required=True)
-    parser.add_argument("--timeout", type=float, default=1800.0)
-    args = parser.parse_args()
-
+def create_backend_and_frame(args, *, resident: bool = False):
+    """Build one validated Mode-B request without running inference."""
     source_manifest = json.loads((ROOT / "integration" / "vision_mode_b_manifest.json").read_text(encoding="utf-8"))
     model_manifest = json.loads(args.model_manifest.read_text(encoding="utf-8"))
     vision_root = args.vision_root.resolve()
@@ -49,26 +41,23 @@ def main() -> int:
     ):
         if not path.is_file() or sha256(path) != expected:
             raise RuntimeError(f"fixed input missing or hash mismatch: {path}")
-
     sam = Path(model_manifest["sam"]["snapshot_path"])
     moge = Path(model_manifest["moge"]["model_path"])
+    worker = "vision_resident_worker.py" if resident else "vision_worker_entry.py"
     command = (
-        str(args.gpu_python), str(ROOT / "tools" / "vision_worker_entry.py"),
-        "--upstream-root", str(vision_root),
-        "--proposal-json", str(proposal),
-        "--person-masks", str(people),
-        "--output-root", str(args.output_root.resolve()),
-        "--input-root", str(vision_root),
-        "--sam-model", str(sam),
+        str(args.gpu_python), str(ROOT / "tools" / worker),
+        "--upstream-root", str(vision_root), "--proposal-json", str(proposal),
+        "--person-masks", str(people), "--output-root", str(args.output_root.resolve()),
+        "--input-root", str(vision_root), "--sam-model", str(sam),
         "--sam-model-id", model_manifest["sam"]["repository"],
-        "--sam-revision", model_manifest["sam"]["revision"],
-        "--moge-model", str(moge),
+        "--sam-revision", model_manifest["sam"]["revision"], "--moge-model", str(moge),
         "--moge-model-id", model_manifest["moge"]["repository"],
         "--moge-revision", model_manifest["moge"]["revision"],
     )
     backend = CargoPipelineBackend(
         command, cwd=ROOT, timeout_seconds=args.timeout, worker_epoch=f"smoke-{uuid4()}",
         allowed_roots=(vision_root, ROOT, args.output_root.resolve(), args.model_manifest.parent.resolve()),
+        resident=resident,
     )
     capture = source.stat().st_mtime
     frame = SensorFrame(
@@ -76,10 +65,22 @@ def main() -> int:
         capture, max(capture, time()), "unix-file-mtime", "camera_optical_model",
         int(source_manifest["input"]["width"]), int(source_manifest["input"]["height"]),
         "png", ResourceReference(source.as_uri(), sha256(source), "image/png"),
-        image_mapping=ImageMapping(
-            int(source_manifest["input"]["width"]), int(source_manifest["input"]["height"]),
-        ),
+        image_mapping=ImageMapping(int(source_manifest["input"]["width"]), int(source_manifest["input"]["height"])),
     )
+    return source_manifest, backend, frame
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--gpu-python", type=Path, required=True)
+    parser.add_argument("--vision-root", type=Path, required=True)
+    parser.add_argument("--model-manifest", type=Path, required=True)
+    parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--result", type=Path, required=True)
+    parser.add_argument("--timeout", type=float, default=1800.0)
+    parser.add_argument("--resident", action="store_true")
+    args = parser.parse_args()
+    source_manifest, backend, frame = create_backend_and_frame(args, resident=args.resident)
     started = perf_counter()
     try:
         observation = backend.infer(frame)
@@ -103,7 +104,8 @@ def main() -> int:
         "wall_seconds": wall,
         "result": str(args.result),
     }, indent=2, sort_keys=True))
-    if observation.provider != "cargo-real-image-gpu-worker" or observation.status not in (
+    expected_provider = "cargo-real-image-gpu-resident-worker" if args.resident else "cargo-real-image-gpu-worker"
+    if observation.provider != expected_provider or observation.status not in (
         ObservationStatus.COMPLETE, ObservationStatus.PARTIAL,
     ):
         raise RuntimeError(f"real GPU worker failed closed: {observation.failure_code}: {observation.failure_message}")

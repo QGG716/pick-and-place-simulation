@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path
 import sys
 
@@ -362,6 +363,61 @@ def test_pipeline_timeout_crash_and_bad_schema_are_distinct(tmp_path):
     malformed = tmp_path / "malformed.py"
     malformed.write_text("print('not-json')\n", encoding="utf-8")
     assert CargoPipelineBackend((sys.executable, str(malformed)), cwd=tmp_path, allowed_roots=(FIXTURE.parent,)).infer(valid_frame).failure_code == "WORKER_SCHEMA_ERROR"
+
+
+def test_resident_pipeline_handshake_reuses_process_and_rotates_epoch_after_crash(tmp_path):
+    digest = __import__("hashlib").sha256(FIXTURE.read_bytes()).hexdigest()
+    worker = tmp_path / "resident.py"
+    starts = tmp_path / "starts.txt"
+    worker.write_text(
+        """import json, os, sys
+starts = sys.argv[1]
+with open(starts, 'a', encoding='utf-8') as stream:
+    stream.write('start\\n')
+for line in sys.stdin:
+    request = json.loads(line)
+    if request['op'] == 'hello':
+        response = {'schema_version': '1.1.0', 'op': 'ready', 'worker_epoch': request['worker_epoch']}
+    elif request['op'] == 'shutdown':
+        break
+    elif request['frame']['sequence'] == 3:
+        raise SystemExit(7)
+    else:
+        response = {
+            'schema_version': '1.1.0', 'request_id': request['request_id'],
+            'worker_epoch': request['worker_epoch'],
+            'input_sha256': request['frame']['rgb_sha256'], 'status': 'FAILED',
+            'error_code': 'EXPECTED_TEST_FAILURE', 'error_message': 'no GPU in unit test',
+        }
+    print(json.dumps(response), flush=True)
+""",
+        encoding="utf-8",
+    )
+    backend = CargoPipelineBackend(
+        (sys.executable, str(worker), str(starts)), cwd=tmp_path,
+        timeout_seconds=2.0, allowed_roots=(FIXTURE.parent,), resident=True,
+        worker_epoch="resident-epoch-a",
+    )
+    try:
+        first = replace(frame(1), rgb=ResourceReference(FIXTURE.resolve().as_uri(), digest))
+        second = replace(frame(2), rgb=ResourceReference(FIXTURE.resolve().as_uri(), digest))
+        assert backend.infer(first).failure_code == "EXPECTED_TEST_FAILURE"
+        process_id = backend._process.pid
+        assert backend.infer(second).failure_code == "EXPECTED_TEST_FAILURE"
+        assert backend._process.pid == process_id
+        assert starts.read_text(encoding="utf-8").splitlines() == ["start"]
+
+        crashed = replace(frame(3), rgb=ResourceReference(FIXTURE.resolve().as_uri(), digest))
+        previous_epoch = backend.worker_epoch
+        assert backend.infer(crashed).failure_code == "WORKER_CRASH"
+        assert backend.worker_epoch != previous_epoch
+        assert backend._process is None
+
+        fourth = replace(frame(4), rgb=ResourceReference(FIXTURE.resolve().as_uri(), digest))
+        assert backend.infer(fourth).failure_code == "EXPECTED_TEST_FAILURE"
+        assert starts.read_text(encoding="utf-8").splitlines() == ["start", "start"]
+    finally:
+        backend.shutdown()
 
 
 def test_pipeline_output_references_are_root_bounded_and_hash_verified(tmp_path):

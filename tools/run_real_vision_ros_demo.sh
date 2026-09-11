@@ -8,6 +8,7 @@ ARTIFACT_ROOT=${ARTIFACT_ROOT:-/root/autodl-tmp/v05-acceptance}
 MODEL_MANIFEST=${MODEL_MANIFEST:-$ARTIFACT_ROOT/model-manifest.json}
 HUMBLE_INSTALL=${HUMBLE_INSTALL:-$ARTIFACT_ROOT/humble/final/install}
 RUN_ID=${RUN_ID:-real-vision-ros-$(date -u +%Y%m%dT%H%M%SZ)}
+WORKER_MODE=${WORKER_MODE:-one-shot}
 RUN="$ARTIFACT_ROOT/ros-gpu/$RUN_ID"
 SOURCE="$VISION_ROOT/runs/current/cargo_7/01_proposals/source.png"
 PROPOSALS="$VISION_ROOT/runs/current/cargo_7/01_proposals/boxes_merged.json"
@@ -27,30 +28,45 @@ export PYTHONPATH="$ROOT/src:$ROOT/packages/unloading_contracts/src${PYTHONPATH:
 
 SAM_MODEL=$(/usr/bin/python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["sam"]["snapshot_path"])' "$MODEL_MANIFEST")
 MOGE_MODEL=$(/usr/bin/python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["moge"]["model_path"])' "$MODEL_MANIFEST")
-WORKER_COMMAND="['$GPU_VENV/bin/python','$ROOT/tools/vision_worker_entry.py','--upstream-root','$VISION_ROOT','--proposal-json','$PROPOSALS','--person-masks','$PEOPLE','--output-root','$RUN/worker-runs','--input-root','$VISION_ROOT','--sam-model','$SAM_MODEL','--moge-model','$MOGE_MODEL']"
+case "$WORKER_MODE" in
+  one-shot)
+    WORKER_ENTRY="$ROOT/tools/vision_worker_entry.py"
+    RESIDENT_ARGS=()
+    ;;
+  resident)
+    WORKER_ENTRY="$ROOT/tools/vision_resident_worker.py"
+    RESIDENT_ARGS=(-p worker_resident:=true)
+    ;;
+  *)
+    echo "WORKER_MODE must be one-shot or resident" >&2
+    exit 2
+    ;;
+esac
+WORKER_COMMAND="['$GPU_VENV/bin/python','$WORKER_ENTRY','--upstream-root','$VISION_ROOT','--proposal-json','$PROPOSALS','--person-masks','$PEOPLE','--output-root','$RUN/worker-runs','--input-root','$VISION_ROOT','--sam-model','$SAM_MODEL','--moge-model','$MOGE_MODEL']"
 WORKER_ROOTS="['$VISION_ROOT','$ROOT','$RUN']"
 
 pids=()
 cleanup() {
   for pid in "${pids[@]}"; do
-    kill "$pid" 2>/dev/null || true
+    kill -- "-$pid" 2>/dev/null || true
   done
   wait "${pids[@]}" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
 
-ros2 run unloading_ros_bridge mock_state_publisher >"$RUN/mock-state.log" 2>&1 &
+setsid ros2 run unloading_ros_bridge mock_state_publisher >"$RUN/mock-state.log" 2>&1 &
 pids+=("$!")
-ros2 run unloading_ros_bridge world_bridge_node >"$RUN/world-bridge.log" 2>&1 &
+setsid ros2 run unloading_ros_bridge world_bridge_node >"$RUN/world-bridge.log" 2>&1 &
 pids+=("$!")
-/usr/bin/python3 "$ROOT/tools/real_vision_ros_probe.py" --output "$RUN/summary.json" --timeout 1900 >"$RUN/probe.log" 2>&1 &
+setsid /usr/bin/python3 "$ROOT/tools/real_vision_ros_probe.py" --output "$RUN/summary.json" --timeout 1900 >"$RUN/probe.log" 2>&1 &
 probe_pid=$!
 pids+=("$probe_pid")
 sleep 2
-ros2 run unloading_ros_bridge perception_node --ros-args \
+setsid ros2 run unloading_ros_bridge perception_node --ros-args \
   -p backend:=pipeline -p input_image:="$SOURCE" -p input_width:=1290 -p input_height:=1333 \
   -p worker_cwd:="$ROOT" -p worker_timeout_seconds:=1800.0 \
   -p worker_command:="$WORKER_COMMAND" -p worker_allowed_roots:="$WORKER_ROOTS" \
+  "${RESIDENT_ARGS[@]}" \
   >"$RUN/perception-node.log" 2>&1 &
 pids+=("$!")
 wait "$probe_pid"
