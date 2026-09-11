@@ -1,15 +1,8 @@
 from __future__ import annotations
 
-from collections import deque
-
 import pytest
 
 from unloading_sim.online_execution import (
-    ExecutionBackend,
-    ExecutionBackendCapabilities,
-    ExecutionBackendHealth,
-    ExecutionBackendIdentity,
-    ExecutionBackendState,
     ExecutionCommandResult,
     ExecutionCommandStatus,
     ExecutionFeedback,
@@ -20,7 +13,6 @@ from unloading_sim.online_planning import (
     ContinuousPlanningSession,
     ExecutionState,
     MotionBoundaryState,
-    PlanArtifactKind,
     PlanningCandidate,
     PlanningRequest,
     PlanningResult,
@@ -39,17 +31,10 @@ from unloading_sim.online_runtime import (
     RuntimeWatchdogPolicy,
     WorldObservation,
 )
-
-
-class FakeClock:
-    def __init__(self) -> None:
-        self.value = 0.0
-
-    def __call__(self) -> float:
-        return self.value
-
-    def advance(self, seconds: float) -> None:
-        self.value += seconds
+from tests.online_contract_fixtures import (
+    FakeClock,
+    ScriptedExecutionBackend,
+)
 
 
 def world(sequence: int = 0, cartons=("a",), q=(0.0, 0.0)) -> PlanningWorldSnapshot:
@@ -110,112 +95,6 @@ class Planner(PlannerBackend):
 class ResumeFailingSession(ContinuousPlanningSession):
     def resume_after_recovery(self):
         raise RuntimeError("injected resume failure")
-
-
-class ScriptedExecutionBackend(ExecutionBackend):
-    def __init__(
-        self,
-        *,
-        stop_status: ExecutionCommandStatus = ExecutionCommandStatus.ACCEPTED,
-        stop_error: Exception | None = None,
-        start_error_after_accept: Exception | None = None,
-        start_result: object | None = None,
-    ) -> None:
-        self._identity = ExecutionBackendIdentity("scripted-stop", "1", "1")
-        self._capabilities = ExecutionBackendCapabilities(
-            frozenset({PlanArtifactKind.GEOMETRIC_PATH}),
-            frozenset({BoundaryMode.STOP_BOUNDARY}),
-            True,
-            True,
-            True,
-            True,
-            True,
-            True,
-            True,
-            False,
-        )
-        self.feedback = deque()
-        self.plan = None
-        self.execution_id = "execution-0"
-        self.stop_calls = 0
-        self.stop_command_id: str | None = None
-        self.start_calls = 0
-        self.stop_status = stop_status
-        self.stop_error = stop_error
-        self.start_error_after_accept = start_error_after_accept
-        self.start_result = start_result
-
-    @property
-    def identity(self):
-        return self._identity
-
-    @property
-    def capabilities(self):
-        return self._capabilities
-
-    @property
-    def health(self):
-        return ExecutionBackendHealth.READY
-
-    @property
-    def state(self):
-        return ExecutionBackendState.IDLE if self.plan is None else ExecutionBackendState.RUNNING
-
-    def start(self, plan_envelope):
-        self.start_calls += 1
-        self.execution_id = f"execution-{self.start_calls}"
-        self.plan = plan_envelope
-        if self.start_error_after_accept is not None:
-            raise self.start_error_after_accept
-        if self.start_result is not None:
-            if callable(self.start_result):
-                return self.start_result(plan_envelope, self.execution_id)
-            return self.start_result
-        return ExecutionCommandResult(
-            ExecutionCommandStatus.ACCEPTED,
-            f"start-{self.start_calls}",
-            self.execution_id,
-            plan_envelope.plan_id,
-        )
-
-    def poll(self):
-        return self.feedback.popleft() if self.feedback else None
-
-    def request_stop(self, plan_id, reason):
-        del reason
-        self.stop_calls += 1
-        if self.stop_error is not None:
-            raise self.stop_error
-        self.stop_command_id = f"stop-{self.stop_calls}"
-        return ExecutionCommandResult(
-            self.stop_status,
-            self.stop_command_id,
-            self.execution_id,
-            plan_id,
-        )
-
-    def current_boundary(self):
-        return None if self.plan is None else self.plan.expected_start_boundary
-
-    def shutdown(self):
-        return None
-
-    def emit(self, sequence, status, progress, boundary=None, *, stop_command_id=None):
-        assert self.plan is not None
-        feedback = ExecutionFeedback(
-            sequence,
-            self.execution_id,
-            self.plan.plan_id,
-            status,
-            progress,
-            boundary or self.plan.expected_start_boundary,
-            observed_at_monotonic_seconds=float(sequence),
-            feedback_stream_id="scripted-feedback",
-            producer_epoch=7,
-            stop_command_id=stop_command_id,
-        )
-        self.feedback.append(feedback)
-        return feedback
 
 
 def running_runtime(*, backend=None, watchdog_policy=None):

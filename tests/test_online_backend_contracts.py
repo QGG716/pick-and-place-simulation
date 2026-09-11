@@ -8,184 +8,25 @@ import pytest
 
 from unloading_sim.online_planning import (
     ArtifactKind,
-    BackendCapabilities,
     BackendHealth,
-    BackendIdentity,
     BackendProvenance,
     BoundaryMode,
     ContinuousPlanningSession,
-    FailureDetails,
-    FailureScope,
-    MotionBoundaryState,
     OperationalOutcome,
     PlanStatus,
-    PlanValidationResult,
-    PlanValidator,
-    PlanningCandidate,
     PlanningPath,
-    PlanningRequest,
-    PlanningResult,
-    PlanningWorldSnapshot,
-    PlannerBackend,
-    RobotStateRevision,
-    SceneRevision,
     SessionState,
-    ValidationStatus,
 )
-
-
-ROBOT_MODEL = "robot-model-test-v1"
-WORLD_MODEL = "world-model-test-v1"
-
-
-def world(sequence=0, cartons=("a",), q=(0.0, 0.0), *, robot_model=ROBOT_MODEL, world_model=WORLD_MODEL):
-    scene = {"cartons": list(cartons)}
-    return PlanningWorldSnapshot(
-        SceneRevision.from_scene(scene, sequence),
-        scene,
-        RobotStateRevision(sequence, q, {"mode": "AUTO"}),
-        {"id": "tool-v1"},
-        None,
-        {"x_m": -0.5},
-        {"extension_m": 0.0},
-        {
-            "config": "test",
-            "robot_model_fingerprint": robot_model,
-            "world_model_fingerprint": world_model,
-        },
-    )
-
-
-def request(request_id, snapshot, *, boundary=BoundaryMode.STOP_BOUNDARY):
-    velocity = tuple(0.0 for _ in snapshot.current_q) if boundary is BoundaryMode.STOP_BOUNDARY else tuple(0.1 for _ in snapshot.current_q)
-    acceleration = tuple(0.0 for _ in snapshot.current_q)
-    return PlanningRequest(
-        request_id,
-        snapshot,
-        (PlanningCandidate("a", "top"),),
-        motion_boundary=MotionBoundaryState(
-            snapshot.current_q,
-            velocity,
-            acceleration,
-            0.0,
-            boundary,
-        ),
-    )
-
-
-def identity(name="semantic", *, robot_model=ROBOT_MODEL, world_model=WORLD_MODEL):
-    return BackendIdentity(name, "1.0", "1.0", robot_model, world_model)
-
-
-def capabilities(
-    *paths,
-    boundaries=(BoundaryMode.STOP_BOUNDARY,),
-    artifacts=(ArtifactKind.GEOMETRIC_PATH,),
-    initialize=False,
-    prewarm=False,
-):
-    return BackendCapabilities(
-        supported_planning_paths=frozenset(paths),
-        supported_boundary_modes=frozenset(boundaries),
-        supported_artifact_kinds=frozenset(artifacts),
-        supports_warm_start=PlanningPath.WARM in paths,
-        supports_deterministic_seed=True,
-        supports_attached_object=True,
-        supports_incremental_world_update=False,
-        supports_logical_cancel=True,
-        supports_hard_deadline=False,
-        supports_revalidation=False,
-        initialization_required=initialize,
-        prewarm_required=prewarm,
-    )
-
-
-class SemanticBackend(PlannerBackend):
-    def __init__(self, name, caps, outcomes=None, *, health=BackendHealth.READY, clock=None):
-        super().__init__(identity=identity(name), capabilities=caps, seed=7)
-        self.outcomes = {} if outcomes is None else dict(outcomes)
-        self.calls = []
-        self._health = health
-        self.clock = clock
-        self.cancelled = []
-
-    @property
-    def health(self):
-        return self._health
-
-    def initialize(self):
-        if self.clock:
-            self.clock.value += 2.0
-        self._health = BackendHealth.READY
-
-    def prewarm(self):
-        if self.clock:
-            self.clock.value += 3.0
-
-    def logical_cancel(self, request_id):
-        self.cancelled.append(request_id)
-
-    def plan(self, planning_request, candidate, planning_path):
-        self.calls.append(planning_path)
-        outcome = self.outcomes.get(planning_path, PlanStatus.SUCCESS)
-        if isinstance(outcome, Exception):
-            raise outcome
-        if isinstance(outcome, OperationalOutcome):
-            return PlanningResult.operational_failure(
-                outcome,
-                candidate,
-                failure=FailureDetails(
-                    retryable=True,
-                    scope=FailureScope.BACKEND_LOCAL,
-                    native_code=outcome.value,
-                    native_message="fake operational result",
-                    allow_path_fallback=True,
-                    allow_backend_fallback=True,
-                ),
-            )
-        if outcome is not PlanStatus.SUCCESS:
-            return PlanningResult.failed(outcome, candidate)
-        q = planning_request.motion_boundary.current_q
-        end_q = tuple(value + 0.1 for value in q)
-        artifact = next(iter(self.capabilities.supported_artifact_kinds))
-        if artifact is ArtifactKind.GEOMETRIC_PATH:
-            return PlanningResult.succeeded(candidate, [q, end_q], artifact_kind=artifact)
-        start = planning_request.motion_boundary
-        end = MotionBoundaryState(
-            end_q,
-            start.qd,
-            start.qdd,
-            start.time_seconds + 1.0,
-            start.boundary_mode,
-        )
-        return PlanningResult.succeeded(
-            candidate,
-            [q, end_q],
-            artifact_kind=artifact,
-            expected_start_boundary=start,
-            expected_end_boundary=end,
-        )
-
-
-class SemanticValidator(PlanValidator):
-    def __init__(self, *, valid=True, raises=False):
-        super().__init__("authoritative-test-validator", "1.0")
-        self.valid = valid
-        self.raises = raises
-        self.calls = 0
-
-    def validate(self, plan_envelope, current_world_snapshot, current_motion_boundary):
-        self.calls += 1
-        if self.raises:
-            raise RuntimeError("validator unavailable")
-        return PlanValidationResult(
-            ValidationStatus.VALID if self.valid else ValidationStatus.INVALID,
-            current_world_snapshot,
-            current_motion_boundary,
-            "accepted" if self.valid else "authoritative rejection",
-            validator_name=self.name,
-            validator_version=self.version,
-        )
+from tests.online_contract_fixtures import (
+    ROBOT_MODEL,
+    WORLD_MODEL,
+    SemanticBackend,
+    SemanticValidator,
+    semantic_capabilities as capabilities,
+    semantic_identity as identity,
+    semantic_request as request,
+    semantic_world as world,
+)
 
 
 def test_backend_identity_provenance_and_capabilities_are_immutable_and_saved():
