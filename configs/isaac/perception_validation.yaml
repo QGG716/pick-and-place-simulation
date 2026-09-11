@@ -1,0 +1,74 @@
+schema_version: isaac_perception_validation_v1
+modes:
+  - ISAAC_GROUND_TRUTH
+  - ISAAC_SENSOR_WITH_ORACLE_PROPOSALS
+raw_image_automatic: false
+layout_bundle:
+  snapshot: integration/isaac_scene_contract/m710id70_layout_v1/scene_snapshot.json
+  isaac_contract: integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json
+  feasibility_reference_commit: f84578a3c9a91364b747560b994f2e6e9b5d65a2
+cameras:
+  - camera_id: front_validation_camera
+    frame_id: front_validation_camera_optical
+    resolution: [640, 480]
+    # Pixel intrinsics used by the saved CameraInfo and offline projection.
+    K: [560.0, 0.0, 319.5, 0.0, 560.0, 239.5, 0.0, 0.0, 1.0]
+    distortion_model: plumb_bob
+    distortion: [0.0, 0.0, 0.0, 0.0, 0.0]
+    # Camera optical axes are +X right, +Y down, +Z forward. T_W_C maps
+    # optical coordinates into W (+X trailer, +Y left, +Z up).
+    T_W_C:
+      - [0.0, -0.7863183388, 0.6178215519, -0.8]
+      - [-1.0, 0.0, 0.0, 0.0]
+      - [0.0, -0.6178215519, -0.7863183388, 2.6]
+      - [0.0, 0.0, 0.0, 1.0]
+    look_at_world_m: [0.3, 0.0, 1.2]
+    near_clip_m: 0.05
+    far_clip_m: 12.0
+    publish_rate_hz: 10.0
+    modalities: [rgb, metric_depth, camera_info, pointcloud, gt_annotations]
+    focal_length_mm: 24.0
+    horizontal_aperture_mm: 27.4285714286
+scenes:
+  - static_full_stack
+  - single_target_focus
+  - known_translation
+  - known_rotation
+  - partial_occlusion
+  - camera_transform_change
+target_selection:
+  strategy: manifest_stable_id
+  simulation_object_id: carton_l07_c02
+perturbations:
+  known_translation_m: [0.05, 0.0, 0.0]
+  known_rotation_rpy_rad: [0.0, 0.0, 0.17453292519943295]
+  occluder_size_xyz_m: [0.18, 0.7, 0.9]
+  camera_translation_m: [0.0, 0.15, 0.0]
+rendering:
+  physics_hz: 60
+  camera_hz: 10
+  smoke_frames: 18
+  renderer: RaytracedLighting
+  visual_demo_resolution: [1280, 720]
+  visual_demo_fps: 20
+  visual_demo_seconds: 12
+vision:
+  mode: ISAAC_SENSOR_WITH_ORACLE_PROPOSALS
+  proposal_source: ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL
+  keyframes: [0, 50, 100]
+  resident_worker_timeout_s: 90.0
+  raw_image_automatic: false
+ros:
+  use_sim_time: true
+  topics:
+    clock: /clock
+    rgb: /isaac/front_camera/rgb
+    depth: /isaac/front_camera/depth
+    camera_info: /isaac/front_camera/camera_info
+    pointcloud: /isaac/front_camera/pointcloud
+    tf: /tf
+    tf_static: /tf_static
+    joint_states: /joint_states
+    gt_2d: /isaac/ground_truth/detections_2d
+    gt_3d: /isaac/ground_truth/detections_3d
+

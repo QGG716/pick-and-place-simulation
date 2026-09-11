@@ -1,0 +1,18 @@
+{
+  "schema_version": "isaac_layout_reference_v1",
+  "feasibility_reference_branch": "feat/v0.5-feasibility-core",
+  "feasibility_reference_commit": "f84578a3c9a91364b747560b994f2e6e9b5d65a2",
+  "reference_artifact_status": "ARCHIVED_VALIDATED_SNAPSHOT",
+  "scene_snapshot_sha256": "3006382a7890ff30d76e1ad7a9cec68235842dc1f185ef09832ed44295a63b09",
+  "isaac_layout_contract_sha256": "a27b4d09da684d96cc9ab5199dbc836afb88487d46aa406c473e556a5cba9d16",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+  "current_reference_export": {
+    "status": "BLOCKED",
+    "attempted_at_commit": "f84578a3c9a91364b747560b994f2e6e9b5d65a2",
+    "attempted_layout_fingerprint": "57b497a0583f144299bd0f3ef08ff474688abd4aa4a1b11f922ddc44d046fb4d",
+    "reason": "TOOL_SELF_COLLISION",
+    "collision_pair": ["tool_rigid_13", "J5_link"],
+    "policy": "The blocked current export is not rewritten or accepted as a valid home configuration. The checked-in archived bundle remains a versioned compatibility fixture only."
+  }
+}
