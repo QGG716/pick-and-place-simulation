@@ -43,11 +43,56 @@ class IsaacSensorAdapterNode(Node):
         super().__init__("isaac_sensor_adapter")
         self.declare_parameter("capture_directory", "")
         self.declare_parameter("scene_manifest", "")
+        self.declare_parameter("sequence_index", "")
+        self.declare_parameter("sequence_hold_cycles", 1)
         self.declare_parameter("publish_period_seconds", 1.0)
         capture = Path(str(self.get_parameter("capture_directory").value)).resolve()
-        manifest_path = Path(str(self.get_parameter("scene_manifest").value)).resolve()
+        manifest_value = str(self.get_parameter("scene_manifest").value)
+        sequence_value = str(self.get_parameter("sequence_index").value)
+        if sequence_value:
+            sequence_path = Path(sequence_value).resolve()
+            if not capture.is_dir() or not sequence_path.is_file():
+                raise RuntimeError("capture_directory and sequence_index must exist")
+            index = json.loads(sequence_path.read_text(encoding="utf-8"))
+            self.samples = tuple(
+                (capture / record["scene"], sequence_path.parent / record["path"])
+                for record in index["scenes"]
+            )
+        else:
+            manifest_path = Path(manifest_value).resolve()
+            if not capture.is_dir() or not manifest_path.is_file():
+                raise RuntimeError("capture_directory and scene_manifest must exist")
+            self.samples = ((capture, manifest_path),)
+        if not self.samples:
+            raise RuntimeError("Isaac capture sequence cannot be empty")
+        self.sample_index = 0
+        self.sequence_hold_cycles = int(self.get_parameter("sequence_hold_cycles").value)
+        if self.sequence_hold_cycles <= 0:
+            raise RuntimeError("sequence_hold_cycles must be positive")
+        self.sequence_hold_count = 0
+        self._load_capture(*self.samples[0])
+
+        sensor_qos = QoSProfile(depth=2, reliability=ReliabilityPolicy.RELIABLE)
+        static_qos = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        self.clock_pub = self.create_publisher(Clock, "/clock", sensor_qos)
+        self.rgb_pub = self.create_publisher(Image, "/isaac/front_camera/rgb", sensor_qos)
+        self.depth_pub = self.create_publisher(Image, "/isaac/front_camera/depth", sensor_qos)
+        self.info_pub = self.create_publisher(CameraInfo, "/isaac/front_camera/camera_info", sensor_qos)
+        self.cloud_pub = self.create_publisher(PointCloud2, "/isaac/front_camera/pointcloud", sensor_qos)
+        self.tf_pub = self.create_publisher(TFMessage, "/tf", sensor_qos)
+        self.tf_static_pub = self.create_publisher(TFMessage, "/tf_static", static_qos)
+        self.joints_pub = self.create_publisher(JointState, "/joint_states", sensor_qos)
+        self.gt2_pub = self.create_publisher(Detection2DArray, "/isaac/ground_truth/detections_2d", sensor_qos)
+        self.gt3_pub = self.create_publisher(Detection3DArray, "/isaac/ground_truth/detections_3d", sensor_qos)
+        self.domain_pub = self.create_publisher(PerceptionObservation, "/unloading/perception", sensor_qos)
+        period = float(self.get_parameter("publish_period_seconds").value)
+        if period <= 0.0:
+            raise RuntimeError("publish_period_seconds must be positive")
+        self.timer = self.create_timer(period, self.publish_capture)
+
+    def _load_capture(self, capture: Path, manifest_path: Path) -> None:
         if not capture.is_dir() or not manifest_path.is_file():
-            raise RuntimeError("capture_directory and scene_manifest must exist")
+            raise RuntimeError("every capture and scene manifest in the sequence must exist")
         self.capture = capture
         self.manifest = IsaacSceneManifest.from_dict(json.loads(manifest_path.read_text(encoding="utf-8")))
         self.binding = IsaacCaptureBinding.from_dict(json.loads((capture / "capture_binding.json").read_text(encoding="utf-8")))
@@ -69,24 +114,6 @@ class IsaacSensorAdapterNode(Node):
         if self.rgb.ndim != 3 or self.rgb.shape[2] != 3 or self.rgb.shape[:2] != self.depth.shape:
             raise RuntimeError("RGB and depth dimensions differ")
         self.observation = ground_truth_observation(self.manifest, self.annotations["objects"])
-
-        sensor_qos = QoSProfile(depth=2, reliability=ReliabilityPolicy.RELIABLE)
-        static_qos = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE, durability=DurabilityPolicy.TRANSIENT_LOCAL)
-        self.clock_pub = self.create_publisher(Clock, "/clock", sensor_qos)
-        self.rgb_pub = self.create_publisher(Image, "/isaac/front_camera/rgb", sensor_qos)
-        self.depth_pub = self.create_publisher(Image, "/isaac/front_camera/depth", sensor_qos)
-        self.info_pub = self.create_publisher(CameraInfo, "/isaac/front_camera/camera_info", sensor_qos)
-        self.cloud_pub = self.create_publisher(PointCloud2, "/isaac/front_camera/pointcloud", sensor_qos)
-        self.tf_pub = self.create_publisher(TFMessage, "/tf", sensor_qos)
-        self.tf_static_pub = self.create_publisher(TFMessage, "/tf_static", static_qos)
-        self.joints_pub = self.create_publisher(JointState, "/joint_states", sensor_qos)
-        self.gt2_pub = self.create_publisher(Detection2DArray, "/isaac/ground_truth/detections_2d", sensor_qos)
-        self.gt3_pub = self.create_publisher(Detection3DArray, "/isaac/ground_truth/detections_3d", sensor_qos)
-        self.domain_pub = self.create_publisher(PerceptionObservation, "/unloading/perception", sensor_qos)
-        period = float(self.get_parameter("publish_period_seconds").value)
-        if period <= 0.0:
-            raise RuntimeError("publish_period_seconds must be positive")
-        self.timer = self.create_timer(period, self.publish_capture)
 
     def _header(self, message, frame_id: str) -> None:
         message.header.stamp = self.stamp
@@ -157,6 +184,11 @@ class IsaacSensorAdapterNode(Node):
         self.gt2_pub.publish(detections_2d)
         self.gt3_pub.publish(detections_3d)
         self.domain_pub.publish(observation_to_msg(self.observation))
+        self.sequence_hold_count += 1
+        if self.sample_index + 1 < len(self.samples) and self.sequence_hold_count >= self.sequence_hold_cycles:
+            self.sample_index += 1
+            self.sequence_hold_count = 0
+            self._load_capture(*self.samples[self.sample_index])
 
 
 def main(args=None) -> None:

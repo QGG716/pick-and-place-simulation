@@ -3,12 +3,19 @@ set -euo pipefail
 
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 ISAAC_PYTHON="${ISAAC_PYTHON:-/root/autodl-tmp/envs/isaacsim-clean/bin/python}"
+GPU_PYTHON="${GPU_PYTHON:-/root/v05-gpu-venv/bin/python}"
+VISION_ROOT="${VISION_ROOT:-/root/vision-fixed}"
+MODEL_MANIFEST="${MODEL_MANIFEST:-/root/autodl-tmp/v05-acceptance/model-manifest.json}"
 OUTPUT_ROOT="${ISAAC_PERCEPTION_OUTPUT:-${PROJECT_ROOT}/outputs/isaac_perception_validation}"
 BUNDLE_DIR="${OUTPUT_ROOT}/scene_bundle"
 USD_DIR="${OUTPUT_ROOT}/usd"
 
 if [[ ! -x "${ISAAC_PYTHON}" ]]; then
   echo "Isaac acceptance FAIL: missing Isaac Python at ${ISAAC_PYTHON}" >&2
+  exit 2
+fi
+if [[ ! -x "${GPU_PYTHON}" || ! -d "${VISION_ROOT}" || ! -f "${MODEL_MANIFEST}" ]]; then
+  echo "Isaac acceptance FAIL: resident vision worker environment is incomplete" >&2
   exit 2
 fi
 if [[ "${OMNI_KIT_ACCEPT_EULA:-}" != "YES" ]]; then
@@ -42,6 +49,11 @@ PY
 "${ISAAC_PYTHON}" "${PROJECT_ROOT}/tools/finalize_isaac_perception_capture.py" \
   --bundle-directory "${BUNDLE_DIR}" --capture-directory "${OUTPUT_ROOT}" --project-root "${PROJECT_ROOT}"
 
+"${ISAAC_PYTHON}" "${PROJECT_ROOT}/tools/run_isaac_mode_b1.py" \
+  --capture-directory "${OUTPUT_ROOT}" --bundle-directory "${BUNDLE_DIR}" \
+  --vision-root "${VISION_ROOT}" --gpu-python "${GPU_PYTHON}" \
+  --model-manifest "${MODEL_MANIFEST}" --worker-timeout 1200 --fps 20 --seconds 12
+
 "${ISAAC_PYTHON}" - "${OUTPUT_ROOT}" <<'PY'
 import json
 from pathlib import Path
@@ -49,7 +61,7 @@ import sys
 root = Path(sys.argv[1])
 run = json.loads((root / "run_status.json").read_text())
 domain = json.loads((root / "domain_summary.json").read_text())
-if run.get("status") != "PASS" or domain.get("status") != "PASS":
+if run.get("status") != "PASS" or domain.get("status") != "PASS" or domain.get("mode_b1") != "PASS":
     raise SystemExit("Isaac perception acceptance did not produce PASS summaries")
 print(json.dumps({
     "status": "PASS",

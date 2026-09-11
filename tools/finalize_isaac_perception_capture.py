@@ -34,6 +34,10 @@ def main() -> int:
     index = json.loads((args.bundle_directory / "index.json").read_text(encoding="utf-8"))
     contract = json.loads((args.project_root / "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json").read_text(encoding="utf-8"))
     results = []
+    # One assembler spans the ordered keyframes so a geometry change advances
+    # SceneRevision instead of making every independently serialized snapshot
+    # look like revision zero.
+    assembler = SnapshotAssembler()
     for record in index["scenes"]:
         scene_name = record["scene"]
         scene_dir = args.capture_directory / scene_name
@@ -45,7 +49,6 @@ def main() -> int:
             raise ValueError(f"capture binding differs from manifest for {scene_name}")
         annotation_payload = json.loads((scene_dir / "gt_annotations.json").read_text(encoding="utf-8"))
         observation = ground_truth_observation(manifest, annotation_payload["objects"])
-        assembler = SnapshotAssembler()
         assembler.update = build_scene_update(observation)
         assembler.robot_state = RobotStateRevision(
             int(manifest.timing["simulation_frame"]), tuple(manifest.robot["q_rad"]),
