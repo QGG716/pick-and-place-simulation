@@ -422,7 +422,7 @@ try:
             json.dumps(segmentation_info, indent=2, default=lambda value: value.item() if hasattr(value, "item") else str(value)),
             encoding="utf-8",
         )
-        for numeric_id, labels in segmentation_info.get("idToLabels", {}).items():
+        for numeric_id, labels in segmentation_info.get("idToSemantics", {}).items():
             label = labels.get("simulation_object_id") if isinstance(labels, dict) else None
             if isinstance(label, list):
                 label = label[0] if len(label) == 1 else None
