@@ -43,12 +43,10 @@ jobs:
         shell: bash
         run: |
           source /opt/ros/humble/setup.bash
-          cd ros2_ws
-          rosdep install --from-paths src --ignore-src --rosdistro humble -r -y
-          colcon build --symlink-install
-          source install/setup.bash
-          colcon test --return-code-on-test-failure
-          colcon test-result --verbose
+          rosdep install --from-paths ros2_ws/src --ignore-src --rosdistro humble -r -y
+          RUN_ID=github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
+          ARTIFACT_ROOT="$RUNNER_TEMP/acceptance" \
+          bash tools/run_humble_acceptance.sh
       - name: Upload install and test diagnostics
         if: always()
         uses: actions/upload-artifact@v4
