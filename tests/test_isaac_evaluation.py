@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from unloading_contracts import EvidenceKind, Validity
-from unloading_perception.isaac_evaluation import bbox_iou, evaluate_depth, evaluate_observations, mask_iou
+from unloading_perception.isaac_evaluation import bbox_iou, evaluate_depth, evaluate_observations, mask_iou, mask_tight_bbox
 from unloading_perception.isaac_validation import ground_truth_observation
 
 from test_isaac_perception_contract import _manifest, _gt
@@ -17,6 +17,30 @@ def test_bbox_and_mask_iou_are_exact():
     first = np.array([[1, 0], [1, 0]], dtype=bool)
     second = np.array([[1, 1], [0, 0]], dtype=bool)
     assert mask_iou(first, second) == pytest.approx(1 / 3)
+    assert mask_tight_bbox(first) == (0.0, 0.0, 1.0, 2.0)
+    assert mask_tight_bbox(np.zeros((2, 2), dtype=bool)) is None
+
+
+def test_oracle_proposal_bbox_and_estimated_mask_bbox_are_not_conflated():
+    manifest, _ = _manifest()
+    truth = _gt(manifest)
+    estimate = replace(
+        truth.cargo[0], source_instance_id="vision-1", object_id=None, track_id=None,
+        raw_result={"oracle_proposal_source_id": truth.cargo[0].source_instance_id},
+    )
+    prediction = replace(truth, provider="worker", synthetic=False, cargo=(estimate,))
+    gt_mask = np.zeros((8, 8), dtype=bool)
+    gt_mask[1:5, 1:5] = True
+    predicted_mask = np.zeros((8, 8), dtype=bool)
+    predicted_mask[2:6, 2:6] = True
+    report = evaluate_observations(
+        truth, prediction,
+        ground_truth_masks={truth.cargo[0].source_instance_id: gt_mask},
+        prediction_masks={estimate.source_instance_id: predicted_mask},
+    )
+    assert report["mean_proposal_bbox_iou"] == 1.0
+    assert report["mean_estimated_mask_bbox_iou"] == pytest.approx(9 / 23)
+    assert "oracle proposals" in report["bbox_claim_boundary"]
 
 
 def test_depth_reports_scale_aligned_and_absolute_error_separately():

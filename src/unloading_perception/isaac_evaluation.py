@@ -39,6 +39,16 @@ def mask_iou(first: np.ndarray, second: np.ndarray) -> float:
     return 1.0 if not np.any(union) else float(np.logical_and(left, right).sum() / union.sum())
 
 
+def mask_tight_bbox(mask: np.ndarray) -> tuple[float, float, float, float] | None:
+    value = np.asarray(mask, dtype=bool)
+    if value.ndim != 2:
+        raise ValueError("mask bbox requires a two-dimensional mask")
+    rows, columns = np.nonzero(value)
+    if not len(rows):
+        return None
+    return float(columns.min()), float(rows.min()), float(columns.max() + 1), float(rows.max() + 1)
+
+
 def _orientation_error_degrees(first: Sequence[float], second: Sequence[float]) -> float:
     left = np.asarray(first, dtype=float)
     right = np.asarray(second, dtype=float)
@@ -166,17 +176,24 @@ def evaluate_observations(
             dimension_error = [abs(left - right) for left, right in zip(truth.full_dimensions_m, estimate.full_dimensions_m)]
             relative_error = [error / left for error, left in zip(dimension_error, truth.full_dimensions_m)]
         masks_status: float | None = None
+        estimated_mask_bbox_iou: float | None = None
         if ground_truth_masks is not None and prediction_masks is not None:
             left = ground_truth_masks.get(truth.source_instance_id)
             right = prediction_masks.get(estimate.source_instance_id)
             if left is not None and right is not None:
                 masks_status = mask_iou(left, right)
+                left_bbox, right_bbox = mask_tight_bbox(left), mask_tight_bbox(right)
+                if left_bbox is not None and right_bbox is not None:
+                    estimated_mask_bbox_iou = bbox_iou(left_bbox, right_bbox)
+        proposal_bbox_iou = bbox_iou(truth.bbox_xyxy, estimate.bbox_xyxy)
         per_object.append({
             "simulation_object_id": truth.source_instance_id,
             "prediction_source_instance_id": estimate.source_instance_id,
             "match_method": method,
             "visibility": "partially_occluded" if truth.occluded else "visible",
-            "bbox_iou": bbox_iou(truth.bbox_xyxy, estimate.bbox_xyxy),
+            "bbox_iou": proposal_bbox_iou,
+            "proposal_bbox_iou": proposal_bbox_iou,
+            "estimated_mask_bbox_iou": estimated_mask_bbox_iou,
             "mask_iou": masks_status,
             "center_translation_error_m": center_error,
             "orientation_angular_error_deg": orientation_error,
@@ -211,11 +228,14 @@ def evaluate_observations(
         "unmatched_prediction_ids": [item.source_instance_id for index, item in enumerate(prediction.cargo) if index not in matched_predictions],
         "unknown_region_count": len(prediction.unknown_regions),
         "mean_bbox_iou": mean("bbox_iou"),
+        "mean_proposal_bbox_iou": mean("proposal_bbox_iou"),
+        "mean_estimated_mask_bbox_iou": mean("estimated_mask_bbox_iou"),
         "mean_mask_iou": mean("mask_iou"),
         "mean_center_translation_error_m": mean("center_translation_error_m"),
         "mean_orientation_angular_error_deg": mean("orientation_angular_error_deg"),
         "per_object": per_object,
         "depth": dict(depth_evaluation or {"status": "NOT_EVALUATED"}),
+        "bbox_claim_boundary": "proposal bbox IoU evaluates injected oracle proposals; estimated mask bbox IoU evaluates the vision output",
         "claim_boundary": "Isaac rendered-image evaluation is not real-camera accuracy",
     }
     report["evaluation_fingerprint"] = canonical_digest(report)

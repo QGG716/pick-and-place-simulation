@@ -42,6 +42,7 @@ def main() -> int:
     parser.add_argument("--worker-timeout", type=float, default=1200.0)
     parser.add_argument("--fps", type=int, default=20)
     parser.add_argument("--seconds", type=float, default=12.0)
+    parser.add_argument("--reuse-existing", action="store_true", help="Re-evaluate validated worker responses without GPU inference")
     args = parser.parse_args()
     if args.worker_timeout <= 0.0 or args.fps <= 0 or args.seconds <= 0.0:
         raise ValueError("positive timeout, FPS and duration are required")
@@ -55,6 +56,13 @@ def main() -> int:
     worker_root.mkdir(parents=True, exist_ok=True)
     results = []
     video_frames = []
+    previous_elapsed = {}
+    previous_summary = capture_root / "mode_b1_summary.json"
+    if args.reuse_existing and previous_summary.is_file():
+        previous_elapsed = {
+            item["scene"]: float(item["elapsed_seconds"])
+            for item in json.loads(previous_summary.read_text(encoding="utf-8"))["scenes"]
+        }
 
     for record in index["scenes"]:
         scene = record["scene"]
@@ -90,20 +98,29 @@ def main() -> int:
             "--moge-revision", str(model_manifest["moge"]["revision"]),
             "--stage-timeout", str(args.worker_timeout),
         ]
-        started = perf_counter()
-        completed = subprocess.run(
-            command, input=json.dumps(request) + "\n", text=True, capture_output=True,
-            timeout=args.worker_timeout + 60.0, cwd=ROOT,
-        )
-        elapsed = perf_counter() - started
         response_path = scene_dir / "mode_b1_worker_response.json"
-        response_path.write_text(completed.stdout, encoding="utf-8")
-        (scene_dir / "mode_b1_worker_stderr.log").write_text(completed.stderr, encoding="utf-8")
+        if args.reuse_existing:
+            if not response_path.is_file() or scene not in previous_elapsed:
+                raise FileNotFoundError(f"validated Mode B1 response is unavailable for {scene}")
+            worker_stdout = response_path.read_text(encoding="utf-8")
+            worker_returncode = 0
+            elapsed = previous_elapsed[scene]
+        else:
+            started = perf_counter()
+            completed = subprocess.run(
+                command, input=json.dumps(request) + "\n", text=True, capture_output=True,
+                timeout=args.worker_timeout + 60.0, cwd=ROOT,
+            )
+            elapsed = perf_counter() - started
+            worker_stdout = completed.stdout
+            worker_returncode = completed.returncode
+            response_path.write_text(worker_stdout, encoding="utf-8")
+            (scene_dir / "mode_b1_worker_stderr.log").write_text(completed.stderr, encoding="utf-8")
         try:
-            response = json.loads(completed.stdout.strip().splitlines()[-1])
+            response = json.loads(worker_stdout.strip().splitlines()[-1])
         except (IndexError, json.JSONDecodeError) as exc:
             raise RuntimeError(f"Mode B1 worker emitted invalid JSON for {scene}") from exc
-        if completed.returncode or response.get("status") != "COMPLETE":
+        if worker_returncode or response.get("status") != "COMPLETE":
             raise RuntimeError(f"Mode B1 worker failed for {scene}: {response.get('error_code')} {response.get('error_message')}")
         prediction = loads(response["observation"])
         prediction = replace(
@@ -153,7 +170,9 @@ def main() -> int:
             "scene": scene, "status": "PASS", "elapsed_seconds": elapsed,
             "proposal_count": len(json.loads(proposals.read_text(encoding="utf-8"))["instances"]),
             "prediction_count": len(prediction.cargo), "processed_object_count": report["processed_object_count"],
-            "mean_bbox_iou": report["mean_bbox_iou"], "mean_mask_iou": report["mean_mask_iou"],
+            "mean_proposal_bbox_iou": report["mean_proposal_bbox_iou"],
+            "mean_estimated_mask_bbox_iou": report["mean_estimated_mask_bbox_iou"],
+            "mean_mask_iou": report["mean_mask_iou"],
             "depth": depth_report, "evaluation_fingerprint": report["evaluation_fingerprint"],
             "worker_response_sha256": sha256(response_path),
         })
