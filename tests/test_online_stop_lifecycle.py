@@ -793,6 +793,7 @@ def test_reconciled_stop_evidence_conflict_revokes_unconsumed_recovery_grant():
 def _faulted_runtime(
     *,
     feedback_limit: int,
+    feedback_capacity: int = 64,
     session_class=ContinuousPlanningSession,
 ):
     clock = FakeClock()
@@ -802,6 +803,7 @@ def _faulted_runtime(
         session,
         backend,
         clock=clock,
+        execution_feedback_capacity=feedback_capacity,
         max_execution_feedback_per_step=feedback_limit,
     )
     runtime.submit_initial(request("matrix-k", world()))
@@ -824,10 +826,12 @@ def _prepare_evidence_phase(
     delivery: str,
     feedback_limit: int,
     *,
+    feedback_capacity: int = 64,
     session_class=ContinuousPlanningSession,
 ):
     runtime, session, backend = _faulted_runtime(
         feedback_limit=feedback_limit,
+        feedback_capacity=feedback_capacity,
         session_class=session_class,
     )
     command_id = backend.stop_command_id
@@ -1119,3 +1123,196 @@ def test_reconfirmation_rejection_remains_recovery_with_external_confirmation_re
     assert not lifecycle["recovery_grant_valid"]
     with pytest.raises(RuntimeError, match="before stopped evidence"):
         runtime.resume_after_recovery()
+
+
+def test_received_stop_conflict_backlog_blocks_successor_before_evidence_retirement():
+    runtime, session, backend, terminal = _prepare_evidence_phase("C", "same-step", 1)
+    backend.feedback.append(terminal)
+    backend.feedback.append(
+        ExecutionFeedback(
+            terminal.feedback_sequence + 1,
+            terminal.execution_id,
+            terminal.plan_id,
+            ExecutionFeedbackStatus.STOPPED,
+            terminal.progress,
+            MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+            feedback_stream_id=terminal.feedback_stream_id,
+            producer_epoch=terminal.producer_epoch,
+            stop_command_id=terminal.stop_command_id,
+        )
+    )
+    runtime.submit_initial(
+        PlanningRequest(
+            "backlogged-stop-conflict-successor",
+            session.current_world,
+            (PlanningCandidate("a", "top"),),
+            motion_boundary=session.current_motion_boundary,
+        )
+    )
+
+    runtime.step()
+    gated = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert gated["pending_execution_feedback"] == 1
+    assert gated["session"]["state"] == "READY"
+    assert gated["execution_start_feedback_gate"]["active"]
+    assert not gated["stop_lifecycle"]["retired"]
+
+    runtime.step()
+    conflicted = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert runtime.state is RuntimeState.RECOVERY
+    assert session.state is SessionState.RECOVERY
+    assert conflicted["stop_lifecycle"]["evidence_conflict"]
+    assert not conflicted["stop_lifecycle"]["resume_allowed"]
+    assert not conflicted["stop_lifecycle"]["recovery_grant_valid"]
+    assert conflicted["stop_lifecycle"]["accepted_evidence"]["q"] == (0.0, 0.0)
+    assert conflicted["stop_lifecycle"]["conflicting_evidence"]["q"] == (0.01, 0.0)
+
+
+@pytest.mark.parametrize(
+    "sequence_kind,feedback_limit",
+    [
+        ("same", 1),
+        ("same", 8),
+        ("higher", 1),
+        ("higher", 8),
+    ],
+)
+def test_received_stop_conflict_gate_is_independent_of_sequence_and_step_budget(
+    sequence_kind,
+    feedback_limit,
+):
+    replay = f"sequence={sequence_kind},feedback_limit={feedback_limit}"
+    runtime, session, backend, terminal = _prepare_evidence_phase(
+        "C",
+        "same-step",
+        feedback_limit,
+    )
+    backend.feedback.extend(
+        (
+            terminal,
+            ExecutionFeedback(
+                terminal.feedback_sequence + int(sequence_kind == "higher"),
+                terminal.execution_id,
+                terminal.plan_id,
+                ExecutionFeedbackStatus.STOPPED,
+                terminal.progress,
+                MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+                feedback_stream_id=terminal.feedback_stream_id,
+                producer_epoch=terminal.producer_epoch,
+                stop_command_id=terminal.stop_command_id,
+            ),
+        )
+    )
+    runtime.submit_initial(
+        PlanningRequest(
+            f"successor-{sequence_kind}-{feedback_limit}",
+            session.current_world,
+            (PlanningCandidate("a", "top"),),
+            motion_boundary=session.current_motion_boundary,
+        )
+    )
+    for _ in range(4):
+        runtime.step()
+
+    lifecycle = runtime.snapshot()["stop_lifecycle"]
+    assert backend.start_calls == 1, replay
+    assert runtime.state is RuntimeState.RECOVERY, replay
+    assert session.state is SessionState.RECOVERY, replay
+    assert lifecycle["evidence_conflict"], replay
+    assert not lifecycle["retired"], replay
+    assert not lifecycle["recovery_grant_valid"], replay
+
+
+def test_finite_duplicate_backlog_clears_before_single_handoff_and_late_conflict_is_history():
+    runtime, session, backend, terminal = _prepare_evidence_phase("C", "same-step", 1)
+    backend.feedback.extend((terminal, terminal, terminal))
+    runtime.submit_initial(
+        PlanningRequest(
+            "finite-duplicate-successor",
+            session.current_world,
+            (PlanningCandidate("a", "top"),),
+            motion_boundary=session.current_motion_boundary,
+        )
+    )
+
+    runtime.step()
+    assert backend.start_calls == 1
+    assert runtime.snapshot()["execution_start_feedback_gate"]["active"]
+    for _ in range(4):
+        runtime.step()
+        if backend.start_calls == 2:
+            break
+
+    handed_off = runtime.snapshot()
+    assert backend.start_calls == 2
+    assert handed_off["pending_execution_feedback"] == 0
+    assert handed_off["stop_lifecycle"]["retired"]
+
+    backend.feedback.append(
+        ExecutionFeedback(
+            terminal.feedback_sequence + 1,
+            terminal.execution_id,
+            terminal.plan_id,
+            ExecutionFeedbackStatus.STOPPED,
+            terminal.progress,
+            MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+            feedback_stream_id=terminal.feedback_stream_id,
+            producer_epoch=terminal.producer_epoch,
+            stop_command_id=terminal.stop_command_id,
+        )
+    )
+    runtime.step()
+
+    historical = runtime.snapshot()
+    assert backend.start_calls == 2
+    assert session.execution.state is ExecutionState.RUNNING
+    assert historical["stop_lifecycle"]["retired"]
+    assert not historical["stop_lifecycle"]["evidence_conflict"]
+
+
+def test_feedback_capacity_boundary_remains_bounded_and_cannot_hide_conflict():
+    runtime, session, backend, terminal = _prepare_evidence_phase(
+        "C",
+        "same-step",
+        1,
+        feedback_capacity=3,
+    )
+    conflict = ExecutionFeedback(
+        terminal.feedback_sequence + 1,
+        terminal.execution_id,
+        terminal.plan_id,
+        ExecutionFeedbackStatus.STOPPED,
+        terminal.progress,
+        MotionBoundaryState.stopped((0.01, 0.0), time_seconds=0.2),
+        feedback_stream_id=terminal.feedback_stream_id,
+        producer_epoch=terminal.producer_epoch,
+        stop_command_id=terminal.stop_command_id,
+    )
+    backend.feedback.extend((terminal, terminal, terminal, conflict))
+    runtime.submit_initial(
+        PlanningRequest(
+            "capacity-boundary-successor",
+            session.current_world,
+            (PlanningCandidate("a", "top"),),
+            motion_boundary=session.current_motion_boundary,
+        )
+    )
+
+    runtime.step()
+    first = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert first["pending_execution_feedback"] == 2
+    assert first["pending_execution_feedback"] <= first["execution_start_feedback_gate"]["capacity"]
+    assert first["execution_start_feedback_gate"]["active"]
+    for _ in range(5):
+        runtime.step()
+
+    final = runtime.snapshot()
+    assert backend.start_calls == 1
+    assert runtime.state is RuntimeState.RECOVERY
+    assert session.state is SessionState.RECOVERY
+    assert final["pending_execution_feedback"] <= 3
+    assert final["stop_lifecycle"]["evidence_conflict"]
+    assert not final["stop_lifecycle"]["recovery_grant_valid"]
