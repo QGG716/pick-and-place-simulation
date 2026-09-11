@@ -438,6 +438,16 @@ try:
         for annotation in annotations:
             object_id = annotation["simulation_object_id"]
             mask = masks_by_object.get(object_id)
+            projection_intersects_image = bool(annotation["visible"])
+            annotation["projection_intersects_image"] = projection_intersects_image
+            annotation["visible"] = mask is not None
+            annotation["occluded"] = bool(annotation["occluded"] or (projection_intersects_image and mask is None))
+            if mask is not None:
+                mask_rows, mask_columns = np.nonzero(mask)
+                annotation["bbox_xyxy"] = [
+                    float(mask_columns.min()), float(mask_rows.min()),
+                    float(mask_columns.max() + 1), float(mask_rows.max() + 1),
+                ]
             annotation["mask_key"] = object_id if mask is not None else None
             annotation["mask_pixel_count"] = 0 if mask is None else int(mask.sum())
             annotation["isaac_instance_id"] = instance_identity.get(object_id)
@@ -446,8 +456,6 @@ try:
                 "sha256": masks_sha256,
                 "media_type": "application/x-npz; array=bool",
             }
-            if annotation["visible"] and mask is None:
-                raise RuntimeError(f"visible GT object lacks an Isaac instance mask: {object_id}")
         annotations_path = scene_dir / "gt_annotations.json"
         annotations_payload = {
             "schema_version": "isaac_ground_truth_annotations_v1",
