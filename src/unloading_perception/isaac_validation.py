@@ -539,10 +539,14 @@ def ground_truth_observation(
         source = objects[object_id]
         pose = _transform(source["T_W_object"], f"T_W_object[{object_id}]")
         bbox = _finite_vector(annotation.get("bbox_xyxy", ()), 4, "GT bbox")
-        if bbox[2] <= bbox[0] or bbox[3] <= bbox[1]:
-            raise ValueError("GT bbox must have positive area")
         occluded = bool(annotation.get("occluded", source.get("occluded", False)))
         visible = bool(annotation.get("visible", source.get("visible", True)))
+        projected_bbox = bbox
+        if bbox[2] <= bbox[0] or bbox[3] <= bbox[1]:
+            if visible:
+                raise ValueError("visible GT bbox must have positive area")
+            width, height = (float(value) for value in manifest.cameras[0]["resolution"])
+            bbox = (0.0, 0.0, width, height)
         eligible = visible and not occluded
         reasons = () if eligible else (("SIMULATION_OBJECT_OCCLUDED",) if occluded else ("SIMULATION_OBJECT_NOT_VISIBLE",))
         if not eligible:
@@ -577,6 +581,8 @@ def ground_truth_observation(
                 "isaac_prim_path": annotation.get("prim_path"),
                 "semantic_identity": source["semantic_id"],
                 "simulation_frame": timing["simulation_frame"],
+                "projected_bbox_xyxy": projected_bbox,
+                "bbox_fallback": bbox != projected_bbox,
                 "oracle_source": "ISAAC_GROUND_TRUTH",
                 "simulation_oracle_state": True,
             },

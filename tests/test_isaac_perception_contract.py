@@ -120,6 +120,18 @@ def test_occluded_ground_truth_fails_closed():
     assert observation.unknown_regions
 
 
+def test_invisible_ground_truth_uses_conservative_full_frame_unknown_region():
+    manifest, _ = _manifest()
+    observation = ground_truth_observation(manifest, [{
+        "simulation_object_id": "carton_l07_c02", "bbox_xyxy": [0, 0, 0, 0],
+        "visible": False, "occluded": False,
+    }])
+    assert observation.cargo[0].bbox_xyxy == (0.0, 0.0, 640.0, 480.0)
+    assert observation.cargo[0].candidate_eligible is False
+    assert observation.cargo[0].raw_result["bbox_fallback"] is True
+    assert observation.unknown_regions[0].bbox_xyxy == (0.0, 0.0, 640.0, 480.0)
+
+
 def test_late_gpu_result_remains_evaluable_but_cannot_replace_live_world():
     first = IsaacCaptureBinding("epoch-a", 0, 0.0, "1" * 64, "2" * 64, "3" * 64)
     newer = IsaacCaptureBinding("epoch-a", 50, 5.0, "4" * 64, "2" * 64, "5" * 64)
