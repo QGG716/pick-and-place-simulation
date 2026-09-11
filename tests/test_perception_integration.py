@@ -1,4 +1,5 @@
 from dataclasses import replace
+import json
 from pathlib import Path
 import sys
 
@@ -52,6 +53,17 @@ def test_real_upstream_fixture_preserves_null_scores_and_non_box_obstacles():
     assert "NON_BOX_CARGO" in bag.eligibility_reasons
     assert result.cargo[2].geometry_validity is Validity.NOT_EVALUATED
     assert result.cargo[3].geometry_validity is Validity.INVALID
+
+
+def test_upstream_quality_head_overshoot_is_explicitly_bounded(tmp_path):
+    payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    payload["instances"][0]["sam_iou_score"] = 1.00387
+    source = tmp_path / "overshoot.json"
+    source.write_text(json.dumps(payload), encoding="utf-8")
+    result = CargoJsonReplayBackend().read(source)
+    assert result.cargo[0].contour_score == 1.0
+    assert result.cargo[0].raw_result["sam_iou_score_raw"] == 1.00387
+    assert result.cargo[0].raw_result["sam_iou_score_clipped_to_contract"] is True
 
 
 def test_monocular_metric_named_output_is_not_execution_geometry():

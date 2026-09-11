@@ -44,6 +44,15 @@ def _optional_score(value: Any) -> float | None:
     return None if value is None else float(value)
 
 
+def _contract_score(value: Any) -> float | None:
+    """Map an upstream quality-head value to the contract score interval."""
+
+    if value is None:
+        return None
+    number = float(value)
+    return min(1.0, max(0.0, number))
+
+
 def _face_evidence(geometry: Mapping[str, Any]) -> tuple[FaceEvidence, ...]:
     result = []
     evidence_map = {
@@ -110,7 +119,7 @@ def _cargo_from_upstream(instance: Mapping[str, Any]) -> CargoObservation:
     return CargoObservation(
         source_id, None, None, label, bbox, None,
         _optional_score(instance.get("score")),
-        _optional_score(instance.get("sam_iou_score")),
+        _contract_score(instance.get("sam_iou_score")),
         _optional_score(geometry.get("mask_reprojection_iou") if isinstance(geometry, Mapping) else None),
         _optional_score(geometry.get("plane_residual_mean") if isinstance(geometry, Mapping) else None),
         pose, dimensions, corners, axes,
@@ -123,6 +132,11 @@ def _cargo_from_upstream(instance: Mapping[str, Any]) -> CargoObservation:
             "simulation_object_id": instance.get("simulation_object_id"),
             "oracle_proposal_source_id": instance.get("oracle_proposal_source_id"),
             "proposal_source": instance.get("proposal_source"),
+            "sam_iou_score_raw": instance.get("sam_iou_score"),
+            "sam_iou_score_clipped_to_contract": (
+                instance.get("sam_iou_score") is not None
+                and not 0.0 <= float(instance["sam_iou_score"]) <= 1.0
+            ),
             "geometry_status": instance.get("geometry_status"),
             "geometry_3d_status": instance.get("geometry_3d_status"),
             "completion_mode": geometry.get("completion_mode") if isinstance(geometry, Mapping) else None,
