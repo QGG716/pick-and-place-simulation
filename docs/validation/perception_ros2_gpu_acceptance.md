@@ -194,6 +194,76 @@ Benchmark summary:
 `/root/autodl-tmp/v05-acceptance/gpu/exact-9e61c4f-benchmark/benchmark-summary.json`
 (SHA-256 `de73ae2b75c321f4605e07db0b2ffa933b8f55e2a3163fc13cd6b3e7b13605eb`).
 
+## Resident-worker follow-up (2026-09-11)
+
+Code commit `513f464bed5bebba797b99b2ba658a86bbe18d16` adds an
+opt-in, bounded resident worker while preserving the one-shot worker as the
+default diagnostic path. The adapter permits one active request, uses the
+`hello` / `ready` / `infer` / `shutdown` JSON-lines protocol, bounds response
+waits and stderr retention, rotates the worker epoch after timeout, crash, OOM,
+or a fatal response, and requires a fresh handshake before recovery. SAM and
+MoGe loaders are cached inside the resident process; the worker still invokes
+the fixed upstream stage entry points rather than carrying a second algorithm
+implementation.
+
+The follow-up ran only against `/root/vision-fixed` at visual-upstream commit
+`1d208f2ed380a207e6e46b4a62d2ac640edfe477`. The previously used
+`/root/vision-upstream` directory had been changed outside this run and its
+proposal JSON SHA-256 was `496d8b...`, not the pinned `43b445...`; it was
+therefore rejected as an acceptance source. This environment drift did not
+modify the fixed checkout, models, or frozen input evidence.
+
+The server source suite reported `284 passed, 1 deselected in 4.51s`. A clean
+ROS 2 Humble build and installed launch-test run reported 3 packages built and
+`5 tests, 0 errors, 0 failures, 0 skipped`. One preceding Humble attempt was
+invalidated by two orphan ROS demo publishers in the same DDS domain; after
+terminating those exact processes, the isolated rerun passed. The demo now
+launches each background component in its own process group and terminates the
+group during cleanup. A final resident ROS run left no matching processes.
+
+The bounded resident benchmark used 3 warmups followed by 10 measured requests.
+Every request performed new inference and wrote a distinct run directory; no
+result cache was reused. Only one frozen image was tested, so these values
+measure repeatability and process reuse, not dataset performance.
+
+| Metric | One-shot baseline | Resident worker |
+|---|---:|---:|
+| Warmups / measured | 1 / 3 | 3 / 10 |
+| Minimum | 39.474 s | 27.640 s |
+| Median | 40.000 s | 27.930 s |
+| Mean | 39.985 s | 27.928 s |
+| Maximum | 40.482 s | 28.435 s |
+| Peak sampled process GPU memory | 3790 MiB | 4016 MiB |
+
+The resident mean was 30.2% lower than the one-shot mean on this single fixed
+input. Worker startup was 3.936 s and model loading was 0.979 s on the first
+warmup. Measured mean stage times were SAM 15.389 s, MoGe 2.353 s, 2-D geometry
+2.029 s, 3-D geometry 6.805 s, assembly 0.620 s, and request total 27.848 s.
+The remaining dominant costs are SAM and 3-D geometry. P95/P99 and production
+throughput are intentionally not claimed.
+
+One-shot and resident results both contained 39 cargo instances and 39 unknown
+regions. `cargo_masks.npz` arrays and `cargo_instances.json` were byte-for-byte
+identical. Across `box_geometry_2d.json`,
+`box_cuboids_instance_aware.json`, and `final_instance_aware.json`, all compared
+numeric fields were exactly equal; only run-specific absolute artifact paths
+and provenance differed. The final ROS round trip completed in 35.576 s,
+preserved the world fingerprint, and remained fail-closed with
+`planning_admissible=false`, `OBSERVATION_STALE`, and
+`UNKNOWN_OR_UNTRANSFORMED_REGIONS`.
+
+Follow-up evidence:
+
+| File | SHA-256 |
+|---|---|
+| `/root/autodl-tmp/v05-acceptance/work-16db253-20260911/gpu/resident-benchmark-3x10/benchmark-summary.json` | `29fb188151c308d73970474d18c924c27a13bdb5660914c6f491ad796e5d7afa` |
+| `/root/autodl-tmp/v05-acceptance/work-16db253-20260911/gpu/resident-smoke-fixed/result.json` | `64443bf45fc4d81eb71c03310147c118176450236cf30abad2494e87d54e7b08` |
+| `/root/autodl-tmp/v05-acceptance/work-16db253-20260911/ros-gpu/resident-ros-cleanup-final/summary.json` | `e73e3eda6332e5039972ea741b44b4c4045d62535a7437795ead905433a91913` |
+| `/root/autodl-tmp/v05-acceptance/work-16db253-20260911/humble/humble-resident-isolated-final/build/unloading_ros_bridge/pytest.xml` | `08424a24ab51c581575cefdf348df66389154f88f514d3e26e844de5d392314e` |
+
+The compact, sanitized record committed with the repository is
+`docs/validation/evidence/perception_resident_gpu_20260911.json`.
+
 ## Fail-closed regression coverage
 
 The server-run suites include negative coverage for:
