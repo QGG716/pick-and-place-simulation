@@ -73,7 +73,7 @@ class ResidentRuntime:
         if actual != UPSTREAM_COMMIT:
             raise RuntimeError(f"UPSTREAM_SHA_MISMATCH:expected {UPSTREAM_COMMIT}, got {actual}")
         self.upstream_commit = actual
-        self.proposal = controlled(self.upstream, args.proposal_json)
+        self.proposal = None if args.proposal_json is None else controlled(self.upstream, args.proposal_json)
         self.person_masks = None if args.person_masks is None else controlled(self.upstream, args.person_masks)
         self.output_root = args.output_root.resolve()
         self.output_root.mkdir(parents=True, exist_ok=True)
@@ -141,7 +141,7 @@ class ResidentRuntime:
         self._sample_gpu(name + ":after", samples)
         log.write_text(output.getvalue() + "\n--- stderr ---\n" + errors.getvalue(), encoding="utf-8")
 
-    def _sam(self, source: Path, sam_image: Path, masks: Path, instances: Path,
+    def _sam(self, source: Path, proposal: Path, sam_image: Path, masks: Path, instances: Path,
              log: Path, timings: dict[str, float], samples: list[dict[str, Any]]) -> None:
         runtime = self
 
@@ -158,7 +158,7 @@ class ResidentRuntime:
         old_processor, old_model = self.sam_entry.SamProcessor, self.sam_entry.SamModel
         self.sam_entry.SamProcessor, self.sam_entry.SamModel = CachedProcessor, CachedModel
         argv = [
-            "sam_from_generated_boxes.py", str(source), str(self.proposal),
+            "sam_from_generated_boxes.py", str(source), str(proposal),
             "--output", str(sam_image), "--masks-output", str(masks),
             "--json-output", str(instances), "--sam-model", self.args.sam_model,
             "--device", "cuda",
@@ -247,6 +247,22 @@ class ResidentRuntime:
             raise ValueError("input escapes configured worker roots")
         if not source.is_file() or sha256(source) != input_hash:
             raise ValueError("input file missing or SHA-256 mismatch")
+        proposal = self.proposal
+        proposal_reference = request.get("proposal_reference")
+        if proposal_reference is not None:
+            if not isinstance(proposal_reference, dict):
+                raise ValueError("proposal_reference must be a mapping")
+            parsed_proposal = urlparse(str(proposal_reference.get("uri", "")))
+            if parsed_proposal.scheme != "file" or parsed_proposal.netloc not in ("", "localhost"):
+                raise ValueError("proposal_reference must use a local file URI")
+            proposal = Path(unquote(parsed_proposal.path)).resolve()
+            if not any(proposal == root or root in proposal.parents for root in roots):
+                raise ValueError("proposal reference escapes configured worker roots")
+            expected_proposal_hash = str(proposal_reference.get("sha256", ""))
+            if not proposal.is_file() or len(expected_proposal_hash) != 64 or sha256(proposal) != expected_proposal_hash:
+                raise ValueError("proposal file missing or SHA-256 mismatch")
+        if proposal is None:
+            raise ValueError("each request requires a validated proposal_reference")
 
         safe_id = "".join(character for character in request_id if character.isalnum() or character in "-_")
         run_dir = controlled(
@@ -262,7 +278,7 @@ class ResidentRuntime:
 
         sam_image, masks = run_dir / "sam_crossvalidated.jpg", run_dir / "cargo_masks.npz"
         instances = run_dir / "cargo_instances.json"
-        self._sam(source, sam_image, masks, instances, run_dir / "sam.log", timings, samples)
+        self._sam(source, proposal, sam_image, masks, instances, run_dir / "sam.log", timings, samples)
         logs["sam"] = {"path": str(run_dir / "sam.log"), "sha256": sha256(run_dir / "sam.log"), "returncode": 0}
 
         python = sys.executable
@@ -311,7 +327,7 @@ class ResidentRuntime:
             "sam_weight_sha256": None if sam_weight is None else sha256(sam_weight),
             "moge_model_id": self.args.moge_model_id, "moge_revision": self.args.moge_revision,
             "moge_weight_sha256": sha256(Path(self.args.moge_model)), "num_tokens": self.args.num_tokens,
-            "proposal_sha256": sha256(self.proposal),
+            "proposal_sha256": sha256(proposal),
             "person_masks_sha256": None if self.person_masks is None else sha256(self.person_masks),
         }
         artifacts = {path.name: {"path": str(path), "sha256": sha256(path)} for path in (sam_image, masks, instances, faces_json, pointmap, cuboids_json, final_json, final_image)}
@@ -354,7 +370,10 @@ class ResidentRuntime:
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser()
     result.add_argument("--upstream-root", type=Path, required=True)
-    result.add_argument("--proposal-json", type=Path, required=True)
+    result.add_argument(
+        "--proposal-json", type=Path,
+        help="Legacy fixed proposal file; per-request proposal_reference is preferred",
+    )
     result.add_argument("--person-masks", type=Path)
     result.add_argument("--output-root", type=Path, required=True)
     result.add_argument("--input-root", type=Path, action="append", required=True)

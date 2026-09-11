@@ -7,8 +7,10 @@ from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
+from queue import Empty, Queue
 import subprocess
 import sys
+from threading import Thread
 from time import perf_counter
 
 import cv2
@@ -30,6 +32,84 @@ def sha256(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _stable_color(identity: str) -> tuple[int, int, int]:
+    digest = hashlib.sha256(identity.encode("utf-8")).digest()
+    return tuple(80 + int(value) % 176 for value in digest[:3])
+
+
+def _label_panel(image: np.ndarray, label: str, color: tuple[int, int, int]) -> np.ndarray:
+    result = image.copy()
+    cv2.rectangle(result, (0, 0), (result.shape[1], 30), (15, 15, 15), -1)
+    cv2.putText(result, label, (10, 21), cv2.FONT_HERSHEY_SIMPLEX, 0.50, color, 2, cv2.LINE_AA)
+    return result
+
+
+class _ResidentWorkerClient:
+    def __init__(self, command: list[str], *, cwd: Path, worker_epoch: str, timeout: float, log_path: Path) -> None:
+        self.command = command
+        self.cwd = cwd
+        self.worker_epoch = worker_epoch
+        self.timeout = timeout
+        self.log_stream = log_path.open("w", encoding="utf-8")
+        self.process = subprocess.Popen(
+            command, cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=self.log_stream, text=True, bufsize=1,
+        )
+        self.lines: Queue[str] = Queue(maxsize=2)
+        assert self.process.stdout is not None and self.process.stdin is not None
+
+        def read_stdout() -> None:
+            assert self.process.stdout is not None
+            for line in self.process.stdout:
+                self.lines.put(line)
+            self.lines.put("")
+
+        Thread(target=read_stdout, name="isaac-b1-resident-stdout", daemon=True).start()
+        self.process.stdin.write(json.dumps({
+            "schema_version": SCHEMA_VERSION, "op": "hello", "worker_epoch": worker_epoch,
+        }, sort_keys=True) + "\n")
+        self.process.stdin.flush()
+        ready = self._read()
+        if ready.get("op") != "ready" or ready.get("worker_epoch") != worker_epoch:
+            self.close(force=True)
+            raise RuntimeError(f"resident worker handshake failed: {ready}")
+        self.ready = ready
+
+    def _read(self) -> dict:
+        try:
+            line = self.lines.get(timeout=self.timeout)
+        except Empty as exc:
+            raise TimeoutError("resident worker response timed out") from exc
+        if not line:
+            raise RuntimeError(f"resident worker exited with code {self.process.poll()}")
+        return json.loads(line)
+
+    def infer(self, request: dict) -> dict:
+        if self.process.poll() is not None or self.process.stdin is None:
+            raise RuntimeError("resident worker is not running")
+        self.process.stdin.write(json.dumps(request, sort_keys=True) + "\n")
+        self.process.stdin.flush()
+        return self._read()
+
+    def close(self, *, force: bool = False) -> None:
+        if self.process.poll() is None and not force and self.process.stdin is not None:
+            self.process.stdin.write(json.dumps({
+                "schema_version": SCHEMA_VERSION, "op": "shutdown", "worker_epoch": self.worker_epoch,
+            }, sort_keys=True) + "\n")
+            self.process.stdin.flush()
+        if self.process.poll() is None:
+            try:
+                self.process.wait(timeout=10.0 if not force else 1.0)
+            except subprocess.TimeoutExpired:
+                self.process.terminate()
+                try:
+                    self.process.wait(timeout=5.0)
+                except subprocess.TimeoutExpired:
+                    self.process.kill()
+                    self.process.wait()
+        self.log_stream.close()
 
 
 def main() -> int:
@@ -58,39 +138,23 @@ def main() -> int:
     video_frames = []
     previous_elapsed = {}
     previous_summary = capture_root / "mode_b1_summary.json"
+    previous_data = None
     if args.reuse_existing and previous_summary.is_file():
+        previous_data = json.loads(previous_summary.read_text(encoding="utf-8"))
         previous_elapsed = {
             item["scene"]: float(item["elapsed_seconds"])
-            for item in json.loads(previous_summary.read_text(encoding="utf-8"))["scenes"]
+            for item in previous_data["scenes"]
         }
 
-    for record in index["scenes"]:
-        scene = record["scene"]
-        scene_dir = capture_root / scene
-        manifest = IsaacSceneManifest.from_dict(json.loads((bundle_root / record["path"]).read_text(encoding="utf-8")))
-        annotations = json.loads((scene_dir / "gt_annotations.json").read_text(encoding="utf-8"))
-        binding = json.loads((scene_dir / "capture_binding.json").read_text(encoding="utf-8"))
-        source = scene_dir / "sensor_rgb.png"
-        proposals = scene_dir / "oracle_proposals.json"
-        request = {
-            "schema_version": SCHEMA_VERSION,
-            "op": "infer",
-            "request_id": f"isaac-b1-{scene}-{binding['frame_sequence']}",
-            "worker_epoch": f"isaac-b1-{binding['simulation_epoch']}",
-            "frame": {
-                "source": "isaac-sim-6.0.1", "stream": "perception_validation",
-                "epoch": binding["simulation_epoch"], "sequence": binding["frame_sequence"],
-                "capture_time": binding["simulation_time"], "receive_time": binding["simulation_time"],
-                "clock_domain": "ros_sim_time", "frame_id": manifest.cameras[0]["frame_id"],
-                "width": manifest.cameras[0]["resolution"][0], "height": manifest.cameras[0]["resolution"][1],
-                "encoding": "rgb8", "rgb_uri": source.resolve().as_uri(), "rgb_sha256": sha256(source),
-            },
-        }
+    worker_epoch = f"isaac-b1-resident-{sha256(bundle_root / 'index.json')[:16]}"
+    worker = None
+    resident_ready = None if previous_data is None else previous_data.get("resident_worker_ready")
+    if not args.reuse_existing:
         command = [
-            str(args.gpu_python), str(ROOT / "tools/vision_worker_entry.py"),
-            "--upstream-root", str(vision_root), "--proposal-json", str(proposals),
-            "--output-root", str(worker_root), "--input-root", str(capture_root),
-            "--input-root", str(vision_root), "--sam-model", str(model_manifest["sam"]["snapshot_path"]),
+            str(args.gpu_python), str(ROOT / "tools/vision_resident_worker.py"),
+            "--upstream-root", str(vision_root), "--output-root", str(worker_root),
+            "--input-root", str(capture_root), "--input-root", str(vision_root),
+            "--sam-model", str(model_manifest["sam"]["snapshot_path"]),
             "--sam-model-id", str(model_manifest["sam"]["repository"]),
             "--sam-revision", str(model_manifest["sam"]["revision"]),
             "--moge-model", str(model_manifest["moge"]["model_path"]),
@@ -98,84 +162,148 @@ def main() -> int:
             "--moge-revision", str(model_manifest["moge"]["revision"]),
             "--stage-timeout", str(args.worker_timeout),
         ]
-        response_path = scene_dir / "mode_b1_worker_response.json"
-        if args.reuse_existing:
-            if not response_path.is_file() or scene not in previous_elapsed:
-                raise FileNotFoundError(f"validated Mode B1 response is unavailable for {scene}")
-            worker_stdout = response_path.read_text(encoding="utf-8")
-            worker_returncode = 0
-            elapsed = previous_elapsed[scene]
-        else:
-            started = perf_counter()
-            completed = subprocess.run(
-                command, input=json.dumps(request) + "\n", text=True, capture_output=True,
-                timeout=args.worker_timeout + 60.0, cwd=ROOT,
-            )
-            elapsed = perf_counter() - started
-            worker_stdout = completed.stdout
-            worker_returncode = completed.returncode
-            response_path.write_text(worker_stdout, encoding="utf-8")
-            (scene_dir / "mode_b1_worker_stderr.log").write_text(completed.stderr, encoding="utf-8")
-        try:
-            response = json.loads(worker_stdout.strip().splitlines()[-1])
-        except (IndexError, json.JSONDecodeError) as exc:
-            raise RuntimeError(f"Mode B1 worker emitted invalid JSON for {scene}") from exc
-        if worker_returncode or response.get("status") != "COMPLETE":
-            raise RuntimeError(f"Mode B1 worker failed for {scene}: {response.get('error_code')} {response.get('error_message')}")
-        prediction = loads(response["observation"])
-        prediction = replace(
-            prediction, capture_time=float(binding["simulation_time"]),
-            processed_time=float(binding["simulation_time"]) + elapsed,
-            clock_domain="ros_sim_time",
-            coverage={**dict(prediction.coverage), "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL", "raw_image_automatic": False},
+        worker = _ResidentWorkerClient(
+            command, cwd=ROOT, worker_epoch=worker_epoch,
+            timeout=args.worker_timeout + 60.0,
+            log_path=capture_root / "mode_b1_resident_worker.log",
         )
-        if prediction.synthetic:
-            raise RuntimeError("Mode B1 prediction cannot be synthetic")
-        truth = ground_truth_observation(manifest, annotations["objects"])
-        metrics_path = Path(response["metrics_reference"]["path"])
-        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
-        artifacts = metrics["artifacts"]
-        pointmap = np.load(artifacts["moge2_pointmap.npz"]["path"])
-        depth_report = evaluate_depth(
-            np.load(scene_dir / "metric_depth_m.npy"), pointmap["depth"], valid_mask=pointmap["valid_mask"]
-        )
-        gt_archive = np.load(scene_dir / "gt_instance_masks.npz")
-        gt_masks = {name: gt_archive[name] for name in gt_archive.files}
-        predicted_archive = np.load(artifacts["cargo_masks.npz"]["path"])
-        predicted_masks = {
-            str(mask_id): predicted_archive["masks"][index].astype(bool)
-            for index, mask_id in enumerate(predicted_archive["mask_ids"])
-        }
-        report = evaluate_observations(
-            truth, prediction, ground_truth_masks=gt_masks,
-            prediction_masks=predicted_masks, depth_evaluation=depth_report,
-        )
-        write_evaluation(scene_dir / "mode_b1_evaluation.json", report)
-        (scene_dir / "mode_b1_perception_observation.json").write_text(dumps(prediction), encoding="utf-8")
+        resident_ready = worker.ready
 
-        image = cv2.imread(str(source))
-        for item in prediction.cargo:
-            x1, y1, x2, y2 = (int(round(value)) for value in item.bbox_xyxy)
-            cv2.rectangle(image, (x1, y1), (x2, y2), (80, 255, 80), 2)
-        cv2.rectangle(image, (0, 0), (image.shape[1], 52), (15, 15, 15), -1)
-        cv2.putText(image, f"MODE B1 PRED | {scene} | n={len(prediction.cargo)}", (10, 21), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (80, 255, 80), 2, cv2.LINE_AA)
-        cv2.putText(image, "oracle proposals; SAM+MoGe estimate; RAW_IMAGE_AUTOMATIC=false", (10, 43), cv2.FONT_HERSHEY_SIMPLEX, 0.38, (80, 255, 80), 1, cv2.LINE_AA)
-        prediction_overlay = scene_dir / "mode_b1_prediction_overlay.png"
-        cv2.imwrite(str(prediction_overlay), image)
-        gt = cv2.imread(str(scene_dir / "gt_overlay.png"))
-        comparison = np.hstack((gt, image))
-        cv2.imwrite(str(scene_dir / "mode_b1_gt_prediction_comparison.png"), comparison)
-        video_frames.append(comparison)
-        results.append({
-            "scene": scene, "status": "PASS", "elapsed_seconds": elapsed,
-            "proposal_count": len(json.loads(proposals.read_text(encoding="utf-8"))["instances"]),
-            "prediction_count": len(prediction.cargo), "processed_object_count": report["processed_object_count"],
-            "mean_proposal_bbox_iou": report["mean_proposal_bbox_iou"],
-            "mean_estimated_mask_bbox_iou": report["mean_estimated_mask_bbox_iou"],
-            "mean_mask_iou": report["mean_mask_iou"],
-            "depth": depth_report, "evaluation_fingerprint": report["evaluation_fingerprint"],
-            "worker_response_sha256": sha256(response_path),
-        })
+    try:
+        for record in index["scenes"]:
+            scene = record["scene"]
+            scene_dir = capture_root / scene
+            manifest = IsaacSceneManifest.from_dict(json.loads((bundle_root / record["path"]).read_text(encoding="utf-8")))
+            annotations = json.loads((scene_dir / "gt_annotations.json").read_text(encoding="utf-8"))
+            binding = json.loads((scene_dir / "capture_binding.json").read_text(encoding="utf-8"))
+            source = scene_dir / "sensor_rgb.png"
+            proposals = scene_dir / "oracle_proposals.json"
+            request = {
+                "schema_version": SCHEMA_VERSION,
+                "op": "infer",
+                "request_id": f"isaac-b1-resident-{scene}-{binding['frame_sequence']}",
+                "worker_epoch": worker_epoch,
+                "proposal_reference": {"uri": proposals.resolve().as_uri(), "sha256": sha256(proposals)},
+                "frame": {
+                    "source": "isaac-sim-6.0.1", "stream": "perception_validation",
+                    "epoch": binding["simulation_epoch"], "sequence": binding["frame_sequence"],
+                    "capture_time": binding["simulation_time"], "receive_time": binding["simulation_time"],
+                    "clock_domain": "ros_sim_time", "frame_id": manifest.cameras[0]["frame_id"],
+                    "width": manifest.cameras[0]["resolution"][0], "height": manifest.cameras[0]["resolution"][1],
+                    "encoding": "rgb8", "rgb_uri": source.resolve().as_uri(), "rgb_sha256": sha256(source),
+                },
+            }
+            response_path = scene_dir / "mode_b1_worker_response.json"
+            if args.reuse_existing:
+                if not response_path.is_file() or scene not in previous_elapsed:
+                    raise FileNotFoundError(f"validated Mode B1 response is unavailable for {scene}")
+                response = json.loads(response_path.read_text(encoding="utf-8").strip().splitlines()[-1])
+                elapsed = previous_elapsed[scene]
+            else:
+                assert worker is not None
+                started = perf_counter()
+                response = worker.infer(request)
+                elapsed = perf_counter() - started
+                response_path.write_text(json.dumps(response, sort_keys=True) + "\n", encoding="utf-8")
+            if response.get("status") != "COMPLETE":
+                raise RuntimeError(f"Mode B1 worker failed for {scene}: {response.get('error_code')} {response.get('error_message')}")
+            prediction = loads(response["observation"])
+            prediction = replace(
+                prediction, capture_time=float(binding["simulation_time"]),
+                processed_time=float(binding["simulation_time"]) + elapsed,
+                clock_domain="ros_sim_time",
+                coverage={**dict(prediction.coverage), "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL", "raw_image_automatic": False},
+            )
+            if prediction.synthetic:
+                raise RuntimeError("Mode B1 prediction cannot be synthetic")
+            truth = ground_truth_observation(manifest, annotations["objects"])
+            metrics_path = Path(response["metrics_reference"]["path"])
+            metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+            artifacts = metrics["artifacts"]
+            pointmap = np.load(artifacts["moge2_pointmap.npz"]["path"])
+            depth_report = evaluate_depth(
+                np.load(scene_dir / "metric_depth_m.npy"), pointmap["depth"], valid_mask=pointmap["valid_mask"]
+            )
+            gt_archive = np.load(scene_dir / "gt_instance_masks.npz")
+            gt_masks = {name: gt_archive[name] for name in gt_archive.files}
+            predicted_archive = np.load(artifacts["cargo_masks.npz"]["path"])
+            predicted_masks = {
+                str(mask_id): predicted_archive["masks"][index].astype(bool)
+                for index, mask_id in enumerate(predicted_archive["mask_ids"])
+            }
+            report = evaluate_observations(
+                truth, prediction, ground_truth_masks=gt_masks,
+                prediction_masks=predicted_masks, depth_evaluation=depth_report,
+                T_W_C=manifest.cameras[0]["T_W_C"],
+            )
+            write_evaluation(scene_dir / "mode_b1_evaluation.json", report)
+            (scene_dir / "mode_b1_perception_observation.json").write_text(dumps(prediction), encoding="utf-8")
+
+            matched_ids = {item["prediction_source_instance_id"]: item["simulation_object_id"] for item in report["per_object"]}
+            image = cv2.imread(str(source))
+            mask_layer = image.copy()
+            for item in prediction.cargo:
+                color = _stable_color(matched_ids.get(item.source_instance_id, item.source_instance_id))
+                mask = predicted_masks.get(item.source_instance_id)
+                if mask is not None and mask.shape == image.shape[:2]:
+                    mask_layer[mask] = color
+            image = cv2.addWeighted(image, 0.65, mask_layer, 0.35, 0.0)
+            for item in prediction.cargo:
+                identity = matched_ids.get(item.source_instance_id, item.source_instance_id)
+                color = _stable_color(identity)
+                x1, y1, x2, y2 = (int(round(value)) for value in item.bbox_xyxy)
+                cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
+                status = "ELIGIBLE" if item.candidate_eligible else "REJECTED"
+                cv2.putText(image, f"PRED {identity[-8:]} {status}", (x1, max(42, y1 - 3)), cv2.FONT_HERSHEY_SIMPLEX, 0.30, color, 1, cv2.LINE_AA)
+            cv2.rectangle(image, (0, 0), (image.shape[1], 54), (15, 15, 15), -1)
+            cv2.putText(image, f"MODE B1 PRED | {scene} | n={len(prediction.cargo)}", (10, 21), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (80, 255, 80), 2, cv2.LINE_AA)
+            cv2.putText(image, f"ORACLE ROI; RAW=false; UNKNOWN={len(prediction.unknown_regions)}", (10, 44), cv2.FONT_HERSHEY_SIMPLEX, 0.38, (60, 180, 255), 1, cv2.LINE_AA)
+            prediction_overlay = scene_dir / "mode_b1_prediction_overlay.png"
+            cv2.imwrite(str(prediction_overlay), image)
+
+            gt = cv2.imread(str(source))
+            gt_layer = gt.copy()
+            for annotation in annotations["objects"]:
+                identity = str(annotation["simulation_object_id"])
+                mask = gt_masks.get(identity)
+                color = _stable_color(identity)
+                if mask is not None and mask.shape == gt.shape[:2]:
+                    gt_layer[mask] = color
+                if annotation.get("visible", False):
+                    x1, y1, x2, y2 = (int(round(value)) for value in annotation["bbox_xyxy"])
+                    cv2.rectangle(gt, (x1, y1), (x2, y2), color, 2)
+                    cv2.putText(gt, f"GT {identity[-8:]}", (x1, max(35, y1 - 3)), cv2.FONT_HERSHEY_SIMPLEX, 0.30, color, 1, cv2.LINE_AA)
+            gt = cv2.addWeighted(gt, 0.65, gt_layer, 0.35, 0.0)
+            gt = _label_panel(gt, f"ISAAC GT | n={len(truth.cargo)}", (80, 220, 255))
+            cv2.imwrite(str(scene_dir / "mode_b1_gt_overlay.png"), gt)
+
+            rgb_panel = _label_panel(cv2.imread(str(source)), "ISAAC RGB INPUT", (255, 255, 255))
+            overview = cv2.resize(cv2.imread(str(scene_dir / "isaac_overview.png")), (image.shape[1], image.shape[0]))
+            overview = _label_panel(overview, "WORLD / CAMERA VIEW", (255, 220, 80))
+            upstream_3d = cv2.imread(str(artifacts["final_instance_aware.jpg"]["path"]))
+            upstream_3d = cv2.resize(upstream_3d, (image.shape[1], image.shape[0]))
+            upstream_3d = _label_panel(upstream_3d, "PREDICTED 3D GEOMETRY (MONOCULAR SCALE)", (80, 255, 80))
+            comparison = np.vstack((np.hstack((rgb_panel, gt)), np.hstack((image, upstream_3d))))
+            cv2.imwrite(str(scene_dir / "mode_b1_gt_prediction_comparison.png"), comparison)
+            video_frames.append(comparison)
+            results.append({
+                "scene": scene, "status": "PASS", "elapsed_seconds": elapsed,
+                "proposal_count": len(json.loads(proposals.read_text(encoding="utf-8"))["instances"]),
+                "prediction_count": len(prediction.cargo), "processed_object_count": report["processed_object_count"],
+                "mean_proposal_bbox_iou": report["mean_proposal_bbox_iou"],
+                "mean_estimated_mask_bbox_iou": report["mean_estimated_mask_bbox_iou"],
+                "mean_mask_iou": report["mean_mask_iou"],
+                "mean_center_translation_error_m": report["mean_center_translation_error_m"],
+                "mean_orientation_angular_error_deg": report["mean_orientation_angular_error_deg"],
+                "mean_full_dimension_abs_error_m": report["mean_full_dimension_abs_error_m"],
+                "mean_per_axis_dimension_relative_error": report["mean_per_axis_dimension_relative_error"],
+                "unknown_region_count": report["unknown_region_count"],
+                "depth": depth_report, "evaluation_fingerprint": report["evaluation_fingerprint"],
+                "worker_response_sha256": sha256(response_path),
+            })
+    finally:
+        if worker is not None:
+            worker.close()
 
     video_path = capture_root / "isaac_perception_mode_b1_validation.mp4"
     height, width = video_frames[0].shape[:2]
@@ -190,6 +318,8 @@ def main() -> int:
     summary = {
         "schema_version": "isaac_perception_mode_b1_summary_v1", "status": "PASS",
         "mode": "ISAAC_SENSOR_WITH_ORACLE_PROPOSALS", "raw_image_automatic": False,
+        "execution_model": "one resident GPU worker with SAM and MoGe loaded once",
+        "resident_worker_ready": resident_ready,
         "vision_commit": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
         "scene_count": len(results), "scenes": results,
         "video": str(video_path), "video_sha256": sha256(video_path),

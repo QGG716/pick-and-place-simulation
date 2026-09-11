@@ -5,11 +5,11 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from unloading_contracts import EvidenceKind, Validity
+from unloading_contracts import EvidenceKind, Pose3D, Validity
 from unloading_perception.isaac_evaluation import bbox_iou, evaluate_depth, evaluate_observations, mask_iou, mask_tight_bbox
 from unloading_perception.isaac_validation import ground_truth_observation
 
-from test_isaac_perception_contract import _manifest, _gt
+from test_isaac_perception_contract import IDENTITY, _manifest, _gt
 
 
 def test_bbox_and_mask_iou_are_exact():
@@ -100,3 +100,26 @@ def test_evaluation_rejects_gt_disguised_as_prediction():
     truth = _gt(manifest)
     with pytest.raises(ValueError, match="cannot be replaced"):
         evaluate_observations(truth, truth)
+
+
+def test_evaluation_applies_explicit_camera_to_world_transform_without_validating_scale():
+    manifest, _ = _manifest()
+    truth = _gt(manifest)
+    source = truth.cargo[0]
+    camera_pose = Pose3D(
+        source.pose.position_m, source.pose.orientation_xyzw,
+        "camera_optical_model", source.pose.axis_convention, EvidenceKind.MODEL_ESTIMATED,
+    )
+    estimate = replace(
+        source, source_instance_id="vision-1", object_id=None, track_id=None,
+        pose=camera_pose, pose_evidence=EvidenceKind.MODEL_ESTIMATED,
+        metric_scale_validity=Validity.UNKNOWN, candidate_eligible=False,
+        eligibility_reasons=("MONOCULAR_SCALE_UNVERIFIED",),
+        raw_result={"oracle_proposal_source_id": source.source_instance_id},
+    )
+    prediction = replace(truth, provider="worker", synthetic=False, cargo=(estimate,))
+    report = evaluate_observations(truth, prediction, T_W_C=IDENTITY)
+    assert report["mean_center_translation_error_m"] == pytest.approx(0.0)
+    assert report["mean_orientation_angular_error_deg"] == pytest.approx(0.0)
+    assert report["per_object"][0]["world_transform_applied"] is True
+    assert report["world_transform_evaluation"]["metric_scale_valid"] is False

@@ -15,6 +15,7 @@ import numpy as np
 
 from unloading_contracts import CargoObservation, PerceptionObservation
 
+from .geometry import transform_pose
 from .isaac_validation import canonical_digest, write_json
 
 
@@ -153,6 +154,7 @@ def evaluate_observations(
     ground_truth_masks: Mapping[str, np.ndarray] | None = None,
     prediction_masks: Mapping[str, np.ndarray] | None = None,
     depth_evaluation: Mapping[str, Any] | None = None,
+    T_W_C: Sequence[Sequence[float]] | None = None,
 ) -> dict[str, Any]:
     if not ground_truth.synthetic or ground_truth.provider != "isaac-sim-ground-truth":
         raise ValueError("evaluation ground truth must be explicit Isaac synthetic truth")
@@ -168,9 +170,14 @@ def evaluate_observations(
         truth = ground_truth.cargo[gt_index]
         estimate = prediction.cargo[prediction_index]
         center_error = orientation_error = None
-        if truth.pose is not None and estimate.pose is not None and truth.pose.frame_id == estimate.pose.frame_id == "world":
-            center_error = sqrt(sum((left - right) ** 2 for left, right in zip(truth.pose.position_m, estimate.pose.position_m)))
-            orientation_error = _orientation_error_degrees(truth.pose.orientation_xyzw, estimate.pose.orientation_xyzw)
+        estimate_world_pose = estimate.pose
+        transform_applied = False
+        if estimate_world_pose is not None and estimate_world_pose.frame_id == "camera_optical_model" and T_W_C is not None:
+            estimate_world_pose = transform_pose(T_W_C, estimate_world_pose, "world")
+            transform_applied = True
+        if truth.pose is not None and estimate_world_pose is not None and truth.pose.frame_id == estimate_world_pose.frame_id == "world":
+            center_error = sqrt(sum((left - right) ** 2 for left, right in zip(truth.pose.position_m, estimate_world_pose.position_m)))
+            orientation_error = _orientation_error_degrees(truth.pose.orientation_xyzw, estimate_world_pose.orientation_xyzw)
         dimension_error = relative_error = None
         if truth.full_dimensions_m is not None and estimate.full_dimensions_m is not None:
             dimension_error = [abs(left - right) for left, right in zip(truth.full_dimensions_m, estimate.full_dimensions_m)]
@@ -197,6 +204,7 @@ def evaluate_observations(
             "mask_iou": masks_status,
             "center_translation_error_m": center_error,
             "orientation_angular_error_deg": orientation_error,
+            "world_transform_applied": transform_applied,
             "full_dimension_abs_error_m": dimension_error,
             "per_axis_dimension_relative_error": relative_error,
             "candidate_eligible": estimate.candidate_eligible,
@@ -210,6 +218,10 @@ def evaluate_observations(
     def mean(field: str) -> float | None:
         values = [float(item[field]) for item in per_object if item[field] is not None]
         return None if not values else float(np.mean(values))
+
+    def mean_vector(field: str) -> list[float] | None:
+        vectors = [item[field] for item in per_object if item[field] is not None]
+        return None if not vectors else [float(np.mean([vector[axis] for vector in vectors])) for axis in range(3)]
 
     report = {
         "schema_version": "isaac_perception_evaluation_v1",
@@ -233,9 +245,18 @@ def evaluate_observations(
         "mean_mask_iou": mean("mask_iou"),
         "mean_center_translation_error_m": mean("center_translation_error_m"),
         "mean_orientation_angular_error_deg": mean("orientation_angular_error_deg"),
+        "mean_full_dimension_abs_error_m": mean_vector("full_dimension_abs_error_m"),
+        "mean_per_axis_dimension_relative_error": mean_vector("per_axis_dimension_relative_error"),
         "per_object": per_object,
         "depth": dict(depth_evaluation or {"status": "NOT_EVALUATED"}),
         "bbox_claim_boundary": "proposal bbox IoU evaluates injected oracle proposals; estimated mask bbox IoU evaluates the vision output",
+        "world_transform_evaluation": {
+            "transform": "T_W_object_prediction = T_W_C @ T_C_object_prediction",
+            "T_W_C_supplied": T_W_C is not None,
+            "prediction_camera_frame": "camera_optical_model",
+            "metric_scale_valid": False,
+            "claim_boundary": "world-frame errors are absolute mismatches of monocular pseudo-3D and are not metric accuracy",
+        },
         "claim_boundary": "Isaac rendered-image evaluation is not real-camera accuracy",
     }
     report["evaluation_fingerprint"] = canonical_digest(report)
