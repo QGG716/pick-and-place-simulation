@@ -120,6 +120,9 @@ def _cargo_from_upstream(instance: Mapping[str, Any]) -> CargoObservation:
         {
             "id": instance.get("id"),
             "instance_id": instance.get("instance_id"),
+            "simulation_object_id": instance.get("simulation_object_id"),
+            "oracle_proposal_source_id": instance.get("oracle_proposal_source_id"),
+            "proposal_source": instance.get("proposal_source"),
             "geometry_status": instance.get("geometry_status"),
             "geometry_3d_status": instance.get("geometry_3d_status"),
             "completion_mode": geometry.get("completion_mode") if isinstance(geometry, Mapping) else None,

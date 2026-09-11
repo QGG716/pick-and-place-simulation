@@ -76,19 +76,26 @@ def main() -> int:
         write_json(scene_dir / "feasibility_compatibility_report.json", compatibility)
         proposals = {
             "schema_version": "isaac_oracle_proposals_v1",
+            "coordinate_space": "source_image",
+            "source_size": [int(manifest.cameras[0]["resolution"][0]), int(manifest.cameras[0]["resolution"][1])],
             "source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
             "raw_image_automatic": False,
             "simulation_epoch": binding.simulation_epoch,
             "frame_sequence": binding.frame_sequence,
             "rgb_sha256": binding.rgb_sha256,
             "instances": [{
-                "instance_id": item["simulation_object_id"],
-                "label": item["category"],
+                "id": proposal_index,
+                "instance_id": proposal_index,
+                "simulation_object_id": item["simulation_object_id"],
+                "oracle_proposal_source_id": item["simulation_object_id"],
+                "label": "box",
                 "bbox": item["bbox_xyxy"],
                 "visible": item["visible"],
                 "occluded": item["occluded"],
                 "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
-            } for item in annotation_payload["objects"] if item["visible"]],
+            } for proposal_index, item in enumerate(
+                (item for item in annotation_payload["objects"] if item["visible"]), start=1
+            )],
         }
         write_json(scene_dir / "oracle_proposals.json", proposals)
         results.append({

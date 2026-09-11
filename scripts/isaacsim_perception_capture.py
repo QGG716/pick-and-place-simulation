@@ -89,6 +89,7 @@ try:
     from isaacsim.asset.importer.urdf import URDFImporter, URDFImporterConfig
     from isaacsim.core.api import World
     from isaacsim.core.experimental.prims import Articulation
+    from isaacsim.core.experimental.utils.semantics import add_labels
     from pxr import Gf, Sdf, UsdGeom, UsdPhysics, UsdShade
 
     project_root = args.project_root.resolve()
@@ -224,6 +225,9 @@ try:
         key = "target" if role == "selected_carton" else "tool" if role == "tool_equal_scale_collision_proxy" else "carton" if "carton" in role else "chassis" if item["name"] == "chassis" else "conveyor"
         UsdShade.MaterialBindingAPI.Apply(cube.GetPrim()).Bind(materials[key])
         UsdPhysics.CollisionAPI.Apply(cube.GetPrim())
+        if "carton" in role or role == "selected_carton":
+            add_labels(cube.GetPrim(), labels="carton", taxonomy="class")
+            add_labels(cube.GetPrim(), labels=item["name"], taxonomy="simulation_object_id")
         prim_paths[item["name"]] = path
 
     # Finite trailer surfaces are visualization-only because layout v1 leaves
@@ -274,9 +278,13 @@ try:
         product = rep.create.render_product(camera, (args.width, args.height))
         rgb = rep.AnnotatorRegistry.get_annotator("rgb")
         depth = rep.AnnotatorRegistry.get_annotator("distance_to_image_plane")
+        instance = rep.AnnotatorRegistry.get_annotator(
+            "instance_segmentation", init_params={"colorize": False}
+        )
         rgb.attach(product)
         depth.attach(product)
-        cameras.append((rgb, depth))
+        instance.attach(product)
+        cameras.append((rgb, depth, instance))
 
     world = World(stage_units_in_meters=1.0, physics_dt=1.0 / 60.0, rendering_dt=1.0 / 30.0)
     articulation = Articulation(root_prim_path)
@@ -357,7 +365,7 @@ try:
 
     scene_records = []
     video_frames = []
-    for scene_index, ((scene_name, manifest), (rgb_annotator, depth_annotator)) in enumerate(zip(manifests, cameras), start=1):
+    for scene_index, ((scene_name, manifest), (rgb_annotator, depth_annotator, instance_annotator)) in enumerate(zip(manifests, cameras), start=1):
         scene_dir = args.output / scene_name
         scene_dir.mkdir(parents=True, exist_ok=True)
         apply_manifest(manifest, scene_name)
@@ -366,9 +374,11 @@ try:
             world.step(render=True)
         rgba = np.asarray(rgb_data(rgb_annotator.get_data()))
         depth = np.asarray(rgb_data(depth_annotator.get_data()), dtype=np.float32)
+        instance_result = instance_annotator.get_data()
+        instance_ids = np.asarray(instance_result["data"], dtype=np.uint32)
         overview_rgba = np.asarray(rgb_data(overview_annotator.get_data()))
-        if rgba.shape != (args.height, args.width, 4) or depth.shape != (args.height, args.width):
-            raise RuntimeError(f"invalid RGB-D shapes for {scene_name}: {rgba.shape}, {depth.shape}")
+        if rgba.shape != (args.height, args.width, 4) or depth.shape != (args.height, args.width) or instance_ids.shape != (args.height, args.width):
+            raise RuntimeError(f"invalid sensor shapes for {scene_name}: {rgba.shape}, {depth.shape}, {instance_ids.shape}")
         rgb = rgba[:, :, :3].astype(np.uint8)
         overview = overview_rgba[:, :, :3].astype(np.uint8)
         rgb_path = scene_dir / "sensor_rgb.png"
@@ -404,7 +414,34 @@ try:
         }
         camera_info_path = scene_dir / "camera_info.json"
         camera_info_path.write_text(json.dumps(camera_info, indent=2), encoding="utf-8")
+        masks_by_object = {}
+        instance_identity = {}
+        for numeric_id, labels in instance_result.get("info", {}).get("idToLabels", {}).items():
+            label = labels.get("simulation_object_id") if isinstance(labels, dict) else None
+            if isinstance(label, list):
+                label = label[0] if len(label) == 1 else None
+            if label in prim_paths:
+                mask = instance_ids == int(numeric_id)
+                if np.any(mask):
+                    masks_by_object[str(label)] = mask
+                    instance_identity[str(label)] = int(numeric_id)
+        masks_path = scene_dir / "gt_instance_masks.npz"
+        np.savez_compressed(masks_path, **masks_by_object)
+        masks_sha256 = sha256(masks_path)
         annotations = project_annotations(manifest)
+        for annotation in annotations:
+            object_id = annotation["simulation_object_id"]
+            mask = masks_by_object.get(object_id)
+            annotation["mask_key"] = object_id if mask is not None else None
+            annotation["mask_pixel_count"] = 0 if mask is None else int(mask.sum())
+            annotation["isaac_instance_id"] = instance_identity.get(object_id)
+            annotation["mask_reference"] = None if mask is None else {
+                "uri": masks_path.resolve().as_uri() + f"#{object_id}",
+                "sha256": masks_sha256,
+                "media_type": "application/x-npz; array=bool",
+            }
+            if annotation["visible"] and mask is None:
+                raise RuntimeError(f"visible GT object lacks an Isaac instance mask: {object_id}")
         annotations_path = scene_dir / "gt_annotations.json"
         annotations_payload = {
             "schema_version": "isaac_ground_truth_annotations_v1",
@@ -412,6 +449,7 @@ try:
             "simulation_frame": manifest.timing["simulation_frame"],
             "simulation_time": manifest.timing["simulation_time"],
             "manifest_fingerprint": manifest.manifest_fingerprint,
+            "instance_masks_sha256": masks_sha256,
             "objects": annotations,
         }
         annotations_path.write_text(json.dumps(annotations_payload, indent=2), encoding="utf-8")
@@ -466,7 +504,7 @@ try:
             "artifacts": {name: str((scene_dir / name).resolve()) for name in (
                 "isaac_overview.png", "sensor_rgb.png", "sensor_rgb.npy", "metric_depth_m.npy",
                 "metric_depth_visualization.png", "pointcloud_world_m.npz", "camera_info.json",
-                "gt_annotations.json", "capture_binding.json", "gt_overlay.png",
+                "gt_annotations.json", "gt_instance_masks.npz", "capture_binding.json", "gt_overlay.png",
                 "prediction_overlay.png", "comparison.png",
             )},
         })

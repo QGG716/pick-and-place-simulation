@@ -43,6 +43,15 @@ def inside(root: Path, value: Path, *, must_exist: bool = True) -> Path:
     return value
 
 
+def inside_any(roots: list[Path], value: Path) -> Path:
+    candidate = value.resolve()
+    if not any(candidate == root.resolve() or root.resolve() in candidate.parents for root in roots):
+        raise ValueError("controlled input path escapes configured worker roots")
+    if not candidate.is_file():
+        raise FileNotFoundError(candidate)
+    return candidate
+
+
 def emit(request_id: str, worker_epoch: str, input_hash: str | None, status: str, **extra) -> int:
     print(json.dumps({"schema_version": SCHEMA_VERSION, "request_id": request_id, "worker_epoch": worker_epoch, "input_sha256": input_hash, "status": status, **extra}, sort_keys=True))
     return 0 if status == "COMPLETE" else 2
@@ -94,8 +103,9 @@ def main() -> int:
                     error_code="MODEL_MISSING",
                     error_message="offline worker requires a local SAM snapshot directory and MoGe model.pt",
                 )
-        proposal = inside(upstream, args.proposal_json)
-        person_masks = None if args.person_masks is None else inside(upstream, args.person_masks)
+        controlled_inputs = [upstream, *(path.resolve() for path in args.input_root)]
+        proposal = inside_any(controlled_inputs, args.proposal_json)
+        person_masks = None if args.person_masks is None else inside_any(controlled_inputs, args.person_masks)
         output_root = args.output_root.resolve()
         output_root.mkdir(parents=True, exist_ok=True)
         safe_id = "".join(character for character in request_id if character.isalnum() or character in "-_")

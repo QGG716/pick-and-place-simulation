@@ -25,6 +25,7 @@ from unloading_contracts import (
     PerceptionObservation,
     PlanningWorldSnapshot,
     Pose3D,
+    ResourceReference,
     UnknownRegion,
     Validity,
     canonical_fingerprint,
@@ -552,13 +553,17 @@ def ground_truth_observation(
         if not eligible:
             unknown.append(UnknownRegion(f"gt-{object_id}", manifest.cameras[0]["frame_id"], reasons[0], bbox))
         rotation = tuple(row[:3] for row in pose[:3])
+        mask_value = annotation.get("mask_reference")
+        mask_reference = None if mask_value is None else ResourceReference(
+            str(mask_value["uri"]), str(mask_value["sha256"]), str(mask_value["media_type"])
+        )
         cargo.append(CargoObservation(
             source_instance_id=object_id,
             object_id=object_id,
             track_id=object_id,
             category=str(source["category"]),
             bbox_xyxy=bbox,
-            mask_reference=None,
+            mask_reference=mask_reference,
             detection_score=1.0,
             contour_score=None,
             reprojection_score=1.0,
