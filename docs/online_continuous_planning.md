@@ -1,4 +1,4 @@
-# Online continuous planning control plane (0.5.2.dev9)
+# Online continuous planning control plane (0.5.2.dev10)
 
 ## Acceptance scope
 
@@ -10,6 +10,79 @@ those task sets nor 900 boxes/h is an acceptance gate for this module.
 The current conservative CPU timing model is stop-to-stop. Reports produced by
 the control plane contain only planning latency and robot idle time while
 waiting for a planner. `production_throughput` is deliberately `null`.
+
+## Development backend acceptance
+
+Run the reusable CPU-only acceptance entry from the repository root:
+
+```powershell
+uv run --extra dev python -m tools.online_backend_acceptance --output outputs/online_backend_acceptance.json
+```
+
+The default profile factory is
+`tests.online_acceptance_profiles:default_profiles`. A future adapter registers
+another profile factory with `--profiles package.module:factory`. Each returned
+`BackendAcceptanceProfile` supplies planner, validator, execution, world,
+request, and planning-executor factories plus a deterministic seed and declared
+optional cases. The test-only support module is not imported by
+`online_planning`, `online_execution`, or `online_runtime`.
+
+The report deliberately separates three conclusions:
+
+1. **Backend compliance** executes the supplied implementations and checks
+   identity, capabilities, lifecycle, seed, validation gating, failure
+   categories, candidate/path exhaustion, k/k+1 reuse, and mismatch replan.
+2. **Runtime tolerance** reuses controlled public-interface fault sequences for
+   UNKNOWN start, correlated stop evidence, conflict, feedback capacity, late
+   planning completion, and explicit recovery. A runtime PASS means the bad
+   input was isolated; it does not certify the injected backend as compliant.
+3. **Geometry evidence** records the existing V3 bottom-alternative fixture as
+   `NOT_EVALUATED`. The command does not rerun grasp, IK, collision, or motion
+   planning, and `ProviderNeutralPlanValidator` is not geometric validation.
+
+Core identity, capability shape, lifecycle, successful-proposal validation,
+path selection, and configured runtime handoff cases are required. Optional
+capabilities that are not declared produce `NOT_EVALUATED` with a reason;
+declaring one makes its case required, so a broken declaration fails the
+overall command. JSON counts are derived from executed cases, never hard-coded.
+Each profile records backend identities, capabilities, seed and replay inputs;
+runtime fault cases include their reusable callable IDs. Generated reports live
+under ignored `outputs/` and are not committed.
+
+The built-in substitution proof uses two independent test planners with
+cooperative and threaded executors, respectively, and combines them with
+`DeterministicSimExecutionBackend` and the shared scripted execution fixture.
+Only capability-compatible combinations are exercised. This is a development
+integration baseline rather than a promise that every interface is frozen.
+
+A provider module returns profiles without registering names inside the control
+plane. Its planner factory receives a scenario ID and seed. `success` is
+mandatory; optional fixture scenarios use `candidate-fallback`,
+`domain:<PlanStatus>`, or `operational:<OperationalOutcome>`. Returning `None`
+for an undeclared optional scenario records `NOT_EVALUATED`; returning `None`
+after declaring that case records `FAIL`. The profile's normal backend objects
+remain responsible for truthful immutable identities and capabilities:
+
+```python
+from tools.online_backend_acceptance import BackendAcceptanceProfile
+
+def acceptance_profiles():
+    return (BackendAcceptanceProfile(
+        profile_id="my-adapter+my-executor",
+        planner_factory=make_planner_for_scenario,
+        validator_factory=make_authoritative_validator,
+        execution_factory=make_execution_backend,
+        world_factory=make_deterministic_world,
+        request_factory=make_request,
+        executor_factory=make_executor,
+        seed=42,
+        declared_optional_cases=frozenset({"planner.domain.NO_IK"}),
+    ),)
+```
+
+Then pass `--profiles my_package.acceptance:acceptance_profiles`. The suite does
+not use backend names for scheduling and does not add any provider-specific
+branch to the session or runtime.
 
 ## Boundary
 

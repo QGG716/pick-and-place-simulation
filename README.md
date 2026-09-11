@@ -1,89 +1,25 @@
-# Trailer Unloading Geometric Simulator v0.5.2.dev9
+# Trailer Unloading Geometric Simulator v0.5.2.dev10
 
-v0.5.2.dev9 closes the handoff ordering gap between feedback receipt and
-processing. A READY successor cannot start while the runtime's bounded feedback
-queue contains already-received, unprocessed messages. The configured per-step
-budget remains intact: finite backlog is classified over later steps, sustained
-backlog keeps execution gated, and stop evidence retires only after the queue is
-clear, all existing safety checks pass, and successor start returns ACCEPTED.
-This guarantee begins at `ExecutionBackend.poll()` receipt; it cannot predict
-feedback still outside the runtime.
+v0.5.2.dev10 provides a reusable, CPU-only development acceptance entry for
+provider-neutral `PlannerBackend`, `PlanValidator`, and `ExecutionBackend`
+factories. It reports backend compliance, runtime fault isolation, and recorded
+V3 geometric evidence as separate conclusions. Replacing the built-in semantic
+profiles changes only factory configuration; it does not modify the online
+session or runtime.
 
-v0.5.2.dev8 retains correlated stop evidence until an accepted successor
-execution explicitly retires it. Reconciliation alone no longer makes evidence
-historical: a conflict before recovery, after reconciliation, or after explicit
-authorization revokes the version-bound recovery grant and blocks execution.
-Replacement evidence can be reconciled through the public recovery path without
-pretending that a failed execution is running again. A finite event-ordering
-matrix locks these conclusions across delivery order and feedback batch limits.
-This remains a control-plane contract, not hardware stop or safety evidence.
+Run the acceptance baseline with:
 
-v0.5.2.dev7 makes the execution-adapter boundary fail closed. STOPPING/STOPPED
-can authorize stop reconciliation only when they carry the current correlated
-`stop_command_id`; legacy uncorrelated objects remain constructible but have no
-authoritative stop meaning. An exception or malformed response after `start()`
-is recorded as an `UNKNOWN` start result, never blindly retried, and supervised
-through one bounded stop attempt. Conflicting evidence for the active stop
-attempt latches recovery and requires a new independently correlated stop proof
-through the public recovery gate. These are control-plane contracts, not a real
-controller, emergency stop, robot-safety certification, or throughput result.
+```powershell
+uv run --extra dev python -m tools.online_backend_acceptance --output outputs/online_backend_acceptance.json
+```
 
-v0.5.2.dev6 completes the safe-stop lifecycle contract. A stop request is a
-command, not proof of rest; FAILED/DEVIATED/FAULTED remains the execution-task
-outcome, while only STOPPED correlated to the current stop command can supply
-stop evidence. Stop evidence and an authoritative compatible world observation
-may arrive in either order. Severe faults require explicit
-`ContinuousPlanningRuntime.resume_after_recovery()` after reconciliation.
-Repeated conflicts cannot starve or duplicate stop dispatch. This remains
-control-plane bookkeeping, not a hardware emergency stop or safety rating.
-
-v0.5.2.dev5 hardens compound-failure behavior in the existing online runtime.
-A speculative k+1 planning timeout is isolated from a still-valid executing k;
-runtime staging is bounded in addition to the ingress mailbox; and execution
-feedback retains its local poll receive time while queued, so old backlog
-cannot renew the feedback-silence watchdog. Failures that leave motion status
-uncertain now request a real stop and retain explicit stop-unconfirmed state
-until authoritative STOPPED feedback is reconciled. This is control-plane
-safety bookkeeping, not a real controller or robot-safety certification.
-
-v0.5.2.dev4 adds a thread-safe, bounded MPSC `RuntimeIngressMailbox` for
-external planning requests and authoritative world observations. Producers
-only enqueue immutable messages; the runtime owner thread remains the sole
-writer of session and runtime state. Configurable monotonic-clock watchdogs
-cover scene freshness, execution-feedback silence, stop acknowledgement,
-stopped-world reconciliation, planning deadlines, and execution-backend
-health. Runtime/session event streams and long-lived histories are bounded and
-expose overflow and history-gap diagnostics through `events_since(...)`.
-These are control-plane liveness and audit features, not ROS integration,
-controller simulation, physical timing, or production-throughput evidence.
-
-v0.5 建立了与底层几何规划成功率解耦的在线连续规划控制平面。当前版本不以
-M-710iD/70 原始任务成功率、连续清空率或 900 boxes/h 作为验收指标，详细边界见
-[V0.5.2 开发说明](docs/releases/V0.5.2-dev.md)、
-[V0.5.1 发布说明](docs/releases/V0.5.1.md)和
-[在线连续规划设计](docs/online_continuous_planning.md)。
-
-v0.5.2.dev1 新增严格 FIFO 的单 worker `ThreadedPlanningExecutor`：plan k 保持
-`EXECUTING` 时，k+1 可在真实后台线程中计算，但 completion 只能由主线程 poll 后改变
-session。`CooperativePlanningExecutor` 仍用于确定性单元测试，历史
-`DeterministicAsyncPlanningExecutor` 只是兼容名，不创建线程。running planner 只能
-合作取消；Python thread 不能安全强杀任务，也不提供 hard deadline 或保证纯 Python CPU
-代码并行。当前 `ExecutionMonitor` 不是机器人执行后端，本版本不证明非零速度无缝拼接或
-真实卸货吞吐。
-
-v0.5.2.dev2 新增 provider-neutral `ExecutionBackend`、不可变
-`ExecutionFeedback`、完整实际 `MotionBoundaryState` 回传、纯控制面的
-`DeterministicSimExecutionBackend` 以及 `ContinuousPlanningRuntime`。runtime 以固定
-step 顺序组合 session、planner executor 和 execution backend，并在执行 k 时最多自动提交
-一个 speculative k+1。执行反馈与 world observation 是两个独立事实源；该确定性 backend
-只用于状态机测试，不是机器人动力学、控制器或真实执行周期仿真。
-
-v0.5.2.dev3 用不可变 `WorldObservation` 和 `ObservationAuthority` 明确区分
-AUTHORITATIVE/PREDICTED，不再从 source 名称推断安全语义。观测与执行反馈均按
-producer/stream/epoch/execution 序列域处理 duplicate、stale 和 conflict；STOPPED boundary
-可与先到或后到的 authoritative world observation 安全汇合。initial request、world
-observation 和 execution feedback ingress 均有容量及每 step 处理上限，并返回或记录明确
-背压结果。上述机制只属于在线控制面，不实现视觉、ROS、真实控制器或物理节拍。
+The report contains actual PASS/FAIL/SKIP/NOT_EVALUATED cases and exits nonzero
+when a required contract fails. Historical development details and the precise
+scope limits are centralized in [V0.5.2 development notes](docs/releases/V0.5.2-dev.md)
+and [the online design](docs/online_continuous_planning.md). This remains a
+control-plane acceptance baseline, not geometric-planner qualification, robot
+safety certification, seamless blending, or a throughput claim;
+`production_throughput` remains `null`.
 
 > 当前工作分支增加了 **M-710iD/70 V3 技术验证修复**。V3 使用完整 TCP
 > 变换、实际刚体附着、完整路径检查和解析时间参数化，验收入口为
@@ -317,16 +253,8 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 
 ## 版本历史
 
-- v0.5.2.dev9: bounded received-feedback handoff gate and backlog ordering regressions.
-- v0.5.2.dev8: stop-evidence retirement at accepted handoff, version-bound recovery grants, and finite event-ordering acceptance matrix.
-- v0.5.2.dev7: strict correlated STOPPED authority, contained ambiguous starts, and latched active-stop evidence conflicts.
-- v0.5.2.dev6: correlated stop-attempt lifecycle, independent task-terminal/STOPPED evidence, and explicit recovery authorization.
-- v0.5.2.dev5: compound-failure isolation, end-to-end bounded ingress staging, and receive-time feedback watchdogs.
-- v0.5.2.dev4: thread-safe external ingress, deterministic watchdog policies, and bounded auditable journals.
-- v0.5.2.dev3：类型化 world observation、execution-scoped feedback ordering、STOPPED/world 乱序汇合及有界 ingress 背压。
-- v0.5.2.dev2：执行后端/反馈契约、完整实际 boundary、确定性执行 fixture、自动 successor 与 STOPPED acknowledgement runtime。
-- v0.5.2.dev1：单 worker threaded planning、queued/running 取消、late-result 隔离及 queue/compute/backend/validation/end-to-end 延迟分层。
-- v0.5.2.dev0：完整 motion boundary、严格 plan lineage、真实 rolling-horizon occupancy、provider-neutral capability 与独立 validation contract。
+- v0.5.2.dev10：provider-neutral backend factory 验收入口、JSON 报告和替换组合回归。
+- v0.5.2.dev0–dev9：在线规划、执行监管、停止证据与有界异步处理；逐版记录集中在 [V0.5.2 开发说明](docs/releases/V0.5.2-dev.md)。
 - v0.5.1：不可变 planning world、执行前连续性验证、STOPPING 握手和 generation 隔离。
 - v0.5：与底层成功率解耦的在线连续规划控制平面、scene revision、rolling horizon 与 speculative replan。
 - v0.4：M-710iD/70、动态 L 形传送带、拓扑脱垛与分层任务资格。
@@ -334,4 +262,4 @@ python -m pytest -q --basetemp .tmp/pytest-v0.4
 - v0.3：FANUC M-20iD/35 负载感知资格评估。
 - v0.2：可审计数字孪生与回放链路。
 
-发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev9`。
+发布说明位于 [`docs/releases/`](docs/releases/)。Python 包版本为 `0.5.2.dev10`。
