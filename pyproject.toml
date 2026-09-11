@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unloading-layer1-sim"
-version = "0.5.2.dev9"
+version = "0.5.2.dev10"
 description = "Fast geometric simulation and motion planning for industrial-arm trailer unloading"
 readme = "README.md"
 requires-python = ">=3.10"
