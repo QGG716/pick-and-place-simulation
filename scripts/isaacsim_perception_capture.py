@@ -417,7 +417,12 @@ try:
         camera_info_path.write_text(json.dumps(camera_info, indent=2), encoding="utf-8")
         masks_by_object = {}
         instance_identity = {}
-        for numeric_id, labels in instance_result.get("info", {}).get("idToLabels", {}).items():
+        segmentation_info = instance_result.get("info", {})
+        (scene_dir / "instance_segmentation_info.json").write_text(
+            json.dumps(segmentation_info, indent=2, default=lambda value: value.item() if hasattr(value, "item") else str(value)),
+            encoding="utf-8",
+        )
+        for numeric_id, labels in segmentation_info.get("idToLabels", {}).items():
             label = labels.get("simulation_object_id") if isinstance(labels, dict) else None
             if isinstance(label, list):
                 label = label[0] if len(label) == 1 else None
@@ -505,7 +510,8 @@ try:
             "artifacts": {name: str((scene_dir / name).resolve()) for name in (
                 "isaac_overview.png", "sensor_rgb.png", "sensor_rgb.npy", "metric_depth_m.npy",
                 "metric_depth_visualization.png", "pointcloud_world_m.npz", "camera_info.json",
-                "gt_annotations.json", "gt_instance_masks.npz", "capture_binding.json", "gt_overlay.png",
+                "gt_annotations.json", "gt_instance_masks.npz", "instance_segmentation_info.json",
+                "capture_binding.json", "gt_overlay.png",
                 "prediction_overlay.png", "comparison.png",
             )},
         })
