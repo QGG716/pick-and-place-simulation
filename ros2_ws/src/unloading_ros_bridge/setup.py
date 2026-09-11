@@ -23,5 +23,6 @@ setup(
         "execution_bridge_node = unloading_ros_bridge.execution_bridge_node:main",
         "mock_follow_joint_trajectory = unloading_ros_bridge.mock_follow_joint_trajectory:main",
         "mock_state_publisher = unloading_ros_bridge.mock_state_publisher:main",
+        "isaac_sensor_adapter_node = unloading_ros_bridge.isaac_sensor_adapter_node:main",
     ]},
 )

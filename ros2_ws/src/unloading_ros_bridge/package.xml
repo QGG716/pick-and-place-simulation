@@ -9,13 +9,16 @@
   <depend>action_msgs</depend>
   <depend>control_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>rosgraph_msgs</depend>
   <depend>rclpy</depend>
   <depend>sensor_msgs</depend>
+  <depend>tf2_msgs</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>tf2_ros</depend>
   <depend>trajectory_msgs</depend>
   <depend>unloading_interfaces</depend>
   <depend>visualization_msgs</depend>
+  <depend>vision_msgs</depend>
   <test_depend>ament_pytest</test_depend>
   <test_depend>launch_testing</test_depend>
   <export><build_type>ament_python</build_type></export>
