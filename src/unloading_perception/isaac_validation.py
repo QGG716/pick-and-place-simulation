@@ -65,6 +65,32 @@ def sha256_file(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def verify_text_asset_identity(path: str | Path, expected_sha256: str) -> dict[str, str]:
+    """Verify a text asset while making Git's newline checkout policy explicit.
+
+    The frozen feasibility export was created from a Windows checkout and its
+    byte hash therefore includes CRLF newlines.  Linux servers check the same
+    Git blob out with LF newlines.  Only this lossless newline transformation
+    is accepted; every other byte difference still fails closed.
+    """
+
+    asset_path = Path(path)
+    expected = _require_sha256(expected_sha256, "expected asset hash")
+    raw = asset_path.read_bytes()
+    actual = hashlib.sha256(raw).hexdigest()
+    if actual == expected:
+        return {"contract_sha256": expected, "checkout_sha256": actual, "normalization": "EXACT_BYTES"}
+    lf = raw.replace(b"\r\n", b"\n")
+    crlf = lf.replace(b"\n", b"\r\n")
+    if hashlib.sha256(crlf).hexdigest() == expected:
+        return {
+            "contract_sha256": expected,
+            "checkout_sha256": actual,
+            "normalization": "GIT_TEXT_LF_CHECKOUT_OF_CRLF_CONTRACT",
+        }
+    raise ValueError("text asset differs from the frozen contract beyond newline normalization")
+
+
 def _require_sha256(value: Any, name: str) -> str:
     result = str(value).lower()
     if len(result) != 64 or any(character not in "0123456789abcdef" for character in result):

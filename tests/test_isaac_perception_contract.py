@@ -16,6 +16,7 @@ from unloading_perception.isaac_validation import (
     ground_truth_observation,
     load_validation_config,
     SimulationClockGuard,
+    verify_text_asset_identity,
 )
 from unloading_perception.scene import SnapshotAssembler, build_scene_update
 
@@ -164,3 +165,15 @@ def test_simulation_clock_pause_resume_and_restart_are_explicit():
     guard.observe("epoch-b", 0, 0.0, restart=True)
     with pytest.raises(ValueError, match="restart must create"):
         guard.observe("epoch-b", 1, 0.1, restart=True)
+
+
+def test_text_asset_identity_allows_only_git_newline_conversion(tmp_path):
+    crlf = b"<robot>\r\n  <link name=\"base\"/>\r\n</robot>\r\n"
+    expected = __import__("hashlib").sha256(crlf).hexdigest()
+    asset = tmp_path / "robot.urdf"
+    asset.write_bytes(crlf.replace(b"\r\n", b"\n"))
+    identity = verify_text_asset_identity(asset, expected)
+    assert identity["normalization"] == "GIT_TEXT_LF_CHECKOUT_OF_CRLF_CONTRACT"
+    asset.write_bytes(asset.read_bytes().replace(b"base", b"changed"))
+    with pytest.raises(ValueError, match="beyond newline normalization"):
+        verify_text_asset_identity(asset, expected)

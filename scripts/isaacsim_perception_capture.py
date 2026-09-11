@@ -94,7 +94,11 @@ try:
     project_root = args.project_root.resolve()
     sys.path.insert(0, str(project_root / "packages/unloading_contracts/src"))
     sys.path.insert(0, str(project_root / "src"))
-    from unloading_perception.isaac_validation import IsaacSceneManifest, feasibility_digest
+    from unloading_perception.isaac_validation import (
+        IsaacSceneManifest,
+        feasibility_digest,
+        verify_text_asset_identity,
+    )
 
     bundle_index = json.loads((args.bundle_directory / "index.json").read_text(encoding="utf-8"))
     manifests = []
@@ -111,8 +115,12 @@ try:
         raise ValueError("frozen feasibility Isaac layout contract fingerprint mismatch")
     urdf_record = contract["robot"]["urdf"]
     urdf_path = project_root / urdf_record["repository_path"]
-    if not urdf_path.is_file() or sha256(urdf_path) != urdf_record["sha256"]:
+    if not urdf_path.is_file():
         raise ValueError("robot URDF differs from the frozen scene contract")
+    try:
+        urdf_identity = verify_text_asset_identity(urdf_path, urdf_record["sha256"])
+    except ValueError as exc:
+        raise ValueError("robot URDF differs from the frozen scene contract") from exc
 
     import_manifest_path = args.usd_directory / "m710id70_perception_import.json"
     settings = {
@@ -125,7 +133,7 @@ try:
     }
     cached = json.loads(import_manifest_path.read_text(encoding="utf-8")) if import_manifest_path.is_file() else None
     imported_now = False
-    if cached and cached.get("urdf_sha256") == urdf_record["sha256"] and cached.get("settings") == settings and Path(cached["usd_path"]).is_file():
+    if cached and cached.get("urdf_contract_sha256") == urdf_record["sha256"] and cached.get("urdf_checkout_sha256") == urdf_identity["checkout_sha256"] and cached.get("settings") == settings and Path(cached["usd_path"]).is_file():
         usd_path = Path(cached["usd_path"])
         root_prim_path = str(cached["root_prim_path"])
     else:
@@ -140,7 +148,9 @@ try:
         usd_path = Path(importer.import_urdf()).resolve()
         root_prim_path = f"/{urdf_path.stem}"
         import_manifest_path.write_text(json.dumps({
-            "urdf_sha256": urdf_record["sha256"], "usd_path": str(usd_path),
+            "urdf_contract_sha256": urdf_record["sha256"],
+            "urdf_checkout_sha256": urdf_identity["checkout_sha256"],
+            "urdf_identity": urdf_identity, "usd_path": str(usd_path),
             "root_prim_path": root_prim_path, "settings": settings,
         }, indent=2), encoding="utf-8")
         imported_now = True
@@ -500,6 +510,7 @@ try:
         "robot_q_max_abs_rad": q_error,
         "urdf_imported_this_run": imported_now,
         "urdf_sha256": urdf_record["sha256"],
+        "urdf_checkout_identity": urdf_identity,
         "scene_count": len(scene_records),
         "scenes": scene_records,
         "video": str(video_path.resolve()),

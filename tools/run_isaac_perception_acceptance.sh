@@ -30,6 +30,15 @@ export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp/runtime-root}"
   --bundle-directory "${BUNDLE_DIR}" --project-root "${PROJECT_ROOT}" \
   --usd-directory "${USD_DIR}" --output "${OUTPUT_ROOT}" --width 640 --height 480 --fps 20 --seconds 12
 
+"${ISAAC_PYTHON}" - "${OUTPUT_ROOT}" <<'PY'
+import json
+from pathlib import Path
+import sys
+status = json.loads((Path(sys.argv[1]) / "run_status.json").read_text())
+if status.get("status") != "PASS":
+    raise SystemExit(f"Isaac capture failed closed: {status.get('reason', status.get('status'))}")
+PY
+
 "${ISAAC_PYTHON}" "${PROJECT_ROOT}/tools/finalize_isaac_perception_capture.py" \
   --bundle-directory "${BUNDLE_DIR}" --capture-directory "${OUTPUT_ROOT}" --project-root "${PROJECT_ROOT}"
 
@@ -51,4 +60,3 @@ print(json.dumps({
     "output": str(root.resolve()),
 }, indent=2))
 PY
-
