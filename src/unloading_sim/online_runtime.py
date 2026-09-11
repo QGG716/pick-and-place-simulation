@@ -315,6 +315,7 @@ class RuntimeMetrics:
         self._ingress_lock = Lock()
         self.execution_start_command_count = 0
         self.execution_start_rejected_count = 0
+        self.execution_start_feedback_gated_count = 0
         self.execution_feedback_count_by_status: Counter[str] = Counter()
         self.execution_stop_request_count = 0
         self.execution_stop_rejected_count = 0
@@ -373,6 +374,7 @@ class RuntimeMetrics:
         return {
             "execution_start_command_count": self.execution_start_command_count,
             "execution_start_rejected_count": self.execution_start_rejected_count,
+            "execution_start_feedback_gated_count": self.execution_start_feedback_gated_count,
             "execution_feedback_count_by_status": dict(
                 sorted(self.execution_feedback_count_by_status.items())
             ),
@@ -1703,6 +1705,8 @@ class ContinuousPlanningRuntime:
             processed += 1
 
     def _execution_start_invariants_hold(self) -> bool:
+        if self._pending_feedback:
+            return False
         lifecycle = self._stop_lifecycle
         if lifecycle is not None and not lifecycle.retired:
             if not self._stop_evidence_trusted(lifecycle):
@@ -1718,6 +1722,16 @@ class ContinuousPlanningRuntime:
         if self.session.state is not SessionState.READY or self._active_plan is not None:
             return
         if not self._execution_start_invariants_hold():
+            if self._pending_feedback:
+                self.metrics.execution_start_feedback_gated_count += 1
+                self._event(
+                    "execution_start_feedback_gated",
+                    "RECEIVED_FEEDBACK_PENDING",
+                    pending_feedback=len(self._pending_feedback),
+                    feedback_capacity=self._execution_feedback_capacity,
+                    per_step_processing_limit=self._max_execution_feedback_per_step,
+                )
+                return
             message = "execution start blocked by unresolved stop or recovery evidence"
             self.session.enter_recovery(message, reason=ReplanReason.EXECUTION_FAILED)
             self.state = RuntimeState.RECOVERY
@@ -2457,6 +2471,17 @@ class ContinuousPlanningRuntime:
             "pending_initial_requests": len(self._pending_initial) + mailbox_requests,
             "pending_world_observations": len(self._pending_worlds) + mailbox_worlds,
             "pending_execution_feedback": len(self._pending_feedback),
+            "execution_start_feedback_gate": {
+                "active": bool(
+                    self.session.state is SessionState.READY
+                    and self._active_plan is None
+                    and self._pending_feedback
+                ),
+                "received_unprocessed_count": len(self._pending_feedback),
+                "capacity": self._execution_feedback_capacity,
+                "per_step_processing_limit": self._max_execution_feedback_per_step,
+                "receive_boundary": "feedback already returned by ExecutionBackend.poll",
+            },
             "latest_world_fingerprint": (
                 None if self._latest_world is None else self._latest_world.fingerprint
             ),
