@@ -28,6 +28,10 @@ jobs:
         shell: bash
         run: |
           source /opt/ros/humble/setup.bash
+          # Keep the core venv isolated from ROS pytest entry points.  The ROS
+          # environment exposes launch_testing through PYTHONPATH, but its
+          # system dependencies are intentionally not installed into this venv.
+          unset PYTHONPATH PYTHONHOME
           VENV="$RUNNER_TEMP/core-venv"
           /usr/bin/python3.10 -m venv "$VENV"
           "$VENV/bin/python" -m pip install pip==25.2 setuptools==79.0.1 wheel==0.45.1
