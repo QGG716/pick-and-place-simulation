@@ -529,17 +529,31 @@ def hypotheses_from_geometry_record(
 
     if not record.get("accepted"):
         return ()
+    source = MetricPointMapSource(pointmap_source)
+    surfaces = int(record.get("depth_supported_face_count", record.get("visible_plane_count", 0)))
     axes = tuple(tuple(float(value) for value in axis) for axis in record["orthogonal_axes_3d"])
-    corners = tuple(tuple(float(value) for value in point) for point in record["corners_3d"])
+    corner_key = "corners_3d"
+    plane_pair = record.get("orthogonal_plane_pair_diagnostics", {})
+    if (
+        source is not MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE
+        and surfaces >= 3
+        and plane_pair.get("reliable") is True
+        and len(record.get("unanchored_corners_3d", ())) == 8
+    ):
+        # The inherited monocular pipeline may replace a complete three-plane
+        # cuboid with its 2D front-face anchoring heuristic.  With registered
+        # metric depth the three observed planes are the stronger 3D datum;
+        # retaining their shared cuboid centre avoids converting visible-face
+        # thickness into a fictitious object depth.
+        corner_key = "unanchored_corners_3d"
+    corners = tuple(tuple(float(value) for value in point) for point in record[corner_key])
     dimensions = tuple(float(value) for value in record["shape_dimensions"])
     center = tuple(sum(point[index] for point in corners) / len(corners) for index in range(3))
     pose = pose_from_axes_rows(center, axes, "module_0_main_rgb_optical", EvidenceKind.MODEL_ESTIMATED)
-    surfaces = int(record.get("depth_supported_face_count", record.get("visible_plane_count", 0)))
     support = min(1.0, max(0.0, float(record.get("plane_inlier_ratio", 0.0))))
     residual = max(0.0, float(record.get("plane_residual_mean", 0.0)))
     completion = str(record.get("completion_mode", "UNKNOWN"))
     ambiguous = surfaces < 2 or "single_visible_plane" in completion
-    source = MetricPointMapSource(pointmap_source)
     verified_metric = source is not MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE
     base_reasons = []
     if ambiguous:
@@ -553,6 +567,7 @@ def hypotheses_from_geometry_record(
         "algorithm": "PINNED_PLANE_ORTHOGONAL_CUBOID_RECOVERY",
         "upstream_method": record.get("method"),
         "visible_face_evidence": record.get("camera_facing_faces", ()),
+        "pose_corner_source": corner_key,
         "metric_scale_validity": Validity.VALID.value if verified_metric else Validity.UNKNOWN.value,
     }
     hypotheses = [CuboidHypothesis(

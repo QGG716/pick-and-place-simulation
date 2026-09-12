@@ -144,3 +144,36 @@ def test_world_transform_uses_capture_time_pose_not_inference_time_j1():
     inference_pose = _metadata(0.0).T_W_C_at_capture
     assert captured.pose_world is not None
     assert captured.pose_world.position_m != pytest.approx(tuple(inference_pose[row][3] for row in range(3)))
+
+
+def test_registered_three_plane_pose_prefers_metric_cuboid_over_2d_face_anchor():
+    record = {
+        "accepted": True,
+        "orthogonal_axes_3d": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+        "corners_3d": [[-0.1, -0.1, 1.0]] * 8,
+        "unanchored_corners_3d": [
+            [-0.3, -0.2, 1.8], [0.3, -0.2, 1.8], [0.3, 0.2, 1.8], [-0.3, 0.2, 1.8],
+            [-0.3, -0.2, 2.1], [0.3, -0.2, 2.1], [0.3, 0.2, 2.1], [-0.3, 0.2, 2.1],
+        ],
+        "shape_dimensions": [0.6, 0.4, 0.3],
+        "depth_supported_face_count": 3,
+        "orthogonal_plane_pair_diagnostics": {"reliable": True},
+        "plane_inlier_ratio": 0.9,
+        "plane_residual_mean": 0.001,
+        "completion_mode": "orthogonality_selected_multi_plane_cuboid",
+        "uncertainty": {"sigma_m": 0.01},
+    }
+    metric = hypotheses_from_geometry_record(
+        record, source_instance_id="box-1",
+        pointmap_source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,
+        presence_score=0.9,
+    )[0]
+    monocular = hypotheses_from_geometry_record(
+        record, source_instance_id="box-1",
+        pointmap_source=MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE,
+        presence_score=0.9,
+    )[0]
+    assert metric.pose_camera.position_m == pytest.approx((0.0, 0.0, 1.95))
+    assert metric.evidence["pose_corner_source"] == "unanchored_corners_3d"
+    assert monocular.pose_camera.position_m == pytest.approx((-0.1, -0.1, 1.0))
+    assert monocular.evidence["pose_corner_source"] == "corners_3d"
