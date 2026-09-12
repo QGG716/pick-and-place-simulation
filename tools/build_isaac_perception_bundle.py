@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from math import pi
+from math import cos, pi, sin
 from pathlib import Path
 import subprocess
 import sys
@@ -43,8 +43,27 @@ def main() -> int:
     snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
     contract = json.loads(contract_path.read_text(encoding="utf-8"))
     target = str(config["target_selection"]["simulation_object_id"])
+    calibration_yaw = 20.0 * pi / 180.0
+    calibration_pose = [
+        [cos(calibration_yaw), -sin(calibration_yaw), 0.0, 1.50],
+        [sin(calibration_yaw), cos(calibration_yaw), 0.0, 0.00],
+        [0.0, 0.0, 1.0, 1.25],
+        [0.0, 0.0, 0.0, 1.0],
+    ]
+    # The calibration scene is deliberately isolated and rotated so the main
+    # camera observes top, front, and side planes.  Keeping the target at its
+    # stacked pose would produce a single-face view and cannot validate a 6D
+    # cuboid recovery algorithm.
     single_box = {
-        item["name"]: ({"visible": True, "state": "RGBD_CALIBRATION_TARGET"} if item["name"] == target else {"visible": False, "state": "CALIBRATION_SCENE_HIDDEN"})
+        item["name"]: (
+            {
+                "visible": True,
+                "state": "RGBD_CALIBRATION_TARGET",
+                "T_W_object": calibration_pose,
+            }
+            if item["name"] == target
+            else {"visible": False, "state": "CALIBRATION_SCENE_HIDDEN"}
+        )
         for item in snapshot["cartons"]
     }
     scene_specs = {
