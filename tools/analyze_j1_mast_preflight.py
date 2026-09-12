@@ -16,6 +16,7 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "packages/unloading_contracts/src"))
 sys.path.insert(0, str(ROOT / "src"))
 
 from unloading_perception.isaac_validation import IsaacSceneManifest, write_json  # noqa: E402

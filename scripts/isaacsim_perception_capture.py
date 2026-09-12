@@ -390,8 +390,7 @@ try:
         rgb = rep.AnnotatorRegistry.get_annotator("rgb")
         depth = rep.AnnotatorRegistry.get_annotator("distance_to_image_plane")
         instance = rep.AnnotatorRegistry.get_annotator(
-            "instance_segmentation",
-            init_params={"colorize": False, "semanticTypes": ["class", "simulation_object_id"]},
+            "instance_id_segmentation", init_params={"colorize": False}
         )
         rgb.attach(product)
         depth.attach(product)
@@ -415,7 +414,7 @@ try:
         sweep_product = rep.create.render_product(sweep_camera, (args.video_width, args.video_height))
         sweep_rgb = rep.AnnotatorRegistry.get_annotator("rgb")
         sweep_instance = rep.AnnotatorRegistry.get_annotator(
-            "instance_segmentation", init_params={"colorize": False, "semanticTypes": ["class", "simulation_object_id"]}
+            "instance_id_segmentation", init_params={"colorize": False}
         )
         sweep_rgb.attach(sweep_product)
         sweep_instance.attach(sweep_product)
@@ -454,8 +453,20 @@ try:
                 values.add(int(numeric_id))
         return values
 
+    def object_id_from_instance_label(label):
+        text = str(label)
+        for object_id, path in prim_paths.items():
+            if object_id.startswith("carton_") and (text == path or path in text):
+                return object_id
+        return None
+
     def carton_mask(result):
-        ids = semantic_ids(result, "class", "carton")
+        info = result.get("info", {})
+        ids = {
+            int(numeric_id) for numeric_id, label in info.get("idToLabels", {}).items()
+            if object_id_from_instance_label(label) is not None
+        }
+        ids.update(semantic_ids(result, "class", "carton"))
         data = np.asarray(result["data"], dtype=np.uint32)
         return np.isin(data, tuple(ids)) if ids else np.zeros(data.shape, dtype=bool)
 
@@ -719,6 +730,13 @@ try:
                 if np.any(mask):
                     masks_by_object[str(label)] = mask
                     instance_identity[str(label)] = int(numeric_id)
+        for numeric_id, label in segmentation_info.get("idToLabels", {}).items():
+            object_id = object_id_from_instance_label(label)
+            if object_id is not None:
+                mask = instance_ids == int(numeric_id)
+                if np.any(mask):
+                    masks_by_object[object_id] = mask
+                    instance_identity[object_id] = int(numeric_id)
         if not masks_by_object:
             raise RuntimeError(f"Isaac emitted no identified carton masks for {scene_name}")
         masks_path = scene_dir / "gt_instance_masks.npz"
