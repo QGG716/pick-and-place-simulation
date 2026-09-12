@@ -35,6 +35,10 @@ from unloading_perception.rgbd import (  # noqa: E402
     hypotheses_from_geometry_record, masked_metric_pointmap, register_rgbd,
     transform_hypothesis_to_world,
 )
+from unloading_perception.upstream_v4 import (  # noqa: E402
+    build_upstream_v4_command, finalize_registered_depth_result,
+    prepare_registered_depth_baseline, validate_upstream_v4_command,
+)
 
 
 def sha256(path: Path) -> str:
@@ -287,24 +291,39 @@ def main() -> int:
         pointmap, filter_audits = _build_pointmap(scene_dir, manifest, masks_path, config["vision"]["pointcloud_filter"])
         pointmap_path = scene_dir / "registered_metric_pointmap.npz"
         pointmap.write_npz(pointmap_path)
-        geometry_json = scene_dir / "rgbd_cuboids.json"
-        geometry_image = scene_dir / "rgbd_cuboids.png"
-        command = [
+        baseline_raw_json = scene_dir / "rgbd_cuboids_baseline_raw.json"
+        baseline_image = scene_dir / "rgbd_cuboids_baseline.png"
+        base_command = [
             str(args.upstream_python), str(vision_root / "pipeline/geometry/recover_box_cuboids_3d.py"),
             str(scene_dir / "sensor_rgb.png"), str(masks_path), str(pointmap_path),
             "--faces-json", str(Path(artifacts["box_geometry_2d.json"]["path"])),
             "--relative-threshold", "0.003", "--seed", "17",
-            "--json-output", str(geometry_json), "--output", str(geometry_image),
+            "--json-output", str(baseline_raw_json), "--output", str(baseline_image),
         ]
         started = perf_counter()
+        completed = subprocess.run(base_command, cwd=vision_root, text=True, capture_output=True, timeout=args.timeout)
+        if completed.returncode != 0:
+            raise RuntimeError(f"registered RGB-D baseline recovery failed for {scene}: {completed.stderr[-1000:]}")
+        baseline = json.loads(baseline_raw_json.read_text(encoding="utf-8"))
+        prepared_baseline = prepare_registered_depth_baseline(baseline)
+        baseline_json = scene_dir / "rgbd_cuboids_v4_input.json"
+        write_json(baseline_json, prepared_baseline)
+        geometry_worker_json = scene_dir / "rgbd_cuboids_v4_worker.json"
+        geometry_json = scene_dir / "rgbd_cuboids.json"
+        geometry_image = scene_dir / "rgbd_cuboids.png"
+        command = build_upstream_v4_command(
+            args.upstream_python, vision_root,
+            source=scene_dir / "sensor_rgb.png", masks=masks_path, pointmap=pointmap_path,
+            baseline=baseline_json, fallback=baseline_json,
+            json_output=geometry_worker_json, image_output=geometry_image,
+        )
+        validate_upstream_v4_command(command, vision_root)
         completed = subprocess.run(command, cwd=vision_root, text=True, capture_output=True, timeout=args.timeout)
         elapsed = perf_counter() - started
         if completed.returncode != 0:
-            raise RuntimeError(f"registered RGB-D cuboid recovery failed for {scene}: {completed.stderr[-1000:]}")
-        geometry = json.loads(geometry_json.read_text(encoding="utf-8"))
-        geometry["pointmap_source"] = "ISAAC_IDEAL_REGISTERED_DEPTH"
-        geometry["method"] = "registered_metric_depth+pinned_planes+shared_orthogonal_cuboid"
-        geometry["legacy_upstream_wording"] = "algorithm reused; MoGe-labelled method text is not provenance"
+            raise RuntimeError(f"registered RGB-D observed-face V4 recovery failed for {scene}: {completed.stderr[-1000:]}")
+        geometry = finalize_registered_depth_result(json.loads(geometry_worker_json.read_text(encoding="utf-8")))
+        geometry["method"] = "registered_metric_depth+pinned_planes+upstream_v4_joint_observed_faces"
         write_json(geometry_json, geometry)
         proposals = json.loads((scene_dir / "oracle_proposals.json").read_text(encoding="utf-8"))
         proposals["_scene_dir"] = str(scene_dir)
