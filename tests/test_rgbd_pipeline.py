@@ -177,3 +177,25 @@ def test_registered_three_plane_pose_prefers_metric_cuboid_over_2d_face_anchor()
     assert metric.evidence["pose_corner_source"] == "unanchored_corners_3d"
     assert monocular.pose_camera.position_m == pytest.approx((-0.1, -0.1, 1.0))
     assert monocular.evidence["pose_corner_source"] == "corners_3d"
+
+
+def test_registered_cuboid_axes_are_canonicalized_by_predicted_side_length():
+    record = {
+        "accepted": True,
+        "orthogonal_axes_3d": [[1, 0, 0], [0, 0, 1], [0, 1, 0]],
+        "corners_3d": [[0, 0, 2]] * 8,
+        "shape_dimensions": [0.6, 0.3, 0.4],
+        "depth_supported_face_count": 2,
+        "plane_inlier_ratio": 1.0,
+        "plane_residual_mean": 0.0,
+        "completion_mode": "multi_plane",
+        "uncertainty": {"sigma_m": 0.01},
+    }
+    result = hypotheses_from_geometry_record(
+        record, source_instance_id="box-1",
+        pointmap_source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,
+        presence_score=1.0,
+    )[0]
+    assert result.full_dimensions_xyz_m == pytest.approx((0.6, 0.4, 0.3))
+    assert result.evidence["axis_order_from_predicted_dimensions"] == (0, 2, 1)
+    assert result.pose_camera.orientation_xyzw == pytest.approx((0.0, 0.0, 0.0, 1.0))

@@ -548,6 +548,17 @@ def hypotheses_from_geometry_record(
         corner_key = "unanchored_corners_3d"
     corners = tuple(tuple(float(value) for value in point) for point in record[corner_key])
     dimensions = tuple(float(value) for value in record["shape_dimensions"])
+    axis_order = (0, 1, 2)
+    if source is not MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE:
+        # A cuboid has no intrinsic axis labels.  RANSAC plane discovery order
+        # changes with small render differences, so bind local XYZ to
+        # descending side length and restore a right-handed basis.  This uses
+        # predicted geometry only; no ground-truth pose or size is consulted.
+        axis_order = tuple(sorted(range(3), key=lambda index: (-dimensions[index], index)))
+        axes = tuple(axes[index] for index in axis_order)
+        dimensions = tuple(dimensions[index] for index in axis_order)
+        if float(np.linalg.det(np.asarray(axes, dtype=float))) < 0.0:
+            axes = (axes[0], axes[1], tuple(-value for value in axes[2]))
     center = tuple(sum(point[index] for point in corners) / len(corners) for index in range(3))
     pose = pose_from_axes_rows(center, axes, "module_0_main_rgb_optical", EvidenceKind.MODEL_ESTIMATED)
     support = min(1.0, max(0.0, float(record.get("plane_inlier_ratio", 0.0))))
@@ -568,6 +579,7 @@ def hypotheses_from_geometry_record(
         "upstream_method": record.get("method"),
         "visible_face_evidence": record.get("camera_facing_faces", ()),
         "pose_corner_source": corner_key,
+        "axis_order_from_predicted_dimensions": axis_order,
         "metric_scale_validity": Validity.VALID.value if verified_metric else Validity.UNKNOWN.value,
     }
     hypotheses = [CuboidHypothesis(
