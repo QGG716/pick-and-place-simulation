@@ -87,6 +87,7 @@ simulation_app = SimulationApp({
 try:
     import cv2
     import numpy as np
+    import Semantics
     import omni.replicator.core as rep
     import omni.usd
     from isaacsim.asset.importer.urdf import URDFImporter, URDFImporterConfig
@@ -309,6 +310,13 @@ try:
         if "carton" in role or role == "selected_carton":
             add_labels(cube.GetPrim(), labels="carton", taxonomy="class")
             add_labels(cube.GetPrim(), labels=item["name"], taxonomy="simulation_object_id")
+            # Isaac 6.0.1's Replicator annotator still consumes the legacy
+            # SemanticsAPI even though the public utility writes
+            # UsdSemantics.LabelsAPI.  Author both forms for this runtime.
+            for taxonomy, value in (("class", "carton"), ("simulation_object_id", item["name"])):
+                legacy = Semantics.SemanticsAPI.Apply(cube.GetPrim(), taxonomy)
+                legacy.CreateSemanticTypeAttr().Set(taxonomy)
+                legacy.CreateSemanticDataAttr().Set(value)
         prim_paths[item["name"]] = path
 
     # Finite trailer surfaces are visualization-only because layout v1 leaves
@@ -432,6 +440,25 @@ try:
     target_id = contract["target"]
     target_path = prim_paths[target_id]
 
+    def semantic_value(labels, taxonomy):
+        value = labels.get(taxonomy) if isinstance(labels, dict) else None
+        if isinstance(value, list):
+            return value[0] if len(value) == 1 else None
+        return value
+
+    def semantic_ids(result, taxonomy, expected_value=None):
+        values = set()
+        for numeric_id, labels in result.get("info", {}).get("idToSemantics", {}).items():
+            value = semantic_value(labels, taxonomy)
+            if value is not None and (expected_value is None or value == expected_value):
+                values.add(int(numeric_id))
+        return values
+
+    def carton_mask(result):
+        ids = semantic_ids(result, "class", "carton")
+        data = np.asarray(result["data"], dtype=np.uint32)
+        return np.isin(data, tuple(ids)) if ids else np.zeros(data.shape, dtype=bool)
+
     def apply_manifest(manifest, scene_name):
         by_id = {item["simulation_object_id"]: item for item in manifest.objects}
         for object_id, state in by_id.items():
@@ -511,6 +538,7 @@ try:
         scene_dir.mkdir(parents=True, exist_ok=True)
         apply_manifest(manifest, scene_name)
         articulation.set_dof_positions(command[None, :])
+        articulation.set_dof_position_targets(command[None, :])
         for _ in range(8):
             world.step(render=True)
         if scene_name == "MECHANICAL_TOP_VIEW":
@@ -535,20 +563,21 @@ try:
                 sample_command = command.copy()
                 sample_command[discovered_names.index("J1")] = angle_rad
                 articulation.set_dof_positions(sample_command[None, :])
+                articulation.set_dof_position_targets(sample_command[None, :])
                 rig_matrix = np.asarray(rig_pose.T_W_vision_flange, dtype=float)
                 vision_api = UsdGeom.XformCommonAPI(vision_root.GetPrim())
                 vision_api.SetTranslate(Gf.Vec3d(*rig_matrix[:3, 3].tolist()))
                 vision_api.SetRotate(Gf.Vec3f(*rpy_degrees(rig_matrix[:3, :3])), UsdGeom.XformCommonAPI.RotationOrderXYZ)
                 for _ in range(4):
                     world.step(render=True)
-                with_robot_ids = np.asarray(sweep_instance.get_data()["data"], dtype=np.uint32)
-                with_robot_pixels = int(np.count_nonzero(with_robot_ids))
+                with_robot_result = sweep_instance.get_data()
+                with_robot_pixels = int(np.count_nonzero(carton_mask(with_robot_result)))
                 sweep_image = np.asarray(rgb_data(sweep_rgb.get_data()))[:, :, :3].astype(np.uint8)
                 UsdGeom.Imageable(root_prim).MakeInvisible()
                 for _ in range(2):
                     world.step(render=True)
-                without_robot_ids = np.asarray(sweep_instance.get_data()["data"], dtype=np.uint32)
-                without_robot_pixels = int(np.count_nonzero(without_robot_ids))
+                without_robot_result = sweep_instance.get_data()
+                without_robot_pixels = int(np.count_nonzero(carton_mask(without_robot_result)))
                 UsdGeom.Imageable(root_prim).MakeVisible()
                 robot_occlusion_fraction = max(0.0, 1.0 - with_robot_pixels / max(1, without_robot_pixels))
                 tile = cv2.cvtColor(sweep_image, cv2.COLOR_RGB2BGR)
@@ -582,6 +611,7 @@ try:
             }, indent=2), encoding="utf-8")
             apply_manifest(manifest, scene_name)
             articulation.set_dof_positions(command[None, :])
+            articulation.set_dof_position_targets(command[None, :])
             for _ in range(4):
                 world.step(render=True)
         rgba = np.asarray(rgb_data(rgb_annotator.get_data()))
@@ -613,6 +643,7 @@ try:
             ).astype(np.uint32)
         rgb = rgba[:, :, :3].astype(np.uint8)
         overview = overview_rgba[:, :, :3].astype(np.uint8)
+        frame_instance_result = {"data": instance_ids, "info": instance_result.get("info", {})}
         if scene_name in {"DARK_LIGHT_OFF", "DARK_LIGHT_ON"}:
             luminance = (0.2126 * rgb[:, :, 0] + 0.7152 * rgb[:, :, 1] + 0.0722 * rgb[:, :, 2]) / 255.0
             lighting_samples[scene_name] = {
@@ -620,8 +651,8 @@ try:
                 "shadow_fraction": float(np.mean(luminance < 0.08)),
                 "underexposed_fraction": float(np.mean(luminance < 0.04)),
                 "saturated_pixel_ratio": float(np.mean(luminance > 0.98)),
-                "semantic_carton_pixel_count": int(np.count_nonzero(instance_ids)),
-                "semantic_mask": instance_ids != 0,
+                "semantic_carton_pixel_count": int(np.count_nonzero(carton_mask(frame_instance_result))),
+                "semantic_mask": carton_mask(frame_instance_result),
             }
         rgb_path = scene_dir / "sensor_rgb.png"
         cv2.imwrite(str(rgb_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
@@ -682,14 +713,14 @@ try:
             encoding="utf-8",
         )
         for numeric_id, labels in segmentation_info.get("idToSemantics", {}).items():
-            label = labels.get("simulation_object_id") if isinstance(labels, dict) else None
-            if isinstance(label, list):
-                label = label[0] if len(label) == 1 else None
+            label = semantic_value(labels, "simulation_object_id")
             if label in prim_paths:
                 mask = instance_ids == int(numeric_id)
                 if np.any(mask):
                     masks_by_object[str(label)] = mask
                     instance_identity[str(label)] = int(numeric_id)
+        if not masks_by_object:
+            raise RuntimeError(f"Isaac emitted no identified carton masks for {scene_name}")
         masks_path = scene_dir / "gt_instance_masks.npz"
         np.savez_compressed(masks_path, **masks_by_object)
         masks_sha256 = sha256(masks_path)
@@ -856,7 +887,13 @@ try:
 
     measured_q = np.asarray(articulation.get_dof_positions().numpy(), dtype=float)[0]
     q_by_name = {name: measured_q[index] for index, name in enumerate(discovered_names)}
-    q_error = max(abs(float(q_by_name[name]) - float(first_manifest.robot["q_rad"][expected_names.index(name)])) for name in expected_names)
+    q_errors = {
+        name: abs(float(q_by_name[name]) - float(first_manifest.robot["q_rad"][expected_names.index(name)]))
+        for name in expected_names
+    }
+    q_error = max(q_errors.values())
+    if q_errors["J1"] > 1e-3:
+        raise RuntimeError(f"captured official-URDF J1 differs from commanded sensing pose: {q_errors['J1']}")
     try:
         gpu_name = subprocess.run(
             ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
@@ -878,6 +915,9 @@ try:
         "mode_b1_capture": "READY_FOR_EXTERNAL_GPU_WORKER",
         "ros_bridge": "NOT_RUN_BY_ISAAC_PROCESS",
         "robot_q_max_abs_rad": q_error,
+        "robot_joint_abs_error_rad": q_errors,
+        "robot_j1_capture_pose_status": "PASS",
+        "other_joint_dynamic_state_status": "NOT_AN_EXECUTION_QUALIFICATION",
         "urdf_imported_this_run": imported_now,
         "urdf_sha256": urdf_record["robot_asset_hash"],
         "feasibility_commit": actual_feasibility_commit,
