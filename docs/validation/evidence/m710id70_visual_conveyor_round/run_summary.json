@@ -9,6 +9,7 @@
   },
   "participating_source_sha256": {
     "scripts/isaacsim_fanuc_replay.py": "08f574457bededa83df4e437d0287bb4b8c1a4c0be8101315531883fd1a8d48b",
+    "src/unloading_sim/isaac_bridge.py": "6b720470d151412e0c396116436986fa57a18ca19b9e22739219a352002996eb",
     "src/unloading_sim/m710_replay_physics.py": "c4fc75fa86b2a468c0456ac4fec16ffe707ea04390634322b67196e979562bf9",
     "src/unloading_sim/m710_execution.py": "9e2b960a4b823708626d11e93d0aa6b2b00c80fff3d2c73f36b38892c58e699c",
     "src/unloading_sim/conveyor_placement.py": "f2a9cd2ebc27a96d2f0d70bb862efbd8f490e4d7a8d61241c8e63cee72f9e3b2",

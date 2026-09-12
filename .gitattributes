@@ -38,3 +38,4 @@ scripts/analyze_gripper_step.py binary
 # M-710 replay bundles bind this adapter's raw source bytes. Preserve the
 # validated mixed-newline byte stream so a clean Linux checkout can reuse it.
 scripts/isaacsim_fanuc_replay.py binary
+src/unloading_sim/isaac_bridge.py binary
