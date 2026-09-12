@@ -20,7 +20,11 @@ collision_policy:
   stack_contact_mode: planner_relaxed_physics_checked
   stack_contact_stages: [support-release, extraction]
   maximum_planned_stack_penetration_m: 0.010
+  # Enter free transit at 20.2 mm (two 10 mm margins plus the unchanged
+  # 0.2 mm numerical/contact tolerance). Once latched, losing the actual
+  # 20.0 mm engineering margin remains a hard failure.
   free_space_clearance_m: 0.0202
+  free_space_clearance_loss_tolerance_m: 0.0002
   maximum_actual_penetration_m: 0.010
   maximum_neighbor_displacement_m: 0.060
   maximum_neighbor_tilt_rad: 0.20

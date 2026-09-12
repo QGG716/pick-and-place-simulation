@@ -392,18 +392,25 @@ if metadata.get("robot_model") == "fanuc_m710id_70":
         "required_output",
         "material_palette",
         "conveyor_visual_motion",
+        "pbr_materials",
     }:
         raise ValueError("M-710 replay requires a content-addressed rendering contract")
     if rendering_contract["material_palette"] != {
-        "chassis_rgb": [0.10, 0.12, 0.16],
-        "conveyor_rgb": [0.035, 0.22, 0.62],
-        "conveyor_motion_marker_rgb": [1.0, 0.58, 0.03],
+        "chassis_rgb": [0.08, 0.09, 0.11],
+        "conveyor_rgb": [0.035, 0.04, 0.045],
+        "conveyor_frame_rgb": [0.32, 0.36, 0.40],
+        "conveyor_motion_marker_rgb": [0.62, 0.67, 0.70],
+        "conveyor_roller_rgb": [0.18, 0.20, 0.22],
+        "trailer_rgb": [0.56, 0.60, 0.64],
     }:
         raise ValueError("M-710 replay rendering palette differs from the bound contract")
     if rendering_contract["conveyor_visual_motion"] != {
-        "model": "collision_free_wrapped_surface_markers_v1",
+        "model": "industrial_belt_surface_and_roller_phase_v2",
         "markers_have_collision": False,
         "markers_follow_active_physx_surface_velocity": True,
+        "rollers_follow_active_physx_surface_velocity": True,
+        "independent_phase_accumulators": True,
+        "stopped_surface_phase_is_frozen": True,
     }:
         raise ValueError("M-710 replay conveyor visual-motion contract is invalid")
     required_output = rendering_contract["required_output"]
@@ -527,6 +534,7 @@ try:
         audit_surface_attachment_contact,
         select_active_conveyor_surfaces,
         replay_command_arrays,
+        swept_payload_tool_clearance,
         validate_continuation_request,
         obb_penetration_depth,
         verify_physics_backend_readback,
@@ -542,7 +550,7 @@ try:
     print("FANUC_REPLAY_STAGE=replicator_imported", flush=True)
     import omni.usd
     print("FANUC_REPLAY_STAGE=usd_imported", flush=True)
-    from PIL import Image
+    from PIL import Image, ImageDraw, ImageFont
     print("FANUC_REPLAY_STAGE=pillow_imported", flush=True)
     if args.record_video:
         import cv2
@@ -569,6 +577,7 @@ try:
         Sdf,
         Usd,
         UsdGeom,
+        UsdLux,
         UsdPhysics,
         UsdShade,
     )
@@ -712,6 +721,57 @@ try:
         )
         st.Set([Gf.Vec2f(0, 0), Gf.Vec2f(1, 0), Gf.Vec2f(1, 1), Gf.Vec2f(0, 1)])
         UsdShade.MaterialBindingAPI.Apply(mesh.GetPrim()).Bind(material)
+
+    def _load_hud_fonts(frame_height: int):
+        body_size = max(26, int(round(28.0 * frame_height / 1080.0)))
+        small_size = max(18, int(round(20.0 * frame_height / 1080.0)))
+        candidates = (
+            "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+            "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf",
+            "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        )
+        for candidate in candidates:
+            if Path(candidate).is_file():
+                return (
+                    ImageFont.truetype(candidate, body_size),
+                    ImageFont.truetype(candidate, small_size),
+                    "NotoSansCJK" in candidate or "wqy" in candidate,
+                    candidate,
+                )
+        return ImageFont.load_default(), ImageFont.load_default(), False, "PIL_DEFAULT"
+
+    def _draw_runtime_hud(rendered_rgb, lines, assumption, status_color):
+        image = Image.fromarray(rendered_rgb).convert("RGBA")
+        overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay)
+        body_font, small_font, _, _ = hud_fonts
+        scale = image.height / 1080.0
+        left, top = int(22 * scale), int(20 * scale)
+        pad_x, pad_y = int(18 * scale), int(14 * scale)
+        line_gap = int(7 * scale)
+        measured = [draw.textbbox((0, 0), line, font=body_font) for line in lines]
+        widths = [box[2] - box[0] for box in measured]
+        heights = [box[3] - box[1] for box in measured]
+        assumption_box = draw.textbbox((0, 0), assumption, font=small_font)
+        panel_width = max(max(widths, default=0), assumption_box[2] - assumption_box[0]) + 2 * pad_x
+        panel_height = sum(heights) + line_gap * max(0, len(lines) - 1) + 2 * pad_y
+        footer_gap = int(10 * scale)
+        footer_height = assumption_box[3] - assumption_box[1]
+        panel_height += footer_gap + footer_height
+        draw.rounded_rectangle(
+            [left, top, left + panel_width, top + panel_height],
+            radius=max(8, int(12 * scale)), fill=(8, 12, 18, 224),
+            outline=(120, 132, 145, 190), width=max(1, int(2 * scale)),
+        )
+        y = top + pad_y
+        for index, (line, height) in enumerate(zip(lines, heights, strict=True)):
+            color = status_color if index == len(lines) - 1 else (248, 250, 252, 255)
+            draw.text((left + pad_x, y), line, font=body_font, fill=color)
+            y += height + line_gap
+        y += footer_gap - line_gap
+        draw.text((left + pad_x, y), assumption, font=small_font, fill=(190, 202, 214, 255))
+        return np.asarray(Image.alpha_composite(image, overlay).convert("RGB"), dtype=np.uint8)
 
     timestamps, positions = replay_command_arrays(bundle, expected_joint_names)
 
@@ -878,6 +938,18 @@ try:
         simulation_app.update()
     print("FANUC_REPLAY_STAGE=stage_opened", flush=True)
     stage = context.get_stage()
+    interior_light = UsdLux.RectLight.Define(stage, "/Validation/Lighting/TrailerCeiling")
+    interior_light.CreateWidthAttr(4.8)
+    interior_light.CreateHeightAttr(1.6)
+    interior_light.CreateIntensityAttr(1050.0)
+    interior_light.CreateColorAttr(Gf.Vec3f(0.92, 0.95, 1.0))
+    UsdGeom.XformCommonAPI(interior_light.GetPrim()).SetTranslate(Gf.Vec3d(0.0, 0.0, 2.62))
+    entrance_fill = UsdLux.DistantLight.Define(stage, "/Validation/Lighting/EntranceFill")
+    entrance_fill.CreateIntensityAttr(420.0)
+    entrance_fill.CreateAngleAttr(2.0)
+    UsdGeom.XformCommonAPI(entrance_fill.GetPrim()).SetRotate(
+        Gf.Vec3f(-38.0, -24.0, -18.0), UsdGeom.XformCommonAPI.RotationOrderXYZ
+    )
     root_prim = stage.GetPrimAtPath(root_prim_path)
     if not root_prim.IsValid():
         default_prim = stage.GetDefaultPrim()
@@ -999,6 +1071,7 @@ try:
     allowed_self_collision_pairs: list[dict[str, str]] = []
     srdf_filter_complete = False
     owned_tool_collider_paths = {}
+    owned_tool_collider_corners_body_m = []
     compliant_cup_collider_paths = set()
     compliant_cup_index_by_path = {}
     official_robot_link_colliders = {}
@@ -1116,18 +1189,23 @@ try:
         return Gf.Vec3f(*np.clip(value, 0.0, 1.0).tolist())
 
     category_colors = {
-        "trailer": _color("trailer", (0.20, 0.23, 0.27)),
+        "trailer": _color("trailer", (0.56, 0.60, 0.64)),
+        "floor": _color("trailer", (0.56, 0.60, 0.64)),
         "static": _color("static", (0.08, 0.22, 0.36)),
         "amr": _color("amr", (0.055, 0.065, 0.075)),
-        "chassis": _color("chassis", (0.10, 0.12, 0.16)),
-        "conveyor": _color("conveyor", (0.035, 0.22, 0.62)),
+        "chassis": _color("chassis", (0.08, 0.09, 0.11)),
+        "conveyor": _color("conveyor", (0.035, 0.04, 0.045)),
         "carton": _color("carton", (0.47, 0.25, 0.095)),
     }
     UsdGeom.Xform.Define(stage, "/Validation/Materials")
     category_materials = {}
-    for category in ("trailer", "carton"):
-        spec = dict(pbr_specs.get(category, {}))
+    for category in ("trailer", "floor", "carton", "conveyor"):
+        spec_name = "trailer" if category == "floor" else (
+            "conveyor_belt" if category == "conveyor" else category
+        )
+        spec = dict(pbr_specs.get(spec_name, {}))
         if spec:
+            spec.setdefault("fallback_rgb", spec.pop("rgb", list(category_colors[category])))
             spec.setdefault("fallback_rgb", list(category_colors[category]))
             category_materials[category] = _preview_material(
                 f"/Validation/Materials/{category.title()}", spec
@@ -1186,16 +1264,31 @@ try:
     dynamic_scene_records: list[dict[str, object]] = []
     static_scene_records: list[dict[str, object]] = []
     conveyor_visual_markers: dict[str, list[dict[str, object]]] = {}
+    conveyor_visual_rollers: dict[str, list[dict[str, object]]] = {}
     if conveyor_enabled:
         UsdGeom.Xform.Define(stage, "/Validation/ConveyorMotionMarkers")
+        UsdGeom.Xform.Define(stage, "/Validation/ConveyorEquipment")
+        def _named_pbr_material(name, fallback):
+            spec = dict(pbr_specs.get(name, {}))
+            spec.setdefault("fallback_rgb", spec.pop("rgb", list(fallback)))
+            return _preview_material(
+                f"/Validation/Materials/{''.join(part.title() for part in name.split('_'))}",
+                spec,
+            )
+        conveyor_frame_material = _named_pbr_material(
+            "conveyor_frame", _color("conveyor_frame", (0.32, 0.36, 0.40))
+        )
+        conveyor_roller_material = _named_pbr_material(
+            "conveyor_roller", _color("conveyor_roller", (0.18, 0.20, 0.22))
+        )
         conveyor_marker_material = _preview_material(
             "/Validation/Materials/ConveyorMotionMarker",
             {
                 "fallback_rgb": list(
-                    _color("conveyor_motion_marker", (1.0, 0.58, 0.03))
+                    _color("conveyor_motion_marker", (0.62, 0.67, 0.70))
                 ),
-                "roughness": 0.32,
-                "metallic": 0.05,
+                "roughness": 0.62,
+                "metallic": 0.18,
             },
         )
     for primitive in scene_primitives:
@@ -1251,6 +1344,17 @@ try:
                     z_min=0.19,
                     z_max=0.31,
                 )
+            if str(primitive["name"]) in {"trailer_left_wall", "trailer_right_wall"}:
+                inner_sign = -1.0 if str(primitive["name"]) == "trailer_left_wall" else 1.0
+                for rib_index, local_x in enumerate(np.linspace(-0.44, 0.44, 7)):
+                    rib = UsdGeom.Cube.Define(stage, f"{prim_path}/InteriorRib_{rib_index:02d}")
+                    rib.CreateSizeAttr(1.0)
+                    UsdShade.MaterialBindingAPI.Apply(rib.GetPrim()).Bind(category_materials[category])
+                    rib_xform = UsdGeom.XformCommonAPI(rib.GetPrim())
+                    # The rib remains inside the wall's physical OBB; it adds
+                    # visible trailer structure without an unmodelled protrusion.
+                    rib_xform.SetScale(Gf.Vec3f(0.018, 0.16, 0.94))
+                    rib_xform.SetTranslate(Gf.Vec3d(float(local_x), 0.40 * inner_sign, 0.0))
         xform = UsdGeom.XformCommonAPI(cube.GetPrim())
         size = np.asarray(primitive["size_m"], dtype=float)
         center = np.asarray(primitive["center_m"], dtype=float)
@@ -1278,6 +1382,7 @@ try:
             ])
             shell.CreateSubdivisionSchemeAttr().Set("none")
             UsdPhysics.CollisionAPI.Apply(shell.GetPrim())
+            UsdGeom.Imageable(shell.GetPrim()).MakeInvisible()
             top_collision = UsdGeom.Mesh.Define(stage, f"{prim_path}/TopCollision")
             top_collision.CreatePointsAttr(
                 [
@@ -1291,6 +1396,7 @@ try:
             top_collision.CreateFaceVertexIndicesAttr([0, 1, 2, 0, 2, 3])
             top_collision.CreateSubdivisionSchemeAttr().Set("none")
             UsdPhysics.CollisionAPI.Apply(top_collision.GetPrim())
+            UsdGeom.Imageable(top_collision.GetPrim()).MakeInvisible()
             # PhysX surface velocity drives contact friction while the belt
             # body itself remains kinematic. The carton remains a fully
             # dynamic rigid body; its pose is never overwritten after release.
@@ -1310,10 +1416,10 @@ try:
             conveyor_surface_paths[primitive_name] = prim_path
             conveyor_surface_enabled_attrs[primitive_name] = enabled_attr
             conveyor_primitives[primitive_name] = primitive
-            # Bright, non-colliding stripes make the otherwise kinematic
-            # PhysX surface velocity visible in the qualification video. The
-            # stripes wrap along the exact configured world direction and are
-            # updated only while this surface owns the physical belt drive.
+            # Subtle belt seams and end rollers share the exact physical drive
+            # state.  Their apparent motion is derived from per-surface travel
+            # phase; all visual hard structure remains inside the existing
+            # collision shell, so appearance adds no unmodelled obstruction.
             direction = conveyor_directions_world[primitive_name]
             if abs(float(direction[2])) > 1e-12:
                 raise ValueError("conveyor motion markers require horizontal surface velocity")
@@ -1323,7 +1429,7 @@ try:
             half_size = 0.5 * size
             travel_half_extent = float(np.sum(np.abs(local_direction) * half_size))
             lateral_half_extent = float(np.sum(np.abs(local_lateral) * half_size))
-            marker_count = max(4, int(math.ceil(2.0 * travel_half_extent / 0.24)))
+            marker_count = max(5, int(math.ceil(2.0 * travel_half_extent / 0.20)))
             marker_width = max(0.04, 2.0 * lateral_half_extent - 0.08)
             top_center = center + rotation @ np.array([0.0, 0.0, half_size[2] + 0.003])
             yaw_deg = math.degrees(math.atan2(float(direction[1]), float(direction[0])))
@@ -1338,13 +1444,13 @@ try:
                 )
                 marker.CreateSizeAttr(1.0)
                 marker.CreateDisplayColorAttr(
-                    [_color("conveyor_motion_marker", (1.0, 0.58, 0.03))]
+                    [_color("conveyor_motion_marker", (0.62, 0.67, 0.70))]
                 )
                 UsdShade.MaterialBindingAPI.Apply(marker.GetPrim()).Bind(
                     conveyor_marker_material
                 )
                 marker_xform = UsdGeom.XformCommonAPI(marker.GetPrim())
-                marker_xform.SetScale(Gf.Vec3f(0.045, marker_width, 0.004))
+                marker_xform.SetScale(Gf.Vec3f(0.014, marker_width, 0.003))
                 marker_xform.SetRotate(
                     Gf.Vec3f(0.0, 0.0, yaw_deg),
                     UsdGeom.XformCommonAPI.RotationOrderXYZ,
@@ -1362,6 +1468,34 @@ try:
                     }
                 )
             conveyor_visual_markers[primitive_name] = marker_records
+            equipment_root = (
+                "/Validation/ConveyorEquipment/" + _safe_prim_name(primitive_name)
+            )
+            UsdGeom.Xform.Define(stage, equipment_root)
+            for side_index, side_sign in enumerate((-1.0, 1.0)):
+                rail = UsdGeom.Cube.Define(stage, f"{equipment_root}/FrameRail_{side_index}")
+                rail.CreateSizeAttr(1.0)
+                UsdShade.MaterialBindingAPI.Apply(rail.GetPrim()).Bind(conveyor_frame_material)
+                rail_xform = UsdGeom.XformCommonAPI(rail.GetPrim())
+                rail_center = (center + lateral * side_sign * max(0.0, lateral_half_extent - 0.025)
+                               + np.array([0.0, 0.0, -0.045]))
+                rail_xform.SetScale(Gf.Vec3f(2.0 * travel_half_extent, 0.035, 0.055))
+                rail_xform.SetRotate(Gf.Vec3f(0.0, 0.0, yaw_deg), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+                rail_xform.SetTranslate(Gf.Vec3d(*rail_center.tolist()))
+            roller_records = []
+            roller_axis = "Y" if abs(float(direction[0])) > 0.5 else "X"
+            for end_index, end_sign in enumerate((-1.0, 1.0)):
+                roller = UsdGeom.Cylinder.Define(stage, f"{equipment_root}/EndRoller_{end_index}")
+                roller.CreateAxisAttr(roller_axis)
+                roller.CreateRadiusAttr(0.032)
+                roller.CreateHeightAttr(max(0.05, 2.0 * lateral_half_extent - 0.07))
+                UsdShade.MaterialBindingAPI.Apply(roller.GetPrim()).Bind(conveyor_roller_material)
+                roller_xform = UsdGeom.XformCommonAPI(roller.GetPrim())
+                roller_center = (center + direction * end_sign * max(0.0, travel_half_extent - 0.035)
+                                 + np.array([0.0, 0.0, half_size[2] - 0.036]))
+                roller_xform.SetTranslate(Gf.Vec3d(*roller_center.tolist()))
+                roller_records.append({"xform": roller_xform, "axis": roller_axis})
+            conveyor_visual_rollers[primitive_name] = roller_records
         else:
             UsdPhysics.CollisionAPI.Apply(cube.GetPrim())
         if bool(primitive.get("dynamic", False)):
@@ -1523,6 +1657,14 @@ try:
             if not args.disable_gripper_collision:
                 UsdPhysics.CollisionAPI.Apply(collision_proxy.GetPrim())
                 owned_tool_collider_paths[str(collision_proxy.GetPath())] = suction_tool_path
+                owned_tool_collider_corners_body_m.append(
+                    np.asarray(
+                        [[x, y, z] for x in (tool_min[0], tool_max[0])
+                         for y in (tool_min[1], tool_max[1])
+                         for z in (tool_min[2], tool_max[2])],
+                        dtype=float,
+                    )
+                )
 
         if metadata.get("robot_model") != "fanuc_m710id_70":
             # Legacy bundles did not provide complete link inertials. Preserve
@@ -1562,6 +1704,19 @@ try:
         )
         UsdPhysics.CollisionAPI.Apply(suction_tool.GetPrim())
         owned_tool_collider_paths[str(suction_tool.GetPath())] = suction_tool_path
+        fallback_half = np.asarray(
+            [0.01, 0.5 * float(footprint_size[0]), 0.5 * float(footprint_size[1])],
+            dtype=float,
+        )
+        fallback_center = np.asarray([tool_uncompressed_face_x - 0.01, 0.0, 0.0])
+        owned_tool_collider_corners_body_m.append(
+            np.asarray(
+                [fallback_center + [x, y, z] for x in (-fallback_half[0], fallback_half[0])
+                 for y in (-fallback_half[1], fallback_half[1])
+                 for z in (-fallback_half[2], fallback_half[2])],
+                dtype=float,
+            )
+        )
 
     if metadata.get("robot_model") == "fanuc_m710id_70":
         from unloading_sim.collision_policy import SimulationCollisionPolicy
@@ -1642,6 +1797,22 @@ try:
                 UsdGeom.Imageable(collider.GetPrim()).MakeInvisible()
                 UsdPhysics.CollisionAPI.Apply(collider.GetPrim())
                 owned_tool_collider_paths[str(collider.GetPath())] = suction_tool_path
+                collider_center = np.asarray(
+                    [tool_contact_plane_x - 0.5 * collision_height, float(cup_y), float(cup_z)],
+                    dtype=float,
+                )
+                collider_half = np.asarray(
+                    [0.5 * collision_height, collider_radius, collider_radius], dtype=float
+                )
+                owned_tool_collider_corners_body_m.append(
+                    np.asarray(
+                        [collider_center + [x, y, z]
+                         for x in (-collider_half[0], collider_half[0])
+                         for y in (-collider_half[1], collider_half[1])
+                         for z in (-collider_half[2], collider_half[2])],
+                        dtype=float,
+                    )
+                )
                 compliant_cup_collider_paths.add(str(collider.GetPath()))
                 compliant_cup_index_by_path[str(collider.GetPath())] = cup_index
 
@@ -2713,6 +2884,9 @@ try:
     session_output_root = args.output
     session_segment_index = 0
     session_time_offset_s = 0.0
+    hud_fonts = _load_hud_fonts(args.height)
+    hud_chinese_enabled = bool(hud_fonts[2])
+    hud_font_path = str(hud_fonts[3])
     if args.continuation_dir is not None:
         args.continuation_dir.mkdir(parents=True, exist_ok=True)
         if not ideal_independent_mode:
@@ -2888,14 +3062,21 @@ try:
         conveyor_landing_height_tolerance_m = float(
             conveyor_cfg.get("landing_height_tolerance_m", 0.04)
         )
+        transport_cfg = dict(conveyor_cfg.get("transport", {}))
         conveyor_transport_minimum_distance_m = float(
-            conveyor_cfg.get("transport_minimum_distance_m", 0.10)
+            transport_cfg.get("minimum_visible_distance_m", 0.20)
+        )
+        conveyor_transport_target_distance_m = float(
+            transport_cfg.get("target_distance_m", 0.60)
+        )
+        conveyor_safe_tail_margin_m = float(
+            transport_cfg.get("safe_tail_margin_m", 0.10)
         )
         conveyor_transport_speed_tolerance_m_s = float(
-            conveyor_cfg.get("transport_speed_tolerance_m_s", 0.15)
+            transport_cfg.get("speed_tolerance_m_s", 0.15)
         )
         conveyor_transport_audit_window_s = float(
-            conveyor_cfg.get("transport_audit_window_seconds", 1.0)
+            transport_cfg.get("audit_window_seconds", 3.0)
         )
         if not np.isfinite(conveyor_transport_audit_window_s) or conveyor_transport_audit_window_s <= 0.0:
             raise ValueError("conveyor transport audit window must be finite and positive")
@@ -2919,6 +3100,60 @@ try:
             )
         conveyor_started = bool(conveyor_enabled and conveyor_start_policy == "immediate")
         conveyor_started_time_s = 0.0 if conveyor_started else None
+        conveyor_running = conveyor_started
+        conveyor_stopped_time_s = None
+        conveyor_stop_reason = None
+        conveyor_visual_phase_m = {
+            name: 0.0 for name in conveyor_visual_markers
+        }
+        conveyor_start_interlock_history = []
+        target_center_at_conveyor_start = None
+
+        def _actual_conveyor_start_interlock() -> dict[str, object]:
+            required = float(dict(conveyor_cfg.get("actual_start_interlock", {})).get(
+                "require_tool_target_clearance_m", 0.0202
+            ))
+            result = {
+                "attachment_released": bool(release_open_confirmed),
+                "target_independent": bool(
+                    release_open_confirmed and not target_cup_release_gate.pending
+                ),
+                "tool_target_clearance_m": None,
+                "required_clearance_m": required,
+                "transport_swept_conflict_clear": False,
+                "ready": False,
+            }
+            if target_carton_path is None or target_body is None:
+                return result
+            if len(owned_tool_collider_corners_body_m) != len(owned_tool_collider_paths):
+                raise RuntimeError("live conveyor interlock is missing audited tool collider geometry")
+            direction = conveyor_initial_direction_world
+            if direction is None:
+                return result
+            target_positions, target_orientations = target_body.get_world_poses()
+            body_positions, body_orientations = grasp_body.get_world_poses()
+            clearance = swept_payload_tool_clearance(
+                payload_center_m=np.asarray(target_positions.numpy(), dtype=float)[0],
+                payload_half_extents_m=0.5 * np.asarray(target_primitive["size_m"], dtype=float),
+                payload_rotation=_rotation_matrix_from_quaternion_wxyz(
+                    np.asarray(target_orientations.numpy(), dtype=float)[0]
+                ),
+                transport_direction_world=direction,
+                transport_distance_m=conveyor_transport_minimum_distance_m,
+                tool_body_center_m=np.asarray(body_positions.numpy(), dtype=float)[0],
+                tool_body_rotation=_rotation_matrix_from_quaternion_wxyz(
+                    np.asarray(body_orientations.numpy(), dtype=float)[0]
+                ),
+                tool_collider_corners_body_m=owned_tool_collider_corners_body_m,
+            )
+            result["tool_target_clearance_m"] = clearance
+            result["transport_swept_conflict_clear"] = clearance >= required
+            result["ready"] = bool(
+                result["attachment_released"]
+                and result["target_independent"]
+                and result["transport_swept_conflict_clear"]
+            )
+            return result
 
         def _apply_conveyor_surface_selection(
             desired: tuple[str, ...], simulation_time_s: float
@@ -2947,18 +3182,12 @@ try:
                 }
             )
 
-        def _update_conveyor_visual_markers(simulation_time_s: float) -> None:
+        def _update_conveyor_visual_markers(time_step_s: float) -> None:
             for surface_name, records in conveyor_visual_markers.items():
-                moving = (
-                    conveyor_started_time_s is not None
-                    and surface_name in active_conveyor_surfaces
-                )
-                phase_m = (
-                    conveyor_speed_m_s
-                    * max(0.0, simulation_time_s - float(conveyor_started_time_s))
-                    if moving
-                    else 0.0
-                )
+                moving = surface_name in active_conveyor_surfaces
+                if moving:
+                    conveyor_visual_phase_m[surface_name] += conveyor_speed_m_s * time_step_s
+                phase_m = conveyor_visual_phase_m[surface_name]
                 for record in records:
                     half = float(record["travel_half_extent_m"])
                     span = 2.0 * half
@@ -2970,6 +3199,14 @@ try:
                         + np.asarray(record["direction"], dtype=float) * offset
                     )
                     record["xform"].SetTranslate(Gf.Vec3d(*position.tolist()))
+                roller_angle_deg = math.degrees(phase_m / 0.032)
+                for record in conveyor_visual_rollers.get(surface_name, []):
+                    rotation = (Gf.Vec3f(roller_angle_deg, 0.0, 0.0)
+                                if record["axis"] == "X"
+                                else Gf.Vec3f(0.0, roller_angle_deg, 0.0))
+                    record["xform"].SetRotate(
+                        rotation, UsdGeom.XformCommonAPI.RotationOrderXYZ
+                    )
 
         for step in range(physics_steps):
             simulation_time = step * physics_dt
@@ -2996,16 +3233,30 @@ try:
                 >= float(metadata.get("release_retreat_time_seconds", float("inf")))
             )
             if conveyor_enabled and not conveyor_started and conveyor_start_due:
-                conveyor_started = True
-                conveyor_started_time_s = simulation_time
-                print(
-                    f"FANUC_REPLAY_EVENT=conveyor_started time_s={simulation_time:.6f} "
-                    f"speed_m_s={conveyor_speed_m_s:.6f}",
-                    flush=True,
-                )
+                interlock = _actual_conveyor_start_interlock()
+                conveyor_start_interlock_history.append({
+                    "time_s": float(simulation_time), **interlock,
+                })
+                if interlock["ready"]:
+                    conveyor_started = True
+                    conveyor_running = True
+                    conveyor_started_time_s = simulation_time
+                    positions_at_start, _ = target_body.get_world_poses()
+                    target_center_at_conveyor_start = np.asarray(
+                        positions_at_start.numpy(), dtype=float
+                    )[0].copy()
+                    target_rigid_api = PhysxSchema.PhysxRigidBodyAPI.Apply(
+                        stage.GetPrimAtPath(target_carton_path)
+                    )
+                    target_rigid_api.CreateSleepThresholdAttr().Set(0.0)
+                    print(
+                        f"FANUC_REPLAY_EVENT=conveyor_started time_s={simulation_time:.6f} "
+                        f"speed_m_s={conveyor_speed_m_s:.6f} actual_interlock=true",
+                        flush=True,
+                    )
             if conveyor_enabled:
                 payload_center_for_drive = None
-                if conveyor_started and target_body is not None:
+                if conveyor_running and target_body is not None:
                     drive_positions, _ = target_body.get_world_poses()
                     payload_center_for_drive = np.asarray(
                         drive_positions.numpy(), dtype=float
@@ -3013,7 +3264,7 @@ try:
                 desired_surfaces = select_active_conveyor_surfaces(
                     payload_center_m=payload_center_for_drive,
                     conveyor_primitives=conveyor_primitives,
-                    started=conveyor_started,
+                    started=conveyor_running,
                     exclusive=conveyor_exclusive,
                     current_surface=active_conveyor_surface,
                     preferred_initial_surface=(
@@ -3021,7 +3272,7 @@ try:
                     ),
                 )
                 _apply_conveyor_surface_selection(desired_surfaces, simulation_time)
-                if conveyor_started:
+                if conveyor_running:
                     conveyor_selection_initialized = True
             if (
                 target_body is not None
@@ -3446,7 +3697,7 @@ try:
             world.step(render=False, update_fabric=True)
             simulation_time = (step + 1) * physics_dt
             if conveyor_enabled:
-                _update_conveyor_visual_markers(simulation_time)
+                _update_conveyor_visual_markers(physics_dt)
             release_clearance_failure = target_cup_release_gate.observe(
                 simulation_time, active_contact_headers, target_path=target_carton_path,
                 compliant_paths=compliant_cup_collider_paths)
@@ -3503,16 +3754,72 @@ try:
                     if args.record_replay:
                         replay_frames.append(Image.fromarray(rendered_rgb))
                     if replay_video_writer is not None:
-                        video_frame = cv2.cvtColor(rendered_rgb, cv2.COLOR_RGB2BGR)
                         phase = contact_runtime_context["stage"]
-                        cv2.putText(video_frame, f"row {metadata.get('row_selection', {}).get('row_id', 'derived-row')} | {metadata.get('target')} | {gripper_cfg.get('target_face')} | cups {sum(commanded_cup_mask)} | {place_surface} | {phase} | {simulation_time:.2f}s", (24, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.60, (250, 250, 250), 2)
-                        cv2.putText(video_frame, "Stack contact allowed | J5/J6-tool exempt | Ideal independent suction", (24, 74), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (250, 250, 250), 2)
-                        cv2.putText(video_frame, "Belts: transverse left-to-right (-Y) | longitudinal trailer-to-outfeed (-X)", (24, 106), cv2.FONT_HERSHEY_SIMPLEX, 0.60, (40, 210, 255), 2)
+                        display_phase = "conveyor_transport" if conveyor_running else phase
+                        actual_cups = int(
+                            ideal_actual_contact_count_at_attach
+                            if ideal_actual_contact_count_at_attach is not None
+                            else sum(commanded_cup_mask)
+                        )
+                        if conveyor_running:
+                            state_key = "belt_running"
+                        elif conveyor_started:
+                            state_key = "belt_stopped"
+                        elif conveyor_start_due and release_open_confirmed:
+                            state_key = "waiting_clearance"
+                        elif release_open_confirmed:
+                            state_key = "released"
+                        elif grasp_joint is not None:
+                            state_key = "attached"
+                        else:
+                            state_key = "approaching"
+                        if hud_chinese_enabled:
+                            phase_names = {
+                                "home": "初始", "pregrasp": "预抓取", "contact": "接触",
+                                "support-release": "解除支撑", "extraction": "脱垛",
+                                "transit": "搬运", "place": "放置", "withdrawal": "撤离",
+                                "conveyor_transport": "输送",
+                            }
+                            state_names = {
+                                "belt_running": "皮带运行", "belt_stopped": "带内安全位停止",
+                                "waiting_clearance": "等待工具退出输送冲突区",
+                                "released": "已解除吸附", "attached": "箱体已吸附",
+                                "approaching": "接近目标",
+                            }
+                            face_names = {"front": "正面", "side": "侧面", "top": "顶面"}
+                            belt_names = {
+                                "conveyor_transverse": "横向传送带",
+                                "conveyor_longitudinal": "纵向传送带",
+                            }
+                            lines = [
+                                f"首箱 {metadata.get('target')} · 行 {metadata.get('row_selection', {}).get('row_id', '派生')} · {face_names.get(str(gripper_cfg.get('target_face')), gripper_cfg.get('target_face'))}",
+                                f"阶段 {phase_names.get(display_phase, display_phase)} · 仿真 {simulation_time:.2f} s",
+                                f"吸盘 {actual_cups}/72 · {'已释放' if release_open_confirmed else '已吸附' if grasp_joint is not None else '待吸附'}",
+                                f"接收 {belt_names.get(place_surface, place_surface)} · 实际带速 {conveyor_speed_m_s if conveyor_running else 0.0:.2f} m/s",
+                                f"状态 {state_names[state_key]}",
+                            ]
+                            assumption = "物理：保留箱间接触；仅免除 J5/J6 与自有吸具内部碰撞"
+                        else:
+                            lines = [
+                                f"First carton {metadata.get('target')} · row {metadata.get('row_selection', {}).get('row_id', 'derived')} · {gripper_cfg.get('target_face')}",
+                                f"Phase {display_phase} · simulation {simulation_time:.2f} s",
+                                f"Cups {actual_cups}/72 · {'released' if release_open_confirmed else 'attached' if grasp_joint is not None else 'open'}",
+                                f"Receiver {place_surface} · actual belt {conveyor_speed_m_s if conveyor_running else 0.0:.2f} m/s",
+                                f"State {state_key.replace('_', ' ')}",
+                            ]
+                            assumption = "Physics: stack contact kept; only J5/J6-owned-tool internal pairs exempt"
+                        status_color = ((72, 232, 150, 255) if conveyor_running
+                                        else (255, 205, 92, 255) if state_key == "waiting_clearance"
+                                        else (210, 220, 232, 255))
+                        rendered_rgb = _draw_runtime_hud(
+                            rendered_rgb, lines, assumption, status_color
+                        )
+                        video_frame = cv2.cvtColor(rendered_rgb, cv2.COLOR_RGB2BGR)
                         if replay_video_frame_count == 0:
                             cv2.imwrite(str(args.output / "initial.png"), video_frame)
-                        if phase not in saved_phase_keyframes:
-                            cv2.imwrite(str(args.output / f"phase_{_safe_prim_name(phase)}.png"), video_frame)
-                            saved_phase_keyframes.add(phase)
+                        if display_phase not in saved_phase_keyframes:
+                            cv2.imwrite(str(args.output / f"phase_{_safe_prim_name(display_phase)}.png"), video_frame)
+                            saved_phase_keyframes.add(display_phase)
                         last_video_frame = video_frame.copy()
                         replay_video_writer.write(video_frame)
                         if preview_video_writer is not None:
@@ -3694,6 +4001,46 @@ try:
                 payload_linear_velocity = np.asarray(
                     payload_linear_velocities.numpy(), dtype=float
                 )[0]
+                if (
+                    conveyor_running
+                    and target_center_at_conveyor_start is not None
+                    and conveyor_initial_direction_world is not None
+                ):
+                    actual_progress = float(
+                        (payload_center - target_center_at_conveyor_start)
+                        @ conveyor_initial_direction_world
+                    )
+                    surface = conveyor_primitives.get(active_conveyor_surface or place_surface)
+                    safe_progress = conveyor_transport_target_distance_m
+                    if surface is not None:
+                        surface_center = np.asarray(surface["center_m"], dtype=float)
+                        surface_size = np.asarray(surface["size_m"], dtype=float)
+                        surface_rotation = np.asarray(surface["rotation_matrix"], dtype=float)
+                        surface_half_along = float(
+                            np.sum(np.abs(surface_rotation.T @ conveyor_initial_direction_world)
+                                   * 0.5 * surface_size)
+                        )
+                        target_half_along = 0.5 * float(np.max(target_primitive["size_m"][:2]))
+                        surface_outlet_projection = float(
+                            surface_center @ conveyor_initial_direction_world + surface_half_along
+                        )
+                        safe_progress = min(
+                            safe_progress,
+                            surface_outlet_projection
+                            - float(target_center_at_conveyor_start @ conveyor_initial_direction_world)
+                            - target_half_along
+                            - conveyor_safe_tail_margin_m,
+                        )
+                    if actual_progress >= max(conveyor_transport_minimum_distance_m, safe_progress):
+                        conveyor_running = False
+                        conveyor_stopped_time_s = simulation_time
+                        conveyor_stop_reason = "SAFE_IN_BELT_WAIT_POSITION_REACHED"
+                        _apply_conveyor_surface_selection((), simulation_time)
+                        print(
+                            f"FANUC_REPLAY_EVENT=conveyor_stopped time_s={simulation_time:.6f} "
+                            f"distance_m={actual_progress:.6f} reason={conveyor_stop_reason}",
+                            flush=True,
+                        )
                 elapsed_after_release = simulation_time - float(release_executed_time_s)
                 if (
                     target_landing_center is None
@@ -3707,16 +4054,15 @@ try:
                 if (
                     target_landing_center is not None
                     and conveyor_started
+                    and conveyor_running
                     and conveyor_started_time_s is not None
                 ):
-                    # Restrict the speed audit to the configured interval after
-                    # landing. The former implementation compared simulation time
-                    # with the belt start time (normally zero), so every carton
-                    # landing later than one second silently produced no samples.
+                    # Start transport evidence at the actual interlocked belt
+                    # start and stop sampling when the physical drive stops.
                     # An L-shaped conveyor can subsequently transfer the carton
                     # to a different surface with a different travel direction.
-                    elapsed_after_landing = simulation_time - float(target_landing_time_s)
-                    if elapsed_after_landing <= conveyor_transport_audit_window_s + 1e-9:
+                    elapsed_after_belt_start = simulation_time - float(conveyor_started_time_s)
+                    if elapsed_after_belt_start <= conveyor_transport_audit_window_s + 1e-9:
                         conveyor_transport_samples.append(
                             (
                                 simulation_time,
@@ -4413,6 +4759,14 @@ try:
             "conveyor_speed_command_m_s": conveyor_speed_m_s if conveyor_enabled else None,
             "conveyor_start_policy": conveyor_start_policy if conveyor_enabled else None,
             "conveyor_started_time_s": conveyor_started_time_s,
+            "conveyor_stopped_time_s": conveyor_stopped_time_s,
+            "conveyor_stop_reason": conveyor_stop_reason,
+            "conveyor_running_at_end": conveyor_running,
+            "conveyor_start_interlock_history": conveyor_start_interlock_history,
+            "target_center_at_conveyor_start_m": (
+                None if target_center_at_conveyor_start is None
+                else target_center_at_conveyor_start.tolist()
+            ),
             "conveyor_exclusive_surface_drive_at_transfer": conveyor_exclusive,
             "conveyor_active_surface_history": conveyor_surface_history,
             "conveyor_maximum_simultaneously_active_surfaces": max(
@@ -4437,13 +4791,27 @@ try:
             "conveyor_transport_speed_audit_model": "piecewise_selected_active_surface_direction",
             "conveyor_transport_direction_count": len(conveyor_directions_world),
             "conveyor_visual_motion": {
-                "model": "collision_free_wrapped_surface_markers_v1",
+                "model": "industrial_belt_surface_and_roller_phase_v2",
                 "markers_have_collision": False,
                 "marker_counts": {
                     name: len(records)
                     for name, records in conveyor_visual_markers.items()
                 },
                 "markers_follow_active_physx_surface_velocity": True,
+                "roller_counts": {
+                    name: len(records)
+                    for name, records in conveyor_visual_rollers.items()
+                },
+                "rollers_follow_active_physx_surface_velocity": True,
+                "independent_phase_accumulators_m": dict(conveyor_visual_phase_m),
+                "stopped_surface_phase_is_frozen": True,
+            },
+            "hud": {
+                "model": "measured_state_dark_panel_v1",
+                "font_path": hud_font_path,
+                "chinese_enabled": hud_chinese_enabled,
+                "body_pixels_at_1080p": 28,
+                "line_count": 5,
             },
             "target_carton_dynamic": target_carton_path is not None,
             "payload_constraint_commanded": grasp_commanded,

@@ -28,6 +28,14 @@ def _area(polygon: np.ndarray) -> float:
                      - np.dot(polygon[:, 1], np.roll(polygon[:, 0], -1)))) / 2
 
 
+def _counterclockwise(polygon: np.ndarray) -> np.ndarray:
+    signed_twice_area = float(
+        np.dot(polygon[:, 0], np.roll(polygon[:, 1], -1))
+        - np.dot(polygon[:, 1], np.roll(polygon[:, 0], -1))
+    )
+    return polygon if signed_twice_area >= 0.0 else polygon[::-1].copy()
+
+
 def _halfplane(polygon: np.ndarray, start: np.ndarray, end: np.ndarray, inside: bool) -> np.ndarray:
     """Clip a convex polygon against a directed edge's left or right halfplane."""
     if len(polygon) < 3:
@@ -82,6 +90,39 @@ def _face_corners(box: OBB, z_sign: float, inset: float = 0.0) -> np.ndarray:
     return local @ box.rotation.T + box.center
 
 
+def _horizontal_support_face(
+    box: OBB,
+    *,
+    upward: bool = False,
+    inset: float = 0.0,
+    maximum_tilt_rad: float = np.deg2rad(5.0),
+) -> tuple[np.ndarray, int | None, int | None]:
+    """Return the actual horizontal lower/upper box face for any cuboid orientation."""
+    if not np.isfinite(maximum_tilt_rad) or not 0.0 <= maximum_tilt_rad < 0.5 * np.pi:
+        raise ValueError("maximum_tilt_rad must be finite and in [0, pi/2)")
+    projections = box.rotation.T @ np.array([0.0, 0.0, 1.0])
+    axis = int(np.argmax(np.abs(projections)))
+    if abs(float(projections[axis])) < np.cos(maximum_tilt_rad):
+        return np.empty((0, 3)), None, None
+    sign = 1 if projections[axis] > 0.0 else -1
+    if not upward:
+        sign = -sign
+    varying = [index for index in range(3) if index != axis]
+    if inset >= min(float(box.half_extents[index]) for index in varying):
+        return np.empty((0, 3)), axis, sign
+    local = np.zeros((4, 3), dtype=float)
+    local[:, axis] = sign * box.half_extents[axis]
+    a, b = varying
+    values = ((-1, -1), (1, -1), (1, 1), (-1, 1))
+    for row, (sa, sb) in enumerate(values):
+        local[row, a] = sa * (box.half_extents[a] - inset)
+        local[row, b] = sb * (box.half_extents[b] - inset)
+    world = local @ box.rotation.T + box.center
+    order = _counterclockwise(world[:, :2])
+    lookup = [int(np.argmin(np.linalg.norm(world[:, :2] - point, axis=1))) for point in order]
+    return world[lookup], axis, sign
+
+
 @dataclass(frozen=True)
 class ConveyorSupport:
     body: OBB
@@ -132,7 +173,8 @@ def _supports(items: Iterable[OBB | ConveyorSupport]) -> tuple[ConveyorSupport, 
 def support_union_audit(payload: OBB, supports: Sequence[OBB | ConveyorSupport], *,
                         contact_tolerance_m: float = 0.002,
                         edge_tolerance_m: float = 1e-6,
-                        engineering_edge_margin_m: float = 0.0) -> dict[str, Any]:
+                        engineering_edge_margin_m: float = 0.0,
+                        max_support_tilt_rad: float = np.deg2rad(5.0)) -> dict[str, Any]:
     """Check all actual bottom points are on a fully covering coplanar union.
 
     ``edge_tolerance_m`` is numerical only.  Rigid support penetration deeper
@@ -143,10 +185,17 @@ def support_union_audit(payload: OBB, supports: Sequence[OBB | ConveyorSupport],
     for value in (contact_tolerance_m, edge_tolerance_m, engineering_edge_margin_m):
         if not np.isfinite(value) or value < 0:
             raise ValueError("support tolerances must be finite and nonnegative")
+    if not np.isfinite(max_support_tilt_rad) or not 0.0 <= max_support_tilt_rad < 0.5 * np.pi:
+        raise ValueError("max_support_tilt_rad must be finite and in [0, pi/2)")
     items = _supports(supports)
-    bottom = _face_corners(payload, -1.0)
+    bottom, support_face_axis, support_face_sign = _horizontal_support_face(
+        payload, maximum_tilt_rad=max_support_tilt_rad
+    )
+    if not len(bottom):
+        bottom = np.empty((0, 3))
     footprint = bottom[:, :2]
-    bottom_z = [float(bottom[:, 2].min()), float(bottom[:, 2].max())]
+    bottom_z = ([float(bottom[:, 2].min()), float(bottom[:, 2].max())]
+                if len(bottom) else [float("nan"), float("nan")])
     footprint_area = _area(footprint)
     audit: dict[str, Any] = {
         "schema": "complete_bottom_support_union_v1",
@@ -161,8 +210,10 @@ def support_union_audit(payload: OBB, supports: Sequence[OBB | ConveyorSupport],
         "tolerance_m": contact_tolerance_m, "edge_tolerance_m": edge_tolerance_m,
         "engineering_edge_margin_m": engineering_edge_margin_m,
         "coverage_method": "complete_convex_footprint_minus_support_polygon_union",
+        "support_face_local_axis": support_face_axis,
+        "support_face_local_sign": support_face_sign,
     }
-    if footprint_area <= 1e-14 or payload.rotation[2, 2] <= 0:
+    if footprint_area <= 1e-14:
         audit["reason"] = "NO_HORIZONTAL_BOTTOM_FOOTPRINT"
         return audit
     eligible: list[tuple[ConveyorSupport, np.ndarray, float]] = []
@@ -221,6 +272,13 @@ def support_union_audit(payload: OBB, supports: Sequence[OBB | ConveyorSupport],
 @dataclass(frozen=True)
 class PlacementPolicy:
     yaw_offsets_rad: tuple[float, ...] = (0.0, np.pi / 2, -np.pi / 2)
+    orientation_rpy_offsets_rad: tuple[tuple[float, float, float], ...] = (
+        (0.0, 0.0, 0.0),
+        (0.0, np.pi / 2, 0.0),
+        (0.0, -np.pi / 2, 0.0),
+        (np.pi / 2, 0.0, 0.0),
+        (-np.pi / 2, 0.0, 0.0),
+    )
     coarse_samples_per_axis: int = 3
     fine_samples_per_axis: int = 7
     maximum_candidates: int = 24
@@ -232,6 +290,11 @@ class PlacementPolicy:
     def __post_init__(self) -> None:
         if not self.yaw_offsets_rad or not np.all(np.isfinite(self.yaw_offsets_rad)):
             raise ValueError("placement needs finite yaw offsets")
+        if (not self.orientation_rpy_offsets_rad
+                or any(np.asarray(value, dtype=float).shape != (3,)
+                       or not np.all(np.isfinite(value))
+                       for value in self.orientation_rpy_offsets_rad)):
+            raise ValueError("placement needs finite bounded orientation offsets")
         if self.coarse_samples_per_axis < 2 or self.fine_samples_per_axis < self.coarse_samples_per_axis:
             raise ValueError("placement sampling needs a coarse grid and a finer grid")
         if self.maximum_candidates < 1:
@@ -250,6 +313,8 @@ class PlacementCandidate:
     yaw_rad: float
     score: float
     outlet_directions: Mapping[str, tuple[float, float, float] | None]
+    orientation_rpy_offset_rad: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    contact_normal_up_alignment: float | None = None
 
     @property
     def target_obb(self) -> OBB:
@@ -260,11 +325,14 @@ class PlacementCandidate:
                 "half_extents_m": self.payload.half_extents.tolist(),
                 "receiver_names": list(self.receiver_names), "support": dict(self.support),
                 "reasons": list(self.reasons), "yaw_rad": self.yaw_rad, "score": self.score,
-                "outlet_directions": dict(self.outlet_directions)}
+                "outlet_directions": dict(self.outlet_directions),
+                "orientation_rpy_offset_rad": list(self.orientation_rpy_offset_rad),
+                "contact_normal_up_alignment": self.contact_normal_up_alignment}
 
 
 def _placement_stream(target: OBB, family: tuple[ConveyorSupport, ...], all_supports: tuple[ConveyorSupport, ...],
-                      occupied: tuple[OBB, ...], preferred: np.ndarray, policy: PlacementPolicy
+                      occupied: tuple[OBB, ...], preferred: np.ndarray, policy: PlacementPolicy,
+                      contact_normal_local: np.ndarray | None,
                       ) -> Iterable[PlacementCandidate]:
     points = np.concatenate([_face_corners(item.body, 1) for item in family])
     lower, upper = points[:, :2].min(axis=0), points[:, :2].max(axis=0)
@@ -276,29 +344,50 @@ def _placement_stream(target: OBB, family: tuple[ConveyorSupport, ...], all_supp
         # Visit every allowed yaw in each coarse/fine round; later families are
         # interleaved by the public generator, so neither conveyor is starved.
         yaw_grids = []
-        for offset in policy.yaw_offsets_rad:
-            yaw = original_yaw + offset
-            rotation = rotation_matrix_from_rpy(0, 0, yaw)
-            relative = _face_corners(OBB(np.zeros(3), target.half_extents, rotation), -1)[:, :2]
-            low_center = lower - relative.min(axis=0)
-            high_center = upper - relative.max(axis=0)
-            if np.any(low_center > high_center + policy.edge_tolerance_m):
-                continue
-            grid = [np.clip(preferred[:2], low_center, high_center), 0.5 * (low_center + high_center)]
-            grid.extend(np.array([x, y]) for x in np.linspace(low_center[0], high_center[0], count)
-                        for y in np.linspace(low_center[1], high_center[1], count))
-            grid.sort(key=lambda xy: float(np.linalg.norm(xy - preferred[:2])))
-            yaw_grids.append([(xy, yaw, rotation, offset) for xy in grid])
+        for orientation_offset in policy.orientation_rpy_offsets_rad:
+            base_rotation = target.rotation @ rotation_matrix_from_rpy(*orientation_offset)
+            for offset in policy.yaw_offsets_rad:
+                yaw = original_yaw + offset
+                rotation = rotation_matrix_from_rpy(0, 0, offset) @ base_rotation
+                relative, _, _ = _horizontal_support_face(
+                    OBB(np.zeros(3), target.half_extents, rotation)
+                )
+                if not len(relative):
+                    continue
+                relative = relative[:, :2]
+                low_center = lower - relative.min(axis=0)
+                high_center = upper - relative.max(axis=0)
+                if np.any(low_center > high_center + policy.edge_tolerance_m):
+                    continue
+                grid = [np.clip(preferred[:2], low_center, high_center), 0.5 * (low_center + high_center)]
+                grid.extend(np.array([x, y]) for x in np.linspace(low_center[0], high_center[0], count)
+                            for y in np.linspace(low_center[1], high_center[1], count))
+                grid.sort(key=lambda xy: float(np.linalg.norm(xy - preferred[:2])))
+                contact_up = (None if contact_normal_local is None else
+                              float((rotation @ contact_normal_local)[2]))
+                yaw_grids.append([(xy, yaw, rotation, offset, orientation_offset, contact_up)
+                                  for xy in grid])
+        if contact_normal_local is not None:
+            # Keep the previously demonstrated pose as the bounded first
+            # fallback for time-critical execution, then prefer alternatives
+            # whose actual contact face points upward (tool above carton).
+            # Every branch still derives its contact TCP from the attachment.
+            yaw_grids.sort(key=lambda grid: (
+                0 if np.allclose(grid[0][4], (0.0, 0.0, 0.0), atol=1e-12, rtol=0.0)
+                and abs(float(grid[0][3])) < 1e-12 else 1,
+                -float(grid[0][5]), abs(float(grid[0][3])),
+            ))
         for batch in zip_longest(*yaw_grids):
             for entry in batch:
                 if entry is None:
                     continue
-                xy, yaw, rotation, offset = entry
-                key = (*np.round(xy, 9), round(float(np.cos(yaw)), 9), round(float(np.sin(yaw)), 9))
+                xy, yaw, rotation, offset, orientation_offset, contact_up = entry
+                key = (*np.round(xy, 9), *np.round(rotation.flatten(), 9))
                 if key in seen:
                     continue
                 seen.add(key)
-                payload = OBB([*xy, z + target.half_extents[2]], target.half_extents.copy(), rotation,
+                vertical_half_extent = float(np.sum(np.abs(rotation[2, :]) * target.half_extents))
+                payload = OBB([*xy, z + vertical_half_extent], target.half_extents.copy(), rotation,
                               target.name, target.category)
                 audit = support_union_audit(payload, family, contact_tolerance_m=policy.contact_tolerance_m,
                                             edge_tolerance_m=policy.edge_tolerance_m,
@@ -314,13 +403,16 @@ def _placement_stream(target: OBB, family: tuple[ConveyorSupport, ...], all_supp
                     payload, names, audit,
                     ("COMPLETE_BOTTOM_SUPPORT", "CURRENT_OCCUPANCY_CLEAR",
                      "BOTH_CONVEYORS_SHARE_SAMPLING_BUDGET", "PRESERVE_YAW" if abs(offset) < 1e-10 else "BOUNDED_YAW_ALTERNATIVE"),
-                    yaw, distance / scale + 0.1 * abs(offset) / np.pi,
-                    {item.name: item.outlet_direction_world for item in all_supports if item.name in names})
+                    yaw, distance / scale + 0.1 * abs(offset) / np.pi
+                    + (0.0 if contact_up is None else 0.12 * (1.0 - contact_up)),
+                    {item.name: item.outlet_direction_world for item in all_supports if item.name in names},
+                    tuple(float(value) for value in orientation_offset), contact_up)
 
 
 def generate_conveyor_placements(target: OBB, supports: Sequence[OBB | ConveyorSupport], *,
                                  occupied: Iterable[OBB] = (), preferred_point_world: Sequence[float] | None = None,
-                                 policy: PlacementPolicy | None = None) -> tuple[PlacementCandidate, ...]:
+                                 policy: PlacementPolicy | None = None,
+                                 contact_normal_local: Sequence[float] | None = None) -> tuple[PlacementCandidate, ...]:
     """Return a bounded fair sequence, including noncentral and joint-support poses.
 
     Every live single-belt family gets a turn before the union gets another;
@@ -346,7 +438,14 @@ def generate_conveyor_placements(target: OBB, supports: Sequence[OBB | ConveyorS
         groups[-1].append(item)
     families.extend(tuple(group) for group in groups if len(group) > 1)
     occupancy = tuple(occupied)
-    streams = [iter(_placement_stream(target, family, horizontal, occupancy, preferred, policy)) for family in families]
+    contact_normal = None
+    if contact_normal_local is not None:
+        contact_normal = np.asarray(contact_normal_local, dtype=float)
+        if contact_normal.shape != (3,) or not np.all(np.isfinite(contact_normal)) or np.linalg.norm(contact_normal) <= 1e-12:
+            raise ValueError("contact normal must be a finite nonzero local vector")
+        contact_normal = contact_normal / np.linalg.norm(contact_normal)
+    streams = [iter(_placement_stream(target, family, horizontal, occupancy, preferred, policy,
+                                      contact_normal)) for family in families]
     result = []
     seen = set()
     while streams and len(result) < policy.maximum_candidates:

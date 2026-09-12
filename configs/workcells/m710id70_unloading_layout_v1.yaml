@@ -52,10 +52,15 @@ trailer:
   inner_width_m: 2.300
   right_wall_y_m: -1.150
   left_wall_y_m: 1.150
-  length_m: null
-  height_m: null
-  length_status: NOT_DEFINED_BY_CONFIRMED_LAYOUT
-  height_status: NOT_DEFINED_BY_CONFIRMED_LAYOUT
+  # Fixed development-scene assumptions, not user-confirmed measurements.
+  # The opening is on -X and the closed end wall is farther inside on +X.
+  opening_x_m: -3.200
+  closed_end_wall_x_m: 3.200
+  length_m: 6.400
+  height_m: 2.700
+  wall_thickness_m: 0.050
+  length_status: DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED
+  height_status: DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED
 carton_stack:
   carton_size_xyz_m: [0.600, 0.400, 0.300]
   front_face_x_m: 0.0
@@ -68,4 +73,5 @@ carton_stack:
   no_pallet: true
 evidence:
   approval_basis: confirmed_dimension_constrained_and_corrected_two_view_layout
+  development_scene_assumptions: [trailer_length_6p4m, trailer_height_2p7m, trailer_opening_x_minus_3p2m]
   unconfirmed: [trailer_length, trailer_height, real_robot_mounting_plate_cad, conveyor_manufacturing_details]

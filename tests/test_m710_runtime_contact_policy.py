@@ -10,9 +10,49 @@ from unloading_sim.m710_replay_physics import (
     ActualStackContactMonitor, audit_payload_support_contact,
     finite_gravity_compensated_drive_target,
     replay_command_arrays,
+    swept_payload_tool_clearance,
     validate_continuation_request,
     validate_same_world_continuation,
 )
+
+
+def _box_corners(center, half):
+    return np.asarray(
+        [np.asarray(center) + [x, y, z] for x in (-half[0], half[0])
+         for y in (-half[1], half[1]) for z in (-half[2], half[2])],
+        dtype=float,
+    )
+
+
+def test_conveyor_start_clearance_uses_live_tool_pose_and_separate_colliders():
+    payload_kwargs = dict(
+        payload_center_m=[0.0, 0.0, 0.15],
+        payload_half_extents_m=[0.30, 0.20, 0.15],
+        payload_rotation=np.eye(3),
+        transport_direction_world=[-1.0, 0.0, 0.0],
+        transport_distance_m=0.20,
+        tool_body_rotation=np.eye(3),
+    )
+    local_colliders = [
+        _box_corners([0.0, -0.50, 0.0], [0.10, 0.05, 0.05]),
+        _box_corners([0.0, 0.50, 0.0], [0.10, 0.05, 0.05]),
+    ]
+    # Treating the two disconnected shapes as one combined AABB would fill
+    # their gap and falsely overlap the payload. Per-collider geometry does not.
+    clearance = swept_payload_tool_clearance(
+        **payload_kwargs,
+        tool_body_center_m=[0.0, 0.0, 0.30],
+        tool_collider_corners_body_m=local_colliders,
+    )
+    assert clearance == pytest.approx(0.25)
+    # The same authored geometry at the old contact pose must fail; changing
+    # only the live body pose is sufficient to restore the real clearance.
+    touching = swept_payload_tool_clearance(
+        **payload_kwargs,
+        tool_body_center_m=[0.0, 0.0, 0.15],
+        tool_collider_corners_body_m=[_box_corners([0.0, 0.0, 0.0], [0.10, 0.05, 0.05])],
+    )
+    assert touching < 0.0
 
 
 def test_wrist_tool_pair_exemption_uses_exact_owned_shapes():
@@ -43,6 +83,21 @@ def test_actual_stack_contact_allows_sliding_then_requires_geometric_free_space(
     assert result["first_free_space_time_s"] == 1.0
     severe = OBB([0, 0, 0.40], target.half_extents, np.eye(3), name=target.name)
     assert monitor.observe(1.1, severe, [neighbor], commanded_motion=True)["reason"] == "SEVERE_ACTUAL_STACK_PENETRATION"
+
+
+def test_actual_stack_free_space_latch_keeps_engineering_margin_strict():
+    policy = SimulationCollisionPolicy(stack_contact_mode="planner_relaxed_physics_checked")
+    target = OBB([0, 0, 0.45], [0.3, 0.2, 0.15], np.eye(3), name="selected")
+    neighbor = OBB([0, 0, 0.15], [0.3, 0.2, 0.15], np.eye(3), name="support")
+    monitor = ActualStackContactMonitor(target, [neighbor], policy)
+    entered = OBB([-0.62021, 0, 0.45], target.half_extents, np.eye(3), name=target.name)
+    assert monitor.observe(1.0, entered, [neighbor], commanded_motion=True)["free_space_reached"]
+    numerical_return = OBB([-0.6201, 0, 0.45], target.half_extents, np.eye(3), name=target.name)
+    assert monitor.observe(1.1, numerical_return, [neighbor], commanded_motion=True)["accepted"]
+    margin_lost = OBB([-0.6199, 0, 0.45], target.half_extents, np.eye(3), name=target.name)
+    assert monitor.observe(1.2, margin_lost, [neighbor], commanded_motion=True)["reason"] == (
+        "ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST"
+    )
 
 
 def test_actual_motion_stall_and_neighbor_disturbance_remain_failures():

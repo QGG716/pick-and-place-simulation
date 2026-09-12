@@ -1145,6 +1145,7 @@ def _build_automatic_trajectory_connector(
             },
         )
     validity = policy.data["state_validity"]
+    strategy = policy.data.get("search_strategy", {})
     return build_m710_layout_trajectory_connector(
         lightweight_robot=lightweight_robot,
         urdf_path=urdf_path,
@@ -1167,10 +1168,13 @@ def _build_automatic_trajectory_connector(
         left_wall_y_m=float(layout.data["trailer"]["left_wall_y_m"]),
         official_radial_reach_m=float(validity["official_radial_reach_m"]),
         radial_guard_tolerance_m=float(validity["radial_guard_tolerance_m"]),
-        collision_policy=policy.layout_validation.data.get("collision_policy"),
-        surface_directions_world=policy.data.get("search_strategy", {}).get(
-            "surface_directions_world", {}
+        budget=LayoutTrajectoryBudget(
+            extraction_runtime_clearance_reserve_m=float(
+                strategy.get("extraction_runtime_clearance_reserve_m", 0.0)
+            )
         ),
+        collision_policy=policy.layout_validation.data.get("collision_policy"),
+        surface_directions_world=strategy.get("surface_directions_world", {}),
     )
 
 

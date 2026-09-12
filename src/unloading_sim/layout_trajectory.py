@@ -287,6 +287,7 @@ class LayoutTrajectoryBudget:
     extraction_scan_step_m: float = 0.01
     maximum_extraction_m: float = 0.80
     extraction_direction_attempts: int = 5
+    extraction_runtime_clearance_reserve_m: float = 0.0
     local_transit_cartesian_sample_budget: int = 240
     local_transit_outward_step_m: float = 0.03
     local_transit_outward_attempts: int = 3
@@ -330,6 +331,11 @@ class LayoutTrajectoryBudget:
                 raise ValueError(f"{name} must be finite and positive")
         if not 0.0 <= float(self.rrt_goal_bias) <= 1.0:
             raise ValueError("rrt_goal_bias must be in [0, 1]")
+        if (
+            not np.isfinite(self.extraction_runtime_clearance_reserve_m)
+            or self.extraction_runtime_clearance_reserve_m < 0.0
+        ):
+            raise ValueError("extraction_runtime_clearance_reserve_m must be finite and non-negative")
 
 
 @dataclass(frozen=True)
@@ -750,6 +756,9 @@ class LayoutTrajectoryConnector:
             "local_transit_outward_step_m": self.budget.local_transit_outward_step_m,
             "local_transit_outward_attempts": self.budget.local_transit_outward_attempts,
             "maximum_extraction_m": self.budget.maximum_extraction_m,
+            "extraction_runtime_clearance_reserve_m": (
+                self.budget.extraction_runtime_clearance_reserve_m
+            ),
             "withdrawal_distance_m": self.budget.withdrawal_distance_m,
             "post_release_vertical_lift_m": self.budget.post_release_vertical_lift_m,
             "post_release_conveyor_escape_clearance_m": (
@@ -1407,6 +1416,9 @@ class LayoutTrajectoryConnector:
         attempts: list[dict[str, Any]] = []
         free_clearance = max(2.0 * self.collision_margin_m + self.contact_tolerance_m,
                              self.collision_policy.free_space_clearance_m)
+        runtime_clearance_goal = (
+            free_clearance + self.budget.extraction_runtime_clearance_reserve_m
+        )
         # Search beyond, not exactly on, the acceptance boundary. A strict
         # but nonzero FK residual can otherwise leave every successful path
         # a fraction of a micron short of the unchanged physical clearance.
@@ -1418,7 +1430,7 @@ class LayoutTrajectoryConnector:
                 box,
                 direction,
                 constraints,
-                free_space_clearance_m=free_clearance + fk_boundary_guard,
+                free_space_clearance_m=runtime_clearance_goal + fk_boundary_guard,
                 scan_step_m=self.budget.extraction_scan_step_m,
                 maximum_distance_m=self.budget.maximum_extraction_m,
             )
@@ -1451,6 +1463,10 @@ class LayoutTrajectoryConnector:
                 "direction_world": direction.tolist(),
                 "distance_m": float(distance),
                 "free_clearance_m": free_clearance,
+                "runtime_clearance_goal_m": runtime_clearance_goal,
+                "runtime_clearance_reserve_m": (
+                    self.budget.extraction_runtime_clearance_reserve_m
+                ),
                 "fk_boundary_guard_m": fk_boundary_guard,
                 "search": search,
                 "initial_proximity": branch_tracker.evidence(),
@@ -1629,7 +1645,9 @@ class LayoutTrajectoryConnector:
                             for surface in support_bodies)]
         placements = generate_conveyor_placements(target, supports or (receiver,),
             occupied=occupied, preferred_point_world=attachment.box_at(extraction[-1]).center,
-            policy=self.placement_policy)
+            policy=self.placement_policy,
+            contact_normal_local=-(np.linalg.inv(rigid.tcp_from_box)[:3, :3]
+                                   @ np.array([0.0, 0.0, 1.0])))
         self._placement_remaining = self.budget.stage_connection_iterations
         self._local_transit_remaining = self.budget.local_transit_cartesian_sample_budget
         placement_attempts = []

@@ -22,6 +22,10 @@ search_strategy:
   coarse_place_samples_per_axis: 3
   fine_place_samples_per_axis: 7
   row_height_fraction: 0.05
+  # This does not change the 20.2 mm acceptance predicate. It asks the
+  # geometric extraction endpoint for 3 mm more separation so the measured
+  # PhysX state retains the unchanged margin after observed stack settling.
+  extraction_runtime_clearance_reserve_m: 0.003
   # Planning and PhysX consume the same immutable transport directions.  They
   # are needed before belt start to place the empty tool outside the carton's
   # future swept path; they do not alter receiver geometry or collision rules.

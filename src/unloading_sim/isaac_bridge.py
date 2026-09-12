@@ -885,6 +885,7 @@ def _validated_rendering_contract(value: Any, *, physics_time_step_s: float) -> 
         "required_output",
         "material_palette",
         "conveyor_visual_motion",
+        "pbr_materials",
     }
     if not isinstance(value, dict) or set(value) != expected_contract_keys:
         raise ValueError(
@@ -918,9 +919,12 @@ def _validated_rendering_contract(value: Any, *, physics_time_step_s: float) -> 
         raise ValueError("M-710 output FPS must divide the physics rate into an integer render stride")
     palette = value["material_palette"]
     expected_palette = {
-        "chassis_rgb": [0.10, 0.12, 0.16],
-        "conveyor_rgb": [0.035, 0.22, 0.62],
-        "conveyor_motion_marker_rgb": [1.0, 0.58, 0.03],
+        "chassis_rgb": [0.08, 0.09, 0.11],
+        "conveyor_rgb": [0.035, 0.04, 0.045],
+        "conveyor_frame_rgb": [0.32, 0.36, 0.40],
+        "conveyor_motion_marker_rgb": [0.62, 0.67, 0.70],
+        "conveyor_roller_rgb": [0.18, 0.20, 0.22],
+        "trailer_rgb": [0.56, 0.60, 0.64],
     }
     if not isinstance(palette, dict) or set(palette) != set(expected_palette):
         raise ValueError("M-710 rendering palette is incomplete")
@@ -934,12 +938,31 @@ def _validated_rendering_contract(value: Any, *, physics_time_step_s: float) -> 
         audited_palette[name] = color.tolist()
     visual_motion = value["conveyor_visual_motion"]
     expected_visual_motion = {
-        "model": "collision_free_wrapped_surface_markers_v1",
+        "model": "industrial_belt_surface_and_roller_phase_v2",
         "markers_have_collision": False,
         "markers_follow_active_physx_surface_velocity": True,
+        "rollers_follow_active_physx_surface_velocity": True,
+        "independent_phase_accumulators": True,
+        "stopped_surface_phase_is_frozen": True,
     }
     if visual_motion != expected_visual_motion:
         raise ValueError("M-710 conveyor visual motion contract is invalid")
+    pbr_materials = value["pbr_materials"]
+    required_pbr = {"conveyor_belt", "conveyor_frame", "conveyor_roller", "conveyor_seam", "trailer"}
+    if not isinstance(pbr_materials, dict) or set(pbr_materials) != required_pbr:
+        raise ValueError("M-710 industrial PBR material contract is incomplete")
+    audited_pbr = {}
+    for name, material in pbr_materials.items():
+        if not isinstance(material, dict) or set(material) != {"rgb", "roughness", "metallic"}:
+            raise ValueError(f"M-710 PBR material {name} is incomplete")
+        rgb = np.asarray(material["rgb"], dtype=float)
+        roughness = float(material["roughness"])
+        metallic = float(material["metallic"])
+        if rgb.shape != (3,) or not np.all(np.isfinite(rgb)) or np.any(rgb < 0) or np.any(rgb > 1):
+            raise ValueError(f"M-710 PBR material {name} has an invalid RGB value")
+        if not (0.0 <= roughness <= 1.0 and 0.0 <= metallic <= 1.0):
+            raise ValueError(f"M-710 PBR material {name} has invalid surface parameters")
+        audited_pbr[name] = {"rgb": rgb.tolist(), "roughness": roughness, "metallic": metallic}
     return {
         "required_output": {
             "width_px": width,
@@ -950,6 +973,7 @@ def _validated_rendering_contract(value: Any, *, physics_time_step_s: float) -> 
         },
         "material_palette": audited_palette,
         "conveyor_visual_motion": dict(expected_visual_motion),
+        "pbr_materials": audited_pbr,
     }
 
 

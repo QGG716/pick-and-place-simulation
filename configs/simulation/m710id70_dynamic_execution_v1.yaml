@@ -6,11 +6,9 @@ robot_cad_manifest: ../../assets/robots/fanuc_m710id_70/official/provenance.yaml
 tool_cad_manifest: ../../assets/grippers/shanghai_wantai_three_zone/asset_manifest.yaml
 
 physics_boundary_patches:
-  # These finite USD collision patches cover the robot's complete reachable
-  # envelope.  Their X/Z extents are solver extents, not claims about trailer
-  # length or height; the only physical boundaries asserted are floor Z=0 and
-  # the two confirmed side-wall Y planes.
-  extent_basis: robot_reachable_envelope_not_trailer_dimensions
+  # Retained only as a legacy fallback.  The active layout now supplies one
+  # closed, shared CPU/Isaac development trailer boundary set.
+  extent_basis: layout_trailer_boundaries_with_reachable_patch_fallback
   robot_reach_m: 2.104
   task_tcp_extension_m: 0.250
   thickness_m: 0.050
@@ -23,9 +21,9 @@ replay:
   release_hold_s: 0.10
   # Independent of the receiver-support wait.  The verified withdrawal needs
   # 0.8774 s from release to restore the unchanged 20.2 mm cup/target margin;
-  # 1.0 s remains bounded and is shorter than the 4.3384 s remaining retreat.
+  # The actual conveyor-start interlock, not this timer, gates belt motion.
   release_clearance_wait_s: 1.00
-  post_release_settle_s: 1.00
+  post_release_settle_s: 3.00
   normal_time_scale: 1.0
   output_width_px: 1920
   output_height_px: 1080

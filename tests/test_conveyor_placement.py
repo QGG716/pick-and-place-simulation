@@ -32,7 +32,7 @@ def test_discovery_uses_role_and_both_belts_get_noncentral_candidates():
     assert any(np.linalg.norm(item.payload.center[:2] - supports[0].center[:2]) > 0.1
                for item in candidates if item.receiver_names == (supports[0].name,))
     assert all(item.support["supported"] for item in candidates)
-    assert all(item.payload.center[2] == pytest.approx(.75) for item in candidates)
+    assert all(item.support["bottom_z_range_m"] == pytest.approx([.6, .6]) for item in candidates)
     assert any(abs(item.yaw_rad) > 0.1 for item in candidates[:6])
 
 
@@ -70,6 +70,20 @@ def test_two_contiguous_supports_and_actual_yaw_are_fully_audited():
     assert not support_union_audit(tilted, supports)["supported"]
 
 
+def test_measured_submilliradian_tilt_uses_same_support_band_as_outer_gate():
+    support = box("belt", [0, 0, .54], [1.4, .35, .06])
+    rotation = rotation_matrix_from_rpy(.0002, -.0002, 0)
+    vertical_half_extent = float(np.sum(np.abs(rotation[2]) * np.array([.3, .2, .15])))
+    payload = OBB([0, 0, .6 + vertical_half_extent + .0003], [.3, .2, .15], rotation,
+                  "payload", "carton")
+    audit = support_union_audit(
+        payload, [support], contact_tolerance_m=.003, max_support_tilt_rad=np.deg2rad(5)
+    )
+    assert audit["supported"]
+    assert audit["support_face_local_axis"] == 2
+    assert audit["bottom_z_range_m"][0] >= .6
+
+
 def test_failed_place_has_other_locations_and_occupied_belt_is_excluded():
     supports = belts()
     target = box("new", [.5, 0, 2.25], [.3, .2, .15], category="carton")
@@ -96,3 +110,28 @@ def test_valid_lower_surface_cannot_hide_overlap_with_higher_rigid_receiver():
     target = box("payload", [0, 0, .75], [.3, .2, .15], category="carton")
     assert support_union_audit(target, [lower])["supported"]
     assert support_union_audit(target, [lower, higher])["reason"] == "SUPPORT_PENETRATION"
+
+
+def test_rotated_carton_uses_actual_support_face_and_height():
+    support = box("belt", [0.0, 0.0, 0.54], [0.8, 0.6, 0.06])
+    rotated = OBB(
+        [0.0, 0.0, 0.90], [0.30, 0.20, 0.15],
+        rotation_matrix_from_rpy(0.0, np.pi / 2.0, 0.0), "box", "carton",
+    )
+    audit = support_union_audit(rotated, [support])
+    assert audit["supported"]
+    assert audit["support_face_local_axis"] == 0
+    assert audit["support_face_local_sign"] == 1
+
+    candidates = generate_conveyor_placements(
+        box("box", [0.0, 0.0, 1.5], [0.30, 0.20, 0.15], category="carton"),
+        [support],
+        policy=PlacementPolicy(
+            yaw_offsets_rad=(0.0,),
+            orientation_rpy_offsets_rad=((0.0, np.pi / 2.0, 0.0),),
+            maximum_candidates=2,
+        ),
+    )
+    assert candidates
+    assert candidates[0].payload.center[2] == pytest.approx(0.90)
+    assert candidates[0].support["support_face_local_axis"] == 0

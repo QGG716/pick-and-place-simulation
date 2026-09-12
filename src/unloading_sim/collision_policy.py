@@ -20,6 +20,7 @@ class SimulationCollisionPolicy:
     stack_contact_stages: tuple[str, ...] = ("support-release", "extraction")
     maximum_planned_stack_penetration_m: float = 0.010
     free_space_clearance_m: float = 0.0202
+    free_space_clearance_loss_tolerance_m: float = 0.0002
     maximum_actual_penetration_m: float = 0.010
     maximum_neighbor_displacement_m: float = 0.060
     maximum_neighbor_tilt_rad: float = 0.20
@@ -44,6 +45,8 @@ class SimulationCollisionPolicy:
         for name, value in asdict(self).items():
             if isinstance(value, (int, float)) and (not np.isfinite(value) or value < 0):
                 raise ValueError(f"invalid collision policy threshold: {name}")
+        if self.free_space_clearance_loss_tolerance_m > self.free_space_clearance_m:
+            raise ValueError("free-space loss tolerance cannot exceed its entry clearance")
 
     @classmethod
     def from_mapping(cls, value: Mapping | None):

@@ -241,9 +241,47 @@ class WorkcellLayout:
             ),
         )
 
-    def fixed_components(self) -> tuple[OBB, OBB, OBB]:
+    def trailer_boundary_boxes(self) -> tuple[OBB, ...]:
+        """Return the configured closed development trailer in world coordinates.
+
+        The opening remains on negative X.  These are physical CPU collision
+        bodies and are serialized unchanged for Isaac; they are not camera-only
+        scenery and their dimensions are explicitly marked as assumptions.
+        """
+        trailer = self.data["trailer"]
+        opening = float(trailer["opening_x_m"])
+        closed_end = float(trailer["closed_end_wall_x_m"])
+        right = float(trailer["right_wall_y_m"])
+        left = float(trailer["left_wall_y_m"])
+        height = float(trailer["height_m"])
+        thickness = float(trailer["wall_thickness_m"])
+        length = closed_end - opening
+        centre_x = 0.5 * (opening + closed_end)
+        centre_y = 0.5 * (right + left)
+        width = left - right
+        identity = np.eye(3)
+        return (
+            OBB([centre_x, centre_y, -0.5 * thickness],
+                [0.5 * length, 0.5 * width, 0.5 * thickness], identity,
+                "trailer_floor", "floor"),
+            OBB([centre_x, left + 0.5 * thickness, 0.5 * height],
+                [0.5 * length, 0.5 * thickness, 0.5 * height], identity,
+                "trailer_left_wall", "trailer"),
+            OBB([centre_x, right - 0.5 * thickness, 0.5 * height],
+                [0.5 * length, 0.5 * thickness, 0.5 * height], identity,
+                "trailer_right_wall", "trailer"),
+            OBB([centre_x, centre_y, height + 0.5 * thickness],
+                [0.5 * length, 0.5 * width, 0.5 * thickness], identity,
+                "trailer_ceiling", "trailer"),
+            OBB([closed_end + 0.5 * thickness, centre_y, 0.5 * height],
+                [0.5 * thickness, 0.5 * width, 0.5 * height], identity,
+                "trailer_closed_end_wall", "trailer"),
+        )
+
+    def fixed_components(self) -> tuple[OBB, ...]:
         transform = self.world_from_assembly
-        return tuple(box.transformed(transform) for box in self.component_local_boxes())
+        assembly = tuple(box.transformed(transform) for box in self.component_local_boxes())
+        return (*assembly, *self.trailer_boundary_boxes())
 
     def cartons(self) -> tuple[OBB, ...]:
         stack = self.data["carton_stack"]
@@ -395,12 +433,25 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
     _keys(tool, {"load_config", "geometry_config", "geometry_status", "physical_step_length_m", "planning_tcp_status"}, "tool")
     _positive(tool["physical_step_length_m"], "tool.physical_step_length_m")
     trailer = _mapping(data["trailer"], "trailer")
-    _keys(trailer, {"inner_width_m", "right_wall_y_m", "left_wall_y_m", "length_m", "height_m", "length_status", "height_status"}, "trailer")
+    _keys(trailer, {"inner_width_m", "right_wall_y_m", "left_wall_y_m",
+                    "opening_x_m", "closed_end_wall_x_m", "length_m", "height_m",
+                    "wall_thickness_m", "length_status", "height_status"}, "trailer")
     _positive(trailer["inner_width_m"], "trailer.inner_width_m")
-    if trailer["length_m"] is not None or trailer["height_m"] is not None:
-        raise ValueError("layout v1 trailer length and height must remain undefined")
-    if trailer["length_status"] != "NOT_DEFINED_BY_CONFIRMED_LAYOUT" or trailer["height_status"] != "NOT_DEFINED_BY_CONFIRMED_LAYOUT":
-        raise ValueError("layout v1 must explicitly preserve unknown trailer length and height")
+    length = _positive(trailer["length_m"], "trailer.length_m")
+    height = _positive(trailer["height_m"], "trailer.height_m")
+    _positive(trailer["wall_thickness_m"], "trailer.wall_thickness_m")
+    opening = float(trailer["opening_x_m"])
+    closed_end = float(trailer["closed_end_wall_x_m"])
+    if not np.isfinite(opening) or not np.isfinite(closed_end) or closed_end <= opening:
+        raise ValueError("trailer opening/closed-end coordinates must be finite and ordered along +X")
+    if not np.isclose(closed_end - opening, length, atol=1e-12, rtol=0.0):
+        raise ValueError("trailer length must equal closed_end_wall_x_m - opening_x_m")
+    expected_status = "DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED"
+    if trailer["length_status"] != expected_status or trailer["height_status"] != expected_status:
+        raise ValueError("layout v1 trailer length and height must be named development assumptions")
+    if height <= float(np.max(np.concatenate([box.corners() for box in WorkcellLayout(
+            config_path, data, {}, "").cartons()])[:, 2])):
+        raise ValueError("development trailer height must contain the unchanged carton stack")
     stack = _mapping(data["carton_stack"], "carton_stack")
     _keys(stack, {"carton_size_xyz_m", "front_face_x_m", "depth_rows", "width_columns", "height_layers", "column_gap_m", "layer_gap_m", "center_y_m", "no_pallet"}, "carton_stack")
     _vector(stack["carton_size_xyz_m"], 3, "carton_stack.carton_size_xyz_m", positive=True)
@@ -521,10 +572,18 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         "right_side_clearance": {"status": "PASS" if abs(assembly_bounds["y"][0] - float(trailer["right_wall_y_m"]) - 0.05) <= tolerance else "FAIL", "clearance_m": assembly_bounds["y"][0] - float(trailer["right_wall_y_m"])},
         "trailer_inner_width": scalar(trailer["inner_width_m"], 2.3),
         "trailer_wall_coordinates": vector([trailer["right_wall_y_m"], trailer["left_wall_y_m"]], [-1.15, 1.15]),
-        "trailer_length_height_undefined": {
-            "status": "PASS" if trailer["length_m"] is None and trailer["height_m"] is None else "FAIL",
+        "trailer_development_extent": {
+            "status": "PASS" if (
+                trailer["length_status"] == "DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED"
+                and trailer["height_status"] == "DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED"
+                and abs(float(trailer["closed_end_wall_x_m"]) - float(trailer["opening_x_m"])
+                        - float(trailer["length_m"])) <= tolerance
+            ) else "FAIL",
+            "opening_x_m": trailer["opening_x_m"],
+            "closed_end_wall_x_m": trailer["closed_end_wall_x_m"],
             "length_m": trailer["length_m"],
             "height_m": trailer["height_m"],
+            "status_basis": "DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED",
         },
         "stack_to_conveyor_clearance": {"status": "PASS" if abs(float(layout.data["carton_stack"]["front_face_x_m"]) - assembly_bounds["x"][1] - 0.2) <= tolerance else "FAIL", "clearance_m": float(layout.data["carton_stack"]["front_face_x_m"]) - assembly_bounds["x"][1]},
         "stack_count": {"status": "PASS" if len(stack) == int(layout.data["carton_stack"]["width_columns"]) * int(layout.data["carton_stack"]["height_layers"]) else "FAIL", "count": len(stack)},
@@ -612,8 +671,8 @@ def _audit_initial_state_prepared(
         "collision_policy": effective.to_mapping(),
         "status": "PASS" if not unique else "FAIL",
         "failures": unique,
-        "known_geometry_scope": "side_wall_planes_floor_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_source_audited_rigid_tool_solids",
-        "complete_workcell_clearance": "KNOWN_GEOMETRY_EVALUATED_TRAILER_LENGTH_AND_HEIGHT_UNDEFINED",
+        "known_geometry_scope": "closed_development_trailer_floor_walls_ceiling_end_wall_fixed_assembly_carton_stack_official_robot_mesh_broadphase_and_source_audited_rigid_tool_solids",
+        "complete_workcell_clearance": "KNOWN_GEOMETRY_EVALUATED_WITH_NAMED_DEVELOPMENT_TRAILER_EXTENTS",
     }
 
 

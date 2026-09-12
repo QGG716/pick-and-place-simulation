@@ -80,6 +80,27 @@ def test_confirmed_dimensions_and_world_bounds_are_literal_contracts():
     assert audit["checks"]["stack_to_conveyor_clearance"]["clearance_m"] == pytest.approx(0.2)
 
 
+def test_named_development_trailer_is_closed_behind_stack_and_open_at_negative_x():
+    layout = _config().layout
+    trailer = layout.data["trailer"]
+    assert trailer["length_status"] == "DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED"
+    assert trailer["height_status"] == "DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED"
+    assert trailer["opening_x_m"] == pytest.approx(-3.2)
+    assert trailer["closed_end_wall_x_m"] == pytest.approx(3.2)
+    assert trailer["length_m"] == pytest.approx(6.4)
+    assert trailer["height_m"] == pytest.approx(2.7)
+    boundaries = {box.name: box for box in layout.trailer_boundary_boxes()}
+    assert set(boundaries) == {
+        "trailer_floor", "trailer_left_wall", "trailer_right_wall",
+        "trailer_ceiling", "trailer_closed_end_wall",
+    }
+    np.testing.assert_allclose(_bounds(boundaries["trailer_floor"]),
+                               ([-3.2, -1.15, -0.05], [3.2, 1.15, 0.0]))
+    np.testing.assert_allclose(_bounds(boundaries["trailer_ceiling"]),
+                               ([-3.2, -1.15, 2.7], [3.2, 1.15, 2.75]))
+    assert _bounds(boundaries["trailer_closed_end_wall"])[0][0] == pytest.approx(3.2)
+
+
 def test_robot_mount_derivation_is_explicit_and_supported():
     config = _config()
     layout = config.layout

@@ -241,14 +241,27 @@ def _m710_config() -> dict:
                     "camera_mode": "fixed_overview_with_contact_and_place_keyframes",
                 },
                 "material_palette": {
-                    "chassis_rgb": [0.10, 0.12, 0.16],
-                    "conveyor_rgb": [0.035, 0.22, 0.62],
-                    "conveyor_motion_marker_rgb": [1.0, 0.58, 0.03],
+                    "chassis_rgb": [0.08, 0.09, 0.11],
+                    "conveyor_rgb": [0.035, 0.04, 0.045],
+                    "conveyor_frame_rgb": [0.32, 0.36, 0.40],
+                    "conveyor_motion_marker_rgb": [0.62, 0.67, 0.70],
+                    "conveyor_roller_rgb": [0.18, 0.20, 0.22],
+                    "trailer_rgb": [0.56, 0.60, 0.64],
                 },
                 "conveyor_visual_motion": {
-                    "model": "collision_free_wrapped_surface_markers_v1",
+                    "model": "industrial_belt_surface_and_roller_phase_v2",
                     "markers_have_collision": False,
                     "markers_follow_active_physx_surface_velocity": True,
+                    "rollers_follow_active_physx_surface_velocity": True,
+                    "independent_phase_accumulators": True,
+                    "stopped_surface_phase_is_frozen": True,
+                },
+                "pbr_materials": {
+                    "conveyor_belt": {"rgb": [0.035, 0.04, 0.045], "roughness": 0.78, "metallic": 0.02},
+                    "conveyor_frame": {"rgb": [0.32, 0.36, 0.40], "roughness": 0.28, "metallic": 0.82},
+                    "conveyor_roller": {"rgb": [0.18, 0.20, 0.22], "roughness": 0.24, "metallic": 0.86},
+                    "conveyor_seam": {"rgb": [0.62, 0.67, 0.70], "roughness": 0.62, "metallic": 0.18},
+                    "trailer": {"rgb": [0.56, 0.60, 0.64], "roughness": 0.46, "metallic": 0.52},
                 },
             },
         }
@@ -586,10 +599,10 @@ def test_m710_bundle_binds_explicit_dynamics_full_stack_and_physical_cup_face():
         "render_every_physics_steps": 8,
     }
     assert metadata["rendering"]["material_palette"]["chassis_rgb"] == [
-        0.10, 0.12, 0.16
+        0.08, 0.09, 0.11
     ]
     assert metadata["rendering"]["material_palette"]["conveyor_rgb"] == [
-        0.035, 0.22, 0.62
+        0.035, 0.04, 0.045
     ]
     assert metadata["rendering"]["conveyor_visual_motion"][
         "markers_have_collision"

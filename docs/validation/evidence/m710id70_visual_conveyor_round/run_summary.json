@@ -1,0 +1,75 @@
+{
+  "schema": "m710id70_visual_conveyor_round_summary_v1",
+  "date": "2026-09-12",
+  "branch": "feat/v0.5-feasibility-core",
+  "source_git_at_execution": {
+    "base_head": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+    "dirty_worktree": true,
+    "identity_policy": "exact participating source hashes below; documentation-only finalization does not invalidate the run"
+  },
+  "participating_source_sha256": {
+    "scripts/isaacsim_fanuc_replay.py": "08f574457bededa83df4e437d0287bb4b8c1a4c0be8101315531883fd1a8d48b",
+    "src/unloading_sim/m710_replay_physics.py": "c4fc75fa86b2a468c0456ac4fec16ffe707ea04390634322b67196e979562bf9",
+    "src/unloading_sim/m710_execution.py": "9e2b960a4b823708626d11e93d0aa6b2b00c80fff3d2c73f36b38892c58e699c",
+    "src/unloading_sim/conveyor_placement.py": "f2a9cd2ebc27a96d2f0d70bb862efbd8f490e4d7a8d61241c8e63cee72f9e3b2",
+    "src/unloading_sim/workcell_layout.py": "508d377e6107bf4609ec99abe1d85ecfeb9e315110b26ec864c25b883952d38c",
+    "configs/simulation/m710id70_dynamic_execution_v1.yaml": "b815a8ff8528cd842ad589b3ff8a5e627c44aace7e5eef6bd7239101a8060787",
+    "configs/validation/m710id70_layout_v1_single_carton.yaml": "a2a250352a6eab213e9a200ad4506f9752ed8306507b65fb94580c3111cb1ef6",
+    "configs/workcells/m710id70_unloading_layout_v1.yaml": "48ffb67e43112921311a2f332a2ec8b3084930c84f21a062e74c8206900185d0"
+  },
+  "runtime": {
+    "isolated_root": "/root/autodl-tmp/m710-visual-round34-20260911",
+    "isaacsim_version": "6.0.1.0",
+    "physics_backend": "physx_cpu",
+    "rendering": "GPU RaytracedLighting",
+    "width_px": 1920,
+    "height_px": 1080,
+    "fps": 30,
+    "seed_policy": "deterministic values retained from single_carton_motion_audit_v4",
+    "perception_ros2_workspace_touched": false
+  },
+  "inputs": {
+    "preflight_fingerprint": "4149a1e40f0b74f7fb8c106d63b1e7727b2012f22fa2c15f8a022ea445759ff3",
+    "preflight_v5_sha256": "2799c1d018d3064a959976e067b285e41f5909a02b1ca77b04f8cc05f77200a0",
+    "replay_bundle_v5_sha256": "669952099c1f3a89ce823ea8b7643d33b56cd73968196850bc882168b4bae46c",
+    "target": "carton_l07_c02",
+    "grasp_face": "front",
+    "receiver": "conveyor_longitudinal",
+    "dynamic_carton_count": 40
+  },
+  "result": {
+    "physical_cycle_completed": true,
+    "runtime_stop_reason": null,
+    "simulation_execution_qualified": true,
+    "qualification_passed": false,
+    "qualification_failures": ["joint_efforts_within_limit"],
+    "conveyor_started_time_s": 123.43333333333334,
+    "conveyor_stopped_time_s": 125.57916666666667,
+    "conveyor_stop_event_distance_m": 0.600789,
+    "conveyor_transport_audit_distance_m": 0.5994852781295776,
+    "conveyor_projected_speed_m_s": 0.3000240623950958,
+    "conveyor_lateral_drift_m": 0.01140308380142531,
+    "interlock_tool_sweep_clearance_m": 0.029969702812327026,
+    "interlock_required_clearance_m": 0.0202,
+    "replayed_simulation_seconds": 126.43333333333334,
+    "video_frame_count": 3793
+  },
+  "artifacts": {
+    "replay_mp4": {
+      "bytes": 104533771,
+      "sha256": "0aacabfc9781ce2038f1886ec54ef2a45d8567b7c2bb0c71896686646594013e"
+    },
+    "result_json_sha256": "2ebaef7e7320aef08d6cdd53f4af2290b29f6bc24ac8d35bce0952079d91a8e5",
+    "phase_place_png_sha256": "31ea25509efb127dbf9942829d55f6c4058b643e5c9ad42efac9a16feb666469",
+    "phase_conveyor_transport_png_sha256": "ef9cd3f14ec831870be3e91070744f0c3dba7a53b824ac5a55615119e4dbe394",
+    "final_png_sha256": "29f9e35a4cd413f1a7333c92677923f47e35e6233c37b67a337f1d76a17f1f45"
+  },
+  "validation": {
+    "focused_tests_passed": 16,
+    "py_compile_passed": true,
+    "git_diff_check_passed": true,
+    "full_pytest_run": false,
+    "task_104_run": false,
+    "continuous_129_run": false
+  }
+}

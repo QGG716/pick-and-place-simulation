@@ -29,3 +29,8 @@ assets/robots/fanuc_m710id_70/official/fanuc_m710_description/robot/m710id_70.st
 assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/*.urdf text eol=lf
 assets/robots/fanuc_m710id_70/official/*.yaml text eol=lf
 scripts/expand_official_m710id70_urdf.py text eol=lf
+
+# The audited Wantai analysis manifest hashes the supplied CRLF byte stream.
+# Keep those exact bytes on Linux as well as Windows instead of normalizing it.
+assets/grippers/shanghai_wantai_three_zone/mass_properties.json binary
+scripts/analyze_gripper_step.py binary

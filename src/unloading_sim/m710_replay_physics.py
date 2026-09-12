@@ -72,6 +72,80 @@ def obb_penetration_depth(center_a, half_a, rotation_a, center_b, half_b, rotati
     return 0.0 if not np.isfinite(minimum_overlap) else minimum_overlap
 
 
+def swept_payload_tool_clearance(
+    payload_center_m,
+    payload_half_extents_m,
+    payload_rotation,
+    transport_direction_world,
+    transport_distance_m,
+    tool_body_center_m,
+    tool_body_rotation,
+    tool_collider_corners_body_m,
+):
+    """Conservative clearance from live tool colliders to a payload sweep.
+
+    ``tool_collider_corners_body_m`` contains the authored collision geometry
+    expressed in the owning rigid body's frame.  The caller supplies the live
+    PhysX body pose, avoiding USD/Fabric transforms that can remain stale for
+    articulation children.  Each collider is evaluated separately: combining
+    disconnected tool shapes into one box would fill the real gaps between
+    them and can incorrectly prevent conveyor start.
+    """
+    payload_center = np.asarray(payload_center_m, dtype=float)
+    payload_half = np.asarray(payload_half_extents_m, dtype=float)
+    payload_rotation = np.asarray(payload_rotation, dtype=float)
+    direction = np.asarray(transport_direction_world, dtype=float)
+    tool_center = np.asarray(tool_body_center_m, dtype=float)
+    tool_rotation = np.asarray(tool_body_rotation, dtype=float)
+    corner_sets = [np.asarray(corners, dtype=float) for corners in tool_collider_corners_body_m]
+    if (
+        payload_center.shape != (3,)
+        or payload_half.shape != (3,)
+        or payload_rotation.shape != (3, 3)
+        or direction.shape != (3,)
+        or tool_center.shape != (3,)
+        or tool_rotation.shape != (3, 3)
+        or not corner_sets
+        or any(corners.ndim != 2 or corners.shape[1] != 3 or len(corners) < 2 for corners in corner_sets)
+        or not all(
+            np.all(np.isfinite(value))
+            for value in (payload_center, payload_half, payload_rotation, direction,
+                          tool_center, tool_rotation, *corner_sets)
+        )
+        or np.any(payload_half <= 0.0)
+        or not np.isfinite(transport_distance_m)
+        or transport_distance_m < 0.0
+    ):
+        raise ValueError("live swept-clearance inputs must be finite valid geometry")
+    direction_norm = float(np.linalg.norm(direction))
+    if abs(direction_norm - 1.0) > 1.0e-6:
+        raise ValueError("transport direction must be a unit vector")
+
+    signs = np.asarray(
+        [[x, y, z] for x in (-1.0, 1.0) for y in (-1.0, 1.0) for z in (-1.0, 1.0)],
+        dtype=float,
+    )
+    payload_corners = (signs * payload_half) @ payload_rotation.T + payload_center
+    translated_corners = payload_corners + direction * float(transport_distance_m)
+    swept_corners = np.vstack((payload_corners, translated_corners))
+    swept_low = swept_corners.min(axis=0)
+    swept_high = swept_corners.max(axis=0)
+
+    clearances = []
+    for corners in corner_sets:
+        tool_world = corners @ tool_rotation.T + tool_center
+        tool_low = tool_world.min(axis=0)
+        tool_high = tool_world.max(axis=0)
+        separating_gaps = np.maximum(swept_low - tool_high, tool_low - swept_high)
+        positive = np.maximum(separating_gaps, 0.0)
+        if np.any(positive > 0.0):
+            clearances.append(float(np.linalg.norm(positive)))
+        else:
+            overlap = np.minimum(tool_high, swept_high) - np.maximum(tool_low, swept_low)
+            clearances.append(-float(np.min(overlap)))
+    return min(clearances)
+
+
 def replay_command_arrays(bundle, expected_joint_names):
     """Consume the exporter schema identically for initial and continued tasks."""
     if "timestamps_seconds" not in bundle or "positions_rad" not in bundle:
@@ -397,7 +471,10 @@ class ActualStackContactMonitor:
             self.first_free_space_time_s = float(time_s)
         if penetration > self.policy.maximum_actual_penetration_m:
             reason = "SEVERE_ACTUAL_STACK_PENETRATION"
-        elif previously_free and clearance < self.policy.free_space_clearance_m - 1e-6:
+        elif previously_free and clearance < (
+            self.policy.free_space_clearance_m
+            - self.policy.free_space_clearance_loss_tolerance_m
+        ):
             reason = "ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST"
         elif drift > self.policy.maximum_neighbor_displacement_m:
             reason = "EXCESSIVE_ACTUAL_NEIGHBOR_DISPLACEMENT"
@@ -752,6 +829,7 @@ def audit_payload_support_contact(
         union_audit = support_union_audit(
             actual_box, support_boxes,
             contact_tolerance_m=max(max_support_gap_m, maximum_penetration_m),
+            max_support_tilt_rad=max_support_tilt_rad,
         )
         overlap_ratio = (1.0 - union_audit["unsupported_area_m2"] / union_audit["footprint_area_m2"]
                          if union_audit["footprint_area_m2"] > 0 else 0.0)

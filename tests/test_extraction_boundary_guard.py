@@ -5,6 +5,7 @@ No IK result, path-valid boolean, or tracker release result is mocked.
 """
 
 import numpy as np
+import pytest
 
 from unloading_sim.collision_policy import PhysicsCheckedStackTracker, SimulationCollisionPolicy
 from unloading_sim.geometry import OBB, make_transform, rotation_matrix_from_rpy
@@ -96,6 +97,24 @@ def test_guard_reaches_actual_free_space_with_nonzero_strict_fk_residual():
     assert chosen["free_clearance_m"] == .0202
     assert chosen["failure"] is None
     assert not tracker.fully_released  # failed/unused branch state stays local
+
+
+def test_runtime_clearance_reserve_moves_goal_without_relaxing_release_predicate():
+    connector, start, attachment, tracker, neighbor = fixture()
+    connector.budget = LayoutTrajectoryBudget(
+        cartesian_step_m=.04,
+        extraction_direction_attempts=2,
+        extraction_runtime_clearance_reserve_m=.003,
+    )
+    path, final_tracker, failure, evidence = connector._extraction(
+        start, attachment, [neighbor], tracker, np.array([-1., 0., 0.]), seed=71070
+    )
+    assert failure is None and final_tracker.fully_released
+    chosen = evidence["attempts"][evidence["selected_attempt"]]
+    assert chosen["free_clearance_m"] == .0202
+    assert chosen["runtime_clearance_reserve_m"] == .003
+    assert chosen["runtime_clearance_goal_m"] == pytest.approx(.0232)
+    assert attachment.box_at(path[-1]).signed_distance_obb(neighbor) >= .0232
 
 
 def test_unbuffered_boundary_goal_cannot_falsely_complete_or_report_null_failure(monkeypatch):

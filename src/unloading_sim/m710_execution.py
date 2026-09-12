@@ -202,8 +202,8 @@ def load_m710_execution_config(path: str | Path | None = None) -> M710ExecutionC
         {"extent_basis", "robot_reach_m", "task_tcp_extension_m", "thickness_m"},
         "physics_boundary_patches",
     )
-    if boundary["extent_basis"] != "robot_reachable_envelope_not_trailer_dimensions":
-        raise ValueError("boundary patches must not claim an unknown trailer length or height")
+    if boundary["extent_basis"] != "layout_trailer_boundaries_with_reachable_patch_fallback":
+        raise ValueError("boundary patches must defer to the shared configured trailer boundaries")
     if not np.isclose(_positive(boundary["robot_reach_m"], "robot_reach_m"), 2.104):
         raise ValueError("boundary reach must retain the M-710iD/70 2.104 m input")
     if not np.isclose(_positive(boundary["task_tcp_extension_m"], "task_tcp_extension_m"), 0.250):
@@ -346,6 +346,14 @@ def _boundary_primitives(
     dynamics: M710EngineeringDynamicsConfig,
     execution: M710ExecutionConfig,
 ) -> list[dict[str, Any]]:
+    trailer = scene.snapshot.get("trailer", {})
+    if all(trailer.get(key) is not None for key in (
+        "opening_x_m", "closed_end_wall_x_m", "length_m", "height_m", "wall_thickness_m"
+    )):
+        # The frozen fixed-components list already contains the floor, side
+        # walls, ceiling and closed end.  Duplicating reachable patches here
+        # would create coincident PhysX colliders and divergent visualization.
+        return []
     boundary = execution.data["physics_boundary_patches"]
     radius = float(boundary["robot_reach_m"]) + float(boundary["task_tcp_extension_m"])
     thickness = float(boundary["thickness_m"])
@@ -664,6 +672,7 @@ def _bridge_configuration(
                     "chassis": "painted_steel",
                     "floor": "painted_steel",
                     "side_wall": "painted_steel",
+                    "trailer": "painted_steel",
                 },
                 "damping": damping,
                 "settling": {
@@ -683,14 +692,27 @@ def _bridge_configuration(
                     "camera_mode": str(replay["camera_mode"]),
                 },
                 "material_palette": {
-                    "chassis_rgb": [0.10, 0.12, 0.16],
-                    "conveyor_rgb": [0.035, 0.22, 0.62],
-                    "conveyor_motion_marker_rgb": [1.0, 0.58, 0.03],
+                    "chassis_rgb": [0.08, 0.09, 0.11],
+                    "conveyor_rgb": [0.035, 0.04, 0.045],
+                    "conveyor_frame_rgb": [0.32, 0.36, 0.40],
+                    "conveyor_motion_marker_rgb": [0.62, 0.67, 0.70],
+                    "conveyor_roller_rgb": [0.18, 0.20, 0.22],
+                    "trailer_rgb": [0.56, 0.60, 0.64],
                 },
                 "conveyor_visual_motion": {
-                    "model": "collision_free_wrapped_surface_markers_v1",
+                    "model": "industrial_belt_surface_and_roller_phase_v2",
                     "markers_have_collision": False,
                     "markers_follow_active_physx_surface_velocity": True,
+                    "rollers_follow_active_physx_surface_velocity": True,
+                    "independent_phase_accumulators": True,
+                    "stopped_surface_phase_is_frozen": True,
+                },
+                "pbr_materials": {
+                    "conveyor_belt": {"rgb": [0.035, 0.04, 0.045], "roughness": 0.78, "metallic": 0.02},
+                    "conveyor_frame": {"rgb": [0.32, 0.36, 0.40], "roughness": 0.28, "metallic": 0.82},
+                    "conveyor_roller": {"rgb": [0.18, 0.20, 0.22], "roughness": 0.24, "metallic": 0.86},
+                    "conveyor_seam": {"rgb": [0.62, 0.67, 0.70], "roughness": 0.62, "metallic": 0.18},
+                    "trailer": {"rgb": [0.56, 0.60, 0.64], "roughness": 0.46, "metallic": 0.52},
                 },
             },
             "camera": copy.deepcopy(dict(replay["camera"])),
@@ -700,6 +722,19 @@ def _bridge_configuration(
                 "surface_directions_world": conveyor_directions,
                 "start_policy": "after_release_retreat",
                 "exclusive_surface_drive_at_transfer": dynamics.exclusive_surface_drive_at_transfer,
+                "actual_start_interlock": {
+                    "require_attachment_released": True,
+                    "require_target_independent": True,
+                    "require_tool_target_clearance_m": 0.0202,
+                    "require_transport_swept_conflict_clear": True,
+                },
+                "transport": {
+                    "target_distance_m": 0.60,
+                    "safe_tail_margin_m": 0.10,
+                    "minimum_visible_distance_m": 0.20,
+                    "audit_window_seconds": 3.00,
+                    "speed_tolerance_m_s": 0.15,
+                },
             },
         },
     }

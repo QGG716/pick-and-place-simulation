@@ -58,15 +58,11 @@ def preflight() -> dict:
 def test_adapter_preserves_carton_mass_inertia_and_ready_preflight_scene(preflight, geometry_adapter_input):
     primitives = _scene_primitives(*geometry_adapter_input)
     cartons = [item for item in primitives if item["category"] == "carton"]
-    fixed = [
-        item
-        for item in primitives
-        if item["name"] in {"chassis", "conveyor_transverse", "conveyor_longitudinal"}
-    ]
-    assert len(primitives) == 46  # 3 fixed + 40 cartons + 3 finite boundary patches
+    fixed = [item for item in primitives if item["category"] != "carton"]
+    assert len(primitives) == 48  # 3 assembly + 5 trailer boundaries + 40 cartons
     assert preflight["scene"]["carton_count"] == 40
     assert preflight["scene"]["dynamic_carton_count"] == 40
-    assert len(preflight["scene"]["primitives"]) == 46
+    assert len(preflight["scene"]["primitives"]) == 48
     assert len(cartons) == 40
     assert {item["name"] for item in cartons} == {
         f"carton_l{layer:02d}_c{column:02d}" for layer in range(8) for column in range(5)
@@ -76,11 +72,16 @@ def test_adapter_preserves_carton_mass_inertia_and_ready_preflight_scene(preflig
     for carton in cartons:
         np.testing.assert_allclose(carton["size_m"], [0.6, 0.4, 0.3], atol=1e-12, rtol=0)
         np.testing.assert_allclose(carton["inertia_at_com_kg_m2"], expected_inertia, atol=1e-12, rtol=0)
-    assert len(fixed) == 3
+    assert len(fixed) == 8
     assert {item["name"] for item in fixed} == {
         "chassis",
         "conveyor_transverse",
         "conveyor_longitudinal",
+        "trailer_floor",
+        "trailer_left_wall",
+        "trailer_right_wall",
+        "trailer_ceiling",
+        "trailer_closed_end_wall",
     }
     assert all(item["dynamic"] is False for item in fixed)
     population = preflight["motion"]["task_population"]
@@ -92,34 +93,23 @@ def test_adapter_preserves_carton_mass_inertia_and_ready_preflight_scene(preflig
     ]
 
 
-def test_boundary_patches_are_finite_solver_extents_not_trailer_dimension_claims(geometry_adapter_input):
+def test_named_development_trailer_replaces_legacy_reachable_patches(geometry_adapter_input):
     scene, _, _ = geometry_adapter_input
-    assert scene.policy.layout_validation.layout.data["trailer"]["length_m"] is None
-    assert scene.policy.layout_validation.layout.data["trailer"]["height_m"] is None
-    patches = [item for item in _scene_primitives(*geometry_adapter_input) if "boundary" in item]
-    assert {item["name"] for item in patches} == {
-        "physical_floor_reachable_patch",
-        "physical_right_sidewall_reachable_patch",
-        "physical_left_sidewall_reachable_patch",
+    trailer = scene.policy.layout_validation.layout.data["trailer"]
+    assert trailer["length_m"] == pytest.approx(6.4)
+    assert trailer["height_m"] == pytest.approx(2.7)
+    assert trailer["length_status"] == "DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED"
+    primitives = _scene_primitives(*geometry_adapter_input)
+    assert not [item for item in primitives if "boundary" in item]
+    trailer_boxes = {item["name"]: item for item in primitives if item["name"].startswith("trailer_")}
+    assert set(trailer_boxes) == {
+        "trailer_floor", "trailer_left_wall", "trailer_right_wall",
+        "trailer_ceiling", "trailer_closed_end_wall",
     }
-    assert len(patches) == 3
-    for patch in patches:
-        assert patch["dynamic"] is False
-        assert np.all(np.isfinite(patch["center_m"]))
-        assert np.all(np.isfinite(patch["size_m"]))
-        assert np.all(np.asarray(patch["size_m"]) > 0.0)
-        assert patch["boundary"]["extent_status"] == (
-            "FINITE_SOLVER_PATCH_COVERS_ROBOT_REACHABLE_ENVELOPE_NOT_A_TRAILER_DIMENSION"
-        )
-    by_name = {item["name"]: item for item in patches}
-    assert by_name["physical_floor_reachable_patch"]["boundary"] == {
-        "axis": "z",
-        "value_m": 0.0,
-        "inside": "+",
-        "extent_status": "FINITE_SOLVER_PATCH_COVERS_ROBOT_REACHABLE_ENVELOPE_NOT_A_TRAILER_DIMENSION",
-    }
-    assert by_name["physical_right_sidewall_reachable_patch"]["boundary"]["value_m"] == -1.15
-    assert by_name["physical_left_sidewall_reachable_patch"]["boundary"]["value_m"] == 1.15
+    np.testing.assert_allclose(trailer_boxes["trailer_floor"]["size_m"], [6.4, 2.3, 0.05])
+    np.testing.assert_allclose(trailer_boxes["trailer_ceiling"]["center_m"], [0.0, 0.0, 2.725])
+    np.testing.assert_allclose(trailer_boxes["trailer_closed_end_wall"]["center_m"], [3.225, 0.0, 1.35])
+    assert all(item["dynamic"] is False for item in trailer_boxes.values())
 
 
 def test_conveyor_transport_and_ready_but_not_yet_executed_contract(preflight, geometry_adapter_input):
@@ -150,18 +140,24 @@ def test_conveyor_transport_and_ready_but_not_yet_executed_contract(preflight, g
         "camera_mode": "fixed_overview_with_contact_and_place_keyframes",
     }
     assert simulation["rendering"]["material_palette"] == {
-        "chassis_rgb": [0.10, 0.12, 0.16],
-        "conveyor_rgb": [0.035, 0.22, 0.62],
-        "conveyor_motion_marker_rgb": [1.0, 0.58, 0.03],
+        "chassis_rgb": [0.08, 0.09, 0.11],
+        "conveyor_rgb": [0.035, 0.04, 0.045],
+        "conveyor_frame_rgb": [0.32, 0.36, 0.40],
+        "conveyor_motion_marker_rgb": [0.62, 0.67, 0.70],
+        "conveyor_roller_rgb": [0.18, 0.20, 0.22],
+        "trailer_rgb": [0.56, 0.60, 0.64],
     }
     assert simulation["rendering"]["conveyor_visual_motion"] == {
-        "model": "collision_free_wrapped_surface_markers_v1",
+        "model": "industrial_belt_surface_and_roller_phase_v2",
         "markers_have_collision": False,
         "markers_follow_active_physx_surface_velocity": True,
+        "rollers_follow_active_physx_surface_velocity": True,
+        "independent_phase_accumulators": True,
+        "stopped_surface_phase_is_frozen": True,
     }
     assert configuration["execution"][
         "post_release_settle_seconds"
-    ] == pytest.approx(1.0)
+    ] == pytest.approx(3.0)
     assert simulation["physics"]["contact_offset_m"] == pytest.approx(0.010)
     assert simulation["physics"]["rest_offset_m"] == pytest.approx(0.0)
     assert configuration["execution"]["joint_velocity_feedforward_enabled"] is True
