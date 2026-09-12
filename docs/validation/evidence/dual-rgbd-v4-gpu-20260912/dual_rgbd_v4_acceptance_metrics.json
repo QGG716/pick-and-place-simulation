@@ -1,0 +1,94 @@
+{
+  "capture_root": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296",
+  "claim_boundary": "coverage, direct observed faces, and complete cuboid eligibility are separate results",
+  "coverage": {
+    "active_profile": "dual_module_full_face_candidate",
+    "carton_count": 40,
+    "frustum_union_sample_coverage": 1.0,
+    "fully_covered_cartons": 40,
+    "minimum_image_edge_margin_px": 59.03313781323959,
+    "minimum_projected_face_short_edge_px": 176.08333103262407,
+    "vertical_overlap_m": 0.13600000000000034
+  },
+  "fusion": {
+    "conflict_group_count": 4,
+    "coverage_status": "COMPLETE_MODULE_SET",
+    "fused_object_count": 39,
+    "oracle_identity_used": false,
+    "overlap_group_count": 4,
+    "published_observed_face_count": 43
+  },
+  "modules": {
+    "module_0_upper": {
+      "baseline_face_label_count": 35,
+      "complete_cuboid": {
+        "execution_eligible_count": 0,
+        "pose_and_dimensions_emitted_count": 5,
+        "status_counts": {
+          "COMPLETE_HYPOTHESIS_RETAINED_INELIGIBLE": 5,
+          "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR": 8
+        }
+      },
+      "direct_face_metrics": {
+        "mean_mask_coverage": 0.9164238461538462,
+        "mean_mask_iou": 0.88251,
+        "mean_mask_precision": 0.9595899999999999,
+        "mean_plane_residual_m": 0.00021692307692307693,
+        "measured_face_count": 13
+      },
+      "input_instance_count": 13,
+      "removed_non_observed_completion_face_labels": 22,
+      "v4_direct_observed_face_count": 13
+    },
+    "module_1_lower": {
+      "baseline_face_label_count": 90,
+      "complete_cuboid": {
+        "execution_eligible_count": 0,
+        "pose_and_dimensions_emitted_count": 0,
+        "status_counts": {
+          "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR": 30,
+          "NO_CERTIFIED_OBSERVED_FACE": 1
+        }
+      },
+      "direct_face_metrics": {
+        "mean_mask_coverage": 0.9451470000000001,
+        "mean_mask_iou": 0.8844496666666667,
+        "mean_mask_precision": 0.9323703333333333,
+        "mean_plane_residual_m": 0.0004348709677419355,
+        "measured_face_count": 30
+      },
+      "input_instance_count": 31,
+      "removed_non_observed_completion_face_labels": 60,
+      "v4_direct_observed_face_count": 30
+    }
+  },
+  "rendered_visibility": {
+    "object_count": 40,
+    "occluded_count": 4,
+    "occluded_object_ids": [
+      "carton_l00_c00",
+      "carton_l00_c01",
+      "carton_l00_c02",
+      "carton_l00_c04"
+    ],
+    "out_of_fov_count": 0,
+    "robot_and_scene_geometry_visible": true,
+    "visible_count": 36,
+    "visible_ratio": 0.9
+  },
+  "same_frame_base_vs_v4": {
+    "baseline_face_label_count": 125,
+    "direct_face_metric_change": "UNCHANGED_SAME_MEASURED_FACES",
+    "direct_face_metrics": {
+      "mean_mask_coverage": 0.9364632558139536,
+      "mean_mask_iou": 0.8838632558139535,
+      "mean_mask_precision": 0.940599534883721,
+      "measured_face_count": 43
+    },
+    "interpretation": "V4 did not numerically move the registered observed face; it stopped publishing completion faces as observations.",
+    "removed_fraction": 0.656,
+    "removed_non_observed_completion_face_labels": 82,
+    "v4_direct_observed_face_count": 43
+  },
+  "schema_version": "dual_rgbd_v4_acceptance_metrics_v1"
+}

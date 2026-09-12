@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from dataclasses import replace
 import json
 
@@ -130,6 +131,24 @@ def test_invisible_ground_truth_uses_conservative_full_frame_unknown_region():
     assert observation.cargo[0].candidate_eligible is False
     assert observation.cargo[0].raw_result["bbox_fallback"] is True
     assert observation.unknown_regions[0].bbox_xyxy == (0.0, 0.0, 2592.0, 1944.0)
+
+
+def test_ground_truth_camera_binding_is_independent_of_manifest_order():
+    manifest, _ = _manifest()
+    reordered = copy.copy(manifest)
+    object.__setattr__(reordered, "cameras", tuple(reversed(manifest.cameras)))
+    annotation = [{
+        "simulation_object_id": "carton_l07_c02", "bbox_xyxy": [0, 0, 0, 0],
+        "visible": False, "occluded": False,
+    }]
+
+    primary = ground_truth_observation(reordered, annotation)
+    lower = ground_truth_observation(
+        reordered, annotation, camera_frame_id="module_1_lower_rgb_optical",
+    )
+
+    assert primary.unknown_regions[0].frame_id == "module_0_upper_rgb_optical"
+    assert lower.unknown_regions[0].frame_id == "module_1_lower_rgb_optical"
 
 
 def test_manifest_camera_is_derived_from_capture_time_j1_and_latest_a_base_chain():

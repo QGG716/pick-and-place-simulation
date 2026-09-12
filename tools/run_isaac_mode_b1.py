@@ -46,6 +46,13 @@ def _label_panel(image: np.ndarray, label: str, color: tuple[int, int, int]) -> 
     return result
 
 
+def _camera_for_frame(manifest: IsaacSceneManifest, frame_id: str) -> dict:
+    matches = [camera for camera in manifest.cameras if str(camera["frame_id"]) == frame_id]
+    if len(matches) != 1:
+        raise ValueError(f"capture frame is not bound to exactly one manifest camera: {frame_id}")
+    return matches[0]
+
+
 class _ResidentWorkerClient:
     def __init__(self, command: list[str], *, cwd: Path, worker_epoch: str, timeout: float, log_path: Path) -> None:
         self.command = command
@@ -176,6 +183,8 @@ def main() -> int:
             manifest = IsaacSceneManifest.from_dict(json.loads((bundle_root / record["path"]).read_text(encoding="utf-8")))
             annotations = json.loads((scene_dir / "gt_annotations.json").read_text(encoding="utf-8"))
             binding = json.loads((scene_dir / "capture_binding.json").read_text(encoding="utf-8"))
+            capture_metadata = json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8"))
+            primary_camera = _camera_for_frame(manifest, str(capture_metadata["rgb_frame_id"]))
             source = scene_dir / "sensor_rgb.png"
             proposals = scene_dir / "oracle_proposals.json"
             request = {
@@ -188,8 +197,8 @@ def main() -> int:
                     "source": "isaac-sim-6.0.1", "stream": "perception_validation",
                     "epoch": binding["simulation_epoch"], "sequence": binding["frame_sequence"],
                     "capture_time": binding["simulation_time"], "receive_time": binding["simulation_time"],
-                    "clock_domain": "ros_sim_time", "frame_id": manifest.cameras[0]["frame_id"],
-                    "width": manifest.cameras[0]["resolution"][0], "height": manifest.cameras[0]["resolution"][1],
+                    "clock_domain": "ros_sim_time", "frame_id": primary_camera["frame_id"],
+                    "width": primary_camera["resolution"][0], "height": primary_camera["resolution"][1],
                     "encoding": "rgb8", "rgb_uri": source.resolve().as_uri(), "rgb_sha256": sha256(source),
                 },
             }
@@ -216,7 +225,9 @@ def main() -> int:
             )
             if prediction.synthetic:
                 raise RuntimeError("Mode B1 prediction cannot be synthetic")
-            truth = ground_truth_observation(manifest, annotations["objects"])
+            truth = ground_truth_observation(
+                manifest, annotations["objects"], camera_frame_id=str(primary_camera["frame_id"]),
+            )
             metrics_path = Path(response["metrics_reference"]["path"])
             metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
             artifacts = metrics["artifacts"]
@@ -234,7 +245,7 @@ def main() -> int:
             report = evaluate_observations(
                 truth, prediction, ground_truth_masks=gt_masks,
                 prediction_masks=predicted_masks, depth_evaluation=depth_report,
-                T_W_C=manifest.cameras[0]["T_W_C"],
+                T_W_C=primary_camera["T_W_C"],
             )
             write_evaluation(scene_dir / "mode_b1_evaluation.json", report)
             (scene_dir / "mode_b1_perception_observation.json").write_text(dumps(prediction), encoding="utf-8")
@@ -306,12 +317,15 @@ def main() -> int:
                 "worker_response_sha256": sha256(response_path),
             })
             module_runs = {
-                str(manifest.cameras[0].get("module_id", "module_0_upper")): {
+                str(primary_camera["module_id"]): {
                     "response": str(response_path), "elapsed_seconds": elapsed,
                     "status": "PASS",
                 }
             }
-            for module_camera in manifest.cameras[1:]:
+            for module_camera in (
+                camera for camera in manifest.cameras
+                if str(camera["frame_id"]) != str(primary_camera["frame_id"])
+            ):
                 module_id = str(module_camera["module_id"])
                 module_dir = scene_dir / "modules" / module_id
                 module_binding = json.loads((module_dir / "capture_binding.json").read_text(encoding="utf-8"))

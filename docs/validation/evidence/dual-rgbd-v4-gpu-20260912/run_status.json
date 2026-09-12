@@ -1,0 +1,343 @@
+{
+  "status": "PASS",
+  "scope": "Isaac sensor, exact-state and visualization validation; no planning or execution",
+  "isaac_version": "6.0.1.0",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "layout_id": "m710id70_unloading_layout_v1",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+  "perception_commit": "221b2969ac92cfefc9eaf37ba3c262de1f210c9c",
+  "raw_image_automatic": false,
+  "mode_a_capture": "PASS",
+  "mode_b1_capture": "READY_FOR_EXTERNAL_GPU_WORKER",
+  "ros_bridge": "NOT_RUN_BY_ISAAC_PROCESS",
+  "robot_q_max_abs_rad": 4.371139006309477e-08,
+  "robot_joint_abs_error_rad": {
+    "J1": 4.371139006309477e-08,
+    "J2": 1.5749719528557193e-08,
+    "J3": 2.6604129121921005e-08,
+    "J4": 6.450857625850404e-10,
+    "J5": 3.968208295290765e-08,
+    "J6": 2.2050048009703005e-08
+  },
+  "robot_j1_capture_pose_status": "PASS",
+  "other_joint_dynamic_state_status": "NOT_AN_EXECUTION_QUALIFICATION",
+  "urdf_imported_this_run": true,
+  "urdf_sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+  "feasibility_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+  "urdf_checkout_identity": {
+    "contract_sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+    "checkout_sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+    "normalization": "EXACT_BYTES"
+  },
+  "scene_count": 8,
+  "scenes": [
+    {
+      "scene": "MECHANICAL_TOP_VIEW",
+      "status": "PASS",
+      "manifest_fingerprint": "ddff1d9305262a6b505654824c6a56fafc3a69d4959096474918886052b70d04",
+      "dynamic_scene_fingerprint": "9db1a0c991bd50de69cf9ec85da43641256c3284ea5a383fccdf33c0bec0165c",
+      "world_fingerprint": "b40dad50036e1fa1b3ec16d45fd4510c4046f26dd7c301eb97de0dfee6b9559f",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5787558981735508,
+      "rgb_sha256": "d575e34c6d6830723a44caa4c197d63b8e09116d52a2875e6f8522f25c506ee2",
+      "gt_sha256": "244d32aa65a9d8835701e45cdb1498baf91f99bb6217233e5b2489065e33b44e",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/modules/module_0_upper",
+          "finite_depth_fraction": 0.5787558981735508
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/modules/module_1_lower",
+          "finite_depth_fraction": 1.0
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MECHANICAL_TOP_VIEW/comparison.png"
+      }
+    },
+    {
+      "scene": "J1_ROTATION_SWEEP",
+      "status": "PASS",
+      "manifest_fingerprint": "0eea57d53798f338575ebe0aa3a93e626ae2c247fa9d331896749062cd3bc787",
+      "dynamic_scene_fingerprint": "9db1a0c991bd50de69cf9ec85da43641256c3284ea5a383fccdf33c0bec0165c",
+      "world_fingerprint": "b40dad50036e1fa1b3ec16d45fd4510c4046f26dd7c301eb97de0dfee6b9559f",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5787558981735508,
+      "rgb_sha256": "e452d8f9fa18f9246350629d7f3b3f47b9d8ac932b5e773bd258ac10778cfef2",
+      "gt_sha256": "1a8d6fbfec0cc421c22e580c5ddf4d3db7b4d70c0d31a459ba63a4809140e716",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/modules/module_0_upper",
+          "finite_depth_fraction": 0.5787558981735508
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/modules/module_1_lower",
+          "finite_depth_fraction": 1.0
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/J1_ROTATION_SWEEP/comparison.png"
+      }
+    },
+    {
+      "scene": "FULL_STACK_NOMINAL",
+      "status": "PASS",
+      "manifest_fingerprint": "21db85855185df092bfa0c38fb1ad9fbc5bc6aed59543ac2706f28b947abb496",
+      "dynamic_scene_fingerprint": "9db1a0c991bd50de69cf9ec85da43641256c3284ea5a383fccdf33c0bec0165c",
+      "world_fingerprint": "b40dad50036e1fa1b3ec16d45fd4510c4046f26dd7c301eb97de0dfee6b9559f",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5787558981735508,
+      "rgb_sha256": "73bea216c8b6826c03cfdbcdf97e20de9ae76088022b0ea174dce4a46c4d7d15",
+      "gt_sha256": "eb8794ae5de65c51c18a4dd444f3b20ff956df621581a888ebd07ca4a576e53a",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_0_upper",
+          "finite_depth_fraction": 0.5787558981735508
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower",
+          "finite_depth_fraction": 1.0
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/comparison.png"
+      }
+    },
+    {
+      "scene": "DARK_LIGHT_OFF",
+      "status": "PASS",
+      "manifest_fingerprint": "b5db1073706fb62d5ad34e213352906fa042e695736efef9c7d547ceedf253c2",
+      "dynamic_scene_fingerprint": "9db1a0c991bd50de69cf9ec85da43641256c3284ea5a383fccdf33c0bec0165c",
+      "world_fingerprint": "b40dad50036e1fa1b3ec16d45fd4510c4046f26dd7c301eb97de0dfee6b9559f",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5787558981735508,
+      "rgb_sha256": "2f9eb6a4a150dd7101509f48819f17de8839f473895a4de1b9fee156d0cf90a6",
+      "gt_sha256": "f564f300ab6811f96fe39260bda1aecf51947e539895c4266a6cf27ee38f0029",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/modules/module_0_upper",
+          "finite_depth_fraction": 0.5787558981735508
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/modules/module_1_lower",
+          "finite_depth_fraction": 1.0
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_OFF/comparison.png"
+      }
+    },
+    {
+      "scene": "DARK_LIGHT_ON",
+      "status": "PASS",
+      "manifest_fingerprint": "cc53696a5d293903a8e89c83597624673e106f4f325f0763533417ab5b10719d",
+      "dynamic_scene_fingerprint": "9db1a0c991bd50de69cf9ec85da43641256c3284ea5a383fccdf33c0bec0165c",
+      "world_fingerprint": "b40dad50036e1fa1b3ec16d45fd4510c4046f26dd7c301eb97de0dfee6b9559f",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5787558981735508,
+      "rgb_sha256": "e61942ce4fc392670bd1e1fdefc402229bd8f4b9e80e490c4d530544496fa3dc",
+      "gt_sha256": "44d281ff571e5f364fe10d6167573ed8e56d2a07cdf4b78b907110696c505967",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/modules/module_0_upper",
+          "finite_depth_fraction": 0.5787558981735508
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/modules/module_1_lower",
+          "finite_depth_fraction": 1.0
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/DARK_LIGHT_ON/comparison.png"
+      }
+    },
+    {
+      "scene": "RGBD_CALIBRATION_BOX",
+      "status": "PASS",
+      "manifest_fingerprint": "83b183087f58404750661d978f6ff62f858920d2c97b827e07ad796b5be21946",
+      "dynamic_scene_fingerprint": "8d1ec81c2d877b0695cc179e25274a515ceb36597e9973281aa5db9c10461eb1",
+      "world_fingerprint": "a630b285d3835c7158d31c198b8746538c3fc93a353e76d2bf4c0fcb8fa6614c",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5462828011481989,
+      "rgb_sha256": "f09c5a40c59a8dc1564a10f9704c4d7a3de6e19f993f4923df852250a13a8896",
+      "gt_sha256": "d41c0b4f98737e6dc95b3aeac06355135c3512c215edead444380074b2143bd8",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_0_upper",
+          "finite_depth_fraction": 0.5462828011481989
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower",
+          "finite_depth_fraction": 0.9454067675786212
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/comparison.png"
+      }
+    },
+    {
+      "scene": "PARTIAL_OCCLUSION",
+      "status": "PASS",
+      "manifest_fingerprint": "2b0ceff82ed321c4ae7de8a6f5e7e65915908594243045cbe77f074dc863aafd",
+      "dynamic_scene_fingerprint": "5b0bcb400e2b6fde96fa47b094d93e4da017f89ea3c4473e7b588998e5807e47",
+      "world_fingerprint": "b3afd27f82f193a0a78368234d9533d0bf7434e0e8b7412103513c5dd68dfd03",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5986953764034953,
+      "rgb_sha256": "38b03eb482542d79ee1d594768006b17385d7facbc15de443a408d7e2704582d",
+      "gt_sha256": "a5bf4f3c1e1f43823481257b142fffba0378de05a93a62ac096b4ada76a2fae1",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/modules/module_0_upper",
+          "finite_depth_fraction": 0.5986953764034953
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/modules/module_1_lower",
+          "finite_depth_fraction": 1.0
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/PARTIAL_OCCLUSION/comparison.png"
+      }
+    },
+    {
+      "scene": "MOTION_TIMESTAMP_TEST",
+      "status": "PASS",
+      "manifest_fingerprint": "c81ba4732fbbc0a810a13425d16f2c49f36ac54d3846670f6312e8b8e81bbfdd",
+      "dynamic_scene_fingerprint": "9db1a0c991bd50de69cf9ec85da43641256c3284ea5a383fccdf33c0bec0165c",
+      "world_fingerprint": "b40dad50036e1fa1b3ec16d45fd4510c4046f26dd7c301eb97de0dfee6b9559f",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5787558981735508,
+      "rgb_sha256": "251d022173ffe9c4071cbeabea640a84e0c87d8df5c54d0ac5940029ad89777e",
+      "gt_sha256": "ce12f1a9830174e6360019e41707e2de812c216d3144dca6b53d21b298acbfcf",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/modules/module_0_upper",
+          "finite_depth_fraction": 0.5787558981735508
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/modules/module_1_lower",
+          "finite_depth_fraction": 1.0
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/MOTION_TIMESTAMP_TEST/comparison.png"
+      }
+    }
+  ],
+  "video": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/isaac_j1_mast_rgbd_validation.mp4",
+  "video_sha256": "e6c3a7c238f69c9e57523441ebbf8d4155d4374e47695b7b0415fe381ebb846c",
+  "visualization_only_trailer_surfaces": "UNCONFIRMED_LENGTH_HEIGHT_NOT_PART_OF_LAYOUT_FINGERPRINT"
+}

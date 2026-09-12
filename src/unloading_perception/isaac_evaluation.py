@@ -15,7 +15,7 @@ import numpy as np
 
 from unloading_contracts import CargoObservation, PerceptionObservation
 
-from .geometry import transform_pose
+from .geometry import rotation_from_quaternion, transform_pose
 from .isaac_validation import canonical_digest, write_json
 
 
@@ -57,6 +57,32 @@ def _orientation_error_degrees(first: Sequence[float], second: Sequence[float]) 
         raise ValueError("orientation comparison requires xyzw quaternions")
     dot = float(np.clip(abs(np.dot(left, right)), 0.0, 1.0))
     return degrees(2.0 * acos(dot))
+
+
+def _cuboid_symmetry_orientation_error_degrees(
+    first: Sequence[float], second: Sequence[float]
+) -> float:
+    """Return orientation error modulo a labeled rectangular cuboid's D2 symmetry.
+
+    The raw quaternion error remains separately reported.  Only the four
+    proper 180-degree local-axis flips are equivalent here; unequal dimension
+    axes are never silently permuted.
+    """
+
+    truth = np.asarray(rotation_from_quaternion(first), dtype=float)
+    estimate = np.asarray(rotation_from_quaternion(second), dtype=float)
+    symmetries = (
+        np.diag((1.0, 1.0, 1.0)),
+        np.diag((1.0, -1.0, -1.0)),
+        np.diag((-1.0, 1.0, -1.0)),
+        np.diag((-1.0, -1.0, 1.0)),
+    )
+    errors = []
+    for symmetry in symmetries:
+        relative = truth.T @ estimate @ symmetry
+        cosine = float(np.clip((np.trace(relative) - 1.0) / 2.0, -1.0, 1.0))
+        errors.append(degrees(acos(cosine)))
+    return min(errors)
 
 
 def _proposal_identity(item: CargoObservation) -> str | None:
@@ -169,7 +195,7 @@ def evaluate_observations(
     for gt_index, prediction_index, method in matches:
         truth = ground_truth.cargo[gt_index]
         estimate = prediction.cargo[prediction_index]
-        center_error = orientation_error = None
+        center_error = orientation_error = symmetry_orientation_error = None
         estimate_world_pose = estimate.pose
         transform_applied = False
         if estimate_world_pose is not None and estimate_world_pose.frame_id == "camera_optical_model" and T_W_C is not None:
@@ -178,6 +204,9 @@ def evaluate_observations(
         if truth.pose is not None and estimate_world_pose is not None and truth.pose.frame_id == estimate_world_pose.frame_id == "world":
             center_error = sqrt(sum((left - right) ** 2 for left, right in zip(truth.pose.position_m, estimate_world_pose.position_m)))
             orientation_error = _orientation_error_degrees(truth.pose.orientation_xyzw, estimate_world_pose.orientation_xyzw)
+            symmetry_orientation_error = _cuboid_symmetry_orientation_error_degrees(
+                truth.pose.orientation_xyzw, estimate_world_pose.orientation_xyzw
+            )
         dimension_error = relative_error = None
         if truth.full_dimensions_m is not None and estimate.full_dimensions_m is not None:
             dimension_error = [abs(left - right) for left, right in zip(truth.full_dimensions_m, estimate.full_dimensions_m)]
@@ -204,6 +233,7 @@ def evaluate_observations(
             "mask_iou": masks_status,
             "center_translation_error_m": center_error,
             "orientation_angular_error_deg": orientation_error,
+            "cuboid_symmetry_orientation_error_deg": symmetry_orientation_error,
             "world_transform_applied": transform_applied,
             "full_dimension_abs_error_m": dimension_error,
             "per_axis_dimension_relative_error": relative_error,
@@ -245,6 +275,7 @@ def evaluate_observations(
         "mean_mask_iou": mean("mask_iou"),
         "mean_center_translation_error_m": mean("center_translation_error_m"),
         "mean_orientation_angular_error_deg": mean("orientation_angular_error_deg"),
+        "mean_cuboid_symmetry_orientation_error_deg": mean("cuboid_symmetry_orientation_error_deg"),
         "mean_full_dimension_abs_error_m": mean_vector("full_dimension_abs_error_m"),
         "mean_per_axis_dimension_relative_error": mean_vector("per_axis_dimension_relative_error"),
         "per_object": per_object,

@@ -1,0 +1,6181 @@
+{
+  "schema_version": "dual_module_rendered_visibility_collection_v1",
+  "scenes": [
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "MECHANICAL_TOP_VIEW",
+      "object_count": 40,
+      "union_visible_count": 36,
+      "out_of_fov_count": 0,
+      "occluded_count": 4,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 128
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26922
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26968
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 27320
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 25558
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51693
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51678
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51687
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51608
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49241
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63647
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63644
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63624
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63513
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 60636
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79106
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79102
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79079
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 78891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 75345
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4332
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100899
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4394
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100882
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4458
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100839
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 5100
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100557
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4068
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 96137
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81510
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49380
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81842
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49382
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81475
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49418
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81238
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49589
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 77744
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 47005
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98517
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98832
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98408
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 97887
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 93985
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        }
+      },
+      "robot_and_scene_geometry_visible": true,
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    },
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "J1_ROTATION_SWEEP",
+      "object_count": 40,
+      "union_visible_count": 36,
+      "out_of_fov_count": 0,
+      "occluded_count": 4,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 128
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26922
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26968
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 27320
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 25558
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51693
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51678
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51687
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51608
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49241
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63647
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63644
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63624
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63513
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 60636
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79106
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79102
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79079
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 78891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 75345
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4332
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100899
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4394
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100882
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4458
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100839
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 5100
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100557
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4068
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 96137
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81510
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49380
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81842
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49382
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81475
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49418
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81238
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49589
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 77744
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 47005
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98517
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98832
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98408
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 97887
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 93985
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        }
+      },
+      "robot_and_scene_geometry_visible": true,
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    },
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "FULL_STACK_NOMINAL",
+      "object_count": 40,
+      "union_visible_count": 36,
+      "out_of_fov_count": 0,
+      "occluded_count": 4,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 128
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26922
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26968
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 27320
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 25558
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51693
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51678
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51687
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51608
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49241
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63647
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63644
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63624
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63513
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 60636
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79106
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79102
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79079
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 78891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 75345
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4332
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100899
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4394
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100882
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4458
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100839
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 5100
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100557
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4068
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 96137
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81510
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49380
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81842
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49382
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81475
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49418
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81238
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49589
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 77744
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 47005
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98517
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98832
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98408
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 97887
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 93985
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        }
+      },
+      "robot_and_scene_geometry_visible": true,
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    },
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "DARK_LIGHT_OFF",
+      "object_count": 40,
+      "union_visible_count": 36,
+      "out_of_fov_count": 0,
+      "occluded_count": 4,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 128
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26922
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26968
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 27320
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 25558
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51693
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51678
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51687
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51608
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49241
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63647
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63644
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63624
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63513
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 60636
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79106
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79102
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79079
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 78891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 75345
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4332
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100899
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4394
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100882
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4458
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100839
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 5100
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100557
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4068
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 96137
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81510
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49380
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81842
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49382
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81475
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49418
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81238
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49589
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 77744
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 47005
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98517
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98832
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98408
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 97887
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 93985
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        }
+      },
+      "robot_and_scene_geometry_visible": true,
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    },
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "DARK_LIGHT_ON",
+      "object_count": 40,
+      "union_visible_count": 36,
+      "out_of_fov_count": 0,
+      "occluded_count": 4,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 128
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26922
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26968
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 27320
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 25558
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51693
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51678
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51687
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51608
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49241
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63647
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63644
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63624
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63513
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 60636
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79106
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79102
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79079
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 78891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 75345
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4332
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100899
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4394
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100882
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4458
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100839
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 5100
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100557
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4068
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 96137
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81510
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49380
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81842
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49382
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81475
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49418
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81238
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49589
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 77744
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 47005
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98517
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98832
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98408
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 97887
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 93985
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        }
+      },
+      "robot_and_scene_geometry_visible": true,
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    },
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "RGBD_CALIBRATION_BOX",
+      "object_count": 40,
+      "union_visible_count": 1,
+      "out_of_fov_count": 0,
+      "occluded_count": 39,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 47503
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 36461
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        }
+      },
+      "robot_and_scene_geometry_visible": true,
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    },
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "PARTIAL_OCCLUSION",
+      "object_count": 40,
+      "union_visible_count": 35,
+      "out_of_fov_count": 0,
+      "occluded_count": 5,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 128
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26922
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26968
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 27320
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 25558
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51693
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51678
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51687
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51608
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49241
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63647
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63644
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63624
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63513
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 60636
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79106
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79102
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79079
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 78891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 75345
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4332
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100899
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 2826
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100882
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100839
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 1951
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100557
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4068
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 96137
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81510
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49380
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 54008
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49382
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 48611
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 17637
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 48944
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 77744
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 47005
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 97230
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 58504
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 21987
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 93985
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        }
+      },
+      "robot_and_scene_geometry_visible": true,
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    },
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "MOTION_TIMESTAMP_TEST",
+      "object_count": 40,
+      "union_visible_count": 36,
+      "out_of_fov_count": 0,
+      "occluded_count": 4,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 128
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26922
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 26968
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 27320
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 25558
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51693
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51678
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51687
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51608
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49241
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63647
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63644
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63624
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 63513
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 60636
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79106
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79102
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 79079
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 78891
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 75345
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4332
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100899
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4394
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100882
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4458
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100839
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 5100
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 100557
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 4068
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 96137
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81510
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49380
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81842
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49382
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81475
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49418
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 81238
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49589
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 77744
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 47005
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98517
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98832
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 98408
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 97887
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 93985
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        }
+      },
+      "robot_and_scene_geometry_visible": true,
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    }
+  ]
+}

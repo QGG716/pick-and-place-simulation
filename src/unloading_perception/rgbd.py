@@ -612,11 +612,11 @@ def hypotheses_from_geometry_record(
     plane_pair = record.get("orthogonal_plane_pair_diagnostics", {})
     if (
         source is not MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE
-        and surfaces >= 3
+        and surfaces >= 2
         and plane_pair.get("reliable") is True
         and len(record.get("unanchored_corners_3d", ())) == 8
     ):
-        # The inherited monocular pipeline may replace a complete three-plane
+        # The inherited monocular pipeline may replace a complete multi-plane
         # cuboid with its 2D front-face anchoring heuristic.  With registered
         # metric depth the three observed planes are the stronger 3D datum;
         # retaining their shared cuboid centre avoids converting visible-face

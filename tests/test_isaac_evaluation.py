@@ -123,3 +123,23 @@ def test_evaluation_applies_explicit_camera_to_world_transform_without_validatin
     assert report["mean_orientation_angular_error_deg"] == pytest.approx(0.0)
     assert report["per_object"][0]["world_transform_applied"] is True
     assert report["world_transform_evaluation"]["metric_scale_valid"] is False
+
+
+def test_cuboid_symmetry_error_is_separate_from_raw_quaternion_error():
+    manifest, _ = _manifest()
+    truth = _gt(manifest)
+    source = truth.cargo[0]
+    # A 180-degree local Z flip is the same labeled rectangular cuboid, but it
+    # is intentionally still visible in the raw quaternion metric.
+    estimate = replace(
+        source,
+        source_instance_id="vision-1",
+        object_id=None,
+        track_id=None,
+        pose=replace(source.pose, orientation_xyzw=(0.0, 0.0, 1.0, 0.0)),
+        raw_result={"oracle_proposal_source_id": source.source_instance_id},
+    )
+    prediction = replace(truth, provider="worker", synthetic=False, cargo=(estimate,))
+    report = evaluate_observations(truth, prediction)
+    assert report["mean_orientation_angular_error_deg"] == pytest.approx(180.0)
+    assert report["mean_cuboid_symmetry_orientation_error_deg"] == pytest.approx(0.0)

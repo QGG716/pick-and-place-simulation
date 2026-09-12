@@ -1,0 +1,404 @@
+{
+  "calibration_gate": "PASS",
+  "claim_boundary": "PERCEPTION_GEOMETRY_VALID is distinct from FEASIBILITY_EXECUTION_VALID",
+  "comparison_mode": "STAGED_MONOCULAR_MOGE",
+  "detector_metrics": "NOT_EVALUATED",
+  "primary_mode": "STAGED_RGBD",
+  "proposal_source": "ISAAC_GT_ORACLE_PROPOSAL",
+  "scenes": [
+    {
+      "ambiguous_instance_count": 0,
+      "elapsed_seconds": 3.724532965105027,
+      "fusion": {
+        "conflict_group_count": 0,
+        "coverage_status": "COMPLETE_MODULE_SET",
+        "fused_object_count": 2,
+        "oracle_identity_used": false,
+        "overlap_group_count": 0,
+        "published_observed_face_count": 2
+      },
+      "hypothesis_count": 1,
+      "modules": {
+        "module_0_upper": {
+          "elapsed_seconds": 3.724532965105027,
+          "observed_face_sets": 1
+        },
+        "module_1_lower": {
+          "elapsed_seconds": 3.8795729230623692,
+          "observed_face_sets": 1
+        }
+      },
+      "moge": {
+        "center_error_m": 0.5673494405927825,
+        "dimension_abs_error_m": 0.19952,
+        "dimension_relative_error": [
+          0.5805,
+          0.407725,
+          0.29056666666666675
+        ],
+        "orientation_error_deg": 154.1658204011074
+      },
+      "relative_improvement": {
+        "center_error_m": 0.9453868196919017,
+        "dimension_abs_error_m": 0.9483067695803261,
+        "orientation_error_deg": -0.1670486951968421
+      },
+      "rgbd": {
+        "center_error_m": 0.030984757296792294,
+        "dimension_abs_error_m": 0.010313833333333336,
+        "dimension_relative_error": [
+          0.037452883333333374,
+          0.0067470749999999635,
+          0.019236466666666674
+        ],
+        "orientation_error_deg": 179.9190195430631
+      },
+      "scene": "RGBD_CALIBRATION_BOX"
+    },
+    {
+      "ambiguous_instance_count": 0,
+      "elapsed_seconds": 13.918615302070975,
+      "fusion": {
+        "conflict_group_count": 4,
+        "coverage_status": "COMPLETE_MODULE_SET",
+        "fused_object_count": 39,
+        "oracle_identity_used": false,
+        "overlap_group_count": 4,
+        "published_observed_face_count": 43
+      },
+      "hypothesis_count": 5,
+      "modules": {
+        "module_0_upper": {
+          "elapsed_seconds": 13.918615302070975,
+          "observed_face_sets": 13
+        },
+        "module_1_lower": {
+          "elapsed_seconds": 28.524410584941506,
+          "observed_face_sets": 31
+        }
+      },
+      "moge": {
+        "center_error_m": 0.6323243897500815,
+        "dimension_abs_error_m": 0.21037743589743588,
+        "dimension_relative_error": [
+          0.683076923076923,
+          0.30088076923076923,
+          0.33644615384615384
+        ],
+        "orientation_error_deg": 133.03249057156728
+      },
+      "relative_improvement": {
+        "center_error_m": -0.6235172408681893,
+        "dimension_abs_error_m": 0.6543172971167814,
+        "orientation_error_deg": 0.18942526978770216
+      },
+      "rgbd": {
+        "center_error_m": 1.026589548580714,
+        "dimension_abs_error_m": 0.07272384066666666,
+        "dimension_relative_error": [
+          0.31182437333333335,
+          0.04643010000000003,
+          0.04168286000000003
+        ],
+        "orientation_error_deg": 107.8327751545182
+      },
+      "scene": "MECHANICAL_TOP_VIEW"
+    },
+    {
+      "ambiguous_instance_count": 0,
+      "elapsed_seconds": 13.357619669986889,
+      "fusion": {
+        "conflict_group_count": 4,
+        "coverage_status": "COMPLETE_MODULE_SET",
+        "fused_object_count": 39,
+        "oracle_identity_used": false,
+        "overlap_group_count": 4,
+        "published_observed_face_count": 43
+      },
+      "hypothesis_count": 5,
+      "modules": {
+        "module_0_upper": {
+          "elapsed_seconds": 13.357619669986889,
+          "observed_face_sets": 13
+        },
+        "module_1_lower": {
+          "elapsed_seconds": 28.47874815086834,
+          "observed_face_sets": 31
+        }
+      },
+      "moge": {
+        "center_error_m": 0.5673945241599156,
+        "dimension_abs_error_m": 0.20209923076923075,
+        "dimension_relative_error": [
+          0.6433833333333333,
+          0.2985653846153846,
+          0.3361384615384615
+        ],
+        "orientation_error_deg": 122.90775361292813
+      },
+      "relative_improvement": {
+        "center_error_m": -0.809687787664779,
+        "dimension_abs_error_m": 0.6353239162787512,
+        "orientation_error_deg": -0.4626414894420257
+      },
+      "rgbd": {
+        "center_error_m": 1.0268069411600678,
+        "dimension_abs_error_m": 0.07370075599999999,
+        "dimension_relative_error": [
+          0.31394625666666665,
+          0.039432830000000085,
+          0.056537939999999974
+        ],
+        "orientation_error_deg": 179.76997980838672
+      },
+      "scene": "J1_ROTATION_SWEEP"
+    },
+    {
+      "ambiguous_instance_count": 0,
+      "elapsed_seconds": 13.84305316908285,
+      "fusion": {
+        "conflict_group_count": 4,
+        "coverage_status": "COMPLETE_MODULE_SET",
+        "fused_object_count": 39,
+        "oracle_identity_used": false,
+        "overlap_group_count": 4,
+        "published_observed_face_count": 43
+      },
+      "hypothesis_count": 5,
+      "modules": {
+        "module_0_upper": {
+          "elapsed_seconds": 13.84305316908285,
+          "observed_face_sets": 13
+        },
+        "module_1_lower": {
+          "elapsed_seconds": 28.660926044918597,
+          "observed_face_sets": 31
+        }
+      },
+      "moge": {
+        "center_error_m": 0.5727477131598491,
+        "dimension_abs_error_m": 0.20100128205128207,
+        "dimension_relative_error": [
+          0.638151282051282,
+          0.29845961538461546,
+          0.33576410256410255
+        ],
+        "orientation_error_deg": 137.07148383063515
+      },
+      "relative_improvement": {
+        "center_error_m": -0.7920126867548268,
+        "dimension_abs_error_m": 0.6482141111486723,
+        "orientation_error_deg": -0.3118904618530844
+      },
+      "rgbd": {
+        "center_error_m": 1.026371168292264,
+        "dimension_abs_error_m": 0.07070941466666668,
+        "dimension_relative_error": [
+          0.3078518966666667,
+          0.03166139500000009,
+          0.04917516
+        ],
+        "orientation_error_deg": 179.82277222945953
+      },
+      "scene": "FULL_STACK_NOMINAL"
+    },
+    {
+      "ambiguous_instance_count": 0,
+      "elapsed_seconds": 12.993263398995623,
+      "fusion": {
+        "conflict_group_count": 4,
+        "coverage_status": "COMPLETE_MODULE_SET",
+        "fused_object_count": 40,
+        "oracle_identity_used": false,
+        "overlap_group_count": 4,
+        "published_observed_face_count": 44
+      },
+      "hypothesis_count": 4,
+      "modules": {
+        "module_0_upper": {
+          "elapsed_seconds": 12.993263398995623,
+          "observed_face_sets": 13
+        },
+        "module_1_lower": {
+          "elapsed_seconds": 27.55430959002115,
+          "observed_face_sets": 31
+        }
+      },
+      "moge": {
+        "center_error_m": 0.5538242453482686,
+        "dimension_abs_error_m": 0.28094692307692304,
+        "dimension_relative_error": [
+          0.8591679487179485,
+          0.4752461538461539,
+          0.4574717948717948
+        ],
+        "orientation_error_deg": 139.46031878888306
+      },
+      "relative_improvement": {
+        "center_error_m": -0.646705753323304,
+        "dimension_abs_error_m": 0.6879841755400463,
+        "orientation_error_deg": -0.18306655634844482
+      },
+      "rgbd": {
+        "center_error_m": 0.911985571144931,
+        "dimension_abs_error_m": 0.08765988583333335,
+        "dimension_relative_error": [
+          0.28984661666666667,
+          0.14913698750000004,
+          0.09805630833333331
+        ],
+        "orientation_error_deg": 164.9908390968202
+      },
+      "scene": "DARK_LIGHT_OFF"
+    },
+    {
+      "ambiguous_instance_count": 0,
+      "elapsed_seconds": 12.405752246966586,
+      "fusion": {
+        "conflict_group_count": 4,
+        "coverage_status": "COMPLETE_MODULE_SET",
+        "fused_object_count": 40,
+        "oracle_identity_used": false,
+        "overlap_group_count": 4,
+        "published_observed_face_count": 44
+      },
+      "hypothesis_count": 3,
+      "modules": {
+        "module_0_upper": {
+          "elapsed_seconds": 12.405752246966586,
+          "observed_face_sets": 13
+        },
+        "module_1_lower": {
+          "elapsed_seconds": 28.96501680696383,
+          "observed_face_sets": 31
+        }
+      },
+      "moge": {
+        "center_error_m": 0.5395286311582024,
+        "dimension_abs_error_m": 0.2675666666666667,
+        "dimension_relative_error": [
+          0.8202807692307693,
+          0.4149096153846155,
+          0.4818923076923077
+        ],
+        "orientation_error_deg": 124.08266078647438
+      },
+      "relative_improvement": {
+        "center_error_m": -0.8707096910906269,
+        "dimension_abs_error_m": 0.6254057140484198,
+        "orientation_error_deg": -0.2889154218118934
+      },
+      "rgbd": {
+        "center_error_m": 1.0093014389285095,
+        "dimension_abs_error_m": 0.10022894444444445,
+        "dimension_relative_error": [
+          0.3272759166666666,
+          0.12404281666666672,
+          0.18234718888888893
+        ],
+        "orientation_error_deg": 159.9320550671407
+      },
+      "scene": "DARK_LIGHT_ON"
+    },
+    {
+      "ambiguous_instance_count": 0,
+      "elapsed_seconds": 10.512758716009557,
+      "fusion": {
+        "conflict_group_count": 2,
+        "coverage_status": "COMPLETE_MODULE_SET",
+        "fused_object_count": 38,
+        "oracle_identity_used": false,
+        "overlap_group_count": 2,
+        "published_observed_face_count": 40
+      },
+      "hypothesis_count": 3,
+      "modules": {
+        "module_0_upper": {
+          "elapsed_seconds": 10.512758716009557,
+          "observed_face_sets": 10
+        },
+        "module_1_lower": {
+          "elapsed_seconds": 28.724424394080415,
+          "observed_face_sets": 31
+        }
+      },
+      "moge": {
+        "center_error_m": 0.541411441164118,
+        "dimension_abs_error_m": 0.280111,
+        "dimension_relative_error": [
+          0.8459866666666667,
+          0.514445,
+          0.42321
+        ],
+        "orientation_error_deg": 116.85149881223336
+      },
+      "relative_improvement": {
+        "center_error_m": -1.4430960073722563,
+        "dimension_abs_error_m": 0.6115073270556632,
+        "orientation_error_deg": -0.027574199652749196
+      },
+      "rgbd": {
+        "center_error_m": 1.322720130253716,
+        "dimension_abs_error_m": 0.10882107111111111,
+        "dimension_relative_error": [
+          0.33216657777777775,
+          0.12270711666666674,
+          0.2602680666666667
+        ],
+        "orientation_error_deg": 120.07358537020487
+      },
+      "scene": "PARTIAL_OCCLUSION"
+    },
+    {
+      "ambiguous_instance_count": 0,
+      "elapsed_seconds": 13.145625869045034,
+      "fusion": {
+        "conflict_group_count": 3,
+        "coverage_status": "COMPLETE_MODULE_SET",
+        "fused_object_count": 39,
+        "oracle_identity_used": false,
+        "overlap_group_count": 3,
+        "published_observed_face_count": 42
+      },
+      "hypothesis_count": 5,
+      "modules": {
+        "module_0_upper": {
+          "elapsed_seconds": 13.145625869045034,
+          "observed_face_sets": 12
+        },
+        "module_1_lower": {
+          "elapsed_seconds": 28.612415047828108,
+          "observed_face_sets": 31
+        }
+      },
+      "moge": {
+        "center_error_m": 0.46910783930516226,
+        "dimension_abs_error_m": 0.2335797222222222,
+        "dimension_relative_error": [
+          0.6984166666666667,
+          0.36710833333333337,
+          0.4494861111111112
+        ],
+        "orientation_error_deg": 125.01602475689045
+      },
+      "relative_improvement": {
+        "center_error_m": -1.224638499066101,
+        "dimension_abs_error_m": 0.6855428061083118,
+        "orientation_error_deg": 0.7109771776966181
+      },
+      "rgbd": {
+        "center_error_m": 1.0435953595319778,
+        "dimension_abs_error_m": 0.073450824,
+        "dimension_relative_error": [
+          0.31337124,
+          0.04526457000000003,
+          0.04741299999999997
+        ],
+        "orientation_error_deg": 36.13248430838594
+      },
+      "scene": "MOTION_TIMESTAMP_TEST"
+    }
+  ],
+  "schema_version": "rgbd_vs_moge_summary_v1",
+  "status": "PASS"
+}

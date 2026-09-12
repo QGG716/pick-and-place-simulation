@@ -68,6 +68,13 @@ def _worker_artifacts(scene_dir: Path) -> dict:
     return metrics["artifacts"]
 
 
+def _camera_for_frame(manifest: IsaacSceneManifest, frame_id: str) -> dict:
+    matches = [camera for camera in manifest.cameras if str(camera["frame_id"]) == frame_id]
+    if len(matches) != 1:
+        raise ValueError(f"capture frame is not bound to exactly one manifest camera: {frame_id}")
+    return matches[0]
+
+
 def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: Path, config: dict) -> tuple[MetricPointMap, list[dict]]:
     metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8")))
     camera = next(item for item in manifest.cameras if str(item["frame_id"]) == metadata.rgb_frame_id)
@@ -190,12 +197,20 @@ def _observation(
         )
         observed_world = transform_observed_face_set(observed_camera, metadata.T_W_C_at_capture, "world")
         observed_face_sets.append(observed_world)
-        hypotheses = hypotheses_from_geometry_record(
-            record, source_instance_id=source_id,
-            pointmap_source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,
-            presence_score=float(proposal.get("score", 1.0)),
-            camera_frame=metadata.rgb_frame_id,
-        )
+        adaptation_error = None
+        try:
+            hypotheses = hypotheses_from_geometry_record(
+                record, source_instance_id=source_id,
+                pointmap_source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,
+                presence_score=float(proposal.get("score", 1.0)),
+                camera_frame=metadata.rgb_frame_id,
+            )
+        except ValueError as exc:
+            # Keep certified observed faces, but fail this complete-cuboid
+            # candidate closed.  A single malformed upstream record must not
+            # erase valid evidence from the rest of the batch.
+            hypotheses = ()
+            adaptation_error = str(exc)
         world_hypotheses = tuple(transform_hypothesis_to_world(item, metadata) for item in hypotheses)
         hypothesis_groups[source_id] = world_hypotheses
         if world_hypotheses:
@@ -236,7 +251,10 @@ def _observation(
                 },
             ))
         else:
-            if observed_world.complete_cuboid_status == "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR":
+            if adaptation_error is not None:
+                reasons = ("INVALID_UPSTREAM_COMPLETE_CUBOID",)
+                geometry_validity = Validity.INVALID
+            elif observed_world.complete_cuboid_status == "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR":
                 reasons = ("COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE",)
                 geometry_validity = Validity.UNKNOWN
             elif observed_world.complete_cuboid_status == "SUFFICIENT_MULTIFACE_EVIDENCE":
@@ -272,6 +290,7 @@ def _observation(
                     "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH", "record": record,
                     "observed_face_set": observed_world.to_dict(),
                     "complete_cuboid_status": observed_world.complete_cuboid_status,
+                    "complete_cuboid_adaptation_error": adaptation_error,
                 },
             ))
             unknown.append(UnknownRegion(f"rgbd-{source_id}", metadata.rgb_frame_id, reasons[0], bbox))
@@ -355,10 +374,10 @@ def _run_secondary_module(
     observation, predicted_masks, hypotheses, observed_sets = _observation(
         scene, manifest, geometry, masks_path, proposals, elapsed,
     )
-    truth_payload = json.loads((module_dir / "gt_annotations.json").read_text(encoding="utf-8"))
-    truth = ground_truth_observation(manifest, truth_payload["objects"])
-    gt_archive = np.load(module_dir / "gt_instance_masks.npz", allow_pickle=False)
     metadata = CaptureMetadata.from_dict(json.loads((module_dir / "capture_metadata.json").read_text(encoding="utf-8")))
+    truth_payload = json.loads((module_dir / "gt_annotations.json").read_text(encoding="utf-8"))
+    truth = ground_truth_observation(manifest, truth_payload["objects"], camera_frame_id=metadata.rgb_frame_id)
+    gt_archive = np.load(module_dir / "gt_instance_masks.npz", allow_pickle=False)
     camera = next(item for item in manifest.cameras if item["frame_id"] == metadata.rgb_frame_id)
     report = evaluate_observations(
         truth, observation, ground_truth_masks={name: gt_archive[name] for name in gt_archive.files},
@@ -403,6 +422,8 @@ def main() -> int:
         scene = record["scene"]
         scene_dir = capture_root / scene
         manifest = IsaacSceneManifest.from_dict(json.loads((bundle_root / record["path"]).read_text(encoding="utf-8")))
+        primary_metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8")))
+        primary_camera = _camera_for_frame(manifest, primary_metadata.rgb_frame_id)
         artifacts = _worker_artifacts(scene_dir)
         masks_path = Path(artifacts["cargo_masks.npz"]["path"])
         pointmap, filter_audits = _build_pointmap(scene_dir, manifest, masks_path, config["vision"]["pointcloud_filter"])
@@ -448,16 +469,16 @@ def main() -> int:
             scene, manifest, geometry, masks_path, proposals, elapsed,
         )
         truth_payload = json.loads((scene_dir / "gt_annotations.json").read_text(encoding="utf-8"))
-        truth = ground_truth_observation(manifest, truth_payload["objects"])
+        truth = ground_truth_observation(manifest, truth_payload["objects"], camera_frame_id=primary_metadata.rgb_frame_id)
         gt_archive = np.load(scene_dir / "gt_instance_masks.npz", allow_pickle=False)
         report = evaluate_observations(
             truth, observation,
             ground_truth_masks={name: gt_archive[name] for name in gt_archive.files},
-            prediction_masks=predicted_masks, T_W_C=manifest.cameras[0]["T_W_C"],
+            prediction_masks=predicted_masks, T_W_C=primary_camera["T_W_C"],
         )
         report["mode"] = "STAGED_RGBD"
         report["world_transform_evaluation"]["metric_scale_valid"] = True
-        report["world_transform_evaluation"]["prediction_camera_frame"] = "module_0_main_rgb_optical"
+        report["world_transform_evaluation"]["prediction_camera_frame"] = primary_metadata.rgb_frame_id
         report["world_transform_evaluation"]["claim_boundary"] = (
             "registered metric depth is evaluated in world using capture-time T_W_C; "
             "this does not establish execution qualification"
@@ -466,16 +487,19 @@ def main() -> int:
         (scene_dir / "mode_b_rgbd_observation.json").write_text(dumps(observation), encoding="utf-8")
         write_json(scene_dir / "metric_pointmap_filter_audit.json", filter_audits)
         secondary_results = []
-        for module_camera in manifest.cameras[1:]:
+        for module_camera in (
+            camera for camera in manifest.cameras
+            if str(camera["frame_id"]) != str(primary_camera["frame_id"])
+        ):
             module_dir = scene_dir / "modules" / str(module_camera["module_id"])
             secondary_results.append(_run_secondary_module(
                 scene=scene, module_dir=module_dir, manifest=manifest,
                 artifacts=_worker_artifacts(module_dir), config=config, vision_root=vision_root,
                 upstream_python=args.upstream_python, timeout=args.timeout,
             ))
-        upper_metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8")))
+        upper_metadata = primary_metadata
         batches = [ModuleFaceBatch(
-            str(manifest.cameras[0].get("module_id", "module_0_upper")), upper_metadata.sensor_epoch,
+            str(primary_camera["module_id"]), upper_metadata.sensor_epoch,
             upper_metadata.frame_sequence, upper_metadata.capture_center_time,
             tuple(item for item in upper_observed_sets if item.faces),
         )]
@@ -539,8 +563,10 @@ def main() -> int:
                     "maximum": float(limits["max_center_translation_error_m"]),
                 },
                 "orientation_error_deg": {
-                    "value": report["mean_orientation_angular_error_deg"],
+                    "value": report["mean_cuboid_symmetry_orientation_error_deg"],
                     "maximum": float(limits["max_orientation_error_deg"]),
+                    "metric": "CUBOID_D2_SYMMETRY_EQUIVALENT",
+                    "raw_quaternion_error_deg": report["mean_orientation_angular_error_deg"],
                 },
                 "full_dimension_abs_error_m": {
                     "value": _scalar_mean(report["mean_full_dimension_abs_error_m"]),

@@ -57,7 +57,20 @@ def finalize_registered_depth_result(payload: Mapping[str, Any]) -> dict[str, An
     refined_count = 0
     suppressed_count = 0
     for record in result.get("instances", ()):  # type: ignore[union-attr]
-        corners = np.asarray(record.get("corners_3d", ()), dtype=float)
+        corner_key = "corners_3d"
+        plane_pair = record.get("orthogonal_plane_pair_diagnostics", {})
+        if (
+            int(record.get("depth_supported_face_count", record.get("visible_plane_count", 0))) >= 2
+            and plane_pair.get("reliable") is True
+            and len(record.get("unanchored_corners_3d", ())) == 8
+        ):
+            # Keep this selection identical to hypotheses_from_geometry_record.
+            # V4's 2D silhouette anchor may publish a projective eight-corner
+            # fit that is not an orthogonal cuboid.  Once at least two
+            # orthogonal depth planes are reliable, the unanchored metric
+            # result is the coherent cuboid datum.
+            corner_key = "unanchored_corners_3d"
+        corners = np.asarray(record.get(corner_key, ()), dtype=float)
         if corners.shape == (8, 3):
             vectors = np.asarray((corners[1] - corners[0], corners[3] - corners[0], corners[4] - corners[0]))
             dimensions = np.linalg.norm(vectors, axis=1)
@@ -69,7 +82,8 @@ def finalize_registered_depth_result(payload: Mapping[str, Any]) -> dict[str, An
                 record["shape_dimensions_before_adapter_coherence"] = record.get("shape_dimensions")
                 record["orthogonal_axes_3d"] = np.round(axes, 8).tolist()
                 record["shape_dimensions"] = np.round(dimensions, 8).tolist()
-                record["geometry_coherence"] = "DERIVED_FROM_PUBLISHED_CORNERS_0_1_3_4"
+                record["geometry_coherence"] = f"DERIVED_FROM_{corner_key.upper()}_0_1_3_4"
+                record["geometry_coherence_corner_source"] = corner_key
         if record.get("multiplane_refinement_status") == (
             "joint_sam_silhouette+depth_faces+fixed_intrinsics_pnp"
         ):

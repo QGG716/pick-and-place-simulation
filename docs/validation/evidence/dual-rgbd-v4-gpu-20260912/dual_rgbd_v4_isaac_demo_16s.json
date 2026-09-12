@@ -1,0 +1,18 @@
+{
+  "output": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/dual_rgbd_v4_isaac_demo_16s.mp4",
+  "sha256": "370d7e854d686bee7f00446cc64a7434fa2577c65f84c55a7aa4fa1bcb9b46f6",
+  "fps": 20.0,
+  "frame_count": 320,
+  "duration_seconds": 16.0,
+  "segments": [
+    {
+      "source": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/isaac_j1_mast_rgbd_validation.mp4",
+      "duration_seconds": 8.0
+    },
+    {
+      "source": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/isaac_perception_mode_b1_validation.mp4",
+      "duration_seconds": 8.0
+    }
+  ],
+  "note": "sequential excerpts from real Isaac capture and Mode B1 validation; no synthetic interpolation"
+}

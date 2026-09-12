@@ -1,0 +1,44 @@
+{
+  "schema_version": "rgbd_capture_metadata_v1",
+  "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+  "sensor_epoch": "sim-j1-mast-v2",
+  "frame_sequence": 100,
+  "requested_time": 1.6666666666666667,
+  "capture_start": 1.6666666666666667,
+  "capture_center_time": 1.6666666666666667,
+  "capture_end": 1.6666666666666667,
+  "clock_domain": "ros_sim_time",
+  "rgb_frame_id": "module_1_lower_rgb_optical",
+  "depth_frame_id": "module_1_lower_depth_optical",
+  "calibration_identity": "e6318d1f0cd52b9c8a12ca8df80192da9f5a4cdf7602fcc7b5d0473cd5bf180b",
+  "illumination_state": "LIGHT_ON_NOMINAL",
+  "j1_state_identity": "a7d4c7ddf2222aba85abc6c9d9e85d9aa11b8017efc45fb9898adcea5bfcc622",
+  "q1_at_capture_rad": -1.5707963267948966,
+  "T_W_C_at_capture": [
+    [
+      0.0,
+      -0.3420201433256687,
+      0.9396926207859084,
+      -1.325
+    ],
+    [
+      -1.0,
+      -0.0,
+      0.0,
+      0.75
+    ],
+    [
+      0.0,
+      -0.9396926207859084,
+      -0.3420201433256687,
+      1.6293411964178086
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "sync_status": "SYNCHRONIZED"
+}

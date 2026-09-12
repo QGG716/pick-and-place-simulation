@@ -638,6 +638,7 @@ def ground_truth_observation(
     annotations: Sequence[Mapping[str, Any]],
     *,
     processed_time: float | None = None,
+    camera_frame_id: str | None = None,
 ) -> PerceptionObservation:
     """Convert exact Isaac object state to explicitly synthetic domain data."""
 
@@ -647,6 +648,18 @@ def ground_truth_observation(
     if processed < capture_time:
         raise ValueError("processed_time cannot precede capture_time")
     objects = {str(item["simulation_object_id"]): item for item in manifest.objects}
+    if camera_frame_id is None:
+        primary = [camera for camera in manifest.cameras if str(camera.get("module_id")) == "module_0_upper"]
+        if len(primary) != 1:
+            if len(manifest.cameras) != 1:
+                raise ValueError("multi-camera GT conversion requires camera_frame_id")
+            primary = [next(iter(manifest.cameras))]
+        camera = primary[0]
+    else:
+        matches = [camera for camera in manifest.cameras if str(camera.get("frame_id")) == camera_frame_id]
+        if len(matches) != 1:
+            raise ValueError(f"capture camera frame is not unique in manifest: {camera_frame_id}")
+        camera = matches[0]
     cargo = []
     unknown = []
     for annotation in annotations:
@@ -662,12 +675,12 @@ def ground_truth_observation(
         if bbox[2] <= bbox[0] or bbox[3] <= bbox[1]:
             if visible:
                 raise ValueError("visible GT bbox must have positive area")
-            width, height = (float(value) for value in manifest.cameras[0]["resolution"])
+            width, height = (float(value) for value in camera["resolution"])
             bbox = (0.0, 0.0, width, height)
         eligible = visible and not occluded
         reasons = () if eligible else (("SIMULATION_OBJECT_OCCLUDED",) if occluded else ("SIMULATION_OBJECT_NOT_VISIBLE",))
         if not eligible:
-            unknown.append(UnknownRegion(f"gt-{object_id}", manifest.cameras[0]["frame_id"], reasons[0], bbox))
+            unknown.append(UnknownRegion(f"gt-{object_id}", str(camera["frame_id"]), reasons[0], bbox))
         rotation = tuple(row[:3] for row in pose[:3])
         mask_value = annotation.get("mask_reference")
         mask_reference = None if mask_value is None else ResourceReference(

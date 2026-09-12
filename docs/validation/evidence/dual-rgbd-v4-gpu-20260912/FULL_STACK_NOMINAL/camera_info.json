@@ -1,0 +1,58 @@
+{
+  "camera_id": "module_0_upper_rgbd",
+  "frame_id": "module_0_upper_rgb_optical",
+  "width": 2592,
+  "height": 1944,
+  "K": [
+    748.2459488697552,
+    0.0,
+    1295.5,
+    0.0,
+    1525.7343809582005,
+    971.5,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "distortion_model": "plumb_bob",
+  "D": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "T_W_C": [
+    [
+      0.0,
+      -0.0,
+      1.0,
+      -1.325
+    ],
+    [
+      -1.0,
+      -0.0,
+      0.0,
+      0.75
+    ],
+    [
+      0.0,
+      -1.0,
+      -0.0,
+      2.6293411964178084
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "near_clip_m": 0.05,
+  "far_clip_m": 12.0,
+  "intrinsics_mode": "EXACT_USER_SPEC_RESAMPLED",
+  "registration_mode": "SIMULATION_IDEAL_REGISTERED_DEPTH",
+  "depth_semantics": "optical_z_m",
+  "native_square_pixel_fy_px": 748.2459488697552,
+  "vertical_resampling_applied": true
+}

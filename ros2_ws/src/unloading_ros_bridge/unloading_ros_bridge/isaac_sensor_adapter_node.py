@@ -108,7 +108,14 @@ class IsaacSensorAdapterNode(Node):
             self.manifest.timing["simulation_epoch"], self.manifest.timing["simulation_frame"],
         ):
             raise RuntimeError("capture and scene manifest timing identities differ")
-        camera = self.manifest.cameras[0]
+        cameras = [
+            camera for camera in self.manifest.cameras
+            if str(camera["frame_id"]) == self.capture_metadata.rgb_frame_id
+        ]
+        if len(cameras) != 1:
+            raise RuntimeError("capture frame is not bound to exactly one manifest camera")
+        self.camera = cameras[0]
+        camera = self.camera
         if (
             self.capture_metadata.sensor_epoch != self.binding.simulation_epoch
             or self.capture_metadata.frame_sequence != self.binding.frame_sequence
@@ -125,7 +132,9 @@ class IsaacSensorAdapterNode(Node):
         self.points = np.load(capture / "pointcloud_world_m.npz", allow_pickle=False)["xyz_m"].astype(np.float32)
         if self.rgb.ndim != 3 or self.rgb.shape[2] != 3 or self.rgb.shape[:2] != self.depth.shape:
             raise RuntimeError("RGB and depth dimensions differ")
-        self.observation = ground_truth_observation(self.manifest, self.annotations["objects"])
+        self.observation = ground_truth_observation(
+            self.manifest, self.annotations["objects"], camera_frame_id=self.frame_id,
+        )
 
     def _header(self, message, frame_id: str) -> None:
         message.header.stamp = self.stamp
@@ -142,7 +151,7 @@ class IsaacSensorAdapterNode(Node):
         self.rgb_pub.publish(rgb)
         self.depth_pub.publish(depth)
 
-        camera = self.manifest.cameras[0]
+        camera = self.camera
         info = CameraInfo(height=self.depth.shape[0], width=self.depth.shape[1], distortion_model=str(camera["distortion_model"]), d=list(camera["distortion"]), k=list(camera["K"]), r=[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0])
         info.p = [camera["K"][0], 0.0, camera["K"][2], 0.0, 0.0, camera["K"][4], camera["K"][5], 0.0, 0.0, 0.0, 1.0, 0.0]
         self._header(info, self.frame_id)

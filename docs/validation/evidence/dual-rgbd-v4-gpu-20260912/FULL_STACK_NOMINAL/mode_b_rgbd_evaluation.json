@@ -1,0 +1,429 @@
+{
+  "bbox_claim_boundary": "proposal bbox IoU evaluates injected oracle proposals; estimated mask bbox IoU evaluates the vision output",
+  "capture_time": 1.6666666666666667,
+  "claim_boundary": "Isaac rendered-image evaluation is not real-camera accuracy",
+  "depth": {
+    "status": "NOT_EVALUATED"
+  },
+  "evaluation_fingerprint": "acf4d617bdab9c5758491d6a2bd50075188f295a0b49b0d60fcc0372fa053c5a",
+  "frame_sequence": 100,
+  "ground_truth_object_count": 40,
+  "mean_bbox_iou": 1.0,
+  "mean_center_translation_error_m": 1.026371168292264,
+  "mean_cuboid_symmetry_orientation_error_deg": 0.4353115827678312,
+  "mean_estimated_mask_bbox_iou": 0.0857336424106485,
+  "mean_full_dimension_abs_error_m": [
+    0.18471113799999997,
+    0.012664558000000038,
+    0.014752547999999999
+  ],
+  "mean_mask_iou": 0.05148436032138322,
+  "mean_orientation_angular_error_deg": 179.82277222945953,
+  "mean_per_axis_dimension_relative_error": [
+    0.3078518966666667,
+    0.03166139500000009,
+    0.04917516
+  ],
+  "mean_proposal_bbox_iou": 1.0,
+  "missed_object_ids": [
+    "carton_l00_c00",
+    "carton_l00_c01",
+    "carton_l00_c02",
+    "carton_l00_c03",
+    "carton_l00_c04",
+    "carton_l01_c00",
+    "carton_l01_c01",
+    "carton_l01_c02",
+    "carton_l01_c03",
+    "carton_l01_c04",
+    "carton_l02_c00",
+    "carton_l02_c01",
+    "carton_l02_c02",
+    "carton_l02_c03",
+    "carton_l02_c04",
+    "carton_l03_c00",
+    "carton_l03_c01",
+    "carton_l03_c02",
+    "carton_l03_c03",
+    "carton_l03_c04",
+    "carton_l04_c00",
+    "carton_l04_c01",
+    "carton_l04_c02",
+    "carton_l04_c03",
+    "carton_l04_c04",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "mode": "STAGED_RGBD",
+  "per_object": [
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": null,
+      "cuboid_symmetry_orientation_error_deg": null,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE"
+      ],
+      "estimated_mask_bbox_iou": 0.49746560463432293,
+      "full_dimension_abs_error_m": null,
+      "mask_iou": 0.3488913732066331,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": null,
+      "per_axis_dimension_relative_error": null,
+      "pose_evidence": null,
+      "prediction_source_instance_id": "1",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l05_c00",
+      "size_evidence": null,
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": null,
+      "cuboid_symmetry_orientation_error_deg": null,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE"
+      ],
+      "estimated_mask_bbox_iou": 0.6145552560646901,
+      "full_dimension_abs_error_m": null,
+      "mask_iou": 0.3204053109713487,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": null,
+      "per_axis_dimension_relative_error": null,
+      "pose_evidence": null,
+      "prediction_source_instance_id": "2",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l05_c01",
+      "size_evidence": null,
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": null,
+      "cuboid_symmetry_orientation_error_deg": null,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": null,
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": null,
+      "per_axis_dimension_relative_error": null,
+      "pose_evidence": null,
+      "prediction_source_instance_id": "3",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l05_c02",
+      "size_evidence": null,
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": null,
+      "cuboid_symmetry_orientation_error_deg": null,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": null,
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": null,
+      "per_axis_dimension_relative_error": null,
+      "pose_evidence": null,
+      "prediction_source_instance_id": "4",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l05_c03",
+      "size_evidence": null,
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": null,
+      "cuboid_symmetry_orientation_error_deg": null,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": null,
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": null,
+      "per_axis_dimension_relative_error": null,
+      "pose_evidence": null,
+      "prediction_source_instance_id": "5",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l05_c04",
+      "size_evidence": null,
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": null,
+      "cuboid_symmetry_orientation_error_deg": null,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": null,
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": null,
+      "per_axis_dimension_relative_error": null,
+      "pose_evidence": null,
+      "prediction_source_instance_id": "6",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l06_c00",
+      "size_evidence": null,
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": null,
+      "cuboid_symmetry_orientation_error_deg": null,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": null,
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": null,
+      "per_axis_dimension_relative_error": null,
+      "pose_evidence": null,
+      "prediction_source_instance_id": "7",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l06_c01",
+      "size_evidence": null,
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": null,
+      "cuboid_symmetry_orientation_error_deg": null,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": null,
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": null,
+      "per_axis_dimension_relative_error": null,
+      "pose_evidence": null,
+      "prediction_source_instance_id": "8",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l06_c02",
+      "size_evidence": null,
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 1.2928968306090798,
+      "cuboid_symmetry_orientation_error_deg": 0.615145001181675,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "GEOMETRY_UNCERTAINTY_INCOMPLETE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": [
+        0.20063337999999997,
+        0.023346710000000048,
+        0.01656209000000003
+      ],
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 179.61879488825625,
+      "per_axis_dimension_relative_error": [
+        0.3343889666666666,
+        0.05836677500000012,
+        0.05520696666666677
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "9",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l06_c03",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 1.299446090453534,
+      "cuboid_symmetry_orientation_error_deg": 0.9385666511517069,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "GEOMETRY_UNCERTAINTY_INCOMPLETE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": [
+        0.16666672999999999,
+        0.02442340000000004,
+        0.010663050000000007
+      ],
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 179.7284172181568,
+      "per_axis_dimension_relative_error": [
+        0.2777778833333333,
+        0.0610585000000001,
+        0.035543500000000026
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "10",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l06_c04",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.8470790023055976,
+      "cuboid_symmetry_orientation_error_deg": 0.37487385116336897,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "GEOMETRY_UNCERTAINTY_INCOMPLETE"
+      ],
+      "estimated_mask_bbox_iou": 0.002516490639417394,
+      "full_dimension_abs_error_m": [
+        0.17962557999999995,
+        0.0017848100000000255,
+        0.007875909999999986
+      ],
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 179.76664904088466,
+      "per_axis_dimension_relative_error": [
+        0.2993759666666666,
+        0.004462025000000064,
+        0.026253033333333287
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "11",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l07_c00",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.8470956677571425,
+      "cuboid_symmetry_orientation_error_deg": 0.17379097078585468,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "GEOMETRY_UNCERTAINTY_INCOMPLETE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": [
+        0.17948999999999998,
+        0.007678200000000024,
+        0.013661409999999985
+      ],
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 180.0,
+      "per_axis_dimension_relative_error": [
+        0.29914999999999997,
+        0.01919550000000006,
+        0.04553803333333328
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "12",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l07_c01",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": false
+    },
+    {
+      "bbox_iou": 1.0,
+      "candidate_eligible": false,
+      "center_translation_error_m": 0.8453382503359661,
+      "cuboid_symmetry_orientation_error_deg": 0.07418143955655108,
+      "depth_evidence": "OBSERVED",
+      "eligibility_reasons": [
+        "GEOMETRY_UNCERTAINTY_INCOMPLETE"
+      ],
+      "estimated_mask_bbox_iou": 0.0,
+      "full_dimension_abs_error_m": [
+        0.19713999999999998,
+        0.006089670000000047,
+        0.025000279999999986
+      ],
+      "mask_iou": 0.0,
+      "match_method": "ORACLE_PROPOSAL_IDENTITY",
+      "orientation_angular_error_deg": 180.0,
+      "per_axis_dimension_relative_error": [
+        0.3285666666666667,
+        0.015224175000000117,
+        0.08333426666666663
+      ],
+      "pose_evidence": "MODEL_ESTIMATED",
+      "prediction_source_instance_id": "13",
+      "proposal_bbox_iou": 1.0,
+      "scale_evidence": "OBSERVED",
+      "simulation_object_id": "carton_l07_c02",
+      "size_evidence": "CONSTRAINT_COMPLETED",
+      "visibility": "visible",
+      "world_transform_applied": false
+    }
+  ],
+  "prediction_object_count": 13,
+  "prediction_processed_time": 15.509719835749516,
+  "processed_object_count": 13,
+  "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+  "raw_image_automatic": false,
+  "schema_version": "isaac_perception_evaluation_v1",
+  "sensor_to_result_latency_s": 13.84305316908285,
+  "source_epoch": "sim-j1-mast-v2",
+  "unknown_region_count": 8,
+  "unmatched_prediction_ids": [],
+  "world_transform_evaluation": {
+    "T_W_C_supplied": true,
+    "claim_boundary": "registered metric depth is evaluated in world using capture-time T_W_C; this does not establish execution qualification",
+    "metric_scale_valid": true,
+    "prediction_camera_frame": "module_0_main_rgb_optical",
+    "transform": "T_W_object_prediction = T_W_C @ T_C_object_prediction"
+  }
+}

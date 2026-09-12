@@ -48,6 +48,31 @@ def test_v4_output_restores_metric_provenance_and_never_publishes_hidden_faces()
     assert result["v4_adapter"]["suppressed_completion_face_count"] == 1
 
 
+def test_multiplane_metric_result_derives_axes_from_unanchored_depth_cuboid():
+    worker = {
+        "instances": [{
+            "mask_id": 1,
+            "depth_supported_face_count": 2,
+            "orthogonal_plane_pair_diagnostics": {"reliable": True},
+            # A projective silhouette anchor need not remain an orthogonal
+            # metric cuboid and must not overwrite the multi-plane datum.
+            "corners_3d": [
+                [0, 0, 0], [1, 0, 0], [1.2, 1, 0], [0.2, 1, 0],
+                [0, 0, 1], [1, 0, 1], [1.2, 1, 1], [0.2, 1, 1],
+            ],
+            "unanchored_corners_3d": [
+                [0, 0, 0], [2, 0, 0], [2, 1, 0], [0, 1, 0],
+                [0, 0, 0.5], [2, 0, 0.5], [2, 1, 0.5], [0, 1, 0.5],
+            ],
+            "camera_facing_faces": [],
+        }]
+    }
+    record = finalize_registered_depth_result(worker)["instances"][0]
+    assert record["geometry_coherence_corner_source"] == "unanchored_corners_3d"
+    assert record["shape_dimensions"] == [2.0, 1.0, 0.5]
+    assert record["orthogonal_axes_3d"] == [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+
+
 def test_command_invokes_actual_v4_worker_with_observed_face_safeguards():
     vision_root = Path("tmp") / "vision"
     command = build_upstream_v4_command(

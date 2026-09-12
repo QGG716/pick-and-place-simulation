@@ -45,6 +45,13 @@ def main() -> int:
         manifest = IsaacSceneManifest.from_dict(json.loads((args.bundle_directory / record["path"]).read_text(encoding="utf-8")))
         binding = IsaacCaptureBinding.from_dict(json.loads((scene_dir / "capture_binding.json").read_text(encoding="utf-8")))
         capture_metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8")))
+        primary_matches = [
+            camera for camera in manifest.cameras
+            if str(camera["frame_id"]) == capture_metadata.rgb_frame_id
+        ]
+        if len(primary_matches) != 1:
+            raise ValueError(f"capture frame is not bound to exactly one manifest camera for {scene_name}")
+        primary_camera = primary_matches[0]
         if (binding.simulation_epoch, binding.frame_sequence) != (
             manifest.timing["simulation_epoch"], manifest.timing["simulation_frame"],
         ):
@@ -57,7 +64,9 @@ def main() -> int:
         ):
             raise ValueError(f"unified RGB-D metadata differs from manifest for {scene_name}")
         annotation_payload = json.loads((scene_dir / "gt_annotations.json").read_text(encoding="utf-8"))
-        observation = ground_truth_observation(manifest, annotation_payload["objects"])
+        observation = ground_truth_observation(
+            manifest, annotation_payload["objects"], camera_frame_id=capture_metadata.rgb_frame_id,
+        )
         assembler.update = build_scene_update(observation)
         assembler.robot_state = RobotStateRevision(
             int(manifest.timing["simulation_frame"]), tuple(manifest.robot["q_rad"]),
@@ -89,7 +98,7 @@ def main() -> int:
         proposals = {
             "schema_version": "isaac_oracle_proposals_v1",
             "coordinate_space": "source_image",
-            "source_size": [int(manifest.cameras[0]["resolution"][0]), int(manifest.cameras[0]["resolution"][1])],
+            "source_size": [int(primary_camera["resolution"][0]), int(primary_camera["resolution"][1])],
             "source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
             "raw_image_automatic": False,
             "simulation_epoch": binding.simulation_epoch,
