@@ -235,7 +235,7 @@ try:
     # Its root is evaluated from J1 for every scene; no static world camera pose
     # or independent mast yaw joint exists.
     vision_root = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig")
-    vision_root.GetPrim().CreateAttribute("rigId", Sdf.ValueTypeNames.String).Set("m710id70_j1_perception_mast_v2")
+    vision_root.GetPrim().CreateAttribute("rigId", Sdf.ValueTypeNames.String).Set("m710id70_j1_perception_mast_v3")
     vision_root.GetPrim().CreateAttribute("kinematicParentFrame", Sdf.ValueTypeNames.String).Set("J1_link")
     flange_xform = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange")
     flange_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Proxy")
@@ -258,38 +258,38 @@ try:
     mast_top_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, 1.45))
     mast_top_xform.SetScale(Gf.Vec3f(0.07, 0.07, 0.10))
     UsdShade.MaterialBindingAPI.Apply(mast_top_proxy.GetPrim()).Bind(materials["mast"])
-    module_xform = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0")
-    module_api = UsdGeom.XformCommonAPI(module_xform.GetPrim())
-    module_api.SetTranslate(Gf.Vec3d(0.0, 0.0, 1.3))
-    module_api.SetRotate(Gf.Vec3f(0.0, 0.0, 90.0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-    module_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0/Housing")
-    module_proxy.CreateSizeAttr(1.0)
-    module_proxy_api = UsdGeom.XformCommonAPI(module_proxy.GetPrim())
-    # The declared camera centre is the front optical point.  Keep every
-    # rendered proxy strictly behind its +X-facing image plane.
-    module_proxy_api.SetTranslate(Gf.Vec3d(-0.08, 0.0, 0.0))
-    module_proxy_api.SetScale(Gf.Vec3f(0.12, 0.34, 0.11))
-    UsdShade.MaterialBindingAPI.Apply(module_proxy.GetPrim()).Bind(materials["module"])
-    for sensor_name, lateral in (("RGBCamera", 0.035), ("DepthCamera", -0.035)):
-        sensor = UsdGeom.Cube.Define(stage, f"/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0/{sensor_name}")
-        sensor.CreateSizeAttr(1.0)
-        sensor_api = UsdGeom.XformCommonAPI(sensor.GetPrim())
-        sensor_api.SetTranslate(Gf.Vec3d(-0.01, lateral, 0.0))
-        sensor_api.SetScale(Gf.Vec3f(0.01, 0.045, 0.045))
-        UsdShade.MaterialBindingAPI.Apply(sensor.GetPrim()).Bind(materials["lens"])
     fill_lights = []
-    for light_name, lateral in (("FillLightLeft", 0.12), ("FillLightRight", -0.12)):
-        light = UsdLux.DiskLight.Define(
-            stage, f"/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0/{light_name}"
-        )
-        light.CreateRadiusAttr(0.035)
-        light.CreateColorAttr(Gf.Vec3f(1.0, 0.93, 0.82))
-        light.CreateEnableColorTemperatureAttr(True)
-        light.CreateColorTemperatureAttr(5000.0)
-        light_api = UsdGeom.XformCommonAPI(light.GetPrim())
-        light_api.SetTranslate(Gf.Vec3d(0.07, lateral, 0.0))
-        light_api.SetRotate(Gf.Vec3f(0.0, -90.0, 0.0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-        fill_lights.append(light)
+    for module_name, height, depression in (
+        ("PerceptionModule0Upper", 1.3, 0.0), ("PerceptionModule1Lower", 0.3, 20.0)
+    ):
+        module_path = f"/PerceptionValidation/VisionRig/VisionFlange/Mast/{module_name}"
+        module_xform = UsdGeom.Xform.Define(stage, module_path)
+        module_api = UsdGeom.XformCommonAPI(module_xform.GetPrim())
+        module_api.SetTranslate(Gf.Vec3d(0.0, 0.0, height))
+        module_api.SetRotate(Gf.Vec3f(0.0, depression, 90.0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        module_proxy = UsdGeom.Cube.Define(stage, f"{module_path}/Housing")
+        module_proxy.CreateSizeAttr(1.0)
+        module_proxy_api = UsdGeom.XformCommonAPI(module_proxy.GetPrim())
+        module_proxy_api.SetTranslate(Gf.Vec3d(-0.08, 0.0, 0.0))
+        module_proxy_api.SetScale(Gf.Vec3f(0.12, 0.34, 0.11))
+        UsdShade.MaterialBindingAPI.Apply(module_proxy.GetPrim()).Bind(materials["module"])
+        for sensor_name, lateral in (("RGBCamera", 0.035), ("DepthCamera", -0.035)):
+            sensor = UsdGeom.Cube.Define(stage, f"{module_path}/{sensor_name}")
+            sensor.CreateSizeAttr(1.0)
+            sensor_api = UsdGeom.XformCommonAPI(sensor.GetPrim())
+            sensor_api.SetTranslate(Gf.Vec3d(-0.01, lateral, 0.0))
+            sensor_api.SetScale(Gf.Vec3f(0.01, 0.045, 0.045))
+            UsdShade.MaterialBindingAPI.Apply(sensor.GetPrim()).Bind(materials["lens"])
+        for light_name, lateral in (("FillLightLeft", 0.12), ("FillLightRight", -0.12)):
+            light = UsdLux.DiskLight.Define(stage, f"{module_path}/{light_name}")
+            light.CreateRadiusAttr(0.035)
+            light.CreateColorAttr(Gf.Vec3f(1.0, 0.93, 0.82))
+            light.CreateEnableColorTemperatureAttr(True)
+            light.CreateColorTemperatureAttr(5000.0)
+            light_api = UsdGeom.XformCommonAPI(light.GetPrim())
+            light_api.SetTranslate(Gf.Vec3d(0.07, lateral, 0.0))
+            light_api.SetRotate(Gf.Vec3f(0.0, -90.0, 0.0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+            fill_lights.append(light)
 
     environment_distant = UsdLux.DistantLight.Define(stage, "/PerceptionValidation/EnvironmentDistant")
     environment_distant.CreateAngleAttr(4.0)
@@ -383,30 +383,32 @@ try:
 
     cameras = []
     for scene_name, manifest in manifests:
-        camera_config = manifest.cameras[0]
-        t_w_c = np.asarray(camera_config["T_W_C"], dtype=float)
-        position = t_w_c[:3, 3]
-        look_at = np.asarray(camera_config["look_at_world_m"], dtype=float)
-        declared_forward = t_w_c[:3, 2]
-        actual_forward = (look_at - position) / np.linalg.norm(look_at - position)
-        if np.max(np.abs(declared_forward - actual_forward)) > 1e-6:
-            raise ValueError(f"{scene_name} look_at is inconsistent with declared T_W_C")
-        camera = rep.create.camera(
-            position=tuple(position.tolist()), look_at=tuple(look_at.tolist()),
-            focal_length=float(camera_config["focal_length_mm"]),
-            horizontal_aperture=float(camera_config["horizontal_aperture_mm"]),
-            clipping_range=(float(camera_config["near_clip_m"]), float(camera_config["far_clip_m"])),
-        )
-        product = rep.create.render_product(camera, (args.width, args.height))
-        rgb = rep.AnnotatorRegistry.get_annotator("rgb")
-        depth = rep.AnnotatorRegistry.get_annotator("distance_to_image_plane")
-        instance = rep.AnnotatorRegistry.get_annotator(
-            "instance_id_segmentation", init_params={"colorize": False}
-        )
-        rgb.attach(product)
-        depth.attach(product)
-        instance.attach(product)
-        cameras.append((rgb, depth, instance))
+        scene_cameras = []
+        for camera_config in manifest.cameras:
+            t_w_c = np.asarray(camera_config["T_W_C"], dtype=float)
+            position = t_w_c[:3, 3]
+            look_at = np.asarray(camera_config["look_at_world_m"], dtype=float)
+            declared_forward = t_w_c[:3, 2]
+            actual_forward = (look_at - position) / np.linalg.norm(look_at - position)
+            if np.max(np.abs(declared_forward - actual_forward)) > 1e-6:
+                raise ValueError(f"{scene_name}/{camera_config['module_id']} look_at is inconsistent with declared T_W_C")
+            camera = rep.create.camera(
+                position=tuple(position.tolist()), look_at=tuple(look_at.tolist()),
+                focal_length=float(camera_config["focal_length_mm"]),
+                horizontal_aperture=float(camera_config["horizontal_aperture_mm"]),
+                clipping_range=(float(camera_config["near_clip_m"]), float(camera_config["far_clip_m"])),
+            )
+            product = rep.create.render_product(camera, (args.width, args.height))
+            rgb = rep.AnnotatorRegistry.get_annotator("rgb")
+            depth = rep.AnnotatorRegistry.get_annotator("distance_to_image_plane")
+            instance = rep.AnnotatorRegistry.get_annotator(
+                "instance_id_segmentation", init_params={"colorize": False}
+            )
+            rgb.attach(product)
+            depth.attach(product)
+            instance.attach(product)
+            scene_cameras.append((camera_config, rgb, depth, instance))
+        cameras.append(scene_cameras)
 
     rig_spec = load_vision_rig_spec(project_root / "configs/isaac/perception_sensing_pose.yaml")
     sweep_manifest = next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
@@ -533,8 +535,8 @@ try:
             occluder_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, -10.0))
             occluder_xform.SetScale(Gf.Vec3f(0.01, 0.01, 0.01))
 
-    def project_annotations(manifest):
-        camera = manifest.cameras[0]
+    def project_annotations(manifest, camera=None):
+        camera = manifest.cameras[0] if camera is None else camera
         t_w_c = np.asarray(camera["T_W_C"], dtype=float)
         t_c_w = np.linalg.inv(t_w_c)
         k = np.asarray(camera["K"], dtype=float).reshape(3, 3)
@@ -572,10 +574,125 @@ try:
             })
         return result
 
+    def capture_module_artifacts(scene_dir, scene_name, manifest, camera, annotators, scene_record):
+        """Persist one module without borrowing K, masks, or extrinsics from another."""
+        rgb_annotator, depth_annotator, instance_annotator = annotators
+        rgba = np.asarray(rgb_data(rgb_annotator.get_data()))
+        depth = np.asarray(rgb_data(depth_annotator.get_data()), dtype=np.float32)
+        instance_result = instance_annotator.get_data()
+        instance_ids = np.asarray(instance_result["data"], dtype=np.uint32)
+        if rgba.shape != (args.height, args.width, 4) or depth.shape != (args.height, args.width):
+            raise RuntimeError(f"invalid module sensor shapes for {scene_name}/{camera['module_id']}")
+        target_k = np.asarray(camera["K"], dtype=np.float64).reshape(3, 3)
+        if camera["intrinsics_mode"] == "EXACT_USER_SPEC_RESAMPLED":
+            source_fy = float(target_k[0, 0])
+            source_cy = (args.height - 1.0) / 2.0
+            output_rows, output_columns = np.indices((args.height, args.width), dtype=np.float32)
+            map_x = output_columns
+            map_y = ((output_rows - float(target_k[1, 2])) * source_fy / float(target_k[1, 1]) + source_cy).astype(np.float32)
+            rgba = cv2.remap(rgba, map_x, map_y, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+            depth = cv2.remap(depth, map_x, map_y, cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=float("nan"))
+            instance_ids = cv2.remap(instance_ids.astype(np.float32), map_x, map_y, cv2.INTER_NEAREST,
+                                     borderMode=cv2.BORDER_CONSTANT).astype(np.uint32)
+        rgb = rgba[:, :, :3].astype(np.uint8)
+        module_dir = scene_dir / "modules" / str(camera["module_id"])
+        module_dir.mkdir(parents=True, exist_ok=True)
+        rgb_path = module_dir / "sensor_rgb.png"
+        cv2.imwrite(str(rgb_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+        np.save(module_dir / "sensor_rgb.npy", rgb)
+        np.save(module_dir / "metric_depth_m.npy", depth)
+        finite = np.isfinite(depth) & (depth > 0.0)
+        depth_visual = np.zeros_like(depth, dtype=np.uint8)
+        if np.any(finite):
+            low, high = np.percentile(depth[finite], [2.0, 98.0])
+            depth_visual[finite] = np.clip(255.0 * (depth[finite] - low) / max(high - low, 1e-6), 0, 255).astype(np.uint8)
+        cv2.imwrite(str(module_dir / "metric_depth_visualization.png"), cv2.applyColorMap(255 - depth_visual, cv2.COLORMAP_TURBO))
+        camera_info = {
+            "module_id": camera["module_id"], "camera_id": camera["camera_id"], "frame_id": camera["frame_id"],
+            "width": args.width, "height": args.height, "K": camera["K"], "distortion_model": camera["distortion_model"],
+            "D": camera["distortion"], "T_W_C": camera["T_W_C"], "near_clip_m": camera["near_clip_m"],
+            "far_clip_m": camera["far_clip_m"], "intrinsics_mode": camera["intrinsics_mode"],
+            "registration_mode": camera["registration_mode"], "depth_semantics": camera["depth_semantics"],
+            "native_square_pixel_fy_px": float(target_k[0, 0]),
+            "vertical_resampling_applied": camera["intrinsics_mode"] == "EXACT_USER_SPEC_RESAMPLED",
+        }
+        (module_dir / "camera_info.json").write_text(json.dumps(camera_info, indent=2), encoding="utf-8")
+        segmentation_info = instance_result.get("info", {})
+        masks_by_object = {}
+        identity = {}
+        for numeric_id, labels in segmentation_info.get("idToSemantics", {}).items():
+            label = semantic_value(labels, "simulation_object_id")
+            if label in prim_paths and np.any(mask := instance_ids == int(numeric_id)):
+                masks_by_object[str(label)], identity[str(label)] = mask, int(numeric_id)
+        for numeric_id, label in segmentation_info.get("idToLabels", {}).items():
+            object_id = object_id_from_instance_label(label)
+            if object_id is not None and np.any(mask := instance_ids == int(numeric_id)):
+                masks_by_object[object_id], identity[object_id] = mask, int(numeric_id)
+        if not masks_by_object:
+            raise RuntimeError(f"no identified carton masks for {scene_name}/{camera['module_id']}")
+        masks_path = module_dir / "gt_instance_masks.npz"
+        np.savez_compressed(masks_path, **masks_by_object)
+        masks_hash = sha256(masks_path)
+        annotations = project_annotations(manifest, camera)
+        for annotation in annotations:
+            object_id = annotation["simulation_object_id"]
+            mask = masks_by_object.get(object_id)
+            projection_intersects = bool(annotation["visible"])
+            annotation["projection_intersects_image"] = projection_intersects
+            annotation["visible"] = mask is not None
+            annotation["occluded"] = bool(annotation["occluded"] or (projection_intersects and mask is None))
+            if mask is not None:
+                rows, columns = np.nonzero(mask)
+                annotation["bbox_xyxy"] = [float(columns.min()), float(rows.min()), float(columns.max() + 1), float(rows.max() + 1)]
+            annotation["mask_key"] = object_id if mask is not None else None
+            annotation["mask_pixel_count"] = 0 if mask is None else int(mask.sum())
+            annotation["isaac_instance_id"] = identity.get(object_id)
+        annotations_path = module_dir / "gt_annotations.json"
+        annotations_path.write_text(json.dumps({
+            "schema_version": "isaac_ground_truth_annotations_v1", "module_id": camera["module_id"],
+            "simulation_epoch": manifest.timing["simulation_epoch"], "simulation_frame": manifest.timing["simulation_frame"],
+            "simulation_time": manifest.timing["simulation_time"], "manifest_fingerprint": manifest.manifest_fingerprint,
+            "instance_masks_sha256": masks_hash, "objects": annotations,
+        }, indent=2), encoding="utf-8")
+        calibration_identity = hashlib.sha256(json.dumps(camera_info, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        capture_time = float(manifest.timing["simulation_time"])
+        binding = {
+            "schema_version": "isaac_capture_binding_v1", "module_id": camera["module_id"],
+            "simulation_epoch": manifest.timing["simulation_epoch"],
+            "frame_sequence": manifest.timing["simulation_frame"], "simulation_time": capture_time,
+            "rgb_sha256": sha256(rgb_path), "camera_calibration_identity": calibration_identity,
+            "gt_snapshot_sha256": sha256(annotations_path),
+        }
+        (module_dir / "capture_binding.json").write_text(json.dumps(binding, indent=2), encoding="utf-8")
+        metadata = CaptureMetadata(
+            capture_id=f"{manifest.timing['simulation_epoch']}:{camera['module_id']}:{manifest.timing['simulation_frame']}",
+            sensor_epoch=str(manifest.timing["simulation_epoch"]), frame_sequence=int(manifest.timing["simulation_frame"]),
+            requested_time=capture_time, capture_start=capture_time, capture_center_time=capture_time, capture_end=capture_time,
+            clock_domain="ros_sim_time", rgb_frame_id=str(camera["frame_id"]), depth_frame_id=str(camera["depth_frame_id"]),
+            calibration_identity=calibration_identity, illumination_state=IlluminationState(scene_record["illumination_state"]),
+            j1_state_identity=hashlib.sha256(json.dumps({"joint_names": manifest.robot["joint_names"], "q_rad": manifest.robot["q_rad"]}, sort_keys=True).encode()).hexdigest(),
+            q1_at_capture_rad=float(camera["q1_at_capture_rad"]),
+            T_W_C_at_capture=tuple(tuple(float(value) for value in row) for row in camera["T_W_C"]),
+        )
+        (module_dir / "capture_metadata.json").write_text(json.dumps(metadata.to_dict(), indent=2), encoding="utf-8")
+        (module_dir / "capture_binding.json").write_text(json.dumps({
+            "schema_version": "isaac_capture_binding_v1", "module_id": camera["module_id"],
+            "simulation_epoch": manifest.timing["simulation_epoch"], "frame_sequence": manifest.timing["simulation_frame"],
+            "simulation_time": capture_time, "rgb_sha256": sha256(rgb_path),
+            "camera_calibration_identity": calibration_identity, "gt_snapshot_sha256": sha256(annotations_path),
+        }, indent=2), encoding="utf-8")
+        (module_dir / "instance_segmentation_info.json").write_text(
+            json.dumps(segmentation_info, indent=2, default=str), encoding="utf-8"
+        )
+        return {"module_id": camera["module_id"], "rgb": rgb, "depth": depth, "masks": masks_by_object,
+                "annotations": annotations, "directory": module_dir, "finite_depth_fraction": float(finite.mean())}
+
     scene_records = []
     video_frames = []
     lighting_samples = {}
-    for scene_index, ((scene_name, manifest), (rgb_annotator, depth_annotator, instance_annotator)) in enumerate(zip(manifests, cameras), start=1):
+    rendered_visibility_records = []
+    for scene_index, ((scene_name, manifest), scene_cameras) in enumerate(zip(manifests, cameras), start=1):
+        camera, rgb_annotator, depth_annotator, instance_annotator = scene_cameras[0]
         scene_dir = args.output / scene_name
         scene_dir.mkdir(parents=True, exist_ok=True)
         apply_manifest(manifest, scene_name)
@@ -864,6 +981,56 @@ try:
             json.dumps(capture_metadata.to_dict(), indent=2), encoding="utf-8"
         )
 
+        module_results = [
+            capture_module_artifacts(
+                scene_dir, scene_name, manifest, module_camera,
+                (module_rgb, module_depth, module_instance), scene_record,
+            )
+            for module_camera, module_rgb, module_depth, module_instance in scene_cameras
+        ]
+        if scene_name == "FULL_STACK_NOMINAL":
+            if len(module_results) != 2:
+                raise RuntimeError("dual-module full-stack capture is incomplete")
+            cv2.imwrite(str(args.output / "03_upper_rgb.png"), cv2.cvtColor(module_results[0]["rgb"], cv2.COLOR_RGB2BGR))
+            cv2.imwrite(str(args.output / "04_lower_rgb.png"), cv2.cvtColor(module_results[1]["rgb"], cv2.COLOR_RGB2BGR))
+            for result, label in zip(module_results, ("upper", "lower")):
+                finite_module = np.isfinite(result["depth"]) & (result["depth"] > 0.0)
+                visual = np.zeros(result["depth"].shape, dtype=np.uint8)
+                if np.any(finite_module):
+                    low, high = np.percentile(result["depth"][finite_module], (2.0, 98.0))
+                    visual[finite_module] = np.clip(
+                        255.0 * (result["depth"][finite_module] - low) / max(high - low, 1e-6), 0, 255
+                    ).astype(np.uint8)
+                cv2.imwrite(str(args.output / f"{label}_depth.png"), cv2.applyColorMap(255 - visual, cv2.COLORMAP_TURBO))
+        visibility_by_id = {}
+        for item in manifest.objects:
+            object_id = item["simulation_object_id"]
+            per_module = []
+            for result in module_results:
+                annotation = next(value for value in result["annotations"] if value["simulation_object_id"] == object_id)
+                per_module.append({
+                    "module_id": result["module_id"], "projection_intersects_image": annotation["projection_intersects_image"],
+                    "rendered_visible": annotation["visible"], "mask_pixel_count": annotation["mask_pixel_count"],
+                })
+            visibility_by_id[object_id] = {
+                "modules": per_module,
+                "union_visible": any(value["rendered_visible"] for value in per_module),
+                "out_of_fov": not any(value["projection_intersects_image"] for value in per_module),
+                "occluded": any(value["projection_intersects_image"] for value in per_module)
+                            and not any(value["rendered_visible"] for value in per_module),
+            }
+        rendered_visibility = {
+            "schema_version": "dual_module_rendered_visibility_v1", "scene": scene_name,
+            "object_count": len(visibility_by_id),
+            "union_visible_count": sum(value["union_visible"] for value in visibility_by_id.values()),
+            "out_of_fov_count": sum(value["out_of_fov"] for value in visibility_by_id.values()),
+            "occluded_count": sum(value["occluded"] for value in visibility_by_id.values()),
+            "objects": visibility_by_id, "robot_and_scene_geometry_visible": True,
+            "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage",
+        }
+        (scene_dir / "rendered_visibility.json").write_text(json.dumps(rendered_visibility, indent=2), encoding="utf-8")
+        rendered_visibility_records.append(rendered_visibility)
+
         gt_overlay = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
         for annotation in annotations:
             if not annotation["visible"]:
@@ -902,6 +1069,12 @@ try:
             "finite_depth_fraction": float(finite.mean()),
             "rgb_sha256": binding["rgb_sha256"],
             "gt_sha256": binding["gt_snapshot_sha256"],
+            "modules": {
+                str(result["module_id"]): {
+                    "directory": str(result["directory"].resolve()),
+                    "finite_depth_fraction": result["finite_depth_fraction"],
+                } for result in module_results
+            },
             "artifacts": {name: str((scene_dir / name).resolve()) for name in (
                 "isaac_overview.png", "sensor_rgb.png", "sensor_rgb.npy", "metric_depth_m.npy",
                 "metric_depth_visualization.png", "pointcloud_world_m.npz", "camera_info.json",
@@ -913,6 +1086,10 @@ try:
 
     if set(lighting_samples) != {"DARK_LIGHT_OFF", "DARK_LIGHT_ON"}:
         raise RuntimeError("controlled LIGHT_OFF/LIGHT_ON captures are incomplete")
+    (args.output / "rendered_visibility.json").write_text(json.dumps({
+        "schema_version": "dual_module_rendered_visibility_collection_v1",
+        "scenes": rendered_visibility_records,
+    }, indent=2), encoding="utf-8")
     off_mask = lighting_samples["DARK_LIGHT_OFF"].pop("semantic_mask")
     on_mask = lighting_samples["DARK_LIGHT_ON"].pop("semantic_mask")
     intersection = int(np.logical_and(off_mask, on_mask).sum())

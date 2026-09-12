@@ -305,6 +305,61 @@ def main() -> int:
                 "depth": depth_report, "evaluation_fingerprint": report["evaluation_fingerprint"],
                 "worker_response_sha256": sha256(response_path),
             })
+            module_runs = {
+                str(manifest.cameras[0].get("module_id", "module_0_upper")): {
+                    "response": str(response_path), "elapsed_seconds": elapsed,
+                    "status": "PASS",
+                }
+            }
+            for module_camera in manifest.cameras[1:]:
+                module_id = str(module_camera["module_id"])
+                module_dir = scene_dir / "modules" / module_id
+                module_binding = json.loads((module_dir / "capture_binding.json").read_text(encoding="utf-8"))
+                module_source = module_dir / "sensor_rgb.png"
+                module_proposals = module_dir / "oracle_proposals.json"
+                module_request = {
+                    "schema_version": SCHEMA_VERSION, "op": "infer",
+                    "request_id": f"isaac-b1-resident-{scene}-{module_id}-{module_binding['frame_sequence']}",
+                    "worker_epoch": worker_epoch,
+                    "proposal_reference": {"uri": module_proposals.resolve().as_uri(), "sha256": sha256(module_proposals)},
+                    "frame": {
+                        "source": "isaac-sim-6.0.1", "stream": f"perception_validation/{module_id}",
+                        "epoch": module_binding["simulation_epoch"], "sequence": module_binding["frame_sequence"],
+                        "capture_time": module_binding["simulation_time"], "receive_time": module_binding["simulation_time"],
+                        "clock_domain": "ros_sim_time", "frame_id": module_camera["frame_id"],
+                        "width": module_camera["resolution"][0], "height": module_camera["resolution"][1],
+                        "encoding": "rgb8", "rgb_uri": module_source.resolve().as_uri(),
+                        "rgb_sha256": sha256(module_source),
+                    },
+                }
+                module_response_path = module_dir / "mode_b1_worker_response.json"
+                if args.reuse_existing:
+                    if not module_response_path.is_file():
+                        raise FileNotFoundError(f"validated Mode B1 response is unavailable for {scene}/{module_id}")
+                    module_response = json.loads(module_response_path.read_text(encoding="utf-8").strip().splitlines()[-1])
+                    module_elapsed = float(module_response.get("elapsed_seconds", 0.0))
+                else:
+                    assert worker is not None
+                    module_started = perf_counter()
+                    module_response = worker.infer(module_request)
+                    module_elapsed = perf_counter() - module_started
+                    module_response["elapsed_seconds"] = module_elapsed
+                    module_response_path.write_text(json.dumps(module_response, sort_keys=True) + "\n", encoding="utf-8")
+                if module_response.get("status") != "COMPLETE":
+                    raise RuntimeError(
+                        f"Mode B1 worker failed for {scene}/{module_id}: "
+                        f"{module_response.get('error_code')} {module_response.get('error_message')}"
+                    )
+                module_metrics = json.loads(Path(module_response["metrics_reference"]["path"]).read_text(encoding="utf-8"))
+                module_artifacts = module_metrics["artifacts"]
+                module_preview = cv2.imread(str(module_artifacts["sam_crossvalidated.jpg"]["path"]))
+                if module_preview is not None:
+                    cv2.imwrite(str(module_dir / "mode_b1_sam_segmentation.png"), module_preview)
+                module_runs[module_id] = {
+                    "response": str(module_response_path), "elapsed_seconds": module_elapsed,
+                    "status": "PASS", "artifacts": module_artifacts,
+                }
+            results[-1]["modules"] = module_runs
     finally:
         if worker is not None:
             worker.close()

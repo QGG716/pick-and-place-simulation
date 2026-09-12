@@ -33,6 +33,7 @@ from unloading_perception.isaac_validation import IsaacSceneManifest, ground_tru
 from unloading_perception.observed_faces import (  # noqa: E402
     observed_faces_from_geometry_record, transform_observed_face_set,
 )
+from unloading_perception.fusion import ModuleFaceBatch, fuse_module_face_batches  # noqa: E402
 from unloading_perception.rgbd import (  # noqa: E402
     CaptureMetadata, MetricPointMap, MetricPointMapSource, PointCloudFilterConfig,
     filter_registered_instance_depth, hypotheses_from_geometry_record, masked_metric_pointmap, register_rgbd,
@@ -69,7 +70,7 @@ def _worker_artifacts(scene_dir: Path) -> dict:
 
 def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: Path, config: dict) -> tuple[MetricPointMap, list[dict]]:
     metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8")))
-    camera = manifest.cameras[0]
+    camera = next(item for item in manifest.cameras if str(item["frame_id"]) == metadata.rgb_frame_id)
     rgb = np.load(scene_dir / "sensor_rgb.npy", allow_pickle=False)
     depth_path = scene_dir / "metric_depth_m.npy"
     depth = np.load(depth_path, allow_pickle=False)
@@ -163,7 +164,7 @@ def _observation(
     masks_path: Path,
     proposals: dict,
     elapsed: float,
-) -> tuple[PerceptionObservation, dict[str, np.ndarray], dict[str, tuple]]:
+) -> tuple[PerceptionObservation, dict[str, np.ndarray], dict[str, tuple], tuple]:
     proposal_by_id = {int(item["id"]): item for item in proposals["instances"]}
     mask_archive = np.load(masks_path, allow_pickle=False)
     masks_by_id = {
@@ -176,6 +177,7 @@ def _observation(
     cargo = []
     unknown = []
     hypothesis_groups = {}
+    observed_face_sets = []
     for record in geometry_payload["instances"]:
         mask_id = int(record["mask_id"])
         source_id = str(mask_id)
@@ -187,6 +189,7 @@ def _observation(
             frame_id=metadata.rgb_frame_id,
         )
         observed_world = transform_observed_face_set(observed_camera, metadata.T_W_C_at_capture, "world")
+        observed_face_sets.append(observed_world)
         hypotheses = hypotheses_from_geometry_record(
             record, source_instance_id=source_id,
             pointmap_source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,
@@ -286,7 +289,7 @@ def _observation(
         },
         False,
     )
-    return observation, masks_by_id, hypothesis_groups
+    return observation, masks_by_id, hypothesis_groups, tuple(observed_face_sets)
 
 
 def _top_view(path: Path, observation: PerceptionObservation) -> None:
@@ -306,6 +309,73 @@ def _top_view(path: Path, observation: PerceptionObservation) -> None:
     cv2.arrowedLine(image, pixel(-2.2, -1.2), pixel(-1.4, -1.2), (0, 0, 220), 3)
     cv2.putText(image, "+X trailer", pixel(-1.9, -1.27), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (0, 0, 220), 1, cv2.LINE_AA)
     cv2.imwrite(str(path), image)
+
+
+def _run_secondary_module(
+    *, scene: str, module_dir: Path, manifest: IsaacSceneManifest, artifacts: dict,
+    config: dict, vision_root: Path, upstream_python: Path, timeout: float,
+) -> dict:
+    masks_path = Path(artifacts["cargo_masks.npz"]["path"])
+    pointmap, audits = _build_pointmap(module_dir, manifest, masks_path, config["vision"]["pointcloud_filter"])
+    pointmap_path = module_dir / "registered_metric_pointmap.npz"
+    pointmap.write_npz(pointmap_path)
+    raw_json = module_dir / "rgbd_cuboids_baseline_raw.json"
+    base_image = module_dir / "rgbd_cuboids_baseline.png"
+    base_command = [
+        str(upstream_python), str(vision_root / "pipeline/geometry/recover_box_cuboids_3d.py"),
+        str(module_dir / "sensor_rgb.png"), str(masks_path), str(pointmap_path),
+        "--faces-json", str(Path(artifacts["box_geometry_2d.json"]["path"])),
+        "--relative-threshold", "0.003", "--seed", "17",
+        "--json-output", str(raw_json), "--output", str(base_image),
+    ]
+    started = perf_counter()
+    completed = subprocess.run(base_command, cwd=vision_root, text=True, capture_output=True, timeout=timeout)
+    if completed.returncode != 0:
+        raise RuntimeError(f"registered RGB-D baseline failed for {scene}/{module_dir.name}: {completed.stderr[-1000:]}")
+    baseline_json = module_dir / "rgbd_cuboids_v4_input.json"
+    write_json(baseline_json, prepare_registered_depth_baseline(json.loads(raw_json.read_text(encoding="utf-8"))))
+    worker_json = module_dir / "rgbd_cuboids_v4_worker.json"
+    geometry_json = module_dir / "rgbd_cuboids.json"
+    geometry_image = module_dir / "rgbd_cuboids.png"
+    command = build_upstream_v4_command(
+        upstream_python, vision_root, source=module_dir / "sensor_rgb.png", masks=masks_path,
+        pointmap=pointmap_path, baseline=baseline_json, fallback=baseline_json,
+        json_output=worker_json, image_output=geometry_image,
+    )
+    validate_upstream_v4_command(command, vision_root)
+    completed = subprocess.run(command, cwd=vision_root, text=True, capture_output=True, timeout=timeout)
+    elapsed = perf_counter() - started
+    if completed.returncode != 0:
+        raise RuntimeError(f"observed-face V4 failed for {scene}/{module_dir.name}: {completed.stderr[-1000:]}")
+    geometry = finalize_registered_depth_result(json.loads(worker_json.read_text(encoding="utf-8")))
+    geometry["method"] = "registered_metric_depth+pinned_planes+upstream_v4_joint_observed_faces"
+    write_json(geometry_json, geometry)
+    proposals = json.loads((module_dir / "oracle_proposals.json").read_text(encoding="utf-8"))
+    proposals["_scene_dir"] = str(module_dir)
+    observation, predicted_masks, hypotheses, observed_sets = _observation(
+        scene, manifest, geometry, masks_path, proposals, elapsed,
+    )
+    truth_payload = json.loads((module_dir / "gt_annotations.json").read_text(encoding="utf-8"))
+    truth = ground_truth_observation(manifest, truth_payload["objects"])
+    gt_archive = np.load(module_dir / "gt_instance_masks.npz", allow_pickle=False)
+    metadata = CaptureMetadata.from_dict(json.loads((module_dir / "capture_metadata.json").read_text(encoding="utf-8")))
+    camera = next(item for item in manifest.cameras if item["frame_id"] == metadata.rgb_frame_id)
+    report = evaluate_observations(
+        truth, observation, ground_truth_masks={name: gt_archive[name] for name in gt_archive.files},
+        prediction_masks=predicted_masks, T_W_C=camera["T_W_C"],
+    )
+    report["mode"] = "STAGED_RGBD"
+    report["module_id"] = module_dir.name
+    report["world_transform_evaluation"]["metric_scale_valid"] = True
+    report["world_transform_evaluation"]["prediction_camera_frame"] = metadata.rgb_frame_id
+    write_evaluation(module_dir / "mode_b_rgbd_evaluation.json", report)
+    (module_dir / "mode_b_rgbd_observation.json").write_text(dumps(observation), encoding="utf-8")
+    write_json(module_dir / "metric_pointmap_filter_audit.json", audits)
+    return {
+        "module_id": module_dir.name, "elapsed_seconds": elapsed, "observation": observation,
+        "observed_face_sets": observed_sets, "hypotheses": hypotheses, "report": report,
+        "geometry_image": geometry_image, "predicted_masks": predicted_masks,
+    }
 
 
 def main() -> int:
@@ -374,7 +444,9 @@ def main() -> int:
         write_json(geometry_json, geometry)
         proposals = json.loads((scene_dir / "oracle_proposals.json").read_text(encoding="utf-8"))
         proposals["_scene_dir"] = str(scene_dir)
-        observation, predicted_masks, hypothesis_groups = _observation(scene, manifest, geometry, masks_path, proposals, elapsed)
+        observation, predicted_masks, hypothesis_groups, upper_observed_sets = _observation(
+            scene, manifest, geometry, masks_path, proposals, elapsed,
+        )
         truth_payload = json.loads((scene_dir / "gt_annotations.json").read_text(encoding="utf-8"))
         truth = ground_truth_observation(manifest, truth_payload["objects"])
         gt_archive = np.load(scene_dir / "gt_instance_masks.npz", allow_pickle=False)
@@ -393,6 +465,40 @@ def main() -> int:
         write_evaluation(scene_dir / "mode_b_rgbd_evaluation.json", report)
         (scene_dir / "mode_b_rgbd_observation.json").write_text(dumps(observation), encoding="utf-8")
         write_json(scene_dir / "metric_pointmap_filter_audit.json", filter_audits)
+        secondary_results = []
+        for module_camera in manifest.cameras[1:]:
+            module_dir = scene_dir / "modules" / str(module_camera["module_id"])
+            secondary_results.append(_run_secondary_module(
+                scene=scene, module_dir=module_dir, manifest=manifest,
+                artifacts=_worker_artifacts(module_dir), config=config, vision_root=vision_root,
+                upstream_python=args.upstream_python, timeout=args.timeout,
+            ))
+        upper_metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8")))
+        batches = [ModuleFaceBatch(
+            str(manifest.cameras[0].get("module_id", "module_0_upper")), upper_metadata.sensor_epoch,
+            upper_metadata.frame_sequence, upper_metadata.capture_center_time,
+            tuple(item for item in upper_observed_sets if item.faces),
+        )]
+        for item in secondary_results:
+            module_dir = scene_dir / "modules" / item["module_id"]
+            metadata = CaptureMetadata.from_dict(json.loads((module_dir / "capture_metadata.json").read_text(encoding="utf-8")))
+            batches.append(ModuleFaceBatch(
+                item["module_id"], metadata.sensor_epoch, metadata.frame_sequence,
+                metadata.capture_center_time, tuple(face_set for face_set in item["observed_face_sets"] if face_set.faces),
+            ))
+        fusion = fuse_module_face_batches(
+            batches, expected_modules=tuple(str(camera["module_id"]) for camera in manifest.cameras),
+        )
+        write_json(scene_dir / "fused_observed_faces.json", asdict(fusion))
+        fusion_metrics = {
+            "fused_object_count": len(fusion.objects),
+            "overlap_group_count": sum(len(item.source_members) > 1 for item in fusion.objects),
+            "conflict_group_count": sum(item.association_status == "CONFLICT_RETAINED_NO_AVERAGE" for item in fusion.objects),
+            "published_observed_face_count": sum(len(item.observed_faces) for item in fusion.objects),
+            "coverage_status": fusion.coverage_status,
+            "oracle_identity_used": False,
+        }
+        write_json(scene_dir / "multimodule_fusion_metrics.json", fusion_metrics)
         mode_c_scene = mode_c_by_scene[scene]
         comparison = {
             "scene": scene,
@@ -411,6 +517,14 @@ def main() -> int:
             "hypothesis_count": sum(len(items) for items in hypothesis_groups.values()),
             "ambiguous_instance_count": sum(len(items) > 1 for items in hypothesis_groups.values()),
             "elapsed_seconds": elapsed,
+            "modules": {
+                batches[0].module_id: {"elapsed_seconds": elapsed, "observed_face_sets": len(batches[0].face_sets)},
+                **{item["module_id"]: {
+                    "elapsed_seconds": item["elapsed_seconds"],
+                    "observed_face_sets": len(item["observed_face_sets"]),
+                } for item in secondary_results},
+            },
+            "fusion": fusion_metrics,
         }
         for key in ("center_error_m", "orientation_error_deg", "dimension_abs_error_m"):
             moge = comparison["moge"][key]

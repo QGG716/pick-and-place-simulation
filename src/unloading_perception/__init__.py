@@ -2,6 +2,7 @@
 
 from .backends import CargoJsonReplayBackend, CargoPipelineBackend, SimGroundTruthBackend
 from .execution import ExecutionGate
+from .fusion import FusionResult, ModuleFaceBatch, fuse_module_face_batches
 from .isaac_validation import (
     HistoricalResultGate,
     IsaacCaptureBinding,
@@ -16,6 +17,7 @@ from .scene import ObservationTracker, SnapshotAssembler, build_scene_update
 __all__ = [
     "CargoJsonReplayBackend", "CargoPipelineBackend", "SimGroundTruthBackend",
     "ExecutionGate", "ObservationTracker", "SnapshotAssembler", "build_scene_update",
+    "FusionResult", "ModuleFaceBatch", "fuse_module_face_batches",
     "HistoricalResultGate", "IsaacCaptureBinding", "IsaacSceneManifest",
     "SimulationClockGuard", "build_feasibility_handoff", "build_scene_manifest",
     "ground_truth_observation",

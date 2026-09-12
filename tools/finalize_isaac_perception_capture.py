@@ -110,6 +110,34 @@ def main() -> int:
             )],
         }
         write_json(scene_dir / "oracle_proposals.json", proposals)
+        module_proposals = {}
+        for camera in manifest.cameras:
+            module_id = str(camera.get("module_id", camera["camera_id"]))
+            module_dir = scene_dir / "modules" / module_id
+            module_annotations_path = module_dir / "gt_annotations.json"
+            module_binding_path = module_dir / "capture_binding.json"
+            if not module_annotations_path.is_file() or not module_binding_path.is_file():
+                raise FileNotFoundError(f"dual-module capture artifacts missing for {scene_name}/{module_id}")
+            module_annotations = json.loads(module_annotations_path.read_text(encoding="utf-8"))
+            module_binding = json.loads(module_binding_path.read_text(encoding="utf-8"))
+            payload = {
+                "schema_version": "isaac_oracle_proposals_v1", "module_id": module_id,
+                "coordinate_space": "source_image", "source_size": list(camera["resolution"]),
+                "source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL", "raw_image_automatic": False,
+                "simulation_epoch": module_binding["simulation_epoch"],
+                "frame_sequence": module_binding["frame_sequence"], "rgb_sha256": module_binding["rgb_sha256"],
+                "instances": [{
+                    "id": proposal_index, "instance_id": proposal_index,
+                    "simulation_object_id": item["simulation_object_id"],
+                    "oracle_proposal_source_id": item["simulation_object_id"], "label": "box",
+                    "bbox": item["bbox_xyxy"], "visible": item["visible"], "occluded": item["occluded"],
+                    "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+                } for proposal_index, item in enumerate(
+                    (item for item in module_annotations["objects"] if item["visible"]), start=1
+                )],
+            }
+            write_json(module_dir / "oracle_proposals.json", payload)
+            module_proposals[module_id] = len(payload["instances"])
         results.append({
             "scene": scene_name,
             "mode_a_status": "PASS",
@@ -119,6 +147,7 @@ def main() -> int:
             "candidate_count": len(assembled.snapshot.scene_snapshot["obstacles"]),
             "unknown_region_count": len(observation.unknown_regions),
             "feasibility_handoff_status": compatibility["status"],
+            "module_proposal_counts": module_proposals,
         })
     summary = {
         "schema_version": "isaac_perception_domain_finalize_v2",
