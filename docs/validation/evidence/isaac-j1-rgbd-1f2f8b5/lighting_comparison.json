@@ -1,0 +1,31 @@
+{
+  "schema_version": "simulation_illumination_validation_v1",
+  "status": "PASS",
+  "geometry_status": "SIMULATION_LIGHT_PROXY",
+  "claim_boundary": "simulation illumination validation; no real lux claim",
+  "controlled_variables": [
+    "scene",
+    "camera_pose",
+    "exposure",
+    "proposal",
+    "depth"
+  ],
+  "samples": {
+    "DARK_LIGHT_OFF": {
+      "mean_luminance": 0.028616865240066073,
+      "shadow_fraction": 0.9643704275262918,
+      "underexposed_fraction": 0.9325024291266575,
+      "saturated_pixel_ratio": 0.0,
+      "semantic_carton_pixel_count": 1244986
+    },
+    "DARK_LIGHT_ON": {
+      "mean_luminance": 0.029454383045723245,
+      "shadow_fraction": 0.9643863041711122,
+      "underexposed_fraction": 0.9323222292079459,
+      "saturated_pixel_ratio": 0.0,
+      "semantic_carton_pixel_count": 1244986
+    }
+  },
+  "mask_iou_light_off_vs_on": 1.0,
+  "segmentation_retention_ratio": 1.0
+}

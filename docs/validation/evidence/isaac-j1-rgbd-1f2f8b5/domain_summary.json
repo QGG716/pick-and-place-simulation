@@ -1,0 +1,94 @@
+{
+  "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "mode_a": "PASS",
+  "mode_b_staged_rgbd": "PASS",
+  "mode_b_summary": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/rgbd_vs_moge_summary.json",
+  "mode_c_moge": "PASS",
+  "mode_c_moge_summary": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/mode_c_moge_summary.json",
+  "raw_image_automatic": false,
+  "scenes": [
+    {
+      "candidate_count": 40,
+      "feasibility_handoff_status": "COMPATIBLE_WITH_KNOWN_GAP",
+      "mode_a_status": "PASS",
+      "planning_world_snapshot": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/MECHANICAL_TOP_VIEW/planning_world_snapshot.json",
+      "scene": "MECHANICAL_TOP_VIEW",
+      "scene_revision": 0,
+      "unknown_region_count": 27,
+      "world_fingerprint": "b4fb0dc1dbe69ff86d5f774eee9afe0d0c3ce8f425f5a95a61ef8e0639f0bc4f"
+    },
+    {
+      "candidate_count": 40,
+      "feasibility_handoff_status": "COMPATIBLE_WITH_KNOWN_GAP",
+      "mode_a_status": "PASS",
+      "planning_world_snapshot": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/J1_ROTATION_SWEEP/planning_world_snapshot.json",
+      "scene": "J1_ROTATION_SWEEP",
+      "scene_revision": 1,
+      "unknown_region_count": 27,
+      "world_fingerprint": "95c3b00b9241d3cabb8a6fc6b33e94c75d5bd2bfbe9033be8e1e0e0bb0e7e909"
+    },
+    {
+      "candidate_count": 40,
+      "feasibility_handoff_status": "COMPATIBLE_WITH_KNOWN_GAP",
+      "mode_a_status": "PASS",
+      "planning_world_snapshot": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/FULL_STACK_NOMINAL/planning_world_snapshot.json",
+      "scene": "FULL_STACK_NOMINAL",
+      "scene_revision": 2,
+      "unknown_region_count": 27,
+      "world_fingerprint": "6ab22ecf1d522b5bfa668d859c175e3a58d98e119123244f986ed0d25b531711"
+    },
+    {
+      "candidate_count": 40,
+      "feasibility_handoff_status": "COMPATIBLE_WITH_KNOWN_GAP",
+      "mode_a_status": "PASS",
+      "planning_world_snapshot": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/DARK_LIGHT_OFF/planning_world_snapshot.json",
+      "scene": "DARK_LIGHT_OFF",
+      "scene_revision": 3,
+      "unknown_region_count": 27,
+      "world_fingerprint": "308b212bf6d50ebd2699a4d87fbe3fe36fba24ce987b1b28aaf3fef5707b6e16"
+    },
+    {
+      "candidate_count": 40,
+      "feasibility_handoff_status": "COMPATIBLE_WITH_KNOWN_GAP",
+      "mode_a_status": "PASS",
+      "planning_world_snapshot": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/DARK_LIGHT_ON/planning_world_snapshot.json",
+      "scene": "DARK_LIGHT_ON",
+      "scene_revision": 4,
+      "unknown_region_count": 27,
+      "world_fingerprint": "81087b892f6bd68ae2c034b2580098128cee2c49491ecd57968450f829b0b9c2"
+    },
+    {
+      "candidate_count": 40,
+      "feasibility_handoff_status": "COMPATIBLE_WITH_KNOWN_GAP",
+      "mode_a_status": "PASS",
+      "planning_world_snapshot": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/RGBD_CALIBRATION_BOX/planning_world_snapshot.json",
+      "scene": "RGBD_CALIBRATION_BOX",
+      "scene_revision": 5,
+      "unknown_region_count": 39,
+      "world_fingerprint": "13f22932269313dcb1f86b309c78278954042c962ced5eb9dbcdaebf0baede8d"
+    },
+    {
+      "candidate_count": 40,
+      "feasibility_handoff_status": "COMPATIBLE_WITH_KNOWN_GAP",
+      "mode_a_status": "PASS",
+      "planning_world_snapshot": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/PARTIAL_OCCLUSION/planning_world_snapshot.json",
+      "scene": "PARTIAL_OCCLUSION",
+      "scene_revision": 6,
+      "unknown_region_count": 30,
+      "world_fingerprint": "05d0b3e0ac8576ecc103d86507f647fca4a92978ad8836079cfa20c213e8513c"
+    },
+    {
+      "candidate_count": 40,
+      "feasibility_handoff_status": "COMPATIBLE_WITH_KNOWN_GAP",
+      "mode_a_status": "PASS",
+      "planning_world_snapshot": "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/outputs/isaac_j1_mast_rgbd_1f2f8b5/MOTION_TIMESTAMP_TEST/planning_world_snapshot.json",
+      "scene": "MOTION_TIMESTAMP_TEST",
+      "scene_revision": 7,
+      "unknown_region_count": 27,
+      "world_fingerprint": "d340321907a09343cbf31b7d6476bae138d3358d0d3a7545360c37a2d2d8c237"
+    }
+  ],
+  "schema_version": "isaac_perception_domain_finalize_v2",
+  "status": "PASS_WITH_KNOWN_FEASIBILITY_GAP"
+}

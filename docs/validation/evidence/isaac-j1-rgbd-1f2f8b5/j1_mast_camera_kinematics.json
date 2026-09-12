@@ -1,0 +1,161 @@
+{
+  "flange_height_status": "PROVISIONAL_ENGINEERING_DATUM",
+  "nominal_q1_rad": -1.5707963267948966,
+  "parent_frame": "J1_link",
+  "physical_relation": "camera optical forward and J1 arm heading differ by +90 degrees",
+  "rig_id": "m710id70_j1_perception_mast_v2",
+  "samples": [
+    {
+      "camera_center_world_m": [
+        -1.325,
+        0.75,
+        2.6293411964178084
+      ],
+      "camera_heading_world_rad": 0.0,
+      "camera_j1_yaw_offset_rad": 1.5707963267948966,
+      "camera_roll_pitch_level": true,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "j1_heading_world_rad": -1.5707963267948966,
+      "mast_center_world_m": [
+        -1.325,
+        0.75,
+        1.3293411964178086
+      ],
+      "mast_offset_world_m": [
+        0.0,
+        0.4,
+        0.16434119641780853
+      ],
+      "mast_radius_m": 0.4,
+      "q1_rad": -1.5707963267948966,
+      "radius_pass": true,
+      "yaw_phase_pass": true
+    },
+    {
+      "camera_center_world_m": [
+        -1.607842712474619,
+        0.632842712474619,
+        2.6293411964178084
+      ],
+      "camera_heading_world_rad": 0.7853981633974483,
+      "camera_j1_yaw_offset_rad": 1.5707963267948966,
+      "camera_roll_pitch_level": true,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "j1_heading_world_rad": -0.7853981633974483,
+      "mast_center_world_m": [
+        -1.607842712474619,
+        0.632842712474619,
+        1.3293411964178086
+      ],
+      "mast_offset_world_m": [
+        -0.2828427124746191,
+        0.282842712474619,
+        0.16434119641780853
+      ],
+      "mast_radius_m": 0.4000000000000001,
+      "q1_rad": -0.7853981633974483,
+      "radius_pass": true,
+      "yaw_phase_pass": true
+    },
+    {
+      "camera_center_world_m": [
+        -1.725,
+        0.35,
+        2.6293411964178084
+      ],
+      "camera_heading_world_rad": 1.5707963267948966,
+      "camera_j1_yaw_offset_rad": 1.5707963267948966,
+      "camera_roll_pitch_level": true,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "j1_heading_world_rad": 0.0,
+      "mast_center_world_m": [
+        -1.725,
+        0.35,
+        1.3293411964178086
+      ],
+      "mast_offset_world_m": [
+        -0.40000000000000013,
+        0.0,
+        0.16434119641780853
+      ],
+      "mast_radius_m": 0.40000000000000013,
+      "q1_rad": 0.0,
+      "radius_pass": true,
+      "yaw_phase_pass": true
+    },
+    {
+      "camera_center_world_m": [
+        -1.607842712474619,
+        0.06715728752538097,
+        2.6293411964178084
+      ],
+      "camera_heading_world_rad": 2.356194490192345,
+      "camera_j1_yaw_offset_rad": 1.5707963267948966,
+      "camera_roll_pitch_level": true,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "j1_heading_world_rad": 0.7853981633974483,
+      "mast_center_world_m": [
+        -1.607842712474619,
+        0.06715728752538097,
+        1.3293411964178086
+      ],
+      "mast_offset_world_m": [
+        -0.2828427124746191,
+        -0.282842712474619,
+        0.16434119641780853
+      ],
+      "mast_radius_m": 0.4000000000000001,
+      "q1_rad": 0.7853981633974483,
+      "radius_pass": true,
+      "yaw_phase_pass": true
+    },
+    {
+      "camera_center_world_m": [
+        -1.325,
+        -0.050000000000000044,
+        2.6293411964178084
+      ],
+      "camera_heading_world_rad": 3.141592653589793,
+      "camera_j1_yaw_offset_rad": 1.5707963267948966,
+      "camera_roll_pitch_level": true,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "j1_heading_world_rad": 1.5707963267948966,
+      "mast_center_world_m": [
+        -1.325,
+        -0.050000000000000044,
+        1.3293411964178086
+      ],
+      "mast_offset_world_m": [
+        0.0,
+        -0.4,
+        0.16434119641780853
+      ],
+      "mast_radius_m": 0.4,
+      "q1_rad": 1.5707963267948966,
+      "radius_pass": true,
+      "yaw_phase_pass": true
+    }
+  ],
+  "schema_version": "j1_mast_camera_kinematics_v2",
+  "status": "PASS"
+}

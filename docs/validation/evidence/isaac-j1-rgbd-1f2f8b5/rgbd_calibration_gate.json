@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "center_translation_error_m": {
+      "maximum": 0.1,
+      "value": 0.024878672944240596
+    },
+    "full_dimension_abs_error_m": {
+      "maximum": 0.15,
+      "value": 0.009189999999999995
+    },
+    "orientation_error_deg": {
+      "maximum": 20.0,
+      "value": 1.493127949915771
+    }
+  },
+  "failure_action": "STOP_BEFORE_FULL_STACK_RGBD_EVALUATION",
+  "schema_version": "rgbd_calibration_gate_v1",
+  "status": "PASS"
+}

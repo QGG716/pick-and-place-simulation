@@ -1,0 +1,260 @@
+{
+  "calibration_gate": "PASS",
+  "claim_boundary": "PERCEPTION_GEOMETRY_VALID is distinct from FEASIBILITY_EXECUTION_VALID",
+  "comparison_mode": "STAGED_MONOCULAR_MOGE",
+  "detector_metrics": "NOT_EVALUATED",
+  "primary_mode": "STAGED_RGBD",
+  "proposal_source": "ISAAC_GT_ORACLE_PROPOSAL",
+  "scenes": [
+    {
+      "ambiguous_instance_count": 0,
+      "elapsed_seconds": 1.7015974479727447,
+      "hypothesis_count": 1,
+      "moge": {
+        "center_error_m": 0.569890041674978,
+        "dimension_abs_error_m": 0.18856666666666663,
+        "dimension_relative_error": [
+          0.4211166666666666,
+          0.35672499999999996,
+          0.5678
+        ],
+        "orientation_error_deg": 85.70710105817898
+      },
+      "relative_improvement": {
+        "center_error_m": 0.956344783861955,
+        "dimension_abs_error_m": 0.9512639208060809,
+        "orientation_error_deg": 0.9825787136482166
+      },
+      "rgbd": {
+        "center_error_m": 0.024878672944240596,
+        "dimension_abs_error_m": 0.009189999999999995,
+        "dimension_relative_error": [
+          0.021383333333333348,
+          0.014824999999999977,
+          0.029366666666666617
+        ],
+        "orientation_error_deg": 1.493127949915771
+      },
+      "scene": "RGBD_CALIBRATION_BOX"
+    },
+    {
+      "ambiguous_instance_count": 10,
+      "elapsed_seconds": 5.97160889999941,
+      "hypothesis_count": 20,
+      "moge": {
+        "center_error_m": 0.9324572611041937,
+        "dimension_abs_error_m": 0.2860953333333333,
+        "dimension_relative_error": [
+          0.7824916666666667,
+          0.5925475,
+          0.5059066666666666
+        ],
+        "orientation_error_deg": 130.56323063065977
+      },
+      "relative_improvement": {
+        "center_error_m": 0.04218480044430768,
+        "dimension_abs_error_m": 0.31887389518179254,
+        "orientation_error_deg": 0.035426192506243195
+      },
+      "rgbd": {
+        "center_error_m": 0.8931217376216676,
+        "dimension_abs_error_m": 0.19486699999999998,
+        "dimension_relative_error": [
+          0.4433783333333333,
+          0.3773275000000001,
+          0.55881
+        ],
+        "orientation_error_deg": 125.937872488101
+      },
+      "scene": "MECHANICAL_TOP_VIEW"
+    },
+    {
+      "ambiguous_instance_count": 10,
+      "elapsed_seconds": 6.038608225993812,
+      "hypothesis_count": 20,
+      "moge": {
+        "center_error_m": 0.7606780086633076,
+        "dimension_abs_error_m": 0.258789,
+        "dimension_relative_error": [
+          0.7274116666666666,
+          0.52988,
+          0.42655999999999994
+        ],
+        "orientation_error_deg": 139.6729110430901
+      },
+      "relative_improvement": {
+        "center_error_m": -0.17355462442661432,
+        "dimension_abs_error_m": 0.2419293967930116,
+        "orientation_error_deg": 0.033987658297012474
+      },
+      "rgbd": {
+        "center_error_m": 0.8926971947664528,
+        "dimension_abs_error_m": 0.19618033333333332,
+        "dimension_relative_error": [
+          0.44210166666666667,
+          0.38375750000000003,
+          0.5659233333333333
+        ],
+        "orientation_error_deg": 134.92575586920853
+      },
+      "scene": "J1_ROTATION_SWEEP"
+    },
+    {
+      "ambiguous_instance_count": 10,
+      "elapsed_seconds": 5.719178561121225,
+      "hypothesis_count": 20,
+      "moge": {
+        "center_error_m": 0.819571167046694,
+        "dimension_abs_error_m": 0.2712513333333333,
+        "dimension_relative_error": [
+          0.7473016666666668,
+          0.5766600000000001,
+          0.44902999999999993
+        ],
+        "orientation_error_deg": 122.32559137574717
+      },
+      "relative_improvement": {
+        "center_error_m": -0.16677680492230298,
+        "dimension_abs_error_m": 0.2417991186525656,
+        "orientation_error_deg": -0.07838409385355338
+      },
+      "rgbd": {
+        "center_error_m": 0.9562566276931846,
+        "dimension_abs_error_m": 0.205663,
+        "dimension_relative_error": [
+          0.44691166666666665,
+          0.43700250000000007,
+          0.5801366666666666
+        ],
+        "orientation_error_deg": 131.91397201083515
+      },
+      "scene": "FULL_STACK_NOMINAL"
+    },
+    {
+      "ambiguous_instance_count": 9,
+      "elapsed_seconds": 5.077921207994223,
+      "hypothesis_count": 18,
+      "moge": {
+        "center_error_m": 0.6991611181741101,
+        "dimension_abs_error_m": 0.27881407407407405,
+        "dimension_relative_error": [
+          0.8471518518518518,
+          0.5405722222222222,
+          0.37307407407407406
+        ],
+        "orientation_error_deg": 158.97308914546826
+      },
+      "relative_improvement": {
+        "center_error_m": -0.2787352452992049,
+        "dimension_abs_error_m": 0.3343725674085213,
+        "orientation_error_deg": 0.20346901469611936
+      },
+      "rgbd": {
+        "center_error_m": 0.894041963952037,
+        "dimension_abs_error_m": 0.18558629629629628,
+        "dimension_relative_error": [
+          0.4188074074074074,
+          0.3531666666666667,
+          0.5473592592592591
+        ],
+        "orientation_error_deg": 126.62699133384149
+      },
+      "scene": "DARK_LIGHT_OFF"
+    },
+    {
+      "ambiguous_instance_count": 9,
+      "elapsed_seconds": 5.127629168098792,
+      "hypothesis_count": 18,
+      "moge": {
+        "center_error_m": 0.7250050758083078,
+        "dimension_abs_error_m": 0.28320111111111107,
+        "dimension_relative_error": [
+          0.8391796296296294,
+          0.5569555555555555,
+          0.41104444444444443
+        ],
+        "orientation_error_deg": 130.95387840956138
+      },
+      "relative_improvement": {
+        "center_error_m": -0.22809588062267105,
+        "dimension_abs_error_m": 0.34116967002902004,
+        "orientation_error_deg": 0.10923844141700816
+      },
+      "rgbd": {
+        "center_error_m": 0.8903757470307101,
+        "dimension_abs_error_m": 0.18658148148148146,
+        "dimension_relative_error": [
+          0.4217296296296296,
+          0.3555805555555556,
+          0.548248148148148
+        ],
+        "orientation_error_deg": 116.6486808345885
+      },
+      "scene": "DARK_LIGHT_ON"
+    },
+    {
+      "ambiguous_instance_count": 8,
+      "elapsed_seconds": 5.380320091964677,
+      "hypothesis_count": 17,
+      "moge": {
+        "center_error_m": 0.562840460919491,
+        "dimension_abs_error_m": 0.2839866666666666,
+        "dimension_relative_error": [
+          0.8012944444444444,
+          0.5879749999999999,
+          0.45331111111111105
+        ],
+        "orientation_error_deg": 129.54518513090818
+      },
+      "relative_improvement": {
+        "center_error_m": -0.4641923794065895,
+        "dimension_abs_error_m": 0.18237554188772537,
+        "orientation_error_deg": 0.04799914303790058
+      },
+      "rgbd": {
+        "center_error_m": 0.8241067137000111,
+        "dimension_abs_error_m": 0.23219444444444445,
+        "dimension_relative_error": [
+          0.47755000000000003,
+          0.5600194444444444,
+          0.620151851851852
+        ],
+        "orientation_error_deg": 123.32712725993841
+      },
+      "scene": "PARTIAL_OCCLUSION"
+    },
+    {
+      "ambiguous_instance_count": 11,
+      "elapsed_seconds": 6.351397913880646,
+      "hypothesis_count": 22,
+      "moge": {
+        "center_error_m": 0.7914828364657741,
+        "dimension_abs_error_m": 0.2797187878787879,
+        "dimension_relative_error": [
+          0.7761030303030303,
+          0.5915022727272727,
+          0.45631212121212117
+        ],
+        "orientation_error_deg": 139.03931507159635
+      },
+      "relative_improvement": {
+        "center_error_m": -0.19226404313966017,
+        "dimension_abs_error_m": 0.25206376100672556,
+        "orientation_error_deg": 0.11728047609494831
+      },
+      "rgbd": {
+        "center_error_m": 0.9436565266803303,
+        "dimension_abs_error_m": 0.20921181818181814,
+        "dimension_relative_error": [
+          0.46333181818181823,
+          0.43563181818181823,
+          0.5846121212121211
+        ],
+        "orientation_error_deg": 122.732718004084
+      },
+      "scene": "MOTION_TIMESTAMP_TEST"
+    }
+  ],
+  "schema_version": "rgbd_vs_moge_summary_v1",
+  "status": "PASS"
+}

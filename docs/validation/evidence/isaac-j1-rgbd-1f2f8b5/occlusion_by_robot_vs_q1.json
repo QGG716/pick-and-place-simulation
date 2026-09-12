@@ -1,0 +1,108 @@
+{
+  "schema_version": "occlusion_by_robot_vs_q1_v1",
+  "rig_id": "m710id70_j1_perception_mast_v2",
+  "method": "Isaac rendered semantic carton pixels with robot visible versus hidden",
+  "samples": [
+    {
+      "q1_deg": -90.0,
+      "q1_rad": -1.5707963267948966,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "mast_center_world_m": [
+        -1.325,
+        0.75,
+        1.3293411964178086
+      ],
+      "mast_j1_radius_m": 0.4,
+      "camera_j1_yaw_offset_deg": 90.0,
+      "carton_pixels_with_robot": 220550,
+      "carton_pixels_without_robot": 220550,
+      "robot_occlusion_fraction": 0.0,
+      "robot_occlusion_status": "OBSERVED"
+    },
+    {
+      "q1_deg": -45.0,
+      "q1_rad": -0.7853981633974483,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "mast_center_world_m": [
+        -1.607842712474619,
+        0.632842712474619,
+        1.3293411964178086
+      ],
+      "mast_j1_radius_m": 0.4000000000000001,
+      "camera_j1_yaw_offset_deg": 90.0,
+      "carton_pixels_with_robot": 69447,
+      "carton_pixels_without_robot": 69447,
+      "robot_occlusion_fraction": 0.0,
+      "robot_occlusion_status": "OBSERVED"
+    },
+    {
+      "q1_deg": 0.0,
+      "q1_rad": 0.0,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "mast_center_world_m": [
+        -1.725,
+        0.35,
+        1.3293411964178086
+      ],
+      "mast_j1_radius_m": 0.40000000000000013,
+      "camera_j1_yaw_offset_deg": 90.0,
+      "carton_pixels_with_robot": 0,
+      "carton_pixels_without_robot": 0,
+      "robot_occlusion_fraction": null,
+      "robot_occlusion_status": "NOT_OBSERVABLE_NO_CARTON_PIXELS"
+    },
+    {
+      "q1_deg": 45.0,
+      "q1_rad": 0.7853981633974483,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "mast_center_world_m": [
+        -1.607842712474619,
+        0.06715728752538097,
+        1.3293411964178086
+      ],
+      "mast_j1_radius_m": 0.4000000000000001,
+      "camera_j1_yaw_offset_deg": 90.0,
+      "carton_pixels_with_robot": 0,
+      "carton_pixels_without_robot": 0,
+      "robot_occlusion_fraction": null,
+      "robot_occlusion_status": "NOT_OBSERVABLE_NO_CARTON_PIXELS"
+    },
+    {
+      "q1_deg": 90.0,
+      "q1_rad": 1.5707963267948966,
+      "j1_center_world_m": [
+        -1.325,
+        0.35,
+        1.165
+      ],
+      "mast_center_world_m": [
+        -1.325,
+        -0.050000000000000044,
+        1.3293411964178086
+      ],
+      "mast_j1_radius_m": 0.4,
+      "camera_j1_yaw_offset_deg": 90.0,
+      "carton_pixels_with_robot": 0,
+      "carton_pixels_without_robot": 0,
+      "robot_occlusion_fraction": null,
+      "robot_occlusion_status": "NOT_OBSERVABLE_NO_CARTON_PIXELS"
+    }
+  ],
+  "status": "PASS"
+}
