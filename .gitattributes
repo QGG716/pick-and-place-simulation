@@ -34,3 +34,7 @@ scripts/expand_official_m710id70_urdf.py text eol=lf
 # Keep those exact bytes on Linux as well as Windows instead of normalizing it.
 assets/grippers/shanghai_wantai_three_zone/mass_properties.json binary
 scripts/analyze_gripper_step.py binary
+
+# M-710 replay bundles bind this adapter's raw source bytes. Preserve the
+# validated mixed-newline byte stream so a clean Linux checkout can reuse it.
+scripts/isaacsim_fanuc_replay.py binary
