@@ -1,0 +1,1651 @@
+{
+  "actual_capture": {
+    "K": [
+      1296.0000000000002,
+      0.0,
+      1295.5,
+      0.0,
+      1525.7343809582005,
+      971.5,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "T_W_C": [
+      [
+        0.0,
+        0.0,
+        1.0,
+        -1.325
+      ],
+      [
+        -1.0,
+        0.0,
+        0.0,
+        0.75
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0,
+        2.6293411964178084
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "camera_id": "module_0_main_rgbd",
+    "capture_pose_matches_camera_info": true,
+    "frame_id": "module_0_main_rgb_optical",
+    "render_product_module_matches": true,
+    "rgb_sha256": "802beed2802fb6456e800a153b9cfc61f20d2301c96173b3905288e6c8569c92",
+    "rgb_size_px": [
+      2592,
+      1944
+    ]
+  },
+  "conclusion": "The missing image-right stack/wall content is primarily a horizontal projection limit, while missing lower layers are a vertical projection limit; projected cartons can additionally be mechanically occluded.",
+  "frustum_coverage": {
+    "carton_count": 40,
+    "cartons": [
+      {
+        "center_world_m": [
+          0.3,
+          -0.84,
+          0.15
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -1.04,
+            0.0
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            0.0
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            0.3
+          ],
+          [
+            0.0,
+            -1.04,
+            0.3
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l00_c00",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.42,
+          0.15
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.62,
+            0.0
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            0.0
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            0.3
+          ],
+          [
+            0.0,
+            -0.62,
+            0.3
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l00_c01",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.0,
+          0.15
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.2,
+            0.0
+          ],
+          [
+            0.0,
+            0.2,
+            0.0
+          ],
+          [
+            0.0,
+            0.2,
+            0.3
+          ],
+          [
+            0.0,
+            -0.2,
+            0.3
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l00_c02",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.42,
+          0.15
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.21999999999999997,
+            0.0
+          ],
+          [
+            0.0,
+            0.62,
+            0.0
+          ],
+          [
+            0.0,
+            0.62,
+            0.3
+          ],
+          [
+            0.0,
+            0.21999999999999997,
+            0.3
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l00_c03",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.84,
+          0.15
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.6399999999999999,
+            0.0
+          ],
+          [
+            0.0,
+            1.04,
+            0.0
+          ],
+          [
+            0.0,
+            1.04,
+            0.3
+          ],
+          [
+            0.0,
+            0.6399999999999999,
+            0.3
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l00_c04",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.84,
+          0.44999999999999996
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -1.04,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            0.6
+          ],
+          [
+            0.0,
+            -1.04,
+            0.6
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l01_c00",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.42,
+          0.44999999999999996
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.62,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            0.6
+          ],
+          [
+            0.0,
+            -0.62,
+            0.6
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l01_c01",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.0,
+          0.44999999999999996
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.2,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            0.2,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            0.2,
+            0.6
+          ],
+          [
+            0.0,
+            -0.2,
+            0.6
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l01_c02",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.42,
+          0.44999999999999996
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.21999999999999997,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            0.62,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            0.62,
+            0.6
+          ],
+          [
+            0.0,
+            0.21999999999999997,
+            0.6
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l01_c03",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.84,
+          0.44999999999999996
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.6399999999999999,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            1.04,
+            0.29999999999999993
+          ],
+          [
+            0.0,
+            1.04,
+            0.6
+          ],
+          [
+            0.0,
+            0.6399999999999999,
+            0.6
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l01_c04",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.84,
+          0.75
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -1.04,
+            0.6
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            0.6
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            0.9
+          ],
+          [
+            0.0,
+            -1.04,
+            0.9
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l02_c00",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.42,
+          0.75
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.62,
+            0.6
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            0.6
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            0.9
+          ],
+          [
+            0.0,
+            -0.62,
+            0.9
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l02_c01",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.0,
+          0.75
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.2,
+            0.6
+          ],
+          [
+            0.0,
+            0.2,
+            0.6
+          ],
+          [
+            0.0,
+            0.2,
+            0.9
+          ],
+          [
+            0.0,
+            -0.2,
+            0.9
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l02_c02",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.42,
+          0.75
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.21999999999999997,
+            0.6
+          ],
+          [
+            0.0,
+            0.62,
+            0.6
+          ],
+          [
+            0.0,
+            0.62,
+            0.9
+          ],
+          [
+            0.0,
+            0.21999999999999997,
+            0.9
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l02_c03",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.84,
+          0.75
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.6399999999999999,
+            0.6
+          ],
+          [
+            0.0,
+            1.04,
+            0.6
+          ],
+          [
+            0.0,
+            1.04,
+            0.9
+          ],
+          [
+            0.0,
+            0.6399999999999999,
+            0.9
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l02_c04",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.84,
+          1.0499999999999998
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -1.04,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            1.1999999999999997
+          ],
+          [
+            0.0,
+            -1.04,
+            1.1999999999999997
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l03_c00",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.42,
+          1.0499999999999998
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.62,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            1.1999999999999997
+          ],
+          [
+            0.0,
+            -0.62,
+            1.1999999999999997
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l03_c01",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.0,
+          1.0499999999999998
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.2,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            0.2,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            0.2,
+            1.1999999999999997
+          ],
+          [
+            0.0,
+            -0.2,
+            1.1999999999999997
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l03_c02",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.42,
+          1.0499999999999998
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.21999999999999997,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            0.62,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            0.62,
+            1.1999999999999997
+          ],
+          [
+            0.0,
+            0.21999999999999997,
+            1.1999999999999997
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l03_c03",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.84,
+          1.0499999999999998
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.6399999999999999,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            1.04,
+            0.8999999999999998
+          ],
+          [
+            0.0,
+            1.04,
+            1.1999999999999997
+          ],
+          [
+            0.0,
+            0.6399999999999999,
+            1.1999999999999997
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l03_c04",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.84,
+          1.3499999999999999
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -1.04,
+            1.2
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            1.2
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            1.4999999999999998
+          ],
+          [
+            0.0,
+            -1.04,
+            1.4999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l04_c00",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.42,
+          1.3499999999999999
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.62,
+            1.2
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            1.2
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            1.4999999999999998
+          ],
+          [
+            0.0,
+            -0.62,
+            1.4999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l04_c01",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.0,
+          1.3499999999999999
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.2,
+            1.2
+          ],
+          [
+            0.0,
+            0.2,
+            1.2
+          ],
+          [
+            0.0,
+            0.2,
+            1.4999999999999998
+          ],
+          [
+            0.0,
+            -0.2,
+            1.4999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l04_c02",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.42,
+          1.3499999999999999
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.21999999999999997,
+            1.2
+          ],
+          [
+            0.0,
+            0.62,
+            1.2
+          ],
+          [
+            0.0,
+            0.62,
+            1.4999999999999998
+          ],
+          [
+            0.0,
+            0.21999999999999997,
+            1.4999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l04_c03",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.84,
+          1.3499999999999999
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.6399999999999999,
+            1.2
+          ],
+          [
+            0.0,
+            1.04,
+            1.2
+          ],
+          [
+            0.0,
+            1.04,
+            1.4999999999999998
+          ],
+          [
+            0.0,
+            0.6399999999999999,
+            1.4999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l04_c04",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.84,
+          1.65
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -1.04,
+            1.5
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            1.5
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            -1.04,
+            1.7999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l05_c00",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.42,
+          1.65
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.62,
+            1.5
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            1.5
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            -0.62,
+            1.7999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.05325987144168962
+        },
+        "simulation_object_id": "carton_l05_c01",
+        "uncovered_sample_count": 1031,
+        "union_sample_coverage": 0.05325987144168962
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.0,
+          1.65
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.2,
+            1.5
+          ],
+          [
+            0.0,
+            0.2,
+            1.5
+          ],
+          [
+            0.0,
+            0.2,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            -0.2,
+            1.7999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.06060606060606061
+        },
+        "simulation_object_id": "carton_l05_c02",
+        "uncovered_sample_count": 1023,
+        "union_sample_coverage": 0.06060606060606061
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.42,
+          1.65
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.21999999999999997,
+            1.5
+          ],
+          [
+            0.0,
+            0.62,
+            1.5
+          ],
+          [
+            0.0,
+            0.62,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            0.21999999999999997,
+            1.7999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.06060606060606061
+        },
+        "simulation_object_id": "carton_l05_c03",
+        "uncovered_sample_count": 1023,
+        "union_sample_coverage": 0.06060606060606061
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.84,
+          1.65
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.6399999999999999,
+            1.5
+          ],
+          [
+            0.0,
+            1.04,
+            1.5
+          ],
+          [
+            0.0,
+            1.04,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            0.6399999999999999,
+            1.7999999999999998
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.06060606060606061
+        },
+        "simulation_object_id": "carton_l05_c04",
+        "uncovered_sample_count": 1023,
+        "union_sample_coverage": 0.06060606060606061
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.84,
+          1.9499999999999997
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -1.04,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            2.0999999999999996
+          ],
+          [
+            0.0,
+            -1.04,
+            2.0999999999999996
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l06_c00",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.42,
+          1.9499999999999997
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.62,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            2.0999999999999996
+          ],
+          [
+            0.0,
+            -0.62,
+            2.0999999999999996
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.8787878787878788
+        },
+        "simulation_object_id": "carton_l06_c01",
+        "uncovered_sample_count": 132,
+        "union_sample_coverage": 0.8787878787878788
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.0,
+          1.9499999999999997
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.2,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            0.2,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            0.2,
+            2.0999999999999996
+          ],
+          [
+            0.0,
+            -0.2,
+            2.0999999999999996
+          ]
+        ],
+        "fully_covered_by_union": true,
+        "per_module_sample_coverage": {
+          "module_0_main": 1.0
+        },
+        "simulation_object_id": "carton_l06_c02",
+        "uncovered_sample_count": 0,
+        "union_sample_coverage": 1.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.42,
+          1.9499999999999997
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.21999999999999997,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            0.62,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            0.62,
+            2.0999999999999996
+          ],
+          [
+            0.0,
+            0.21999999999999997,
+            2.0999999999999996
+          ]
+        ],
+        "fully_covered_by_union": true,
+        "per_module_sample_coverage": {
+          "module_0_main": 1.0
+        },
+        "simulation_object_id": "carton_l06_c03",
+        "uncovered_sample_count": 0,
+        "union_sample_coverage": 1.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.84,
+          1.9499999999999997
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.6399999999999999,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            1.04,
+            1.7999999999999998
+          ],
+          [
+            0.0,
+            1.04,
+            2.0999999999999996
+          ],
+          [
+            0.0,
+            0.6399999999999999,
+            2.0999999999999996
+          ]
+        ],
+        "fully_covered_by_union": true,
+        "per_module_sample_coverage": {
+          "module_0_main": 1.0
+        },
+        "simulation_object_id": "carton_l06_c04",
+        "uncovered_sample_count": 0,
+        "union_sample_coverage": 1.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.84,
+          2.25
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -1.04,
+            2.1
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            2.1
+          ],
+          [
+            0.0,
+            -0.6399999999999999,
+            2.4
+          ],
+          [
+            0.0,
+            -1.04,
+            2.4
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.0
+        },
+        "simulation_object_id": "carton_l07_c00",
+        "uncovered_sample_count": 1089,
+        "union_sample_coverage": 0.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          -0.42,
+          2.25
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.62,
+            2.1
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            2.1
+          ],
+          [
+            0.0,
+            -0.21999999999999997,
+            2.4
+          ],
+          [
+            0.0,
+            -0.62,
+            2.4
+          ]
+        ],
+        "fully_covered_by_union": false,
+        "per_module_sample_coverage": {
+          "module_0_main": 0.8787878787878788
+        },
+        "simulation_object_id": "carton_l07_c01",
+        "uncovered_sample_count": 132,
+        "union_sample_coverage": 0.8787878787878788
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.0,
+          2.25
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            -0.2,
+            2.1
+          ],
+          [
+            0.0,
+            0.2,
+            2.1
+          ],
+          [
+            0.0,
+            0.2,
+            2.4
+          ],
+          [
+            0.0,
+            -0.2,
+            2.4
+          ]
+        ],
+        "fully_covered_by_union": true,
+        "per_module_sample_coverage": {
+          "module_0_main": 1.0
+        },
+        "simulation_object_id": "carton_l07_c02",
+        "uncovered_sample_count": 0,
+        "union_sample_coverage": 1.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.42,
+          2.25
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.21999999999999997,
+            2.1
+          ],
+          [
+            0.0,
+            0.62,
+            2.1
+          ],
+          [
+            0.0,
+            0.62,
+            2.4
+          ],
+          [
+            0.0,
+            0.21999999999999997,
+            2.4
+          ]
+        ],
+        "fully_covered_by_union": true,
+        "per_module_sample_coverage": {
+          "module_0_main": 1.0
+        },
+        "simulation_object_id": "carton_l07_c03",
+        "uncovered_sample_count": 0,
+        "union_sample_coverage": 1.0
+      },
+      {
+        "center_world_m": [
+          0.3,
+          0.84,
+          2.25
+        ],
+        "front_face_world_m": [
+          [
+            0.0,
+            0.6399999999999999,
+            2.1
+          ],
+          [
+            0.0,
+            1.04,
+            2.1
+          ],
+          [
+            0.0,
+            1.04,
+            2.4
+          ],
+          [
+            0.0,
+            0.6399999999999999,
+            2.4
+          ]
+        ],
+        "fully_covered_by_union": true,
+        "per_module_sample_coverage": {
+          "module_0_main": 1.0
+        },
+        "simulation_object_id": "carton_l07_c04",
+        "uncovered_sample_count": 0,
+        "union_sample_coverage": 1.0
+      }
+    ],
+    "claim_boundary": "FRUSTUM_COVERAGE_ONLY; rendered visibility and occlusion require semantic renders",
+    "fully_covered_carton_count": 6,
+    "per_module_sample_coverage": {
+      "module_0_main": 0.19981634527089073
+    },
+    "sampling_density_per_axis": 33,
+    "schema_version": "front_face_frustum_coverage_v1",
+    "stack_region": {
+      "carton_count": 40,
+      "derivation": "manifest carton transforms and full dimensions; physical local -X faces",
+      "front_x_range_m": [
+        0.0,
+        0.0
+      ],
+      "y_range_m": [
+        -1.04,
+        1.04
+      ],
+      "z_range_m": [
+        0.0,
+        2.4
+      ]
+    },
+    "union_sample_coverage": 0.19981634527089073
+  },
+  "layout_regions": {
+    "R_context_y_range_m": [
+      -1.15,
+      1.15
+    ],
+    "R_stack": {
+      "carton_count": 40,
+      "derivation": "manifest carton transforms and full dimensions; physical local -X faces",
+      "front_x_range_m": [
+        0.0,
+        0.0
+      ],
+      "y_range_m": [
+        -1.04,
+        1.04
+      ],
+      "z_range_m": [
+        0.0,
+        2.4
+      ]
+    },
+    "left_wall_probe": {
+      "camera_xyz_m": [
+        -0.3999999999999999,
+        1.4293411964178084,
+        1.325
+      ],
+      "edge_margin_px": -674.3830230147764,
+      "inside": false,
+      "pixel_xy": [
+        904.2547169811321,
+        2617.3830230147764
+      ]
+    },
+    "right_wall_asset_in_snapshot": true,
+    "right_wall_probe": {
+      "camera_xyz_m": [
+        1.9,
+        1.4293411964178084,
+        1.325
+      ],
+      "edge_margin_px": -674.3830230147764,
+      "inside": false,
+      "pixel_xy": [
+        3153.9150943396226,
+        2617.3830230147764
+      ]
+    }
+  },
+  "native_to_output_mapping": {
+    "horizontal_mapping": "IDENTITY_NO_CROP_NO_LETTERBOX",
+    "note": "the explicit vertical remap realizes VFOV=65 degrees; map_x is the output column",
+    "output_size_unchanged": true,
+    "right_side_loss_caused_by_mapping": false,
+    "source_row_interval_sampled": [
+      146.28165550069366,
+      1796.7183444993063
+    ],
+    "vertical_mapping": "CENTER_CROP_BY_DETERMINISTIC_RESAMPLE"
+  },
+  "reference": {
+    "capture_run": "isaac_j1_mast_rgbd_1f2f8b5/FULL_STACK_NOMINAL",
+    "isaac_version": "6.0.1.0",
+    "perception_commit": "eca9c8ce8a2f17cf99e5e6705f379d3c9651e418"
+  },
+  "rendered_visibility": {
+    "carton_count": 40,
+    "occluded_count": 7,
+    "occluded_ids": [
+      "carton_l04_c00",
+      "carton_l04_c01",
+      "carton_l04_c02",
+      "carton_l04_c03",
+      "carton_l04_c04",
+      "carton_l05_c00",
+      "carton_l06_c00"
+    ],
+    "out_of_frustum_ids": [
+      "carton_l00_c00",
+      "carton_l00_c01",
+      "carton_l00_c02",
+      "carton_l00_c03",
+      "carton_l00_c04",
+      "carton_l01_c00",
+      "carton_l01_c01",
+      "carton_l01_c02",
+      "carton_l01_c03",
+      "carton_l01_c04",
+      "carton_l02_c00",
+      "carton_l02_c01",
+      "carton_l02_c02",
+      "carton_l02_c03",
+      "carton_l02_c04",
+      "carton_l03_c00",
+      "carton_l03_c01",
+      "carton_l03_c02",
+      "carton_l03_c03",
+      "carton_l03_c04"
+    ],
+    "projection_intersection_count": 20,
+    "semantic_visible_count": 13
+  },
+  "root_causes": [
+    {
+      "cause": "MOUNT_OFFSET_PLUS_90_DEG_HORIZONTAL_FOV_INSUFFICIENT",
+      "evidence": "right wall and rightmost stack samples project beyond the positive image-u edge",
+      "state": "REPRODUCED"
+    },
+    {
+      "cause": "HORIZONTAL_CROP_ROI_OR_LETTERBOX",
+      "evidence": "2592x1944 render/output identity in x; map_x equals output columns",
+      "state": "RULED_OUT"
+    },
+    {
+      "cause": "VERTICAL_SINGLE_CAMERA_COVERAGE_INSUFFICIENT",
+      "evidence": "lower stack layers fall outside output VFOV",
+      "state": "REPRODUCED"
+    },
+    {
+      "cause": "MECHANICAL_OCCLUSION",
+      "evidence": "7 projected cartons had zero semantic pixels with the full mechanism present",
+      "state": "REPRODUCED_FOR_PROJECTED_CARTONS"
+    },
+    {
+      "cause": "RIGHT_WALL_ASSET_MISSING",
+      "evidence": "snapshot defines right_wall_y_m=-1.15 and capture stage builder creates RightWall",
+      "state": "RULED_OUT_AT_LAYOUT_AND_STAGE_BUILDER_LEVEL"
+    }
+  ],
+  "schema_version": "camera_coverage_root_cause_v1",
+  "status": "REPRODUCED"
+}
