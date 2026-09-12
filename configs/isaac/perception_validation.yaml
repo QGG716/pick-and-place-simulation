@@ -1,5 +1,5 @@
 schema_version: isaac_perception_validation_v2
-rig_id: m710id70_j1_perception_mast_v2
+rig_id: m710id70_j1_perception_mast_v3
 vision_rig_config: configs/isaac/perception_sensing_pose.yaml
 modes: [ISAAC_GT, STAGED_RGBD, STAGED_MONOCULAR_MOGE]
 primary_mode: STAGED_RGBD
@@ -78,11 +78,19 @@ ros:
   use_sim_time: true
   topics:
     clock: /clock
-    rgb: /isaac/vision_mast/module_0_main/rgb
-    depth: /isaac/vision_mast/module_0_main/depth
-    camera_info: /isaac/vision_mast/module_0_main/camera_info
-    capture_metadata: /isaac/vision_mast/module_0_main/capture_metadata
-    pointcloud: /isaac/vision_mast/module_0_main/pointcloud_on_demand
+    modules:
+      module_0_upper:
+        rgb: /isaac/vision_mast/module_0_upper/rgb
+        depth: /isaac/vision_mast/module_0_upper/depth
+        camera_info: /isaac/vision_mast/module_0_upper/camera_info
+        capture_metadata: /isaac/vision_mast/module_0_upper/capture_metadata
+        pointcloud: /isaac/vision_mast/module_0_upper/pointcloud_on_demand
+      module_1_lower:
+        rgb: /isaac/vision_mast/module_1_lower/rgb
+        depth: /isaac/vision_mast/module_1_lower/depth
+        camera_info: /isaac/vision_mast/module_1_lower/camera_info
+        capture_metadata: /isaac/vision_mast/module_1_lower/capture_metadata
+        pointcloud: /isaac/vision_mast/module_1_lower/pointcloud_on_demand
     tf: /tf
     tf_static: /tf_static
     joint_states: /joint_states

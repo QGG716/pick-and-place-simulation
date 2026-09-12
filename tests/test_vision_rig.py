@@ -63,7 +63,7 @@ def test_user_defined_mast_and_module_heights_are_not_optimized(spec):
 def test_exact_user_fovs_require_explicit_resampling(spec):
     assert (spec.rgb.width_px, spec.rgb.height_px) == (2592, 1944)
     assert spec.rgb.frame_rate_hz == 30.0
-    assert spec.rgb.hfov_rad == pytest.approx(pi / 2.0)
+    assert spec.rgb.hfov_rad == pytest.approx(120.0 * pi / 180.0)
     assert spec.rgb.vfov_rad == pytest.approx(65.0 * pi / 180.0)
     assert spec.rgb.square_pixel_compatible is False
     assert spec.rgb.intrinsics_mode == "EXACT_USER_SPEC_RESAMPLED"
@@ -73,10 +73,25 @@ def test_exact_user_fovs_require_explicit_resampling(spec):
 
 def test_integrated_rgbd_and_symmetric_fill_light_contract(spec):
     assert spec.depth_semantics == "optical_z_m"
-    assert spec.calibration_identity == "m710id70_module0_ideal_registered_rgbd_v1"
+    assert spec.calibration_identity == "m710id70_module0_upper_ideal_registered_rgbd_120x65_v1"
     assert spec.light_offsets_module_m == ((0.0, 0.12, 0.0), (0.0, -0.12, 0.0))
     assert spec.independent_mast_yaw is False
     assert spec.geometry_qualification == "VISION_RIG_GEOMETRY_NOT_EXECUTION_QUALIFIED"
+
+
+def test_dual_modules_preserve_upper_datum_and_define_physical_lower_depression(spec):
+    assert [module.module_id for module in spec.module_specs] == ["module_0_upper", "module_1_lower"]
+    upper, lower = spec.module_specs
+    assert upper.aliases == ("module_0_main",)
+    assert upper.height_from_flange_m == pytest.approx(1.3)
+    assert upper.optical_depression_rad == pytest.approx(0.0)
+    assert lower.height_from_flange_m == pytest.approx(0.3)
+    assert lower.optical_depression_rad == pytest.approx(20.0 * pi / 180.0)
+    pose = evaluate_vision_rig_pose(T_W_BASE, spec.nominal_q1_rad, spec)
+    lower_forward = tuple(pose.camera_transform("module_1_lower")[row][2] for row in range(3))
+    assert lower_forward[0] > 0.0
+    assert lower_forward[1] == pytest.approx(0.0, abs=1e-12)
+    assert lower_forward[2] == pytest.approx(-__import__("math").sin(20.0 * pi / 180.0))
 
 
 def test_old_static_or_right_side_geometry_fails_current_acceptance(spec):

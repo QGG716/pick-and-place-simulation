@@ -60,11 +60,16 @@ def _yaw_transform(yaw_rad: float) -> tuple[tuple[float, ...], ...]:
     )
 
 
-def _optical_pose(position: Sequence[float], heading_rad: float) -> tuple[tuple[float, ...], ...]:
-    """Return T_W_C for a level optical camera at the requested world yaw."""
+def _optical_pose(
+    position: Sequence[float], heading_rad: float, depression_rad: float = 0.0
+) -> tuple[tuple[float, ...], ...]:
+    """Return T_W_C from physical heading and downward optical depression."""
 
     c, s = cos(heading_rad), sin(heading_rad)
-    x, y, z = (s, -c, 0.0), (0.0, 0.0, -1.0), (c, s, 0.0)
+    cd, sd = cos(depression_rad), sin(depression_rad)
+    # Columns are optical right, down and forward.  Defining depression on the
+    # physical forward ray avoids library-specific Euler pitch sign guesses.
+    x, y, z = (s, -c, 0.0), (-c * sd, -s * sd, -cd), (c * cd, s * cd, -sd)
     return (
         (x[0], y[0], z[0], float(position[0])),
         (x[1], y[1], z[1], float(position[1])),
@@ -125,6 +130,38 @@ class ExactFovCamera:
 
 
 @dataclass(frozen=True)
+class VisionModuleSpec:
+    module_id: str
+    aliases: tuple[str, ...]
+    height_from_flange_m: float
+    optical_depression_rad: float
+    rgb: ExactFovCamera
+    depth: ExactFovCamera
+    depth_semantics: str
+    calibration_identity: str
+    light_offsets_module_m: tuple[tuple[float, float, float], tuple[float, float, float]]
+
+    def __post_init__(self) -> None:
+        if not self.module_id:
+            raise ValueError("module ID is required")
+        if not isfinite(self.height_from_flange_m) or self.height_from_flange_m <= 0.0:
+            raise ValueError("module height must be positive and finite")
+        if not isfinite(self.optical_depression_rad) or not 0.0 <= self.optical_depression_rad < pi / 2.0:
+            raise ValueError("optical depression must lie in [0, pi/2)")
+        if self.rgb.K != self.depth.K:
+            raise ValueError("ideal registered RGB-D requires identical RGB/depth intrinsics")
+        if self.depth_semantics != "optical_z_m" or not self.calibration_identity:
+            raise ValueError("module requires optical-z depth and a calibration identity")
+        if len(self.light_offsets_module_m) != 2:
+            raise ValueError("each module requires exactly two fill lights")
+        left, right = self.light_offsets_module_m
+        if any(len(offset) != 3 or not all(isfinite(value) for value in offset) for offset in (left, right)):
+            raise ValueError("fill-light offsets must be finite XYZ triples")
+        if abs(left[0] - right[0]) > 1e-9 or abs(left[1] + right[1]) > 1e-9 or abs(left[2] - right[2]) > 1e-9:
+            raise ValueError("fill lights must be left-right symmetric in the module frame")
+
+
+@dataclass(frozen=True)
 class VisionRigSpec:
     rig_id: str
     parent_frame: str
@@ -144,6 +181,8 @@ class VisionRigSpec:
     depth_semantics: str
     calibration_identity: str
     light_offsets_module_m: tuple[tuple[float, float, float], tuple[float, float, float]]
+    modules: tuple[VisionModuleSpec, ...] = ()
+    active_coverage_profile: str = "dual_module_90deg_baseline"
 
     def __post_init__(self) -> None:
         if not self.rig_id or self.parent_frame != "J1_link":
@@ -191,10 +230,42 @@ class VisionRigSpec:
         left, right = self.light_offsets_module_m
         if abs(left[0] - right[0]) > 1e-9 or abs(left[1] + right[1]) > 1e-9 or abs(left[2] - right[2]) > 1e-9:
             raise ValueError("fill lights must be left-right symmetric in the module frame")
+        if self.modules:
+            module_ids = [module.module_id for module in self.modules]
+            aliases = [alias for module in self.modules for alias in module.aliases]
+            if len(module_ids) != len(set(module_ids)) or set(module_ids) & set(aliases):
+                raise ValueError("module IDs and aliases must be unique")
+            if len(self.modules) != 2 or module_ids != ["module_0_upper", "module_1_lower"]:
+                raise ValueError("dual rig requires ordered upper and lower modules")
+            if any(module.height_from_flange_m > self.mast_height_m for module in self.modules):
+                raise ValueError("all modules must lie on the mast span")
+            upper, lower = self.modules
+            if upper.height_from_flange_m != self.module_height_m or upper.rgb != self.rgb or upper.depth != self.depth:
+                raise ValueError("legacy upper-module compatibility fields must be exact aliases")
+            if not upper.height_from_flange_m > lower.height_from_flange_m:
+                raise ValueError("upper module must be above lower module")
+        if self.active_coverage_profile not in {"dual_module_90deg_baseline", "dual_module_full_face_candidate"}:
+            raise ValueError("unsupported dual-module coverage profile")
 
     @property
     def mast_radius_m(self) -> float:
         return sqrt(sum(float(value) ** 2 for value in self.mast_offset_j1_xy_m))
+
+    @property
+    def module_specs(self) -> tuple[VisionModuleSpec, ...]:
+        if self.modules:
+            return self.modules
+        return (VisionModuleSpec(
+            module_id="module_0_main",
+            aliases=(),
+            height_from_flange_m=self.module_height_m,
+            optical_depression_rad=0.0,
+            rgb=self.rgb,
+            depth=self.depth,
+            depth_semantics=self.depth_semantics,
+            calibration_identity=self.calibration_identity,
+            light_offsets_module_m=self.light_offsets_module_m,
+        ),)
 
 
 @dataclass(frozen=True)
@@ -207,6 +278,8 @@ class VisionRigPose:
     T_W_mast_top: tuple[tuple[float, ...], ...]
     T_W_module: tuple[tuple[float, ...], ...]
     T_W_camera_optical: tuple[tuple[float, ...], ...]
+    T_W_modules: Mapping[str, tuple[tuple[float, ...], ...]]
+    T_W_camera_opticals: Mapping[str, tuple[tuple[float, ...], ...]]
 
     @property
     def j1_center_world_m(self) -> tuple[float, float, float]:
@@ -219,6 +292,9 @@ class VisionRigPose:
     @property
     def camera_center_world_m(self) -> tuple[float, float, float]:
         return tuple(row[3] for row in self.T_W_camera_optical[:3])
+
+    def camera_transform(self, module_id: str) -> tuple[tuple[float, ...], ...]:
+        return self.T_W_camera_opticals[module_id]
 
 
 def evaluate_vision_rig_pose(
@@ -237,12 +313,28 @@ def evaluate_vision_rig_pose(
     )
     T_W_flange = _matmul(T_W_J1, T_J1_flange)
     T_W_top = _matmul(T_W_flange, _translation(0.0, 0.0, spec.mast_height_m))
-    T_W_module = _matmul(T_W_flange, _translation(0.0, 0.0, spec.module_height_m))
     camera_heading = wrap_to_pi(q1 + spec.mast_j1_yaw_offset_rad)
-    T_W_camera = _optical_pose(tuple(row[3] for row in T_W_module[:3]), camera_heading)
-    for transform in (T_W_J1, T_W_flange, T_W_top, T_W_module, T_W_camera):
+    modules = {
+        module.module_id: _matmul(T_W_flange, _translation(0.0, 0.0, module.height_from_flange_m))
+        for module in spec.module_specs
+    }
+    cameras = {
+        module.module_id: _optical_pose(
+            tuple(row[3] for row in modules[module.module_id][:3]),
+            camera_heading,
+            module.optical_depression_rad,
+        )
+        for module in spec.module_specs
+    }
+    primary_id = spec.module_specs[0].module_id
+    T_W_module = modules[primary_id]
+    T_W_camera = cameras[primary_id]
+    for transform in (T_W_J1, T_W_flange, T_W_top, *modules.values(), *cameras.values()):
         validate_transform_parent_child(transform)
-    return VisionRigPose(q1, wrap_to_pi(q1), camera_heading, T_W_J1, T_W_flange, T_W_top, T_W_module, T_W_camera)
+    return VisionRigPose(
+        q1, wrap_to_pi(q1), camera_heading, T_W_J1, T_W_flange, T_W_top,
+        T_W_module, T_W_camera, modules, cameras,
+    )
 
 
 def audit_j1_sweep(
@@ -286,10 +378,14 @@ def audit_j1_sweep(
 def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
     source = Path(path)
     data = yaml.safe_load(source.read_text(encoding="utf-8"))
-    if not isinstance(data, Mapping) or data.get("schema_version") != "j1_perception_sensing_pose_v2":
+    if not isinstance(data, Mapping) or data.get("schema_version") not in {
+        "j1_perception_sensing_pose_v2", "j1_perception_sensing_pose_v3"
+    }:
         raise ValueError("unsupported J1 perception sensing-pose schema")
-    camera = data["module_0_main"]["rgb_camera"]
-    depth = data["module_0_main"]["depth_camera"]
+    module_values = data.get("modules")
+    upper_value = module_values[0] if module_values else data["module_0_main"]
+    camera = upper_value["rgb_camera"]
+    depth = upper_value["depth_camera"]
 
     def camera_spec(value: Mapping[str, Any]) -> ExactFovCamera:
         return ExactFovCamera(
@@ -298,7 +394,24 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
             str(value["intrinsics_mode"]),
         )
 
-    lights = data["module_0_main"]["fill_lights"]
+    def module_spec(value: Mapping[str, Any]) -> VisionModuleSpec:
+        module_lights = value["fill_lights"]
+        return VisionModuleSpec(
+            module_id=str(value["module_id"]),
+            aliases=tuple(str(alias) for alias in value.get("aliases", ())),
+            height_from_flange_m=float(value["height_from_flange_m"]),
+            optical_depression_rad=float(value.get("optical_depression_deg", 0.0)) * pi / 180.0,
+            rgb=camera_spec(value["rgb_camera"]),
+            depth=camera_spec(value["depth_camera"]),
+            depth_semantics=str(value["depth_camera"]["depth_semantics"]),
+            calibration_identity=str(value["calibration_identity"]),
+            light_offsets_module_m=tuple(
+                tuple(float(number) for number in item["relative_xyz_m"]) for item in module_lights
+            ),
+        )
+
+    lights = upper_value["fill_lights"]
+    modules = tuple(module_spec(value) for value in module_values) if module_values else ()
     return VisionRigSpec(
         rig_id=str(data["rig_id"]),
         parent_frame=str(data["kinematics"]["parent_frame"]),
@@ -307,7 +420,7 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
         flange_height_j1_m=float(data["kinematics"]["vision_flange_height_j1_m"]),
         flange_height_status=str(data["kinematics"]["vision_flange_height_status"]),
         mast_height_m=float(data["mast"]["height_from_flange_m"]),
-        module_height_m=float(data["module_0_main"]["height_from_flange_m"]),
+        module_height_m=float(upper_value["height_from_flange_m"]),
         mast_j1_yaw_offset_rad=float(data["kinematics"]["mast_j1_yaw_offset_rad"]),
         nominal_q1_rad=float(data["nominal_sensing_pose"]["q1_rad"]),
         nominal_camera_heading_world_rad=float(data["nominal_sensing_pose"]["camera_heading_world_rad"]),
@@ -316,8 +429,10 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
         rgb=camera_spec(camera),
         depth=camera_spec(depth),
         depth_semantics=str(depth["depth_semantics"]),
-        calibration_identity=str(data["module_0_main"]["calibration_identity"]),
+        calibration_identity=str(upper_value["calibration_identity"]),
         light_offsets_module_m=tuple(tuple(float(number) for number in item["relative_xyz_m"]) for item in lights),
+        modules=modules,
+        active_coverage_profile=str(data.get("coverage", {}).get("active_profile", "dual_module_90deg_baseline")),
     )
 
 

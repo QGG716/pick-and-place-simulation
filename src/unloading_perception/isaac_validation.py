@@ -207,49 +207,70 @@ def _translation_transform(xyz: Sequence[float]) -> list[list[float]]:
     ]
 
 
-def _dynamic_camera(
+def _dynamic_cameras(
     validation_config: Mapping[str, Any], T_W_robot: Sequence[Sequence[float]], q1_at_capture_rad: float
-) -> tuple[dict[str, Any], dict[str, Any]]:
+) -> tuple[tuple[dict[str, Any], ...], dict[str, Any]]:
     spec = load_vision_rig_spec(validation_config["vision_rig_config"])
     pose = evaluate_vision_rig_pose(T_W_robot, q1_at_capture_rad, spec)
-    position = pose.camera_center_world_m
-    forward = tuple(pose.T_W_camera_optical[row][2] for row in range(3))
-    focal_length_mm = 24.0
-    horizontal_aperture_mm = 2.0 * focal_length_mm
-    vertical_aperture_mm = 2.0 * focal_length_mm * __import__("math").tan(spec.rgb.vfov_rad / 2.0)
-    camera = {
-        "camera_id": "module_0_main_rgbd",
-        "frame_id": "module_0_main_rgb_optical",
-        "depth_frame_id": "module_0_main_depth_optical",
-        "rig_id": spec.rig_id,
-        "module_id": "module_0_main",
-        "resolution": [spec.rgb.width_px, spec.rgb.height_px],
-        "K": list(spec.rgb.K),
-        "distortion_model": "plumb_bob",
-        "distortion": [0.0, 0.0, 0.0, 0.0, 0.0],
-        "T_W_C": [list(row) for row in pose.T_W_camera_optical],
-        "T_rgb_depth": _translation_transform((0.0, 0.0, 0.0)),
-        "pose_source": "J1_CAPTURE_TIME_TRANSFORM_CHAIN",
-        "q1_at_capture_rad": float(q1_at_capture_rad),
-        "calibration_identity": spec.calibration_identity,
-        "registration_mode": "SIMULATION_IDEAL_REGISTERED_DEPTH",
-        "depth_semantics": spec.depth_semantics,
-        "near_clip_m": 0.05,
-        "far_clip_m": 12.0,
-        "publish_rate_hz": spec.rgb.frame_rate_hz,
-        "modalities": ["rgb", "metric_depth", "camera_info", "capture_metadata", "pointcloud_on_demand", "gt_annotations"],
-        "intrinsics_mode": spec.rgb.intrinsics_mode,
-        "focal_length_mm": focal_length_mm,
-        "horizontal_aperture_mm": horizontal_aperture_mm,
-        "vertical_aperture_mm": vertical_aperture_mm,
-        "look_at_world_m": [position[index] + forward[index] for index in range(3)],
-    }
+    cameras = []
+    for module in spec.module_specs:
+        transform = pose.camera_transform(module.module_id)
+        position = tuple(row[3] for row in transform[:3])
+        forward = tuple(transform[row][2] for row in range(3))
+        horizontal_aperture_mm = 36.0
+        focal_length_mm = horizontal_aperture_mm / (
+            2.0 * __import__("math").tan(module.rgb.hfov_rad / 2.0)
+        )
+        # Isaac renders the native image with square pixels.  The explicit
+        # output remap then realizes the independently specified VFOV while
+        # keeping horizontal rays unchanged.
+        vertical_aperture_mm = horizontal_aperture_mm * module.rgb.height_px / module.rgb.width_px
+        cameras.append({
+            "camera_id": f"{module.module_id}_rgbd",
+            "frame_id": f"{module.module_id}_rgb_optical",
+            "depth_frame_id": f"{module.module_id}_depth_optical",
+            "rig_id": spec.rig_id,
+            "module_id": module.module_id,
+            "compatibility_aliases": list(module.aliases),
+            "resolution": [module.rgb.width_px, module.rgb.height_px],
+            "K": list(module.rgb.K),
+            "distortion_model": "plumb_bob",
+            "distortion": [0.0, 0.0, 0.0, 0.0, 0.0],
+            "T_W_C": [list(row) for row in transform],
+            "T_rgb_depth": _translation_transform((0.0, 0.0, 0.0)),
+            "pose_source": "J1_CAPTURE_TIME_TRANSFORM_CHAIN",
+            "q1_at_capture_rad": float(q1_at_capture_rad),
+            "optical_depression_rad": module.optical_depression_rad,
+            "calibration_identity": module.calibration_identity,
+            "registration_mode": "SIMULATION_IDEAL_REGISTERED_DEPTH",
+            "depth_semantics": module.depth_semantics,
+            "near_clip_m": 0.05,
+            "far_clip_m": 12.0,
+            "publish_rate_hz": module.rgb.frame_rate_hz,
+            "modalities": ["rgb", "metric_depth", "camera_info", "capture_metadata", "pointcloud_on_demand", "gt_annotations"],
+            "intrinsics_mode": module.rgb.intrinsics_mode,
+            "focal_length_mm": focal_length_mm,
+            "horizontal_aperture_mm": horizontal_aperture_mm,
+            "vertical_aperture_mm": vertical_aperture_mm,
+            "native_square_pixel_focal_px": module.rgb.fx_px,
+            "look_at_world_m": [position[index] + forward[index] for index in range(3)],
+        })
     rig = {
         "rig_id": spec.rig_id,
         "parent_frame": spec.parent_frame,
         "T_W_J1": [list(row) for row in pose.T_W_J1],
         "T_W_vision_flange": [list(row) for row in pose.T_W_vision_flange],
         "T_W_mast_top": [list(row) for row in pose.T_W_mast_top],
+        "modules": [{
+            "module_id": module.module_id,
+            "aliases": list(module.aliases),
+            "height_from_flange_m": module.height_from_flange_m,
+            "optical_depression_rad": module.optical_depression_rad,
+            "T_W_module": [list(row) for row in pose.T_W_modules[module.module_id]],
+            "T_W_camera_optical": [list(row) for row in pose.T_W_camera_opticals[module.module_id]],
+            "calibration_identity": module.calibration_identity,
+            "fill_lights": [list(offset) for offset in module.light_offsets_module_m],
+        } for module in spec.module_specs],
         "T_W_module_0_main": [list(row) for row in pose.T_W_module],
         "mast_j1_radius_m": spec.mast_radius_m,
         "mast_j1_yaw_offset_rad": spec.mast_j1_yaw_offset_rad,
@@ -259,8 +280,25 @@ def _dynamic_camera(
         "geometry_qualification": spec.geometry_qualification,
         "moving_obstacle": True,
         "independent_mast_yaw": False,
+        "capture_timing": {
+            "mode": "SIMULTANEOUS_CAPTURE_TIME_GROUP",
+            "module_ids": [module.module_id for module in spec.module_specs],
+            "maximum_inter_module_skew_s": 0.0,
+        },
+        "sensor_configuration_fingerprint": canonical_digest({
+            "rig_id": spec.rig_id,
+            "profile": spec.active_coverage_profile,
+            "modules": [{
+                "module_id": module.module_id,
+                "height_from_flange_m": module.height_from_flange_m,
+                "optical_depression_rad": module.optical_depression_rad,
+                "resolution": [module.rgb.width_px, module.rgb.height_px],
+                "K": list(module.rgb.K),
+                "calibration_identity": module.calibration_identity,
+            } for module in spec.module_specs],
+        }),
     }
-    return camera, rig
+    return tuple(cameras), rig
 
 
 @dataclass(frozen=True)
@@ -407,7 +445,7 @@ def build_scene_manifest(
     t_w_robot = _matmul(t_w_a, t_a_robot)
     rig_spec = load_vision_rig_spec(validation_config["vision_rig_config"])
     q1 = float(rig_spec.nominal_q1_rad if q1_at_capture_rad is None else q1_at_capture_rad)
-    camera, vision_rig = _dynamic_camera(validation_config, t_w_robot, q1)
+    cameras, vision_rig = _dynamic_cameras(validation_config, t_w_robot, q1)
     mechanisms = {
         "components": [{
             "component_id": item["name"],
@@ -421,7 +459,6 @@ def build_scene_manifest(
         "conveyor_state": {"identity": canonical_digest(snapshot["receiver"]), "running": False},
         "vision_rig": vision_rig,
     }
-    cameras = (camera,)
     dynamic = canonical_digest({
         "objects": tuple(objects),
         "mechanisms": mechanisms,

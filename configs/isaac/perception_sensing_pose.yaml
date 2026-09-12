@@ -1,5 +1,5 @@
-schema_version: j1_perception_sensing_pose_v2
-rig_id: m710id70_j1_perception_mast_v2
+schema_version: j1_perception_sensing_pose_v3
+rig_id: m710id70_j1_perception_mast_v3
 geometry_qualification: VISION_RIG_GEOMETRY_NOT_EXECUTION_QUALIFIED
 kinematics:
   parent_frame: J1_link
@@ -27,56 +27,117 @@ nominal_sensing_pose:
   arm_heading_world_rad: -1.5707963267948966
   camera_j1_yaw_offset_rad: 1.5707963267948966
   mast_side: LEFT_WORLD_PLUS_Y
+coverage:
+  active_profile: dual_module_full_face_candidate
+  profiles:
+    dual_module_90deg_baseline:
+      hfov_deg: 90.0
+      vfov_deg: 65.0
+      status: RETAINED_BASELINE
+    dual_module_full_face_candidate:
+      hfov_deg: 120.0
+      vfov_deg: 65.0
+      status: DESIGN_CHANGE_PENDING_RENDERED_ACCEPTANCE
+modules:
+  - module_id: module_0_upper
+    aliases: [module_0_main]
+    height_from_flange_m: 1.300
+    optical_depression_deg: 0.0
+    calibration_identity: m710id70_module0_upper_ideal_registered_rgbd_120x65_v1
+    rgb_camera:
+      frame_id: module_0_upper_rgb_optical
+      resolution_px: [2592, 1944]
+      frame_rate_hz: 30.0
+      hfov_rad: 2.0943951023931953
+      vfov_rad: 1.1344640137963142
+      intrinsics_mode: EXACT_USER_SPEC_RESAMPLED
+      optical_axes: {x: right, y: down, z: forward}
+    depth_camera:
+      frame_id: module_0_upper_depth_optical
+      resolution_px: [2592, 1944]
+      frame_rate_hz: 30.0
+      hfov_rad: 2.0943951023931953
+      vfov_rad: 1.1344640137963142
+      intrinsics_mode: EXACT_USER_SPEC_RESAMPLED
+      registration_mode: SIMULATION_IDEAL_REGISTERED_DEPTH
+      depth_semantics: optical_z_m
+      T_rgb_depth:
+        - [1.0, 0.0, 0.0, 0.0]
+        - [0.0, 1.0, 0.0, 0.0]
+        - [0.0, 0.0, 1.0, 0.0]
+        - [0.0, 0.0, 0.0, 1.0]
+    fill_lights:
+      - light_id: module_0_upper_fill_left
+        relative_xyz_m: [0.0, 0.120, 0.0]
+        light_type: disk_proxy
+        color_temperature_k: 5000.0
+        intensity: 2500.0
+        beam_spread_rad: 1.5707963267948966
+        trigger_mode: CAPTURE_SYNCHRONIZED
+        geometry_status: SIMULATION_LIGHT_PROXY
+      - light_id: module_0_upper_fill_right
+        relative_xyz_m: [0.0, -0.120, 0.0]
+        light_type: disk_proxy
+        color_temperature_k: 5000.0
+        intensity: 2500.0
+        beam_spread_rad: 1.5707963267948966
+        trigger_mode: CAPTURE_SYNCHRONIZED
+        geometry_status: SIMULATION_LIGHT_PROXY
+  - module_id: module_1_lower
+    aliases: []
+    height_from_flange_m: 0.300
+    optical_depression_deg: 20.0
+    calibration_identity: m710id70_module1_lower_ideal_registered_rgbd_120x65_v1
+    rgb_camera:
+      frame_id: module_1_lower_rgb_optical
+      resolution_px: [2592, 1944]
+      frame_rate_hz: 30.0
+      hfov_rad: 2.0943951023931953
+      vfov_rad: 1.1344640137963142
+      intrinsics_mode: EXACT_USER_SPEC_RESAMPLED
+      optical_axes: {x: right, y: down, z: forward}
+    depth_camera:
+      frame_id: module_1_lower_depth_optical
+      resolution_px: [2592, 1944]
+      frame_rate_hz: 30.0
+      hfov_rad: 2.0943951023931953
+      vfov_rad: 1.1344640137963142
+      intrinsics_mode: EXACT_USER_SPEC_RESAMPLED
+      registration_mode: SIMULATION_IDEAL_REGISTERED_DEPTH
+      depth_semantics: optical_z_m
+      T_rgb_depth:
+        - [1.0, 0.0, 0.0, 0.0]
+        - [0.0, 1.0, 0.0, 0.0]
+        - [0.0, 0.0, 1.0, 0.0]
+        - [0.0, 0.0, 0.0, 1.0]
+    fill_lights:
+      - light_id: module_1_lower_fill_left
+        relative_xyz_m: [0.0, 0.120, 0.0]
+        light_type: disk_proxy
+        color_temperature_k: 5000.0
+        intensity: 2500.0
+        beam_spread_rad: 1.5707963267948966
+        trigger_mode: CAPTURE_SYNCHRONIZED
+        geometry_status: SIMULATION_LIGHT_PROXY
+      - light_id: module_1_lower_fill_right
+        relative_xyz_m: [0.0, -0.120, 0.0]
+        light_type: disk_proxy
+        color_temperature_k: 5000.0
+        intensity: 2500.0
+        beam_spread_rad: 1.5707963267948966
+        trigger_mode: CAPTURE_SYNCHRONIZED
+        geometry_status: SIMULATION_LIGHT_PROXY
+# Backward-readable alias for consumers that have not yet adopted modules[].
 module_0_main:
-  height_from_flange_m: 1.300
-  orientation: horizontal
-  calibration_identity: m710id70_module0_ideal_registered_rgbd_v1
-  rgb_camera:
-    frame_id: module_0_main_rgb_optical
-    resolution_px: [2592, 1944]
-    frame_rate_hz: 30.0
-    hfov_rad: 1.5707963267948966
-    vfov_rad: 1.1344640137963142
-    intrinsics_mode: EXACT_USER_SPEC_RESAMPLED
-    optical_axes: {x: right, y: down, z: forward}
-  depth_camera:
-    frame_id: module_0_main_depth_optical
-    resolution_px: [2592, 1944]
-    frame_rate_hz: 30.0
-    hfov_rad: 1.5707963267948966
-    vfov_rad: 1.1344640137963142
-    intrinsics_mode: EXACT_USER_SPEC_RESAMPLED
-    registration_mode: SIMULATION_IDEAL_REGISTERED_DEPTH
-    depth_semantics: optical_z_m
-    T_rgb_depth:
-      - [1.0, 0.0, 0.0, 0.0]
-      - [0.0, 1.0, 0.0, 0.0]
-      - [0.0, 0.0, 1.0, 0.0]
-      - [0.0, 0.0, 0.0, 1.0]
-  fill_lights:
-    - light_id: fill_light_left
-      relative_xyz_m: [0.0, 0.120, 0.0]
-      light_type: disk_proxy
-      color_temperature_k: 5000.0
-      intensity: 2500.0
-      beam_spread_rad: 1.0471975511965976
-      trigger_mode: CAPTURE_SYNCHRONIZED
-      geometry_status: SIMULATION_LIGHT_PROXY
-    - light_id: fill_light_right
-      relative_xyz_m: [0.0, -0.120, 0.0]
-      light_type: disk_proxy
-      color_temperature_k: 5000.0
-      intensity: 2500.0
-      beam_spread_rad: 1.0471975511965976
-      trigger_mode: CAPTURE_SYNCHRONIZED
-      geometry_status: SIMULATION_LIGHT_PROXY
+  compatibility_alias_for: module_0_upper
 capture:
   sensor_acquisition_hz: 30.0
   capture_trigger_hz: 2.0
   vision_processing_hz: 2.0
   continuous_sensor_stream: true
   triggered_perception_capture: true
-  multi_module_triggering: NOT_ACTIVE
-  trigger_group: module_0_main
+  multi_module_triggering: SIMULTANEOUS_CAPTURE_TIME_GROUP
+  trigger_group: [module_0_upper, module_1_lower]
+  maximum_inter_module_skew_s: 0.0
   illumination_modes: [LIGHT_OFF, LIGHT_ON_NOMINAL, LIGHT_LOW, LIGHT_HIGH]
   pointcloud2_mode: ON_DEMAND

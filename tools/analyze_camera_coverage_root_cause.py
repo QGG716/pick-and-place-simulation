@@ -54,7 +54,6 @@ def main() -> int:
         simulation_frame=100,
         simulation_time=100.0 / 60.0,
     )
-    camera = dict(manifest.cameras[0])
     camera_info = _load(args.legacy_capture / "camera_info.json")
     capture_metadata = _load(args.legacy_capture / "capture_metadata.json")
     annotations = _load(args.legacy_capture / "gt_annotations.json")
@@ -65,8 +64,14 @@ def main() -> int:
     width = int.from_bytes(image_header[16:20], "big")
     height = int.from_bytes(image_header[20:24], "big")
 
-    if camera_info["K"] != camera["K"] or camera_info["T_W_C"] != camera["T_W_C"]:
-        raise ValueError("legacy CameraInfo differs from the frozen manifest reconstruction")
+    camera = {
+        **camera_info,
+        "camera_id": camera_info["camera_id"],
+        "module_id": "module_0_main",
+        "resolution": [camera_info["width"], camera_info["height"]],
+    }
+    if camera_info["T_W_C"] != manifest.cameras[0]["T_W_C"]:
+        raise ValueError("legacy upper-camera pose differs from the frozen kinematic reconstruction")
     if capture_metadata["T_W_C_at_capture"] != camera["T_W_C"]:
         raise ValueError("capture-time pose differs from CameraInfo/manifest pose")
 
