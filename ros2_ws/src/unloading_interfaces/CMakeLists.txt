@@ -18,6 +18,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/MechanismState.msg"
   "msg/PerceptionObservation.msg"
   "msg/PlanningWorldSnapshot.msg"
+  "msg/RgbdCaptureMetadata.msg"
   "msg/StopAcknowledgement.msg"
   "msg/UnknownRegion.msg"
   DEPENDENCIES builtin_interfaces geometry_msgs trajectory_msgs

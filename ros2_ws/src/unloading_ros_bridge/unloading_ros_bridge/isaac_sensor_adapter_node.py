@@ -15,13 +15,13 @@ import rclpy
 from builtin_interfaces.msg import Time
 from geometry_msgs.msg import TransformStamped
 from rclpy.node import Node
-from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
+from rclpy.qos import QoSProfile, ReliabilityPolicy
 from rosgraph_msgs.msg import Clock
 from sensor_msgs.msg import CameraInfo, Image, JointState, PointCloud2, PointField
 from tf2_msgs.msg import TFMessage
 from vision_msgs.msg import Detection2D, Detection2DArray, Detection3D, Detection3DArray
 
-from unloading_interfaces.msg import PerceptionObservation
+from unloading_interfaces.msg import PerceptionObservation, RgbdCaptureMetadata
 from unloading_perception.geometry import quaternion_from_rotation
 from unloading_perception.isaac_validation import (
     IsaacCaptureBinding,
@@ -29,9 +29,10 @@ from unloading_perception.isaac_validation import (
     ground_truth_observation,
     sha256_file,
 )
+from unloading_perception.rgbd import CaptureMetadata
 
 from .common import float_to_time, require_humble_python310
-from .mapping import observation_to_msg
+from .mapping import capture_metadata_to_msg, observation_to_msg
 
 
 def _stamp(value: float) -> Time:
@@ -46,6 +47,7 @@ class IsaacSensorAdapterNode(Node):
         self.declare_parameter("sequence_index", "")
         self.declare_parameter("sequence_hold_cycles", 1)
         self.declare_parameter("publish_period_seconds", 1.0)
+        self.declare_parameter("publish_pointcloud_on_demand", False)
         capture = Path(str(self.get_parameter("capture_directory").value)).resolve()
         manifest_value = str(self.get_parameter("scene_manifest").value)
         sequence_value = str(self.get_parameter("sequence_index").value)
@@ -73,14 +75,14 @@ class IsaacSensorAdapterNode(Node):
         self._load_capture(*self.samples[0])
 
         sensor_qos = QoSProfile(depth=2, reliability=ReliabilityPolicy.RELIABLE)
-        static_qos = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.clock_pub = self.create_publisher(Clock, "/clock", sensor_qos)
-        self.rgb_pub = self.create_publisher(Image, "/isaac/front_camera/rgb", sensor_qos)
-        self.depth_pub = self.create_publisher(Image, "/isaac/front_camera/depth", sensor_qos)
-        self.info_pub = self.create_publisher(CameraInfo, "/isaac/front_camera/camera_info", sensor_qos)
-        self.cloud_pub = self.create_publisher(PointCloud2, "/isaac/front_camera/pointcloud", sensor_qos)
+        self.rgb_pub = self.create_publisher(Image, "/isaac/vision_mast/module_0_main/rgb", sensor_qos)
+        self.depth_pub = self.create_publisher(Image, "/isaac/vision_mast/module_0_main/depth", sensor_qos)
+        self.info_pub = self.create_publisher(CameraInfo, "/isaac/vision_mast/module_0_main/camera_info", sensor_qos)
+        self.metadata_pub = self.create_publisher(RgbdCaptureMetadata, "/isaac/vision_mast/module_0_main/capture_metadata", sensor_qos)
+        self.cloud_pub = self.create_publisher(PointCloud2, "/isaac/vision_mast/module_0_main/pointcloud_on_demand", sensor_qos)
+        self.publish_pointcloud_on_demand = bool(self.get_parameter("publish_pointcloud_on_demand").value)
         self.tf_pub = self.create_publisher(TFMessage, "/tf", sensor_qos)
-        self.tf_static_pub = self.create_publisher(TFMessage, "/tf_static", static_qos)
         self.joints_pub = self.create_publisher(JointState, "/joint_states", sensor_qos)
         self.gt2_pub = self.create_publisher(Detection2DArray, "/isaac/ground_truth/detections_2d", sensor_qos)
         self.gt3_pub = self.create_publisher(Detection3DArray, "/isaac/ground_truth/detections_3d", sensor_qos)
@@ -96,6 +98,7 @@ class IsaacSensorAdapterNode(Node):
         self.capture = capture
         self.manifest = IsaacSceneManifest.from_dict(json.loads(manifest_path.read_text(encoding="utf-8")))
         self.binding = IsaacCaptureBinding.from_dict(json.loads((capture / "capture_binding.json").read_text(encoding="utf-8")))
+        self.capture_metadata = CaptureMetadata.from_dict(json.loads((capture / "capture_metadata.json").read_text(encoding="utf-8")))
         self.annotations = json.loads((capture / "gt_annotations.json").read_text(encoding="utf-8"))
         if sha256_file(capture / "sensor_rgb.png") != self.binding.rgb_sha256:
             raise RuntimeError("Isaac RGB hash differs from capture binding")
@@ -106,7 +109,16 @@ class IsaacSensorAdapterNode(Node):
         ):
             raise RuntimeError("capture and scene manifest timing identities differ")
         camera = self.manifest.cameras[0]
+        if (
+            self.capture_metadata.sensor_epoch != self.binding.simulation_epoch
+            or self.capture_metadata.frame_sequence != self.binding.frame_sequence
+            or self.capture_metadata.capture_center_time != self.binding.simulation_time
+            or self.capture_metadata.calibration_identity != self.binding.camera_calibration_identity
+            or self.capture_metadata.T_W_C_at_capture != tuple(tuple(float(value) for value in row) for row in camera["T_W_C"])
+        ):
+            raise RuntimeError("unified RGB-D metadata differs from capture/manifest identity")
         self.frame_id = str(camera["frame_id"])
+        self.depth_frame_id = str(camera["depth_frame_id"])
         self.stamp = _stamp(float(self.binding.simulation_time))
         self.rgb = np.load(capture / "sensor_rgb.npy", allow_pickle=False).astype(np.uint8)
         self.depth = np.load(capture / "metric_depth_m.npy", allow_pickle=False).astype(np.float32)
@@ -126,7 +138,7 @@ class IsaacSensorAdapterNode(Node):
         rgb = Image(height=self.rgb.shape[0], width=self.rgb.shape[1], encoding="rgb8", is_bigendian=0, step=self.rgb.shape[1] * 3, data=self.rgb.tobytes())
         depth = Image(height=self.depth.shape[0], width=self.depth.shape[1], encoding="32FC1", is_bigendian=0, step=self.depth.shape[1] * 4, data=self.depth.astype("<f4", copy=False).tobytes())
         self._header(rgb, self.frame_id)
-        self._header(depth, self.frame_id)
+        self._header(depth, self.depth_frame_id)
         self.rgb_pub.publish(rgb)
         self.depth_pub.publish(depth)
 
@@ -135,6 +147,7 @@ class IsaacSensorAdapterNode(Node):
         info.p = [camera["K"][0], 0.0, camera["K"][2], 0.0, 0.0, camera["K"][4], camera["K"][5], 0.0, 0.0, 0.0, 1.0, 0.0]
         self._header(info, self.frame_id)
         self.info_pub.publish(info)
+        self.metadata_pub.publish(capture_metadata_to_msg(self.capture_metadata))
 
         cloud = PointCloud2(height=1, width=len(self.points), is_bigendian=False, point_step=12, row_step=12 * len(self.points), is_dense=bool(np.isfinite(self.points).all()), data=self.points.astype("<f4", copy=False).tobytes())
         cloud.fields = [
@@ -143,7 +156,8 @@ class IsaacSensorAdapterNode(Node):
             PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
         ]
         self._header(cloud, "world")
-        self.cloud_pub.publish(cloud)
+        if self.publish_pointcloud_on_demand:
+            self.cloud_pub.publish(cloud)
 
         transform = np.asarray(camera["T_W_C"], dtype=float)
         quaternion = quaternion_from_rotation(transform[:3, :3])
@@ -154,7 +168,6 @@ class IsaacSensorAdapterNode(Node):
         tf.transform.rotation.x, tf.transform.rotation.y, tf.transform.rotation.z, tf.transform.rotation.w = quaternion
         message = TFMessage(transforms=[tf])
         self.tf_pub.publish(message)
-        self.tf_static_pub.publish(message)
 
         joints = JointState(name=list(self.manifest.robot["joint_names"]), position=list(self.manifest.robot["q_rad"]))
         self._header(joints, "world")

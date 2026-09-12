@@ -1,0 +1,17 @@
+string schema_version
+string capture_id
+string sensor_epoch
+uint64 frame_sequence
+builtin_interfaces/Time requested_time
+builtin_interfaces/Time capture_start
+builtin_interfaces/Time capture_center_time
+builtin_interfaces/Time capture_end
+string clock_domain
+string rgb_frame_id
+string depth_frame_id
+string calibration_identity
+string illumination_state
+string j1_state_identity
+float64 q1_at_capture_rad
+geometry_msgs/Transform t_w_c_at_capture
+string sync_status

@@ -34,6 +34,13 @@ def test_optional_ros_fields_have_explicit_presence_flags():
         assert flag in cargo
     assert "trajectory_msgs/JointTrajectory trajectory" in (ROS / "unloading_interfaces" / "msg" / "ExecutionAuthorization.msg").read_text(encoding="utf-8")
     assert "planning_generation" in (ROS / "unloading_interfaces" / "msg" / "ExecutionCancel.msg").read_text(encoding="utf-8")
+    capture = (ROS / "unloading_interfaces" / "msg" / "RgbdCaptureMetadata.msg").read_text(encoding="utf-8")
+    for field in (
+        "capture_id", "sensor_epoch", "frame_sequence", "capture_center_time",
+        "calibration_identity", "illumination_state", "j1_state_identity",
+        "q1_at_capture_rad", "t_w_c_at_capture", "sync_status",
+    ):
+        assert field in capture
     bridge = (ROS / "unloading_ros_bridge" / "unloading_ros_bridge" / "execution_bridge_node.py").read_text(encoding="utf-8")
     assert '"/unloading/controller_stop_facts"' in bridge
     assert "acknowledgement.command_id" in bridge

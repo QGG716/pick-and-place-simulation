@@ -23,7 +23,10 @@ from unloading_contracts import (
 from unloading_interfaces.msg import CargoObservation as CargoObservationMsg
 from unloading_interfaces.msg import PerceptionObservation as PerceptionObservationMsg
 from unloading_interfaces.msg import PlanningWorldSnapshot as PlanningWorldSnapshotMsg
+from unloading_interfaces.msg import RgbdCaptureMetadata as RgbdCaptureMetadataMsg
 from unloading_interfaces.msg import UnknownRegion as UnknownRegionMsg
+from unloading_perception.geometry import quaternion_from_rotation, rotation_from_quaternion
+from unloading_perception.rgbd import CaptureMetadata, IlluminationState
 
 from .common import float_to_time, time_to_float
 
@@ -38,6 +41,64 @@ def _triples(values) -> tuple[tuple[float, float, float], ...] | None:
     if len(values) % 3:
         raise ValueError("flattened 3D data must be divisible by three")
     return tuple(tuple(float(item) for item in values[index:index + 3]) for index in range(0, len(values), 3))
+
+
+def capture_metadata_to_msg(metadata: CaptureMetadata) -> RgbdCaptureMetadataMsg:
+    message = RgbdCaptureMetadataMsg()
+    message.schema_version = "rgbd_capture_metadata_v1"
+    message.capture_id = metadata.capture_id
+    message.sensor_epoch = metadata.sensor_epoch
+    message.frame_sequence = metadata.frame_sequence
+    message.requested_time = float_to_time(metadata.requested_time)
+    message.capture_start = float_to_time(metadata.capture_start)
+    message.capture_center_time = float_to_time(metadata.capture_center_time)
+    message.capture_end = float_to_time(metadata.capture_end)
+    message.clock_domain = metadata.clock_domain
+    message.rgb_frame_id = metadata.rgb_frame_id
+    message.depth_frame_id = metadata.depth_frame_id
+    message.calibration_identity = metadata.calibration_identity
+    message.illumination_state = metadata.illumination_state.value
+    message.j1_state_identity = metadata.j1_state_identity
+    message.q1_at_capture_rad = metadata.q1_at_capture_rad
+    transform = metadata.T_W_C_at_capture
+    message.t_w_c_at_capture.translation.x = transform[0][3]
+    message.t_w_c_at_capture.translation.y = transform[1][3]
+    message.t_w_c_at_capture.translation.z = transform[2][3]
+    quaternion = quaternion_from_rotation(tuple(row[:3] for row in transform[:3]))
+    (
+        message.t_w_c_at_capture.rotation.x,
+        message.t_w_c_at_capture.rotation.y,
+        message.t_w_c_at_capture.rotation.z,
+        message.t_w_c_at_capture.rotation.w,
+    ) = quaternion
+    message.sync_status = metadata.sync_status
+    return message
+
+
+def capture_metadata_from_msg(message: RgbdCaptureMetadataMsg) -> CaptureMetadata:
+    if message.schema_version != "rgbd_capture_metadata_v1":
+        raise ValueError("unsupported RGB-D capture metadata schema")
+    quaternion = (
+        message.t_w_c_at_capture.rotation.x,
+        message.t_w_c_at_capture.rotation.y,
+        message.t_w_c_at_capture.rotation.z,
+        message.t_w_c_at_capture.rotation.w,
+    )
+    rotation = rotation_from_quaternion(quaternion)
+    translation = message.t_w_c_at_capture.translation
+    transform = tuple(
+        tuple(rotation[row]) + ((translation.x, translation.y, translation.z)[row],)
+        for row in range(3)
+    ) + ((0.0, 0.0, 0.0, 1.0),)
+    return CaptureMetadata(
+        message.capture_id, message.sensor_epoch, int(message.frame_sequence),
+        time_to_float(message.requested_time), time_to_float(message.capture_start),
+        time_to_float(message.capture_center_time), time_to_float(message.capture_end),
+        message.clock_domain, message.rgb_frame_id, message.depth_frame_id,
+        message.calibration_identity, IlluminationState(message.illumination_state),
+        message.j1_state_identity, float(message.q1_at_capture_rad), transform,
+        message.sync_status,
+    )
 
 
 def cargo_to_msg(cargo: CargoObservation) -> CargoObservationMsg:
