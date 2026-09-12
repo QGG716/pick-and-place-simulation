@@ -604,7 +604,13 @@ try:
             map_y = ((output_rows - float(target_k[1, 2])) * source_fy / float(target_k[1, 1]) + source_cy).astype(np.float32)
             rgba = cv2.remap(rgba, map_x, map_y, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
             depth = cv2.remap(depth, map_x, map_y, cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=float("nan"))
-            instance_ids = cv2.remap(instance_ids, map_x, map_y, cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT)
+            # OpenCV geometric transforms reject CV_32U/CV_32S.  Replicator
+            # IDs are exactly representable at these magnitudes in float32;
+            # nearest-neighbour interpolation preserves their integer labels.
+            instance_ids = cv2.remap(
+                instance_ids.astype(np.float32), map_x, map_y, cv2.INTER_NEAREST,
+                borderMode=cv2.BORDER_CONSTANT,
+            ).astype(np.uint32)
         rgb = rgba[:, :, :3].astype(np.uint8)
         overview = overview_rgba[:, :, :3].astype(np.uint8)
         if scene_name in {"DARK_LIGHT_OFF", "DARK_LIGHT_ON"}:
