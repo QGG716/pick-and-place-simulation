@@ -256,7 +256,7 @@ def main() -> int:
                 status = "ELIGIBLE" if item.candidate_eligible else "REJECTED"
                 cv2.putText(image, f"PRED {identity[-8:]} {status}", (x1, max(42, y1 - 3)), cv2.FONT_HERSHEY_SIMPLEX, 0.30, color, 1, cv2.LINE_AA)
             cv2.rectangle(image, (0, 0), (image.shape[1], 54), (15, 15, 15), -1)
-            cv2.putText(image, f"MODE B1 PRED | {scene} | n={len(prediction.cargo)}", (10, 21), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (80, 255, 80), 2, cv2.LINE_AA)
+            cv2.putText(image, f"MODE C MOGE | {scene} | n={len(prediction.cargo)}", (10, 21), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (80, 255, 80), 2, cv2.LINE_AA)
             cv2.putText(image, f"ORACLE ROI; RAW=false; UNKNOWN={len(prediction.unknown_regions)}", (10, 44), cv2.FONT_HERSHEY_SIMPLEX, 0.38, (60, 180, 255), 1, cv2.LINE_AA)
             prediction_overlay = scene_dir / "mode_b1_prediction_overlay.png"
             cv2.imwrite(str(prediction_overlay), image)
@@ -283,7 +283,11 @@ def main() -> int:
             upstream_3d = cv2.imread(str(artifacts["final_instance_aware.jpg"]["path"]))
             upstream_3d = cv2.resize(upstream_3d, (image.shape[1], image.shape[0]))
             upstream_3d = _label_panel(upstream_3d, "PREDICTED 3D GEOMETRY (MONOCULAR SCALE)", (80, 255, 80))
-            comparison = np.vstack((np.hstack((rgb_panel, gt)), np.hstack((image, upstream_3d))))
+            tile_size = (640, 360)
+            comparison = np.vstack((
+                np.hstack((cv2.resize(rgb_panel, tile_size, interpolation=cv2.INTER_AREA), cv2.resize(gt, tile_size, interpolation=cv2.INTER_AREA))),
+                np.hstack((cv2.resize(image, tile_size, interpolation=cv2.INTER_AREA), cv2.resize(upstream_3d, tile_size, interpolation=cv2.INTER_AREA))),
+            ))
             cv2.imwrite(str(scene_dir / "mode_b1_gt_prediction_comparison.png"), comparison)
             video_frames.append(comparison)
             results.append({
@@ -316,8 +320,8 @@ def main() -> int:
             writer.write(frame)
     writer.release()
     summary = {
-        "schema_version": "isaac_perception_mode_b1_summary_v1", "status": "PASS",
-        "mode": "ISAAC_SENSOR_WITH_ORACLE_PROPOSALS", "raw_image_automatic": False,
+        "schema_version": "isaac_perception_mode_c_summary_v2", "status": "PASS",
+        "mode": "STAGED_MONOCULAR_MOGE", "role": "COMPARISON", "raw_image_automatic": False,
         "execution_model": "one resident GPU worker with SAM and MoGe loaded once",
         "resident_worker_ready": resident_ready,
         "vision_commit": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
@@ -326,10 +330,11 @@ def main() -> int:
         "claim_boundary": "synthetic rendered-image results do not establish real-camera accuracy",
     }
     write_json(capture_root / "mode_b1_summary.json", summary)
+    write_json(capture_root / "mode_c_moge_summary.json", summary)
     domain_path = capture_root / "domain_summary.json"
     domain = json.loads(domain_path.read_text(encoding="utf-8"))
-    domain["mode_b1"] = "PASS"
-    domain["mode_b1_summary"] = str((capture_root / "mode_b1_summary.json").resolve())
+    domain["mode_c_moge"] = "PASS"
+    domain["mode_c_moge_summary"] = str((capture_root / "mode_c_moge_summary.json").resolve())
     write_json(domain_path, domain)
     print(json.dumps(summary, indent=2))
     return 0

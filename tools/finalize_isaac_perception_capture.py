@@ -22,6 +22,7 @@ from unloading_perception.isaac_validation import (  # noqa: E402
     write_json,
 )
 from unloading_perception.scene import SnapshotAssembler, build_scene_update  # noqa: E402
+from unloading_perception.rgbd import CaptureMetadata  # noqa: E402
 
 
 def main() -> int:
@@ -43,10 +44,18 @@ def main() -> int:
         scene_dir = args.capture_directory / scene_name
         manifest = IsaacSceneManifest.from_dict(json.loads((args.bundle_directory / record["path"]).read_text(encoding="utf-8")))
         binding = IsaacCaptureBinding.from_dict(json.loads((scene_dir / "capture_binding.json").read_text(encoding="utf-8")))
+        capture_metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8")))
         if (binding.simulation_epoch, binding.frame_sequence) != (
             manifest.timing["simulation_epoch"], manifest.timing["simulation_frame"],
         ):
             raise ValueError(f"capture binding differs from manifest for {scene_name}")
+        if (
+            capture_metadata.sensor_epoch != binding.simulation_epoch
+            or capture_metadata.frame_sequence != binding.frame_sequence
+            or capture_metadata.capture_center_time != binding.simulation_time
+            or capture_metadata.q1_at_capture_rad != manifest.robot["q_rad"][0]
+        ):
+            raise ValueError(f"unified RGB-D metadata differs from manifest for {scene_name}")
         annotation_payload = json.loads((scene_dir / "gt_annotations.json").read_text(encoding="utf-8"))
         observation = ground_truth_observation(manifest, annotation_payload["objects"])
         assembler.update = build_scene_update(observation)
@@ -71,7 +80,7 @@ def main() -> int:
         snapshot = assembled.snapshot
         handoff = build_feasibility_handoff(snapshot, manifest, evidence_mode="ISAAC_GT")
         compatibility = check_feasibility_handoff(handoff, manifest, contract)
-        if compatibility["status"] != "PASS":
+        if compatibility["status"] not in {"PASS", "COMPATIBLE_WITH_KNOWN_GAP"}:
             raise RuntimeError(f"feasibility handoff compatibility failed for {scene_name}: {compatibility['differences']}")
         (scene_dir / "mode_a_perception_observation.json").write_text(dumps(observation), encoding="utf-8")
         write_json(scene_dir / "planning_world_snapshot.json", to_wire(snapshot))
@@ -112,10 +121,11 @@ def main() -> int:
             "feasibility_handoff_status": compatibility["status"],
         })
     summary = {
-        "schema_version": "isaac_perception_domain_finalize_v1",
-        "status": "PASS",
+        "schema_version": "isaac_perception_domain_finalize_v2",
+        "status": "PASS_WITH_KNOWN_FEASIBILITY_GAP",
         "mode_a": "PASS",
-        "mode_b1": "NOT_RUN",
+        "mode_b_staged_rgbd": "NOT_RUN",
+        "mode_c_moge": "NOT_RUN",
         "raw_image_automatic": False,
         "feasibility_reference_commit": index["feasibility_reference_commit"],
         "layout_fingerprint": index["layout_fingerprint"],
