@@ -246,9 +246,18 @@ try:
     mast_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/Body")
     mast_proxy.CreateSizeAttr(1.0)
     mast_body_xform = UsdGeom.XformCommonAPI(mast_proxy.GetPrim())
-    mast_body_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, 0.75))
-    mast_body_xform.SetScale(Gf.Vec3f(0.07, 0.07, 1.5))
+    # Leave a physical opening around the optical axis at z=1.3 m.  A single
+    # 1.5 m bar through the camera centre causes the sensor to render the mast
+    # interior rather than the trailer.
+    mast_body_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, 0.60))
+    mast_body_xform.SetScale(Gf.Vec3f(0.07, 0.07, 1.20))
     UsdShade.MaterialBindingAPI.Apply(mast_proxy.GetPrim()).Bind(materials["mast"])
+    mast_top_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/TopExtension")
+    mast_top_proxy.CreateSizeAttr(1.0)
+    mast_top_xform = UsdGeom.XformCommonAPI(mast_top_proxy.GetPrim())
+    mast_top_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, 1.45))
+    mast_top_xform.SetScale(Gf.Vec3f(0.07, 0.07, 0.10))
+    UsdShade.MaterialBindingAPI.Apply(mast_top_proxy.GetPrim()).Bind(materials["mast"])
     module_xform = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0")
     module_api = UsdGeom.XformCommonAPI(module_xform.GetPrim())
     module_api.SetTranslate(Gf.Vec3d(0.0, 0.0, 1.3))
@@ -256,15 +265,17 @@ try:
     module_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0/Housing")
     module_proxy.CreateSizeAttr(1.0)
     module_proxy_api = UsdGeom.XformCommonAPI(module_proxy.GetPrim())
-    module_proxy_api.SetTranslate(Gf.Vec3d(0.0, 0.0, 0.0))
+    # The declared camera centre is the front optical point.  Keep every
+    # rendered proxy strictly behind its +X-facing image plane.
+    module_proxy_api.SetTranslate(Gf.Vec3d(-0.08, 0.0, 0.0))
     module_proxy_api.SetScale(Gf.Vec3f(0.12, 0.34, 0.11))
     UsdShade.MaterialBindingAPI.Apply(module_proxy.GetPrim()).Bind(materials["module"])
     for sensor_name, lateral in (("RGBCamera", 0.035), ("DepthCamera", -0.035)):
         sensor = UsdGeom.Cube.Define(stage, f"/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0/{sensor_name}")
         sensor.CreateSizeAttr(1.0)
         sensor_api = UsdGeom.XformCommonAPI(sensor.GetPrim())
-        sensor_api.SetTranslate(Gf.Vec3d(0.065, lateral, 0.0))
-        sensor_api.SetScale(Gf.Vec3f(0.025, 0.045, 0.045))
+        sensor_api.SetTranslate(Gf.Vec3d(-0.01, lateral, 0.0))
+        sensor_api.SetScale(Gf.Vec3f(0.01, 0.045, 0.045))
         UsdShade.MaterialBindingAPI.Apply(sensor.GetPrim()).Bind(materials["lens"])
     fill_lights = []
     for light_name, lateral in (("FillLightLeft", 0.12), ("FillLightRight", -0.12)):
@@ -429,6 +440,15 @@ try:
     source_index = {name: index for index, name in enumerate(expected_names)}
     q = np.asarray(first_manifest.robot["q_rad"], dtype=np.float32)
     command = q[[source_index[name] for name in discovered_names]]
+    zero_velocity = np.zeros_like(command)
+
+    def render_at_joint_command(joint_command):
+        """Render an exact kinematic sensing state without a gravity step."""
+        articulation.set_dof_positions(joint_command[None, :])
+        articulation.set_dof_velocities(zero_velocity[None, :])
+        articulation.set_dof_position_targets(joint_command[None, :])
+        world.render()
+
     world.reset()
     articulation.switch_dof_control_mode("position")
     articulation.set_dof_positions(command[None, :])
@@ -454,6 +474,17 @@ try:
         return values
 
     def object_id_from_instance_label(label):
+        # Replicator 1.13 can return NumPy/Vt scalar wrappers here.  Its JSON
+        # representation is the prim path, while ``str(wrapper)`` is not
+        # guaranteed to be.  Normalize the scalar before matching the exact
+        # USD prim path recorded in our scene contract.
+        if hasattr(label, "item"):
+            try:
+                label = label.item()
+            except (TypeError, ValueError):
+                pass
+        if isinstance(label, (list, tuple)) and len(label) == 1:
+            label = label[0]
         text = str(label)
         for object_id, path in prim_paths.items():
             if object_id.startswith("carton_") and (text == path or path in text):
@@ -552,6 +583,7 @@ try:
         articulation.set_dof_position_targets(command[None, :])
         for _ in range(8):
             world.step(render=True)
+        render_at_joint_command(command)
         if scene_name == "MECHANICAL_TOP_VIEW":
             top_image = cv2.cvtColor(np.asarray(rgb_data(top_annotator.get_data()))[:, :, :3].astype(np.uint8), cv2.COLOR_RGB2BGR)
             side_image = cv2.cvtColor(np.asarray(rgb_data(side_annotator.get_data()))[:, :, :3].astype(np.uint8), cv2.COLOR_RGB2BGR)
@@ -581,6 +613,7 @@ try:
                 vision_api.SetRotate(Gf.Vec3f(*rpy_degrees(rig_matrix[:3, :3])), UsdGeom.XformCommonAPI.RotationOrderXYZ)
                 for _ in range(4):
                     world.step(render=True)
+                render_at_joint_command(sample_command)
                 with_robot_result = sweep_instance.get_data()
                 with_robot_pixels = int(np.count_nonzero(carton_mask(with_robot_result)))
                 sweep_image = np.asarray(rgb_data(sweep_rgb.get_data()))[:, :, :3].astype(np.uint8)
@@ -621,10 +654,7 @@ try:
                 "status": "PASS",
             }, indent=2), encoding="utf-8")
             apply_manifest(manifest, scene_name)
-            articulation.set_dof_positions(command[None, :])
-            articulation.set_dof_position_targets(command[None, :])
-            for _ in range(4):
-                world.step(render=True)
+            render_at_joint_command(command)
         rgba = np.asarray(rgb_data(rgb_annotator.get_data()))
         depth = np.asarray(rgb_data(depth_annotator.get_data()), dtype=np.float32)
         instance_result = instance_annotator.get_data()
@@ -719,6 +749,14 @@ try:
         masks_by_object = {}
         instance_identity = {}
         segmentation_info = instance_result.get("info", {})
+        instance_values, instance_counts = np.unique(instance_ids, return_counts=True)
+        instance_histogram = {
+            str(int(value)): int(count)
+            for value, count in zip(instance_values.tolist(), instance_counts.tolist())
+        }
+        (scene_dir / "instance_id_histogram.json").write_text(
+            json.dumps(instance_histogram, indent=2), encoding="utf-8",
+        )
         (scene_dir / "instance_segmentation_info.json").write_text(
             json.dumps(segmentation_info, indent=2, default=lambda value: value.item() if hasattr(value, "item") else str(value)),
             encoding="utf-8",
@@ -738,7 +776,11 @@ try:
                     masks_by_object[object_id] = mask
                     instance_identity[object_id] = int(numeric_id)
         if not masks_by_object:
-            raise RuntimeError(f"Isaac emitted no identified carton masks for {scene_name}")
+            mapped_ids = sorted(int(value) for value in segmentation_info.get("idToLabels", {}))
+            raise RuntimeError(
+                f"Isaac emitted no identified carton masks for {scene_name}; "
+                f"pixel IDs={instance_values[:64].tolist()}, label IDs={mapped_ids[:64]}"
+            )
         masks_path = scene_dir / "gt_instance_masks.npz"
         np.savez_compressed(masks_path, **masks_by_object)
         masks_sha256 = sha256(masks_path)
