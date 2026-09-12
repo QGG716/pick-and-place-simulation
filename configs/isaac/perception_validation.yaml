@@ -64,7 +64,9 @@ vision:
     depth_percentile_high: 99.0
     discontinuity_mad_scale: 6.0
     discontinuity_floor_m: 0.02
-    connected_depth_component_selection: true
+    local_depth_component_selection: true
+    retain_multiple_depth_components: true
+    minimum_component_points: 8
     minimum_points: 50
   calibration_gate:
     max_center_translation_error_m: 0.10

@@ -30,9 +30,12 @@ from unloading_contracts import (  # noqa: E402
 )
 from unloading_perception.isaac_evaluation import evaluate_observations, write_evaluation  # noqa: E402
 from unloading_perception.isaac_validation import IsaacSceneManifest, ground_truth_observation, write_json  # noqa: E402
+from unloading_perception.observed_faces import (  # noqa: E402
+    observed_faces_from_geometry_record, transform_observed_face_set,
+)
 from unloading_perception.rgbd import (  # noqa: E402
     CaptureMetadata, MetricPointMap, MetricPointMapSource, PointCloudFilterConfig,
-    hypotheses_from_geometry_record, masked_metric_pointmap, register_rgbd,
+    filter_registered_instance_depth, hypotheses_from_geometry_record, masked_metric_pointmap, register_rgbd,
     transform_hypothesis_to_world,
 )
 from unloading_perception.upstream_v4 import (  # noqa: E402
@@ -87,7 +90,9 @@ def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: P
         depth_percentile_high=float(config["depth_percentile_high"]),
         discontinuity_mad_scale=float(config["discontinuity_mad_scale"]),
         discontinuity_floor_m=float(config["discontinuity_floor_m"]),
-        select_largest_component=bool(config["connected_depth_component_selection"]),
+        local_depth_component_selection=bool(config["local_depth_component_selection"]),
+        retain_multiple_depth_components=bool(config["retain_multiple_depth_components"]),
+        minimum_component_points=int(config["minimum_component_points"]),
         minimum_points=int(config["minimum_points"]),
     )
     combined_points = np.full((*depth.shape, 3), np.nan, dtype=np.float32)
@@ -97,13 +102,32 @@ def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: P
         if label not in {"box", "cardboard_box"}:
             continue
         try:
+            filter_result = filter_registered_instance_depth(frame, mask, filter_config)
             item = masked_metric_pointmap(
                 frame, mask, depth_identity=sha256(depth_path),
                 source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH, config=filter_config,
             )
             combined_points[item.valid_mask] = item.points_camera_xyz_m[item.valid_mask]
             combined_valid |= item.valid_mask
-            audits.append({"mask_id": int(mask_id), "status": "PASS", **dict(item.filter_evidence)})
+            audit_path = scene_dir / "pointcloud_filter" / f"mask_{int(mask_id):04d}.npz"
+            audit_path.parent.mkdir(parents=True, exist_ok=True)
+            rows, columns = np.indices(depth.shape, dtype=np.float32)
+            raw_points = np.full((*depth.shape, 3), np.nan, dtype=np.float32)
+            raw = filter_result.raw_valid_mask
+            raw_points[raw, 0] = (columns[raw] - camera["K"][2]) * depth[raw] / camera["K"][0]
+            raw_points[raw, 1] = (rows[raw] - camera["K"][5]) * depth[raw] / camera["K"][4]
+            raw_points[raw, 2] = depth[raw]
+            np.savez_compressed(
+                audit_path, raw_valid_mask=filter_result.raw_valid_mask,
+                filtered_mask=filter_result.retained_mask,
+                rejected_reason=filter_result.rejected_reason,
+                raw_points_camera_xyz_m=raw_points,
+                filtered_points_camera_xyz_m=item.points_camera_xyz_m,
+            )
+            audits.append({
+                "mask_id": int(mask_id), "status": "PASS",
+                "audit_npz": str(audit_path), **dict(item.filter_evidence),
+            })
         except ValueError as exc:
             audits.append({"mask_id": int(mask_id), "status": "REJECTED", "reason": str(exc)})
     if not np.any(combined_valid):
@@ -147,6 +171,8 @@ def _observation(
         for index, mask_id in enumerate(mask_archive["mask_ids"])
     }
     metadata = CaptureMetadata.from_dict(json.loads((Path(proposals["_scene_dir"]) / "capture_metadata.json").read_text(encoding="utf-8")))
+    camera = next(item for item in manifest.cameras if str(item["frame_id"]) == metadata.rgb_frame_id)
+    module_id = str(camera.get("module_id", metadata.rgb_frame_id.removesuffix("_rgb_optical")))
     cargo = []
     unknown = []
     hypothesis_groups = {}
@@ -155,10 +181,17 @@ def _observation(
         source_id = str(mask_id)
         proposal = proposal_by_id.get(mask_id, {})
         bbox = tuple(float(value) for value in proposal.get("bbox", (0.0, 0.0, 1.0, 1.0)))
+        observed_camera = observed_faces_from_geometry_record(
+            record, source_instance_id=source_id, module_id=module_id,
+            capture_id=metadata.capture_id, capture_time=metadata.capture_center_time,
+            frame_id=metadata.rgb_frame_id,
+        )
+        observed_world = transform_observed_face_set(observed_camera, metadata.T_W_C_at_capture, "world")
         hypotheses = hypotheses_from_geometry_record(
             record, source_instance_id=source_id,
             pointmap_source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,
             presence_score=float(proposal.get("score", 1.0)),
+            camera_frame=metadata.rgb_frame_id,
         )
         world_hypotheses = tuple(transform_hypothesis_to_world(item, metadata) for item in hypotheses)
         hypothesis_groups[source_id] = world_hypotheses
@@ -195,11 +228,20 @@ def _observation(
                     "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
                     "hypothesis_count": len(world_hypotheses),
                     "hypotheses": [_hypothesis_dict(item) for item in world_hypotheses],
-                    "algorithm": "PINNED_PLANE_ORTHOGONAL_CUBOID_RECOVERY",
+                    "observed_face_set": observed_world.to_dict(),
+                    "algorithm": "PINNED_UPSTREAM_V4_OBSERVED_FACE_RECOVERY",
                 },
             ))
         else:
-            reasons = ("REGISTERED_DEPTH_CUBOID_REJECTED",)
+            if observed_world.complete_cuboid_status == "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR":
+                reasons = ("COMPLETE_CUBOID_UNOBSERVABLE_SINGLE_FACE",)
+                geometry_validity = Validity.UNKNOWN
+            elif observed_world.complete_cuboid_status == "SUFFICIENT_MULTIFACE_EVIDENCE":
+                reasons = ("COMPLETE_CUBOID_SELF_CONSISTENCY_REJECTED",)
+                geometry_validity = Validity.INVALID
+            else:
+                reasons = ("NO_CERTIFIED_OBSERVED_FACE",)
+                geometry_validity = Validity.INVALID
             cargo.append(CargoObservation(
                 source_instance_id=source_id,
                 object_id=str(proposal.get("simulation_object_id")) if proposal.get("simulation_object_id") else None,
@@ -220,12 +262,16 @@ def _observation(
                 depth_evidence=EvidenceKind.OBSERVED,
                 scale_evidence=EvidenceKind.OBSERVED,
                 metric_scale_validity=Validity.VALID,
-                geometry_validity=Validity.INVALID,
+                geometry_validity=geometry_validity,
                 candidate_eligible=False,
                 eligibility_reasons=reasons,
-                raw_result={"pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH", "record": record},
+                raw_result={
+                    "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH", "record": record,
+                    "observed_face_set": observed_world.to_dict(),
+                    "complete_cuboid_status": observed_world.complete_cuboid_status,
+                },
             ))
-            unknown.append(UnknownRegion(f"rgbd-{source_id}", str(manifest.cameras[0]["frame_id"]), reasons[0], bbox))
+            unknown.append(UnknownRegion(f"rgbd-{source_id}", metadata.rgb_frame_id, reasons[0], bbox))
     observation = PerceptionObservation(
         SCHEMA_VERSION, f"rgbd-{scene}-{metadata.capture_id}", metadata.sensor_epoch,
         metadata.frame_sequence, metadata.capture_center_time, metadata.capture_center_time + elapsed,
@@ -251,10 +297,11 @@ def _top_view(path: Path, observation: PerceptionObservation) -> None:
     for item in observation.cargo:
         if item.pose is None or item.full_dimensions_m is None:
             continue
-        x, y = item.pose.position_m[:2]
-        dx, dy = item.full_dimensions_m[:2]
-        p1, p2 = pixel(x - dx / 2, y + dy / 2), pixel(x + dx / 2, y - dy / 2)
-        cv2.rectangle(image, p1, p2, (20, 130, 230), 2)
+        corners = np.asarray(item.raw_result.get("hypotheses", [{}])[0].get("evidence", {}).get("declared_corners_world_m", ()), dtype=float)
+        if corners.shape != (8, 3):
+            continue
+        hull = cv2.convexHull(np.asarray([pixel(float(point[0]), float(point[1])) for point in corners], dtype=np.int32))
+        cv2.polylines(image, [hull], True, (20, 130, 230), 2, cv2.LINE_AA)
     cv2.putText(image, "MODE B REGISTERED RGB-D CUBOIDS | WORLD TOP VIEW", (36, 34), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (20, 20, 20), 2, cv2.LINE_AA)
     cv2.arrowedLine(image, pixel(-2.2, -1.2), pixel(-1.4, -1.2), (0, 0, 220), 3)
     cv2.putText(image, "+X trailer", pixel(-1.9, -1.27), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (0, 0, 220), 1, cv2.LINE_AA)

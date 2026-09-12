@@ -9,6 +9,7 @@ from unloading_contracts import Validity
 from unloading_perception.rgbd import (
     CaptureManager,
     CaptureRequest,
+    filter_registered_instance_depth,
     IlluminationState,
     MetricPointMap,
     MetricPointMapSource,
@@ -83,6 +84,29 @@ def test_registered_depth_lifts_optical_z_to_metric_xyz_without_gt_cleanup():
     assert pointmap.filter_evidence["metric_scale_validity"] == Validity.VALID.value
 
 
+def test_depth_filter_retains_two_locally_continuous_visible_surfaces():
+    metadata = _metadata()
+    rgb = np.zeros((6, 8, 3), dtype=np.uint8)
+    depth = np.full((6, 8), 2.0, dtype=np.float32)
+    depth[:, 4:] = 2.45
+    frame = register_rgbd(
+        metadata=metadata, rgb=rgb, depth_optical_z_m=depth, rgb_K=K, depth_K=K,
+        T_rgb_depth=IDENTITY, rgb_calibration_identity="calib-a", depth_calibration_identity="calib-a",
+        registration_mode="SIMULATION_IDEAL_REGISTERED_DEPTH",
+    )
+    result = filter_registered_instance_depth(
+        frame, np.ones(depth.shape, dtype=bool),
+        PointCloudFilterConfig(
+            boundary_erosion_px=0, depth_percentile_low=0.0, depth_percentile_high=100.0,
+            discontinuity_floor_m=0.02, minimum_component_points=3, minimum_points=10,
+        ),
+    )
+    assert result.retained_mask.sum() == 48
+    retained_components = [item for item in result.evidence["components"] if item["retained"]]
+    assert len(retained_components) == 2
+    assert result.evidence["global_instance_median_gate_used"] is False
+
+
 def test_metric_pointmap_keeps_registered_depth_provenance(tmp_path):
     pointmap = masked_metric_pointmap(
         _frame(), np.ones((6, 6), dtype=bool), depth_identity="depth-a",
@@ -107,7 +131,7 @@ def test_monocular_source_cannot_claim_verified_metric_scale():
         MetricPointMap(**{**template.__dict__, "source": MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE})
 
 
-def test_single_visible_face_emits_multiple_ineligible_hypotheses():
+def test_single_visible_face_does_not_invent_complete_cuboid_without_size_prior():
     record = {
         "accepted": True,
         "orthogonal_axes_3d": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
@@ -124,10 +148,7 @@ def test_single_visible_face_emits_multiple_ineligible_hypotheses():
         record, source_instance_id="box-1",
         pointmap_source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH, presence_score=0.9,
     )
-    assert len(hypotheses) == 2
-    assert [item.hypothesis_rank for item in hypotheses] == [0, 1]
-    assert all(not item.candidate_eligible for item in hypotheses)
-    assert all(item.evidence["pointmap_source"] == "ISAAC_IDEAL_REGISTERED_DEPTH" for item in hypotheses)
+    assert hypotheses == ()
 
 
 def test_world_transform_uses_capture_time_pose_not_inference_time_j1():
@@ -172,18 +193,20 @@ def test_registered_three_plane_pose_prefers_metric_cuboid_over_2d_face_anchor()
         record, source_instance_id="box-1",
         pointmap_source=MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE,
         presence_score=0.9,
-    )[0]
+    )
     assert metric.pose_camera.position_m == pytest.approx((0.0, 0.0, 1.95))
     assert metric.evidence["pose_corner_source"] == "unanchored_corners_3d"
-    assert monocular.pose_camera.position_m == pytest.approx((-0.1, -0.1, 1.0))
-    assert monocular.evidence["pose_corner_source"] == "corners_3d"
+    assert monocular == ()
 
 
 def test_registered_cuboid_axes_are_canonicalized_by_predicted_side_length():
     record = {
         "accepted": True,
         "orthogonal_axes_3d": [[1, 0, 0], [0, 0, 1], [0, 1, 0]],
-        "corners_3d": [[0, 0, 2]] * 8,
+        "corners_3d": [
+            [-0.3, -0.2, 1.85], [0.3, -0.2, 1.85], [0.3, -0.2, 2.15], [-0.3, -0.2, 2.15],
+            [-0.3, 0.2, 1.85], [0.3, 0.2, 1.85], [0.3, 0.2, 2.15], [-0.3, 0.2, 2.15],
+        ],
         "shape_dimensions": [0.6, 0.3, 0.4],
         "depth_supported_face_count": 2,
         "plane_inlier_ratio": 1.0,

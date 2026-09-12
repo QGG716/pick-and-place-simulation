@@ -257,11 +257,13 @@ class PointCloudFilterConfig:
     depth_percentile_high: float = 99.0
     discontinuity_mad_scale: float = 6.0
     discontinuity_floor_m: float = 0.02
-    select_largest_component: bool = True
+    local_depth_component_selection: bool = True
+    retain_multiple_depth_components: bool = True
+    minimum_component_points: int = 8
     minimum_points: int = 50
 
     def __post_init__(self) -> None:
-        if self.boundary_erosion_px < 0 or self.minimum_points <= 0:
+        if self.boundary_erosion_px < 0 or self.minimum_points <= 0 or self.minimum_component_points <= 0:
             raise ValueError("point filtering counts are invalid")
         if not 0.0 <= self.depth_percentile_low < self.depth_percentile_high <= 100.0:
             raise ValueError("depth percentiles are invalid")
@@ -363,20 +365,19 @@ def _erode_mask(mask: np.ndarray, iterations: int) -> np.ndarray:
     return result
 
 
-def _largest_component(mask: np.ndarray) -> np.ndarray:
-    try:
-        import cv2  # type: ignore
+@dataclass(frozen=True)
+class InstanceDepthFilterResult:
+    raw_valid_mask: np.ndarray = field(compare=False, repr=False)
+    retained_mask: np.ndarray = field(compare=False, repr=False)
+    rejected_reason: np.ndarray = field(compare=False, repr=False)
+    evidence: Mapping[str, Any]
 
-        count, labels, stats, _ = cv2.connectedComponentsWithStats(mask.astype(np.uint8), connectivity=4)
-        if count <= 1:
-            return mask
-        label = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
-        return labels == label
-    except ImportError:
-        pass
-    result = np.zeros_like(mask, dtype=bool)
+
+def _depth_continuous_components(
+    mask: np.ndarray, depth: np.ndarray, threshold_m: float,
+) -> list[list[tuple[int, int]]]:
     seen = np.zeros_like(mask, dtype=bool)
-    best: list[tuple[int, int]] = []
+    components: list[list[tuple[int, int]]] = []
     height, width = mask.shape
     for start_y, start_x in zip(*np.where(mask & ~seen)):
         queue = deque([(int(start_y), int(start_x))])
@@ -386,15 +387,104 @@ def _largest_component(mask: np.ndarray) -> np.ndarray:
             y, x = queue.popleft()
             component.append((y, x))
             for next_y, next_x in ((y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)):
-                if 0 <= next_y < height and 0 <= next_x < width and mask[next_y, next_x] and not seen[next_y, next_x]:
+                if (
+                    0 <= next_y < height and 0 <= next_x < width
+                    and mask[next_y, next_x] and not seen[next_y, next_x]
+                    and abs(float(depth[next_y, next_x]) - float(depth[y, x])) <= threshold_m
+                ):
                     seen[next_y, next_x] = True
                     queue.append((next_y, next_x))
-        if len(component) > len(best):
-            best = component
-    if best:
-        ys, xs = zip(*best)
-        result[np.asarray(ys), np.asarray(xs)] = True
-    return result
+        components.append(component)
+    return components
+
+
+def filter_registered_instance_depth(
+    frame: RegisteredRgbdFrame,
+    instance_mask: np.ndarray,
+    config: PointCloudFilterConfig = PointCloudFilterConfig(),
+) -> InstanceDepthFilterResult:
+    """Keep every locally continuous, non-trivial depth surface in an instance.
+
+    Rejection codes are: 0 retained, 1 outside instance, 2 invalid depth,
+    3 boundary erosion, 4 percentile outlier, 5 tiny local component.
+    """
+
+    mask = np.asarray(instance_mask, dtype=bool)
+    if mask.shape != frame.depth_optical_z_m.shape:
+        raise ValueError("instance mask and registered depth resolution differ")
+    raw_valid = mask & frame.valid_depth_mask
+    if not np.any(raw_valid):
+        raise ValueError("instance mask contains no valid registered depth")
+    eroded = _erode_mask(mask, config.boundary_erosion_px) & frame.valid_depth_mask
+    if not np.any(eroded):
+        raise ValueError("instance mask contains no valid depth after boundary erosion")
+    depth = frame.depth_optical_z_m
+    values = depth[eroded].astype(np.float64)
+    low, high = np.percentile(values, (config.depth_percentile_low, config.depth_percentile_high))
+    percentile_mask = eroded & (depth >= low) & (depth <= high)
+
+    neighbor_differences = []
+    for dy, dx in ((0, 1), (1, 0)):
+        left = percentile_mask[: percentile_mask.shape[0] - dy or None, : percentile_mask.shape[1] - dx or None]
+        right = percentile_mask[dy:, dx:]
+        paired = left & right
+        if np.any(paired):
+            first = depth[: depth.shape[0] - dy or None, : depth.shape[1] - dx or None][paired]
+            second = depth[dy:, dx:][paired]
+            neighbor_differences.append(np.abs(first.astype(np.float64) - second.astype(np.float64)))
+    local_steps = np.concatenate(neighbor_differences) if neighbor_differences else np.zeros(0)
+    local_median = float(np.median(local_steps)) if local_steps.size else 0.0
+    local_mad = float(np.median(np.abs(local_steps - local_median))) if local_steps.size else 0.0
+    discontinuity = max(
+        config.discontinuity_floor_m,
+        local_median + config.discontinuity_mad_scale * 1.4826 * local_mad,
+    )
+    components = (
+        _depth_continuous_components(percentile_mask, depth, discontinuity)
+        if config.local_depth_component_selection else
+        [[(int(y), int(x)) for y, x in zip(*np.where(percentile_mask))]]
+    )
+    retained = np.zeros_like(mask, dtype=bool)
+    component_records = []
+    ordered = sorted(components, key=len, reverse=True)
+    selected_components = ordered if config.retain_multiple_depth_components else ordered[:1]
+    selected_ids = {id(component) for component in selected_components if len(component) >= config.minimum_component_points}
+    for rank, component in enumerate(ordered):
+        ys, xs = zip(*component)
+        component_depth = depth[np.asarray(ys), np.asarray(xs)]
+        keep = id(component) in selected_ids
+        if keep:
+            retained[np.asarray(ys), np.asarray(xs)] = True
+        component_records.append({
+            "rank": rank, "point_count": len(component), "retained": keep,
+            "depth_min_m": float(np.min(component_depth)), "depth_max_m": float(np.max(component_depth)),
+            "depth_median_m": float(np.median(component_depth)),
+        })
+    if int(retained.sum()) < config.minimum_points:
+        raise ValueError(f"registered metric instance has too few filtered points: {int(retained.sum())}")
+
+    reasons = np.ones(mask.shape, dtype=np.uint8)
+    reasons[mask & ~frame.valid_depth_mask] = 2
+    reasons[raw_valid & ~eroded] = 3
+    reasons[eroded & ~percentile_mask] = 4
+    reasons[percentile_mask & ~retained] = 5
+    reasons[retained] = 0
+    evidence = {
+        "filter_schema": "local_multisurface_depth_filter_v1",
+        "boundary_erosion_px": config.boundary_erosion_px,
+        "depth_percentiles": [config.depth_percentile_low, config.depth_percentile_high],
+        "depth_percentile_range_m": [float(low), float(high)],
+        "local_depth_discontinuity_m": discontinuity,
+        "global_instance_median_gate_used": False,
+        "retain_multiple_depth_components": config.retain_multiple_depth_components,
+        "minimum_component_points": config.minimum_component_points,
+        "input_mask_pixels": int(mask.sum()),
+        "raw_valid_point_count": int(raw_valid.sum()),
+        "filtered_point_count": int(retained.sum()),
+        "rejected_point_count": int(raw_valid.sum() - retained.sum()),
+        "components": component_records,
+    }
+    return InstanceDepthFilterResult(raw_valid, retained, reasons, evidence)
 
 
 def masked_metric_pointmap(
@@ -407,25 +497,10 @@ def masked_metric_pointmap(
 ) -> MetricPointMap:
     """Lift a registered instance mask into optical-camera metric XYZ."""
 
-    mask = np.asarray(instance_mask, dtype=bool)
-    if mask.shape != frame.depth_optical_z_m.shape:
-        raise ValueError("instance mask and registered depth resolution differ")
-    eroded = _erode_mask(mask, config.boundary_erosion_px)
-    selected = eroded & frame.valid_depth_mask
-    if not np.any(selected):
-        raise ValueError("instance mask contains no valid registered depth")
-    depths = frame.depth_optical_z_m[selected].astype(np.float64)
-    low, high = np.percentile(depths, (config.depth_percentile_low, config.depth_percentile_high))
-    median = float(np.median(depths))
-    mad = float(np.median(np.abs(depths - median)))
-    discontinuity = max(config.discontinuity_floor_m, config.discontinuity_mad_scale * 1.4826 * mad)
+    filtered = filter_registered_instance_depth(frame, instance_mask, config)
+    selected = filtered.retained_mask
     depth = frame.depth_optical_z_m
-    selected &= (depth >= low) & (depth <= high) & (np.abs(depth - median) <= discontinuity)
-    if config.select_largest_component:
-        selected = _largest_component(selected)
     count = int(selected.sum())
-    if count < config.minimum_points:
-        raise ValueError(f"registered metric instance has too few filtered points: {count}")
     rows, columns = np.indices(depth.shape, dtype=np.float32)
     fx, fy, cx, cy = frame.K[0], frame.K[4], frame.K[2], frame.K[5]
     points = np.full((*depth.shape, 3), np.nan, dtype=np.float32)
@@ -434,12 +509,7 @@ def masked_metric_pointmap(
     points[selected, 1] = (rows[selected] - cy) * z / fy
     points[selected, 2] = z
     evidence = {
-        "boundary_erosion_px": config.boundary_erosion_px,
-        "depth_percentiles": [config.depth_percentile_low, config.depth_percentile_high],
-        "depth_discontinuity_m": discontinuity,
-        "connected_depth_component_selected": config.select_largest_component,
-        "input_mask_pixels": int(mask.sum()),
-        "filtered_point_count": count,
+        **dict(filtered.evidence),
         "metric_scale_validity": "VALID" if source is not MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE else "UNKNOWN",
         "depth_semantics": "optical_z_m",
     }
@@ -524,6 +594,7 @@ def hypotheses_from_geometry_record(
     source_instance_id: str,
     pointmap_source: MetricPointMapSource,
     presence_score: float,
+    camera_frame: str = "module_0_main_rgb_optical",
 ) -> tuple[CuboidHypothesis, ...]:
     """Adapt the pinned plane/cuboid recovery output without MoGe coupling."""
 
@@ -531,6 +602,11 @@ def hypotheses_from_geometry_record(
         return ()
     source = MetricPointMapSource(pointmap_source)
     surfaces = int(record.get("depth_supported_face_count", record.get("visible_plane_count", 0)))
+    size_prior = record.get("dimension_prior") or record.get("known_dimensions_m")
+    if surfaces < 2 and not size_prior:
+        # A metric plane fully determines its own boundary, distance and
+        # normal, but not the hidden thickness or complete cuboid centre.
+        return ()
     axes = tuple(tuple(float(value) for value in axis) for axis in record["orthogonal_axes_3d"])
     corner_key = "corners_3d"
     plane_pair = record.get("orthogonal_plane_pair_diagnostics", {})
@@ -560,7 +636,25 @@ def hypotheses_from_geometry_record(
         if float(np.linalg.det(np.asarray(axes, dtype=float))) < 0.0:
             axes = (axes[0], axes[1], tuple(-value for value in axes[2]))
     center = tuple(sum(point[index] for point in corners) / len(corners) for index in range(3))
-    pose = pose_from_axes_rows(center, axes, "module_0_main_rgb_optical", EvidenceKind.MODEL_ESTIMATED)
+    pose = pose_from_axes_rows(center, axes, camera_frame, EvidenceKind.MODEL_ESTIMATED)
+    reconstructed = []
+    for signs in ((-1, -1, -1), (1, -1, -1), (1, 1, -1), (-1, 1, -1),
+                  (-1, -1, 1), (1, -1, 1), (1, 1, 1), (-1, 1, 1)):
+        reconstructed.append(tuple(
+            center[coordinate] + sum(
+                signs[axis] * dimensions[axis] * axes[axis][coordinate] / 2.0
+                for axis in range(3)
+            ) for coordinate in range(3)
+        ))
+    declared_array = np.asarray(corners, dtype=float)
+    rebuilt_array = np.asarray(reconstructed, dtype=float)
+    corner_set_error = max(
+        float(np.max(np.min(np.linalg.norm(declared_array[:, None, :] - rebuilt_array[None, :, :], axis=2), axis=1))),
+        float(np.max(np.min(np.linalg.norm(rebuilt_array[:, None, :] - declared_array[None, :, :], axis=2), axis=1))),
+    )
+    consistency_tolerance = max(1e-5, 1e-4 * max(dimensions))
+    if not np.isfinite(corner_set_error) or corner_set_error > consistency_tolerance:
+        return ()
     support = min(1.0, max(0.0, float(record.get("plane_inlier_ratio", 0.0))))
     residual = max(0.0, float(record.get("plane_residual_mean", 0.0)))
     completion = str(record.get("completion_mode", "UNKNOWN"))
@@ -580,6 +674,10 @@ def hypotheses_from_geometry_record(
         "visible_face_evidence": record.get("camera_facing_faces", ()),
         "pose_corner_source": corner_key,
         "axis_order_from_predicted_dimensions": axis_order,
+        "declared_corners_camera_m": corners,
+        "reconstructed_corners_camera_m": tuple(reconstructed),
+        "corner_set_consistency_error_m": corner_set_error,
+        "corner_set_consistency_tolerance_m": consistency_tolerance,
         "metric_scale_validity": Validity.VALID.value if verified_metric else Validity.UNKNOWN.value,
     }
     hypotheses = [CuboidHypothesis(
@@ -588,17 +686,9 @@ def hypotheses_from_geometry_record(
         dict(record.get("uncertainty") or {"status": "NOT_FULLY_QUANTIFIED"}), evidence,
         not base_reasons, tuple(base_reasons),
     )]
-    if ambiguous:
-        alternate_axes = (axes[0], axes[2], tuple(-value for value in axes[1]))
-        alternate_dimensions = (dimensions[0], dimensions[2], dimensions[1])
-        alternate_pose = pose_from_axes_rows(center, alternate_axes, pose.frame_id, EvidenceKind.CONSTRAINT_COMPLETED)
-        hypotheses.append(CuboidHypothesis(
-            source_instance_id, 1, max(0.0, float(presence_score) * 0.95), alternate_pose,
-            alternate_dimensions, tuple(record.get("camera_facing_faces", ())), surfaces, support,
-            residual, completion, {"status": "DISCRETE_AXIS_SWAP_HYPOTHESIS"},
-            {**evidence, "ambiguity": "UNOBSERVED_AXIS_SWAP"}, False,
-            tuple(dict.fromkeys((*base_reasons, "ALTERNATE_HYPOTHESIS_REQUIRES_DISAMBIGUATION"))),
-        ))
+    # Axis renaming does not create a second spatial hypothesis.  Additional
+    # hypotheses are accepted only when a producer supplies a geometrically
+    # distinct corner set with explicit evidence.
     return tuple(hypotheses)
 
 
@@ -606,4 +696,10 @@ def transform_hypothesis_to_world(hypothesis: CuboidHypothesis, metadata: Captur
     """Use capture-time T_W_C; inference-time robot state is not an input."""
 
     world = transform_pose(metadata.T_W_C_at_capture, hypothesis.pose_camera, "world")
-    return CuboidHypothesis(**{**hypothesis.__dict__, "pose_world": world})
+    matrix = np.asarray(metadata.T_W_C_at_capture, dtype=float)
+    corners = np.asarray(hypothesis.evidence.get("declared_corners_camera_m", ()), dtype=float)
+    evidence = dict(hypothesis.evidence)
+    if corners.shape == (8, 3):
+        world_corners = (matrix[:3, :3] @ corners.T).T + matrix[:3, 3]
+        evidence["declared_corners_world_m"] = tuple(tuple(float(value) for value in point) for point in world_corners)
+    return CuboidHypothesis(**{**hypothesis.__dict__, "pose_world": world, "evidence": evidence})

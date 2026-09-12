@@ -12,6 +12,8 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+import numpy as np
+
 
 UPSTREAM_V4_SHA = "1d208f2ed380a207e6e46b4a62d2ac640edfe477"
 UPSTREAM_V4_SCRIPT = "pipeline/geometry/refine_multiplane_cuboids.py"
@@ -55,6 +57,19 @@ def finalize_registered_depth_result(payload: Mapping[str, Any]) -> dict[str, An
     refined_count = 0
     suppressed_count = 0
     for record in result.get("instances", ()):  # type: ignore[union-attr]
+        corners = np.asarray(record.get("corners_3d", ()), dtype=float)
+        if corners.shape == (8, 3):
+            vectors = np.asarray((corners[1] - corners[0], corners[3] - corners[0], corners[4] - corners[0]))
+            dimensions = np.linalg.norm(vectors, axis=1)
+            if np.all(np.isfinite(dimensions)) and float(np.min(dimensions)) > 1e-9:
+                axes = vectors / dimensions[:, None]
+                if float(np.linalg.det(axes)) < 0.0:
+                    axes[2] *= -1.0
+                record["orthogonal_axes_3d_before_adapter_coherence"] = record.get("orthogonal_axes_3d")
+                record["shape_dimensions_before_adapter_coherence"] = record.get("shape_dimensions")
+                record["orthogonal_axes_3d"] = np.round(axes, 8).tolist()
+                record["shape_dimensions"] = np.round(dimensions, 8).tolist()
+                record["geometry_coherence"] = "DERIVED_FROM_PUBLISHED_CORNERS_0_1_3_4"
         if record.get("multiplane_refinement_status") == (
             "joint_sam_silhouette+depth_faces+fixed_intrinsics_pnp"
         ):
