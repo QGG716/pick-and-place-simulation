@@ -623,11 +623,19 @@ try:
                 without_robot_result = sweep_instance.get_data()
                 without_robot_pixels = int(np.count_nonzero(carton_mask(without_robot_result)))
                 UsdGeom.Imageable(root_prim).MakeVisible()
-                robot_occlusion_fraction = max(0.0, 1.0 - with_robot_pixels / max(1, without_robot_pixels))
+                robot_occlusion_fraction = (
+                    None if without_robot_pixels == 0
+                    else max(0.0, 1.0 - with_robot_pixels / without_robot_pixels)
+                )
+                occlusion_status = (
+                    "NOT_OBSERVABLE_NO_CARTON_PIXELS"
+                    if robot_occlusion_fraction is None else "OBSERVED"
+                )
                 tile = cv2.cvtColor(sweep_image, cv2.COLOR_RGB2BGR)
                 cv2.rectangle(tile, (0, 0), (tile.shape[1], 66), (12, 12, 12), -1)
                 cv2.putText(tile, f"q1={angle_deg:+.0f} deg", (14, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 230, 255), 2, cv2.LINE_AA)
-                cv2.putText(tile, f"robot occlusion={robot_occlusion_fraction:.3f}", (14, 54), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (255, 210, 50), 1, cv2.LINE_AA)
+                occlusion_text = "N/A (no cartons)" if robot_occlusion_fraction is None else f"{robot_occlusion_fraction:.3f}"
+                cv2.putText(tile, f"robot occlusion={occlusion_text}", (14, 54), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (255, 210, 50), 1, cv2.LINE_AA)
                 sweep_tiles.append(tile)
                 j1_center = np.asarray(rig_pose.j1_center_world_m)
                 mast_center = np.asarray(rig_pose.mast_center_world_m)
@@ -641,6 +649,7 @@ try:
                     "carton_pixels_with_robot": with_robot_pixels,
                     "carton_pixels_without_robot": without_robot_pixels,
                     "robot_occlusion_fraction": robot_occlusion_fraction,
+                    "robot_occlusion_status": occlusion_status,
                 })
             blank = np.zeros_like(sweep_tiles[0])
             montage = np.vstack((np.hstack(sweep_tiles[:3]), np.hstack((sweep_tiles[3], sweep_tiles[4], blank))))
