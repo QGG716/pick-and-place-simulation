@@ -1,74 +1,90 @@
-schema_version: isaac_perception_validation_v1
-modes:
-  - ISAAC_GROUND_TRUTH
-  - ISAAC_SENSOR_WITH_ORACLE_PROPOSALS
+schema_version: isaac_perception_validation_v2
+rig_id: m710id70_j1_perception_mast_v2
+vision_rig_config: configs/isaac/perception_sensing_pose.yaml
+modes: [ISAAC_GT, STAGED_RGBD, STAGED_MONOCULAR_MOGE]
+primary_mode: STAGED_RGBD
+comparison_mode: STAGED_MONOCULAR_MOGE
 raw_image_automatic: false
+proposal_source: ISAAC_GT_ORACLE_PROPOSAL
+detector_metrics: NOT_EVALUATED
 layout_bundle:
   snapshot: integration/isaac_scene_contract/m710id70_layout_v1/scene_snapshot.json
   isaac_contract: integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json
-  feasibility_reference_commit: f84578a3c9a91364b747560b994f2e6e9b5d65a2
-cameras:
+  archived_snapshot_reference_commit: f84578a3c9a91364b747560b994f2e6e9b5d65a2
+  feasibility_reference_commit: 648e177a03d2a5a5d8a2f11e9141c57763325805
+  # Derived from the latest feasibility layout: A->robot base, never a W pose.
+  robot_base_xyz_A_m: [0.625, 0.0, 0.600]
+  latest_layout_binding_status: READ_ONLY_COMPATIBILITY_REFERENCE
+  official_robot_asset:
+    repository_path: assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf
+    sha256: 2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf
+    source_status: LATEST_FEASIBILITY_OFFICIAL_URDF
+historical_cameras:
   - camera_id: front_validation_camera
-    frame_id: front_validation_camera_optical
-    resolution: [640, 480]
-    # Pixel intrinsics used by the saved CameraInfo and offline projection.
-    K: [560.0, 0.0, 319.5, 0.0, 560.0, 239.5, 0.0, 0.0, 1.0]
-    distortion_model: plumb_bob
-    distortion: [0.0, 0.0, 0.0, 0.0, 0.0]
-    # Camera optical axes are +X right, +Y down, +Z forward. T_W_C maps
-    # optical coordinates into W (+X trailer, +Y left, +Z up).
-    T_W_C:
-      - [0.0, -0.7863183388, 0.6178215519, -0.8]
-      - [-1.0, 0.0, 0.0, 0.0]
-      - [0.0, -0.6178215519, -0.7863183388, 2.6]
-      - [0.0, 0.0, 0.0, 1.0]
-    look_at_world_m: [0.3, 0.0, 1.2]
-    near_clip_m: 0.05
-    far_clip_m: 12.0
+    status: SUPERSEDED_BY_J1_MOUNTED_PERCEPTION_MAST_V2
+    resolution_px: [640, 480]
     publish_rate_hz: 10.0
-    modalities: [rgb, metric_depth, camera_info, pointcloud, gt_annotations]
-    focal_length_mm: 24.0
-    horizontal_aperture_mm: 27.4285714286
+    acceptance_eligible: false
 scenes:
-  - static_full_stack
-  - single_target_focus
-  - known_translation
-  - known_rotation
-  - partial_occlusion
-  - camera_transform_change
+  - MECHANICAL_TOP_VIEW
+  - J1_ROTATION_SWEEP
+  - FULL_STACK_NOMINAL
+  - DARK_LIGHT_OFF
+  - DARK_LIGHT_ON
+  - RGBD_CALIBRATION_BOX
+  - PARTIAL_OCCLUSION
+  - MOTION_TIMESTAMP_TEST
 target_selection:
   strategy: manifest_stable_id
   simulation_object_id: carton_l07_c02
 perturbations:
   known_translation_m: [0.05, 0.0, 0.0]
   known_rotation_rpy_rad: [0.0, 0.0, 0.17453292519943295]
-  occluder_size_xyz_m: [0.18, 0.7, 0.9]
-  camera_translation_m: [0.0, 0.15, 0.0]
+  occluder_size_xyz_m: [0.18, 0.70, 0.90]
 rendering:
   physics_hz: 60
-  camera_hz: 10
+  sensor_acquisition_hz: 30
+  capture_trigger_hz: 2
+  vision_processing_hz: 2
   smoke_frames: 18
   renderer: RaytracedLighting
-  visual_demo_resolution: [1280, 720]
+  full_resolution_px: [2592, 1944]
+  visual_demo_resolution_px: [1280, 720]
   visual_demo_fps: 20
   visual_demo_seconds: 12
 vision:
-  mode: ISAAC_SENSOR_WITH_ORACLE_PROPOSALS
-  proposal_source: ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL
   keyframes: [0, 50, 100]
   resident_worker_timeout_s: 90.0
-  raw_image_automatic: false
+  registered_depth_source: ISAAC_IDEAL_REGISTERED_DEPTH
+  depth_unavailable_fallback: DEPTH_UNAVAILABLE_MOGE
+  fallback_scale_status: MONOCULAR_SCALE_UNVERIFIED
+  pointcloud_filter:
+    boundary_erosion_px: 2
+    depth_percentile_low: 1.0
+    depth_percentile_high: 99.0
+    discontinuity_mad_scale: 6.0
+    discontinuity_floor_m: 0.02
+    connected_depth_component_selection: true
+    minimum_points: 50
+  calibration_gate:
+    max_center_translation_error_m: 0.10
+    max_orientation_error_deg: 20.0
+    max_full_dimension_abs_error_m: 0.15
+illumination:
+  geometry_status: SIMULATION_LIGHT_PROXY
+  comparison_modes: [LIGHT_OFF, LIGHT_ON_NOMINAL]
+  controlled_variables: [scene, camera_pose, exposure, proposal, depth]
 ros:
   use_sim_time: true
   topics:
     clock: /clock
-    rgb: /isaac/front_camera/rgb
-    depth: /isaac/front_camera/depth
-    camera_info: /isaac/front_camera/camera_info
-    pointcloud: /isaac/front_camera/pointcloud
+    rgb: /isaac/vision_mast/module_0_main/rgb
+    depth: /isaac/vision_mast/module_0_main/depth
+    camera_info: /isaac/vision_mast/module_0_main/camera_info
+    capture_metadata: /isaac/vision_mast/module_0_main/capture_metadata
+    pointcloud: /isaac/vision_mast/module_0_main/pointcloud_on_demand
     tf: /tf
     tf_static: /tf_static
     joint_states: /joint_states
     gt_2d: /isaac/ground_truth/detections_2d
     gt_3d: /isaac/ground_truth/detections_3d
-

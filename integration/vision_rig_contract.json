@@ -1,0 +1,39 @@
+{
+  "schema_version": "j1_coupled_vision_rig_contract_v2",
+  "rig_id": "m710id70_j1_perception_mast_v2",
+  "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+  "parent_frame": "J1_link",
+  "j1_coupling": {
+    "mast_position_is_function_of_J1": true,
+    "mast_heading_is_function_of_J1": true,
+    "mast_j1_radius_m": 0.4,
+    "mast_j1_yaw_offset_rad": 1.5707963267948966,
+    "independent_mast_yaw": false
+  },
+  "mechanical_extrinsics": {
+    "j1_joint_origin_z_from_base_m": 0.565,
+    "mast_offset_j1_xy_m": [-0.4, 0.0],
+    "vision_flange_height_j1_m": 0.16434119641780853,
+    "vision_flange_height_status": "PROVISIONAL_ENGINEERING_DATUM",
+    "mast_height_from_flange_m": 1.5,
+    "module_0_main_height_from_flange_m": 1.3
+  },
+  "module_0_main": {
+    "children": ["rgb_camera", "depth_camera", "fill_light_left", "fill_light_right", "capture_controller"],
+    "camera_extrinsics": "coaxial_ideal_registration",
+    "depth_extrinsics": "coaxial_ideal_registration",
+    "light_transforms": [[0.0, 0.12, 0.0], [0.0, -0.12, 0.0]],
+    "sensor_parameters": {
+      "rgb_resolution_px": [2592, 1944],
+      "depth_resolution_px": [2592, 1944],
+      "sensor_acquisition_hz": 30.0,
+      "hfov_rad": 1.5707963267948966,
+      "vfov_rad": 1.1344640137963142,
+      "depth_semantics": "optical_z_m"
+    }
+  },
+  "mast_yaw_actuation": {"supported": false, "future_extension": true},
+  "geometry_qualification": "VISION_RIG_GEOMETRY_NOT_EXECUTION_QUALIFIED",
+  "kinematic_rule": "T_W_C(capture_time)=T_W_base*T_base_J1(q1_at_capture)*T_J1_flange*T_flange_mast*T_mast_module*T_module_camera",
+  "planning_interface_status": "MISSING_MOVING_VISION_RIG_CONTRACT_IN_FEASIBILITY_REFERENCE"
+}

@@ -25,10 +25,13 @@ def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("--bundle-directory", required=True, type=Path)
     result.add_argument("--project-root", required=True, type=Path)
+    result.add_argument("--feasibility-root", required=True, type=Path)
     result.add_argument("--usd-directory", required=True, type=Path)
     result.add_argument("--output", required=True, type=Path)
-    result.add_argument("--width", type=int, default=640)
-    result.add_argument("--height", type=int, default=480)
+    result.add_argument("--width", type=int, default=2592)
+    result.add_argument("--height", type=int, default=1944)
+    result.add_argument("--video-width", type=int, default=1280)
+    result.add_argument("--video-height", type=int, default=720)
     result.add_argument("--fps", type=int, default=20)
     result.add_argument("--seconds", type=float, default=12.0)
     return result
@@ -67,7 +70,7 @@ def rgb_data(value):
 
 
 args = parser().parse_args()
-if min(args.width, args.height, args.fps) <= 0 or args.seconds <= 0.0:
+if min(args.width, args.height, args.video_width, args.video_height, args.fps) <= 0 or args.seconds <= 0.0:
     raise ValueError("render dimensions, FPS and duration must be positive")
 args.output.mkdir(parents=True, exist_ok=True)
 args.usd_directory.mkdir(parents=True, exist_ok=True)
@@ -90,7 +93,7 @@ try:
     from isaacsim.core.api import World
     from isaacsim.core.experimental.prims import Articulation
     from isaacsim.core.experimental.utils.semantics import add_labels
-    from pxr import Gf, Sdf, UsdGeom, UsdPhysics, UsdShade
+    from pxr import Gf, Sdf, UsdGeom, UsdLux, UsdPhysics, UsdShade
 
     project_root = args.project_root.resolve()
     sys.path.insert(0, str(project_root / "packages/unloading_contracts/src"))
@@ -100,8 +103,11 @@ try:
         feasibility_digest,
         verify_text_asset_identity,
     )
+    from unloading_perception.rgbd import CaptureMetadata, IlluminationState
+    from unloading_perception.vision_rig import evaluate_vision_rig_pose, load_vision_rig_spec
 
     bundle_index = json.loads((args.bundle_directory / "index.json").read_text(encoding="utf-8"))
+    bundle_scene_records = {str(item["scene"]): item for item in bundle_index["scenes"]}
     manifests = []
     for record in bundle_index["scenes"]:
         value = json.loads((args.bundle_directory / record["path"]).read_text(encoding="utf-8"))
@@ -109,19 +115,32 @@ try:
         if manifest.manifest_fingerprint != record["manifest_fingerprint"]:
             raise ValueError("bundle index/manifest identity mismatch")
         manifests.append((record["scene"], manifest))
+    expected_resolution = tuple(int(value) for value in manifests[0][1].cameras[0]["resolution"])
+    if (args.width, args.height) != expected_resolution:
+        raise ValueError(f"sensor render must use declared full resolution {expected_resolution}")
     contract_path = project_root / "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json"
     contract = json.loads(contract_path.read_text(encoding="utf-8"))
     contract_payload = dict(contract)
     if contract_payload.pop("contract_fingerprint") != feasibility_digest(contract_payload):
         raise ValueError("frozen feasibility Isaac layout contract fingerprint mismatch")
-    urdf_record = contract["robot"]["urdf"]
-    urdf_path = project_root / urdf_record["repository_path"]
+    feasibility_root = args.feasibility_root.resolve()
+    expected_feasibility_commit = str(bundle_index["feasibility_reference_commit"])
+    actual_feasibility_commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=feasibility_root, check=True,
+        text=True, capture_output=True, timeout=10,
+    ).stdout.strip()
+    if actual_feasibility_commit != expected_feasibility_commit:
+        raise ValueError(
+            f"feasibility checkout must be exactly {expected_feasibility_commit}; got {actual_feasibility_commit}"
+        )
+    urdf_record = manifests[0][1].robot
+    urdf_path = feasibility_root / str(urdf_record["robot_asset_path"])
     if not urdf_path.is_file():
-        raise ValueError("robot URDF differs from the frozen scene contract")
+        raise ValueError("latest feasibility official robot URDF is missing")
     try:
-        urdf_identity = verify_text_asset_identity(urdf_path, urdf_record["sha256"])
+        urdf_identity = verify_text_asset_identity(urdf_path, urdf_record["robot_asset_hash"])
     except ValueError as exc:
-        raise ValueError("robot URDF differs from the frozen scene contract") from exc
+        raise ValueError("latest feasibility official robot URDF failed identity verification") from exc
 
     import_manifest_path = args.usd_directory / "m710id70_perception_import.json"
     settings = {
@@ -134,7 +153,7 @@ try:
     }
     cached = json.loads(import_manifest_path.read_text(encoding="utf-8")) if import_manifest_path.is_file() else None
     imported_now = False
-    if cached and cached.get("urdf_contract_sha256") == urdf_record["sha256"] and cached.get("urdf_checkout_sha256") == urdf_identity["checkout_sha256"] and cached.get("settings") == settings and Path(cached["usd_path"]).is_file():
+    if cached and cached.get("urdf_contract_sha256") == urdf_record["robot_asset_hash"] and cached.get("urdf_checkout_sha256") == urdf_identity["checkout_sha256"] and cached.get("feasibility_commit") == actual_feasibility_commit and cached.get("settings") == settings and Path(cached["usd_path"]).is_file():
         usd_path = Path(cached["usd_path"])
         root_prim_path = str(cached["root_prim_path"])
     else:
@@ -149,8 +168,9 @@ try:
         usd_path = Path(importer.import_urdf()).resolve()
         root_prim_path = f"/{urdf_path.stem}"
         import_manifest_path.write_text(json.dumps({
-            "urdf_contract_sha256": urdf_record["sha256"],
+            "urdf_contract_sha256": urdf_record["robot_asset_hash"],
             "urdf_checkout_sha256": urdf_identity["checkout_sha256"],
+            "feasibility_commit": actual_feasibility_commit,
             "urdf_identity": urdf_identity, "usd_path": str(usd_path),
             "root_prim_path": root_prim_path, "settings": settings,
         }, indent=2), encoding="utf-8")
@@ -205,7 +225,68 @@ try:
         "floor": material("Floor", (0.16, 0.17, 0.18)),
         "wall": material("TrailerWall", (0.43, 0.45, 0.48)),
         "occluder": material("UnknownOccluder", (0.92, 0.78, 0.05), emissive=True, opacity=0.82),
+        "mast": material("VisionMast", (0.86, 0.88, 0.91)),
+        "module": material("PerceptionModule", (0.04, 0.05, 0.07)),
+        "lens": material("SensorLens", (0.04, 0.34, 0.52), emissive=True),
     }
+
+    # A modular visual proxy with the same hierarchy as the handoff contract.
+    # Its root is evaluated from J1 for every scene; no static world camera pose
+    # or independent mast yaw joint exists.
+    vision_root = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig")
+    vision_root.GetPrim().CreateAttribute("rigId", Sdf.ValueTypeNames.String).Set("m710id70_j1_perception_mast_v2")
+    vision_root.GetPrim().CreateAttribute("kinematicParentFrame", Sdf.ValueTypeNames.String).Set("J1_link")
+    flange_xform = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange")
+    flange_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Proxy")
+    flange_proxy.CreateSizeAttr(1.0)
+    UsdGeom.XformCommonAPI(flange_proxy.GetPrim()).SetScale(Gf.Vec3f(0.18, 0.18, 0.05))
+    UsdShade.MaterialBindingAPI.Apply(flange_proxy.GetPrim()).Bind(materials["mast"])
+    mast_xform = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast")
+    mast_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/Body")
+    mast_proxy.CreateSizeAttr(1.0)
+    mast_body_xform = UsdGeom.XformCommonAPI(mast_proxy.GetPrim())
+    mast_body_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, 0.75))
+    mast_body_xform.SetScale(Gf.Vec3f(0.07, 0.07, 1.5))
+    UsdShade.MaterialBindingAPI.Apply(mast_proxy.GetPrim()).Bind(materials["mast"])
+    module_xform = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0")
+    module_api = UsdGeom.XformCommonAPI(module_xform.GetPrim())
+    module_api.SetTranslate(Gf.Vec3d(0.0, 0.0, 1.3))
+    module_api.SetRotate(Gf.Vec3f(0.0, 0.0, 90.0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+    module_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0/Housing")
+    module_proxy.CreateSizeAttr(1.0)
+    module_proxy_api = UsdGeom.XformCommonAPI(module_proxy.GetPrim())
+    module_proxy_api.SetTranslate(Gf.Vec3d(0.0, 0.0, 0.0))
+    module_proxy_api.SetScale(Gf.Vec3f(0.12, 0.34, 0.11))
+    UsdShade.MaterialBindingAPI.Apply(module_proxy.GetPrim()).Bind(materials["module"])
+    for sensor_name, lateral in (("RGBCamera", 0.035), ("DepthCamera", -0.035)):
+        sensor = UsdGeom.Cube.Define(stage, f"/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0/{sensor_name}")
+        sensor.CreateSizeAttr(1.0)
+        sensor_api = UsdGeom.XformCommonAPI(sensor.GetPrim())
+        sensor_api.SetTranslate(Gf.Vec3d(0.065, lateral, 0.0))
+        sensor_api.SetScale(Gf.Vec3f(0.025, 0.045, 0.045))
+        UsdShade.MaterialBindingAPI.Apply(sensor.GetPrim()).Bind(materials["lens"])
+    fill_lights = []
+    for light_name, lateral in (("FillLightLeft", 0.12), ("FillLightRight", -0.12)):
+        light = UsdLux.DiskLight.Define(
+            stage, f"/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0/{light_name}"
+        )
+        light.CreateRadiusAttr(0.035)
+        light.CreateColorAttr(Gf.Vec3f(1.0, 0.93, 0.82))
+        light.CreateEnableColorTemperatureAttr(True)
+        light.CreateColorTemperatureAttr(5000.0)
+        light_api = UsdGeom.XformCommonAPI(light.GetPrim())
+        light_api.SetTranslate(Gf.Vec3d(0.07, lateral, 0.0))
+        light_api.SetRotate(Gf.Vec3f(0.0, -90.0, 0.0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        fill_lights.append(light)
+
+    environment_distant = UsdLux.DistantLight.Define(stage, "/PerceptionValidation/EnvironmentDistant")
+    environment_distant.CreateAngleAttr(4.0)
+    UsdGeom.XformCommonAPI(environment_distant.GetPrim()).SetRotate(
+        Gf.Vec3f(305.0, 0.0, 20.0), UsdGeom.XformCommonAPI.RotationOrderXYZ
+    )
+    environment_sphere = UsdLux.SphereLight.Define(stage, "/PerceptionValidation/EnvironmentSphere")
+    environment_sphere.CreateRadiusAttr(0.7)
+    UsdGeom.XformCommonAPI(environment_sphere.GetPrim()).SetTranslate(Gf.Vec3d(-0.7, -1.8, 3.3))
 
     def safe_name(index, name):
         return f"p_{index:03d}_" + "".join(character if character.isascii() and (character.isalnum() or character == "_") else "_" for character in str(name))
@@ -251,13 +332,35 @@ try:
     occluder_xform = UsdGeom.XformCommonAPI(occluder.GetPrim())
     UsdShade.MaterialBindingAPI.Apply(occluder.GetPrim()).Bind(materials["occluder"])
 
-    rep.create.light(light_type="distant", intensity=950.0, rotation=(305.0, 0.0, 20.0))
-    rep.create.light(light_type="sphere", position=(-0.7, -1.8, 3.3), intensity=6500.0, scale=0.7)
-    rep.create.light(light_type="sphere", position=(-0.7, 1.8, 3.0), intensity=5000.0, scale=0.7)
     overview_camera = rep.create.camera(position=(-4.8, -3.8, 3.4), look_at=(-0.7, 0.0, 1.2), focal_length=24.0, clipping_range=(0.05, 20.0))
     overview_product = rep.create.render_product(overview_camera, (args.width, args.height))
     overview_annotator = rep.AnnotatorRegistry.get_annotator("rgb")
     overview_annotator.attach(overview_product)
+    nominal_manifest = manifests[0][1]
+    nominal_j1 = np.asarray(nominal_manifest.mechanisms["vision_rig"]["T_W_J1"], dtype=float)[:3, 3]
+    nominal_module = np.asarray(nominal_manifest.mechanisms["vision_rig"]["T_W_module_0_main"], dtype=float)[:3, 3]
+    top_camera = rep.create.camera(
+        position=(float(nominal_j1[0] - 0.4), float(nominal_j1[1]), 5.4),
+        look_at=(float(nominal_j1[0] + 0.2), float(nominal_j1[1]), 0.7),
+        focal_length=35.0, clipping_range=(0.05, 20.0),
+    )
+    top_product = rep.create.render_product(top_camera, (args.video_width, args.video_height))
+    top_annotator = rep.AnnotatorRegistry.get_annotator("rgb")
+    top_annotator.attach(top_product)
+    side_camera = rep.create.camera(
+        position=(float(nominal_j1[0] - 2.1), float(nominal_j1[1] - 2.6), 2.3),
+        look_at=tuple(nominal_module.tolist()), focal_length=42.0, clipping_range=(0.05, 12.0),
+    )
+    side_product = rep.create.render_product(side_camera, (args.video_width, args.video_height))
+    side_annotator = rep.AnnotatorRegistry.get_annotator("rgb")
+    side_annotator.attach(side_product)
+    closeup_camera = rep.create.camera(
+        position=(float(nominal_module[0] + 0.8), float(nominal_module[1] - 0.55), float(nominal_module[2] + 0.25)),
+        look_at=tuple(nominal_module.tolist()), focal_length=55.0, clipping_range=(0.02, 5.0),
+    )
+    closeup_product = rep.create.render_product(closeup_camera, (args.video_width, args.video_height))
+    closeup_annotator = rep.AnnotatorRegistry.get_annotator("rgb")
+    closeup_annotator.attach(closeup_product)
 
     cameras = []
     for scene_name, manifest in manifests:
@@ -287,6 +390,29 @@ try:
         instance.attach(product)
         cameras.append((rgb, depth, instance))
 
+    rig_spec = load_vision_rig_spec(project_root / "configs/isaac/perception_sensing_pose.yaml")
+    sweep_manifest = next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
+    sweep_sensors = []
+    for angle_deg in (-90.0, -45.0, 0.0, 45.0, 90.0):
+        angle_rad = math.radians(angle_deg)
+        rig_pose = evaluate_vision_rig_pose(sweep_manifest.robot["T_W_robot"], angle_rad, rig_spec)
+        position = np.asarray(rig_pose.camera_center_world_m, dtype=float)
+        forward = np.asarray([rig_pose.T_W_camera_optical[row][2] for row in range(3)], dtype=float)
+        sweep_camera = rep.create.camera(
+            position=tuple(position.tolist()), look_at=tuple((position + forward).tolist()),
+            focal_length=float(sweep_manifest.cameras[0]["focal_length_mm"]),
+            horizontal_aperture=float(sweep_manifest.cameras[0]["horizontal_aperture_mm"]),
+            clipping_range=(float(sweep_manifest.cameras[0]["near_clip_m"]), float(sweep_manifest.cameras[0]["far_clip_m"])),
+        )
+        sweep_product = rep.create.render_product(sweep_camera, (args.video_width, args.video_height))
+        sweep_rgb = rep.AnnotatorRegistry.get_annotator("rgb")
+        sweep_instance = rep.AnnotatorRegistry.get_annotator(
+            "instance_segmentation", init_params={"colorize": False, "semanticTypes": ["class", "simulation_object_id"]}
+        )
+        sweep_rgb.attach(sweep_product)
+        sweep_instance.attach(sweep_product)
+        sweep_sensors.append((angle_deg, angle_rad, rig_pose, sweep_rgb, sweep_instance))
+
     world = World(stage_units_in_meters=1.0, physics_dt=1.0 / 60.0, rendering_dt=1.0 / 30.0)
     articulation = Articulation(root_prim_path)
     discovered_names = list(articulation.dof_names)
@@ -310,11 +436,24 @@ try:
         by_id = {item["simulation_object_id"]: item for item in manifest.objects}
         for object_id, state in by_id.items():
             prim = stage.GetPrimAtPath(prim_paths[object_id])
+            imageable = UsdGeom.Imageable(prim)
+            imageable.MakeVisible() if state.get("visible", True) else imageable.MakeInvisible()
             pose = np.asarray(state["T_W_object"], dtype=float)
             xform = UsdGeom.XformCommonAPI(prim)
             xform.SetTranslate(Gf.Vec3d(*pose[:3, 3].tolist()))
             xform.SetRotate(Gf.Vec3f(*rpy_degrees(pose[:3, :3])), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-        if scene_name == "partial_occlusion":
+        rig_pose = np.asarray(manifest.mechanisms["vision_rig"]["T_W_vision_flange"], dtype=float)
+        vision_api = UsdGeom.XformCommonAPI(vision_root.GetPrim())
+        vision_api.SetTranslate(Gf.Vec3d(*rig_pose[:3, 3].tolist()))
+        vision_api.SetRotate(Gf.Vec3f(*rpy_degrees(rig_pose[:3, :3])), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        record = bundle_scene_records[scene_name]
+        dark = scene_name in {"DARK_LIGHT_OFF", "DARK_LIGHT_ON"}
+        environment_distant.CreateIntensityAttr(35.0 if dark else 950.0)
+        environment_sphere.CreateIntensityAttr(80.0 if dark else 6500.0)
+        fill_intensity = 0.0 if record["illumination_state"] == "LIGHT_OFF" else 2500.0
+        for light in fill_lights:
+            light.CreateIntensityAttr(fill_intensity)
+        if scene_name == "PARTIAL_OCCLUSION":
             target = by_id[target_id]
             camera_position = np.asarray(manifest.cameras[0]["T_W_C"], dtype=float)[:3, 3]
             target_position = np.asarray(target["T_W_object"], dtype=float)[:3, 3]
@@ -366,6 +505,7 @@ try:
 
     scene_records = []
     video_frames = []
+    lighting_samples = {}
     for scene_index, ((scene_name, manifest), (rgb_annotator, depth_annotator, instance_annotator)) in enumerate(zip(manifests, cameras), start=1):
         scene_dir = args.output / scene_name
         scene_dir.mkdir(parents=True, exist_ok=True)
@@ -373,6 +513,77 @@ try:
         articulation.set_dof_positions(command[None, :])
         for _ in range(8):
             world.step(render=True)
+        if scene_name == "MECHANICAL_TOP_VIEW":
+            top_image = cv2.cvtColor(np.asarray(rgb_data(top_annotator.get_data()))[:, :, :3].astype(np.uint8), cv2.COLOR_RGB2BGR)
+            side_image = cv2.cvtColor(np.asarray(rgb_data(side_annotator.get_data()))[:, :, :3].astype(np.uint8), cv2.COLOR_RGB2BGR)
+            closeup_image = cv2.cvtColor(np.asarray(rgb_data(closeup_annotator.get_data()))[:, :, :3].astype(np.uint8), cv2.COLOR_RGB2BGR)
+            cv2.rectangle(top_image, (0, 0), (top_image.shape[1], 112), (10, 10, 10), -1)
+            cv2.putText(top_image, "W +X: INTO TRAILER    W +Y: LEFT", (16, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.62, (0, 240, 255), 2, cv2.LINE_AA)
+            cv2.putText(top_image, "MAST = J1 + 0.400 m LEFT (+Y)", (16, 62), cv2.FONT_HERSHEY_SIMPLEX, 0.62, (80, 255, 100), 2, cv2.LINE_AA)
+            cv2.putText(top_image, "camera +X / arm -Y / phase = +90 deg", (16, 96), cv2.FONT_HERSHEY_SIMPLEX, 0.56, (255, 210, 60), 2, cv2.LINE_AA)
+            cv2.arrowedLine(top_image, (top_image.shape[1] - 180, 82), (top_image.shape[1] - 60, 82), (0, 240, 255), 3, tipLength=0.15)
+            cv2.arrowedLine(top_image, (top_image.shape[1] - 180, 82), (top_image.shape[1] - 180, 20), (80, 255, 100), 3, tipLength=0.18)
+            cv2.imwrite(str(args.output / "01_mast_left_top_view.png"), top_image)
+            cv2.imwrite(str(args.output / "02_mast_j1_90deg_relation.png"), top_image)
+            cv2.imwrite(str(args.output / "02_side_view_mast_camera.png"), side_image)
+            cv2.imwrite(str(args.output / "04_rgbd_module_closeup.png"), closeup_image)
+            cv2.imwrite(str(args.output / "04_isaac_vision_rig.png"), closeup_image)
+        if scene_name == "J1_ROTATION_SWEEP":
+            sweep_tiles = []
+            occlusion_samples = []
+            for angle_deg, angle_rad, rig_pose, sweep_rgb, sweep_instance in sweep_sensors:
+                sample_command = command.copy()
+                sample_command[discovered_names.index("J1")] = angle_rad
+                articulation.set_dof_positions(sample_command[None, :])
+                rig_matrix = np.asarray(rig_pose.T_W_vision_flange, dtype=float)
+                vision_api = UsdGeom.XformCommonAPI(vision_root.GetPrim())
+                vision_api.SetTranslate(Gf.Vec3d(*rig_matrix[:3, 3].tolist()))
+                vision_api.SetRotate(Gf.Vec3f(*rpy_degrees(rig_matrix[:3, :3])), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+                for _ in range(4):
+                    world.step(render=True)
+                with_robot_ids = np.asarray(sweep_instance.get_data()["data"], dtype=np.uint32)
+                with_robot_pixels = int(np.count_nonzero(with_robot_ids))
+                sweep_image = np.asarray(rgb_data(sweep_rgb.get_data()))[:, :, :3].astype(np.uint8)
+                UsdGeom.Imageable(root_prim).MakeInvisible()
+                for _ in range(2):
+                    world.step(render=True)
+                without_robot_ids = np.asarray(sweep_instance.get_data()["data"], dtype=np.uint32)
+                without_robot_pixels = int(np.count_nonzero(without_robot_ids))
+                UsdGeom.Imageable(root_prim).MakeVisible()
+                robot_occlusion_fraction = max(0.0, 1.0 - with_robot_pixels / max(1, without_robot_pixels))
+                tile = cv2.cvtColor(sweep_image, cv2.COLOR_RGB2BGR)
+                cv2.rectangle(tile, (0, 0), (tile.shape[1], 66), (12, 12, 12), -1)
+                cv2.putText(tile, f"q1={angle_deg:+.0f} deg", (14, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 230, 255), 2, cv2.LINE_AA)
+                cv2.putText(tile, f"robot occlusion={robot_occlusion_fraction:.3f}", (14, 54), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (255, 210, 50), 1, cv2.LINE_AA)
+                sweep_tiles.append(tile)
+                j1_center = np.asarray(rig_pose.j1_center_world_m)
+                mast_center = np.asarray(rig_pose.mast_center_world_m)
+                occlusion_samples.append({
+                    "q1_deg": angle_deg,
+                    "q1_rad": angle_rad,
+                    "j1_center_world_m": j1_center.tolist(),
+                    "mast_center_world_m": mast_center.tolist(),
+                    "mast_j1_radius_m": float(np.linalg.norm((mast_center - j1_center)[:2])),
+                    "camera_j1_yaw_offset_deg": 90.0,
+                    "carton_pixels_with_robot": with_robot_pixels,
+                    "carton_pixels_without_robot": without_robot_pixels,
+                    "robot_occlusion_fraction": robot_occlusion_fraction,
+                })
+            blank = np.zeros_like(sweep_tiles[0])
+            montage = np.vstack((np.hstack(sweep_tiles[:3]), np.hstack((sweep_tiles[3], sweep_tiles[4], blank))))
+            cv2.imwrite(str(scene_dir / "03_j1_sweep_montage.png"), montage)
+            cv2.imwrite(str(args.output / "03_j1_sweep_montage.png"), montage)
+            (scene_dir / "occlusion_by_robot_vs_q1.json").write_text(json.dumps({
+                "schema_version": "occlusion_by_robot_vs_q1_v1",
+                "rig_id": "m710id70_j1_perception_mast_v2",
+                "method": "Isaac rendered semantic carton pixels with robot visible versus hidden",
+                "samples": occlusion_samples,
+                "status": "PASS",
+            }, indent=2), encoding="utf-8")
+            apply_manifest(manifest, scene_name)
+            articulation.set_dof_positions(command[None, :])
+            for _ in range(4):
+                world.step(render=True)
         rgba = np.asarray(rgb_data(rgb_annotator.get_data()))
         depth = np.asarray(rgb_data(depth_annotator.get_data()), dtype=np.float32)
         instance_result = instance_annotator.get_data()
@@ -380,8 +591,32 @@ try:
         overview_rgba = np.asarray(rgb_data(overview_annotator.get_data()))
         if rgba.shape != (args.height, args.width, 4) or depth.shape != (args.height, args.width) or instance_ids.shape != (args.height, args.width):
             raise RuntimeError(f"invalid sensor shapes for {scene_name}: {rgba.shape}, {depth.shape}, {instance_ids.shape}")
+        camera = manifest.cameras[0]
+        if camera["intrinsics_mode"] == "EXACT_USER_SPEC_RESAMPLED":
+            # Isaac renders square-pixel HFOV=90 input.  A deterministic
+            # vertical resample realizes the independently specified VFOV=65
+            # while retaining the requested 2592x1944 output and exact K.
+            target_k = np.asarray(camera["K"], dtype=np.float64).reshape(3, 3)
+            source_fy = float(target_k[0, 0])
+            source_cy = (args.height - 1.0) / 2.0
+            output_rows, output_columns = np.indices((args.height, args.width), dtype=np.float32)
+            map_x = output_columns
+            map_y = ((output_rows - float(target_k[1, 2])) * source_fy / float(target_k[1, 1]) + source_cy).astype(np.float32)
+            rgba = cv2.remap(rgba, map_x, map_y, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+            depth = cv2.remap(depth, map_x, map_y, cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=float("nan"))
+            instance_ids = cv2.remap(instance_ids, map_x, map_y, cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT)
         rgb = rgba[:, :, :3].astype(np.uint8)
         overview = overview_rgba[:, :, :3].astype(np.uint8)
+        if scene_name in {"DARK_LIGHT_OFF", "DARK_LIGHT_ON"}:
+            luminance = (0.2126 * rgb[:, :, 0] + 0.7152 * rgb[:, :, 1] + 0.0722 * rgb[:, :, 2]) / 255.0
+            lighting_samples[scene_name] = {
+                "mean_luminance": float(np.mean(luminance)),
+                "shadow_fraction": float(np.mean(luminance < 0.08)),
+                "underexposed_fraction": float(np.mean(luminance < 0.04)),
+                "saturated_pixel_ratio": float(np.mean(luminance > 0.98)),
+                "semantic_carton_pixel_count": int(np.count_nonzero(instance_ids)),
+                "semantic_mask": instance_ids != 0,
+            }
         rgb_path = scene_dir / "sensor_rgb.png"
         cv2.imwrite(str(rgb_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
         np.save(scene_dir / "sensor_rgb.npy", rgb)
@@ -394,8 +629,21 @@ try:
             depth_visual[finite] = np.clip(255.0 * (depth[finite] - low) / max(high - low, 1e-6), 0, 255).astype(np.uint8)
         depth_color = cv2.applyColorMap(255 - depth_visual, cv2.COLORMAP_TURBO)
         cv2.imwrite(str(scene_dir / "metric_depth_visualization.png"), depth_color)
+        if scene_name == "DARK_LIGHT_OFF":
+            cv2.imwrite(str(args.output / "05_dark_light_off.png"), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+        elif scene_name == "DARK_LIGHT_ON":
+            cv2.imwrite(str(args.output / "06_dark_light_on.png"), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+        elif scene_name == "FULL_STACK_NOMINAL":
+            cv2.imwrite(str(args.output / "07_fullres_rgb_preview.png"), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+            cv2.imwrite(str(args.output / "08_metric_depth_preview.png"), depth_color)
+            preview_size = (args.video_width, args.video_height)
+            registered_preview = np.hstack((
+                cv2.resize(cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR), preview_size, interpolation=cv2.INTER_AREA),
+                cv2.resize(depth_color, preview_size, interpolation=cv2.INTER_AREA),
+            ))
+            cv2.putText(registered_preview, "REGISTERED RGB | OPTICAL_Z_M", (16, 32), cv2.FONT_HERSHEY_SIMPLEX, 0.72, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.imwrite(str(args.output / "09_registered_rgbd.png"), registered_preview)
 
-        camera = manifest.cameras[0]
         k = np.asarray(camera["K"], dtype=float).reshape(3, 3)
         rows, columns = np.indices(depth.shape)
         stride = 2
@@ -412,6 +660,11 @@ try:
             "distortion_model": camera["distortion_model"], "D": camera["distortion"],
             "T_W_C": camera["T_W_C"], "near_clip_m": camera["near_clip_m"],
             "far_clip_m": camera["far_clip_m"],
+            "intrinsics_mode": camera["intrinsics_mode"],
+            "registration_mode": camera["registration_mode"],
+            "depth_semantics": camera["depth_semantics"],
+            "native_square_pixel_fy_px": float(k[0, 0]),
+            "vertical_resampling_applied": camera["intrinsics_mode"] == "EXACT_USER_SPEC_RESAMPLED",
         }
         camera_info_path = scene_dir / "camera_info.json"
         camera_info_path.write_text(json.dumps(camera_info, indent=2), encoding="utf-8")
@@ -477,6 +730,33 @@ try:
             "gt_snapshot_sha256": sha256(annotations_path),
         }
         (scene_dir / "capture_binding.json").write_text(json.dumps(binding, indent=2), encoding="utf-8")
+        scene_record = next(item for item in bundle_index["scenes"] if item["scene"] == scene_name)
+        capture_time = float(manifest.timing["simulation_time"])
+        capture_metadata = CaptureMetadata(
+            capture_id=f"{manifest.timing['simulation_epoch']}:module_0_main:{manifest.timing['simulation_frame']}",
+            sensor_epoch=str(manifest.timing["simulation_epoch"]),
+            frame_sequence=int(manifest.timing["simulation_frame"]),
+            requested_time=capture_time,
+            capture_start=capture_time,
+            capture_center_time=capture_time,
+            capture_end=capture_time,
+            clock_domain="ros_sim_time",
+            rgb_frame_id=str(camera["frame_id"]),
+            depth_frame_id=str(camera["depth_frame_id"]),
+            calibration_identity=binding["camera_calibration_identity"],
+            illumination_state=IlluminationState(scene_record["illumination_state"]),
+            j1_state_identity=hashlib.sha256(json.dumps({
+                "joint_names": manifest.robot["joint_names"],
+                "q_rad": manifest.robot["q_rad"],
+                "simulation_epoch": manifest.timing["simulation_epoch"],
+                "simulation_frame": manifest.timing["simulation_frame"],
+            }, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
+            q1_at_capture_rad=float(camera["q1_at_capture_rad"]),
+            T_W_C_at_capture=tuple(tuple(float(value) for value in row) for row in camera["T_W_C"]),
+        )
+        (scene_dir / "capture_metadata.json").write_text(
+            json.dumps(capture_metadata.to_dict(), indent=2), encoding="utf-8"
+        )
 
         gt_overlay = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
         for annotation in annotations:
@@ -496,12 +776,13 @@ try:
         cv2.putText(prediction_overlay, "RAW_IMAGE_AUTOMATIC=false", (12, 47), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (255, 180, 30), 1, cv2.LINE_AA)
         cv2.imwrite(str(scene_dir / "prediction_overlay.png"), prediction_overlay)
 
-        top_left = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
-        top_right = gt_overlay
-        bottom_left = prediction_overlay
-        bottom_right = cv2.cvtColor(overview, cv2.COLOR_RGB2BGR)
+        video_size = (args.video_width, args.video_height)
+        top_left = cv2.resize(cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR), video_size, interpolation=cv2.INTER_AREA)
+        top_right = cv2.resize(gt_overlay, video_size, interpolation=cv2.INTER_AREA)
+        bottom_left = cv2.resize(prediction_overlay, video_size, interpolation=cv2.INTER_AREA)
+        bottom_right = cv2.resize(cv2.cvtColor(overview, cv2.COLOR_RGB2BGR), video_size, interpolation=cv2.INTER_AREA)
         panel = np.vstack((np.hstack((top_left, top_right)), np.hstack((bottom_left, bottom_right))))
-        cv2.putText(panel, f"Isaac perception validation {scene_index}/6: {scene_name}", (18, panel.shape[0] - 18), cv2.FONT_HERSHEY_SIMPLEX, 0.70, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.putText(panel, f"Isaac perception validation {scene_index}/{len(manifests)}: {scene_name}", (18, panel.shape[0] - 18), cv2.FONT_HERSHEY_SIMPLEX, 0.70, (255, 255, 255), 2, cv2.LINE_AA)
         comparison_path = scene_dir / "comparison.png"
         cv2.imwrite(str(comparison_path), panel)
         video_frames.append(panel)
@@ -519,13 +800,43 @@ try:
                 "isaac_overview.png", "sensor_rgb.png", "sensor_rgb.npy", "metric_depth_m.npy",
                 "metric_depth_visualization.png", "pointcloud_world_m.npz", "camera_info.json",
                 "gt_annotations.json", "gt_instance_masks.npz", "instance_segmentation_info.json",
-                "capture_binding.json", "gt_overlay.png",
+                "capture_binding.json", "capture_metadata.json", "gt_overlay.png",
                 "prediction_overlay.png", "comparison.png",
             )},
         })
 
-    video_path = args.output / "isaac_perception_validation.mp4"
-    frame_size = (args.width * 2, args.height * 2)
+    if set(lighting_samples) != {"DARK_LIGHT_OFF", "DARK_LIGHT_ON"}:
+        raise RuntimeError("controlled LIGHT_OFF/LIGHT_ON captures are incomplete")
+    off_mask = lighting_samples["DARK_LIGHT_OFF"].pop("semantic_mask")
+    on_mask = lighting_samples["DARK_LIGHT_ON"].pop("semantic_mask")
+    intersection = int(np.logical_and(off_mask, on_mask).sum())
+    union = int(np.logical_or(off_mask, on_mask).sum())
+    lighting_report = {
+        "schema_version": "simulation_illumination_validation_v1",
+        "status": "PASS",
+        "geometry_status": "SIMULATION_LIGHT_PROXY",
+        "claim_boundary": "simulation illumination validation; no real lux claim",
+        "controlled_variables": ["scene", "camera_pose", "exposure", "proposal", "depth"],
+        "samples": lighting_samples,
+        "mask_iou_light_off_vs_on": float(intersection / max(1, union)),
+        "segmentation_retention_ratio": float(
+            lighting_samples["DARK_LIGHT_ON"]["semantic_carton_pixel_count"]
+            / max(1, lighting_samples["DARK_LIGHT_OFF"]["semantic_carton_pixel_count"])
+        ),
+    }
+    (args.output / "illumination_assumption.json").write_text(json.dumps({
+        "geometry_status": "SIMULATION_LIGHT_PROXY",
+        "light_type": "disk_proxy",
+        "color_temperature_k": 5000.0,
+        "intensity": 2500.0,
+        "beam_spread_rad": 1.0471975511965976,
+        "trigger_mode": "CAPTURE_SYNCHRONIZED",
+        "real_luminaire_cad_available": False,
+    }, indent=2), encoding="utf-8")
+    (args.output / "lighting_comparison.json").write_text(json.dumps(lighting_report, indent=2), encoding="utf-8")
+
+    video_path = args.output / "isaac_j1_mast_rgbd_validation.mp4"
+    frame_size = (args.video_width * 2, args.video_height * 2)
     writer = cv2.VideoWriter(str(video_path), cv2.VideoWriter_fourcc(*"mp4v"), float(args.fps), frame_size)
     if not writer.isOpened():
         raise RuntimeError("OpenCV could not open the perception MP4 writer")
@@ -562,7 +873,8 @@ try:
         "ros_bridge": "NOT_RUN_BY_ISAAC_PROCESS",
         "robot_q_max_abs_rad": q_error,
         "urdf_imported_this_run": imported_now,
-        "urdf_sha256": urdf_record["sha256"],
+        "urdf_sha256": urdf_record["robot_asset_hash"],
+        "feasibility_commit": actual_feasibility_commit,
         "urdf_checkout_identity": urdf_identity,
         "scene_count": len(scene_records),
         "scenes": scene_records,

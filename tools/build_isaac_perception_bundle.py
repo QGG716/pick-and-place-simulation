@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import argparse
-from copy import deepcopy
 import json
-from math import cos, sin
+from math import pi
 from pathlib import Path
 import subprocess
 import sys
@@ -29,23 +28,6 @@ def _git_head() -> str:
     ).stdout.strip()
 
 
-def _translated(pose, offset):
-    result = deepcopy(pose)
-    for index in range(3):
-        result[index][3] = float(result[index][3]) + float(offset[index])
-    return result
-
-
-def _rotated_z(pose, radians):
-    result = deepcopy(pose)
-    rotation = [[cos(radians), -sin(radians), 0.0], [sin(radians), cos(radians), 0.0], [0.0, 0.0, 1.0]]
-    source = [row[:3] for row in pose[:3]]
-    combined = [[sum(source[row][k] * rotation[k][column] for k in range(3)) for column in range(3)] for row in range(3)]
-    for row in range(3):
-        result[row][:3] = combined[row]
-    return result
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=ROOT / "configs/isaac/perception_validation.yaml")
@@ -61,28 +43,28 @@ def main() -> int:
     snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
     contract = json.loads(contract_path.read_text(encoding="utf-8"))
     target = str(config["target_selection"]["simulation_object_id"])
-    source_pose = next(item["pose_world"] for item in snapshot["cartons"] if item["name"] == target)
-    perturbations = config["perturbations"]
-    scene_specs = {
-        "static_full_stack": ({}, config, 0, "sim-epoch-a"),
-        "single_target_focus": ({}, config, 50, "sim-epoch-a"),
-        "known_translation": ({target: {"T_W_object": _translated(source_pose, perturbations["known_translation_m"]), "state": "KNOWN_TRANSLATION"}}, config, 100, "sim-epoch-a"),
-        "known_rotation": ({target: {"T_W_object": _rotated_z(source_pose, float(perturbations["known_rotation_rpy_rad"][2])), "state": "KNOWN_ROTATION"}}, config, 150, "sim-epoch-a"),
-        "partial_occlusion": ({target: {"occluded": True, "state": "PARTIAL_OCCLUSION"}}, config, 200, "sim-epoch-a"),
+    single_box = {
+        item["name"]: ({"visible": True, "state": "RGBD_CALIBRATION_TARGET"} if item["name"] == target else {"visible": False, "state": "CALIBRATION_SCENE_HIDDEN"})
+        for item in snapshot["cartons"]
     }
-    changed_camera = deepcopy(config)
-    camera = changed_camera["cameras"][0]
-    camera["T_W_C"] = _translated(camera["T_W_C"], perturbations["camera_translation_m"])
-    camera["look_at_world_m"] = [float(value) + float(offset) for value, offset in zip(camera["look_at_world_m"], perturbations["camera_translation_m"])]
-    scene_specs["camera_transform_change"] = ({}, changed_camera, 0, "sim-epoch-camera-b")
+    scene_specs = {
+        "MECHANICAL_TOP_VIEW": ({}, 0, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_ON_NOMINAL"),
+        "J1_ROTATION_SWEEP": ({}, 50, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_ON_NOMINAL"),
+        "FULL_STACK_NOMINAL": ({}, 100, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_ON_NOMINAL"),
+        "DARK_LIGHT_OFF": ({}, 150, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_OFF"),
+        "DARK_LIGHT_ON": ({}, 200, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_ON_NOMINAL"),
+        "RGBD_CALIBRATION_BOX": (single_box, 250, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_ON_NOMINAL"),
+        "PARTIAL_OCCLUSION": ({target: {"occluded": True, "state": "PARTIAL_OCCLUSION"}}, 300, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_ON_NOMINAL"),
+        "MOTION_TIMESTAMP_TEST": ({}, 350, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_ON_NOMINAL"),
+    }
 
     args.output.mkdir(parents=True, exist_ok=True)
     records = []
     perception_commit = args.perception_commit or _git_head()
     for scene_name in config["scenes"]:
-        overrides, scene_config, frame, epoch = scene_specs[scene_name]
+        overrides, frame, epoch, q1, illumination = scene_specs[scene_name]
         manifest = build_scene_manifest(
-            snapshot, contract, scene_config,
+            snapshot, contract, config,
             run_id=f"{args.run_id}-{scene_name}",
             perception_commit=perception_commit,
             feasibility_reference_commit=config["layout_bundle"]["feasibility_reference_commit"],
@@ -90,6 +72,7 @@ def main() -> int:
             simulation_epoch=epoch,
             simulation_frame=frame,
             simulation_time=frame / float(config["rendering"]["physics_hz"]),
+            q1_at_capture_rad=q1,
             object_overrides=overrides,
         )
         path = args.output / f"{scene_name}.manifest.json"
@@ -102,9 +85,12 @@ def main() -> int:
             "world_fingerprint": manifest.world_fingerprint,
             "simulation_epoch": epoch,
             "simulation_frame": frame,
+            "q1_at_capture_rad": q1,
+            "illumination_state": illumination,
+            "inference_time_q1_rad": 0.0 if scene_name == "MOTION_TIMESTAMP_TEST" else q1,
         })
     index = {
-        "schema_version": "isaac_perception_scene_bundle_v1",
+        "schema_version": "isaac_perception_scene_bundle_v2",
         "run_id": args.run_id,
         "perception_commit": perception_commit,
         "feasibility_reference_commit": config["layout_bundle"]["feasibility_reference_commit"],
@@ -112,6 +98,9 @@ def main() -> int:
         "layout_fingerprint": snapshot["layout_fingerprint"],
         "source_scene_fingerprint": snapshot["scene_fingerprint"],
         "raw_image_automatic": False,
+        "primary_mode": "STAGED_RGBD",
+        "comparison_mode": "STAGED_MONOCULAR_MOGE",
+        "rig_id": config["rig_id"],
         "scenes": records,
     }
     write_json(args.output / "index.json", index)

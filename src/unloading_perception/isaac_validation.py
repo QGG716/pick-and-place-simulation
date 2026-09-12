@@ -32,8 +32,10 @@ from unloading_contracts import (
     to_wire,
 )
 
+from .vision_rig import evaluate_vision_rig_pose, load_vision_rig_spec
 
-ISAAC_SCENE_MANIFEST_SCHEMA = "isaac_scene_manifest_v1"
+
+ISAAC_SCENE_MANIFEST_SCHEMA = "isaac_scene_manifest_v2"
 ISAAC_CAPTURE_BINDING_SCHEMA = "isaac_capture_binding_v1"
 ISAAC_FEASIBILITY_HANDOFF_SCHEMA = "isaac_feasibility_handoff_v1"
 WORLD_FRAME = "world"
@@ -162,36 +164,103 @@ def load_validation_config(path: str | Path) -> dict[str, Any]:
     """Load and strictly validate the lightweight Isaac validation config."""
 
     data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
-    if not isinstance(data, dict) or data.get("schema_version") != "isaac_perception_validation_v1":
+    if not isinstance(data, dict) or data.get("schema_version") != "isaac_perception_validation_v2":
         raise ValueError("unsupported Isaac perception validation config")
-    if data.get("modes") != ["ISAAC_GROUND_TRUTH", "ISAAC_SENSOR_WITH_ORACLE_PROPOSALS"]:
-        raise ValueError("validation config must keep Mode A and Mode B1 distinct")
+    if data.get("modes") != ["ISAAC_GT", "STAGED_RGBD", "STAGED_MONOCULAR_MOGE"]:
+        raise ValueError("validation config must keep Modes A, B and C distinct")
+    if data.get("primary_mode") != "STAGED_RGBD" or data.get("comparison_mode") != "STAGED_MONOCULAR_MOGE":
+        raise ValueError("registered RGB-D must be primary and MoGe comparison-only")
     if data.get("raw_image_automatic") is not False:
         raise ValueError("RAW_IMAGE_AUTOMATIC must remain false for this validation round")
-    cameras = data.get("cameras")
-    if not isinstance(cameras, list) or not cameras:
-        raise ValueError("at least one validation camera is required")
-    for camera in cameras:
-        if set(camera) != {
-            "camera_id", "frame_id", "resolution", "K", "distortion_model", "distortion",
-            "T_W_C", "near_clip_m", "far_clip_m", "publish_rate_hz", "modalities",
-            "focal_length_mm", "horizontal_aperture_mm", "look_at_world_m",
-        }:
-            raise ValueError("validation camera contains unknown or missing fields")
-        width, height = (int(value) for value in camera["resolution"])
-        if width <= 0 or height <= 0:
-            raise ValueError("camera resolution must be positive")
-        intrinsics = _finite_vector(camera["K"], 9, "camera K")
-        if intrinsics[0] <= 0.0 or intrinsics[4] <= 0.0 or intrinsics[8] != 1.0:
-            raise ValueError("camera K is invalid")
-        _transform(camera["T_W_C"], "T_W_C")
-        near, far = float(camera["near_clip_m"]), float(camera["far_clip_m"])
-        if not (0.0 < near < far) or float(camera["publish_rate_hz"]) <= 0.0:
-            raise ValueError("camera clipping and publish rate are invalid")
-        required_modalities = {"rgb", "metric_depth", "camera_info", "pointcloud", "gt_annotations"}
-        if not required_modalities.issubset(set(camera["modalities"])):
-            raise ValueError("camera must enable all acceptance modalities")
+    rig_path = Path(data.get("vision_rig_config", ""))
+    if not rig_path.is_file():
+        raise ValueError("vision rig configuration is missing")
+    spec = load_vision_rig_spec(rig_path)
+    if data.get("rig_id") != spec.rig_id:
+        raise ValueError("validation and sensing-pose rig identities differ")
+    binding = data.get("layout_bundle", {})
+    base_xyz = _finite_vector(binding.get("robot_base_xyz_A_m", ()), 3, "A to robot base")
+    if base_xyz != (0.625, 0.0, 0.6):
+        raise ValueError("validation must use the latest feasibility A-to-base transform")
+    official = binding.get("official_robot_asset", {})
+    if not str(official.get("repository_path", "")).endswith("m710id_70_official.urdf"):
+        raise ValueError("latest feasibility official M-710iD/70 URDF is required")
+    _require_sha256(official.get("sha256"), "official robot asset hash")
+    history = data.get("historical_cameras", ())
+    if not history or any(item.get("acceptance_eligible") is not False for item in history):
+        raise ValueError("superseded cameras must remain acceptance-ineligible history")
+    if data.get("scenes") != [
+        "MECHANICAL_TOP_VIEW", "J1_ROTATION_SWEEP", "FULL_STACK_NOMINAL", "DARK_LIGHT_OFF",
+        "DARK_LIGHT_ON", "RGBD_CALIBRATION_BOX", "PARTIAL_OCCLUSION", "MOTION_TIMESTAMP_TEST",
+    ]:
+        raise ValueError("J1 mast acceptance scene set is incomplete")
     return data
+
+
+def _translation_transform(xyz: Sequence[float]) -> list[list[float]]:
+    values = _finite_vector(xyz, 3, "translation")
+    return [
+        [1.0, 0.0, 0.0, values[0]],
+        [0.0, 1.0, 0.0, values[1]],
+        [0.0, 0.0, 1.0, values[2]],
+        [0.0, 0.0, 0.0, 1.0],
+    ]
+
+
+def _dynamic_camera(
+    validation_config: Mapping[str, Any], T_W_robot: Sequence[Sequence[float]], q1_at_capture_rad: float
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    spec = load_vision_rig_spec(validation_config["vision_rig_config"])
+    pose = evaluate_vision_rig_pose(T_W_robot, q1_at_capture_rad, spec)
+    position = pose.camera_center_world_m
+    forward = tuple(pose.T_W_camera_optical[row][2] for row in range(3))
+    focal_length_mm = 24.0
+    horizontal_aperture_mm = 2.0 * focal_length_mm
+    vertical_aperture_mm = 2.0 * focal_length_mm * __import__("math").tan(spec.rgb.vfov_rad / 2.0)
+    camera = {
+        "camera_id": "module_0_main_rgbd",
+        "frame_id": "module_0_main_rgb_optical",
+        "depth_frame_id": "module_0_main_depth_optical",
+        "rig_id": spec.rig_id,
+        "module_id": "module_0_main",
+        "resolution": [spec.rgb.width_px, spec.rgb.height_px],
+        "K": list(spec.rgb.K),
+        "distortion_model": "plumb_bob",
+        "distortion": [0.0, 0.0, 0.0, 0.0, 0.0],
+        "T_W_C": [list(row) for row in pose.T_W_camera_optical],
+        "T_rgb_depth": _translation_transform((0.0, 0.0, 0.0)),
+        "pose_source": "J1_CAPTURE_TIME_TRANSFORM_CHAIN",
+        "q1_at_capture_rad": float(q1_at_capture_rad),
+        "calibration_identity": spec.calibration_identity,
+        "registration_mode": "SIMULATION_IDEAL_REGISTERED_DEPTH",
+        "depth_semantics": spec.depth_semantics,
+        "near_clip_m": 0.05,
+        "far_clip_m": 12.0,
+        "publish_rate_hz": spec.rgb.frame_rate_hz,
+        "modalities": ["rgb", "metric_depth", "camera_info", "capture_metadata", "pointcloud_on_demand", "gt_annotations"],
+        "intrinsics_mode": spec.rgb.intrinsics_mode,
+        "focal_length_mm": focal_length_mm,
+        "horizontal_aperture_mm": horizontal_aperture_mm,
+        "vertical_aperture_mm": vertical_aperture_mm,
+        "look_at_world_m": [position[index] + forward[index] for index in range(3)],
+    }
+    rig = {
+        "rig_id": spec.rig_id,
+        "parent_frame": spec.parent_frame,
+        "T_W_J1": [list(row) for row in pose.T_W_J1],
+        "T_W_vision_flange": [list(row) for row in pose.T_W_vision_flange],
+        "T_W_mast_top": [list(row) for row in pose.T_W_mast_top],
+        "T_W_module_0_main": [list(row) for row in pose.T_W_module],
+        "mast_j1_radius_m": spec.mast_radius_m,
+        "mast_j1_yaw_offset_rad": spec.mast_j1_yaw_offset_rad,
+        "mast_height_m": spec.mast_height_m,
+        "module_height_m": spec.module_height_m,
+        "vision_flange_height_status": spec.flange_height_status,
+        "geometry_qualification": spec.geometry_qualification,
+        "moving_obstacle": True,
+        "independent_mast_yaw": False,
+    }
+    return camera, rig
 
 
 @dataclass(frozen=True)
@@ -291,6 +360,7 @@ def build_scene_manifest(
     simulation_epoch: str,
     simulation_frame: int = 0,
     simulation_time: float = 0.0,
+    q1_at_capture_rad: float | None = None,
     object_overrides: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> IsaacSceneManifest:
     """Build one manifest from the feasibility-exported frozen snapshot."""
@@ -329,10 +399,15 @@ def build_scene_manifest(
             "occluded": bool(override.get("occluded", False)),
             "state": str(override.get("state", "INITIAL")),
         })
-    asset_records = [snapshot["robot"]["urdf"], snapshot["robot"]["model_config"], *snapshot["tool"].get("assets", {}).values()]
+    official_robot_asset = dict(validation_config["layout_bundle"]["official_robot_asset"])
+    asset_records = [official_robot_asset, snapshot["robot"]["model_config"], *snapshot["tool"].get("assets", {}).values()]
     asset_manifest_fingerprint = canonical_digest(sorted((item["repository_path"], item["sha256"]) for item in asset_records))
     t_w_a = snapshot["assembly"]["pose_world"]
-    t_a_robot = _matmul(_rigid_inverse(t_w_a), snapshot["robot"]["world_from_mount"])
+    t_a_robot = _translation_transform(validation_config["layout_bundle"]["robot_base_xyz_A_m"])
+    t_w_robot = _matmul(t_w_a, t_a_robot)
+    rig_spec = load_vision_rig_spec(validation_config["vision_rig_config"])
+    q1 = float(rig_spec.nominal_q1_rad if q1_at_capture_rad is None else q1_at_capture_rad)
+    camera, vision_rig = _dynamic_camera(validation_config, t_w_robot, q1)
     mechanisms = {
         "components": [{
             "component_id": item["name"],
@@ -344,21 +419,25 @@ def build_scene_manifest(
         "payload_state": {"identity": canonical_digest(snapshot.get("attachments", [])), "object_id": None},
         "base_state": {"identity": canonical_digest({"T_W_A": t_w_a}), "T_W_A": t_w_a},
         "conveyor_state": {"identity": canonical_digest(snapshot["receiver"]), "running": False},
+        "vision_rig": vision_rig,
     }
-    cameras = tuple(dict(camera) for camera in validation_config["cameras"])
+    cameras = (camera,)
     dynamic = canonical_digest({
         "objects": tuple(objects),
         "mechanisms": mechanisms,
         "camera_calibration": tuple({key: camera[key] for key in ("camera_id", "frame_id", "resolution", "K", "distortion_model", "distortion", "T_W_C", "near_clip_m", "far_clip_m")} for camera in cameras),
     })
+    q_rad = list(snapshot["robot"]["q_rad"])
+    q_rad[0] = q1
     robot = {
         "robot_model_identity": snapshot["robot"]["model"],
-        "robot_asset_hash": snapshot["robot"]["urdf"]["sha256"],
-        "robot_asset_path": snapshot["robot"]["urdf"]["repository_path"],
+        "robot_asset_hash": official_robot_asset["sha256"],
+        "robot_asset_path": official_robot_asset["repository_path"],
+        "robot_asset_status": official_robot_asset["source_status"],
         "T_A_robot": t_a_robot,
-        "T_W_robot": snapshot["robot"]["world_from_mount"],
+        "T_W_robot": t_w_robot,
         "joint_names": snapshot["robot"]["joint_names"],
-        "q_rad": snapshot["robot"]["q_rad"],
+        "q_rad": q_rad,
     }
     world_fingerprint = canonical_digest({
         "layout_fingerprint": snapshot["layout_fingerprint"],
@@ -657,6 +736,7 @@ def build_feasibility_handoff(
         "unknown_regions": unknown,
         "objects": objects,
         "asset_manifest_fingerprint": manifest.layout["asset_manifest_fingerprint"],
+        "moving_vision_rig": dict(manifest.mechanisms["vision_rig"]),
     })
     payload["handoff_fingerprint"] = canonical_digest(payload)
     return payload
@@ -702,17 +782,24 @@ def check_feasibility_handoff(
             differences.append({"field": f"objects.{object_id}.full_dimensions_m", "actual": actual_dimensions, "expected": expected_dimensions})
         if item.get("candidate_eligible") and item.get("eligibility_reasons"):
             differences.append({"field": f"objects.{object_id}.candidate_eligible", "actual": True, "expected": "no eligibility reasons"})
+    missing_capabilities = []
+    rig = handoff.get("moving_vision_rig")
+    if not isinstance(rig, Mapping) or rig.get("parent_frame") != "J1_link" or rig.get("moving_obstacle") is not True:
+        differences.append({"field": "moving_vision_rig", "actual": rig, "expected": "J1-coupled moving obstacle"})
+    elif not layout_contract.get("moving_vision_rig_contract"):
+        missing_capabilities.append("MISSING_MOVING_VISION_RIG_CONTRACT")
     payload = dict(handoff)
     recorded = payload.pop("handoff_fingerprint", None)
     if recorded != canonical_digest(payload):
         differences.append({"field": "handoff_fingerprint", "actual": recorded, "expected": canonical_digest(payload)})
     return {
         "schema_version": "isaac_feasibility_compatibility_report_v1",
-        "status": "PASS" if not differences else "FAIL",
+        "status": "FAIL" if differences else "COMPATIBLE_WITH_KNOWN_GAP" if missing_capabilities else "PASS",
         "feasibility_reference_commit": manifest.source["feasibility_reference_commit"],
         "layout_fingerprint": manifest.layout["layout_fingerprint"],
         "tolerance": float(tolerance),
         "differences": differences,
+        "missing_capabilities": missing_capabilities,
     }
 
 

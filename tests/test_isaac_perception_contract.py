@@ -126,10 +126,23 @@ def test_invisible_ground_truth_uses_conservative_full_frame_unknown_region():
         "simulation_object_id": "carton_l07_c02", "bbox_xyxy": [0, 0, 0, 0],
         "visible": False, "occluded": False,
     }])
-    assert observation.cargo[0].bbox_xyxy == (0.0, 0.0, 640.0, 480.0)
+    assert observation.cargo[0].bbox_xyxy == (0.0, 0.0, 2592.0, 1944.0)
     assert observation.cargo[0].candidate_eligible is False
     assert observation.cargo[0].raw_result["bbox_fallback"] is True
-    assert observation.unknown_regions[0].bbox_xyxy == (0.0, 0.0, 640.0, 480.0)
+    assert observation.unknown_regions[0].bbox_xyxy == (0.0, 0.0, 2592.0, 1944.0)
+
+
+def test_manifest_camera_is_derived_from_capture_time_j1_and_latest_a_base_chain():
+    nominal, _ = _manifest(q1_at_capture_rad=-__import__("math").pi / 2.0)
+    rotated, _ = _manifest(q1_at_capture_rad=0.0)
+    # The unit fixture uses identity T_W_A; the base is still derived from
+    # T_W_A @ T_A_robot rather than copied from a world-pose constant.
+    assert nominal.robot["T_W_robot"][0][3] == pytest.approx(0.625)
+    assert nominal.robot["T_W_robot"][1][3] == pytest.approx(0.0)
+    assert nominal.cameras[0]["pose_source"] == "J1_CAPTURE_TIME_TRANSFORM_CHAIN"
+    assert nominal.cameras[0]["T_W_C"] != rotated.cameras[0]["T_W_C"]
+    assert nominal.mechanisms["vision_rig"]["parent_frame"] == "J1_link"
+    assert nominal.mechanisms["vision_rig"]["moving_obstacle"] is True
 
 
 def test_late_gpu_result_remains_evaluable_but_cannot_replace_live_world():
@@ -158,7 +171,8 @@ def test_feasibility_handoff_contains_existing_planning_world_snapshot():
     assert snapshot is not None
     handoff = build_feasibility_handoff(snapshot, manifest, evidence_mode="ISAAC_GT")
     report = check_feasibility_handoff(handoff, manifest, contract)
-    assert report["status"] == "PASS"
+    assert report["status"] == "COMPATIBLE_WITH_KNOWN_GAP"
+    assert report["missing_capabilities"] == ["MISSING_MOVING_VISION_RIG_CONTRACT"]
     assert handoff["planning_world_snapshot"]["__type__"] == "PlanningWorldSnapshot"
     json.dumps(handoff)
 
