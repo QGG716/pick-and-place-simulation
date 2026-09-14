@@ -551,6 +551,8 @@ class PayloadSupportAudit:
     support_normal_alignment: float
     linear_speed_m_s: float
     angular_speed_rad_s: float
+    support_surface_velocity_world_m_s: tuple[float, float, float] | None = None
+    transport_velocity_error_m_s: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -562,6 +564,11 @@ class PayloadSupportAudit:
             "support_normal_alignment": self.support_normal_alignment,
             "linear_speed_m_s": self.linear_speed_m_s,
             "angular_speed_rad_s": self.angular_speed_rad_s,
+            "support_surface_velocity_world_m_s": (
+                None if self.support_surface_velocity_world_m_s is None
+                else list(self.support_surface_velocity_world_m_s)
+            ),
+            "transport_velocity_error_m_s": self.transport_velocity_error_m_s,
         }
 
 
@@ -731,6 +738,7 @@ def audit_payload_support_contact(
     max_support_tilt_rad: float = np.deg2rad(5.0),
     max_linear_speed_m_s: float = 0.03,
     max_angular_speed_rad_s: float = 0.08,
+    support_surface_velocity_world_m_s: Sequence[float] | None = None,
 ) -> PayloadSupportAudit:
     """Require real, non-penetrating receiver support before vacuum release.
 
@@ -744,6 +752,8 @@ def audit_payload_support_contact(
     payload_size = np.asarray(payload_size_m, dtype=float)
     payload_linear_velocity = np.asarray(payload_linear_velocity_m_s, dtype=float)
     payload_angular_velocity = np.asarray(payload_angular_velocity_rad_s, dtype=float)
+    support_velocity = (None if support_surface_velocity_world_m_s is None else
+                        np.asarray(support_surface_velocity_world_m_s, dtype=float))
     payload_rotation_matrix = _rotation(payload_rotation, "payload_rotation")
     support_center = np.asarray(support.get("center_m", []), dtype=float)
     support_size = np.asarray(support.get("size_m", []), dtype=float)
@@ -767,6 +777,7 @@ def audit_payload_support_contact(
         or payload_size.shape != (3,)
         or payload_linear_velocity.shape != (3,)
         or payload_angular_velocity.shape != (3,)
+        or (support_velocity is not None and support_velocity.shape != (3,))
         or support_center.shape != (3,)
         or support_size.shape != (3,)
         or not support_name
@@ -779,6 +790,7 @@ def audit_payload_support_contact(
                 payload_angular_velocity,
                 support_center,
                 support_size,
+                np.zeros(3) if support_velocity is None else support_velocity,
             )
         )
         or np.any(payload_size <= 0.0)
@@ -834,11 +846,26 @@ def audit_payload_support_contact(
         overlap_ratio = (1.0 - union_audit["unsupported_area_m2"] / union_audit["footprint_area_m2"]
                          if union_audit["footprint_area_m2"] > 0 else 0.0)
         support_name = "+".join(union_audit["receiver_names"]) or support_name
+    # A carton may be placed on any of its six physical faces after a loaded
+    # reorientation.  Compare the inward normal of the actual bottom face with
+    # the receiver normal; local +Z is only correct for an unrotated carton.
+    if union_audit is not None and union_audit["support_face_local_axis"] is not None:
+        bottom_axis = int(union_audit["support_face_local_axis"])
+        bottom_sign = int(union_audit["support_face_local_sign"])
+    else:
+        support_normal_in_payload = payload_rotation_matrix.T @ support_rotation[:, 2]
+        bottom_axis = int(np.argmax(np.abs(support_normal_in_payload)))
+        bottom_sign = -1 if support_normal_in_payload[bottom_axis] > 0.0 else 1
+    payload_inward_support_normal = (
+        -bottom_sign * payload_rotation_matrix[:, bottom_axis]
+    )
     support_normal_alignment = float(
-        np.clip(payload_rotation_matrix[:, 2] @ support_rotation[:, 2], -1.0, 1.0)
+        np.clip(payload_inward_support_normal @ support_rotation[:, 2], -1.0, 1.0)
     )
     linear_speed = float(np.linalg.norm(payload_linear_velocity))
     angular_speed = float(np.linalg.norm(payload_angular_velocity))
+    transport_velocity_error = (None if support_velocity is None else
+                                float(np.linalg.norm(payload_linear_velocity - support_velocity)))
     epsilon = 1e-12
     if support_normal_alignment < cos(max_support_tilt_rad) - epsilon:
         reason = "PAYLOAD_SUPPORT_NORMAL_MISALIGNED"
@@ -846,14 +873,36 @@ def audit_payload_support_contact(
         reason = "PAYLOAD_NOT_IN_SUPPORT_CONTACT"
     elif signed_gap < -maximum_penetration_m - epsilon:
         reason = "PAYLOAD_PENETRATES_SUPPORT"
-    elif union_audit is not None and not union_audit["supported"]:
-        reason = "PAYLOAD_SUPPORT_FOOTPRINT_INSUFFICIENT" if union_audit["reason"] == "UNSUPPORTED_FOOTPRINT" else "PAYLOAD_NOT_IN_SUPPORT_CONTACT"
+    elif (
+        union_audit is not None
+        and not union_audit["supported"]
+        and union_audit["reason"] != "UNSUPPORTED_FOOTPRINT"
+    ):
+        # Plane/contact failures remain fail-closed.  A small uncovered edge is
+        # instead decided by the explicit runtime overlap-ratio gate below;
+        # otherwise a configured 90% threshold would silently become 100%.
+        reason = "PAYLOAD_NOT_IN_SUPPORT_CONTACT"
     elif overlap_ratio + epsilon < minimum_footprint_overlap_ratio:
         reason = "PAYLOAD_SUPPORT_FOOTPRINT_INSUFFICIENT"
-    elif linear_speed > max_linear_speed_m_s + epsilon:
-        reason = "PAYLOAD_LINEAR_SPEED_TOO_HIGH_FOR_RELEASE"
     elif angular_speed > max_angular_speed_rad_s + epsilon:
         reason = "PAYLOAD_ANGULAR_SPEED_TOO_HIGH_FOR_RELEASE"
+    elif support_velocity is None and linear_speed > max_linear_speed_m_s + epsilon:
+        reason = "PAYLOAD_LINEAR_SPEED_TOO_HIGH_FOR_RELEASE"
+    elif support_velocity is not None:
+        support_speed = float(np.linalg.norm(support_velocity))
+        direction = support_velocity / support_speed
+        along = float(payload_linear_velocity @ direction)
+        normal_speed = abs(float(payload_linear_velocity @ support_rotation[:, 2]))
+        lateral = payload_linear_velocity - along * direction
+        lateral -= float(lateral @ support_rotation[:, 2]) * support_rotation[:, 2]
+        if (support_speed <= epsilon
+                or along < -max_linear_speed_m_s - epsilon
+                or along > support_speed + max_linear_speed_m_s + epsilon
+                or normal_speed > max_linear_speed_m_s + epsilon
+                or float(np.linalg.norm(lateral)) > max_linear_speed_m_s + epsilon):
+            reason = "PAYLOAD_VELOCITY_INCOMPATIBLE_WITH_MOVING_SUPPORT"
+        else:
+            reason = None
     else:
         reason = None
     return PayloadSupportAudit(
@@ -865,6 +914,10 @@ def audit_payload_support_contact(
         support_normal_alignment=support_normal_alignment,
         linear_speed_m_s=linear_speed,
         angular_speed_rad_s=angular_speed,
+        support_surface_velocity_world_m_s=(
+            None if support_velocity is None else tuple(float(value) for value in support_velocity)
+        ),
+        transport_velocity_error_m_s=transport_velocity_error,
     )
 
 
@@ -898,13 +951,17 @@ def select_active_conveyor_surfaces(
     exclusive: bool,
     current_surface: str | None = None,
     preferred_initial_surface: str | None = None,
+    preferred_overlap_surface: str | None = None,
+    payload_size_m: Sequence[float] | None = None,
+    payload_rotation: Sequence[Sequence[float]] | None = None,
     footprint_tolerance_m: float = 1e-6,
 ) -> tuple[str, ...]:
-    """Select driven belt surfaces from the payload center deterministically.
+    """Select continuous belt drives with footprint-based transfer ownership.
 
-    In exclusive mode an overlap retains the already active surface.  Without
-    that deterministic ownership, all drives are disabled.  This prevents two
-    orthogonal surface velocities from pulling the same carton at a transfer.
+    Away from a transfer all physical belts keep running.  When the payload's
+    actual bottom footprint overlaps multiple belt surfaces, only the declared
+    transfer owner among those competing contacts remains driven.  Other belts
+    that cannot contact this payload continue running.
     """
 
     if not started:
@@ -919,19 +976,48 @@ def select_active_conveyor_surfaces(
     center = np.asarray(payload_center_m, dtype=float)
     if center.shape != (3,) or not np.all(np.isfinite(center)):
         raise ValueError("payload_center_m must contain three finite values")
-    matching = tuple(
-        name
-        for name in names
-        if _horizontal_footprint_contains(center, conveyor_primitives[name], footprint_tolerance_m)
-    )
-    if len(matching) == 1:
-        return matching
+    if payload_size_m is not None or payload_rotation is not None:
+        if payload_size_m is None or payload_rotation is None:
+            raise ValueError("payload size and rotation must be supplied together")
+        from .conveyor_placement import footprint_support_overlap_areas
+        from .geometry import OBB
+        payload = OBB(
+            center,
+            0.5 * np.asarray(payload_size_m, dtype=float),
+            _rotation(payload_rotation, "payload rotation"),
+            "active_conveyor_payload",
+            "carton",
+        )
+        supports = [OBB(
+            np.asarray(conveyor_primitives[name]["center_m"], dtype=float),
+            0.5 * np.asarray(conveyor_primitives[name]["size_m"], dtype=float),
+            _rotation(conveyor_primitives[name]["rotation_matrix"], "conveyor rotation"),
+            name,
+            "conveyor",
+        ) for name in names]
+        areas = footprint_support_overlap_areas(
+            payload, supports, edge_tolerance_m=footprint_tolerance_m
+        )
+        matching = tuple(name for name in names if areas[name] > 1e-12)
+    else:
+        matching = tuple(
+            name
+            for name in names
+            if _horizontal_footprint_contains(center, conveyor_primitives[name], footprint_tolerance_m)
+        )
+    if len(matching) <= 1:
+        owner = matching[0] if matching else (
+            preferred_initial_surface if preferred_initial_surface in names else current_surface
+        )
+        return tuple(([owner] if owner in names else []) + [name for name in names if name != owner])
     if len(matching) > 1:
-        if current_surface in matching:
-            return (str(current_surface),)
-        if preferred_initial_surface in matching:
-            return (str(preferred_initial_surface),)
-    return ()
+        owner = next((candidate for candidate in (
+            preferred_overlap_surface, preferred_initial_surface, current_surface
+        ) if candidate in matching), None)
+        if owner is None:
+            return ()
+        return tuple([str(owner), *[name for name in names if name not in matching]])
+    return names
 
 
 __all__ = [

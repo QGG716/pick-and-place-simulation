@@ -123,6 +123,16 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--max-sim-seconds", type=float)
     parser.add_argument("--post-release-seconds", default=None, type=float)
+    parser.add_argument(
+        "--demonstration-target-cup-contact-exemption",
+        action="append",
+        default=[],
+        metavar="COLLIDER_BASENAME",
+        help=(
+            "user-authorized demonstration-only allowance for one exact compliant-cup "
+            "collider against the selected target; repeat for multiple exact basenames"
+        ),
+    )
     parser.add_argument("--disable-gripper-break-limits", action="store_true")
     parser.add_argument("--gripper-force-limit", type=float)
     parser.add_argument("--gripper-shear-force-limit", type=float)
@@ -148,6 +158,12 @@ def _validate_args(args: argparse.Namespace) -> None:
         raise ValueError("diagnostic settling steps must be positive")
     if args.diagnostic_only and (args.maximum_segments != 1 or args.continuation_dir is not None):
         raise ValueError("a diagnostic cannot enter task continuation")
+    for collider in args.demonstration_target_cup_contact_exemption:
+        if re.fullmatch(r"CupCompressedCollision_[0-9]{2}", collider) is None:
+            raise ValueError(
+                "demonstration target-cup exemptions require an exact "
+                "CupCompressedCollision_NN basename"
+            )
     reuse_args = (args.reuse_usd_entrypoint, args.reuse_usd_run_evidence, args.reuse_usd_source_contract)
     if any(value is not None for value in reuse_args) and not all(value is not None for value in reuse_args):
         raise ValueError("official USD reuse requires entrypoint, recorded run evidence and source contract")
@@ -1163,6 +1179,18 @@ try:
         raise ValueError(
             "conveyor start_policy must be immediate, after_release, or after_release_retreat"
         )
+    if (
+        metadata.get("robot_model") == "fanuc_m710id_70"
+        and conveyor_enabled
+        and (
+            conveyor_start_policy != "immediate"
+            or conveyor_cfg.get("continuous_during_contact_release_and_withdrawal") is not True
+            or conveyor_cfg.get("overlap_precedence_surface") != "conveyor_longitudinal"
+        )
+    ):
+        raise ValueError(
+            "M-710 conveyor replay forbids delayed start and non-longitudinal overlap ownership"
+        )
     if conveyor_enabled and (not math.isfinite(conveyor_speed_m_s) or conveyor_speed_m_s <= 0.0):
         raise ValueError("enabled conveyor speed_m_s must be finite and positive")
     conveyor_directions_world = {}
@@ -2092,6 +2120,18 @@ try:
     contact_runtime_context = {"stage": "settling", "attached": False, "actual_free_space": False,
                                "release_validation_pending": False}
     unexpected_robot_contact_events = []
+    demonstration_contact_exemption_audit = {
+        "requested_collider_basenames": list(
+            args.demonstration_target_cup_contact_exemption
+        ),
+        "scope": "EXACT_COMPLIANT_CUP_VERSUS_SELECTED_TARGET_ONLY",
+        "maximum_penetration_m": float(
+            effective_collision_policy.maximum_actual_penetration_m
+        ),
+        "event_count": 0,
+        "minimum_separation_m": None,
+        "stages": [],
+    }
     zero_point_contact_resolver = ZeroPointContactResolver()
 
     def _contact_scope_token():
@@ -2120,6 +2160,49 @@ try:
             physical_compression_m=effective_collision_policy.maximum_compliant_cup_additional_compression_m,
             **contact_runtime_context,
         )
+        if reason is None and args.demonstration_target_cup_contact_exemption:
+            cup_collider = (
+                collider0
+                if collider0 in compliant_cup_index_by_path
+                else collider1
+                if collider1 in compliant_cup_index_by_path
+                else None
+            )
+            other_actor = (
+                actor1 if cup_collider == collider0 else actor0
+            )
+            stage_name = str(contact_runtime_context["stage"])
+            allowed_lifecycle = bool(
+                stage_name == "contact"
+                or contact_runtime_context["attached"]
+                or contact_runtime_context["release_validation_pending"]
+            )
+            maximum_penetration_m = float(
+                effective_collision_policy.maximum_actual_penetration_m
+            )
+            if (
+                cup_collider is not None
+                and cup_collider.rsplit("/", 1)[-1]
+                in args.demonstration_target_cup_contact_exemption
+                and other_actor == target_carton_path
+                and allowed_lifecycle
+                and lower is not None
+                and lower >= -maximum_penetration_m
+            ):
+                reason = (
+                    "USER_AUTHORIZED_TARGET_CUP_CONTACT_DEMONSTRATION_EXEMPTION"
+                )
+                demonstration_contact_exemption_audit["event_count"] += 1
+                observed_minimum = demonstration_contact_exemption_audit[
+                    "minimum_separation_m"
+                ]
+                demonstration_contact_exemption_audit["minimum_separation_m"] = (
+                    lower
+                    if observed_minimum is None
+                    else min(float(observed_minimum), lower)
+                )
+                if stage_name not in demonstration_contact_exemption_audit["stages"]:
+                    demonstration_contact_exemption_audit["stages"].append(stage_name)
         classification = reason or "UNEXPECTED_ROBOT_OR_RIGID_TOOL_PROXIMITY"
         counts = record.setdefault("runtime_classification_event_counts", {})
         counts[classification] = counts.get(classification, 0) + 1
@@ -3164,17 +3247,16 @@ try:
             unknown = set(desired) - set(conveyor_surface_enabled_attrs)
             if unknown:
                 raise ValueError(f"selected unknown conveyor surfaces: {sorted(unknown)}")
-            if conveyor_exclusive and len(desired) > 1:
-                raise RuntimeError("exclusive conveyor policy selected more than one surface")
             # A transfer is explicitly break-before-make: every drive is disabled
-            # before the next owner is enabled, so both orthogonal directions are
-            # never active in the same physics step.
+            # before the next owner is enabled. Multiple non-contacting belt
+            # sections may keep running; competing surfaces under the actual
+            # payload footprint are reduced to the declared owner.
             for enabled_attr in conveyor_surface_enabled_attrs.values():
                 enabled_attr.Set(False)
             for surface_name in desired:
                 conveyor_surface_enabled_attrs[surface_name].Set(True)
             active_conveyor_surfaces = desired
-            active_conveyor_surface = desired[0] if len(desired) == 1 else None
+            active_conveyor_surface = desired[0] if desired else None
             conveyor_surface_history.append(
                 {
                     "time_s": float(simulation_time_s),
@@ -3257,10 +3339,15 @@ try:
             if conveyor_enabled:
                 payload_center_for_drive = None
                 if conveyor_running and target_body is not None:
-                    drive_positions, _ = target_body.get_world_poses()
+                    drive_positions, drive_orientations = target_body.get_world_poses()
                     payload_center_for_drive = np.asarray(
                         drive_positions.numpy(), dtype=float
                     )[0]
+                    payload_rotation_for_drive = _rotation_matrix_from_quaternion_wxyz(
+                        np.asarray(drive_orientations.numpy(), dtype=float)[0]
+                    )
+                else:
+                    payload_rotation_for_drive = None
                 desired_surfaces = select_active_conveyor_surfaces(
                     payload_center_m=payload_center_for_drive,
                     conveyor_primitives=conveyor_primitives,
@@ -3270,6 +3357,12 @@ try:
                     preferred_initial_surface=(
                         place_surface if not conveyor_selection_initialized else None
                     ),
+                    preferred_overlap_surface=conveyor_cfg.get("overlap_precedence_surface"),
+                    payload_size_m=(None if payload_center_for_drive is None
+                                    else target_primitive["size_m"]),
+                    payload_rotation=payload_rotation_for_drive,
+                    footprint_tolerance_m=float(conveyor_cfg.get(
+                        "footprint_boundary_tolerance_m", 0.002)),
                 )
                 _apply_conveyor_surface_selection(desired_surfaces, simulation_time)
                 if conveyor_running:
@@ -3576,6 +3669,11 @@ try:
                     max_angular_speed_rad_s=float(
                         actual_state_gates.get("support_max_angular_speed_rad_s", 0.08)
                     ),
+                    support_surface_velocity_world_m_s=(
+                        None
+                        if not conveyor_running or conveyor_initial_direction_world is None
+                        else conveyor_initial_direction_world * conveyor_speed_m_s
+                    ),
                 )
                 support_prim_path = conveyor_surface_paths.get(
                     place_surface,
@@ -3637,6 +3735,8 @@ try:
                     release_velocity_sample_pending = True
                 if release_executed and release_executed_time_s is None:
                     release_executed_time_s = simulation_time
+                    if conveyor_started and target_center_at_conveyor_start is None:
+                        target_center_at_conveyor_start = target_center_at_release.copy()
                 release_commanded = bool(
                     support_release_accepted and release_command_succeeded
                 )
@@ -3794,7 +3894,7 @@ try:
                             lines = [
                                 f"首箱 {metadata.get('target')} · 行 {metadata.get('row_selection', {}).get('row_id', '派生')} · {face_names.get(str(gripper_cfg.get('target_face')), gripper_cfg.get('target_face'))}",
                                 f"阶段 {phase_names.get(display_phase, display_phase)} · 仿真 {simulation_time:.2f} s",
-                                f"吸盘 {actual_cups}/72 · {'已释放' if release_open_confirmed else '已吸附' if grasp_joint is not None else '待吸附'}",
+                                f"吸盘 {actual_cups}/72 · {'已释放' if release_open_confirmed else '已吸附' if grasp_joint is not None else '待吸附'} · {metadata.get('place_placement_family', 'N/A')} · 带速 {conveyor_speed_m_s:.2f} m/s",
                                 f"接收 {belt_names.get(place_surface, place_surface)} · 实际带速 {conveyor_speed_m_s if conveyor_running else 0.0:.2f} m/s",
                                 f"状态 {state_names[state_key]}",
                             ]
@@ -3803,7 +3903,7 @@ try:
                             lines = [
                                 f"First carton {metadata.get('target')} · row {metadata.get('row_selection', {}).get('row_id', 'derived')} · {gripper_cfg.get('target_face')}",
                                 f"Phase {display_phase} · simulation {simulation_time:.2f} s",
-                                f"Cups {actual_cups}/72 · {'released' if release_open_confirmed else 'attached' if grasp_joint is not None else 'open'}",
+                                f"Cups {actual_cups}/72 · {'released' if release_open_confirmed else 'attached' if grasp_joint is not None else 'open'} · {metadata.get('place_placement_family', 'N/A')} · belt {conveyor_speed_m_s:.2f} m/s",
                                 f"Receiver {place_surface} · actual belt {conveyor_speed_m_s if conveyor_running else 0.0:.2f} m/s",
                                 f"State {state_key.replace('_', ' ')}",
                             ]
@@ -4587,6 +4687,26 @@ try:
         actual_replayed_simulation_seconds = (
             float(measured_times[-1]) if measured_times else 0.0
         )
+        offline_planning_performance = metadata.get("offline_planning_performance")
+        performance_timing = (
+            dict(offline_planning_performance)
+            if isinstance(offline_planning_performance, dict)
+            else {
+                "schema": "first_carton_planning_wall_timing_v1",
+                "planning_total_wall_seconds": metadata.get("offline_planning_time_seconds"),
+            }
+        )
+        performance_timing.update({
+            "time_parameterization_seconds": metadata.get(
+                "time_parameterization_wall_seconds"
+            ),
+            "trajectory_physical_execution_seconds": actual_replayed_simulation_seconds,
+            "isaac_replay_wall_seconds": replay_wall_s,
+            "monitoring_wall_seconds": None,
+            "render_and_recording_wall_seconds": None,
+            "physical_execution_clock": "simulated_forward_dynamics_time",
+            "isaac_replay_clock": "host_wall_clock_inclusive_of_monitoring_and_rendering",
+        })
 
         def _finite_or_none(values) -> list[float | None]:
             return [float(value) if np.isfinite(value) else None for value in values]
@@ -4612,7 +4732,8 @@ try:
             "urdf_imported_this_run": imported_now,
             "urdf_import_wall_seconds": import_wall_s,
             "app_startup_wall_seconds": app_startup_wall_s,
-            "offline_planning_time_seconds": metadata.get("offline_planning_time_seconds", 0.0),
+            "offline_planning_time_seconds": metadata.get("offline_planning_time_seconds"),
+            "performance_timing": performance_timing,
             "command_schedule_duration_seconds": requested_duration,
             "post_release_settle_seconds": float(max(0.0, replay_duration - requested_duration)),
             "replayed_simulation_seconds": actual_replayed_simulation_seconds,
@@ -4680,6 +4801,9 @@ try:
             "render_capture_max_joint_delta_rad": capture_max_joint_delta_rad,
             "render_capture_max_carton_delta_m": capture_max_carton_delta_m,
             "wrist_tool_collision_exemptions": wrist_tool_exemption_records,
+            "demonstration_target_cup_contact_exemption": (
+                demonstration_contact_exemption_audit
+            ),
             "collision_policy": metadata.get("collision_policy"),
             "first_unexpected_runtime_robot_contact": unexpected_robot_contact_events[0] if unexpected_robot_contact_events else None,
             "zero_point_contact_resolution": zero_point_contact_resolver.snapshot(),

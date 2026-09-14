@@ -90,6 +90,7 @@ def _support_audit(
     rotation=None,
     linear_velocity=(0.0, 0.0, 0.0),
     angular_velocity=(0.0, 0.0, 0.0),
+    support_velocity=None,
 ):
     return audit_payload_support_contact(
         payload_center_m=center,
@@ -104,6 +105,7 @@ def _support_audit(
         max_support_tilt_rad=np.deg2rad(5.0),
         max_linear_speed_m_s=0.03,
         max_angular_speed_rad_s=0.08,
+        support_surface_velocity_world_m_s=support_velocity,
     )
 
 
@@ -116,6 +118,64 @@ def test_payload_release_support_accepts_only_settled_actual_contact_geometry():
     assert exact.footprint_overlap_ratio == pytest.approx(1.0)
     assert exact.support_normal_alignment == pytest.approx(1.0)
     assert at_gap_limit.accepted
+
+
+def test_payload_release_support_uses_actual_bottom_face_after_reorientation():
+    # Local +X is the physical bottom face after this +90-degree Y rotation.
+    rotation = np.asarray(
+        [
+            [0.0, 0.0, 1.0],
+            [0.0, 1.0, 0.0],
+            [-1.0, 0.0, 0.0],
+        ]
+    )
+    support = _surface("receiver", [0.0, 0.0, 0.05], [1.0, 1.0, 0.1])
+    audit = audit_payload_support_contact(
+        payload_center_m=[0.0, 0.0, 0.4],
+        payload_rotation=rotation,
+        payload_size_m=[0.6, 0.4, 0.3],
+        payload_linear_velocity_m_s=[0.0, 0.0, 0.0],
+        payload_angular_velocity_rad_s=[0.0, 0.0, 0.0],
+        support=support,
+        supports=[support],
+        max_support_gap_m=0.003,
+        maximum_penetration_m=0.001,
+        minimum_footprint_overlap_ratio=0.90,
+        max_support_tilt_rad=np.deg2rad(5.0),
+        max_linear_speed_m_s=0.03,
+        max_angular_speed_rad_s=0.08,
+    )
+
+    assert audit.accepted
+    assert audit.support_normal_alignment == pytest.approx(1.0)
+
+
+@pytest.mark.parametrize(
+    ("support_width_m", "accepted"),
+    [(0.58, True), (0.50, False)],
+)
+def test_payload_release_support_union_honors_configured_overlap_ratio(
+    support_width_m, accepted
+):
+    support = _surface(
+        "receiver", [0.0, 0.0, 0.05], [support_width_m, 1.0, 0.1]
+    )
+    audit = audit_payload_support_contact(
+        payload_center_m=[0.0, 0.0, 0.25],
+        payload_rotation=IDENTITY,
+        payload_size_m=[0.6, 0.4, 0.3],
+        payload_linear_velocity_m_s=[0.0, 0.0, 0.0],
+        payload_angular_velocity_rad_s=[0.0, 0.0, 0.0],
+        support=support,
+        supports=[support],
+        minimum_footprint_overlap_ratio=0.90,
+    )
+
+    assert audit.accepted is accepted
+    assert audit.footprint_overlap_ratio == pytest.approx(
+        support_width_m / 0.6, abs=5e-6
+    )
+    assert audit.reason == (None if accepted else "PAYLOAD_SUPPORT_FOOTPRINT_INSUFFICIENT")
 
 
 @pytest.mark.parametrize(
@@ -154,7 +214,7 @@ def test_payload_release_support_rejects_edge_or_side_contact_as_support():
     assert audit.reason == "PAYLOAD_SUPPORT_NORMAL_MISALIGNED"
 
 
-def test_exclusive_conveyor_selection_never_selects_two_surfaces():
+def test_transfer_ownership_keeps_noncontacting_belts_running_and_overlap_longitudinal():
     surfaces = {
         "cross": _surface("cross", [0.0, 0.0, 0.55], [1.0, 1.0, 0.1]),
         "long": _surface("long", [0.75, 0.0, 0.55], [1.0, 1.0, 0.1]),
@@ -170,26 +230,29 @@ def test_exclusive_conveyor_selection_never_selects_two_surfaces():
         conveyor_primitives=surfaces,
         started=True,
         exclusive=True,
-    ) == ("cross",)
+    ) == ("cross", "long")
     assert select_active_conveyor_surfaces(
         payload_center_m=[0.4, 0.0, 0.8],
         conveyor_primitives=surfaces,
         started=True,
         exclusive=True,
-    ) == ()
+        preferred_overlap_surface="long",
+    ) == ("long",)
     assert select_active_conveyor_surfaces(
         payload_center_m=[0.4, 0.0, 0.8],
         conveyor_primitives=surfaces,
         started=True,
         exclusive=True,
         current_surface="cross",
-    ) == ("cross",)
+        preferred_overlap_surface="long",
+    ) == ("long",)
     assert select_active_conveyor_surfaces(
         payload_center_m=[0.4, 0.0, 0.8],
         conveyor_primitives=surfaces,
         started=True,
         exclusive=True,
         preferred_initial_surface="long",
+        preferred_overlap_surface="long",
     ) == ("long",)
     assert select_active_conveyor_surfaces(
         payload_center_m=[2.0, 0.0, 0.8],
@@ -197,7 +260,35 @@ def test_exclusive_conveyor_selection_never_selects_two_surfaces():
         started=True,
         exclusive=True,
         current_surface="long",
-    ) == ()
+    ) == ("long", "cross")
+
+    # The center is on the cross belt, but the real 0.6 m footprint also
+    # overlaps long. The declared longitudinal owner wins at the seam.
+    assert select_active_conveyor_surfaces(
+        payload_center_m=[0.2, 0.0, 0.8],
+        payload_size_m=[0.6, 0.4, 0.3],
+        payload_rotation=IDENTITY,
+        conveyor_primitives=surfaces,
+        started=True,
+        exclusive=True,
+        preferred_overlap_surface="long",
+    ) == ("long",)
+
+
+def test_moving_support_release_accepts_rest_to_belt_speed_envelope_not_world_rest_only():
+    stopped_at_contact = _support_audit(support_velocity=(-0.30, 0.0, 0.0))
+    matching = _support_audit(
+        linear_velocity=(-0.30, 0.0, 0.0),
+        support_velocity=(-0.30, 0.0, 0.0),
+    )
+    wrong_way = _support_audit(
+        linear_velocity=(0.04, 0.0, 0.0),
+        support_velocity=(-0.30, 0.0, 0.0),
+    )
+    assert stopped_at_contact.accepted
+    assert matching.accepted
+    assert not wrong_way.accepted
+    assert wrong_way.reason == "PAYLOAD_VELOCITY_INCOMPATIBLE_WITH_MOVING_SUPPORT"
 
 
 def test_nonexclusive_legacy_policy_returns_all_declared_surfaces():

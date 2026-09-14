@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from time import perf_counter
 from typing import Callable, Sequence
 
 import numpy as np
@@ -201,6 +202,7 @@ def solve_ik(
     collision_check_stride: int = 8,
     collision_margin: float = 0.015,
     extra_state_valid: Callable[[np.ndarray], bool] | None = None,
+    deadline_monotonic: float | None = None,
 ) -> IKResult:
     q = robot.clamp(np.asarray(seed, dtype=float).copy())
     obstacles = list(obstacles or [])
@@ -209,6 +211,8 @@ def solve_ik(
 
     weights = np.diag([position_weight] * 3 + [orientation_weight] * 3)
     for iteration in range(1, max_iterations + 1):
+        if deadline_monotonic is not None and perf_counter() >= deadline_monotonic:
+            return IKResult(False, q, iteration - 1, last_pos, last_ori, "shared wall-clock deadline reached")
         current = robot.fk(q)
         err, pos_err, ori_err = pose_error(current, target)
         last_pos, last_ori = pos_err, ori_err
@@ -310,10 +314,15 @@ def solve_ik_multistart(
     attempted = 0
     iterations_consumed = 0
     converged_pose_results = 0
+    deadline_reached = False
     max_iterations = int(kwargs.get("max_iterations", 250))
     position_tolerance = float(kwargs.get("position_tolerance", 0.008))
     orientation_tolerance = float(kwargs.get("orientation_tolerance", 0.06))
     for seed_index, seed in enumerate(candidates):
+        deadline = kwargs.get("deadline_monotonic")
+        if deadline is not None and perf_counter() >= float(deadline):
+            deadline_reached = True
+            break
         result = solve_ik(
             robot,
             target,
@@ -350,8 +359,14 @@ def solve_ik_multistart(
         cost = result.position_error + 0.25 * result.orientation_error
         if best is None or cost < best.position_error + 0.25 * best.orientation_error:
             best = result
-    assert best is not None
-    best.message = "all IK restarts failed; returning closest result"
+    if best is None:
+        q = robot.clamp(np.asarray(candidates[0], dtype=float).copy())
+        _, pos, ori = pose_error(robot.fk(q), target)
+        best = IKResult(False, q, 0, pos, ori, "shared wall-clock deadline reached")
+    if deadline_reached or best.message == "shared wall-clock deadline reached":
+        best.message = "shared wall-clock deadline reached; returning closest result"
+    else:
+        best.message = "all IK restarts failed; returning closest result"
     best.search_evidence = {
         "policy": "legacy_first_valid_result",
         "seed_pool_available": len(candidates),
@@ -367,6 +382,10 @@ def solve_ik_multistart(
         "valid_solutions": 0,
         "deduplicated_candidates": 0,
         "duplicate_candidates": 0,
-        "termination": "SEED_STREAM_EXHAUSTED",
+        "termination": (
+            "PLANNING_WALL_CLOCK_DEADLINE"
+            if deadline_reached or best.message.startswith("shared wall-clock deadline")
+            else "SEED_STREAM_EXHAUSTED"
+        ),
     }
     return best

@@ -91,9 +91,10 @@ signature or authorization boundary.
 
 The runtime contact gate uses the nominally compressed physical cup plane, all
 active-cup rays, a 2 mm maximum gap, 0.2 mm penetration tolerance and 5 degree
-normal tolerance before asking SurfaceGripper to close.  Conveyor transfer is
-exclusive and break-before-make: at most one physical surface drive is active,
-and transport metrics follow only that actual active direction.  The M-20
+normal tolerance before asking SurfaceGripper to close. Conveyor transfer uses
+footprint-based break-before-make ownership: only the longitudinal surface
+drives a carton in the overlap, while non-contacting belt sections may continue
+running. Transport metrics follow the actual owned direction. The M-20
 `--plan --config --segment` compatibility path below must not be used for
 M-710.
 

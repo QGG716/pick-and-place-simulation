@@ -131,7 +131,9 @@ def test_conveyor_transport_and_ready_but_not_yet_executed_contract(preflight, g
         "conveyor_longitudinal": [-1.0, 0.0, 0.0],
     }
     assert conveyor["speed_m_s"] == 0.30
-    assert conveyor["start_policy"] == "after_release_retreat"
+    assert conveyor["start_policy"] == "immediate"
+    assert conveyor["continuous_during_contact_release_and_withdrawal"] is True
+    assert conveyor["overlap_precedence_surface"] == "conveyor_longitudinal"
     assert conveyor["exclusive_surface_drive_at_transfer"] is True
     assert simulation["rendering"]["required_output"] == {
         "width_px": 1920,

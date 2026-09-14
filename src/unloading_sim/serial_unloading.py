@@ -23,6 +23,10 @@ from .workcell_layout import canonical_digest, verify_scene_snapshot
 
 
 ACTUAL_MOTION_STATE_SCHEMA = "m710id70_actual_motion_state_v1"
+PLANNED_MOTION_STATE_SCHEMA = "m710id70_cpu_planned_motion_state_v1"
+
+ACTUAL_RIGID_BODY_STATE_SOURCE = "ACTUAL_RIGID_BODY_STATE"
+CPU_PLANNED_ROLLOUT_SOURCE = "CPU_PLANNED_ROLLOUT_NOT_PHYSICAL"
 
 
 def _vector(value: Any, size: int, name: str) -> np.ndarray:
@@ -84,17 +88,18 @@ def _record(box: OBB) -> dict[str, Any]:
             "half_extents_m": box.half_extents.tolist()}
 
 
-def apply_actual_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any], *,
-                               row_state: RowUnloadingState | None = None) -> FrozenLayoutMotionInput:
-    """Create the next immutable CPU scene from actual surviving rigid bodies.
+def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any], *,
+                        expected_schema: str, source: str,
+                        row_state: RowUnloadingState | None = None) -> FrozenLayoutMotionInput:
+    """Create the next immutable CPU scene from an explicitly typed state.
 
     ``completed_carton_ids`` and ``handed_off_ids`` are cumulative trusted
     execution events, not classifier guesses.  Handed-off objects must no longer
     occur in the active body record; all other original objects must occur once.
     New body names, omitted neighbors and reverted completion events fail closed.
     """
-    if state.get("schema", ACTUAL_MOTION_STATE_SCHEMA) != ACTUAL_MOTION_STATE_SCHEMA:
-        raise ValueError("unsupported actual motion state schema")
+    if state.get("schema") != expected_schema:
+        raise ValueError("unsupported motion state schema")
     if state.get("attached") or state.get("attachment_target") or state.get("attachments"):
         raise ValueError("between-task scene update requires actual attachment release")
     snapshot = copy.deepcopy(dict(scene.snapshot))
@@ -190,25 +195,28 @@ def apply_actual_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str
     snapshot["receiver"] = {**snapshot.get("receiver", {}),
         "state": "OCCUPIED" if completed - handed_off else "EMPTY",
         "occupied_carton_ids": sorted(completed - handed_off)}
+    state_fingerprint = canonical_digest(state)
     snapshot["actual_state_context"] = {
-        "schema": ACTUAL_MOTION_STATE_SCHEMA, "source": "ACTUAL_RIGID_BODY_STATE",
+        "schema": expected_schema, "source": source,
         "parent_scene_fingerprint": scene.snapshot["scene_fingerprint"],
         "initial_carton_registry": registry, "initial_carton_count": len(initial_names),
         "completed_carton_ids": sorted(completed), "handed_off_ids": sorted(handed_off),
         "remaining_stack_names": list(remaining_names), "active_body_count": len(actual_cartons),
         "world_session_id": world_session, "time_s": time_s, "carton_velocities": velocities,
-        "row_selection": selection.as_dict(), "actual_state_fingerprint": canonical_digest(state),
+        "row_selection": selection.as_dict(), "actual_state_fingerprint": state_fingerprint,
+        "motion_state_fingerprint": state_fingerprint,
         "completion_source": "EXPLICIT_EXECUTION_EVENTS_NOT_POSITION_CLASSIFICATION",
     }
     # Historical initial audit is retained with its original scope; it cannot
     # be mistaken for validation of the newly observed planner start.
     snapshot.setdefault("initial_scene_audit", copy.deepcopy(snapshot.get("initial_state_audit", {})))
-    snapshot["initial_state_audit"] = {"status": "REQUIRES_ACTUAL_START_VALIDATION",
-        "source": "ACTUAL_RIGID_BODY_STATE", "q_rad": q.tolist()}
+    snapshot["initial_state_audit"] = {"status": "REQUIRES_EXACT_START_VALIDATION",
+        "source": source, "q_rad": q.tolist()}
     snapshot.pop("scene_fingerprint", None)
     snapshot["scene_fingerprint"] = canonical_digest(snapshot)
     verification = verify_scene_snapshot(snapshot)
-    consistency = {"status": "PASS", "scope": "ACTUAL_STATE_IDENTITIES_FIXED_GEOMETRY_AND_LAYOUT",
+    consistency = {"status": "PASS", "scope": "MOTION_STATE_IDENTITIES_FIXED_GEOMETRY_AND_LAYOUT",
+        "source": source,
         "collision_validity": "CHECKED_BY_NEXT_TASK_START_VALIDATOR",
         "layout_fingerprint": snapshot["layout_fingerprint"],
         "scene_fingerprint": snapshot["scene_fingerprint"], "initial_carton_count": len(initial_names),
@@ -218,6 +226,35 @@ def apply_actual_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str
         snapshot_consistency=consistency, cartons=actual_cartons, support_graph=graph,
         removable_cartons=tuple(item.name for item in selection.candidates),
         remaining_stack_names=remaining_names)
+
+
+def apply_actual_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any], *,
+                              row_state: RowUnloadingState | None = None) -> FrozenLayoutMotionInput:
+    """Create the next immutable CPU scene from actual surviving rigid bodies."""
+    return _apply_motion_state(
+        scene,
+        state,
+        expected_schema=ACTUAL_MOTION_STATE_SCHEMA,
+        source=ACTUAL_RIGID_BODY_STATE_SOURCE,
+        row_state=row_state,
+    )
+
+
+def apply_planned_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any], *,
+                               row_state: RowUnloadingState | None = None) -> FrozenLayoutMotionInput:
+    """Advance a CPU-only rollout without claiming measured rigid-body state.
+
+    This is a planning feasibility aid.  It preserves the same identity, joint,
+    support-graph and exact next-start checks as an actual-state continuation,
+    while its distinct schema/source prevents promotion to physical evidence.
+    """
+    return _apply_motion_state(
+        scene,
+        state,
+        expected_schema=PLANNED_MOTION_STATE_SCHEMA,
+        source=CPU_PLANNED_ROLLOUT_SOURCE,
+        row_state=row_state,
+    )
 
 
 class SerialUnloadingSession:

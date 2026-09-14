@@ -179,6 +179,44 @@ def test_structured_place_evidence_is_authoritative_over_legacy_aliases():
         _validated_place_evidence(stale)
 
 
+def test_layout_place_evidence_binds_declared_process_to_actual_tool_box_relation():
+    pose = np.eye(4)
+    pose[:3, 3] = [0.8, -0.4, 0.75]
+    support = {
+        "supported": True,
+        "bottom_gap_m": 0.0,
+        "penetration_m": 0.0,
+        "edge_clearance_xy_m": [0.1, 0.1],
+        "bottom_face_coplanar": True,
+        "actual_box_pose": pose.tolist(),
+    }
+    segment = {"place": {
+        "receiver": "conveyor_transverse",
+        "place_surface": "conveyor_transverse",
+        "effective_receiver": "conveyor_transverse",
+        "process_family": "transverse",
+        "placement_family": "TOP_DOWN",
+        "actual_working_normal_world": [0.0, 0.0, -1.0],
+        "payload_relative_to_tool_world_m": [0.0, 0.0, -0.15],
+        "actual_box_pose_world": pose.tolist(),
+        "release_center_world_m": pose[:3, 3].tolist(),
+        "support": support,
+    }}
+
+    validated = _validated_place_evidence(segment, scene_primitives=[])
+    assert validated["placement_family"] == "TOP_DOWN"
+
+    invalid = copy.deepcopy(segment)
+    invalid["place"]["actual_working_normal_world"] = [0.0, -1.0, 0.0]
+    with pytest.raises(ValueError, match="declared process pose family"):
+        _validated_place_evidence(invalid, scene_primitives=[])
+
+    wrong_side = copy.deepcopy(segment)
+    wrong_side["place"]["payload_relative_to_tool_world_m"] = [0.0, 0.0, 0.15]
+    with pytest.raises(ValueError, match="declared process pose family"):
+        _validated_place_evidence(wrong_side, scene_primitives=[])
+
+
 def test_replay_source_uses_drive_targets_and_actual_contact_release_gates():
     source = (ROOT / "scripts/isaacsim_fanuc_replay.py").read_text(encoding="utf-8")
     loop = source[source.index("for step in range(physics_steps):") :]

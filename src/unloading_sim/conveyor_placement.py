@@ -17,6 +17,21 @@ import numpy as np
 from .geometry import OBB, rotation_matrix_from_rpy
 
 
+TOP_DOWN = "TOP_DOWN"
+RIGHT_WALL_FACING = "RIGHT_WALL_FACING"
+TRANSVERSE_SIDE = "TRANSVERSE_SIDE"
+LONGITUDINAL = "longitudinal"
+TRANSVERSE = "transverse"
+
+_PLACEMENT_NORMALS_WORLD = {
+    TOP_DOWN: np.array([0.0, 0.0, -1.0]),
+    RIGHT_WALL_FACING: np.array([0.0, -1.0, 0.0]),
+    # Viewed along -X from the trailer interior, the carton is in front and
+    # the suction tool remains behind it on the +X side.
+    TRANSVERSE_SIDE: np.array([-1.0, 0.0, 0.0]),
+}
+
+
 def _cross(a: np.ndarray, b: np.ndarray) -> float:
     return float(a[0] * b[1] - a[1] * b[0])
 
@@ -269,9 +284,35 @@ def support_union_audit(payload: OBB, supports: Sequence[OBB | ConveyorSupport],
     return audit
 
 
+def footprint_support_overlap_areas(
+    payload: OBB,
+    supports: Sequence[OBB | ConveyorSupport],
+    *,
+    edge_tolerance_m: float = 1e-6,
+) -> dict[str, float]:
+    """Return actual bottom-footprint overlap areas without inventing support.
+
+    This is an ownership helper, not a support-acceptance predicate.  The
+    caller must separately establish contact with the real support plane.
+    """
+    if not np.isfinite(edge_tolerance_m) or edge_tolerance_m < 0.0:
+        raise ValueError("edge_tolerance_m must be finite and non-negative")
+    bottom, _, _ = _horizontal_support_face(payload)
+    if not len(bottom):
+        return {item.name: 0.0 for item in _supports(supports)}
+    footprint = bottom[:, :2]
+    result: dict[str, float] = {}
+    for item in _supports(supports):
+        top = _face_corners(item.body, 1.0, -edge_tolerance_m)
+        result[item.name] = 0.0 if not len(top) else _area(
+            _intersection(footprint, top[:, :2])
+        )
+    return result
+
+
 @dataclass(frozen=True)
 class PlacementPolicy:
-    yaw_offsets_rad: tuple[float, ...] = (0.0, np.pi / 2, -np.pi / 2)
+    yaw_offsets_rad: tuple[float, ...] = (0.0, np.pi / 2, -np.pi / 2, np.pi)
     orientation_rpy_offsets_rad: tuple[tuple[float, float, float], ...] = (
         (0.0, 0.0, 0.0),
         (0.0, np.pi / 2, 0.0),
@@ -286,6 +327,15 @@ class PlacementPolicy:
     engineering_edge_margin_m: float = 0.0
     occupancy_clearance_m: float = 0.02
     contact_tolerance_m: float = 0.002
+    normal_tolerance_rad: float = np.deg2rad(5.0)
+    process_family_by_support: Mapping[str, str] = field(default_factory=dict)
+    allowed_families_by_process: Mapping[str, tuple[str, ...]] = field(
+        default_factory=lambda: {
+            TRANSVERSE: (TOP_DOWN, TRANSVERSE_SIDE),
+            LONGITUDINAL: (TOP_DOWN, RIGHT_WALL_FACING),
+        }
+    )
+    overlap_process_priority: tuple[str, ...] = (LONGITUDINAL, TRANSVERSE)
 
     def __post_init__(self) -> None:
         if not self.yaw_offsets_rad or not np.all(np.isfinite(self.yaw_offsets_rad)):
@@ -302,6 +352,19 @@ class PlacementPolicy:
         for name in ("edge_tolerance_m", "engineering_edge_margin_m", "occupancy_clearance_m", "contact_tolerance_m"):
             if not np.isfinite(getattr(self, name)) or getattr(self, name) < 0:
                 raise ValueError(f"{name} must be finite and nonnegative")
+        if (not np.isfinite(self.normal_tolerance_rad)
+                or not 0.0 <= self.normal_tolerance_rad < 0.5 * np.pi):
+            raise ValueError("normal_tolerance_rad must be finite and in [0, pi/2)")
+        valid_processes = {TRANSVERSE, LONGITUDINAL}
+        if set(self.allowed_families_by_process) != valid_processes:
+            raise ValueError("placement policy must configure transverse and longitudinal processes")
+        for process, families in self.allowed_families_by_process.items():
+            if not families or any(family not in _PLACEMENT_NORMALS_WORLD for family in families):
+                raise ValueError(f"invalid placement families for {process}")
+        if set(self.overlap_process_priority) != valid_processes:
+            raise ValueError("overlap process priority must contain longitudinal and transverse once")
+        if any(value not in valid_processes for value in self.process_family_by_support.values()):
+            raise ValueError("support process families must be longitudinal or transverse")
 
 
 @dataclass(frozen=True)
@@ -315,6 +378,10 @@ class PlacementCandidate:
     outlet_directions: Mapping[str, tuple[float, float, float] | None]
     orientation_rpy_offset_rad: tuple[float, float, float] = (0.0, 0.0, 0.0)
     contact_normal_up_alignment: float | None = None
+    effective_receiver: str | None = None
+    process_family: str | None = None
+    placement_family: str | None = None
+    working_normal_world: tuple[float, float, float] | None = None
 
     @property
     def target_obb(self) -> OBB:
@@ -327,7 +394,48 @@ class PlacementCandidate:
                 "reasons": list(self.reasons), "yaw_rad": self.yaw_rad, "score": self.score,
                 "outlet_directions": dict(self.outlet_directions),
                 "orientation_rpy_offset_rad": list(self.orientation_rpy_offset_rad),
-                "contact_normal_up_alignment": self.contact_normal_up_alignment}
+                "contact_normal_up_alignment": self.contact_normal_up_alignment,
+                "effective_receiver": self.effective_receiver,
+                "process_family": self.process_family,
+                "placement_family": self.placement_family,
+                "working_normal_world": (None if self.working_normal_world is None
+                                         else list(self.working_normal_world))}
+
+
+def _support_process(item: ConveyorSupport, policy: PlacementPolicy) -> str | None:
+    declared = policy.process_family_by_support.get(item.name)
+    if declared is not None:
+        return declared
+    direction = item.outlet_direction_world
+    if direction is None:
+        return None
+    vector = np.asarray(direction, dtype=float)
+    if np.allclose(vector, [-1.0, 0.0, 0.0], atol=1e-9, rtol=0.0):
+        return LONGITUDINAL
+    if np.allclose(vector, [0.0, -1.0, 0.0], atol=1e-9, rtol=0.0):
+        return TRANSVERSE
+    return None
+
+
+def _placement_family(normal_world: np.ndarray, allowed: Sequence[str], tolerance: float) -> str | None:
+    minimum_alignment = float(np.cos(tolerance))
+    ranked = sorted(
+        ((float(normal_world @ _PLACEMENT_NORMALS_WORLD[name]), name) for name in allowed),
+        reverse=True,
+    )
+    return ranked[0][1] if ranked and ranked[0][0] >= minimum_alignment else None
+
+
+def effective_process_and_receiver(
+    names: Sequence[str], supports: Sequence[ConveyorSupport], policy: PlacementPolicy
+) -> tuple[str | None, str | None]:
+    """Resolve process ownership from actual supporting footprints."""
+    by_name = {item.name: item for item in supports}
+    for process in policy.overlap_process_priority:
+        matches = [name for name in names if _support_process(by_name[name], policy) == process]
+        if matches:
+            return process, matches[0]
+    return None, None
 
 
 def _placement_stream(target: OBB, family: tuple[ConveyorSupport, ...], all_supports: tuple[ConveyorSupport, ...],
@@ -343,7 +451,9 @@ def _placement_stream(target: OBB, family: tuple[ConveyorSupport, ...], all_supp
     for count in (policy.coarse_samples_per_axis, policy.fine_samples_per_axis):
         # Visit every allowed yaw in each coarse/fine round; later families are
         # interleaved by the public generator, so neither conveyor is starved.
-        yaw_grids = []
+        yaw_grids_by_family: dict[str, list[list[tuple[Any, ...]]]] = {
+            family_name: [] for family_name in _PLACEMENT_NORMALS_WORLD
+        }
         for orientation_offset in policy.orientation_rpy_offsets_rad:
             base_rotation = target.rotation @ rotation_matrix_from_rpy(*orientation_offset)
             for offset in policy.yaw_offsets_rad:
@@ -365,23 +475,48 @@ def _placement_stream(target: OBB, family: tuple[ConveyorSupport, ...], all_supp
                 grid.sort(key=lambda xy: float(np.linalg.norm(xy - preferred[:2])))
                 contact_up = (None if contact_normal_local is None else
                               float((rotation @ contact_normal_local)[2]))
-                yaw_grids.append([(xy, yaw, rotation, offset, orientation_offset, contact_up)
-                                  for xy in grid])
-        if contact_normal_local is not None:
-            # Keep the previously demonstrated pose as the bounded first
-            # fallback for time-critical execution, then prefer alternatives
-            # whose actual contact face points upward (tool above carton).
-            # Every branch still derives its contact TCP from the attachment.
-            yaw_grids.sort(key=lambda grid: (
-                0 if np.allclose(grid[0][4], (0.0, 0.0, 0.0), atol=1e-12, rtol=0.0)
-                and abs(float(grid[0][3])) < 1e-12 else 1,
-                -float(grid[0][5]), abs(float(grid[0][3])),
-            ))
+                normal_world = None if contact_normal_local is None else rotation @ contact_normal_local
+                # The effective process is recomputed from the actual supported
+                # footprint below.  At this point retain any orientation that
+                # belongs to at least one configured process so each legal
+                # family receives a bounded first-round opportunity.
+                possible = tuple(dict.fromkeys(
+                    family_name
+                    for allowed in policy.allowed_families_by_process.values()
+                    for family_name in allowed
+                ))
+                placement_family = (None if normal_world is None else
+                                    _placement_family(normal_world, possible, policy.normal_tolerance_rad))
+                if contact_normal_local is not None and placement_family is None:
+                    continue
+                yaw_grids_by_family[placement_family or TOP_DOWN].append([
+                    (xy, yaw, rotation, offset, orientation_offset, contact_up,
+                     placement_family, normal_world) for xy in grid
+                ])
+        # Round-robin the configured pose families before taking a second
+        # orientation from any family.  Candidate scoring never grants an
+        # ineligible pose permission to proceed.
+        yaw_grids = []
+        family_order = tuple(dict.fromkeys(
+            family_name for process in policy.overlap_process_priority
+            for family_name in policy.allowed_families_by_process[process]
+        ))
+        family_streams = [iter(yaw_grids_by_family[name]) for name in family_order]
+        while family_streams:
+            live = []
+            for stream in family_streams:
+                try:
+                    yaw_grids.append(next(stream))
+                    live.append(stream)
+                except StopIteration:
+                    pass
+            family_streams = live
         for batch in zip_longest(*yaw_grids):
             for entry in batch:
                 if entry is None:
                     continue
-                xy, yaw, rotation, offset, orientation_offset, contact_up = entry
+                (xy, yaw, rotation, offset, orientation_offset, contact_up,
+                 placement_family, normal_world) = entry
                 key = (*np.round(xy, 9), *np.round(rotation.flatten(), 9))
                 if key in seen:
                     continue
@@ -389,15 +524,45 @@ def _placement_stream(target: OBB, family: tuple[ConveyorSupport, ...], all_supp
                 vertical_half_extent = float(np.sum(np.abs(rotation[2, :]) * target.half_extents))
                 payload = OBB([*xy, z + vertical_half_extent], target.half_extents.copy(), rotation,
                               target.name, target.category)
-                audit = support_union_audit(payload, family, contact_tolerance_m=policy.contact_tolerance_m,
-                                            edge_tolerance_m=policy.edge_tolerance_m,
-                                            engineering_edge_margin_m=policy.engineering_edge_margin_m)
+                generating_support_audit = support_union_audit(
+                    payload, family,
+                    contact_tolerance_m=policy.contact_tolerance_m,
+                    edge_tolerance_m=policy.edge_tolerance_m,
+                    engineering_edge_margin_m=policy.engineering_edge_margin_m,
+                )
+                if not generating_support_audit["supported"]:
+                    continue
+                # A single surface may generate the position, but process
+                # ownership and collision-contact permissions come from the
+                # actual footprint against every physical support. This is
+                # what turns a seam/crossing candidate into a longitudinal
+                # process without erasing its transverse geometric support.
+                audit = support_union_audit(
+                    payload, all_supports,
+                    contact_tolerance_m=policy.contact_tolerance_m,
+                    edge_tolerance_m=policy.edge_tolerance_m,
+                    engineering_edge_margin_m=policy.engineering_edge_margin_m,
+                )
                 if not audit["supported"]:
                     continue
                 if any(payload.signed_distance_obb(other) < policy.occupancy_clearance_m - 1e-10
                        for other in occupied if other.name != target.name):
                     continue
                 names = tuple(audit["receiver_names"])
+                process_family, effective_receiver = effective_process_and_receiver(
+                    names, all_supports, policy
+                )
+                if contact_normal_local is not None and (
+                    process_family is None or effective_receiver is None
+                ):
+                    continue
+                allowed = (() if process_family is None else
+                           policy.allowed_families_by_process[process_family])
+                qualified_family = (None if normal_world is None else
+                                    _placement_family(normal_world, allowed,
+                                                      policy.normal_tolerance_rad))
+                if contact_normal_local is not None and qualified_family is None:
+                    continue
                 distance = float(np.linalg.norm(xy - preferred[:2]))
                 yield PlacementCandidate(
                     payload, names, audit,
@@ -406,7 +571,10 @@ def _placement_stream(target: OBB, family: tuple[ConveyorSupport, ...], all_supp
                     yaw, distance / scale + 0.1 * abs(offset) / np.pi
                     + (0.0 if contact_up is None else 0.12 * (1.0 - contact_up)),
                     {item.name: item.outlet_direction_world for item in all_supports if item.name in names},
-                    tuple(float(value) for value in orientation_offset), contact_up)
+                    tuple(float(value) for value in orientation_offset), contact_up,
+                    effective_receiver or names[0], process_family, qualified_family,
+                    (None if normal_world is None else
+                     tuple(float(value) for value in normal_world)))
 
 
 def generate_conveyor_placements(target: OBB, supports: Sequence[OBB | ConveyorSupport], *,

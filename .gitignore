@@ -1,6 +1,9 @@
 .venv/
 .uv-cache/
 .uv-python/
+.codex-tools/
+.conda-cpu/
+.mamba-root/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -15,4 +18,5 @@ results/
 .tmp/
 tmp/
 .test-tmp/
+.pytest-tmp-*/
 .vscode/

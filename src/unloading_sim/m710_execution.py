@@ -720,7 +720,14 @@ def _bridge_configuration(
                 "enabled": True,
                 "speed_m_s": next(iter(speeds)),
                 "surface_directions_world": conveyor_directions,
-                "start_policy": "after_release_retreat",
+                "start_policy": "immediate",
+                "continuous_during_contact_release_and_withdrawal": True,
+                "overlap_precedence_surface": "conveyor_longitudinal",
+                "footprint_boundary_tolerance_m": float(
+                    scene.policy.data.get("search_strategy", {}).get(
+                        "conveyor_footprint_boundary_tolerance_m", 0.002
+                    )
+                ),
                 "exclusive_surface_drive_at_transfer": dynamics.exclusive_surface_drive_at_transfer,
                 "actual_start_interlock": {
                     "require_attachment_released": True,
@@ -1189,6 +1196,10 @@ def build_m710_execution_preflight(
     trajectory_segment = trajectory_candidate if simulation_execution_ready else None
     trajectory_segment_status = "VERIFIED" if trajectory_segment is not None else "NOT_AVAILABLE"
     plan_common = {
+        "planning_time_seconds": motion.get("planning_performance", {}).get(
+            "planning_total_wall_seconds"
+        ),
+        "planning_performance": copy.deepcopy(motion.get("planning_performance")),
         "robot": {
             "model": "fanuc_m710id_70",
             "urdf_path": official_manifest["integration"]["expanded_urdf"]["path"],

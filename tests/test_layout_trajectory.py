@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 from pathlib import Path
 from types import SimpleNamespace
+from time import perf_counter
 
 import numpy as np
 import pytest
@@ -10,6 +11,7 @@ import pytest
 from unloading_sim.geometry import OBB
 from unloading_sim.layout_trajectory import (
     ExactM710LayoutStateValidator,
+    LayoutTrajectoryBudget,
     LayoutTrajectoryConnector,
     _audit_official_srdf_policy,
     validate_layout_trajectory_stage_contract,
@@ -263,6 +265,31 @@ def test_stage_connection_limit_does_not_prefetch_an_unused_ik_candidate():
     assert len(evidence["attempts"]) == connector.budget.stage_connection_attempts
 
 
+def test_request_scoped_state_cache_and_wall_deadline_are_fail_closed():
+    calls = []
+    connector = LayoutTrajectoryConnector(
+        _Robot(),
+        lambda *args, **kwargs: calls.append(np.asarray(args[0]).copy()) or None,
+        flange_from_virtual_task_tcp=np.eye(4),
+        flange_from_physical_contact=np.eye(4),
+        ik_policy={}, collision_margin_m=0.01, contact_tolerance_m=0.0002,
+        joint_margin_rad=0.01, maximum_jacobian_condition=1e4,
+        validator_identity="synthetic_exact_validator", execution_qualified=True,
+        budget=LayoutTrajectoryBudget(planning_wall_time_s=1.0),
+    )
+    connector.start_planning_request()
+    assert connector.validate_unloaded_state(np.zeros(6), [], stage="same") is None
+    assert connector.validate_unloaded_state(np.zeros(6), [], stage="same") is None
+    assert len(calls) == 1
+    assert connector._statistics["state_cache_hits"] == 1
+    assert connector.validate_unloaded_state(np.zeros(6), [], stage="different") is None
+    assert len(calls) == 2
+    assert connector._statistics["state_cache_misses"] == 2
+    connector.start_planning_request(perf_counter() - 2.0)
+    failure = connector.validate_unloaded_state(np.zeros(6), [], stage="expired")
+    assert failure["reason"] == "PLANNING_WALL_CLOCK_DEADLINE"
+
+
 def test_official_srdf_policy_has_only_six_adjacent_exclusions(tmp_path):
     root = Path(__file__).resolve().parents[1]
     source = (
@@ -314,6 +341,7 @@ def test_exact_validator_retains_target_and_limits_exceptions_to_mount_pairs():
         right_wall_y_m=-2.0,
         left_wall_y_m=2.0,
         robot_world_boxes=lambda q: [],
+        collision_policy={"wrist_tool_exempt_links": ["J5_link", "J6_link"]},
     )
     target = OBB([3, 0, 1], [0.2, 0.2, 0.2], np.eye(3), "target", "carton")
     assert validator(
@@ -325,7 +353,9 @@ def test_exact_validator_retains_target_and_limits_exceptions_to_mount_pairs():
     }
     assert len(mesh.calls[1][0]) == 58
     assert mesh.calls[1][1]["ignored_geometry_obstacle_pairs"] == {
-        ("J6_link", f"tool_rigid_{index}") for index in range(58)
+        (link, f"tool_rigid_{index}")
+        for link in ("J5_link", "J6_link")
+        for index in range(58)
     }
 
 

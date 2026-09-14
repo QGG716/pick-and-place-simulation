@@ -10,7 +10,9 @@ import pytest
 from unloading_sim.geometry import OBB, make_transform
 from unloading_sim.layout_single_carton import FrozenLayoutMotionInput, LayoutMotionPolicy
 from unloading_sim.serial_unloading import (
-    ACTUAL_MOTION_STATE_SCHEMA, SerialUnloadingSession, apply_actual_motion_state,
+    ACTUAL_MOTION_STATE_SCHEMA, CPU_PLANNED_ROLLOUT_SOURCE,
+    PLANNED_MOTION_STATE_SCHEMA, SerialUnloadingSession, apply_actual_motion_state,
+    apply_planned_motion_state,
     rotation_from_actual_quaternion, state_from_isaac_record,
 )
 from unloading_sim.support import SupportRelationGraph
@@ -121,6 +123,20 @@ def test_explicit_handoff_reduces_active_population_without_resurrecting_objects
     again = apply_actual_motion_state(changed, continued)
     assert len(again.cartons) == 39
     assert again.snapshot["actual_state_context"]["initial_carton_count"] == 40
+
+
+def test_cpu_planned_rollout_has_distinct_nonphysical_provenance(scene):
+    name = scene.cartons[-3].name
+    state = actual(scene, [name], [name])
+    state["schema"] = PLANNED_MOTION_STATE_SCHEMA
+    changed = apply_planned_motion_state(scene, state)
+    context = changed.snapshot["actual_state_context"]
+    assert context["schema"] == PLANNED_MOTION_STATE_SCHEMA
+    assert context["source"] == CPU_PLANNED_ROLLOUT_SOURCE
+    assert changed.snapshot["initial_state_audit"]["source"] == CPU_PLANNED_ROLLOUT_SOURCE
+    assert len(changed.cartons) == 39
+    with pytest.raises(ValueError, match="unsupported motion state schema"):
+        apply_actual_motion_state(scene, state)
 
 
 def test_actual_pose_alone_never_completes_or_removes_a_box_and_sessions_do_not_reset(scene):

@@ -11,6 +11,7 @@ import copy
 import hashlib
 import json
 from dataclasses import dataclass, replace
+from time import perf_counter
 from typing import Any, Mapping, Sequence
 
 import numpy as np
@@ -304,12 +305,42 @@ def _validated_place_evidence(segment: Mapping[str, Any], *,
     ):
         if alias in segment and segment.get(alias) != expected:
             raise ValueError(f"legacy {alias} alias differs from structured place evidence")
+    process_family = str(raw.get("process_family", "")).strip()
+    placement_family = str(raw.get("placement_family", "")).strip()
+    effective_receiver = str(raw.get("effective_receiver", "")).strip()
+    allowed = {
+        "transverse": {"TOP_DOWN", "TRANSVERSE_SIDE"},
+        "longitudinal": {"TOP_DOWN", "RIGHT_WALL_FACING"},
+    }
+    working_normal = np.asarray(raw.get("actual_working_normal_world", []), dtype=float)
+    payload_relative = np.asarray(raw.get("payload_relative_to_tool_world_m", []), dtype=float)
+    required_normal = {
+        "TOP_DOWN": np.array([0.0, 0.0, -1.0]),
+        "RIGHT_WALL_FACING": np.array([0.0, -1.0, 0.0]),
+        "TRANSVERSE_SIDE": np.array([-1.0, 0.0, 0.0]),
+    }.get(placement_family)
+    requires_layout_process_evidence = (
+        scene_primitives is not None
+        and surface in {"conveyor_transverse", "conveyor_longitudinal"}
+    )
+    if (requires_layout_process_evidence and (
+            process_family not in allowed or placement_family not in allowed[process_family]
+            or effective_receiver != surface or required_normal is None
+            or working_normal.shape != (3,) or payload_relative.shape != (3,)
+            or not np.all(np.isfinite(working_normal))
+            or not np.all(np.isfinite(payload_relative))
+            or float(working_normal @ required_normal) < np.cos(np.deg2rad(5.0))
+            or float(payload_relative @ working_normal) <= 0.0)):
+        raise ValueError("place evidence does not satisfy its declared process pose family")
     return {
         "place_surface": surface,
         "place_center_m": release_center.tolist(),
         "release_center_m": release_center.tolist(),
         "planned_support_audit": copy.deepcopy(dict(support)),
         "actual_box_pose_world": pose.tolist(),
+        "process_family": process_family,
+        "placement_family": placement_family,
+        "actual_working_normal_world": working_normal.tolist(),
     }
 
 
@@ -1276,6 +1307,7 @@ def build_fanuc_isaac_replay_bundle(
             f"{OFFICIAL_M710_DESCRIPTION_REPOSITORY}@{OFFICIAL_M710_DESCRIPTION_COMMIT}"
         )
         execution = effective_execution
+    time_parameterization_started = perf_counter()
     limits = motion_limits_from_config(effective_cfg, path.shape[1])
     loaded_motion_time_scale = float(execution.get("loaded_motion_time_scale", 1.0))
     release_index = int(segment.get("release_index", len(path) - 1))
@@ -1354,6 +1386,7 @@ def build_fanuc_isaac_replay_bundle(
     }
     if not audit["within_limits"]:
         raise RuntimeError("trajectory cannot be exported because its timing audit failed")
+    time_parameterization_wall_seconds = perf_counter() - time_parameterization_started
     replay_time_scale = float(cfg.get("execution", {}).get("isaac_replay_time_scale", 1.0))
     if not np.isfinite(replay_time_scale) or replay_time_scale < 1.0:
         raise ValueError("execution.isaac_replay_time_scale must be finite and at least one")
@@ -1979,10 +2012,15 @@ def build_fanuc_isaac_replay_bundle(
     if (
         robot_model_id == "fanuc_m710id_70"
         and conveyor_contract.get("enabled") is True
-        and conveyor_contract.get("start_policy") == "after_release_retreat"
-        and source_release_retreat_time is None
     ):
-        raise ValueError("M-710 after_release_retreat conveyor requires release_retreat_index")
+        if (
+            conveyor_contract.get("start_policy") != "immediate"
+            or conveyor_contract.get("continuous_during_contact_release_and_withdrawal") is not True
+            or conveyor_contract.get("overlap_precedence_surface") != "conveyor_longitudinal"
+        ):
+            raise ValueError(
+                "M-710 conveyor requires immediate continuous drive and longitudinal overlap ownership"
+            )
 
     actual_state_gates = dict(validation_cfg.get("actual_state_gates", {}))
     actual_state_gate_defaults = {
@@ -2026,7 +2064,13 @@ def build_fanuc_isaac_replay_bundle(
         "segment_index": int(segment_index),
         "pick_index": int(segment.get("pick_index", segment_index)),
         "target": str(segment.get("target", "unknown")),
-        "offline_planning_time_seconds": float(plan.get("planning_time_seconds", 0.0)),
+        "offline_planning_time_seconds": (
+            None
+            if plan.get("planning_time_seconds") is None
+            else float(plan["planning_time_seconds"])
+        ),
+        "offline_planning_performance": copy.deepcopy(plan.get("planning_performance")),
+        "time_parameterization_wall_seconds": time_parameterization_wall_seconds,
         "source_waypoint_count": int(len(path)),
         "controller_period_seconds": float(controller_period_seconds),
         "command_count": int(len(command_times)),
@@ -2086,6 +2130,9 @@ def build_fanuc_isaac_replay_bundle(
         "place_center_m": place_evidence["place_center_m"],
         "release_center_m": place_evidence["release_center_m"],
         "place_surface": place_evidence["place_surface"],
+        "place_process_family": place_evidence.get("process_family"),
+        "place_placement_family": place_evidence.get("placement_family"),
+        "place_working_normal_world": place_evidence.get("actual_working_normal_world"),
         "selected_place_support_names": list(segment.get("place", {}).get("support_names", [place_evidence["place_surface"]])),
         "collision_policy": dict(plan.get("collision_policy", {})),
         "stack_carton_names": list(plan.get("stack_carton_names", [])),

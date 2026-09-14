@@ -28,7 +28,8 @@ def test_discovery_uses_role_and_both_belts_get_noncentral_candidates():
     target = box("payload", [.5, .3, 2.25], [.3, .2, .15], category="carton")
     candidates = generate_conveyor_placements(target, supports, policy=PlacementPolicy(maximum_candidates=12))
     assert candidates[0].receiver_names == (supports[0].name,)
-    assert candidates[1].receiver_names == (supports[1].name,)
+    assert supports[1].name in candidates[1].receiver_names
+    assert set(candidates[1].receiver_names) == {supports[0].name, supports[1].name}
     assert any(np.linalg.norm(item.payload.center[:2] - supports[0].center[:2]) > 0.1
                for item in candidates if item.receiver_names == (supports[0].name,))
     assert all(item.support["supported"] for item in candidates)
@@ -135,3 +136,62 @@ def test_rotated_carton_uses_actual_support_face_and_height():
     assert candidates
     assert candidates[0].payload.center[2] == pytest.approx(0.90)
     assert candidates[0].support["support_face_local_axis"] == 0
+
+
+def test_process_pose_families_are_qualified_by_actual_working_normal():
+    target = box("payload", [0.0, 0.0, 1.5], [.3, .2, .15], category="carton")
+    transverse = ConveyorSupport(
+        box("transverse", [0.0, 0.0, .54], [.8, .8, .06]), (0.0, -1.0, 0.0)
+    )
+    longitudinal = ConveyorSupport(
+        box("longitudinal", [0.0, 0.0, .54], [.8, .8, .06]), (-1.0, 0.0, 0.0)
+    )
+    policy = PlacementPolicy(
+        maximum_candidates=16,
+        process_family_by_support={
+            "transverse": "transverse", "longitudinal": "longitudinal"
+        },
+    )
+    transverse_candidates = generate_conveyor_placements(
+        target, [transverse], policy=policy, contact_normal_local=[1.0, 0.0, 0.0]
+    )
+    longitudinal_candidates = generate_conveyor_placements(
+        target, [longitudinal], policy=policy, contact_normal_local=[1.0, 0.0, 0.0]
+    )
+    assert {item.placement_family for item in transverse_candidates} == {
+        "TOP_DOWN", "TRANSVERSE_SIDE"
+    }
+    assert {item.placement_family for item in longitudinal_candidates} == {
+        "TOP_DOWN", "RIGHT_WALL_FACING"
+    }
+    assert all(item.placement_family != "RIGHT_WALL_FACING"
+               for item in transverse_candidates)
+    assert all(item.placement_family != "TRANSVERSE_SIDE"
+               for item in longitudinal_candidates)
+
+
+def test_joint_support_uses_longitudinal_process_without_faking_support_area():
+    target = box("payload", [0.0, 0.0, 1.5], [.3, .2, .15], category="carton")
+    transverse = ConveyorSupport(
+        box("transverse", [-.3, 0.0, .54], [.3, .7, .06]), (0.0, -1.0, 0.0)
+    )
+    longitudinal = ConveyorSupport(
+        box("longitudinal", [.3, 0.0, .54], [.3, .7, .06]), (-1.0, 0.0, 0.0)
+    )
+    policy = PlacementPolicy(
+        yaw_offsets_rad=(0.0, np.pi / 2),
+        maximum_candidates=12,
+        process_family_by_support={
+            "transverse": "transverse", "longitudinal": "longitudinal"
+        },
+    )
+    candidates = generate_conveyor_placements(
+        target, [transverse, longitudinal], preferred_point_world=[0.0, 0.0, .75],
+        policy=policy, contact_normal_local=[1.0, 0.0, 0.0]
+    )
+    joint = next(item for item in candidates if len(item.receiver_names) == 2)
+    assert set(joint.receiver_names) == {"transverse", "longitudinal"}
+    assert joint.effective_receiver == "longitudinal"
+    assert joint.process_family == "longitudinal"
+    assert joint.placement_family in {"TOP_DOWN", "RIGHT_WALL_FACING"}
+    assert joint.support["unsupported_area_m2"] == pytest.approx(0.0)

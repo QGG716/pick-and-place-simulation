@@ -16,6 +16,7 @@ import copy
 import json
 import platform
 from pathlib import Path
+from time import perf_counter
 from typing import Any, Callable, Mapping, Sequence
 import xml.etree.ElementTree as ET
 
@@ -447,6 +448,53 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
             direction, expected, atol=1e-12, rtol=0.0
         ):
             raise ValueError(f"{name} transport direction disagrees with the dynamics contract")
+    process_families = _mapping(
+        strategy.get("surface_process_families"),
+        "search_strategy.surface_process_families",
+    )
+    if process_families != {
+        "conveyor_transverse": "transverse",
+        "conveyor_longitudinal": "longitudinal",
+    }:
+        raise ValueError("surface process families must match the physical L-conveyor")
+    if tuple(strategy.get("overlap_process_priority", ())) != (
+        "longitudinal", "transverse"
+    ):
+        raise ValueError("cross-belt support must use longitudinal process precedence")
+    allowed_families = _mapping(
+        strategy.get("allowed_placement_families"),
+        "search_strategy.allowed_placement_families",
+    )
+    if {name: tuple(values) for name, values in allowed_families.items()} != {
+        "transverse": ("TOP_DOWN", "TRANSVERSE_SIDE"),
+        "longitudinal": ("TOP_DOWN", "RIGHT_WALL_FACING"),
+    }:
+        raise ValueError("configured placement families do not match the approved process")
+    _finite(strategy.get("planning_wall_time_s"), "planning_wall_time_s", minimum=1e-9)
+    _finite(
+        strategy.get("local_transit_outward_step_m"),
+        "local_transit_outward_step_m",
+        minimum=1e-9,
+    )
+    outward_attempts = strategy.get("local_transit_outward_attempts")
+    if (
+        not isinstance(outward_attempts, int)
+        or isinstance(outward_attempts, bool)
+        or outward_attempts < 0
+    ):
+        raise ValueError("local_transit_outward_attempts must be a non-negative integer")
+    normal_tolerance = _finite(
+        strategy.get("placement_normal_tolerance_deg"),
+        "placement_normal_tolerance_deg",
+        minimum=0.0,
+    )
+    if normal_tolerance >= 90.0:
+        raise ValueError("placement normal tolerance must be below 90 degrees")
+    _finite(
+        strategy.get("conveyor_footprint_boundary_tolerance_m"),
+        "conveyor_footprint_boundary_tolerance_m",
+        minimum=0.0,
+    )
 
     tool_frames = _load_tool_frame_contract(data["tool_frame_contract"])
 
@@ -955,8 +1003,10 @@ def _audit_pose(
     robot,
     shapes: Sequence[tuple[str, np.ndarray, np.ndarray]],
     exact_state_failure: Callable[[np.ndarray], Mapping[str, Any] | None] | None = None,
+    deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     policy = scene.policy.data
+    coverage_started = perf_counter()
     requested_selection, requested_geometry = _independent_cup_selection_at_pose(
         requested_physical_contact_pose,
         target,
@@ -985,6 +1035,10 @@ def _audit_pose(
         "strict_grasp_candidates": [],
         "path_connection_attempts": 0,
         "complete_trajectory": None,
+        "planning_timing_seconds": {
+            "coverage_and_candidate_qualification": perf_counter() - coverage_started,
+            "grasp_ik_inclusive_of_endpoint_validation": None,
+        },
     }
     if requested_selection is None:
         attempt.update(
@@ -1020,7 +1074,9 @@ def _audit_pose(
             if exact_state_failure is not None
             else _state_failure(scene, target, face, robot, shapes, q)
         ) is None,
+        deadline_monotonic=deadline_monotonic,
     )
+    ik_started = perf_counter()
     for result in stream:
         actual_virtual_tcp = robot.fk(result.q)
         actual_physical_contact = physical_contact_from_virtual_tcp(
@@ -1077,6 +1133,9 @@ def _audit_pose(
                     ),
                 }
             )
+    attempt["planning_timing_seconds"]["grasp_ik_inclusive_of_endpoint_validation"] = (
+        perf_counter() - ik_started
+    )
     attempt["ik_stream"] = {**stream.evidence(), "best_failure": _best_failure(stream)}
     if not attempt["strict_grasp_candidates"]:
         attempt.update(
@@ -1171,7 +1230,14 @@ def _build_automatic_trajectory_connector(
         budget=LayoutTrajectoryBudget(
             extraction_runtime_clearance_reserve_m=float(
                 strategy.get("extraction_runtime_clearance_reserve_m", 0.0)
-            )
+            ),
+            planning_wall_time_s=float(strategy.get("planning_wall_time_s", 900.0)),
+            local_transit_outward_step_m=float(strategy.get(
+                "local_transit_outward_step_m", 0.03
+            )),
+            local_transit_outward_attempts=int(strategy.get(
+                "local_transit_outward_attempts", 3
+            )),
         ),
         collision_policy=policy.layout_validation.data.get("collision_policy"),
         surface_directions_world=strategy.get("surface_directions_world", {}),
@@ -1305,6 +1371,7 @@ def run_layout_single_carton_audit(
     assets.  Dependency or consistency failures are serialized and fail closed;
     the legacy proxy audit is never used to certify a complete path.
     """
+    planning_request_started = perf_counter()
     policy = (
         config_path
         if isinstance(config_path, LayoutMotionPolicy)
@@ -1369,6 +1436,7 @@ def run_layout_single_carton_audit(
         else lightweight_robot
     )
     if trajectory_connector is not None:
+        trajectory_connector.start_planning_request(planning_request_started)
         trajectory_connector.progress_callback = progress_callback
         strategy = policy.data.get("search_strategy", {})
         trajectory_connector.placement_policy = PlacementPolicy(
@@ -1376,15 +1444,33 @@ def run_layout_single_carton_audit(
             coarse_samples_per_axis=int(strategy.get("coarse_place_samples_per_axis", 3)),
             fine_samples_per_axis=int(strategy.get("fine_place_samples_per_axis", 7)),
             contact_tolerance_m=float(policy.data["state_validity"]["contact_tolerance_m"]),
-            occupancy_clearance_m=2.0 * float(policy.data["state_validity"]["collision_margin_m"]))
+            edge_tolerance_m=float(strategy.get("conveyor_footprint_boundary_tolerance_m", 1e-6)),
+            occupancy_clearance_m=2.0 * float(policy.data["state_validity"]["collision_margin_m"]),
+            normal_tolerance_rad=np.deg2rad(float(strategy.get(
+                "placement_normal_tolerance_deg", 5.0))),
+            process_family_by_support=dict(strategy.get("surface_process_families", {})),
+            allowed_families_by_process={
+                str(name): tuple(str(item) for item in values)
+                for name, values in dict(strategy.get("allowed_placement_families", {
+                    "transverse": ["TOP_DOWN", "TRANSVERSE_SIDE"],
+                    "longitudinal": ["TOP_DOWN", "RIGHT_WALL_FACING"],
+                })).items()
+            },
+            overlap_process_priority=tuple(str(item) for item in strategy.get(
+                "overlap_process_priority", ["longitudinal", "transverse"])))
     if motion_input is not None:
         if trajectory_connector is None:
-            raise ValueError("actual-state continuation requires the exact state validator")
+            raise ValueError("motion-state continuation requires the exact state validator")
         initial_failure = trajectory_connector.validate_unloaded_state(
             policy.layout_validation.initial_q, scene.all_obstacles, stage="actual_task_start")
         if initial_failure is not None:
             raise ValueError(f"ACTUAL_TASK_START_INVALID: {initial_failure}")
-        initial = {"status": "PASS", "source": "ACTUAL_RIGID_BODY_STATE",
+        motion_state_source = str(
+            motion_input.snapshot.get("actual_state_context", {}).get(
+                "source", "FROZEN_INITIAL_LAYOUT_STATE"
+            )
+        )
+        initial = {"status": "PASS", "source": motion_state_source,
                    "validator_identity": trajectory_connector.validator_identity,
                    "q_rad": policy.layout_validation.initial_q.tolist()}
     shapes = (
@@ -1395,16 +1481,19 @@ def run_layout_single_carton_audit(
     trajectory_backend_failure = (
         connector_build.failure_reason or PATH_BACKEND_UNAVAILABLE_REASON
     )
+    model_initialization_seconds = perf_counter() - planning_request_started
     cartons_by_name = {box.name: box for box in scene.cartons}
     tasks: list[dict[str, Any]] = []
     selected_trajectory_segment: Mapping[str, Any] | None = None
     base_seed = int(policy.data["ik"]["seed"])
     pose_index = 0
+    candidate_generation_seconds = 0.0
+    trajectory_search_seconds = 0.0
     for task_index, target_name in enumerate(scene.removable_cartons):
         target = cartons_by_name[target_name]
         attempts: list[dict[str, Any]] = []
         trajectory_pose_attempts = 0
-        task_search_budget_exhausted = False
+        task_search_termination: str | None = None
         faces = _exposed_faces(scene, target_name)
         if selected_trajectory_segment is not None:
             tasks.append(
@@ -1421,7 +1510,13 @@ def run_layout_single_carton_audit(
                 }
             )
             continue
-        for face, (roll, requested_physical_contact, task_set) in _scheduled_contact_poses(scene, target, faces):
+        generation_started = perf_counter()
+        scheduled_contact_poses = tuple(_scheduled_contact_poses(scene, target, faces))
+        candidate_generation_seconds += perf_counter() - generation_started
+        for face, (roll, requested_physical_contact, task_set) in scheduled_contact_poses:
+            if (trajectory_connector is not None and trajectory_connector._deadline_reached()):
+                task_search_termination = "PLANNING_WALL_CLOCK_DEADLINE"
+                break
             requested_virtual_task_tcp = virtual_tcp_from_physical_contact(
                 requested_physical_contact,
                 policy.tool_frames.flange_from_virtual_task_tcp,
@@ -1452,6 +1547,8 @@ def run_layout_single_carton_audit(
                         if trajectory_connector is not None
                         else None
                     ),
+                    deadline_monotonic=(None if trajectory_connector is None else
+                                        trajectory_connector._deadline_monotonic),
                 )
             attempts.append(attempt)
             if progress_callback is not None:
@@ -1471,7 +1568,7 @@ def run_layout_single_carton_audit(
                     if trajectory_pose_attempts >= (
                         trajectory_connector.budget.task_pose_connection_attempts
                     ):
-                        task_search_budget_exhausted = True
+                        task_search_termination = "TASK_POSE_CONNECTION_BUDGET_EXHAUSTED"
                         attempt.update(
                             complete_trajectory=False,
                             failure_stage="task_search_budget",
@@ -1485,6 +1582,7 @@ def run_layout_single_carton_audit(
                     support_names = sorted(
                         scene.support_graph.supported_by[target.name]
                     )
+                    trajectory_started = perf_counter()
                     outcome = trajectory_connector.plan(
                         target=target,
                         face=face,
@@ -1497,6 +1595,7 @@ def run_layout_single_carton_audit(
                         suction=policy.data["suction"],
                         seed=rng_seed + 50000,
                     )
+                    trajectory_search_seconds += perf_counter() - trajectory_started
                     attempt["trajectory_search"] = {
                         "attempts": list(outcome.attempts),
                         "statistics": dict(outcome.statistics),
@@ -1526,6 +1625,8 @@ def run_layout_single_carton_audit(
                         )
                     else:
                         failure = dict(outcome.failure or {})
+                        if outcome.statistics.get("termination") == "PLANNING_WALL_CLOCK_DEADLINE":
+                            task_search_termination = "PLANNING_WALL_CLOCK_DEADLINE"
                         attempt.update(
                             complete_trajectory=False,
                             failure_stage=str(
@@ -1546,14 +1647,14 @@ def run_layout_single_carton_audit(
             pose_index += 1
             if selected_trajectory_segment is not None:
                 break
-            if selected_trajectory_segment is not None or task_search_budget_exhausted:
+            if selected_trajectory_segment is not None or task_search_termination is not None:
                 break
         strict_candidates = sum(len(item["strict_grasp_candidates"]) for item in attempts)
         task_complete = any(item.get("complete_trajectory") is True for item in attempts)
         if task_complete:
             task_reason = "OK"
-        elif task_search_budget_exhausted:
-            task_reason = "TASK_POSE_CONNECTION_BUDGET_EXHAUSTED"
+        elif task_search_termination is not None:
+            task_reason = task_search_termination
         elif strict_candidates and not execution["qualified"]:
             task_reason = EXECUTION_GATE_REASON
         elif strict_candidates and trajectory_connector is None:
@@ -1655,6 +1756,12 @@ def run_layout_single_carton_audit(
             int(item.get("cartesian_samples", 0)) for item in trajectory_statistics
         ),
         "complete_trajectory_success_count": successful_tasks,
+        "placement_candidates_generated": sum(
+            int(item.get("placement_candidates_generated", 0))
+            for item in trajectory_statistics
+        ),
+        "state_cache_hits": sum(int(item.get("state_cache_hits", 0)) for item in trajectory_statistics),
+        "state_cache_misses": sum(int(item.get("state_cache_misses", 0)) for item in trajectory_statistics),
         "task_failure_counts": dict(
             sorted(
                 Counter(
@@ -1694,7 +1801,12 @@ def run_layout_single_carton_audit(
         "task_population": {
             "selector": "SupportRelationGraph.removable_cartons",
             "carton_ids": list(scene.removable_cartons),
-            "population_source": "actual_highest_remaining_row_and_support_graph",
+            "population_source": (
+                "cpu_planned_highest_remaining_row_and_support_graph"
+                if scene.snapshot.get("actual_state_context", {}).get("source")
+                == "CPU_PLANNED_ROLLOUT_NOT_PHYSICAL"
+                else "actual_highest_remaining_row_and_support_graph"
+            ),
             "legacy_104_and_129_denominators_used": False,
             "support_graph": scene.support_graph.audit(),
             "row_selection": {**row_selection.as_dict(), "actual_cost_evidence": approach_cost_evidence,
@@ -1725,6 +1837,53 @@ def run_layout_single_carton_audit(
         "trajectory_backend": dict(connector_build.evidence),
         "tasks": tasks,
         "statistics": statistics,
+        "planning_performance": {
+            "schema": "first_carton_planning_wall_timing_v1",
+            "planning_total_wall_seconds": perf_counter() - planning_request_started,
+            "model_load_and_initialization_seconds": model_initialization_seconds,
+            "candidate_generation_seconds": candidate_generation_seconds + sum(
+                float(item.get("placement_candidate_generation_wall_seconds", 0.0))
+                for item in trajectory_statistics
+            ),
+            "grasp_candidate_generation_seconds": candidate_generation_seconds,
+            "placement_candidate_generation_seconds": sum(
+                float(item.get("placement_candidate_generation_wall_seconds", 0.0))
+                for item in trajectory_statistics
+            ),
+            "grasp_ik_seconds_inclusive_of_endpoint_validation": sum(
+                float(item.get("planning_timing_seconds", {}).get(
+                    "grasp_ik_inclusive_of_endpoint_validation") or 0.0)
+                for item in attempts
+            ),
+            "trajectory_search_seconds_inclusive": trajectory_search_seconds,
+            "trajectory_ik_seconds": sum(float(item.get("trajectory_ik_wall_seconds", 0.0))
+                                          for item in trajectory_statistics),
+            "path_connection_seconds_inclusive_of_collision": sum(
+                float(item.get("path_connection_wall_seconds_inclusive", 0.0))
+                for item in trajectory_statistics
+            ),
+            "collision_validation_seconds_nested": sum(
+                float(item.get("collision_validation_wall_seconds_nested", 0.0))
+                for item in trajectory_statistics
+            ),
+            "final_recheck_seconds": sum(
+                float(item.get("final_recheck_wall_seconds", 0.0))
+                for item in trajectory_statistics
+            ),
+            "time_parameterization_seconds": None,
+            "trajectory_physical_execution_seconds": None,
+            "isaac_replay_wall_seconds": None,
+            "nesting": {
+                "trajectory_search_seconds_inclusive": [
+                    "trajectory_ik_seconds", "path_connection_seconds_inclusive_of_collision",
+                    "collision_validation_seconds_nested", "final_recheck_seconds"
+                ],
+                "path_connection_seconds_inclusive_of_collision": [
+                    "collision_validation_seconds_nested"
+                ],
+            },
+            "unmeasured_value": None,
+        },
         "selected_trajectory_segment": selected_trajectory_segment,
         "complete_trajectory_status": (
             "PASS" if selected_trajectory_segment is not None else "FAIL_CLOSED"

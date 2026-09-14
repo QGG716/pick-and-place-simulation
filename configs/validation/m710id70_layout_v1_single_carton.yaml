@@ -12,7 +12,9 @@ task_population:
   support_minimum_overlap_ratio: 0.20
 
 receiver:
-  name: conveyor_transverse
+  # Default receiving preference only; the planner still searches both
+  # physical belts and all policy-qualified pose families below.
+  name: conveyor_longitudinal
   fixed: true
 
 search_strategy:
@@ -22,6 +24,20 @@ search_strategy:
   coarse_place_samples_per_axis: 3
   fine_place_samples_per_axis: 7
   row_height_fraction: 0.05
+  planning_wall_time_s: 900.0
+  # Create real free-space room for the attached 0.6 x 0.4 x 0.3 m carton
+  # before changing its placement face; every increment remains collision checked.
+  local_transit_outward_step_m: 0.12
+  local_transit_outward_attempts: 3
+  placement_normal_tolerance_deg: 5.0
+  conveyor_footprint_boundary_tolerance_m: 0.002
+  surface_process_families:
+    conveyor_transverse: transverse
+    conveyor_longitudinal: longitudinal
+  overlap_process_priority: [longitudinal, transverse]
+  allowed_placement_families:
+    transverse: [TOP_DOWN, TRANSVERSE_SIDE]
+    longitudinal: [TOP_DOWN, RIGHT_WALL_FACING]
   # This does not change the 20.2 mm acceptance predicate. It asks the
   # geometric extraction endpoint for 3 mm more separation so the measured
   # PhysX state retains the unchanged margin after observed stack settling.
