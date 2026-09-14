@@ -16,7 +16,7 @@ IDENTITY = (
 
 
 def _record():
-    return {
+    value = {
         "corners_3d": [
             [-0.3, -0.2, 2.0], [0.3, -0.2, 2.0], [0.3, 0.2, 2.0], [-0.3, 0.2, 2.0],
             [-0.3, -0.2, 2.3], [0.3, -0.2, 2.3], [0.3, 0.2, 2.3], [-0.3, 0.2, 2.3],
@@ -44,14 +44,19 @@ def _record():
     }
 
 
+    for face in value["camera_facing_faces"]:
+        face["final_support"] = {"status": "PASS", "point_support_count": 120, "point_support_ratio": .88, "plane_residual_m": .002}
+    return value
+
+
 def test_observed_face_set_excludes_completion_and_preserves_shared_edge():
     result = observed_faces_from_geometry_record(
         _record(), source_instance_id="box-7", module_id="module_1_lower",
         capture_id="cap-1", capture_time=2.0, frame_id="module_1_lower_rgb_optical",
     )
     assert len(result.faces) == 2
-    assert result.complete_cuboid_status == "SUFFICIENT_MULTIFACE_EVIDENCE"
-    assert result.shared_edges == (("box-7:face:0", "box-7:face:1", (0, 1)),)
+    assert result.complete_cuboid_status == "MULTIFACE_OBSERVED_VOLUME_UNRESOLVED"
+    assert result.shared_edges == ((result.faces[0].face_id, result.faces[1].face_id, (0, 1)),)
     assert all(face.evidence != "cuboid_constraint_completion" for face in result.faces)
 
 

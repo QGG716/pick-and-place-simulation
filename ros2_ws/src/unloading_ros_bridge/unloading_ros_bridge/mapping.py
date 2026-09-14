@@ -123,6 +123,7 @@ def cargo_to_msg(cargo: CargoObservation) -> CargoObservationMsg:
         if value is not None:
             setattr(message, target_name, value)
     message.has_pose = cargo.pose is not None
+    message.pose_evidence = "" if cargo.pose_evidence is None else cargo.pose_evidence.value
     if cargo.pose is not None:
         message.pose.position.x, message.pose.position.y, message.pose.position.z = cargo.pose.position_m
         message.pose.orientation.x, message.pose.orientation.y, message.pose.orientation.z, message.pose.orientation.w = cargo.pose.orientation_xyzw
@@ -148,6 +149,7 @@ def cargo_to_msg(cargo: CargoObservation) -> CargoObservationMsg:
     message.association_status = cargo.association_status
     message.face_evidence_json = json.dumps(to_wire(cargo.face_evidence), sort_keys=True, separators=(",", ":"))
     message.raw_result_json = json.dumps(to_wire(cargo.raw_result), sort_keys=True, separators=(",", ":"))
+    message.observed_surfaces_json = json.dumps(to_wire(cargo.observed_surfaces), sort_keys=True, separators=(",", ":"))
     return message
 
 
@@ -182,6 +184,7 @@ def cargo_from_msg(message: CargoObservationMsg) -> CargoObservation:
         Validity(message.metric_scale_validity), Validity(message.geometry_validity),
         message.candidate_eligible, tuple(message.eligibility_reasons), message.occluded,
         message.association_status, face_evidence, raw_result,
+        tuple(from_wire(json.loads(message.observed_surfaces_json))) if message.observed_surfaces_json else (),
     )
 
 
@@ -203,6 +206,9 @@ def observation_to_msg(observation: PerceptionObservation) -> PerceptionObservat
     message.source_sequence = observation.source_sequence
     message.capture_time = float_to_time(observation.capture_time)
     message.processed_time = float_to_time(observation.processed_time)
+    message.has_exact_source_times = True
+    message.exact_capture_time_s = observation.capture_time
+    message.exact_processed_time_s = observation.processed_time
     message.status = observation.status.value
     message.failure_code = observation.failure_code or ""
     message.failure_message = observation.failure_message or ""
@@ -215,10 +221,15 @@ def observation_to_msg(observation: PerceptionObservation) -> PerceptionObservat
 
 def observation_from_msg(message: PerceptionObservationMsg) -> PerceptionObservation:
     coverage = from_wire(json.loads(message.coverage_json)) if message.coverage_json else {"absence_means_free_space": False}
+    capture, processed = time_to_float(message.capture_time), time_to_float(message.processed_time)
+    if message.has_exact_source_times:
+        if float_to_time(message.exact_capture_time_s) != message.capture_time or float_to_time(message.exact_processed_time_s) != message.processed_time:
+            raise ValueError("exact source timestamps disagree with ROS Time")
+        capture, processed = message.exact_capture_time_s, message.exact_processed_time_s
     return PerceptionObservation(
         message.schema_version, message.observation_id, message.source_epoch,
-        int(message.source_sequence), time_to_float(message.capture_time),
-        time_to_float(message.processed_time), message.clock_domain, message.provider,
+        int(message.source_sequence), capture,
+        processed, message.clock_domain, message.provider,
         message.upstream_commit, message.model_identity, message.config_identity,
         message.status, message.failure_code or None, message.failure_message or None,
         tuple(cargo_from_msg(item) for item in message.cargo),

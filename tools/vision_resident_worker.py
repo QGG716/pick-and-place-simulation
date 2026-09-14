@@ -78,9 +78,9 @@ class ResidentRuntime:
         self.output_root = args.output_root.resolve()
         self.output_root.mkdir(parents=True, exist_ok=True)
         if not args.allow_model_download and (
-            not Path(args.sam_model).is_dir() or not Path(args.moge_model).is_file()
+            not Path(args.sam_model).is_dir() or (args.comparison and (not args.moge_model or not Path(args.moge_model).is_file()))
         ):
-            raise RuntimeError("MODEL_MISSING:offline worker requires local SAM and MoGe weights")
+            raise RuntimeError("MODEL_MISSING:offline worker requires SAM; comparison additionally requires MoGe")
 
         import torch
         if not torch.cuda.is_available():
@@ -91,7 +91,7 @@ class ResidentRuntime:
             "pinned_sam_from_generated_boxes",
             self.upstream / "pipeline/segmentation/sam_from_generated_boxes.py",
         )
-        self.moge_entry = load_module(
+        self.moge_entry = None if not args.comparison else load_module(
             "pinned_infer_moge_pointmap",
             self.upstream / "pipeline/geometry/infer_moge_pointmap.py",
         )
@@ -99,14 +99,16 @@ class ResidentRuntime:
 
         load_started = perf_counter()
         from transformers import SamModel, SamProcessor
-        from moge.model.v2 import MoGeModel
         self.sam_processor = SamProcessor.from_pretrained(
             args.sam_model, local_files_only=not args.allow_model_download,
         )
         self.sam_model = SamModel.from_pretrained(
             args.sam_model, local_files_only=not args.allow_model_download,
         ).to("cuda").eval()
-        self.moge_model = MoGeModel.from_pretrained(args.moge_model).to("cuda").eval()
+        self.moge_model = None
+        if args.comparison:
+            from moge.model.v2 import MoGeModel
+            self.moge_model = MoGeModel.from_pretrained(args.moge_model).to("cuda").eval()
         torch.cuda.synchronize()
         self.model_load_seconds = perf_counter() - load_started
         self.startup_seconds = perf_counter() - started
@@ -292,6 +294,26 @@ class ResidentRuntime:
             "--faces-dir", str(faces_dir),
         ], run_dir, timings, samples)
 
+        if not self.args.comparison:
+            artifacts = {p.name: {"path": str(p), "sha256": sha256(p)} for p in (sam_image, masks, instances, faces_json)}
+            config = {
+                "mode": "RGBD_PRIMARY_2D_PREREQUISITES", "comparison": False,
+                "sam_model": self.args.sam_model, "sam_revision": self.args.sam_revision,
+                "proposal_sha256": sha256(proposal), "input_sha256": input_hash,
+                "capture_frame": frame_data, "result_cache_reused": False,
+                "upstream_sha": self.upstream_commit,
+            }
+            timings["request_total"] = perf_counter() - request_started
+            metrics_path = run_dir / "metrics.json"
+            metrics_path.write_text(json.dumps({"config": config, "artifacts": artifacts, "timings_seconds": timings, "logs": logs}, indent=2))
+            return {
+                "schema_version": SCHEMA_VERSION, "request_id": request_id,
+                "worker_epoch": worker_epoch, "input_sha256": input_hash, "status": "COMPLETE",
+                "mode": "RGBD_PRIMARY_2D_PREREQUISITES",
+                "metrics_reference": {"path": str(metrics_path), "sha256": sha256(metrics_path)},
+                "stage_timings_seconds": timings,
+            }
+
         pointmap = run_dir / "moge2_pointmap.npz"
         self._moge(source, pointmap, run_dir / "moge.log", timings, samples)
         logs["moge"] = {"path": str(run_dir / "moge.log"), "sha256": sha256(run_dir / "moge.log"), "returncode": 0}
@@ -380,7 +402,8 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--sam-model", required=True)
     result.add_argument("--sam-model-id", default="facebook/sam-vit-base")
     result.add_argument("--sam-revision", default="70c1a07f894ebb5b307fd9eaaee97b9dfc16068f")
-    result.add_argument("--moge-model", required=True)
+    result.add_argument("--comparison", action="store_true", help="Explicitly run the historical monocular MoGe comparison")
+    result.add_argument("--moge-model")
     result.add_argument("--moge-model-id", default="Ruicheng/moge-2-vits-normal")
     result.add_argument("--moge-revision", default="26b477f41595707c5db6770294c0d1721e8ed4ed")
     result.add_argument("--num-tokens", type=int, default=1800)

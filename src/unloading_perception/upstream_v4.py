@@ -24,7 +24,7 @@ REGISTERED_JOINT_FACE = "joint_sam_registered_depth_multiplane_pnp"
 UPSTREAM_JOINT_FACE = "joint_sam_depth_multiplane_pnp"
 
 
-def prepare_registered_depth_baseline(payload: Mapping[str, Any]) -> dict[str, Any]:
+def prepare_registered_depth_baseline(payload: Mapping[str, Any], *, verified_metric_source: bool = False) -> dict[str, Any]:
     """Translate direct metric-depth faces for the pinned worker selector.
 
     V4 at the pinned SHA selects faces by the historical literal
@@ -37,7 +37,7 @@ def prepare_registered_depth_baseline(payload: Mapping[str, Any]) -> dict[str, A
     for record in prepared.get("instances", ()):  # type: ignore[union-attr]
         for face in record.get("camera_facing_faces", ()):
             evidence = face.get("evidence")
-            if evidence in {REGISTERED_DEPTH_FACE, UPSTREAM_SELECTOR_FACE}:
+            if evidence == REGISTERED_DEPTH_FACE or (verified_metric_source and evidence == UPSTREAM_SELECTOR_FACE):
                 face["adapter_source_evidence"] = REGISTERED_DEPTH_FACE
                 face["evidence"] = UPSTREAM_SELECTOR_FACE
     prepared["v4_adapter_input"] = {
@@ -47,6 +47,30 @@ def prepare_registered_depth_baseline(payload: Mapping[str, Any]) -> dict[str, A
         "physical_source_evidence": REGISTERED_DEPTH_FACE,
     }
     return prepared
+
+
+def prepare_metric_multiplane_input(payload: Mapping[str, Any], *, verified_metric_source: bool) -> dict[str, Any]:
+    """Select all datum fields together, before silhouette anchoring."""
+    if not verified_metric_source:
+        raise ValueError("metric pointmap provenance must be verified")
+    from .final_geometry import coherent_cuboid
+    result = deepcopy(dict(payload))
+    for record in result.get("instances", []):
+        if "unanchored_corners_3d" in record:
+            for key in ("corners_3d", "corners_2d", "camera_facing_faces"):
+                if "unanchored_" + key not in record:
+                    raise ValueError("incomplete unanchored geometry version")
+                record[key] = deepcopy(record["unanchored_" + key])
+        try:
+            center, axes, dimensions, _ = coherent_cuboid(record["corners_3d"])
+            record.update(center_3d=center.tolist(), orthogonal_axes_3d=axes.tolist(), shape_dimensions=dimensions.tolist())
+        except (KeyError, ValueError):
+            record['accepted'] = False
+            record['multiplane_input_rejection'] = 'INCOHERENT_METRIC_CUBOID'
+        for key in list(record):
+            if key.startswith('unanchored_'):
+                del record[key]
+    return prepare_registered_depth_baseline(result, verified_metric_source=True)
 
 
 def finalize_registered_depth_result(payload: Mapping[str, Any]) -> dict[str, Any]:
@@ -61,6 +85,7 @@ def finalize_registered_depth_result(payload: Mapping[str, Any]) -> dict[str, An
         plane_pair = record.get("orthogonal_plane_pair_diagnostics", {})
         if (
             int(record.get("depth_supported_face_count", record.get("visible_plane_count", 0))) >= 2
+            and record.get("multiplane_refinement_status") != "joint_sam_silhouette+depth_faces+fixed_intrinsics_pnp"
             and plane_pair.get("reliable") is True
             and len(record.get("unanchored_corners_3d", ())) == 8
         ):
@@ -94,7 +119,7 @@ def finalize_registered_depth_result(payload: Mapping[str, Any]) -> dict[str, An
             if evidence == UPSTREAM_JOINT_FACE:
                 face["evidence"] = REGISTERED_JOINT_FACE
                 face["depth_source"] = "REGISTERED_METRIC_DEPTH"
-            elif evidence == UPSTREAM_SELECTOR_FACE or face.get("adapter_source_evidence") == REGISTERED_DEPTH_FACE:
+            elif face.get("adapter_source_evidence") == REGISTERED_DEPTH_FACE:
                 face["evidence"] = REGISTERED_DEPTH_FACE
                 face["depth_source"] = "REGISTERED_METRIC_DEPTH"
             if face.get("evidence") in {REGISTERED_DEPTH_FACE, REGISTERED_JOINT_FACE, "registered_sam_visible_face"}:

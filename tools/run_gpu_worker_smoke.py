@@ -54,6 +54,8 @@ def create_backend_and_frame(args, *, resident: bool = False):
         "--moge-model-id", model_manifest["moge"]["repository"],
         "--moge-revision", model_manifest["moge"]["revision"],
     )
+    if resident:
+        command += ("--comparison",)
     backend = CargoPipelineBackend(
         command, cwd=ROOT, timeout_seconds=args.timeout, worker_epoch=f"smoke-{uuid4()}",
         allowed_roots=(vision_root, ROOT, args.output_root.resolve(), args.model_manifest.parent.resolve()),

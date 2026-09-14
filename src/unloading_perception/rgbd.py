@@ -612,6 +612,7 @@ def hypotheses_from_geometry_record(
     plane_pair = record.get("orthogonal_plane_pair_diagnostics", {})
     if (
         source is not MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE
+        and record.get("geometry_version") != "FINAL_METRIC_VALIDATED_V1"
         and surfaces >= 2
         and plane_pair.get("reliable") is True
         and len(record.get("unanchored_corners_3d", ())) == 8
@@ -667,6 +668,8 @@ def hypotheses_from_geometry_record(
         base_reasons.append("MONOCULAR_SCALE_UNVERIFIED")
     if not record.get("uncertainty"):
         base_reasons.append("GEOMETRY_UNCERTAINTY_INCOMPLETE")
+    if record.get("complete_observability") == "UNRESOLVED_PHYSICAL_BOUNDARIES":
+        base_reasons.append("PHYSICAL_BOUNDARIES_AND_HIDDEN_VOLUME_UNRESOLVED")
     evidence = {
         "pointmap_source": source.value,
         "algorithm": "PINNED_PLANE_ORTHOGONAL_CUBOID_RECOVERY",

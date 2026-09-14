@@ -98,12 +98,12 @@ def observed_faces_from_geometry_record(
 
     corners = np.asarray(record.get("corners_3d", ()), dtype=float)
     faces = []
-    plane_counts = tuple(int(value) for value in record.get("plane_inlier_counts", ()))
-    overall_support = min(1.0, max(0.0, float(record.get("plane_inlier_ratio", 0.0))))
-    residual = max(0.0, float(record.get("plane_residual_mean", 0.0)))
     for ordinal, source_face in enumerate(record.get("camera_facing_faces", ())):
         evidence = str(source_face.get("evidence", ""))
         if evidence not in DIRECT_FACE_EVIDENCE:
+            continue
+        support = source_face.get("final_support", {})
+        if support.get("status") != "PASS" or support.get("point_support_count", 0) <= 0:
             continue
         indices = tuple(int(value) for value in source_face.get("corner_indices", ()))
         boundary = tuple(tuple(float(value) for value in point) for point in source_face.get("corners_2d", ()))
@@ -111,15 +111,15 @@ def observed_faces_from_geometry_record(
             continue
         points = corners[np.asarray(indices)]
         normal, offset = _face_plane(points)
-        axis = int(source_face.get("axis_index", -1))
-        support_count = plane_counts[axis] if 0 <= axis < len(plane_counts) else 0
+        support_count = int(support["point_support_count"])
         faces.append(ObservedFace(
-            f"{source_instance_id}:face:{ordinal}", indices, boundary,
+            f"{module_id}/{capture_id}/{source_instance_id}:face:{ordinal}", indices, boundary,
             tuple(tuple(float(value) for value in point) for point in points),
-            normal, offset, support_count, overall_support, residual, evidence, frame_id,
+            normal, offset, support_count, float(support["point_support_ratio"]), float(support["plane_residual_m"]), evidence, frame_id,
             {
                 key: source_face[key] for key in (
-                    "mask_precision", "mask_coverage", "mask_iou", "metrics_before_joint_refinement"
+                    "mask_precision", "mask_coverage", "mask_iou", "metrics_before_joint_refinement",
+                    "final_support", "boundary_kind", "physical_corners_certified"
                 ) if key in source_face
             },
         ))
@@ -130,7 +130,7 @@ def observed_faces_from_geometry_record(
             if len(common) == 2:
                 shared.append((first.face_id, second.face_id, common))
     complete_status = (
-        "SUFFICIENT_MULTIFACE_EVIDENCE" if len(faces) >= 2
+        "MULTIFACE_OBSERVED_VOLUME_UNRESOLVED" if len(faces) >= 2
         else "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR" if len(faces) == 1
         else "NO_CERTIFIED_OBSERVED_FACE"
     )

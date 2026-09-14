@@ -87,6 +87,10 @@ def _cuboid_symmetry_orientation_error_degrees(
 
 def _proposal_identity(item: CargoObservation) -> str | None:
     raw = item.raw_result
+    lineage = raw.get("instance_lineage")
+    if lineage is not None:
+        identities = lineage["evaluation_entity_ids"]
+        return identities[0] if lineage["identity_status"] == "RESOLVED" and len(identities) == 1 else None
     for name in ("oracle_proposal_source_id", "simulation_object_id", "source_instance_id"):
         value = raw.get(name) if hasattr(raw, "get") else None
         if value:
@@ -121,6 +125,9 @@ def match_observations(
             continue
         for prediction_index, prediction in enumerate(predictions):
             if prediction_index in used_predictions:
+                continue
+            if "instance_lineage" in prediction.raw_result:
+                # Never replace missing/conflicting source identity with a GT search.
                 continue
             score = bbox_iou(truth.bbox_xyxy, prediction.bbox_xyxy)
             if score >= minimum_bbox_iou:

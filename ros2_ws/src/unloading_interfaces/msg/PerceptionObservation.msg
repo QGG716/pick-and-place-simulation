@@ -16,3 +16,8 @@ bool synthetic
 unloading_interfaces/CargoObservation[] cargo
 unloading_interfaces/UnknownRegion[] unknown_regions
 string coverage_json
+# Preserve source double timestamps through nanosecond ROS transport without
+# rewriting capture history. Exact values must quantize to the Time fields.
+bool has_exact_source_times
+float64 exact_capture_time_s
+float64 exact_processed_time_s

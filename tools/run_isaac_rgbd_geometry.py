@@ -8,7 +8,7 @@ recovery with explicit registered-depth provenance.
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import hashlib
 import json
 from pathlib import Path
@@ -34,6 +34,8 @@ from unloading_perception.observed_faces import (  # noqa: E402
     observed_faces_from_geometry_record, transform_observed_face_set,
 )
 from unloading_perception.fusion import ModuleFaceBatch, fuse_module_face_batches  # noqa: E402
+from unloading_perception.lineage import load_instance_lineage  # noqa: E402
+from unloading_perception.final_geometry import validate_final_record  # noqa: E402
 from unloading_perception.rgbd import (  # noqa: E402
     CaptureMetadata, MetricPointMap, MetricPointMapSource, PointCloudFilterConfig,
     filter_registered_instance_depth, hypotheses_from_geometry_record, masked_metric_pointmap, register_rgbd,
@@ -65,7 +67,12 @@ def _worker_artifacts(scene_dir: Path) -> dict:
     if response.get("status") != "COMPLETE":
         raise RuntimeError(f"Mode C worker response is incomplete for {scene_dir.name}")
     metrics = json.loads(Path(response["metrics_reference"]["path"]).read_text(encoding="utf-8"))
-    return metrics["artifacts"]
+    artifacts = metrics["artifacts"]
+    for name in ("cargo_masks.npz", "cargo_instances.json", "box_geometry_2d.json"):
+        item = artifacts[name]
+        if sha256(Path(item["path"])) != item["sha256"]:
+            raise ValueError(f"worker artifact digest mismatch: {name}")
+    return artifacts
 
 
 def _camera_for_frame(manifest: IsaacSceneManifest, frame_id: str) -> dict:
@@ -171,25 +178,33 @@ def _observation(
     masks_path: Path,
     proposals: dict,
     elapsed: float,
+    *, validate_geometry: bool = True,
 ) -> tuple[PerceptionObservation, dict[str, np.ndarray], dict[str, tuple], tuple]:
-    proposal_by_id = {int(item["id"]): item for item in proposals["instances"]}
-    mask_archive = np.load(masks_path, allow_pickle=False)
-    masks_by_id = {
-        str(int(mask_id)): mask_archive["masks"][index].astype(bool)
-        for index, mask_id in enumerate(mask_archive["mask_ids"])
-    }
     metadata = CaptureMetadata.from_dict(json.loads((Path(proposals["_scene_dir"]) / "capture_metadata.json").read_text(encoding="utf-8")))
     camera = next(item for item in manifest.cameras if str(item["frame_id"]) == metadata.rgb_frame_id)
     module_id = str(camera.get("module_id", metadata.rgb_frame_id.removesuffix("_rgb_optical")))
+    if not np.allclose(metadata.T_W_C_at_capture, camera["T_W_C"], atol=1e-9, rtol=0):
+        raise ValueError("CAPTURE_TF_DIFFERS_FROM_BOUND_MANIFEST")
+    scene_dir = Path(proposals["_scene_dir"])
+    lineage = load_instance_lineage(
+        masks_path, masks_path.parent / "cargo_instances.json", proposals, geometry_payload,
+        sensor_epoch=metadata.sensor_epoch, module_id=module_id, capture_id=metadata.capture_id,
+        source_path=scene_dir / "sensor_rgb.png", proposal_path=scene_dir / "oracle_proposals.json",
+    )
+    masks_by_id = {item.identity: item.mask for item in lineage.values()}
+    records = {int(item["mask_id"]): item for item in geometry_payload["instances"]}
     cargo = []
     unknown = []
     hypothesis_groups = {}
     observed_face_sets = []
-    for record in geometry_payload["instances"]:
-        mask_id = int(record["mask_id"])
-        source_id = str(mask_id)
-        proposal = proposal_by_id.get(mask_id, {})
-        bbox = tuple(float(value) for value in proposal.get("bbox", (0.0, 0.0, 1.0, 1.0)))
+    depth = np.load(scene_dir / "metric_depth_m.npy", allow_pickle=False) if validate_geometry else None
+    for mask_id, item in sorted(lineage.items()):
+        record = records.get(mask_id, {"mask_id": mask_id, "accepted": False})
+        source_id = item.identity
+        proposal = item.proposal
+        bbox = tuple(float(value) for value in proposal["bbox"])
+        if validate_geometry:
+            record = validate_final_record(record, depth, item.mask, camera["K"])
         observed_camera = observed_faces_from_geometry_record(
             record, source_instance_id=source_id, module_id=module_id,
             capture_id=metadata.capture_id, capture_time=metadata.capture_center_time,
@@ -202,7 +217,7 @@ def _observation(
             hypotheses = hypotheses_from_geometry_record(
                 record, source_instance_id=source_id,
                 pointmap_source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,
-                presence_score=float(proposal.get("score", 1.0)),
+                presence_score=float(item.sam["validation_score"]),
                 camera_frame=metadata.rgb_frame_id,
             )
         except ValueError as exc:
@@ -218,12 +233,12 @@ def _observation(
             reasons = tuple(selected.eligibility_reasons)
             cargo.append(CargoObservation(
                 source_instance_id=source_id,
-                object_id=str(proposal.get("simulation_object_id")) if proposal.get("simulation_object_id") else None,
+                object_id=None,
                 track_id=None,
                 category=str(proposal.get("label", "box")),
                 bbox_xyxy=bbox,
-                mask_reference=ResourceReference(masks_path.resolve().as_uri() + f"#{source_id}", sha256(masks_path), "application/x-npz; array=bool"),
-                detection_score=1.0,
+                mask_reference=ResourceReference(masks_path.resolve().as_uri() + f"#mask_id={mask_id}", sha256(masks_path), "application/x-npz; array=bool"),
+                detection_score=None,
                 contour_score=None,
                 reprojection_score=float(record.get("mask_reprojection_iou", 0.0)),
                 geometry_error_m=selected.plane_residual_m,
@@ -240,9 +255,8 @@ def _observation(
                 candidate_eligible=selected.candidate_eligible,
                 eligibility_reasons=reasons,
                 raw_result={
-                    "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
-                    "oracle_proposal_source_id": proposal.get("simulation_object_id"),
-                    "simulation_object_id": proposal.get("simulation_object_id"),
+                    "instance_lineage": item.audit,
+                    "final_face_validation": record.get("final_face_validation", []),
                     "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
                     "hypothesis_count": len(world_hypotheses),
                     "hypotheses": [_hypothesis_dict(item) for item in world_hypotheses],
@@ -265,12 +279,12 @@ def _observation(
                 geometry_validity = Validity.INVALID
             cargo.append(CargoObservation(
                 source_instance_id=source_id,
-                object_id=str(proposal.get("simulation_object_id")) if proposal.get("simulation_object_id") else None,
+                object_id=None,
                 track_id=None,
                 category=str(proposal.get("label", "box")),
                 bbox_xyxy=bbox,
-                mask_reference=ResourceReference(masks_path.resolve().as_uri() + f"#{source_id}", sha256(masks_path), "application/x-npz; array=bool"),
-                detection_score=1.0,
+                mask_reference=ResourceReference(masks_path.resolve().as_uri() + f"#mask_id={mask_id}", sha256(masks_path), "application/x-npz; array=bool"),
+                detection_score=None,
                 contour_score=None,
                 reprojection_score=None,
                 geometry_error_m=None,
@@ -287,6 +301,7 @@ def _observation(
                 candidate_eligible=False,
                 eligibility_reasons=reasons,
                 raw_result={
+                    "instance_lineage": item.audit,
                     "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH", "record": record,
                     "observed_face_set": observed_world.to_dict(),
                     "complete_cuboid_status": observed_world.complete_cuboid_status,
@@ -294,6 +309,17 @@ def _observation(
                 },
             ))
             unknown.append(UnknownRegion(f"rgbd-{source_id}", metadata.rgb_frame_id, reasons[0], bbox))
+        surfaces = tuple({
+            **face.to_dict(), "schema_version": "observed_surface_v1",
+            "module_id": module_id, "capture_id": metadata.capture_id,
+            "source_instance_id": source_id, "sensor_epoch": metadata.sensor_epoch,
+            "capture_time": metadata.capture_center_time, "clock_domain": metadata.clock_domain,
+            "calibration_identity": metadata.calibration_identity,
+            "T_W_C_at_capture": metadata.T_W_C_at_capture,
+            "volume_status": "UNKNOWN", "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD",
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+        } for face in observed_world.faces)
+        cargo[-1] = replace(cargo[-1], observed_surfaces=surfaces)
     observation = PerceptionObservation(
         SCHEMA_VERSION, f"rgbd-{scene}-{metadata.capture_id}", metadata.sensor_epoch,
         metadata.frame_sequence, metadata.capture_center_time, metadata.capture_center_time + elapsed,
@@ -305,6 +331,9 @@ def _observation(
             "mode": "STAGED_RGBD", "role": "PRIMARY", "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
             "detector_metrics": "NOT_EVALUATED", "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
             "capture_id": metadata.capture_id, "absence_means_free_space": False,
+            "module_binding": {"module_id": module_id, "capture_id": metadata.capture_id,
+                               "calibration_identity": metadata.calibration_identity,
+                               "T_W_C_at_capture": metadata.T_W_C_at_capture},
         },
         False,
     )
@@ -351,22 +380,19 @@ def _run_secondary_module(
     completed = subprocess.run(base_command, cwd=vision_root, text=True, capture_output=True, timeout=timeout)
     if completed.returncode != 0:
         raise RuntimeError(f"registered RGB-D baseline failed for {scene}/{module_dir.name}: {completed.stderr[-1000:]}")
-    baseline_json = module_dir / "rgbd_cuboids_v4_input.json"
-    write_json(baseline_json, prepare_registered_depth_baseline(json.loads(raw_json.read_text(encoding="utf-8"))))
-    worker_json = module_dir / "rgbd_cuboids_v4_worker.json"
+    from metric_v4_runner import run_metric_v4
+    metadata = CaptureMetadata.from_dict(json.loads((module_dir / "capture_metadata.json").read_text()))
+    camera = _camera_for_frame(manifest, metadata.rgb_frame_id)
     geometry_json = module_dir / "rgbd_cuboids.json"
-    geometry_image = module_dir / "rgbd_cuboids.png"
-    command = build_upstream_v4_command(
-        upstream_python, vision_root, source=module_dir / "sensor_rgb.png", masks=masks_path,
-        pointmap=pointmap_path, baseline=baseline_json, fallback=baseline_json,
-        json_output=worker_json, image_output=geometry_image,
+    geometry_image = module_dir / "v4_validation/worker.png"
+    geometry = run_metric_v4(
+        raw=json.loads(raw_json.read_text()), source=module_dir / "sensor_rgb.png",
+        masks=masks_path, pointmap=pointmap_path,
+        depth=np.load(module_dir / "metric_depth_m.npy", allow_pickle=False),
+        K=camera["K"], metadata=metadata, output=module_dir / "v4_validation",
+        vision_root=vision_root, python=upstream_python, timeout=timeout,
     )
-    validate_upstream_v4_command(command, vision_root)
-    completed = subprocess.run(command, cwd=vision_root, text=True, capture_output=True, timeout=timeout)
     elapsed = perf_counter() - started
-    if completed.returncode != 0:
-        raise RuntimeError(f"observed-face V4 failed for {scene}/{module_dir.name}: {completed.stderr[-1000:]}")
-    geometry = finalize_registered_depth_result(json.loads(worker_json.read_text(encoding="utf-8")))
     geometry["method"] = "registered_metric_depth+pinned_planes+upstream_v4_joint_observed_faces"
     write_json(geometry_json, geometry)
     proposals = json.loads((module_dir / "oracle_proposals.json").read_text(encoding="utf-8"))
@@ -404,13 +430,14 @@ def main() -> int:
     parser.add_argument("--vision-root", required=True, type=Path)
     parser.add_argument("--upstream-python", required=True, type=Path)
     parser.add_argument("--timeout", type=float, default=1200.0)
+    parser.add_argument("--comparison", action="store_true")
     args = parser.parse_args()
     capture_root = args.capture_directory.resolve()
     bundle_root = args.bundle_directory.resolve()
     vision_root = args.vision_root.resolve()
     index = json.loads((bundle_root / "index.json").read_text(encoding="utf-8"))
     config = json.loads(json.dumps(__import__("yaml").safe_load((ROOT / "configs/isaac/perception_validation.yaml").read_text(encoding="utf-8"))))
-    mode_c = json.loads((capture_root / "mode_c_moge_summary.json").read_text(encoding="utf-8"))
+    mode_c = json.loads((capture_root / "mode_c_moge_summary.json").read_text(encoding="utf-8")) if args.comparison else {"scenes": []}
     mode_c_by_scene = {item["scene"]: item for item in mode_c["scenes"]}
     results = []
     ordered_records = sorted(
@@ -443,24 +470,16 @@ def main() -> int:
         if completed.returncode != 0:
             raise RuntimeError(f"registered RGB-D baseline recovery failed for {scene}: {completed.stderr[-1000:]}")
         baseline = json.loads(baseline_raw_json.read_text(encoding="utf-8"))
-        prepared_baseline = prepare_registered_depth_baseline(baseline)
-        baseline_json = scene_dir / "rgbd_cuboids_v4_input.json"
-        write_json(baseline_json, prepared_baseline)
-        geometry_worker_json = scene_dir / "rgbd_cuboids_v4_worker.json"
+        from metric_v4_runner import run_metric_v4
         geometry_json = scene_dir / "rgbd_cuboids.json"
-        geometry_image = scene_dir / "rgbd_cuboids.png"
-        command = build_upstream_v4_command(
-            args.upstream_python, vision_root,
-            source=scene_dir / "sensor_rgb.png", masks=masks_path, pointmap=pointmap_path,
-            baseline=baseline_json, fallback=baseline_json,
-            json_output=geometry_worker_json, image_output=geometry_image,
+        geometry_image = scene_dir / "v4_validation/worker.png"
+        geometry = run_metric_v4(
+            raw=baseline, source=scene_dir / "sensor_rgb.png", masks=masks_path,
+            pointmap=pointmap_path, depth=np.load(scene_dir / "metric_depth_m.npy", allow_pickle=False),
+            K=primary_camera["K"], metadata=primary_metadata, output=scene_dir / "v4_validation",
+            vision_root=vision_root, python=args.upstream_python, timeout=args.timeout,
         )
-        validate_upstream_v4_command(command, vision_root)
-        completed = subprocess.run(command, cwd=vision_root, text=True, capture_output=True, timeout=args.timeout)
         elapsed = perf_counter() - started
-        if completed.returncode != 0:
-            raise RuntimeError(f"registered RGB-D observed-face V4 recovery failed for {scene}: {completed.stderr[-1000:]}")
-        geometry = finalize_registered_depth_result(json.loads(geometry_worker_json.read_text(encoding="utf-8")))
         geometry["method"] = "registered_metric_depth+pinned_planes+upstream_v4_joint_observed_faces"
         write_json(geometry_json, geometry)
         proposals = json.loads((scene_dir / "oracle_proposals.json").read_text(encoding="utf-8"))
@@ -523,7 +542,7 @@ def main() -> int:
             "oracle_identity_used": False,
         }
         write_json(scene_dir / "multimodule_fusion_metrics.json", fusion_metrics)
-        mode_c_scene = mode_c_by_scene[scene]
+        mode_c_scene = mode_c_by_scene.get(scene, {})
         comparison = {
             "scene": scene,
             "rgbd": {
@@ -533,10 +552,11 @@ def main() -> int:
                 "dimension_relative_error": report["mean_per_axis_dimension_relative_error"],
             },
             "moge": {
-                "center_error_m": mode_c_scene["mean_center_translation_error_m"],
-                "orientation_error_deg": mode_c_scene["mean_orientation_angular_error_deg"],
-                "dimension_abs_error_m": _scalar_mean(mode_c_scene["mean_full_dimension_abs_error_m"]),
-                "dimension_relative_error": mode_c_scene["mean_per_axis_dimension_relative_error"],
+                "status": "EVALUATED" if args.comparison else "NOT_REQUESTED",
+                "center_error_m": mode_c_scene.get("mean_center_translation_error_m"),
+                "orientation_error_deg": mode_c_scene.get("mean_orientation_angular_error_deg"),
+                "dimension_abs_error_m": _scalar_mean(mode_c_scene.get("mean_full_dimension_abs_error_m")),
+                "dimension_relative_error": mode_c_scene.get("mean_per_axis_dimension_relative_error"),
             },
             "hypothesis_count": sum(len(items) for items in hypothesis_groups.values()),
             "ambiguous_instance_count": sum(len(items) > 1 for items in hypothesis_groups.values()),
@@ -597,6 +617,9 @@ def main() -> int:
             segmentation = cv2.addWeighted(segmentation, 0.60, layer, 0.40, 0.0)
             cv2.imwrite(str(capture_root / "10_segmentation.png"), segmentation)
             cv2.imwrite(str(capture_root / "11_rgbd_cuboids.png"), cv2.imread(str(geometry_image)))
+            if not args.comparison:
+                _top_view(capture_root / "14_world_topview_cuboids.png", observation)
+                continue
             moge_image = cv2.imread(str(Path(artifacts["final_instance_aware.jpg"]["path"])))
             cv2.imwrite(str(capture_root / "12_moge_cuboids.png"), moge_image)
             size = (1280, 720)
@@ -611,7 +634,7 @@ def main() -> int:
         "schema_version": "rgbd_vs_moge_summary_v1",
         "status": "PASS",
         "primary_mode": "STAGED_RGBD",
-        "comparison_mode": "STAGED_MONOCULAR_MOGE",
+        "comparison_mode": "STAGED_MONOCULAR_MOGE" if args.comparison else "DISABLED",
         "proposal_source": "ISAAC_GT_ORACLE_PROPOSAL",
         "detector_metrics": "NOT_EVALUATED",
         "calibration_gate": "PASS",

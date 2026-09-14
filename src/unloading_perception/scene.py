@@ -239,6 +239,7 @@ class SnapshotAssembler:
                 "association_status": item.association_status,
                 "occluded": item.occluded,
                 "raw_result": item.raw_result,
+                "observed_surfaces": item.observed_surfaces,
             } for item in self.update.accepted_obstacles),
             "unknown_regions": tuple({"region_id": item.region_id, "frame_id": item.frame_id, "reason": item.reason, "bbox_xyxy": item.bbox_xyxy} for item in self.update.unknown_regions),
             "planning_admissible": self.update.planning_admissible,

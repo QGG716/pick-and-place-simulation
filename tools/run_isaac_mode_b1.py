@@ -159,6 +159,7 @@ def main() -> int:
     if not args.reuse_existing:
         command = [
             str(args.gpu_python), str(ROOT / "tools/vision_resident_worker.py"),
+            "--comparison",
             "--upstream-root", str(vision_root), "--output-root", str(worker_root),
             "--input-root", str(capture_root), "--input-root", str(vision_root),
             "--sam-model", str(model_manifest["sam"]["snapshot_path"]),

@@ -36,3 +36,6 @@ bool occluded
 string association_status
 string face_evidence_json
 string raw_result_json
+# Additive observed_surface_v1 contract: measured world patches, source lineage,
+# support and UNKNOWN volume. Separate from debug raw_result_json.
+string observed_surfaces_json

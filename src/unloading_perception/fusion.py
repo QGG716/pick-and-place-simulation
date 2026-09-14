@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
+import json
 from math import exp, isfinite
 from typing import Sequence
 
@@ -59,12 +61,38 @@ def _face_distance(first: ObservedFace, second: ObservedFace) -> tuple[float, fl
     left = np.asarray(first.corners_3d_m, dtype=float)
     right = np.asarray(second.corners_3d_m, dtype=float)
     normal_alignment = abs(float(np.dot(first.plane_normal, second.plane_normal)))
-    plane_distance = abs(float(first.plane_offset_m - second.plane_offset_m))
+    sign = 1.0 if np.dot(first.plane_normal, second.plane_normal) >= 0 else -1.0
+    plane_distance = abs(float(first.plane_offset_m - sign * second.plane_offset_m))
     corner_distance = max(
         float(np.max(np.min(np.linalg.norm(left[:, None, :] - right[None, :, :], axis=2), axis=1))),
         float(np.max(np.min(np.linalg.norm(right[:, None, :] - left[None, :, :], axis=2), axis=1))),
     )
     return normal_alignment, plane_distance, corner_distance
+
+
+def _overlap(first: ObservedFace, second: ObservedFace) -> float:
+    """Convex intersection / smaller patch area, in their common plane."""
+    p=np.asarray(first.corners_3d_m); q=np.asarray(second.corners_3d_m)
+    u=p[1]-p[0]; u/=np.linalg.norm(u)
+    v=np.cross(first.plane_normal,u)
+    a=np.column_stack(((p-p[0])@u,(p-p[0])@v))
+    b=np.column_stack(((q-p[0])@u,(q-p[0])@v))
+    def signed(poly):
+        if len(poly)<3: return 0.
+        poly=np.asarray(poly); return float(np.sum(poly[:,0]*np.roll(poly[:,1],-1)-poly[:,1]*np.roll(poly[:,0],-1))/2)
+    if signed(a)<0: a=a[::-1]
+    if signed(b)<0: b=b[::-1]
+    poly=list(a)
+    for start,end in zip(b,np.roll(b,-1,axis=0)):
+        previous=poly; poly=[]
+        if not previous: break
+        edge=end-start
+        def side(point): return edge[0]*(point[1]-start[1])-edge[1]*(point[0]-start[0])
+        for s,e in zip(previous,previous[1:]+previous[:1]):
+            ds,de=side(s),side(e)
+            if (ds>=0)!=(de>=0): poly.append(s+(e-s)*ds/(ds-de))
+            if de>=0: poly.append(e)
+    return abs(signed(poly))/max(1e-12,min(abs(signed(a)),abs(signed(b))))
 
 
 def _association_score(first: ObservedFaceSet, second: ObservedFaceSet) -> tuple[float, dict]:
@@ -76,20 +104,22 @@ def _association_score(first: ObservedFaceSet, second: ObservedFaceSet) -> tuple
     for left_face in first.faces:
         for right_face in second.faces:
             alignment, plane_distance, corner_distance = _face_distance(left_face, right_face)
-            if alignment >= 0.94 and plane_distance <= 0.06:
-                same_face.append((corner_distance, alignment, plane_distance))
+            overlap = _overlap(left_face, right_face)
+            if alignment >= 0.94 and plane_distance <= 0.06 and overlap >= 0.20:
+                same_face.append((overlap, alignment, plane_distance, corner_distance))
     if not same_face:
         return 0.0, {"reason": "NO_COPLANAR_OVERLAP", "center_distance_m": center_distance}
-    corner_distance, alignment, plane_distance = min(same_face)
-    score = exp(-center_distance / 0.30) * exp(-corner_distance / 0.15) * alignment
+    overlap, alignment, plane_distance, corner_distance = max(same_face)
+    score = overlap * alignment * exp(-plane_distance / .06)
     diagnostics = {
         "center_distance_m": center_distance,
         "matched_face_corner_distance_m": corner_distance,
         "normal_alignment": alignment,
         "plane_distance_m": plane_distance,
         "score": score,
+        "intersection_over_smaller_patch": overlap,
     }
-    return (score if center_distance <= 0.45 and corner_distance <= 0.20 else 0.0), diagnostics
+    return score, diagnostics
 
 
 def _merge_faces(face_sets: Sequence[ObservedFaceSet], tolerance_m: float) -> tuple[tuple[ObservedFace, ...], bool]:
@@ -101,12 +131,12 @@ def _merge_faces(face_sets: Sequence[ObservedFaceSet], tolerance_m: float) -> tu
             for retained in fused:
                 alignment, plane_distance, corner_distance = _face_distance(face, retained)
                 if alignment >= 0.94 and plane_distance <= 0.06:
-                    if corner_distance <= tolerance_m:
+                    if corner_distance <= tolerance_m and plane_distance <= .01:
                         duplicate = True
                         # Keep the higher-support actual observation; never average.
                         if face.point_support_count > retained.point_support_count:
                             fused[fused.index(retained)] = face
-                    elif corner_distance <= 0.20:
+                    elif _overlap(face, retained) >= .20 and plane_distance > .01:
                         conflict = True
                     break
             if not duplicate:
@@ -125,6 +155,10 @@ def fuse_module_face_batches(
     if not batches:
         raise ValueError("at least one module batch is required")
     modules = tuple(batch.module_id for batch in batches)
+    if not set(modules).issubset(expected_modules):
+        raise ValueError("UNKNOWN_MODULE")
+    if len({batch.frame_sequence for batch in batches}) != 1:
+        raise ValueError("MIXED_CAPTURE_GROUP")
     if len(set(modules)) != len(modules):
         raise ValueError("one batch per module is required")
     epochs = {batch.sensor_epoch for batch in batches}
@@ -136,26 +170,31 @@ def fuse_module_face_batches(
 
     groups: list[list[ObservedFaceSet]] = []
     association_diagnostics: list[dict] = []
-    for batch in sorted(batches, key=lambda item: item.module_id):
-        for face_set in batch.face_sets:
-            best_group = None
-            best_score = 0.0
-            best_diagnostics = {}
-            for group_index, group in enumerate(groups):
-                if any(item.module_id == face_set.module_id for item in group):
-                    continue
-                for existing in group:
-                    score, diagnostics = _association_score(existing, face_set)
-                    if score > best_score:
-                        best_group, best_score, best_diagnostics = group_index, score, diagnostics
-            if best_group is not None and best_score >= minimum_association_score:
-                groups[best_group].append(face_set)
-                association_diagnostics.append({
-                    "members": [(item.module_id, item.source_instance_id) for item in groups[best_group]],
-                    **best_diagnostics,
-                })
-            else:
-                groups.append([face_set])
+    values = sorted((v for b in batches for v in b.face_sets), key=lambda v:(v.module_id,v.capture_id,v.source_instance_id))
+    keys = [(v.module_id,v.capture_id,v.source_instance_id) for v in values]
+    if len(set(keys)) != len(keys): raise ValueError("DUPLICATE_INSTANCE_IN_BATCH")
+    candidates = {i:[] for i in range(len(values))}
+    for i,first in enumerate(values):
+        for j in range(i+1,len(values)):
+            if first.module_id == values[j].module_id: continue
+            score, diagnostics = _association_score(first,values[j])
+            if score >= minimum_association_score:
+                candidates[i].append((score,j,diagnostics)); candidates[j].append((score,i,diagnostics))
+    choices={}; ambiguous=set()
+    for i,options in candidates.items():
+        options.sort(key=lambda x:(-x[0],keys[x[1]]))
+        if len(options)>1 and options[0][0]-options[1][0] <= .05:
+            ambiguous.add(i)
+        elif options: choices[i]=options[0][1]
+    used=set()
+    for i,first in enumerate(values):
+        if i in used: continue
+        j=choices.get(i)
+        if j is not None and choices.get(j)==i and j not in used:
+            group=[first,values[j]]; used.update((i,j))
+            association_diagnostics.append({'members':[(v.module_id,v.source_instance_id) for v in group],**candidates[i][0][2]})
+        else: group=[first]; used.add(i)
+        groups.append(group)
 
     expected = tuple(sorted(set(str(item) for item in expected_modules)))
     received = tuple(sorted(modules))
@@ -166,8 +205,8 @@ def fuse_module_face_batches(
         contributors = tuple(sorted(item.module_id for item in group))
         members = tuple(sorted((item.module_id, item.source_instance_id) for item in group))
         objects.append(FusedObservedObject(
-            f"fused-{index:04d}", members, faces, contributors,
-            "CONFLICT_RETAINED_NO_AVERAGE" if conflict else "ASSOCIATED_BY_WORLD_FACE_GEOMETRY",
+            "fusion-" + hashlib.sha256(json.dumps([(v.module_id,v.capture_id,v.source_instance_id) for v in group]).encode()).hexdigest()[:20], members, faces, contributors,
+            "CONFLICT_RETAINED_NO_AVERAGE" if conflict else "AMBIGUOUS_RETAINED" if len(group)==1 and candidates[values.index(group[0])] else "ASSOCIATED_BY_WORLD_FACE_GEOMETRY" if len(group)>1 else "UNASSOCIATED_RETAINED",
             coverage,
             {"oracle_identity_used": False, "association_records": [
                 item for item in association_diagnostics if all(member in item["members"] for member in members)

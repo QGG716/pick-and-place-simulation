@@ -40,6 +40,7 @@ class WorldBridgeNode(Node):
         self.tracker = ObservationTracker()
         self.assembler = SnapshotAssembler()
         self.mechanism_guard = SourceEpochGuard()
+        self.algorithm_observation_guard = SourceEpochGuard()
         self.mechanism_stamp = None
         self.robot_sequence = 0
         self.mechanism_sequence = 0
@@ -61,7 +62,8 @@ class WorldBridgeNode(Node):
         self.watchdog = self.create_timer(0.1, self.check_freshness)
 
     def on_mechanism(self, message: MechanismState) -> None:
-        if message.schema_version != "1.1.0" or message.clock_domain != "ros" or not all((message.source_epoch, message.tool_state_identity, message.payload_state_identity, message.base_state_identity, message.conveyor_state_identity, message.config_identity, message.robot_model_fingerprint, message.world_model_fingerprint)):
+        expected_clock = "ros_sim_time" if self.get_parameter("use_sim_time").value else "ros"
+        if message.schema_version != "1.1.0" or message.clock_domain != expected_clock or not all((message.source_epoch, message.tool_state_identity, message.payload_state_identity, message.base_state_identity, message.conveyor_state_identity, message.config_identity, message.robot_model_fingerprint, message.world_model_fingerprint)):
             self.get_logger().error("rejecting incomplete mechanism state")
             return
         stamp = time_to_float(message.observed_time)
@@ -143,7 +145,7 @@ class WorldBridgeNode(Node):
         self.assembler.robot_state = RobotStateRevision(self.robot_sequence, positions, {
             "joint_names": names, "actual_velocities": velocities,
             "actual_efforts": tuple(message.effort),
-        }, sample_time=stamp, clock_domain="ros", source="joint_states")
+        }, sample_time=stamp, clock_domain="ros_sim_time" if self.get_parameter("use_sim_time").value else "ros", source="joint_states")
         if content_changed or was_stale:
             self._commit_snapshot("robot")
 
@@ -183,7 +185,15 @@ class WorldBridgeNode(Node):
     def on_observation(self, message: PerceptionObservation) -> None:
         try:
             observation = self._transform_observation(observation_from_msg(message))
-            tracked = self.tracker.update(observation)
+            if observation.provider == "registered-rgbd-fused-algorithm":
+                from unloading_perception.algorithm_handoff import validate_algorithm_capture
+                validate_algorithm_capture(observation)
+                self.algorithm_observation_guard.accept(observation.source_epoch, observation.source_sequence, restart=bool(observation.coverage.get("source_restart", False)))
+                # Cross-camera image bboxes are incomparable. These fusion IDs
+                # remain frame-local until a world-space tracker is available.
+                tracked = observation.cargo
+            else:
+                tracked = self.tracker.update(observation)
         except (ValueError, TypeError) as exc:
             self.get_logger().error(f"rejecting invalid perception observation: {exc}")
             return

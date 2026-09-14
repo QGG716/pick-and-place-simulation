@@ -32,17 +32,19 @@ case "$WORKER_MODE" in
   one-shot)
     WORKER_ENTRY="$ROOT/tools/vision_worker_entry.py"
     RESIDENT_ARGS=()
+    COMPARISON_ARG=""
     ;;
   resident)
     WORKER_ENTRY="$ROOT/tools/vision_resident_worker.py"
     RESIDENT_ARGS=(-p worker_resident:=true)
+    COMPARISON_ARG=",'--comparison'"
     ;;
   *)
     echo "WORKER_MODE must be one-shot or resident" >&2
     exit 2
     ;;
 esac
-WORKER_COMMAND="['$GPU_VENV/bin/python','$WORKER_ENTRY','--upstream-root','$VISION_ROOT','--proposal-json','$PROPOSALS','--person-masks','$PEOPLE','--output-root','$RUN/worker-runs','--input-root','$VISION_ROOT','--sam-model','$SAM_MODEL','--moge-model','$MOGE_MODEL']"
+WORKER_COMMAND="['$GPU_VENV/bin/python','$WORKER_ENTRY','--upstream-root','$VISION_ROOT','--proposal-json','$PROPOSALS','--person-masks','$PEOPLE','--output-root','$RUN/worker-runs','--input-root','$VISION_ROOT','--sam-model','$SAM_MODEL','--moge-model','$MOGE_MODEL'$COMPARISON_ARG]"
 WORKER_ROOTS="['$VISION_ROOT','$ROOT','$RUN']"
 
 pids=()

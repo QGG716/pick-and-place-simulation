@@ -30,3 +30,17 @@ def test_domain_ros_domain_round_trip_preserves_fingerprint():
     update, assembly = _assemble(observation)
     message = snapshot_to_msg(assembly.snapshot, source_epoch=observation.source_epoch, source_capture_time=observation.capture_time, blocking_reasons=update.blocking_reasons, obstacles=update.accepted_obstacles, unknown_regions=update.unknown_regions)
     assert snapshot_from_msg(message).fingerprint == assembly.snapshot.fingerprint
+
+
+def test_exact_source_times_survive_ros_nanosecond_transport():
+    from dataclasses import replace
+    import pytest
+    from unloading_contracts import canonical_fingerprint
+    from unloading_perception.demo import _synthetic_observation
+    from unloading_ros_bridge.mapping import observation_from_msg, observation_to_msg
+    observation = replace(_synthetic_observation(), capture_time=5/3, processed_time=30.327592711585265)
+    message = observation_to_msg(observation)
+    assert canonical_fingerprint(observation_from_msg(message)) == canonical_fingerprint(observation)
+    message.exact_capture_time_s += 1.0
+    with pytest.raises(ValueError, match="timestamps"):
+        observation_from_msg(message)

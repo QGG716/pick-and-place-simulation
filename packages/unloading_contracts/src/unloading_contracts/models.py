@@ -377,6 +377,7 @@ class CargoObservation:
     association_status: str = "UNASSOCIATED"
     face_evidence: tuple[FaceEvidence, ...] = ()
     raw_result: Mapping[str, Any] = field(default_factory=dict, compare=False)
+    observed_surfaces: tuple[Mapping[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         if not self.source_instance_id or not self.category:
@@ -413,6 +414,20 @@ class CargoObservation:
         object.__setattr__(self, "geometry_validity", geometry)
         object.__setattr__(self, "eligibility_reasons", tuple(str(item) for item in self.eligibility_reasons))
         object.__setattr__(self, "face_evidence", tuple(self.face_evidence))
+        surfaces = tuple(self.observed_surfaces)
+        for surface in surfaces:
+            if surface.get("schema_version") != "observed_surface_v1" or surface.get("frame_id") != "world":
+                raise ValueError("observed surface requires versioned world geometry")
+            if not all(surface.get(k) for k in ("face_id", "module_id", "capture_id", "source_instance_id")):
+                raise ValueError("observed surface source identity is incomplete")
+            if len(surface.get("corners_3d_m", ())) != 4 or int(surface.get("point_support_count", 0)) <= 0:
+                raise ValueError("observed surface requires boundary and measured support")
+            for point in surface["corners_3d_m"]:
+                _finite_tuple(point, 3, "observed surface boundary")
+            _finite_tuple(surface["plane_normal"], 3, "observed surface normal")
+            if surface.get("volume_status") != "UNKNOWN":
+                raise ValueError("observed patch cannot assert complete volume")
+        object.__setattr__(self, "observed_surfaces", surfaces)
         object.__setattr__(self, "raw_result", deep_freeze(self.raw_result))
 
 
