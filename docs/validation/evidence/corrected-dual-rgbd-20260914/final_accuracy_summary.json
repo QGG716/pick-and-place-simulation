@@ -1,0 +1,59 @@
+{
+  "RGBD_CALIBRATION_BOX": {
+    "evaluated_faces": 0,
+    "gt_plane_distance_m": {
+      "mean": null,
+      "max": null
+    },
+    "gt_normal_error_deg": {
+      "mean": null,
+      "max": null
+    },
+    "gt_patch_boundary_outside_face_m": {
+      "mean": null,
+      "max": null
+    },
+    "final_depth_residual_m": {
+      "mean": null,
+      "max": null
+    }
+  },
+  "PARTIAL_OCCLUSION": {
+    "evaluated_faces": 33,
+    "gt_plane_distance_m": {
+      "mean": 0.0007399624784392762,
+      "max": 0.0021472021326383595
+    },
+    "gt_normal_error_deg": {
+      "mean": 0.31920066170447,
+      "max": 1.1674225766194797
+    },
+    "gt_patch_boundary_outside_face_m": {
+      "mean": 0.03436479000565509,
+      "max": 0.1675564118654266
+    },
+    "final_depth_residual_m": {
+      "mean": 0.0004606068049428983,
+      "max": 0.001187840073943351
+    }
+  },
+  "FULL_STACK_NOMINAL": {
+    "evaluated_faces": 36,
+    "gt_plane_distance_m": {
+      "mean": 0.0005480016269915899,
+      "max": 0.0023844972655433505
+    },
+    "gt_normal_error_deg": {
+      "mean": 0.22859270893340314,
+      "max": 0.7741444332050346
+    },
+    "gt_patch_boundary_outside_face_m": {
+      "mean": 0.03347373880994166,
+      "max": 0.16874311913469567
+    },
+    "final_depth_residual_m": {
+      "mean": 0.0003839920800221353,
+      "max": 0.0013556000011669947
+    }
+  }
+}

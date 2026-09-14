@@ -1,0 +1,198 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________________ launch tests: test_old_discovery_launch ____________________
+
+==============================================================================================================================================================
+FAIL: test_old_discovery_launch.TestBridgeIntegration.test_world_gate_action_cancel_and_correlated_stop
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/test_old_discovery_launch.py", line 195, in test_world_gate_action_cancel_and_correlated_stop
+    self.wait_for(events, lambda item: item.command_id == competing.command_id and item.kind == "REJECTED")
+  File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/test_old_discovery_launch.py", line 65, in wait_for
+    raise AssertionError(f"timed out waiting for ROS integration output; received={values!r}")
+AssertionError: timed out waiting for ROS integration output; received=[]
+----------------------------- Captured stdout call -----------------------------
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.IncludeLaunchDescription'
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-09-14-21-30-37-718803-autodl-container-qms6hzyhpm-32041050-29182
+[INFO] [launch]: Default logging verbosity is set to DEBUG
+[DEBUG] [launch]: processing event: '<launch.events.include_launch_description.IncludeLaunchDescription object at 0x7f827ac040d0>'
+[DEBUG] [launch]: processing event: '<launch.events.include_launch_description.IncludeLaunchDescription object at 0x7f827ac040d0>' ✓ '<launch.event_handlers.on_include_launch_description.OnIncludeLaunchDescription object at 0x7f827ab86560>'
+[INFO] [mock_follow_joint_trajectory-1]: process started with pid [29186]
+[DEBUG] [launch.launch_context]: emitting event: 'launch.events.process.ProcessStarted'
+[INFO] [world_bridge_node-2]: process started with pid [29188]
+[DEBUG] [launch.launch_context]: emitting event: 'launch.events.process.ProcessStarted'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_started.ProcessStarted object at 0x7f827a351ff0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_started.ProcessStarted object at 0x7f827a351ff0>' ✓ '<launch.event_handlers.on_process_start.OnProcessStart object at 0x7f827abdba60>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_started.ProcessStarted object at 0x7f827a351ff0>' ✓ '<launch.event_handlers.on_process_start.OnProcessStart object at 0x7f827abdb9a0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_started.ProcessStarted object at 0x7f8278857cd0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_started.ProcessStarted object at 0x7f8278857cd0>' ✓ '<launch.event_handlers.on_process_start.OnProcessStart object at 0x7f827abdba60>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_started.ProcessStarted object at 0x7f8278857cd0>' ✓ '<launch.event_handlers.on_process_start.OnProcessStart object at 0x7f827abdb9a0>'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270279ba0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270279ba0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827ac059c0>'
+[world_bridge_node-2] [WARN] [1789392638.892182078] [unloading_world_bridge]: world snapshot blocked: tool_attachment,payload_attachment,base_state,conveyor_state,config_identity
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270279ba0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270279c30>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270279c30>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827ac059c0>'
+[world_bridge_node-2] [WARN] [1789392638.904373844] [unloading_world_bridge]: world snapshot blocked: tool_attachment,payload_attachment,base_state,conveyor_state,config_identity
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270279c30>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8278855f00>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8278855f00>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827ac059c0>'
+[world_bridge_node-2] [ERROR] [1789392639.048391050] [unloading_world_bridge]: rejecting malformed or stale mechanism state: conveyor state requires boolean running
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8278855f00>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f82788572b0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f82788572b0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827ac059c0>'
+[world_bridge_node-2] [ERROR] [1789392639.222613210] [unloading_world_bridge]: rejecting malformed or stale mechanism state: retired source epoch cannot take ownership again
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f82788572b0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[DEBUG] [launch.launch_context]: emitting event: 'launch.events.TimerEvent'
+[DEBUG] [launch]: processing event: '<launch.events.timer_event.TimerEvent object at 0x7f827ac057b0>'
+[DEBUG] [launch]: processing event: '<launch.events.timer_event.TimerEvent object at 0x7f827ac057b0>' ✓ '<launch.event_handler.EventHandler object at 0x7f827ac060e0>'
+[INFO] [execution_bridge_node-3]: process started with pid [29218]
+[DEBUG] [launch.launch_context]: emitting event: 'launch.events.process.ProcessStarted'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_started.ProcessStarted object at 0x7f827a353760>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_started.ProcessStarted object at 0x7f827a353760>' ✓ '<launch.event_handlers.on_process_start.OnProcessStart object at 0x7f827abdba60>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_started.ProcessStarted object at 0x7f827a353760>' ✓ '<launch.event_handlers.on_process_start.OnProcessStart object at 0x7f827abdb9a0>'
+[DEBUG] [launch.launch_context]: emitting event: 'launch.events.Shutdown'
+[DEBUG] [launch]: processing event: '<launch.events.shutdown.Shutdown object at 0x7f827061dd20>'
+[DEBUG] [launch]: processing event: '<launch.events.shutdown.Shutdown object at 0x7f827061dd20>' ✓ '<launch.event_handlers.on_shutdown.OnShutdown object at 0x7f82702dcd60>'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.SignalProcess'
+[DEBUG] [launch]: processing event: '<launch.events.shutdown.Shutdown object at 0x7f827061dd20>' ✓ '<launch.event_handler.EventHandler object at 0x7f827ac06110>'
+[DEBUG] [launch]: processing event: '<launch.events.shutdown.Shutdown object at 0x7f827061dd20>' ✓ '<launch.event_handlers.on_shutdown.OnShutdown object at 0x7f827ac05900>'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.SignalProcess'
+[DEBUG] [launch]: processing event: '<launch.events.shutdown.Shutdown object at 0x7f827061dd20>' ✓ '<launch.event_handlers.on_shutdown.OnShutdown object at 0x7f827ac04f40>'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.SignalProcess'
+[DEBUG] [launch]: processing event: '<launch.events.shutdown.Shutdown object at 0x7f827061dd20>' ✓ '<launch.event_handlers.on_shutdown.OnShutdown object at 0x7f827ab85c60>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f8270279ea0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f8270279ea0>' ✓ '<launch.event_handler.EventHandler object at 0x7f82702dcdf0>'
+[INFO] [execution_bridge_node-3]: sending signal 'SIGINT' to process[execution_bridge_node-3]
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f8270279ea0>' ✓ '<launch.event_handler.EventHandler object at 0x7f827ac059f0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f8270279ea0>' ✓ '<launch.event_handler.EventHandler object at 0x7f827ac05030>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f827027a5c0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f827027a5c0>' ✓ '<launch.event_handler.EventHandler object at 0x7f82702dcdf0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f827027a5c0>' ✓ '<launch.event_handler.EventHandler object at 0x7f827ac059f0>'
+[INFO] [world_bridge_node-2]: sending signal 'SIGINT' to process[world_bridge_node-2]
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f827027a5c0>' ✓ '<launch.event_handler.EventHandler object at 0x7f827ac05030>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f8270279660>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f8270279660>' ✓ '<launch.event_handler.EventHandler object at 0x7f82702dcdf0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f8270279660>' ✓ '<launch.event_handler.EventHandler object at 0x7f827ac059f0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.signal_process.SignalProcess object at 0x7f8270279660>' ✓ '<launch.event_handler.EventHandler object at 0x7f827ac05030>'
+[INFO] [mock_follow_joint_trajectory-1]: sending signal 'SIGINT' to process[mock_follow_joint_trajectory-1]
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f827061dae0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f827061dae0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f82702dcd90>'
+[execution_bridge_node-3] Traceback (most recent call last):
+[execution_bridge_node-3]   File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/humble/ci-discovery/install/unloading_ros_bridge/lib/unloading_ros_bridge/execution_bridge_node", line 33, in <module>
+[execution_bridge_node-3]     sys.exit(load_entry_point('unloading-ros-bridge', 'console_scripts', 'execution_bridge_node')())
+[execution_bridge_node-3]   File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/humble/ci-discovery/build/unloading_ros_bridge/unloading_ros_bridge/execution_bridge_node.py", line 401, in main
+[execution_bridge_node-3]     executor.spin()
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 323, in spin
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f827061dae0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f827027a500>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f827027a500>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f82702dcd90>'
+[execution_bridge_node-3]     self.spin_once()
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 808, in spin_once
+[execution_bridge_node-3]     self._spin_once_impl(timeout_sec)
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 797, in _spin_once_impl
+[execution_bridge_node-3]     handler, entity, node = self.wait_for_ready_callbacks(timeout_sec=timeout_sec)
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 780, in wait_for_ready_callbacks
+[execution_bridge_node-3]     return next(self._cb_iter)
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 677, in _wait_for_ready_callbacks
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f827027a500>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[DEBUG] [launch.launch_context]: emitting event synchronously: 'launch.events.process.ProcessStderr'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270278be0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270278be0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f82702dcd90>'
+[execution_bridge_node-3]     wait_set.wait(timeout_nsec)
+[execution_bridge_node-3] KeyboardInterrupt
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270278be0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270279ea0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270279ea0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827ac04f10>'
+[mock_follow_joint_trajectory-1] Traceback (most recent call last):
+[mock_follow_joint_trajectory-1]   File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/humble/ci-discovery/install/unloading_ros_bridge/lib/unloading_ros_bridge/mock_follow_joint_trajectory", line 33, in <module>
+[mock_follow_joint_trajectory-1]     sys.exit(load_entry_point('unloading-ros-bridge', 'console_scripts', 'mock_follow_joint_trajectory')())
+[mock_follow_joint_trajectory-1]   File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/humble/ci-discovery/build/unloading_ros_bridge/unloading_ros_bridge/mock_follow_joint_trajectory.py", line 87, in main
+[mock_follow_joint_trajectory-1]     executor.spin()
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 323, in spin
+[mock_follow_joint_trajectory-1]     self.spin_once()
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 863, in spin_once
+[mock_follow_joint_trajectory-1]     self._spin_once_impl(timeout_sec)
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 844, in _spin_once_impl
+[mock_follow_joint_trajectory-1]     handler, entity, node = self.wait_for_ready_callbacks(
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 780, in wait_for_ready_callbacks
+[mock_follow_joint_trajectory-1]     return next(self._cb_iter)
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 677, in _wait_for_ready_callbacks
+[mock_follow_joint_trajectory-1]     wait_set.wait(timeout_nsec)
+[mock_follow_joint_trajectory-1] KeyboardInterrupt
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270279ea0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f827027a5f0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f827027a5f0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827ac059c0>'
+[world_bridge_node-2] Traceback (most recent call last):
+[world_bridge_node-2]   File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/humble/ci-discovery/install/unloading_ros_bridge/lib/unloading_ros_bridge/world_bridge_node", line 33, in <module>
+[world_bridge_node-2]     sys.exit(load_entry_point('unloading-ros-bridge', 'console_scripts', 'world_bridge_node')())
+[world_bridge_node-2]   File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/humble/ci-discovery/build/unloading_ros_bridge/unloading_ros_bridge/world_bridge_node.py", line 274, in main
+[world_bridge_node-2]     rclpy.spin(node)
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 229, in spin
+[world_bridge_node-2]     executor.spin_once()
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 808, in spin_once
+[world_bridge_node-2]     self._spin_once_impl(timeout_sec)
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 797, in _spin_once_impl
+[world_bridge_node-2]     handler, entity, node = self.wait_for_ready_callbacks(timeout_sec=timeout_sec)
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 780, in wait_for_ready_callbacks
+[world_bridge_node-2]     return next(self._cb_iter)
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 677, in _wait_for_ready_callbacks
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f827027a5f0>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270278c40>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270278c40>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827ac059c0>'
+[world_bridge_node-2]     wait_set.wait(timeout_nsec)
+[world_bridge_node-2] KeyboardInterrupt
+[DEBUG] [launch]: processing event: '<launch.events.process.process_stderr.ProcessStderr object at 0x7f8270278c40>' ✓ '<launch.event_handlers.on_process_io.OnProcessIO object at 0x7f827abdbcd0>'
+[ERROR] [mock_follow_joint_trajectory-1]: process has died [pid 29186, exit code -2, cmd '/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/humble/ci-discovery/install/unloading_ros_bridge/lib/unloading_ros_bridge/mock_follow_joint_trajectory --ros-args --params-file /tmp/launch_params_ri065e1_'].
+[DEBUG] [launch.launch_context]: emitting event: 'launch.events.process.ProcessExited'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827a350af0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827a350af0>' ✓ '<launch.event_handlers.on_process_exit.OnProcessExit object at 0x7f827ac04fa0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827a350af0>' ✓ '<launch.event_handlers.on_process_exit.OnProcessExit object at 0x7f827ac052d0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827a350af0>' ✓ '<launch.event_handlers.on_process_exit.OnProcessExit object at 0x7f827abdbbb0>'
+[ERROR] [execution_bridge_node-3]: process has died [pid 29218, exit code -2, cmd '/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/humble/ci-discovery/install/unloading_ros_bridge/lib/unloading_ros_bridge/execution_bridge_node --ros-args --params-file /tmp/launch_params_gly1sxmh'].
+[DEBUG] [launch.launch_context]: emitting event: 'launch.events.process.ProcessExited'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827ab84ac0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827ab84ac0>' ✓ '<launch.event_handlers.on_process_exit.OnProcessExit object at 0x7f82702dcc70>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827ab84ac0>' ✓ '<launch.event_handlers.on_process_exit.OnProcessExit object at 0x7f82702dcf70>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827ab84ac0>' ✓ '<launch.event_handlers.on_process_exit.OnProcessExit object at 0x7f827abdbbb0>'
+[ERROR] [world_bridge_node-2]: process has died [pid 29188, exit code -2, cmd '/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/humble/ci-discovery/install/unloading_ros_bridge/lib/unloading_ros_bridge/world_bridge_node --ros-args --params-file /tmp/launch_params_zpfnyh71'].
+[DEBUG] [launch.launch_context]: emitting event: 'launch.events.process.ProcessExited'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827ac056f0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827ac056f0>' ✓ '<launch.event_handlers.on_process_exit.OnProcessExit object at 0x7f827ac04df0>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827ac056f0>' ✓ '<launch.event_handlers.on_process_exit.OnProcessExit object at 0x7f827ac05b70>'
+[DEBUG] [launch]: processing event: '<launch.events.process.process_exited.ProcessExited object at 0x7f827ac056f0>' ✓ '<launch.event_handlers.on_process_exit.OnProcessExit object at 0x7f827abdbbb0>'
+----------------------------- Captured stderr call -----------------------------
+test_world_gate_action_cancel_and_correlated_stop (test_old_discovery_launch.TestBridgeIntegration) ... FAIL
+
+======================================================================
+FAIL: test_world_gate_action_cancel_and_correlated_stop (test_old_discovery_launch.TestBridgeIntegration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/test_old_discovery_launch.py", line 195, in test_world_gate_action_cancel_and_correlated_stop
+    self.wait_for(events, lambda item: item.command_id == competing.command_id and item.kind == "REJECTED")
+  File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/test_old_discovery_launch.py", line 65, in wait_for
+    raise AssertionError(f"timed out waiting for ROS integration output; received={values!r}")
+AssertionError: timed out waiting for ROS integration output; received=[]
+
+----------------------------------------------------------------------
+Ran 1 test in 9.942s
+
+FAILED (failures=1)
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.000s
+
+OK
+- generated xml file: /root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/ci_old_discovery_reproduction.xml -
+=========================== short test summary info ============================
+FAILED ../v05-acceptance/lineage-bd00dfe-20260914/test_old_discovery_launch.py::test_old_discovery_launch
+1 failed in 10.21s

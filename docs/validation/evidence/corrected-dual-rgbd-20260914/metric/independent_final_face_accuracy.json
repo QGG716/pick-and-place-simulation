@@ -1,0 +1,1661 @@
+[
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1",
+    "mask_id": 1,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1:face:0",
+    "gt_entities": [
+      "carton_l05_c00"
+    ],
+    "final_depth_residual_m": 6.118335884858916e-07,
+    "point_support_count": 9099,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0,
+    "gt_normal_error_deg": 0.0,
+    "gt_patch_boundary_outside_face_m": 0.036031196417808525,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2",
+    "mask_id": 2,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2:face:0",
+    "gt_entities": [
+      "carton_l05_c01"
+    ],
+    "final_depth_residual_m": 6.347908050412985e-07,
+    "point_support_count": 8908,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0,
+    "gt_normal_error_deg": 0.0,
+    "gt_patch_boundary_outside_face_m": 0.02995119641780844,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3",
+    "mask_id": 3,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3:face:0",
+    "gt_entities": [
+      "carton_l05_c04"
+    ],
+    "final_depth_residual_m": 0.00044568174795848157,
+    "point_support_count": 4297,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0,
+    "gt_normal_error_deg": 0.0,
+    "gt_patch_boundary_outside_face_m": 0.005319999999999936,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4",
+    "mask_id": 4,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4:face:0",
+    "gt_entities": [
+      "carton_l06_c00"
+    ],
+    "final_depth_residual_m": 2.1949186956216546e-05,
+    "point_support_count": 89054,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0,
+    "gt_normal_error_deg": 0.0,
+    "gt_patch_boundary_outside_face_m": 0.03706119641780861,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5",
+    "mask_id": 5,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5:face:0",
+    "gt_entities": [
+      "carton_l06_c01"
+    ],
+    "final_depth_residual_m": 1.914276895686072e-07,
+    "point_support_count": 84517,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0,
+    "gt_normal_error_deg": 0.0,
+    "gt_patch_boundary_outside_face_m": 0.02487119641780869,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6",
+    "mask_id": 6,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6:face:0",
+    "gt_entities": [
+      "carton_l05_c02",
+      "carton_l06_c02"
+    ],
+    "final_depth_residual_m": 0.00012772569162629337,
+    "point_support_count": 78884,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_status": "AMBIGUOUS_SOURCE_IDENTITY"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7",
+    "mask_id": 7,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7:face:0",
+    "gt_entities": [
+      "carton_l05_c03",
+      "carton_l06_c03"
+    ],
+    "final_depth_residual_m": 1.909544489778656e-07,
+    "point_support_count": 106405,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_status": "AMBIGUOUS_SOURCE_IDENTITY"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8",
+    "mask_id": 8,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8:face:0",
+    "gt_entities": [
+      "carton_l06_c04"
+    ],
+    "final_depth_residual_m": 1.9096161384516356e-07,
+    "point_support_count": 83696,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0,
+    "gt_normal_error_deg": 0.0,
+    "gt_patch_boundary_outside_face_m": 0.019013360179309064,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "mask_id": 9,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 78784,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.00950881367234573,
+      "plane_residual_p95_m": 0.011021316171892103,
+      "mask_precision": 0.992504314743194,
+      "mask_coverage": 0.7972233184582537,
+      "mask_iou": 0.7924520710535315,
+      "plane_normal": [
+        -0.006223694165165231,
+        -0.006630144824911285,
+        -0.9999586525504638
+      ],
+      "plane_offset_m": 1.3279325009291014,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "mask_id": 10,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 71392,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.010901437556769979,
+      "plane_residual_p95_m": 0.012871888969754053,
+      "mask_precision": 0.9867178969773195,
+      "mask_coverage": 0.7897170416583704,
+      "mask_iou": 0.7814104177840044,
+      "plane_normal": [
+        0.003522183552249879,
+        0.01525874544973571,
+        0.9998773749367093
+      ],
+      "plane_offset_m": -1.3239442203323872,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "mask_id": 11,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 90445,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.01847436801826019,
+      "plane_residual_p95_m": 0.14683367883813672,
+      "mask_precision": 0.888510128298328,
+      "mask_coverage": 0.902176515181742,
+      "mask_iou": 0.8104318061666114,
+      "plane_normal": [
+        -0.002102871516653889,
+        -0.004068694031614047,
+        -0.9999895117751294
+      ],
+      "plane_offset_m": 1.3283274651672252,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "mask_id": 12,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 84057,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.016979391591849566,
+      "plane_residual_p95_m": 0.14799146652221684,
+      "mask_precision": 0.9419945535844363,
+      "mask_coverage": 0.9094322066906132,
+      "mask_iou": 0.8612044588336544,
+      "plane_normal": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "plane_offset_m": 1.325,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_0_upper",
+    "mask_id": 13,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 82094,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.01630689303854694,
+      "plane_residual_p95_m": 0.1354558944702149,
+      "mask_precision": 0.9479895609598374,
+      "mask_coverage": 0.8507062102983389,
+      "mask_iou": 0.8127716449680709,
+      "plane_normal": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "plane_offset_m": 1.325,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/2",
+    "mask_id": 2,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/2:face:0",
+    "gt_entities": [
+      "carton_l01_c00"
+    ],
+    "final_depth_residual_m": 0.00021055452242586784,
+    "point_support_count": 24566,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00021349467747094897,
+    "gt_normal_error_deg": 0.06861756847701647,
+    "gt_patch_boundary_outside_face_m": 0.02946303493255556,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/3",
+    "mask_id": 3,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/3:face:0",
+    "gt_entities": [
+      "carton_l01_c01"
+    ],
+    "final_depth_residual_m": 0.0002513941556610969,
+    "point_support_count": 23829,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00035255819219887075,
+    "gt_normal_error_deg": 0.13988860646949094,
+    "gt_patch_boundary_outside_face_m": 0.020998167191124933,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/4",
+    "mask_id": 4,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/4:face:0",
+    "gt_entities": [
+      "carton_l01_c02"
+    ],
+    "final_depth_residual_m": 0.0008639548743023261,
+    "point_support_count": 26403,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0011887728214542426,
+    "gt_normal_error_deg": 0.6504083829784496,
+    "gt_patch_boundary_outside_face_m": 0.04638206116896995,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/5",
+    "mask_id": 5,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/5:face:0",
+    "gt_entities": [
+      "carton_l01_c03"
+    ],
+    "final_depth_residual_m": 0.0007743400600644533,
+    "point_support_count": 45073,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0009779991712211555,
+    "gt_normal_error_deg": 0.325531313335258,
+    "gt_patch_boundary_outside_face_m": 0.16874311913469567,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/6",
+    "mask_id": 6,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/6:face:0",
+    "gt_entities": [
+      "carton_l01_c04"
+    ],
+    "final_depth_residual_m": 0.0004181360983248378,
+    "point_support_count": 22497,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0006432660077428931,
+    "gt_normal_error_deg": 0.33122324887534466,
+    "gt_patch_boundary_outside_face_m": 0.010851768227235686,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/7",
+    "mask_id": 7,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/7:face:0",
+    "gt_entities": [
+      "carton_l02_c00"
+    ],
+    "final_depth_residual_m": 0.00037737382727615434,
+    "point_support_count": 54557,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0005703490964714675,
+    "gt_normal_error_deg": 0.2153316872494908,
+    "gt_patch_boundary_outside_face_m": 0.03462579094523824,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/8",
+    "mask_id": 8,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/8:face:0",
+    "gt_entities": [
+      "carton_l02_c01"
+    ],
+    "final_depth_residual_m": 0.0006245908196001529,
+    "point_support_count": 48726,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0009794822071489961,
+    "gt_normal_error_deg": 0.31496683315360813,
+    "gt_patch_boundary_outside_face_m": 0.0326690585347196,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/9",
+    "mask_id": 9,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/9:face:0",
+    "gt_entities": [
+      "carton_l02_c02"
+    ],
+    "final_depth_residual_m": 0.0002492630731967914,
+    "point_support_count": 53404,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0002913054620881095,
+    "gt_normal_error_deg": 0.11065491872459543,
+    "gt_patch_boundary_outside_face_m": 0.04291820158534412,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/10",
+    "mask_id": 10,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/10:face:0",
+    "gt_entities": [
+      "carton_l02_c03"
+    ],
+    "final_depth_residual_m": 0.00033092081740343043,
+    "point_support_count": 70046,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0005534723097647687,
+    "gt_normal_error_deg": 0.17629798353667084,
+    "gt_patch_boundary_outside_face_m": 0.12494689755004332,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/11",
+    "mask_id": 11,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/11:face:0",
+    "gt_entities": [
+      "carton_l02_c04"
+    ],
+    "final_depth_residual_m": 0.0005184105312074779,
+    "point_support_count": 47734,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0006125481400712229,
+    "gt_normal_error_deg": 0.17078175084681768,
+    "gt_patch_boundary_outside_face_m": 0.023645138919109382,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/12",
+    "mask_id": 12,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/12:face:0",
+    "gt_entities": [
+      "carton_l03_c00"
+    ],
+    "final_depth_residual_m": 0.0008931318890645172,
+    "point_support_count": 48559,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0012762764583085229,
+    "gt_normal_error_deg": 0.4687504556982059,
+    "gt_patch_boundary_outside_face_m": 0.03025178490435179,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/13",
+    "mask_id": 13,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/13:face:0",
+    "gt_entities": [
+      "carton_l03_c01"
+    ],
+    "final_depth_residual_m": 0.0008459358620440771,
+    "point_support_count": 57182,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0013154756392443345,
+    "gt_normal_error_deg": 0.5397256554536858,
+    "gt_patch_boundary_outside_face_m": 0.021677122197763993,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/14",
+    "mask_id": 14,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/14:face:0",
+    "gt_entities": [
+      "carton_l03_c02"
+    ],
+    "final_depth_residual_m": 0.00029649490401574026,
+    "point_support_count": 63594,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00045752031453633046,
+    "gt_normal_error_deg": 0.17610583086318182,
+    "gt_patch_boundary_outside_face_m": 0.02451406030784456,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/15",
+    "mask_id": 15,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/15:face:0",
+    "gt_entities": [
+      "carton_l03_c03"
+    ],
+    "final_depth_residual_m": 0.0007506578326551046,
+    "point_support_count": 70705,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0012059592962976873,
+    "gt_normal_error_deg": 0.46596672721897064,
+    "gt_patch_boundary_outside_face_m": 0.07805304149636241,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/16",
+    "mask_id": 16,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/16:face:0",
+    "gt_entities": [
+      "carton_l03_c04"
+    ],
+    "final_depth_residual_m": 0.0013556000011669947,
+    "point_support_count": 56930,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0023844972655433505,
+    "gt_normal_error_deg": 0.7518958370414829,
+    "gt_patch_boundary_outside_face_m": 0.032876566992767225,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/17",
+    "mask_id": 17,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/17:face:0",
+    "gt_entities": [
+      "carton_l04_c00"
+    ],
+    "final_depth_residual_m": 0.0006950807140897271,
+    "point_support_count": 69515,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.001115655175420338,
+    "gt_normal_error_deg": 0.4464340055687948,
+    "gt_patch_boundary_outside_face_m": 0.010812367379067794,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/18",
+    "mask_id": 18,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/18:face:0",
+    "gt_entities": [
+      "carton_l04_c01"
+    ],
+    "final_depth_residual_m": 0.0004290280824278166,
+    "point_support_count": 72904,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0007267291815730714,
+    "gt_normal_error_deg": 0.29322454808076154,
+    "gt_patch_boundary_outside_face_m": 0.013307722929024074,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/19",
+    "mask_id": 19,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/19:face:0",
+    "gt_entities": [
+      "carton_l04_c02"
+    ],
+    "final_depth_residual_m": 0.000181982267601231,
+    "point_support_count": 69555,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00017312154226750698,
+    "gt_normal_error_deg": 0.06721927662980472,
+    "gt_patch_boundary_outside_face_m": 0.019653307270741355,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/20",
+    "mask_id": 20,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/20:face:0",
+    "gt_entities": [
+      "carton_l04_c03"
+    ],
+    "final_depth_residual_m": 0.000263848670070163,
+    "point_support_count": 78785,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.000259737796506343,
+    "gt_normal_error_deg": 0.06746198296282889,
+    "gt_patch_boundary_outside_face_m": 0.041554153856565273,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/21",
+    "mask_id": 21,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/21:face:0",
+    "gt_entities": [
+      "carton_l04_c04"
+    ],
+    "final_depth_residual_m": 0.000246306283328715,
+    "point_support_count": 75832,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0002393525512993655,
+    "gt_normal_error_deg": 0.05629275398474845,
+    "gt_patch_boundary_outside_face_m": 0.030102837411831423,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/22",
+    "mask_id": 22,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/22:face:0",
+    "gt_entities": [
+      "carton_l05_c00"
+    ],
+    "final_depth_residual_m": 0.00020507063741053496,
+    "point_support_count": 84363,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00022018309086319077,
+    "gt_normal_error_deg": 0.07779180374638253,
+    "gt_patch_boundary_outside_face_m": 0.010260472212502286,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/23",
+    "mask_id": 23,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/23:face:0",
+    "gt_entities": [
+      "carton_l05_c01"
+    ],
+    "final_depth_residual_m": 0.0004380575061636467,
+    "point_support_count": 89091,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.000698030107512515,
+    "gt_normal_error_deg": 0.231503189240068,
+    "gt_patch_boundary_outside_face_m": 0.016459748037878225,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/24",
+    "mask_id": 24,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/24:face:0",
+    "gt_entities": [
+      "carton_l05_c02"
+    ],
+    "final_depth_residual_m": 0.00018130736965100665,
+    "point_support_count": 86603,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.000278109292104034,
+    "gt_normal_error_deg": 0.09934407917475525,
+    "gt_patch_boundary_outside_face_m": 0.02472565650556327,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/25",
+    "mask_id": 25,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/25:face:0",
+    "gt_entities": [
+      "carton_l05_c03"
+    ],
+    "final_depth_residual_m": 0.00029553170714370863,
+    "point_support_count": 92161,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0004361374874705115,
+    "gt_normal_error_deg": 0.19173657357969834,
+    "gt_patch_boundary_outside_face_m": 0.01710913766805003,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/26",
+    "mask_id": 26,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/26:face:0",
+    "gt_entities": [
+      "carton_l05_c04"
+    ],
+    "final_depth_residual_m": 0.00018343011476273905,
+    "point_support_count": 93517,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00015404968591870016,
+    "gt_normal_error_deg": 0.009277631934791742,
+    "gt_patch_boundary_outside_face_m": 0.0314765370743281,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/27",
+    "mask_id": 27,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/27:face:0",
+    "gt_entities": [
+      "carton_l06_c00"
+    ],
+    "final_depth_residual_m": 0.00016864499081731797,
+    "point_support_count": 42388,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0001765038695391019,
+    "gt_normal_error_deg": 0.059923536933169624,
+    "gt_patch_boundary_outside_face_m": 0.02053304428611638,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/28",
+    "mask_id": 28,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/28:face:0",
+    "gt_entities": [
+      "carton_l06_c01"
+    ],
+    "final_depth_residual_m": 0.00045068839817769105,
+    "point_support_count": 44808,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.000905753444201407,
+    "gt_normal_error_deg": 0.7741444332050346,
+    "gt_patch_boundary_outside_face_m": 0.01333631203586752,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/29",
+    "mask_id": 29,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/29:face:0",
+    "gt_entities": [
+      "carton_l06_c02"
+    ],
+    "final_depth_residual_m": 0.0003505979715633597,
+    "point_support_count": 42524,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0006830951793999063,
+    "gt_normal_error_deg": 0.570195678618817,
+    "gt_patch_boundary_outside_face_m": 0.01924010370681009,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/30",
+    "mask_id": 30,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/30:face:0",
+    "gt_entities": [
+      "carton_l06_c03"
+    ],
+    "final_depth_residual_m": 0.0001821595607915462,
+    "point_support_count": 49312,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0002524711228962251,
+    "gt_normal_error_deg": 0.1916394638057643,
+    "gt_patch_boundary_outside_face_m": 0.033964428652575235,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "FULL_STACK_NOMINAL",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/31",
+    "mask_id": 31,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/31:face:0",
+    "gt_entities": [
+      "carton_l06_c04"
+    ],
+    "final_depth_residual_m": 0.00032196138977700413,
+    "point_support_count": 45395,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0003861519851621198,
+    "gt_normal_error_deg": 0.18700176421482362,
+    "gt_patch_boundary_outside_face_m": 0.02765480819230884,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/2",
+    "mask_id": 2,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:300/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/2:face:0",
+    "gt_entities": [
+      "carton_l05_c04"
+    ],
+    "final_depth_residual_m": 0.0005454832770655059,
+    "point_support_count": 3627,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0,
+    "gt_normal_error_deg": 0.0,
+    "gt_patch_boundary_outside_face_m": 0.006520000000000137,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/3",
+    "mask_id": 3,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:300/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/3:face:0",
+    "gt_entities": [
+      "carton_l05_c00",
+      "carton_l06_c00"
+    ],
+    "final_depth_residual_m": 1.924975741755831e-07,
+    "point_support_count": 87971,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_status": "AMBIGUOUS_SOURCE_IDENTITY"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/4",
+    "mask_id": 4,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:300/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/4:face:0",
+    "gt_entities": [
+      "carton_l06_c01"
+    ],
+    "final_depth_residual_m": 1.9135436591830726e-07,
+    "point_support_count": 60961,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0,
+    "gt_normal_error_deg": 0.0,
+    "gt_patch_boundary_outside_face_m": 0.03595119641780889,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/5",
+    "mask_id": 5,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:300/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/5:face:0",
+    "gt_entities": [
+      "carton_l05_c03",
+      "carton_l06_c03"
+    ],
+    "final_depth_residual_m": 8.066789507465088e-06,
+    "point_support_count": 18393,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_status": "AMBIGUOUS_SOURCE_IDENTITY"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "instance": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/6",
+    "mask_id": 6,
+    "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:300/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A300/6:face:0",
+    "gt_entities": [
+      "carton_l06_c04"
+    ],
+    "final_depth_residual_m": 1.9096540689859918e-07,
+    "point_support_count": 79837,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0,
+    "gt_normal_error_deg": 0.0,
+    "gt_patch_boundary_outside_face_m": 0.016531196417808675,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 249,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.027999809265136788,
+      "plane_residual_p95_m": 0.027999809265136788,
+      "mask_precision": 0.9431818181818182,
+      "mask_coverage": 0.08001285347043702,
+      "mask_iou": 0.07962903741605372,
+      "plane_normal": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "plane_offset_m": 1.297,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "mask_id": 7,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 90630,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.021432266348805136,
+      "plane_residual_p95_m": 0.17286570150754751,
+      "mask_precision": 0.7812931034482758,
+      "mask_coverage": 0.9413463236286964,
+      "mask_iou": 0.7450245382130262,
+      "plane_normal": [
+        -0.006286116080918178,
+        -0.004252509410465619,
+        -0.9999712000394467
+      ],
+      "plane_offset_m": 1.3372756819356995,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "mask_id": 8,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 57615,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.004982435643067703,
+      "plane_residual_p95_m": 0.010436820983886763,
+      "mask_precision": 0.973127723541533,
+      "mask_coverage": 0.9366465079984393,
+      "mask_iou": 0.9130310761770439,
+      "plane_normal": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "plane_offset_m": 1.325,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "mask_id": 9,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 15733,
+      "point_support_ratio": 0.9999364433710436,
+      "plane_residual_m": 0.06325215874477173,
+      "plane_residual_p95_m": 0.4350359916687012,
+      "mask_precision": 0.8929118665228988,
+      "mask_coverage": 0.8883242999096658,
+      "mask_iou": 0.8027960610235216,
+      "plane_normal": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "plane_offset_m": 1.325,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_0_upper",
+    "mask_id": 10,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 80397,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.017838537830475305,
+      "plane_residual_p95_m": 0.14799194335937504,
+      "mask_precision": 0.9673681550734577,
+      "mask_coverage": 0.8579432071625991,
+      "mask_iou": 0.8338121363603365,
+      "plane_normal": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "plane_offset_m": 1.325,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/2",
+    "mask_id": 2,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/2:face:0",
+    "gt_entities": [
+      "carton_l01_c00"
+    ],
+    "final_depth_residual_m": 0.00020759214956350507,
+    "point_support_count": 24037,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00019877275802016037,
+    "gt_normal_error_deg": 0.12159308471198715,
+    "gt_patch_boundary_outside_face_m": 0.026002997155338964,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/3",
+    "mask_id": 3,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/3:face:0",
+    "gt_entities": [
+      "carton_l01_c01"
+    ],
+    "final_depth_residual_m": 0.0005761995435437529,
+    "point_support_count": 19531,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.001118060890440753,
+    "gt_normal_error_deg": 0.665224964743756,
+    "gt_patch_boundary_outside_face_m": 0.0511147598934342,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/4",
+    "mask_id": 4,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/4:face:0",
+    "gt_entities": [
+      "carton_l01_c02"
+    ],
+    "final_depth_residual_m": 0.0003207747728426229,
+    "point_support_count": 26631,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0004757606053848451,
+    "gt_normal_error_deg": 0.18293229037757136,
+    "gt_patch_boundary_outside_face_m": 0.05027166207993697,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/5",
+    "mask_id": 5,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/5:face:0",
+    "gt_entities": [
+      "carton_l01_c03"
+    ],
+    "final_depth_residual_m": 0.0003615357040172021,
+    "point_support_count": 45508,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0006028109549776617,
+    "gt_normal_error_deg": 0.19663727573959172,
+    "gt_patch_boundary_outside_face_m": 0.1675564118654266,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/6",
+    "mask_id": 6,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/6:face:0",
+    "gt_entities": [
+      "carton_l01_c04"
+    ],
+    "final_depth_residual_m": 0.0003624678180658831,
+    "point_support_count": 22593,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0005439617675895292,
+    "gt_normal_error_deg": 0.35062322050963796,
+    "gt_patch_boundary_outside_face_m": 0.012593135719309118,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/7",
+    "mask_id": 7,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/7:face:0",
+    "gt_entities": [
+      "carton_l02_c00"
+    ],
+    "final_depth_residual_m": 0.0009951393193126884,
+    "point_support_count": 47779,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.001623278196665523,
+    "gt_normal_error_deg": 0.6955555550365358,
+    "gt_patch_boundary_outside_face_m": 0.02084510162948719,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/8",
+    "mask_id": 8,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/8:face:0",
+    "gt_entities": [
+      "carton_l02_c01"
+    ],
+    "final_depth_residual_m": 0.00024282173023712082,
+    "point_support_count": 37595,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00041415138242328897,
+    "gt_normal_error_deg": 0.16735479627417912,
+    "gt_patch_boundary_outside_face_m": 0.0713025424905335,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/9",
+    "mask_id": 9,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/9:face:0",
+    "gt_entities": [
+      "carton_l02_c02"
+    ],
+    "final_depth_residual_m": 0.0003056474267314015,
+    "point_support_count": 53702,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0004816208426259849,
+    "gt_normal_error_deg": 0.1703048485051063,
+    "gt_patch_boundary_outside_face_m": 0.05265600302718268,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/10",
+    "mask_id": 10,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/10:face:0",
+    "gt_entities": [
+      "carton_l02_c03"
+    ],
+    "final_depth_residual_m": 0.001187840073943351,
+    "point_support_count": 70400,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0019025736186045195,
+    "gt_normal_error_deg": 0.5455374546022957,
+    "gt_patch_boundary_outside_face_m": 0.1271127505448512,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/11",
+    "mask_id": 11,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/11:face:0",
+    "gt_entities": [
+      "carton_l02_c04"
+    ],
+    "final_depth_residual_m": 0.0007782090864305159,
+    "point_support_count": 47651,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.001581249235879989,
+    "gt_normal_error_deg": 0.5432841637845752,
+    "gt_patch_boundary_outside_face_m": 0.02587925699411256,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/12",
+    "mask_id": 12,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/12:face:0",
+    "gt_entities": [
+      "carton_l03_c00"
+    ],
+    "final_depth_residual_m": 0.0011653064095856949,
+    "point_support_count": 53246,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0021472021326383595,
+    "gt_normal_error_deg": 0.8642271384182274,
+    "gt_patch_boundary_outside_face_m": 0.02603564193857691,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/13",
+    "mask_id": 13,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/13:face:0",
+    "gt_entities": [
+      "carton_l03_c01"
+    ],
+    "final_depth_residual_m": 0.00026293018586400136,
+    "point_support_count": 57734,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0002843260779744061,
+    "gt_normal_error_deg": 0.0792613122137432,
+    "gt_patch_boundary_outside_face_m": 0.023067248584925065,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/14",
+    "mask_id": 14,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/14:face:0",
+    "gt_entities": [
+      "carton_l03_c02"
+    ],
+    "final_depth_residual_m": 0.0006484864174584425,
+    "point_support_count": 61664,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0007975898436834994,
+    "gt_normal_error_deg": 0.24120134070199384,
+    "gt_patch_boundary_outside_face_m": 0.025599612802824773,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/15",
+    "mask_id": 15,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/15:face:0",
+    "gt_entities": [
+      "carton_l03_c03"
+    ],
+    "final_depth_residual_m": 0.0003213230601395859,
+    "point_support_count": 67567,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00032327752505090235,
+    "gt_normal_error_deg": 0.04641462794198757,
+    "gt_patch_boundary_outside_face_m": 0.06509499266359856,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/16",
+    "mask_id": 16,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/16:face:0",
+    "gt_entities": [
+      "carton_l03_c04"
+    ],
+    "final_depth_residual_m": 0.0005588508499726996,
+    "point_support_count": 59221,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0010653570750912,
+    "gt_normal_error_deg": 0.3633379425164066,
+    "gt_patch_boundary_outside_face_m": 0.028793500379747622,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/17",
+    "mask_id": 17,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/17:face:0",
+    "gt_entities": [
+      "carton_l04_c00"
+    ],
+    "final_depth_residual_m": 0.0004396338013960532,
+    "point_support_count": 67108,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0008129421439254658,
+    "gt_normal_error_deg": 0.31668368223895554,
+    "gt_patch_boundary_outside_face_m": 0.00822284608500548,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/18",
+    "mask_id": 18,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/18:face:0",
+    "gt_entities": [
+      "carton_l04_c01"
+    ],
+    "final_depth_residual_m": 0.0004696396217253067,
+    "point_support_count": 74764,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0007798714936094187,
+    "gt_normal_error_deg": 0.33315120452570907,
+    "gt_patch_boundary_outside_face_m": 0.011158398133905482,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/19",
+    "mask_id": 19,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/19:face:0",
+    "gt_entities": [
+      "carton_l04_c02"
+    ],
+    "final_depth_residual_m": 0.00038869021982800906,
+    "point_support_count": 68830,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0006323063396380113,
+    "gt_normal_error_deg": 0.2644670699955026,
+    "gt_patch_boundary_outside_face_m": 0.018037761597344076,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/20",
+    "mask_id": 20,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/20:face:0",
+    "gt_entities": [
+      "carton_l04_c03"
+    ],
+    "final_depth_residual_m": 0.0010262504406528049,
+    "point_support_count": 75510,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0020480027463502526,
+    "gt_normal_error_deg": 0.7295315788817675,
+    "gt_patch_boundary_outside_face_m": 0.040056967497426405,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/21",
+    "mask_id": 21,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/21:face:0",
+    "gt_entities": [
+      "carton_l04_c04"
+    ],
+    "final_depth_residual_m": 0.0003143796037001532,
+    "point_support_count": 72892,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.000517063437873222,
+    "gt_normal_error_deg": 0.16762735050461988,
+    "gt_patch_boundary_outside_face_m": 0.027310050417241577,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/22",
+    "mask_id": 22,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/22:face:0",
+    "gt_entities": [
+      "carton_l05_c00"
+    ],
+    "final_depth_residual_m": 0.00025799168700396034,
+    "point_support_count": 81874,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00032324855518178763,
+    "gt_normal_error_deg": 0.11477975823052605,
+    "gt_patch_boundary_outside_face_m": 0.009597436287531874,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/23",
+    "mask_id": 23,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/23:face:0",
+    "gt_entities": [
+      "carton_l05_c01"
+    ],
+    "final_depth_residual_m": 0.00016403063378698837,
+    "point_support_count": 89006,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00014953622295738045,
+    "gt_normal_error_deg": 0.056960198700317835,
+    "gt_patch_boundary_outside_face_m": 0.015030517065257293,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/24",
+    "mask_id": 24,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/24:face:0",
+    "gt_entities": [
+      "carton_l05_c02"
+    ],
+    "final_depth_residual_m": 0.0003253572057609603,
+    "point_support_count": 91454,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0004921462427085466,
+    "gt_normal_error_deg": 0.18710078366778438,
+    "gt_patch_boundary_outside_face_m": 0.02269222415575714,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/25",
+    "mask_id": 25,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/25:face:0",
+    "gt_entities": [
+      "carton_l05_c03"
+    ],
+    "final_depth_residual_m": 0.00036173512315950166,
+    "point_support_count": 91314,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0006905338002281547,
+    "gt_normal_error_deg": 0.25869891500932574,
+    "gt_patch_boundary_outside_face_m": 0.019045387619950477,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/26",
+    "mask_id": 26,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/26:face:0",
+    "gt_entities": [
+      "carton_l05_c04"
+    ],
+    "final_depth_residual_m": 0.00021218639832231494,
+    "point_support_count": 95636,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00026635371441235955,
+    "gt_normal_error_deg": 0.09965552329427917,
+    "gt_patch_boundary_outside_face_m": 0.034851311392253864,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/27",
+    "mask_id": 27,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/27:face:0",
+    "gt_entities": [
+      "carton_l06_c00"
+    ],
+    "final_depth_residual_m": 0.00022790077948893855,
+    "point_support_count": 42345,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.00026279314185617686,
+    "gt_normal_error_deg": 0.1342775527747504,
+    "gt_patch_boundary_outside_face_m": 0.014237173653452034,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/28",
+    "mask_id": 28,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/28:face:0",
+    "gt_entities": [
+      "carton_l06_c01"
+    ],
+    "final_depth_residual_m": 0.0005136769625275578,
+    "point_support_count": 43548,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0011110011097504313,
+    "gt_normal_error_deg": 0.9399836638782568,
+    "gt_patch_boundary_outside_face_m": 0.012995398051906776,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/29",
+    "mask_id": 29,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/29:face:0",
+    "gt_entities": [
+      "carton_l06_c02"
+    ],
+    "final_depth_residual_m": 0.0006295315619178439,
+    "point_support_count": 39823,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0012404181725455543,
+    "gt_normal_error_deg": 1.1674225766194797,
+    "gt_patch_boundary_outside_face_m": 0.010956749122614934,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/30",
+    "mask_id": 30,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/30:face:0",
+    "gt_entities": [
+      "carton_l06_c03"
+    ],
+    "final_depth_residual_m": 0.0005256373925713506,
+    "point_support_count": 48465,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0007648214285441157,
+    "gt_normal_error_deg": 0.2796330565268448,
+    "gt_patch_boundary_outside_face_m": 0.02988098151454502,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "PARTIAL_OCCLUSION",
+    "module": "module_1_lower",
+    "instance": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/31",
+    "mask_id": 31,
+    "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:300/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A300/31:face:0",
+    "gt_entities": [
+      "carton_l06_c04"
+    ],
+    "final_depth_residual_m": 0.0005023929867271098,
+    "point_support_count": 45035,
+    "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+    "gt_plane_distance_m": 0.0007677303318646134,
+    "gt_normal_error_deg": 0.25015890532179463,
+    "gt_patch_boundary_outside_face_m": 0.027036856987522034,
+    "gt_face_axis": 0,
+    "gt_face_sign": -1,
+    "physical_corner_error": "NOT_EVALUATED_OBSERVED_PATCH_IS_NOT_PHYSICAL_CORNER"
+  },
+  {
+    "scene": "RGBD_CALIBRATION_BOX",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 32031,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.14844302825881514,
+      "plane_residual_p95_m": 0.4344221016221752,
+      "mask_precision": 1.0,
+      "mask_coverage": 0.6799626382490925,
+      "mask_iou": 0.6799626382490925,
+      "plane_normal": [
+        0.3431128786418064,
+        -0.016932138083772922,
+        -0.9391415522752921
+      ],
+      "plane_offset_m": 2.1179639578749496,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  },
+  {
+    "scene": "RGBD_CALIBRATION_BOX",
+    "module": "module_1_lower",
+    "mask_id": 1,
+    "rejected_face": {
+      "ordinal": 0,
+      "status": "REJECTED",
+      "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+      "point_support_count": 30430,
+      "point_support_ratio": 1.0,
+      "plane_residual_m": 0.12619062967325648,
+      "plane_residual_p95_m": 0.49416280132776264,
+      "mask_precision": 1.0,
+      "mask_coverage": 0.8331279945242984,
+      "mask_iou": 0.8331279945242984,
+      "plane_normal": [
+        0.3319525831385359,
+        0.3417190163659918,
+        -0.8792244289153437
+      ],
+      "plane_offset_m": 2.1097808143315495,
+      "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+    }
+  }
+]

@@ -1,0 +1,496 @@
+[
+  {
+    "fusion_id": "fusion-962f806aff3d2a010f61",
+    "source_members": [
+      [
+        "module_0_upper",
+        "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l05_c00"
+    ],
+    "association_status": "AMBIGUOUS_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-d6b6fa43b267009bfff6",
+    "source_members": [
+      [
+        "module_0_upper",
+        "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l05_c01"
+    ],
+    "association_status": "AMBIGUOUS_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-5d3128f3c98b20a95cc9",
+    "source_members": [
+      [
+        "module_0_upper",
+        "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3"
+      ],
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/26"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l05_c04"
+    ],
+    "association_status": "ASSOCIATED_BY_WORLD_FACE_GEOMETRY",
+    "classification": "CORRECT_ASSOCIATION"
+  },
+  {
+    "fusion_id": "fusion-50f5f756680e5691e226",
+    "source_members": [
+      [
+        "module_0_upper",
+        "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l06_c00"
+    ],
+    "association_status": "AMBIGUOUS_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-d010d2f4dfebbc874dcd",
+    "source_members": [
+      [
+        "module_0_upper",
+        "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l06_c01"
+    ],
+    "association_status": "AMBIGUOUS_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-09eacb55397bfb9bfb95",
+    "source_members": [
+      [
+        "module_0_upper",
+        "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6"
+      ],
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/29"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l05_c02",
+      "carton_l06_c02"
+    ],
+    "association_status": "CONFLICT_RETAINED_NO_AVERAGE",
+    "classification": "AMBIGUOUS_SOURCE_MERGE"
+  },
+  {
+    "fusion_id": "fusion-faa75d871bb5afe5b3e0",
+    "source_members": [
+      [
+        "module_0_upper",
+        "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7"
+      ],
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/30"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l05_c03",
+      "carton_l06_c03"
+    ],
+    "association_status": "ASSOCIATED_BY_WORLD_FACE_GEOMETRY",
+    "classification": "AMBIGUOUS_SOURCE_MERGE"
+  },
+  {
+    "fusion_id": "fusion-3c398d8ddfff47cd9283",
+    "source_members": [
+      [
+        "module_0_upper",
+        "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8"
+      ],
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/31"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l06_c04"
+    ],
+    "association_status": "ASSOCIATED_BY_WORLD_FACE_GEOMETRY",
+    "classification": "CORRECT_ASSOCIATION"
+  },
+  {
+    "fusion_id": "fusion-a78658f0c9b02ff6e854",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/10"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l02_c03"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-ef2f7658524490aedd61",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/11"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l02_c04"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-fa5db1db50fbccbb0a11",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/12"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l03_c00"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-0ae9a675a829e066f4a8",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/13"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l03_c01"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-8bc48d4ee0a99cf47c57",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/14"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l03_c02"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-5cd45435d39453c08829",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/15"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l03_c03"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-2245da82edb55afdb346",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/16"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l03_c04"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-7bb6c56ae9a068c71d24",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/17"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l04_c00"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-171c7fdba1cf93231b0e",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/18"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l04_c01"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-c1a0829f518ebdc02e92",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/19"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l04_c02"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-8deb3e89193098c7cb23",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/2"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l01_c00"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-ef64a1da477c62e637bb",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/20"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l04_c03"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-6441804398e4c1143dce",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/21"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l04_c04"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-8f0eff17940603f62c47",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/22"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l05_c00"
+    ],
+    "association_status": "AMBIGUOUS_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-d6ff60fc952da637615b",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/23"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l05_c01"
+    ],
+    "association_status": "AMBIGUOUS_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-0a9f9cf2f6b89b440636",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/24"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l05_c02"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-72abf9e3feb6e644e1be",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/25"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l05_c03"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-e8f3eb57e165f24c540d",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/27"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l06_c00"
+    ],
+    "association_status": "AMBIGUOUS_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-d9da68a456049a026abe",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/28"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l06_c01"
+    ],
+    "association_status": "AMBIGUOUS_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-1a0becbb82c9cc646431",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/3"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l01_c01"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-98985a303c7465597512",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/4"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l01_c02"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-b2683635cb8f47789002",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/5"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l01_c03"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-b424fa5d156a98a511bb",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/6"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l01_c04"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-8f42329e787234e64395",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/7"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l02_c00"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-e75d56481840c1279ed3",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/8"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l02_c01"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  },
+  {
+    "fusion_id": "fusion-2981ae4eefe85d868776",
+    "source_members": [
+      [
+        "module_1_lower",
+        "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/9"
+      ]
+    ],
+    "gt_entities": [
+      "carton_l02_c02"
+    ],
+    "association_status": "UNASSOCIATED_RETAINED",
+    "classification": "SINGLE_OBSERVATION"
+  }
+]

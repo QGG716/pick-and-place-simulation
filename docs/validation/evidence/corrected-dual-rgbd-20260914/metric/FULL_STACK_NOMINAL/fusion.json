@@ -1,0 +1,4024 @@
+{
+  "sensor_epoch": "sim-j1-mast-v2",
+  "capture_time_range": [
+    1.6666666666666667,
+    1.6666666666666667
+  ],
+  "expected_modules": [
+    "module_0_upper",
+    "module_1_lower"
+  ],
+  "received_modules": [
+    "module_0_upper",
+    "module_1_lower"
+  ],
+  "objects": [
+    {
+      "fusion_id": "fusion-962f806aff3d2a010f61",
+      "source_members": [
+        [
+          "module_0_upper",
+          "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              2292.9993805015533,
+              1884.9945975531698
+            ],
+            [
+              2089.002122713093,
+              1896.0029150489893
+            ],
+            [
+              2079.0010391248034,
+              1937.998034198835
+            ],
+            [
+              2296.9975550811746,
+              1942.995533982502
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0,
+              -1.01638,
+              1.8360311964178084
+            ],
+            [
+              0.0,
+              -0.6551400000000001,
+              1.8264711964178084
+            ],
+            [
+              0.0,
+              -0.6374299999999999,
+              1.7900011964178084
+            ],
+            [
+              0.0,
+              -1.02346,
+              1.7856611964178084
+            ]
+          ],
+          "plane_normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "plane_offset_m": -0.0,
+          "point_support_count": 9099,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 6.118335884858916e-07,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.85651,
+            "mask_coverage": 0.9118,
+            "mask_iou": 0.79097,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 9099,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 6.118335884858916e-07,
+              "plane_residual_p95_m": 1.9073486323684108e-07,
+              "mask_precision": 0.8633646456020495,
+              "mask_coverage": 0.8967182418448802,
+              "mask_iou": 0.7852766030896695,
+              "plane_normal": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "plane_offset_m": 1.325
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_0_upper"
+      ],
+      "association_status": "AMBIGUOUS_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-d6b6fa43b267009bfff6",
+      "source_members": [
+        [
+          "module_0_upper",
+          "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1842.001899636759,
+              1906.9997175683482
+            ],
+            [
+              1847.9991615061906,
+              1942.0052460069362
+            ],
+            [
+              2068.999955536514,
+              1937.998034198835
+            ],
+            [
+              2059.99841559313,
+              1891.9957032408875
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0,
+              -0.21775,
+              1.8169211964178085
+            ],
+            [
+              0.0,
+              -0.22836999999999996,
+              1.7865211964178083
+            ],
+            [
+              0.0,
+              -0.61972,
+              1.7900011964178084
+            ],
+            [
+              0.0,
+              -0.60378,
+              1.8299511964178083
+            ]
+          ],
+          "plane_normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "plane_offset_m": -0.0,
+          "point_support_count": 8908,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 6.347908050412985e-07,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.991,
+            "mask_coverage": 0.85227,
+            "mask_iou": 0.84572,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 8908,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 6.347908050412985e-07,
+              "plane_residual_p95_m": 1.9073486323684108e-07,
+              "mask_precision": 0.9940854815310791,
+              "mask_coverage": 0.8308151464279052,
+              "mask_iou": 0.8267285382830627,
+              "plane_normal": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "plane_offset_m": 1.325
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_0_upper"
+      ],
+      "association_status": "AMBIGUOUS_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-5d3128f3c98b20a95cc9",
+      "source_members": [
+        [
+          "module_0_upper",
+          "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3"
+        ],
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/26"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1360.622809678234,
+              1942.4428151124189
+            ],
+            [
+              1353.930949682682,
+              1924.214607376141
+            ],
+            [
+              1136.4426762576188,
+              1921.2552584259047
+            ],
+            [
+              1128.779508313345,
+              1942.3967552065785
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0,
+              0.63468,
+              1.7861411964178084
+            ],
+            [
+              0.0,
+              0.64653,
+              1.8019711964178082
+            ],
+            [
+              0.0,
+              1.03166,
+              1.8045411964178084
+            ],
+            [
+              0.0,
+              1.04523,
+              1.7861811964178083
+            ]
+          ],
+          "plane_normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "plane_offset_m": -0.0,
+          "point_support_count": 4297,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00044568174795848157,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.95295,
+            "mask_coverage": 0.93183,
+            "mask_iou": 0.89084,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 4297,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00044568174795848157,
+              "plane_residual_p95_m": 1.9073486323684108e-07,
+              "mask_precision": 0.9671393202790907,
+              "mask_coverage": 0.906922752216125,
+              "mask_iou": 0.8798116298116299,
+              "plane_normal": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "plane_offset_m": 1.325
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        },
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/26:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1355.000280790112,
+              161.00364075541552
+            ],
+            [
+              1117.9979223989642,
+              167.00428630449315
+            ],
+            [
+              1139.0015952477006,
+              616.9965130812143
+            ],
+            [
+              1352.0016331241304,
+              592.0042928345034
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.00015670880781248897,
+              0.65603,
+              1.8150611953453535
+            ],
+            [
+              0.00011276566266027466,
+              1.0306600000000001,
+              1.8109056124740832
+            ],
+            [
+              0.0001536387507874437,
+              1.02195,
+              1.4685234629256718
+            ],
+            [
+              0.00019308552241459331,
+              0.65235,
+              1.4893031391491411
+            ]
+          ],
+          "plane_normal": [
+            -0.9999999868901109,
+            -0.00011852127650749623,
+            -0.00011032898540514536
+          ],
+          "plane_offset_m": 0.00043523270193903703,
+          "point_support_count": 93517,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00018343011476273905,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.94094,
+            "mask_coverage": 0.94596,
+            "mask_iou": 0.89295,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 93517,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00018343011476273905,
+              "plane_residual_p95_m": 0.0004062308409902737,
+              "mask_precision": 0.9422272823447623,
+              "mask_coverage": 0.940881148571831,
+              "mask_iou": 0.8895621486392649,
+              "plane_normal": [
+                0.00011852127650749623,
+                0.34212381417526655,
+                -0.9396548737312411
+              ],
+              "plane_offset_m": 1.3251665608128758
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_0_upper",
+        "module_1_lower"
+      ],
+      "association_status": "ASSOCIATED_BY_WORLD_FACE_GEOMETRY",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": [
+          {
+            "members": [
+              [
+                "module_0_upper",
+                "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3"
+              ],
+              [
+                "module_1_lower",
+                "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/26"
+              ]
+            ],
+            "center_distance_m": 0.14876217821733462,
+            "matched_face_corner_distance_m": 0.3185096821954192,
+            "normal_alignment": 0.9999999868901109,
+            "plane_distance_m": 0.00043523270193903703,
+            "score": 0.9357222267939054,
+            "intersection_over_smaller_patch": 0.9425345322692946
+          }
+        ]
+      }
+    },
+    {
+      "fusion_id": "fusion-50f5f756680e5691e226",
+      "source_members": [
+        [
+          "module_0_upper",
+          "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              2306.0386249992157,
+              1538.3592611759268
+            ],
+            [
+              2076.002408190088,
+              1552.2348078103014
+            ],
+            [
+              2076.002408190088,
+              1939.3913463505025
+            ],
+            [
+              2306.0725078346363,
+              1939.8404304324447
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0,
+              -1.03947,
+              2.1370611964178083
+            ],
+            [
+              0.0,
+              -0.63212,
+              2.1250111964178084
+            ],
+            [
+              0.0,
+              -0.63212,
+              1.7887911964178085
+            ],
+            [
+              0.0,
+              -1.03953,
+              1.7884011964178084
+            ]
+          ],
+          "plane_normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "plane_offset_m": -0.0,
+          "point_support_count": 89054,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 2.1949186956216546e-05,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.97657,
+            "mask_coverage": 0.99881,
+            "mask_iou": 0.97543,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 89054,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 2.1949186956216546e-05,
+              "plane_residual_p95_m": 1.9073486323684108e-07,
+              "mask_precision": 0.9821337980016323,
+              "mask_coverage": 0.9969661349006437,
+              "mask_iou": 0.9792072131508054,
+              "plane_normal": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "plane_offset_m": 1.325
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_0_upper"
+      ],
+      "association_status": "AMBIGUOUS_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-d010d2f4dfebbc874dcd",
+      "source_members": [
+        [
+          "module_0_upper",
+          "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              2068.999955536514,
+              1552.396017480742
+            ],
+            [
+              1844.0009869265696,
+              1556.7832235120259
+            ],
+            [
+              1844.0009869265696,
+              1935.994428294784
+            ],
+            [
+              2068.999955536514,
+              1935.994428294784
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0,
+              -0.61972,
+              2.1248711964178084
+            ],
+            [
+              0.0,
+              -0.22129,
+              2.1210611964178083
+            ],
+            [
+              0.0,
+              -0.22129,
+              1.7917411964178083
+            ],
+            [
+              0.0,
+              -0.61972,
+              1.7917411964178083
+            ]
+          ],
+          "plane_normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "plane_offset_m": -0.0,
+          "point_support_count": 84517,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 1.914276895686072e-07,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.98472,
+            "mask_coverage": 0.98593,
+            "mask_iou": 0.97107,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 84517,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 1.914276895686072e-07,
+              "plane_residual_p95_m": 1.9073486323684108e-07,
+              "mask_precision": 0.990530325227073,
+              "mask_coverage": 0.9788971380256895,
+              "mask_iou": 0.9698211068654113,
+              "plane_normal": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "plane_offset_m": 1.325
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_0_upper"
+      ],
+      "association_status": "AMBIGUOUS_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-09eacb55397bfb9bfb95",
+      "source_members": [
+        [
+          "module_0_upper",
+          "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6"
+        ],
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/29"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1832.0008160484697,
+              1586.9985217432284
+            ],
+            [
+              1603.8676851621271,
+              1588.0003246952535
+            ],
+            [
+              1606.6009005527155,
+              1935.994428294784
+            ],
+            [
+              1832.0008160484697,
+              1935.994428294784
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0,
+              -0.20004,
+              2.0948211964178083
+            ],
+            [
+              0.0,
+              0.20394,
+              2.0939511964178084
+            ],
+            [
+              0.0,
+              0.19910000000000005,
+              1.7917411964178083
+            ],
+            [
+              0.0,
+              -0.20004,
+              1.7917411964178083
+            ]
+          ],
+          "plane_normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "plane_offset_m": -0.0,
+          "point_support_count": 78884,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00012772569162629337,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.99633,
+            "mask_coverage": 0.97639,
+            "mask_iou": 0.97288,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 78884,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00012772569162629337,
+              "plane_residual_p95_m": 1.9073486323684108e-07,
+              "mask_precision": 0.9974836564116182,
+              "mask_coverage": 0.9722321505601637,
+              "mask_iou": 0.9698534474279532,
+              "plane_normal": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "plane_offset_m": 1.325
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        },
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/29:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1660.999798492403,
+              -0.002155634540075032
+            ],
+            [
+              1652.996265258449,
+              197.99877106674262
+            ],
+            [
+              1882.9992238523932,
+              210.00824408909014
+            ],
+            [
+              1911.0049653016317,
+              0.0015995154426658989
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.00024743145897132557,
+              0.19072,
+              1.922818741574843
+            ],
+            [
+              -0.0010726565594465498,
+              0.18172,
+              1.7891702478772946
+            ],
+            [
+              -0.0008880319897228706,
+              -0.18628999999999996,
+              1.7807598962931896
+            ],
+            [
+              0.0005242607094588791,
+              -0.19203000000000003,
+              1.9228776106335626
+            ]
+          ],
+          "plane_normal": [
+            -0.9999504813269562,
+            -0.0007217014811336324,
+            0.009925423968811275
+          ],
+          "plane_offset_m": -0.018699104519709065,
+          "point_support_count": 42524,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0003505979715633597,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.86511,
+            "mask_coverage": 0.9495,
+            "mask_iou": 0.82705,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 42524,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0003505979715633597,
+              "plane_residual_p95_m": 0.0008224021498882905,
+              "mask_precision": 0.8661574498421428,
+              "mask_coverage": 0.9426316722823196,
+              "mask_iou": 0.8227850550471142,
+              "plane_normal": [
+                0.0007217014811336324,
+                0.33267635928035344,
+                -0.9430407833826389
+              ],
+              "plane_offset_m": 1.3218659092919545
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_0_upper",
+        "module_1_lower"
+      ],
+      "association_status": "CONFLICT_RETAINED_NO_AVERAGE",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": [
+          {
+            "members": [
+              [
+                "module_0_upper",
+                "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6"
+              ],
+              [
+                "module_1_lower",
+                "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/29"
+              ]
+            ],
+            "center_distance_m": 0.08918495390057987,
+            "matched_face_corner_distance_m": 0.17213085615785378,
+            "normal_alignment": 0.9999504813269562,
+            "plane_distance_m": 0.018699104519709065,
+            "score": 0.6968812307088738,
+            "intersection_over_smaller_patch": 0.9517631934095755
+          }
+        ]
+      }
+    },
+    {
+      "fusion_id": "fusion-faa75d871bb5afe5b3e0",
+      "source_members": [
+        [
+          "module_0_upper",
+          "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7"
+        ],
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/30"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1368.9975171663386,
+              1455.5090055457815
+            ],
+            [
+              1368.9975171663386,
+              1935.0041403192188
+            ],
+            [
+              1595.1089722059237,
+              1935.994428294784
+            ],
+            [
+              1594.7419081555347,
+              1462.5676861157995
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0,
+              0.61985,
+              2.2090111964178085
+            ],
+            [
+              0.0,
+              0.61985,
+              1.7926011964178084
+            ],
+            [
+              0.0,
+              0.21945000000000003,
+              1.7917411964178083
+            ],
+            [
+              0.0,
+              0.22009999999999996,
+              2.2028811964178083
+            ]
+          ],
+          "plane_normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "plane_offset_m": -0.0,
+          "point_support_count": 106405,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 1.909544489778656e-07,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.98378,
+            "mask_coverage": 0.98855,
+            "mask_iou": 0.9727,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 106405,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 1.909544489778656e-07,
+              "plane_residual_p95_m": 1.9073486323684108e-07,
+              "mask_precision": 0.9868579696165903,
+              "mask_coverage": 0.9874532512968995,
+              "mask_iou": 0.9746368182900691,
+              "plane_normal": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "plane_offset_m": 1.325
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        },
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/30:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1385.9979634612978,
+              0.003660702622699709
+            ],
+            [
+              1390.9988425906574,
+              230.99931633204963
+            ],
+            [
+              1623.0019341616678,
+              217.99310400181608
+            ],
+            [
+              1637.0022983873678,
+              -0.0059123591327733685
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.0003096472434367392,
+              0.61158,
+              1.9226916065311954
+            ],
+            [
+              0.00021231108928421172,
+              0.59703,
+              1.7660355713474245
+            ],
+            [
+              0.0004585283673477214,
+              0.22668999999999995,
+              1.7752787946516613
+            ],
+            [
+              -2.939779151622801e-05,
+              0.22755000000000003,
+              1.9227598725161232
+            ]
+          ],
+          "plane_normal": [
+            -0.9999944063636514,
+            -0.0007303354063719756,
+            -0.003264023836127312
+          ],
+          "plane_offset_m": 0.00641420264658746,
+          "point_support_count": 49312,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0001821595607915462,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.90817,
+            "mask_coverage": 0.95209,
+            "mask_iou": 0.86848,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 49312,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0001821595607915462,
+              "plane_residual_p95_m": 0.00043947484957759233,
+              "mask_precision": 0.9095134457191338,
+              "mask_coverage": 0.9458702574135881,
+              "mask_iou": 0.864516129032258,
+              "plane_normal": [
+                0.0007303354063719756,
+                0.3450854093022412,
+                -0.9385710025868576
+              ],
+              "plane_offset_m": 1.3255408310213546
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_0_upper",
+        "module_1_lower"
+      ],
+      "association_status": "ASSOCIATED_BY_WORLD_FACE_GEOMETRY",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": [
+          {
+            "members": [
+              [
+                "module_0_upper",
+                "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7"
+              ],
+              [
+                "module_1_lower",
+                "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/30"
+              ]
+            ],
+            "center_distance_m": 0.15242241052292185,
+            "matched_face_corner_distance_m": 0.28643916689980387,
+            "normal_alignment": 0.9999944063636514,
+            "plane_distance_m": 0.00641420264658746,
+            "score": 0.7734595115471471,
+            "intersection_over_smaller_patch": 0.8607312298661842
+          }
+        ]
+      }
+    },
+    {
+      "fusion_id": "fusion-3c398d8ddfff47cd9283",
+      "source_members": [
+        [
+          "module_0_upper",
+          "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8"
+        ],
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/31"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1134.200761980628,
+              1567.4345767375833
+            ],
+            [
+              1132.252498943948,
+              1939.874975361825
+            ],
+            [
+              1358.0025370723808,
+              1940.0477000087258
+            ],
+            [
+              1358.0025370723808,
+              1559.1553086627985
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0,
+              1.03563,
+              2.1118111964178086
+            ],
+            [
+              0.0,
+              1.03908,
+              1.7883711964178084
+            ],
+            [
+              0.0,
+              0.63932,
+              1.7882211964178083
+            ],
+            [
+              0.0,
+              0.63932,
+              2.119001196417808
+            ]
+          ],
+          "plane_normal": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "plane_offset_m": -0.0,
+          "point_support_count": 83696,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 1.9096161384516356e-07,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.98505,
+            "mask_coverage": 0.99561,
+            "mask_iou": 0.98079,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 83696,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 1.9096161384516356e-07,
+              "plane_residual_p95_m": 1.9073486323684108e-07,
+              "mask_precision": 0.986864756514562,
+              "mask_coverage": 0.9903211302269447,
+              "mask_iou": 0.9774372868687813,
+              "plane_normal": [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "plane_offset_m": 1.325
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        },
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/31:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1112.0030213848306,
+              -0.0014048047365866217
+            ],
+            [
+              1119.9990372146212,
+              222.00458050924374
+            ],
+            [
+              1357.9975812741275,
+              188.991466627622
+            ],
+            [
+              1363.0018206387354,
+              -0.0022671550778176766
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.0008060605090727258,
+              1.03056,
+              1.9225849581852135
+            ],
+            [
+              -0.0004283055256952828,
+              1.03047,
+              1.772345191807691
+            ],
+            [
+              0.0003030581682135214,
+              0.65073,
+              1.795639893075302
+            ],
+            [
+              -7.1837376669492414e-06,
+              0.64673,
+              1.9227624290394645
+            ]
+          ],
+          "plane_normal": [
+            -0.9999946738209555,
+            -0.002082480567115412,
+            -0.002513086629720748
+          ],
+          "plane_offset_m": 0.006171462567883192,
+          "point_support_count": 45395,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00032196138977700413,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.89935,
+            "mask_coverage": 0.96301,
+            "mask_iou": 0.86932,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 45395,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00032196138977700413,
+              "plane_residual_p95_m": 0.0007329767898860194,
+              "mask_precision": 0.9007838079174522,
+              "mask_coverage": 0.9583474075325114,
+              "mask_iou": 0.8668461655973113,
+              "plane_normal": [
+                0.002082480567115412,
+                0.34437985062649284,
+                -0.9388280895654764
+              ],
+              "plane_offset_m": 1.3255078693793416
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_0_upper",
+        "module_1_lower"
+      ],
+      "association_status": "ASSOCIATED_BY_WORLD_FACE_GEOMETRY",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": [
+          {
+            "members": [
+              [
+                "module_0_upper",
+                "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8"
+              ],
+              [
+                "module_1_lower",
+                "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/31"
+              ]
+            ],
+            "center_distance_m": 0.09852673770474388,
+            "matched_face_corner_distance_m": 0.19637861893235162,
+            "normal_alignment": 0.9999946738209555,
+            "plane_distance_m": 0.006171462567883192,
+            "score": 0.8667919577254841,
+            "intersection_over_smaller_patch": 0.9606998479608811
+          }
+        ]
+      }
+    },
+    {
+      "fusion_id": "fusion-a78658f0c9b02ff6e854",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/10"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/10:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1554.9987758210445,
+              1095.0025736382227
+            ],
+            [
+              1368.9976892581476,
+              1091.9994447906658
+            ],
+            [
+              1362.0023414308819,
+              1516.0038502402558
+            ],
+            [
+              1537.000827812635,
+              1477.0002391581138
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.0008109266949660743,
+              0.24644999999999995,
+              1.022302975595136
+            ],
+            [
+              0.00025779997559083334,
+              0.60737,
+              1.0249468975500433
+            ],
+            [
+              0.0006521415277185305,
+              0.6059,
+              0.5310887332004599
+            ],
+            [
+              -0.0004930210407836366,
+              0.23268999999999995,
+              0.5821497584809192
+            ]
+          ],
+          "plane_normal": [
+            -0.9999952660999214,
+            0.00296707426870932,
+            -0.0008150141297116007
+          ],
+          "plane_offset_m": -0.0007099169640594486,
+          "point_support_count": 70046,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00033092081740343043,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.964,
+            "mask_coverage": 0.94146,
+            "mask_iou": 0.90948,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 70046,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00033092081740343043,
+              "plane_residual_p95_m": 0.0007635456378315419,
+              "mask_precision": 0.9659385514920845,
+              "mask_coverage": 0.9357682956154648,
+              "mask_iou": 0.9058765713103305,
+              "plane_normal": [
+                -0.00296707426870932,
+                0.34278438700001157,
+                -0.9394094211254805
+              ],
+              "plane_offset_m": 1.3251811802226665
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-ef2f7658524490aedd61",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/11"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/11:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1342.00204123783,
+              1190.996936584074
+            ],
+            [
+              1156.9973392721824,
+              1207.9991955489306
+            ],
+            [
+              1167.9982559291448,
+              1481.9994432690514
+            ],
+            [
+              1342.0016616883913,
+              1478.0001872611813
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.00024283941997915726,
+              0.65751,
+              0.9191517886074189
+            ],
+            [
+              -0.00041956897504680235,
+              1.02652,
+              0.9008123416387069
+            ],
+            [
+              -0.0012081183230769899,
+              1.0233400000000001,
+              0.5763548610808906
+            ],
+            [
+              -0.0005796658421819423,
+              0.65037,
+              0.5809468483935099
+            ]
+          ],
+          "plane_normal": [
+            -0.9999955577055546,
+            -0.0016724670837016168,
+            0.0024672703562532775
+          ],
+          "plane_offset_m": -0.0009236287791944745,
+          "point_support_count": 47734,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0005184105312074779,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.94173,
+            "mask_coverage": 0.94768,
+            "mask_iou": 0.89519,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 47734,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0005184105312074779,
+              "plane_residual_p95_m": 0.0010900407998799544,
+              "mask_precision": 0.944255420161418,
+              "mask_coverage": 0.9442927794263106,
+              "mask_iou": 0.8944311197721481,
+              "plane_normal": [
+                0.0016724670837016168,
+                0.3397001482242308,
+                -0.9405323025554676
+              ],
+              "plane_offset_m": 1.326836160102033
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-fa5db1db50fbccbb0a11",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/12"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/12:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              2213.996083964574,
+              906.0007191322471
+            ],
+            [
+              2048.0029209708623,
+              930.9955189383128
+            ],
+            [
+              1998.002696332292,
+              1235.00370768733
+            ],
+            [
+              2192.9988564732193,
+              1192.9981934076347
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.00019800933591618275,
+              -0.9544900000000001,
+              1.2104442035279994
+            ],
+            [
+              -0.0008837351947621475,
+              -0.6535500000000001,
+              1.18683007579119
+            ],
+            [
+              0.0013953255444290047,
+              -0.66412,
+              0.869748215095648
+            ],
+            [
+              0.0026280357581267566,
+              -1.03919,
+              0.9156764125948864
+            ]
+          ],
+          "plane_normal": [
+            -0.9999665338523329,
+            -0.004147767943418449,
+            -0.007051751302948435
+          ],
+          "plane_offset_m": 0.004774541208454327,
+          "point_support_count": 48559,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0008931318890645172,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.92941,
+            "mask_coverage": 0.86372,
+            "mask_iou": 0.81055,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 48559,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0008931318890645172,
+              "plane_residual_p95_m": 0.0020645160577536623,
+              "mask_precision": 0.9312302234154761,
+              "mask_coverage": 0.8575086529631984,
+              "mask_iou": 0.8064403627063473,
+              "plane_normal": [
+                0.004147767943418449,
+                0.3486351758920451,
+                -0.9372493319025681
+              ],
+              "plane_offset_m": 1.3151296637004446
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-0ae9a675a829e066f4a8",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/13"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/13:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1829.9999737986577,
+              893.9945834472496
+            ],
+            [
+              1786.0037779932145,
+              1216.0036129938633
+            ],
+            [
+              1968.998310369523,
+              1216.000223537019
+            ],
+            [
+              2025.9974546496683,
+              904.0019622169918
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.000795954281922695,
+              -0.23955000000000004,
+              1.2216771221977638
+            ],
+            [
+              -0.001870078587359325,
+              -0.23019999999999996,
+              0.8927630111159498
+            ],
+            [
+              -2.8384583422136345e-05,
+              -0.5977600000000001,
+              0.8917415106529731
+            ],
+            [
+              0.0025674851042731817,
+              -0.6073999999999999,
+              1.2116037226452065
+            ]
+          ],
+          "plane_normal": [
+            -0.9999556322246878,
+            -0.0050337303363463285,
+            0.007962106569633896
+          ],
+          "plane_offset_m": -0.010137147659194311,
+          "point_support_count": 57182,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0008459358620440771,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.94607,
+            "mask_coverage": 0.93999,
+            "mask_iou": 0.89218,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 57182,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0008459358620440771,
+              "plane_residual_p95_m": 0.0019596038962275573,
+              "mask_precision": 0.9465024663157546,
+              "mask_coverage": 0.933934375357277,
+              "mask_iou": 0.8871065328348252,
+              "plane_normal": [
+                0.0050337303363463285,
+                0.3345230358634014,
+                -0.9423741295449671
+              ],
+              "plane_offset_m": 1.3240017555304304
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-8bc48d4ee0a99cf47c57",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/14"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/14:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1809.2075311100598,
+              891.5170051521117
+            ],
+            [
+              1595.3020487190865,
+              895.3548822203198
+            ],
+            [
+              1572.4078321657757,
+              1213.1220881193333
+            ],
+            [
+              1771.0291213433593,
+              1206.8795865352035
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.0008000037875679489,
+              -0.19935999999999998,
+              1.2245140603078444
+            ],
+            [
+              -0.0002961961346510389,
+              0.19523999999999997,
+              1.2207231266696938
+            ],
+            [
+              0.0006277410120809623,
+              0.19599999999999995,
+              0.8945675324510005
+            ],
+            [
+              0.00010614032384537175,
+              -0.1995,
+              0.9017596693185825
+            ]
+          ],
+          "plane_normal": [
+            -0.9999952764135405,
+            0.0012497721516923808,
+            -0.0028080634208774518
+          ],
+          "plane_offset_m": 0.0028894470490709073,
+          "point_support_count": 63594,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00029649490401574026,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.97139,
+            "mask_coverage": 0.99532,
+            "mask_iou": 0.96698,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 63594,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00029649490401574026,
+              "plane_residual_p95_m": 0.0006893275281418808,
+              "mask_precision": 0.9762215433738084,
+              "mask_coverage": 0.9911165139330466,
+              "mask_iou": 0.9677537169205485,
+              "plane_normal": [
+                -0.0012497721516923808,
+                0.34465724423924815,
+                -0.9387277678128926
+              ],
+              "plane_offset_m": 1.3242452239969915
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-5cd45435d39453c08829",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/15"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/15:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1372.998311291824,
+              833.9947983405946
+            ],
+            [
+              1366.002357343735,
+              1232.9955264327832
+            ],
+            [
+              1551.9987012936112,
+              1220.9954437651315
+            ],
+            [
+              1579.000465794112,
+              851.9975095642019
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.00012807127938363472,
+              0.60861,
+              1.2780530414963622
+            ],
+            [
+              -0.002129351855407746,
+              0.60853,
+              0.874010790517512
+            ],
+            [
+              0.00033643901383384467,
+              0.23592000000000002,
+              0.8859898670841413
+            ],
+            [
+              0.0022299750365655235,
+              0.22968999999999995,
+              1.2607319526861331
+            ]
+          ],
+          "plane_normal": [
+            -0.9999669301550249,
+            -0.006449333664741156,
+            0.004954259946402439
+          ],
+          "plane_offset_m": -0.002533926162783555,
+          "point_support_count": 70705,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0007506578326551046,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.93695,
+            "mask_coverage": 0.9604,
+            "mask_iou": 0.9021,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 70705,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0007506578326551046,
+              "plane_residual_p95_m": 0.0017442689907245068,
+              "mask_precision": 0.9388402756569425,
+              "mask_coverage": 0.9549180881379739,
+              "mask_iou": 0.8989942656613562,
+              "plane_normal": [
+                0.006449333664741156,
+                0.337353351259461,
+                -0.941356001993556
+              ],
+              "plane_offset_m": 1.3256574358725048
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-2245da82edb55afdb346",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/16"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/16:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1148.0021917434635,
+              902.9955695208499
+            ],
+            [
+              1156.9993032477742,
+              1230.998425128406
+            ],
+            [
+              1340.9986261324245,
+              1237.0048215398103
+            ],
+            [
+              1350.0013610015633,
+              912.9958300438706
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.0036513801344737473,
+              1.02273,
+              1.2145163529242335
+            ],
+            [
+              -0.002673683356775758,
+              1.02766,
+              0.8765501020810303
+            ],
+            [
+              0.002057533206974105,
+              0.65832,
+              0.8671234330072326
+            ],
+            [
+              0.001155392363949792,
+              0.64862,
+              1.2034552753027539
+            ]
+          ],
+          "plane_normal": [
+            -0.9999138939102545,
+            -0.012756421108855569,
+            -0.0030787149471939276
+          ],
+          "plane_offset_m": 0.013132041126077876,
+          "point_support_count": 56930,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0013556000011669947,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.90275,
+            "mask_coverage": 0.94837,
+            "mask_iou": 0.86046,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 56930,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0013556000011669947,
+              "plane_residual_p95_m": 0.003022774627422574,
+              "mask_precision": 0.9048141260986348,
+              "mask_coverage": 0.9427057459844345,
+              "mask_iou": 0.8576507630425285,
+              "plane_normal": [
+                0.012756421108855569,
+                0.34488373902589414,
+                -0.9385587250012717
+              ],
+              "plane_offset_m": 1.323434357630033
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-7bb6c56ae9a068c71d24",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/17"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/17:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              2111.9997627011203,
+              567.996569940648
+            ],
+            [
+              2049.0027946472,
+              907.9987369528922
+            ],
+            [
+              2235.0034937878045,
+              928.998666263295
+            ],
+            [
+              2330.0036482081173,
+              570.0028085450085
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.001043846572810203,
+              -0.65466,
+              1.5089787460174218
+            ],
+            [
+              -0.001148894321033378,
+              -0.64754,
+              1.2089657074884728
+            ],
+            [
+              -0.002185935561271224,
+              -0.99979,
+              1.189187632620932
+            ],
+            [
+              8.394424656654742e-05,
+              -1.02919,
+              1.5074232436792454
+            ]
+          ],
+          "plane_normal": [
+            -0.9999696445218281,
+            0.0025322702270593723,
+            0.007368693397465671
+          ],
+          "plane_offset_m": -0.00841743056029517,
+          "point_support_count": 69515,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0006950807140897271,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.96976,
+            "mask_coverage": 0.93275,
+            "mask_iou": 0.90639,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 69515,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0006950807140897271,
+              "plane_residual_p95_m": 0.0016628927172763987,
+              "mask_precision": 0.972128992560273,
+              "mask_coverage": 0.9278563801388148,
+              "mask_iou": 0.9038133995553418,
+              "plane_normal": [
+                -0.0025322702270593723,
+                0.3350854543302413,
+                -0.942184337538994
+              ],
+              "plane_offset_m": 1.3304476668176843
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-171c7fdba1cf93231b0e",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/18"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/18:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              2091.681090318969,
+              572.8380788765612
+            ],
+            [
+              1860.299338012113,
+              562.6853380021015
+            ],
+            [
+              1817.7360807557966,
+              912.609387807529
+            ],
+            [
+              2034.1195695119825,
+              903.7338387203857
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0005317844734489263,
+              -0.62062,
+              1.5050573951779278
+            ],
+            [
+              0.0012253924315157594,
+              -0.22065999999999997,
+              1.513307722929024
+            ],
+            [
+              -0.0002677238401589399,
+              -0.22030000000000005,
+              1.2042818587949693
+            ],
+            [
+              -0.0008820159811686601,
+              -0.6188400000000001,
+              1.2129443725851745
+            ]
+          ],
+          "plane_normal": [
+            -0.9999869044288988,
+            0.0016341294339842648,
+            0.004849803264200305
+          ],
+          "plane_offset_m": -0.005752023939311013,
+          "point_support_count": 72904,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0004290280824278166,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.9499,
+            "mask_coverage": 0.99629,
+            "mask_iou": 0.94655,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 72904,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0004290280824278166,
+              "plane_residual_p95_m": 0.0009773079396681592,
+              "mask_precision": 0.9562559844698907,
+              "mask_coverage": 0.9947468242164581,
+              "mask_iou": 0.9514512424305701,
+              "plane_normal": [
+                -0.0016341294339842648,
+                0.3374583400369313,
+                -0.9413390453819027
+              ],
+              "plane_offset_m": 1.328358205757351
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-c1a0829f518ebdc02e92",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/19"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/19:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1626.0020261801665,
+              555.0003214939812
+            ],
+            [
+              1595.9997103848507,
+              907.996846853239
+            ],
+            [
+              1796.0011612301237,
+              906.9992307188614
+            ],
+            [
+              1841.9969381067351,
+              564.9951226949681
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0003105376003242899,
+              0.18333999999999995,
+              1.5196533072707412
+            ],
+            [
+              -4.174987375571426e-05,
+              0.19218999999999997,
+              1.2086159487532544
+            ],
+            [
+              -0.0001414197731337552,
+              -0.17878000000000005,
+              1.209599343847384
+            ],
+            [
+              0.00019877892185626855,
+              -0.18894999999999995,
+              1.5115104570327849
+            ]
+          ],
+          "plane_normal": [
+            -0.9999993118036596,
+            0.00027524798342916243,
+            0.0011404519958023353
+          ],
+          "plane_offset_m": -0.001472688876190637,
+          "point_support_count": 69555,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.000181982267601231,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.95887,
+            "mask_coverage": 0.94917,
+            "mask_iou": 0.91204,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 69555,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.000181982267601231,
+              "plane_residual_p95_m": 0.00041495671129681015,
+              "mask_precision": 0.9600414078674948,
+              "mask_coverage": 0.9430419220131243,
+              "mask_iou": 0.9074245606710937,
+              "plane_normal": [
+                -0.00027524798342916243,
+                0.3409482336238417,
+                -0.940082031647946
+              ],
+              "plane_offset_m": 1.325591020670528
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-8deb3e89193098c7cb23",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/2"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/2:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1959.999387028627,
+              1438.9943038451722
+            ],
+            [
+              1924.9976118627687,
+              1594.9997466630089
+            ],
+            [
+              2101.997992984391,
+              1597.0020224071573
+            ],
+            [
+              2131.9980614458836,
+              1441.0025664357013
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.00017963891121963727,
+              -0.6595899999999999,
+              0.6294630349325555
+            ],
+            [
+              0.00027443164984308765,
+              -0.6438200000000001,
+              0.42648983198611545
+            ],
+            [
+              -0.0001653920882069837,
+              -1.03614,
+              0.4241703805252206
+            ],
+            [
+              -0.00023451606061408725,
+              -1.02485,
+              0.6272725839152293
+            ]
+          ],
+          "plane_normal": [
+            -0.9999992828742181,
+            0.0011361340013007761,
+            -0.00037874870341825733
+          ],
+          "plane_offset_m": 0.0011686862615232576,
+          "point_support_count": 24566,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00021055452242586784,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.89849,
+            "mask_coverage": 0.94527,
+            "mask_iou": 0.85406,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 24566,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00021055452242586784,
+              "plane_residual_p95_m": 0.00047347420243154525,
+              "mask_precision": 0.9003481766538391,
+              "mask_coverage": 0.9356337599024985,
+              "mask_iou": 0.8478343399482312,
+              "plane_normal": [
+                -0.0011361340013007761,
+                0.34237580541594037,
+                -0.9395624072222755
+              ],
+              "plane_offset_m": 1.3264027257052686
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-ef64a1da477c62e637bb",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/20"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/20:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1595.0003162566286,
+              528.002349299549
+            ],
+            [
+              1379.9999109427954,
+              530.9967487109276
+            ],
+            [
+              1372.0022333158306,
+              947.9980370054789
+            ],
+            [
+              1569.9997383894288,
+              930.9965815653677
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.0005083145378561582,
+              0.2398,
+              1.5415541538565651
+            ],
+            [
+              -0.0003150895076120541,
+              0.60594,
+              1.5391319928198695
+            ],
+            [
+              8.100951908240894e-05,
+              0.60663,
+              1.170037390846932
+            ],
+            [
+              -0.00013453762147475068,
+              0.23772000000000004,
+              1.1865786737303785
+            ]
+          ],
+          "plane_normal": [
+            -0.9999993068249945,
+            0.000520749044901429,
+            -0.0010560160807970161
+          ],
+          "plane_offset_m": 0.0009962085694866416,
+          "point_support_count": 78785,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.000263848670070163,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.93053,
+            "mask_coverage": 0.93856,
+            "mask_iou": 0.8771,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 78785,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.000263848670070163,
+              "plane_residual_p95_m": 0.0005718103269862773,
+              "mask_precision": 0.9323668639053254,
+              "mask_coverage": 0.9335711154033013,
+              "mask_iou": 0.8743590881850265,
+              "plane_normal": [
+                -0.000520749044901429,
+                0.34301223676441017,
+                -0.9393307906431624
+              ],
+              "plane_offset_m": 1.3246652413917581
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-6441804398e4c1143dce",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/21"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/21:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1350.0004459376596,
+              553.0039468156352
+            ],
+            [
+              1132.000092157775,
+              567.0052954382602
+            ],
+            [
+              1151.0006789695087,
+              948.0049066218733
+            ],
+            [
+              1345.9983985600359,
+              948.0012209856343
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -1.4485973370392813e-05,
+              0.65662,
+              1.5213040221693663
+            ],
+            [
+              0.0002170896211906026,
+              1.03104,
+              1.5098649587136457
+            ],
+            [
+              0.0004662834936046689,
+              1.02088,
+              1.1698971625881684
+            ],
+            [
+              0.0002595511170317977,
+              0.65535,
+              1.1699724070197002
+            ]
+          ],
+          "plane_normal": [
+            -0.999999517352905,
+            0.0005945955934293099,
+            -0.0007821445116047985
+          ],
+          "plane_offset_m": 0.0007823029908629904,
+          "point_support_count": 75832,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.000246306283328715,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.94378,
+            "mask_coverage": 0.94016,
+            "mask_iou": 0.8903,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 75832,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.000246306283328715,
+              "plane_residual_p95_m": 0.0005500378702880448,
+              "mask_precision": 0.94471159835555,
+              "mask_coverage": 0.9352507338250167,
+              "mask_iou": 0.8867165575304022,
+              "plane_normal": [
+                -0.0005945955934293099,
+                0.3427549536765833,
+                -0.9394246580680343
+              ],
+              "plane_offset_m": 1.3249532299042242
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-8f0eff17940603f62c47",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/22"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/22:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              2416.9965470673983,
+              168.00293245709443
+            ],
+            [
+              2182.999986088907,
+              195.00663144284505
+            ],
+            [
+              2113.997304601222,
+              583.000958318473
+            ],
+            [
+              2323.0015917885166,
+              587.0014240992022
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0004526098076551577,
+              -1.02408,
+              1.8102604722125022
+            ],
+            [
+              2.585020217993339e-05,
+              -0.6611,
+              1.7913989432119377
+            ],
+            [
+              -0.00018490121655867497,
+              -0.6614,
+              1.4967728999234338
+            ],
+            [
+              0.00021737113705899702,
+              -1.02389,
+              1.4934339514432209
+            ]
+          ],
+          "plane_normal": [
+            -0.9999990782941247,
+            -0.0011371637593434152,
+            0.0007418015136179061
+          ],
+          "plane_offset_m": -0.002052925812704589,
+          "point_support_count": 84363,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00020507063741053496,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.95243,
+            "mask_coverage": 0.92367,
+            "mask_iou": 0.88293,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 84363,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00020507063741053496,
+              "plane_residual_p95_m": 0.00048358990130483706,
+              "mask_precision": 0.953954882116809,
+              "mask_coverage": 0.9186466885902824,
+              "mask_iou": 0.8796425666798741,
+              "plane_normal": [
+                0.0011371637593434152,
+                0.3413227626752585,
+                -0.9399454657257056
+              ],
+              "plane_offset_m": 1.3233016278732057
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "AMBIGUOUS_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-d6ff60fc952da637615b",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/23"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/23:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1916.9987830848613,
+              158.99936592276234
+            ],
+            [
+              1871.0016696728821,
+              559.9935458737446
+            ],
+            [
+              2079.004368928963,
+              593.9933566045735
+            ],
+            [
+              2154.9999403363477,
+              164.99722979667456
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0002613528054034031,
+              -0.23123000000000005,
+              1.8164597480378781
+            ],
+            [
+              0.0006288597196224543,
+              -0.23802999999999996,
+              1.5155574226253483
+            ],
+            [
+              -0.0007317856223392205,
+              -0.60375,
+              1.4877561700590807
+            ],
+            [
+              -0.0011701222826849822,
+              -0.6071500000000001,
+              1.812117469940821
+            ]
+          ],
+          "plane_normal": [
+            -0.999991837219744,
+            0.003822999440169019,
+            -0.001307734361954678
+          ],
+          "plane_offset_m": 0.0035210787788696866,
+          "point_support_count": 89091,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0004380575061636467,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.94829,
+            "mask_coverage": 0.94699,
+            "mask_iou": 0.90049,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 89091,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0004380575061636467,
+              "plane_residual_p95_m": 0.0010013982761692963,
+              "mask_precision": 0.9501519756838905,
+              "mask_coverage": 0.9424328012440101,
+              "mask_iou": 0.8980313889140887,
+              "plane_normal": [
+                -0.003822999440169019,
+                0.3432462198202726,
+                -0.9392376787876291
+              ],
+              "plane_offset_m": 1.3292467672052533
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "AMBIGUOUS_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-0a9f9cf2f6b89b440636",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/24"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/24:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1889.0010271730293,
+              146.99599904893492
+            ],
+            [
+              1654.9996462745944,
+              161.99514798346274
+            ],
+            [
+              1625.0016320221316,
+              581.0032453227212
+            ],
+            [
+              1838.9960256369145,
+              578.9965066216078
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0002689161284274988,
+              -0.18479,
+              1.8247256565055632
+            ],
+            [
+              0.00018555619892146602,
+              0.18211,
+              1.8143802637569937
+            ],
+            [
+              -0.0003672435409516339,
+              0.18213999999999997,
+              1.4984355337606734
+            ],
+            [
+              -0.0002907213001155373,
+              -0.18630000000000002,
+              1.500078441045537
+            ]
+          ],
+          "plane_normal": [
+            -0.9999984968282405,
+            -0.00017857049325999816,
+            0.0017246604994386446
+          ],
+          "plane_offset_m": -0.0029130886183302723,
+          "point_support_count": 86603,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00018130736965100665,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.91037,
+            "mask_coverage": 0.93749,
+            "mask_iou": 0.85827,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 86603,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00018130736965100665,
+              "plane_residual_p95_m": 0.00042299397992371366,
+              "mask_precision": 0.9118696892801111,
+              "mask_coverage": 0.9326692154434333,
+              "mask_iou": 0.8555495183996048,
+              "plane_normal": [
+                0.00017857049325999816,
+                0.3403989784659646,
+                -0.9402810768977043
+              ],
+              "plane_offset_m": 1.3247610522107132
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-72abf9e3feb6e644e1be",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/25"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/25:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1623.002943704914,
+              158.0041190487504
+            ],
+            [
+              1383.0027812661938,
+              159.9960085577139
+            ],
+            [
+              1380.0011738619585,
+              582.9983855233727
+            ],
+            [
+              1593.0020750480498,
+              591.9940446859327
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -2.452251836704278e-06,
+              0.23314000000000001,
+              1.81710913766805
+            ],
+            [
+              0.0007601155287741967,
+              0.61177,
+              1.8158419003658943
+            ],
+            [
+              -0.00011228233023707901,
+              0.60428,
+              1.4967677523658165
+            ],
+            [
+              -0.000869699839034066,
+              0.23624999999999996,
+              1.4894239169430032
+            ]
+          ],
+          "plane_normal": [
+            -0.9999944006932757,
+            0.0020229291823216514,
+            0.0026657718618998453
+          ],
+          "plane_offset_m": -0.005319741944122369,
+          "point_support_count": 92161,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00029553170714370863,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.94716,
+            "mask_coverage": 0.95134,
+            "mask_iou": 0.90339,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 92161,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00029553170714370863,
+              "plane_residual_p95_m": 0.0007033758006629309,
+              "mask_precision": 0.9490371743383792,
+              "mask_coverage": 0.9467947400862955,
+              "mask_iou": 0.9009864208272639,
+              "plane_normal": [
+                -0.0020229291823216514,
+                0.33951322210265433,
+                -0.9405991068329785
+              ],
+              "plane_offset_m": 1.3255334877760538
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-e8f3eb57e165f24c540d",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/27"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/27:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              2209.0036453745506,
+              -0.0011820035992405507
+            ],
+            [
+              2178.0017170740457,
+              200.99709123178155
+            ],
+            [
+              2405.9983704160254,
+              212.00668817143634
+            ],
+            [
+              2461.0039012443945,
+              -0.004659942583929461
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.00029683011579573204,
+              -0.6472500000000001,
+              1.9226975832559703
+            ],
+            [
+              -0.00022572350857119616,
+              -0.6545799999999999,
+              1.787169946798123
+            ],
+            [
+              0.00012058322847630087,
+              -1.02185,
+              1.7794669557138834
+            ],
+            [
+              6.287862531317856e-05,
+              -1.03318,
+              1.9227794955356965
+            ]
+          ],
+          "plane_normal": [
+            -0.9999994530853227,
+            -0.000932157104143272,
+            -0.00047424907894669986
+          ],
+          "plane_offset_m": 1.1743936735914196e-05,
+          "point_support_count": 42388,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00016864499081731797,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.84786,
+            "mask_coverage": 0.94425,
+            "mask_iou": 0.80745,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 42388,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00016864499081731797,
+              "plane_residual_p95_m": 0.00039677191469688077,
+              "mask_precision": 0.8490675640486349,
+              "mask_coverage": 0.9395544719051313,
+              "mask_iou": 0.8050902184235518,
+              "plane_normal": [
+                0.000932157104143272,
+                0.3424656046297331,
+                -0.9395299041162685
+              ],
+              "plane_offset_m": 1.3235391878849898
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "AMBIGUOUS_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-d9da68a456049a026abe",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/28"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/28:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1932.9978592320833,
+              -0.00608077441206846
+            ],
+            [
+              1913.0005411178113,
+              201.99306322107333
+            ],
+            [
+              2150.0013069336974,
+              199.9962389463107
+            ],
+            [
+              2186.9975818137495,
+              -0.0027136662111544954
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.00041132058647375125,
+              -0.22499999999999998,
+              1.9226754037130558
+            ],
+            [
+              0.0013991155582309123,
+              -0.23421000000000003,
+              1.7866636879641322
+            ],
+            [
+              0.0007869331078800279,
+              -0.6107800000000001,
+              1.7879932490373749
+            ],
+            [
+              -0.0010256445242209367,
+              -0.61284,
+              1.922537178897951
+            ]
+          ],
+          "plane_normal": [
+            -0.9999087228391775,
+            0.0015885995760722598,
+            -0.013417240458153446
+          ],
+          "plane_offset_m": 0.02574413292964059,
+          "point_support_count": 44808,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00045068839817769105,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.90465,
+            "mask_coverage": 0.9626,
+            "mask_iou": 0.87394,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 44808,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00045068839817769105,
+              "plane_residual_p95_m": 0.001016044903837443,
+              "mask_precision": 0.9062556883684243,
+              "mask_coverage": 0.9580705167953132,
+              "mask_iou": 0.8716831374990273,
+              "plane_normal": [
+                -0.0015885995760722598,
+                0.35459700654787873,
+                -0.9350178818069046
+              ],
+              "plane_offset_m": 1.3299533777528916
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "AMBIGUOUS_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-1a0becbb82c9cc646431",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/3"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/3:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1930.00224783795,
+              1445.9988914468913
+            ],
+            [
+              1758.0022122650153,
+              1455.0010398571048
+            ],
+            [
+              1736.9973939265353,
+              1596.0001196392225
+            ],
+            [
+              1910.0003042037545,
+              1598.0034602637204
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.0001876676638477015,
+              -0.59812,
+              0.6209981671911249
+            ],
+            [
+              0.0004863581187057875,
+              -0.23556,
+              0.6091958712600591
+            ],
+            [
+              0.00022278351900029136,
+              -0.22779000000000005,
+              0.42517840815280294
+            ],
+            [
+              -0.0005134234672417026,
+              -0.6109500000000001,
+              0.4231264580380565
+            ]
+          ],
+          "plane_normal": [
+            -0.9999970194994141,
+            0.001908630879895446,
+            0.0015225375046243133
+          ],
+          "plane_offset_m": 8.872600784702814e-06,
+          "point_support_count": 23829,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0002513941556610969,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.94307,
+            "mask_coverage": 0.93788,
+            "mask_iou": 0.88763,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 23829,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0002513941556610969,
+              "plane_residual_p95_m": 0.0005839348169176972,
+              "mask_precision": 0.9454826806332579,
+              "mask_coverage": 0.9285714285714286,
+              "mask_iou": 0.8813803817132712,
+              "plane_normal": [
+                -0.001908630879895446,
+                0.34058840667646584,
+                -0.9402105585270518
+              ],
+              "plane_offset_m": 1.3289171296768054
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-98985a303c7465597512",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/4"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/4:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1565.0027306872512,
+              1423.9983640823623
+            ],
+            [
+              1546.9996339156269,
+              1597.000187133552
+            ],
+            [
+              1719.0020513203222,
+              1599.0011514847909
+            ],
+            [
+              1735.0019752874223,
+              1442.0032893769187
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.002464053762230911,
+              0.17962,
+              0.6463820611689699
+            ],
+            [
+              -4.815175515870962e-06,
+              0.19294,
+              0.4240268010868926
+            ],
+            [
+              -0.0007162515845677841,
+              -0.18806,
+              0.42195519344163834
+            ],
+            [
+              0.001569970763502404,
+              -0.18403999999999998,
+              0.6246577173217698
+            ]
+          ],
+          "plane_normal": [
+            -0.9999355693761947,
+            0.001788764152096442,
+            0.011209702008250454
+          ],
+          "plane_offset_m": -0.0051048154355799605,
+          "point_support_count": 26403,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0008639548743023261,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.92835,
+            "mask_coverage": 0.9466,
+            "mask_iou": 0.88215,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 26403,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0008639548743023261,
+              "plane_residual_p95_m": 0.0019145286095091799,
+              "mask_precision": 0.930141619108011,
+              "mask_coverage": 0.9373735222068378,
+              "mask_iou": 0.8757213930348259,
+              "plane_normal": [
+                -0.001788764152096442,
+                0.3314644324961183,
+                -0.9434660196916657
+              ],
+              "plane_offset_m": 1.3394158163835599
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-b2683635cb8f47789002",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/5"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/5:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1542.9983449012595,
+              1324.0012527449799
+            ],
+            [
+              1369.9989747351551,
+              1324.9974740397504
+            ],
+            [
+              1357.9988257471905,
+              1598.0020491131722
+            ],
+            [
+              1533.0003707302326,
+              1594.996692254679
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -0.00026029818057859977,
+              0.24087999999999998,
+              0.7687431191346956
+            ],
+            [
+              -0.00025124636371454123,
+              0.59671,
+              0.7675692289930676
+            ],
+            [
+              0.0017090190551518614,
+              0.6113500000000001,
+              0.4211043924519151
+            ],
+            [
+              0.0016914330854396198,
+              0.22357000000000005,
+              0.4252078776454633
+            ]
+          ],
+          "plane_normal": [
+            -0.999983859792568,
+            6.694615378118175e-06,
+            -0.0056815587245190365
+          ],
+          "plane_offset_m": 0.00410367146112383,
+          "point_support_count": 45073,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0007743400600644533,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.95142,
+            "mask_coverage": 0.93595,
+            "mask_iou": 0.89326,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 45073,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0007743400600644533,
+              "plane_residual_p95_m": 0.0015126159774740521,
+              "mask_precision": 0.9527564048363913,
+              "mask_coverage": 0.9285169849411862,
+              "mask_iou": 0.887648194099807,
+              "plane_normal": [
+                -6.694615378118175e-06,
+                0.3473535418576018,
+                -0.9377342464228133
+              ],
+              "plane_offset_m": 1.319830108958084
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-b424fa5d156a98a511bb",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/6"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/6:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1167.9975116027163,
+              1453.9982613168218
+            ],
+            [
+              1169.0004721675575,
+              1598.9966931854233
+            ],
+            [
+              1344.001185894509,
+              1594.9985511176278
+            ],
+            [
+              1340.0008716872137,
+              1454.995587930659
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              -2.8331335329978558e-05,
+              1.02152,
+              0.6108517682272356
+            ],
+            [
+              -0.0009383231011887982,
+              1.03015,
+              0.42216372219626397
+            ],
+            [
+              0.0003948643343614222,
+              0.6426000000000001,
+              0.42638214740736946
+            ],
+            [
+              0.0012115452600913734,
+              0.65512,
+              0.6086445967277534
+            ]
+          ],
+          "plane_normal": [
+            -0.9999832904345601,
+            -0.0034119974262284583,
+            0.004666596750696232
+          ],
+          "plane_offset_m": 0.0006042838388112087,
+          "point_support_count": 22497,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0004181360983248378,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.90749,
+            "mask_coverage": 0.93906,
+            "mask_iou": 0.85701,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 22497,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0004181360983248378,
+              "plane_residual_p95_m": 0.0009735481564131287,
+              "mask_precision": 0.9097048119692681,
+              "mask_coverage": 0.929512870305334,
+              "mask_iou": 0.8509986382206083,
+              "plane_normal": [
+                0.0034119974262284583,
+                0.3376292617868893,
+                -0.9412729890200842
+              ],
+              "plane_offset_m": 1.3306266239279105
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-8f42329e787234e64395",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/7"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/7:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              2196.1003463900984,
+              1182.2600700008936
+            ],
+            [
+              1994.9881179543913,
+              1189.2802275303254
+            ],
+            [
+              1941.9622190855798,
+              1489.6474658737297
+            ],
+            [
+              2127.651227904098,
+              1476.591610725108
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              6.968424199094159e-05,
+              -1.03708,
+              0.9287924118903989
+            ],
+            [
+              -0.000779111494609408,
+              -0.63957,
+              0.9215776114220887
+            ],
+            [
+              0.0003076920480022949,
+              -0.6403700000000001,
+              0.5653742090547618
+            ],
+            [
+              0.0011249086012832255,
+              -1.0345,
+              0.5813906118064736
+            ]
+          ],
+          "plane_normal": [
+            -0.9999929377983326,
+            -0.0021906914162105845,
+            -0.0030537230684545905
+          ],
+          "plane_offset_m": 0.0006333605017837349,
+          "point_support_count": 54557,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.00037737382727615434,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.95249,
+            "mask_coverage": 0.97482,
+            "mask_iou": 0.92962,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 54557,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.00037737382727615434,
+              "plane_residual_p95_m": 0.0009115778483903545,
+              "mask_precision": 0.9589236123317045,
+              "mask_coverage": 0.9701954368431348,
+              "mask_iou": 0.9314836947242615,
+              "plane_normal": [
+                0.0021906914162105845,
+                0.3448872889437927,
+                -0.9386415496855653
+              ],
+              "plane_offset_m": 1.319005427724532
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-e75d56481840c1279ed3",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/8"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/8:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1796.0003444898057,
+              1178.0002567331358
+            ],
+            [
+              1754.9964455359711,
+              1478.0032159127552
+            ],
+            [
+              1920.999700648898,
+              1473.0035998973328
+            ],
+            [
+              1977.9973738087253,
+              1191.0021582211114
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0015232353401903875,
+              -0.24317999999999995,
+              0.9326690585347196
+            ],
+            [
+              0.0013524391786630119,
+              -0.23590999999999995,
+              0.5794135610139148
+            ],
+            [
+              -0.000570961848858742,
+              -0.58833,
+              0.5872861799229774
+            ],
+            [
+              -0.00047129246088384313,
+              -0.6067199999999999,
+              0.9195287709103659
+            ]
+          ],
+          "plane_normal": [
+            -0.9999848903886512,
+            0.005464781627181122,
+            0.0005959498005574431
+          ],
+          "plane_offset_m": 0.0022957726538001323,
+          "point_support_count": 48726,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0006245908196001529,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.95706,
+            "mask_coverage": 0.91749,
+            "mask_iou": 0.88121,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 48726,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0006245908196001529,
+              "plane_residual_p95_m": 0.001434309737544881,
+              "mask_precision": 0.9587202896269479,
+              "mask_coverage": 0.9104600321387197,
+              "mask_iou": 0.8761147871116226,
+              "plane_normal": [
+                -0.005464781627181122,
+                0.3414549659042869,
+                -0.9398822492318225
+              ],
+              "plane_offset_m": 1.3323453442001938
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    },
+    {
+      "fusion_id": "fusion-2981ae4eefe85d868776",
+      "source_members": [
+        [
+          "module_1_lower",
+          "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/9"
+        ]
+      ],
+      "observed_faces": [
+        {
+          "face_id": "module_1_lower/sim-j1-mast-v2:module_1_lower:100/sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/9:face:0",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "boundary_2d_px": [
+            [
+              1767.0025014462633,
+              1169.0032671143915
+            ],
+            [
+              1578.998384228673,
+              1180.004728777366
+            ],
+            [
+              1563.0018509819413,
+              1484.997981875767
+            ],
+            [
+              1724.9983927909304,
+              1496.0037341367156
+            ]
+          ],
+          "corners_3d_m": [
+            [
+              0.0006138032493592238,
+              -0.18289,
+              0.9429182015853441
+            ],
+            [
+              0.00013276725363464692,
+              0.18774000000000002,
+              0.9312170604285673
+            ],
+            [
+              -0.00038156753233176133,
+              0.17569999999999997,
+              0.5718718025501197
+            ],
+            [
+              3.7083813026805856e-05,
+              -0.17515000000000003,
+              0.557438160215247
+            ]
+          ],
+          "plane_normal": [
+            -0.9999981350549002,
+            -0.001251444815705681,
+            0.001470976748610173
+          ],
+          "plane_offset_m": -0.0010022885638876558,
+          "point_support_count": 53404,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0002492630731967914,
+          "evidence": "registered_sam_visible_face",
+          "frame_id": "world",
+          "diagnostics": {
+            "mask_precision": 0.96327,
+            "mask_coverage": 0.92657,
+            "mask_iou": 0.89496,
+            "final_support": {
+              "ordinal": 0,
+              "status": "PASS",
+              "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+              "point_support_count": 53404,
+              "point_support_ratio": 1.0,
+              "plane_residual_m": 0.0002492630731967914,
+              "plane_residual_p95_m": 0.0005887438595213011,
+              "mask_precision": 0.9657142857142857,
+              "mask_coverage": 0.9207268714871901,
+              "mask_iou": 0.8915823566730108,
+              "plane_normal": [
+                0.001251444815705681,
+                0.3406372394808618,
+                -0.9401939719891483
+              ],
+              "plane_offset_m": 1.3254533797875592
+            },
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "physical_corners_certified": false
+          }
+        }
+      ],
+      "contributing_modules": [
+        "module_1_lower"
+      ],
+      "association_status": "UNASSOCIATED_RETAINED",
+      "coverage_status": "COMPLETE_MODULE_SET",
+      "diagnostics": {
+        "oracle_identity_used": false,
+        "association_records": []
+      }
+    }
+  ],
+  "coverage_status": "COMPLETE_MODULE_SET"
+}

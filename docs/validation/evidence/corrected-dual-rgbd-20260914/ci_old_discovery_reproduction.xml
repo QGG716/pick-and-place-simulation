@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="10.207" timestamp="2026-09-14T21:30:37.576584" hostname="autodl-container-qms6hzyhpm-32041050"><testcase classname="v05-acceptance.lineage-bd00dfe-20260914.test_old_discovery_launch" name="test_old_discovery_launch" time="10.049"><failure message="test_old_discovery_launch.TestBridgeIntegration.test_world_gate_action_cancel_and_correlated_stop failed">
+==============================================================================================================================================================
+FAIL: test_old_discovery_launch.TestBridgeIntegration.test_world_gate_action_cancel_and_correlated_stop
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/test_old_discovery_launch.py", line 195, in test_world_gate_action_cancel_and_correlated_stop
+    self.wait_for(events, lambda item: item.command_id == competing.command_id and item.kind == "REJECTED")
+  File "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/test_old_discovery_launch.py", line 65, in wait_for
+    raise AssertionError(f"timed out waiting for ROS integration output; received={values!r}")
+AssertionError: timed out waiting for ROS integration output; received=[]
+</failure></testcase></testsuite></testsuites>

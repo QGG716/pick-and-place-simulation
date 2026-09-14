@@ -1,0 +1,113 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-6.2.5, py-1.10.0, pluggy-0.13.0
+cachedir: /__w/_temp/acceptance/humble/github-34688932468-1/build/unloading_ros_bridge/.pytest_cache
+rootdir: /__w/pick-and-place-simulation/pick-and-place-simulation/ros2_ws/src/unloading_ros_bridge, configfile: pytest.ini, testpaths: test
+plugins: ament-lint-0.12.15, launch-testing-1.0.14, launch-testing-ros-0.19.14, ament-pep257-0.12.15, ament-copyright-0.12.15, ament-xmllint-0.12.15, ament-flake8-0.12.15, colcon-core-0.21.1
+collected 5 items
+
+test/test_bridge_integration_launch.py F                                 [ 20%]
+test/test_humble_imports.py ...                                          [ 80%]
+test/test_mock_action_launch.py .                                        [100%]
+
+=================================== FAILURES ===================================
+_________________ launch tests: test_bridge_integration_launch _________________
+
+=========================================================================================================================================================================================================
+FAIL: test_bridge_integration_launch.TestBridgeIntegration.test_world_gate_action_cancel_and_correlated_stop
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/__w/pick-and-place-simulation/pick-and-place-simulation/ros2_ws/src/unloading_ros_bridge/test/test_bridge_integration_launch.py", line 182, in test_world_gate_action_cancel_and_correlated_stop
+    self.wait_for(events, lambda item: item.command_id == competing.command_id and item.kind == "REJECTED")
+  File "/__w/pick-and-place-simulation/pick-and-place-simulation/ros2_ws/src/unloading_ros_bridge/test/test_bridge_integration_launch.py", line 63, in wait_for
+    raise AssertionError("timed out waiting for ROS integration output")
+AssertionError: timed out waiting for ROS integration output
+----------------------------- Captured stdout call -----------------------------
+[INFO] [launch]: All log files can be found below /github/home/.ros/log/2026-09-12-10-39-29-152835-23c115bb98fa-2342
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [mock_follow_joint_trajectory-1]: process started with pid [2355]
+[INFO] [world_bridge_node-2]: process started with pid [2357]
+[INFO] [execution_bridge_node-3]: process started with pid [2359]
+[world_bridge_node-2] [WARN] [1789209570.339728521] [unloading_world_bridge]: world snapshot blocked: tool_attachment,payload_attachment,base_state,conveyor_state,config_identity
+[world_bridge_node-2] [WARN] [1789209570.370583723] [unloading_world_bridge]: world snapshot blocked: tool_attachment,payload_attachment,base_state,conveyor_state,config_identity
+[world_bridge_node-2] [ERROR] [1789209570.514207139] [unloading_world_bridge]: rejecting malformed or stale mechanism state: conveyor state requires boolean running
+[world_bridge_node-2] [ERROR] [1789209570.678485471] [unloading_world_bridge]: rejecting malformed or stale mechanism state: retired source epoch cannot take ownership again
+[INFO] [execution_bridge_node-3]: sending signal 'SIGINT' to process[execution_bridge_node-3]
+[INFO] [world_bridge_node-2]: sending signal 'SIGINT' to process[world_bridge_node-2]
+[INFO] [mock_follow_joint_trajectory-1]: sending signal 'SIGINT' to process[mock_follow_joint_trajectory-1]
+[execution_bridge_node-3] Traceback (most recent call last):
+[execution_bridge_node-3]   File "/__w/_temp/acceptance/humble/github-34688932468-1/install/unloading_ros_bridge/lib/unloading_ros_bridge/execution_bridge_node", line 33, in <module>
+[execution_bridge_node-3]     sys.exit(load_entry_point('unloading-ros-bridge', 'console_scripts', 'execution_bridge_node')())
+[execution_bridge_node-3]   File "/__w/_temp/acceptance/humble/github-34688932468-1/build/unloading_ros_bridge/unloading_ros_bridge/execution_bridge_node.py", line 401, in main
+[execution_bridge_node-3]     executor.spin()
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 323, in spin
+[execution_bridge_node-3]     self.spin_once()
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 808, in spin_once
+[execution_bridge_node-3]     self._spin_once_impl(timeout_sec)
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 797, in _spin_once_impl
+[execution_bridge_node-3]     handler, entity, node = self.wait_for_ready_callbacks(timeout_sec=timeout_sec)
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 780, in wait_for_ready_callbacks
+[execution_bridge_node-3]     return next(self._cb_iter)
+[execution_bridge_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 677, in _wait_for_ready_callbacks
+[execution_bridge_node-3]     wait_set.wait(timeout_nsec)
+[execution_bridge_node-3] KeyboardInterrupt
+[mock_follow_joint_trajectory-1] Traceback (most recent call last):
+[mock_follow_joint_trajectory-1]   File "/__w/_temp/acceptance/humble/github-34688932468-1/install/unloading_ros_bridge/lib/unloading_ros_bridge/mock_follow_joint_trajectory", line 33, in <module>
+[mock_follow_joint_trajectory-1]     sys.exit(load_entry_point('unloading-ros-bridge', 'console_scripts', 'mock_follow_joint_trajectory')())
+[mock_follow_joint_trajectory-1]   File "/__w/_temp/acceptance/humble/github-34688932468-1/build/unloading_ros_bridge/unloading_ros_bridge/mock_follow_joint_trajectory.py", line 87, in main
+[mock_follow_joint_trajectory-1]     executor.spin()
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 323, in spin
+[mock_follow_joint_trajectory-1]     self.spin_once()
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 863, in spin_once
+[mock_follow_joint_trajectory-1]     self._spin_once_impl(timeout_sec)
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 844, in _spin_once_impl
+[mock_follow_joint_trajectory-1]     handler, entity, node = self.wait_for_ready_callbacks(
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 780, in wait_for_ready_callbacks
+[mock_follow_joint_trajectory-1]     return next(self._cb_iter)
+[mock_follow_joint_trajectory-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 677, in _wait_for_ready_callbacks
+[mock_follow_joint_trajectory-1]     wait_set.wait(timeout_nsec)
+[mock_follow_joint_trajectory-1] KeyboardInterrupt
+[world_bridge_node-2] Traceback (most recent call last):
+[world_bridge_node-2]   File "/__w/_temp/acceptance/humble/github-34688932468-1/install/unloading_ros_bridge/lib/unloading_ros_bridge/world_bridge_node", line 33, in <module>
+[world_bridge_node-2]     sys.exit(load_entry_point('unloading-ros-bridge', 'console_scripts', 'world_bridge_node')())
+[world_bridge_node-2]   File "/__w/_temp/acceptance/humble/github-34688932468-1/build/unloading_ros_bridge/unloading_ros_bridge/world_bridge_node.py", line 264, in main
+[world_bridge_node-2]     rclpy.spin(node)
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 229, in spin
+[world_bridge_node-2]     executor.spin_once()
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 808, in spin_once
+[world_bridge_node-2]     self._spin_once_impl(timeout_sec)
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 797, in _spin_once_impl
+[world_bridge_node-2]     handler, entity, node = self.wait_for_ready_callbacks(timeout_sec=timeout_sec)
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 780, in wait_for_ready_callbacks
+[world_bridge_node-2]     return next(self._cb_iter)
+[world_bridge_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 677, in _wait_for_ready_callbacks
+[world_bridge_node-2]     wait_set.wait(timeout_nsec)
+[world_bridge_node-2] KeyboardInterrupt
+[ERROR] [execution_bridge_node-3]: process has died [pid 2359, exit code -2, cmd '/__w/_temp/acceptance/humble/github-34688932468-1/install/unloading_ros_bridge/lib/unloading_ros_bridge/execution_bridge_node --ros-args --params-file /tmp/launch_params_9ep4s6ki'].
+[ERROR] [mock_follow_joint_trajectory-1]: process has died [pid 2355, exit code -2, cmd '/__w/_temp/acceptance/humble/github-34688932468-1/install/unloading_ros_bridge/lib/unloading_ros_bridge/mock_follow_joint_trajectory --ros-args --params-file /tmp/launch_params_8jj2avxm'].
+[ERROR] [world_bridge_node-2]: process has died [pid 2357, exit code -2, cmd '/__w/_temp/acceptance/humble/github-34688932468-1/install/unloading_ros_bridge/lib/unloading_ros_bridge/world_bridge_node --ros-args --params-file /tmp/launch_params_ymq21vt0'].
+----------------------------- Captured stderr call -----------------------------
+test_world_gate_action_cancel_and_correlated_stop (test_bridge_integration_launch.TestBridgeIntegration) ... FAIL
+
+======================================================================
+FAIL: test_world_gate_action_cancel_and_correlated_stop (test_bridge_integration_launch.TestBridgeIntegration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/__w/pick-and-place-simulation/pick-and-place-simulation/ros2_ws/src/unloading_ros_bridge/test/test_bridge_integration_launch.py", line 182, in test_world_gate_action_cancel_and_correlated_stop
+    self.wait_for(events, lambda item: item.command_id == competing.command_id and item.kind == "REJECTED")
+  File "/__w/pick-and-place-simulation/pick-and-place-simulation/ros2_ws/src/unloading_ros_bridge/test/test_bridge_integration_launch.py", line 63, in wait_for
+    raise AssertionError("timed out waiting for ROS integration output")
+AssertionError: timed out waiting for ROS integration output
+
+----------------------------------------------------------------------
+Ran 1 test in 9.974s
+
+FAILED (failures=1)
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.000s
+
+OK
+- generated xml file: /__w/_temp/acceptance/humble/github-34688932468-1/build/unloading_ros_bridge/pytest.xml -
+=========================== short test summary info ============================
+FAILED test/test_bridge_integration_launch.py::test_bridge_integration_launch
+========================= 1 failed, 4 passed in 11.01s =========================

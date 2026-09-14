@@ -1,0 +1,4025 @@
+{
+  "__type__": "PlanningWorldSnapshot",
+  "scene_revision": {
+    "__type__": "SceneRevision",
+    "sequence": 0,
+    "fingerprint": "91dfa2b5630f2fd3f0922da22ac0c49c76ff4b275bf979af84a6a178b9cc385e",
+    "source": "perception-integration",
+    "parent_fingerprint": null
+  },
+  "scene_snapshot": {
+    "blocking_reasons": [
+      "DEGRADED_MISSING_MODULE",
+      "OBSERVATION_STALE",
+      "UNKNOWN_OR_UNTRANSFORMED_REGIONS",
+      "ROBOT_STATE_STALE_OR_TIME_JUMP",
+      "MECHANISM_STATE_STALE_OR_TIME_JUMP"
+    ],
+    "geometry_fingerprint": "91dfa2b5630f2fd3f0922da22ac0c49c76ff4b275bf979af84a6a178b9cc385e",
+    "obstacles": [
+      {
+        "association_status": "UNASSOCIATED_RETAINED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "OBSERVED_SURFACES_WITH_UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "UNKNOWN",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [
+          {
+            "T_W_C_at_capture": [
+              [
+                0.0,
+                -0.0,
+                1.0,
+                -1.325
+              ],
+              [
+                -1.0,
+                -0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                2.6293411964178084
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "boundary_2d_px": [
+              [
+                2292.9993805015533,
+                1884.9945975531698
+              ],
+              [
+                2089.002122713093,
+                1896.0029150489893
+              ],
+              [
+                2079.0010391248034,
+                1937.998034198835
+              ],
+              [
+                2296.9975550811746,
+                1942.995533982502
+              ]
+            ],
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "calibration_identity": "c155391544c4e3200e0576320879de938caa93ea8c5b41aca8697ca296955786",
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "clock_domain": "ros_sim_time",
+            "corner_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "corners_3d_m": [
+              [
+                0.0,
+                -1.01638,
+                1.8360311964178084
+              ],
+              [
+                0.0,
+                -0.6551400000000001,
+                1.8264711964178084
+              ],
+              [
+                0.0,
+                -0.6374299999999999,
+                1.7900011964178084
+              ],
+              [
+                0.0,
+                -1.02346,
+                1.7856611964178084
+              ]
+            ],
+            "diagnostics": {
+              "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+              "final_support": {
+                "mask_coverage": 0.8967182418448802,
+                "mask_iou": 0.7852766030896695,
+                "mask_precision": 0.8633646456020495,
+                "ordinal": 0,
+                "plane_normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "plane_offset_m": 1.325,
+                "plane_residual_m": 6.118335884858916e-07,
+                "plane_residual_p95_m": 1.9073486323684108e-07,
+                "point_support_count": 9099,
+                "point_support_ratio": 1.0,
+                "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                "status": "PASS"
+              },
+              "mask_coverage": 0.9118,
+              "mask_iou": 0.79097,
+              "mask_precision": 0.85651,
+              "physical_corners_certified": false
+            },
+            "evidence": "registered_sam_visible_face",
+            "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1:face:0",
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "plane_normal": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "plane_offset_m": -0.0,
+            "plane_residual_m": 6.118335884858916e-07,
+            "point_support_count": 9099,
+            "point_support_ratio": 1.0,
+            "schema_version": "observed_surface_v1",
+            "sensor_epoch": "sim-j1-mast-v2",
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1",
+            "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD",
+            "volume_status": "UNKNOWN"
+          }
+        ],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "fusion_id": "fusion-962f806aff3d2a010f61",
+          "source_members": [
+            [
+              "module_0_upper",
+              "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1"
+            ]
+          ],
+          "track_id": null
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "fusion-962f806aff3d2a010f61"
+      },
+      {
+        "association_status": "UNASSOCIATED_RETAINED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "OBSERVED_SURFACES_WITH_UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "UNKNOWN",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [
+          {
+            "T_W_C_at_capture": [
+              [
+                0.0,
+                -0.0,
+                1.0,
+                -1.325
+              ],
+              [
+                -1.0,
+                -0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                2.6293411964178084
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "boundary_2d_px": [
+              [
+                1842.001899636759,
+                1906.9997175683482
+              ],
+              [
+                1847.9991615061906,
+                1942.0052460069362
+              ],
+              [
+                2068.999955536514,
+                1937.998034198835
+              ],
+              [
+                2059.99841559313,
+                1891.9957032408875
+              ]
+            ],
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "calibration_identity": "c155391544c4e3200e0576320879de938caa93ea8c5b41aca8697ca296955786",
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "clock_domain": "ros_sim_time",
+            "corner_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "corners_3d_m": [
+              [
+                0.0,
+                -0.21775,
+                1.8169211964178085
+              ],
+              [
+                0.0,
+                -0.22836999999999996,
+                1.7865211964178083
+              ],
+              [
+                0.0,
+                -0.61972,
+                1.7900011964178084
+              ],
+              [
+                0.0,
+                -0.60378,
+                1.8299511964178083
+              ]
+            ],
+            "diagnostics": {
+              "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+              "final_support": {
+                "mask_coverage": 0.8308151464279052,
+                "mask_iou": 0.8267285382830627,
+                "mask_precision": 0.9940854815310791,
+                "ordinal": 0,
+                "plane_normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "plane_offset_m": 1.325,
+                "plane_residual_m": 6.347908050412985e-07,
+                "plane_residual_p95_m": 1.9073486323684108e-07,
+                "point_support_count": 8908,
+                "point_support_ratio": 1.0,
+                "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                "status": "PASS"
+              },
+              "mask_coverage": 0.85227,
+              "mask_iou": 0.84572,
+              "mask_precision": 0.991,
+              "physical_corners_certified": false
+            },
+            "evidence": "registered_sam_visible_face",
+            "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2:face:0",
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "plane_normal": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "plane_offset_m": -0.0,
+            "plane_residual_m": 6.347908050412985e-07,
+            "point_support_count": 8908,
+            "point_support_ratio": 1.0,
+            "schema_version": "observed_surface_v1",
+            "sensor_epoch": "sim-j1-mast-v2",
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2",
+            "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD",
+            "volume_status": "UNKNOWN"
+          }
+        ],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "fusion_id": "fusion-d6b6fa43b267009bfff6",
+          "source_members": [
+            [
+              "module_0_upper",
+              "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2"
+            ]
+          ],
+          "track_id": null
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "fusion-d6b6fa43b267009bfff6"
+      },
+      {
+        "association_status": "UNASSOCIATED_RETAINED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "OBSERVED_SURFACES_WITH_UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "UNKNOWN",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [
+          {
+            "T_W_C_at_capture": [
+              [
+                0.0,
+                -0.0,
+                1.0,
+                -1.325
+              ],
+              [
+                -1.0,
+                -0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                2.6293411964178084
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "boundary_2d_px": [
+              [
+                1360.622809678234,
+                1942.4428151124189
+              ],
+              [
+                1353.930949682682,
+                1924.214607376141
+              ],
+              [
+                1136.4426762576188,
+                1921.2552584259047
+              ],
+              [
+                1128.779508313345,
+                1942.3967552065785
+              ]
+            ],
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "calibration_identity": "c155391544c4e3200e0576320879de938caa93ea8c5b41aca8697ca296955786",
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "clock_domain": "ros_sim_time",
+            "corner_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "corners_3d_m": [
+              [
+                0.0,
+                0.63468,
+                1.7861411964178084
+              ],
+              [
+                0.0,
+                0.64653,
+                1.8019711964178082
+              ],
+              [
+                0.0,
+                1.03166,
+                1.8045411964178084
+              ],
+              [
+                0.0,
+                1.04523,
+                1.7861811964178083
+              ]
+            ],
+            "diagnostics": {
+              "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+              "final_support": {
+                "mask_coverage": 0.906922752216125,
+                "mask_iou": 0.8798116298116299,
+                "mask_precision": 0.9671393202790907,
+                "ordinal": 0,
+                "plane_normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "plane_offset_m": 1.325,
+                "plane_residual_m": 0.00044568174795848157,
+                "plane_residual_p95_m": 1.9073486323684108e-07,
+                "point_support_count": 4297,
+                "point_support_ratio": 1.0,
+                "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                "status": "PASS"
+              },
+              "mask_coverage": 0.93183,
+              "mask_iou": 0.89084,
+              "mask_precision": 0.95295,
+              "physical_corners_certified": false
+            },
+            "evidence": "registered_sam_visible_face",
+            "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3:face:0",
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "plane_normal": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "plane_offset_m": -0.0,
+            "plane_residual_m": 0.00044568174795848157,
+            "point_support_count": 4297,
+            "point_support_ratio": 1.0,
+            "schema_version": "observed_surface_v1",
+            "sensor_epoch": "sim-j1-mast-v2",
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3",
+            "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD",
+            "volume_status": "UNKNOWN"
+          }
+        ],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "fusion_id": "fusion-481222de43233dd17827",
+          "source_members": [
+            [
+              "module_0_upper",
+              "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3"
+            ]
+          ],
+          "track_id": null
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "fusion-481222de43233dd17827"
+      },
+      {
+        "association_status": "UNASSOCIATED_RETAINED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "OBSERVED_SURFACES_WITH_UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "UNKNOWN",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [
+          {
+            "T_W_C_at_capture": [
+              [
+                0.0,
+                -0.0,
+                1.0,
+                -1.325
+              ],
+              [
+                -1.0,
+                -0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                2.6293411964178084
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "boundary_2d_px": [
+              [
+                2306.0386249992157,
+                1538.3592611759268
+              ],
+              [
+                2076.002408190088,
+                1552.2348078103014
+              ],
+              [
+                2076.002408190088,
+                1939.3913463505025
+              ],
+              [
+                2306.0725078346363,
+                1939.8404304324447
+              ]
+            ],
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "calibration_identity": "c155391544c4e3200e0576320879de938caa93ea8c5b41aca8697ca296955786",
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "clock_domain": "ros_sim_time",
+            "corner_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "corners_3d_m": [
+              [
+                0.0,
+                -1.03947,
+                2.1370611964178083
+              ],
+              [
+                0.0,
+                -0.63212,
+                2.1250111964178084
+              ],
+              [
+                0.0,
+                -0.63212,
+                1.7887911964178085
+              ],
+              [
+                0.0,
+                -1.03953,
+                1.7884011964178084
+              ]
+            ],
+            "diagnostics": {
+              "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+              "final_support": {
+                "mask_coverage": 0.9969661349006437,
+                "mask_iou": 0.9792072131508054,
+                "mask_precision": 0.9821337980016323,
+                "ordinal": 0,
+                "plane_normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "plane_offset_m": 1.325,
+                "plane_residual_m": 2.1949186956216546e-05,
+                "plane_residual_p95_m": 1.9073486323684108e-07,
+                "point_support_count": 89054,
+                "point_support_ratio": 1.0,
+                "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                "status": "PASS"
+              },
+              "mask_coverage": 0.99881,
+              "mask_iou": 0.97543,
+              "mask_precision": 0.97657,
+              "physical_corners_certified": false
+            },
+            "evidence": "registered_sam_visible_face",
+            "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4:face:0",
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "plane_normal": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "plane_offset_m": -0.0,
+            "plane_residual_m": 2.1949186956216546e-05,
+            "point_support_count": 89054,
+            "point_support_ratio": 1.0,
+            "schema_version": "observed_surface_v1",
+            "sensor_epoch": "sim-j1-mast-v2",
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4",
+            "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD",
+            "volume_status": "UNKNOWN"
+          }
+        ],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "fusion_id": "fusion-50f5f756680e5691e226",
+          "source_members": [
+            [
+              "module_0_upper",
+              "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4"
+            ]
+          ],
+          "track_id": null
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "fusion-50f5f756680e5691e226"
+      },
+      {
+        "association_status": "UNASSOCIATED_RETAINED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "OBSERVED_SURFACES_WITH_UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "UNKNOWN",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [
+          {
+            "T_W_C_at_capture": [
+              [
+                0.0,
+                -0.0,
+                1.0,
+                -1.325
+              ],
+              [
+                -1.0,
+                -0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                2.6293411964178084
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "boundary_2d_px": [
+              [
+                2068.999955536514,
+                1552.396017480742
+              ],
+              [
+                1844.0009869265696,
+                1556.7832235120259
+              ],
+              [
+                1844.0009869265696,
+                1935.994428294784
+              ],
+              [
+                2068.999955536514,
+                1935.994428294784
+              ]
+            ],
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "calibration_identity": "c155391544c4e3200e0576320879de938caa93ea8c5b41aca8697ca296955786",
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "clock_domain": "ros_sim_time",
+            "corner_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "corners_3d_m": [
+              [
+                0.0,
+                -0.61972,
+                2.1248711964178084
+              ],
+              [
+                0.0,
+                -0.22129,
+                2.1210611964178083
+              ],
+              [
+                0.0,
+                -0.22129,
+                1.7917411964178083
+              ],
+              [
+                0.0,
+                -0.61972,
+                1.7917411964178083
+              ]
+            ],
+            "diagnostics": {
+              "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+              "final_support": {
+                "mask_coverage": 0.9788971380256895,
+                "mask_iou": 0.9698211068654113,
+                "mask_precision": 0.990530325227073,
+                "ordinal": 0,
+                "plane_normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "plane_offset_m": 1.325,
+                "plane_residual_m": 1.914276895686072e-07,
+                "plane_residual_p95_m": 1.9073486323684108e-07,
+                "point_support_count": 84517,
+                "point_support_ratio": 1.0,
+                "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                "status": "PASS"
+              },
+              "mask_coverage": 0.98593,
+              "mask_iou": 0.97107,
+              "mask_precision": 0.98472,
+              "physical_corners_certified": false
+            },
+            "evidence": "registered_sam_visible_face",
+            "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5:face:0",
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "plane_normal": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "plane_offset_m": -0.0,
+            "plane_residual_m": 1.914276895686072e-07,
+            "point_support_count": 84517,
+            "point_support_ratio": 1.0,
+            "schema_version": "observed_surface_v1",
+            "sensor_epoch": "sim-j1-mast-v2",
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5",
+            "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD",
+            "volume_status": "UNKNOWN"
+          }
+        ],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "fusion_id": "fusion-d010d2f4dfebbc874dcd",
+          "source_members": [
+            [
+              "module_0_upper",
+              "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5"
+            ]
+          ],
+          "track_id": null
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "fusion-d010d2f4dfebbc874dcd"
+      },
+      {
+        "association_status": "UNASSOCIATED_RETAINED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "OBSERVED_SURFACES_WITH_UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "UNKNOWN",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [
+          {
+            "T_W_C_at_capture": [
+              [
+                0.0,
+                -0.0,
+                1.0,
+                -1.325
+              ],
+              [
+                -1.0,
+                -0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                2.6293411964178084
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "boundary_2d_px": [
+              [
+                1832.0008160484697,
+                1586.9985217432284
+              ],
+              [
+                1603.8676851621271,
+                1588.0003246952535
+              ],
+              [
+                1606.6009005527155,
+                1935.994428294784
+              ],
+              [
+                1832.0008160484697,
+                1935.994428294784
+              ]
+            ],
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "calibration_identity": "c155391544c4e3200e0576320879de938caa93ea8c5b41aca8697ca296955786",
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "clock_domain": "ros_sim_time",
+            "corner_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "corners_3d_m": [
+              [
+                0.0,
+                -0.20004,
+                2.0948211964178083
+              ],
+              [
+                0.0,
+                0.20394,
+                2.0939511964178084
+              ],
+              [
+                0.0,
+                0.19910000000000005,
+                1.7917411964178083
+              ],
+              [
+                0.0,
+                -0.20004,
+                1.7917411964178083
+              ]
+            ],
+            "diagnostics": {
+              "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+              "final_support": {
+                "mask_coverage": 0.9722321505601637,
+                "mask_iou": 0.9698534474279532,
+                "mask_precision": 0.9974836564116182,
+                "ordinal": 0,
+                "plane_normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "plane_offset_m": 1.325,
+                "plane_residual_m": 0.00012772569162629337,
+                "plane_residual_p95_m": 1.9073486323684108e-07,
+                "point_support_count": 78884,
+                "point_support_ratio": 1.0,
+                "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                "status": "PASS"
+              },
+              "mask_coverage": 0.97639,
+              "mask_iou": 0.97288,
+              "mask_precision": 0.99633,
+              "physical_corners_certified": false
+            },
+            "evidence": "registered_sam_visible_face",
+            "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6:face:0",
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "plane_normal": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "plane_offset_m": -0.0,
+            "plane_residual_m": 0.00012772569162629337,
+            "point_support_count": 78884,
+            "point_support_ratio": 1.0,
+            "schema_version": "observed_surface_v1",
+            "sensor_epoch": "sim-j1-mast-v2",
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6",
+            "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD",
+            "volume_status": "UNKNOWN"
+          }
+        ],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "fusion_id": "fusion-37ea36449e362572dc62",
+          "source_members": [
+            [
+              "module_0_upper",
+              "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6"
+            ]
+          ],
+          "track_id": null
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "fusion-37ea36449e362572dc62"
+      },
+      {
+        "association_status": "UNASSOCIATED_RETAINED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "OBSERVED_SURFACES_WITH_UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "UNKNOWN",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [
+          {
+            "T_W_C_at_capture": [
+              [
+                0.0,
+                -0.0,
+                1.0,
+                -1.325
+              ],
+              [
+                -1.0,
+                -0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                2.6293411964178084
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "boundary_2d_px": [
+              [
+                1368.9975171663386,
+                1455.5090055457815
+              ],
+              [
+                1368.9975171663386,
+                1935.0041403192188
+              ],
+              [
+                1595.1089722059237,
+                1935.994428294784
+              ],
+              [
+                1594.7419081555347,
+                1462.5676861157995
+              ]
+            ],
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "calibration_identity": "c155391544c4e3200e0576320879de938caa93ea8c5b41aca8697ca296955786",
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "clock_domain": "ros_sim_time",
+            "corner_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "corners_3d_m": [
+              [
+                0.0,
+                0.61985,
+                2.2090111964178085
+              ],
+              [
+                0.0,
+                0.61985,
+                1.7926011964178084
+              ],
+              [
+                0.0,
+                0.21945000000000003,
+                1.7917411964178083
+              ],
+              [
+                0.0,
+                0.22009999999999996,
+                2.2028811964178083
+              ]
+            ],
+            "diagnostics": {
+              "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+              "final_support": {
+                "mask_coverage": 0.9874532512968995,
+                "mask_iou": 0.9746368182900691,
+                "mask_precision": 0.9868579696165903,
+                "ordinal": 0,
+                "plane_normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "plane_offset_m": 1.325,
+                "plane_residual_m": 1.909544489778656e-07,
+                "plane_residual_p95_m": 1.9073486323684108e-07,
+                "point_support_count": 106405,
+                "point_support_ratio": 1.0,
+                "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                "status": "PASS"
+              },
+              "mask_coverage": 0.98855,
+              "mask_iou": 0.9727,
+              "mask_precision": 0.98378,
+              "physical_corners_certified": false
+            },
+            "evidence": "registered_sam_visible_face",
+            "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7:face:0",
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "plane_normal": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "plane_offset_m": -0.0,
+            "plane_residual_m": 1.909544489778656e-07,
+            "point_support_count": 106405,
+            "point_support_ratio": 1.0,
+            "schema_version": "observed_surface_v1",
+            "sensor_epoch": "sim-j1-mast-v2",
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7",
+            "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD",
+            "volume_status": "UNKNOWN"
+          }
+        ],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "fusion_id": "fusion-2dfc1fe0f19e72afbc08",
+          "source_members": [
+            [
+              "module_0_upper",
+              "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7"
+            ]
+          ],
+          "track_id": null
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "fusion-2dfc1fe0f19e72afbc08"
+      },
+      {
+        "association_status": "UNASSOCIATED_RETAINED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "OBSERVED_SURFACES_WITH_UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "UNKNOWN",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [
+          {
+            "T_W_C_at_capture": [
+              [
+                0.0,
+                -0.0,
+                1.0,
+                -1.325
+              ],
+              [
+                -1.0,
+                -0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                2.6293411964178084
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "boundary_2d_px": [
+              [
+                1134.200761980628,
+                1567.4345767375833
+              ],
+              [
+                1132.252498943948,
+                1939.874975361825
+              ],
+              [
+                1358.0025370723808,
+                1940.0477000087258
+              ],
+              [
+                1358.0025370723808,
+                1559.1553086627985
+              ]
+            ],
+            "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+            "calibration_identity": "c155391544c4e3200e0576320879de938caa93ea8c5b41aca8697ca296955786",
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "clock_domain": "ros_sim_time",
+            "corner_indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "corners_3d_m": [
+              [
+                0.0,
+                1.03563,
+                2.1118111964178086
+              ],
+              [
+                0.0,
+                1.03908,
+                1.7883711964178084
+              ],
+              [
+                0.0,
+                0.63932,
+                1.7882211964178083
+              ],
+              [
+                0.0,
+                0.63932,
+                2.119001196417808
+              ]
+            ],
+            "diagnostics": {
+              "boundary_kind": "OBSERVED_PATCH_UNCLASSIFIED",
+              "final_support": {
+                "mask_coverage": 0.9903211302269447,
+                "mask_iou": 0.9774372868687813,
+                "mask_precision": 0.986864756514562,
+                "ordinal": 0,
+                "plane_normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "plane_offset_m": 1.325,
+                "plane_residual_m": 1.9096161384516356e-07,
+                "plane_residual_p95_m": 1.9073486323684108e-07,
+                "point_support_count": 83696,
+                "point_support_ratio": 1.0,
+                "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                "status": "PASS"
+              },
+              "mask_coverage": 0.99561,
+              "mask_iou": 0.98079,
+              "mask_precision": 0.98505,
+              "physical_corners_certified": false
+            },
+            "evidence": "registered_sam_visible_face",
+            "face_id": "module_0_upper/sim-j1-mast-v2:module_0_main:100/sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8:face:0",
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "plane_normal": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "plane_offset_m": -0.0,
+            "plane_residual_m": 1.9096161384516356e-07,
+            "point_support_count": 83696,
+            "point_support_ratio": 1.0,
+            "schema_version": "observed_surface_v1",
+            "sensor_epoch": "sim-j1-mast-v2",
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8",
+            "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD",
+            "volume_status": "UNKNOWN"
+          }
+        ],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "fusion_id": "fusion-630febab594139becfee",
+          "source_members": [
+            [
+              "module_0_upper",
+              "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8"
+            ]
+          ],
+          "track_id": null
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "fusion-630febab594139becfee"
+      },
+      {
+        "association_status": "UNASSOCIATED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "NO_CERTIFIED_OBSERVED_FACE",
+          "UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "INVALID",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "complete_cuboid_adaptation_error": null,
+          "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+          "instance_lineage": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "evaluation_entity_ids": [
+              "carton_l07_c00"
+            ],
+            "geometry_instance_identity": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/9",
+            "geometry_status": "PRESENT",
+            "identity_status": "RESOLVED",
+            "mask_bbox": [
+              1860,
+              1154,
+              2305,
+              1625
+            ],
+            "mask_id": 9,
+            "module_id": "module_0_upper",
+            "original_bbox": [
+              1836.0,
+              1153.0,
+              2307.0,
+              1582.0
+            ],
+            "proposal_id": 11,
+            "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+            "sam_instance_id": 9,
+            "sam_iou_score": 0.89333,
+            "sam_prompt_stability": 0.96397,
+            "sensor_epoch": "sim-j1-mast-v2",
+            "supporting_proposal_ids": [],
+            "validation_score": 0.78052
+          },
+          "observed_face_set": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+            "faces": [],
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "shared_edges": [],
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/9"
+          },
+          "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
+          "record": {
+            "accepted": true,
+            "anchoring_error": "registered face failed mask certificate: precision=0.471, iou=0.471",
+            "anchoring_status": "registered_face_rejected_depth_only_safe_fallback",
+            "axis_nearest_plane_angle_degrees": [
+              0.0,
+              0.539,
+              90.0
+            ],
+            "back_face_status": "completion_suppressed_failed_registered_face_certificate",
+            "camera_facing_faces": [],
+            "center_3d": [
+              1.5844162499999999,
+              0.38612,
+              1.5152575
+            ],
+            "certificate_status": "uncertain",
+            "complete_cuboid_consistency": {
+              "corner_error_m": 1.1524430571830092e-05,
+              "status": "PASS"
+            },
+            "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+            "completion_mode": "orthogonality_selected_multi_plane_cuboid",
+            "corners_2d": [
+              [
+                2070.91,
+                1456.69
+              ],
+              [
+                2305.26,
+                1601.14
+              ],
+              [
+                2302.62,
+                1232.98
+              ],
+              [
+                2069.17,
+                1174.45
+              ],
+              [
+                1905.53,
+                1457.94
+              ],
+              [
+                2089.27,
+                1602.51
+              ],
+              [
+                2086.98,
+                1235.0
+              ],
+              [
+                1904.0,
+                1176.07
+              ]
+            ],
+            "corners_3d": [
+              [
+                1.77488,
+                0.54465,
+                1.71271
+              ],
+              [
+                1.77238,
+                0.542,
+                1.31336
+              ],
+              [
+                1.77059,
+                0.22545,
+                1.31547
+              ],
+              [
+                1.77309,
+                0.2281,
+                1.71482
+              ],
+              [
+                1.39824,
+                0.54679,
+                1.71504
+              ],
+              [
+                1.39574,
+                0.54414,
+                1.31569
+              ],
+              [
+                1.39396,
+                0.22759,
+                1.31781
+              ],
+              [
+                1.39645,
+                0.23024,
+                1.71716
+              ]
+            ],
+            "depth_plane_candidate_count": 2,
+            "depth_supported_axes": [
+              0,
+              1
+            ],
+            "depth_supported_face_count": 2,
+            "final_face_validation": [],
+            "front_face_recovered": true,
+            "generated_shape_dimensions": [],
+            "geometry_coherence": "DERIVED_FROM_CORNERS_3D_0_1_3_4",
+            "geometry_coherence_corner_source": "corners_3d",
+            "geometry_version": "FINAL_METRIC_VALIDATED_V1",
+            "label": "box",
+            "mask_id": 9,
+            "mask_reprojection_iou": 0.61013,
+            "mask_reprojection_iou_before_shape_refinement": 0.5997,
+            "method": "moge_metric_pointmap+pyransac3d_planes+shared_orthogonal_cuboid",
+            "monocular_depth_warning": null,
+            "orthogonal_axes_3d": [
+              [
+                -0.0062599123006540905,
+                -0.006635507038693303,
+                -0.9999583909065054
+              ],
+              [
+                -0.005654498879684668,
+                -0.9999617990861582,
+                0.006665359014600696
+              ],
+              [
+                -0.9999647253156974,
+                0.005681617757475633,
+                0.0061860604555690245
+              ]
+            ],
+            "orthogonal_axes_3d_before_adapter_coherence": [
+              [
+                -0.006234,
+                -0.006648,
+                -0.999958
+              ],
+              [
+                -0.005649,
+                -0.999962,
+                0.006683
+              ],
+              [
+                -0.999965,
+                0.00569,
+                0.006196
+              ]
+            ],
+            "orthogonal_plane_pair_diagnostics": {
+              "candidates": [
+                {
+                  "angle_degrees": 89.461,
+                  "indices": [
+                    0,
+                    1
+                  ],
+                  "orthogonal_pair_score": 0.333564,
+                  "support_ratios": [
+                    0.87183,
+                    0.12767
+                  ]
+                }
+              ],
+              "reliable": true,
+              "selected": {
+                "angle_degrees": 89.461,
+                "indices": [
+                  0,
+                  1
+                ],
+                "orthogonal_pair_score": 0.333564,
+                "support_ratios": [
+                  0.87183,
+                  0.12767
+                ]
+              }
+            },
+            "plane_equations": [
+              [
+                -0.006234,
+                -0.006648,
+                -0.999958,
+                1.338041
+              ],
+              [
+                -0.005707,
+                -0.99998,
+                -0.002723,
+                0.242697
+              ]
+            ],
+            "plane_inlier_counts": [
+              10462,
+              1532
+            ],
+            "plane_inlier_ratio": 0.9995,
+            "plane_residual_mean": 0.000889,
+            "projected_camera_facing_face_count": 0,
+            "quality_status": "high",
+            "sam_mask_bbox_fill_ratio": 0.4715,
+            "selected_plane_indices": [
+              0,
+              1
+            ],
+            "shape_certificate_scales": [
+              1.04,
+              1.0,
+              1.0
+            ],
+            "shape_dimensions": [
+              0.399366617282917,
+              0.3165620929612388,
+              0.3766532863257668
+            ],
+            "shape_dimensions_before_adapter_coherence": [
+              0.39937,
+              0.31656,
+              0.37665
+            ],
+            "unanchored_camera_facing_faces": [
+              {
+                "axis_index": 0,
+                "camera_facing_score": 0.634142,
+                "corner_indices": [
+                  1,
+                  2,
+                  6,
+                  5
+                ],
+                "corners_2d": [
+                  [
+                    2305.26,
+                    1601.14
+                  ],
+                  [
+                    2302.62,
+                    1232.98
+                  ],
+                  [
+                    2086.98,
+                    1235.0
+                  ],
+                  [
+                    2089.27,
+                    1602.51
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 79387.19,
+                "side": "high"
+              },
+              {
+                "axis_index": 1,
+                "camera_facing_score": 0.102824,
+                "corner_indices": [
+                  3,
+                  2,
+                  6,
+                  7
+                ],
+                "corners_2d": [
+                  [
+                    2069.17,
+                    1174.45
+                  ],
+                  [
+                    2302.62,
+                    1232.98
+                  ],
+                  [
+                    2086.98,
+                    1235.0
+                  ],
+                  [
+                    1904.0,
+                    1176.07
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 11561.12,
+                "side": "high"
+              },
+              {
+                "axis_index": 2,
+                "camera_facing_score": 0.660119,
+                "corner_indices": [
+                  4,
+                  5,
+                  6,
+                  7
+                ],
+                "corners_2d": [
+                  [
+                    1905.53,
+                    1457.94
+                  ],
+                  [
+                    2089.27,
+                    1602.51
+                  ],
+                  [
+                    2086.98,
+                    1235.0
+                  ],
+                  [
+                    1904.0,
+                    1176.07
+                  ]
+                ],
+                "evidence": "cuboid_constraint_completion",
+                "projected_area_px2": 59341.67,
+                "side": "high"
+              }
+            ],
+            "v4_path_audit": {
+              "face_checks_passed": 1,
+              "fallback_reason": "FEWER_THAN_TWO_RELIABLE_DEPTH_FACES",
+              "final_published_face_count": 0,
+              "joint_accepted": false,
+              "joint_entered": false,
+              "joint_succeeded": false,
+              "raw_depth_plane_count": 2,
+              "visible_candidates": 1
+            },
+            "visible_plane_count": 2
+          }
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/9"
+      },
+      {
+        "association_status": "UNASSOCIATED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "NO_CERTIFIED_OBSERVED_FACE",
+          "UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "INVALID",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "complete_cuboid_adaptation_error": null,
+          "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+          "instance_lineage": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "evaluation_entity_ids": [
+              "carton_l07_c01"
+            ],
+            "geometry_instance_identity": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/10",
+            "geometry_status": "PRESENT",
+            "identity_status": "RESOLVED",
+            "mask_bbox": [
+              1692,
+              1155,
+              2070,
+              1618
+            ],
+            "mask_id": 10,
+            "module_id": "module_0_upper",
+            "original_bbox": [
+              1673.0,
+              1153.0,
+              2070.0,
+              1582.0
+            ],
+            "proposal_id": 12,
+            "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+            "sam_instance_id": 10,
+            "sam_iou_score": 0.91685,
+            "sam_prompt_stability": 0.98204,
+            "sensor_epoch": "sim-j1-mast-v2",
+            "supporting_proposal_ids": [],
+            "validation_score": 0.79888
+          },
+          "observed_face_set": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+            "faces": [],
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "shared_edges": [],
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/10"
+          },
+          "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
+          "record": {
+            "accepted": true,
+            "anchoring_error": "registered face failed mask certificate: precision=0.726, iou=0.668",
+            "anchoring_status": "registered_face_rejected_depth_only_safe_fallback",
+            "axis_nearest_plane_angle_degrees": [
+              0.0,
+              1.405,
+              90.0
+            ],
+            "back_face_status": "completion_suppressed_failed_registered_face_certificate",
+            "camera_facing_faces": [],
+            "center_3d": [
+              1.1688425,
+              0.37105,
+              1.5310200000000003
+            ],
+            "certificate_status": "uncertain",
+            "complete_cuboid_consistency": {
+              "corner_error_m": 9.013878188796005e-06,
+              "status": "PASS"
+            },
+            "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+            "completion_mode": "orthogonality_selected_multi_plane_cuboid",
+            "corners_2d": [
+              [
+                1853.81,
+                1565.95
+              ],
+              [
+                1715.93,
+                1424.22
+              ],
+              [
+                1715.46,
+                1170.94
+              ],
+              [
+                1852.74,
+                1228.87
+              ],
+              [
+                2068.66,
+                1568.62
+              ],
+              [
+                1877.32,
+                1426.13
+              ],
+              [
+                1876.44,
+                1172.64
+              ],
+              [
+                2066.86,
+                1231.2
+              ]
+            ],
+            "corners_3d": [
+              [
+                0.9796,
+                0.5115,
+                1.31285
+              ],
+              [
+                0.98113,
+                0.51812,
+                1.74613
+              ],
+              [
+                0.98252,
+                0.22883,
+                1.75054
+              ],
+              [
+                0.98099,
+                0.2222,
+                1.31726
+              ],
+              [
+                1.35517,
+                0.51327,
+                1.3115
+              ],
+              [
+                1.3567,
+                0.5199,
+                1.74478
+              ],
+              [
+                1.35808,
+                0.2306,
+                1.74919
+              ],
+              [
+                1.35655,
+                0.22398,
+                1.31591
+              ]
+            ],
+            "depth_plane_candidate_count": 2,
+            "depth_supported_axes": [
+              0,
+              1
+            ],
+            "depth_supported_face_count": 2,
+            "final_face_validation": [],
+            "front_face_recovered": true,
+            "generated_shape_dimensions": [],
+            "geometry_coherence": "DERIVED_FROM_CORNERS_3D_0_1_3_4",
+            "geometry_coherence_corner_source": "corners_3d",
+            "geometry_version": "FINAL_METRIC_VALIDATED_V1",
+            "label": "box",
+            "mask_id": 10,
+            "mask_reprojection_iou": 0.67153,
+            "mask_reprojection_iou_before_shape_refinement": 0.66412,
+            "method": "moge_metric_pointmap+pyransac3d_planes+shared_orthogonal_cuboid",
+            "monocular_depth_warning": null,
+            "orthogonal_axes_3d": [
+              [
+                0.0035307697391790344,
+                0.015276925276710245,
+                0.9998770670533146
+              ],
+              [
+                0.00480408742683517,
+                -0.9998722968225987,
+                0.015241745001685745
+              ],
+              [
+                0.9999824347033132,
+                0.004712753706166397,
+                -0.003594473165719933
+              ]
+            ],
+            "orthogonal_axes_3d_before_adapter_coherence": [
+              [
+                0.003527,
+                0.015265,
+                0.999877
+              ],
+              [
+                0.004787,
+                -0.999872,
+                0.015248
+              ],
+              [
+                0.999982,
+                0.004733,
+                -0.0036
+              ]
+            ],
+            "orthogonal_plane_pair_diagnostics": {
+              "candidates": [
+                {
+                  "angle_degrees": 88.595,
+                  "indices": [
+                    0,
+                    1
+                  ],
+                  "orthogonal_pair_score": 0.352932,
+                  "support_ratios": [
+                    0.85375,
+                    0.14625
+                  ]
+                }
+              ],
+              "reliable": true,
+              "selected": {
+                "angle_degrees": 88.595,
+                "indices": [
+                  0,
+                  1
+                ],
+                "orthogonal_pair_score": 0.352932,
+                "support_ratios": [
+                  0.85375,
+                  0.14625
+                ]
+              }
+            },
+            "plane_equations": [
+              [
+                0.003527,
+                0.015265,
+                0.999877,
+                -1.334897
+              ],
+              [
+                0.004699,
+                -0.999946,
+                -0.009277,
+                0.238926
+              ]
+            ],
+            "plane_inlier_counts": [
+              10245,
+              1755
+            ],
+            "plane_inlier_ratio": 1.0,
+            "plane_residual_mean": 0.001198,
+            "projected_camera_facing_face_count": 0,
+            "quality_status": "high",
+            "sam_mask_bbox_fill_ratio": 0.51654,
+            "selected_plane_indices": [
+              0,
+              1
+            ],
+            "shape_certificate_scales": [
+              1.04,
+              1.0,
+              1.0
+            ],
+            "shape_dimensions": [
+              0.43333327093589286,
+              0.2893369492477585,
+              0.3755765971143569
+            ],
+            "shape_dimensions_before_adapter_coherence": [
+              0.43334,
+              0.28933,
+              0.37557
+            ],
+            "unanchored_camera_facing_faces": [
+              {
+                "axis_index": 0,
+                "camera_facing_score": 0.736981,
+                "corner_indices": [
+                  0,
+                  3,
+                  7,
+                  4
+                ],
+                "corners_2d": [
+                  [
+                    1853.81,
+                    1565.95
+                  ],
+                  [
+                    1852.74,
+                    1228.87
+                  ],
+                  [
+                    2066.86,
+                    1231.2
+                  ],
+                  [
+                    2068.66,
+                    1568.62
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 72330.78,
+                "side": "low"
+              },
+              {
+                "axis_index": 1,
+                "camera_facing_score": 0.101666,
+                "corner_indices": [
+                  3,
+                  2,
+                  6,
+                  7
+                ],
+                "corners_2d": [
+                  [
+                    1852.74,
+                    1228.87
+                  ],
+                  [
+                    1715.46,
+                    1170.94
+                  ],
+                  [
+                    1876.44,
+                    1172.64
+                  ],
+                  [
+                    2066.86,
+                    1231.2
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 10593.77,
+                "side": "high"
+              },
+              {
+                "axis_index": 2,
+                "camera_facing_score": 0.526487,
+                "corner_indices": [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "corners_2d": [
+                  [
+                    1853.81,
+                    1565.95
+                  ],
+                  [
+                    1715.93,
+                    1424.22
+                  ],
+                  [
+                    1715.46,
+                    1170.94
+                  ],
+                  [
+                    1852.74,
+                    1228.87
+                  ]
+                ],
+                "evidence": "cuboid_constraint_completion",
+                "projected_area_px2": 40532.77,
+                "side": "low"
+              }
+            ],
+            "v4_path_audit": {
+              "face_checks_passed": 1,
+              "fallback_reason": "FEWER_THAN_TWO_RELIABLE_DEPTH_FACES",
+              "final_published_face_count": 0,
+              "joint_accepted": false,
+              "joint_entered": false,
+              "joint_succeeded": false,
+              "raw_depth_plane_count": 2,
+              "visible_candidates": 1
+            },
+            "visible_plane_count": 2
+          }
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/10"
+      },
+      {
+        "association_status": "UNASSOCIATED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "NO_CERTIFIED_OBSERVED_FACE",
+          "UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "INVALID",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "complete_cuboid_adaptation_error": null,
+          "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+          "instance_lineage": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "evaluation_entity_ids": [
+              "carton_l07_c02"
+            ],
+            "geometry_instance_identity": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/11",
+            "geometry_status": "PRESENT",
+            "identity_status": "RESOLVED",
+            "mask_bbox": [
+              1513,
+              1153,
+              1838,
+              1583
+            ],
+            "mask_id": 11,
+            "module_id": "module_0_upper",
+            "original_bbox": [
+              1510.0,
+              1153.0,
+              1832.0,
+              1582.0
+            ],
+            "proposal_id": 13,
+            "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+            "sam_instance_id": 11,
+            "sam_iou_score": 0.99841,
+            "sam_prompt_stability": 0.99763,
+            "sensor_epoch": "sim-j1-mast-v2",
+            "supporting_proposal_ids": [],
+            "validation_score": 0.84842
+          },
+          "observed_face_set": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+            "faces": [],
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "shared_edges": [],
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/11"
+          },
+          "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
+          "record": {
+            "accepted": true,
+            "anchored_front_spans_3d": [
+              0.34644,
+              0.48441
+            ],
+            "anchoring_status": "registered_2d_face_lifted_to_metric_plane",
+            "axis_nearest_plane_angle_degrees": [
+              0.0,
+              0.283,
+              90.0
+            ],
+            "back_face_status": "bounded_metric_completion_rendered_as_dashed_hypothesis",
+            "camera_facing_faces": [],
+            "certificate_status": "registered_face_anchored",
+            "complete_cuboid_consistency": {
+              "reason": "NONORTHOGONAL_CUBOID",
+              "status": "REJECTED"
+            },
+            "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+            "completion_displacement_budget_px": 24.0,
+            "completion_mode": "orthogonality_selected_multi_plane_cuboid",
+            "corners_2d": [
+              [
+                1515.0,
+                1156.0
+              ],
+              [
+                1604.0,
+                1575.0
+              ],
+              [
+                1830.0,
+                1581.0
+              ],
+              [
+                1834.0,
+                1239.0
+              ],
+              [
+                1506.13,
+                1148.74
+              ],
+              [
+                1591.49,
+                1550.65
+              ],
+              [
+                1808.26,
+                1556.39
+              ],
+              [
+                1812.12,
+                1228.35
+              ]
+            ],
+            "corners_3d": [
+              [
+                0.38924,
+                0.16045,
+                1.32687
+              ],
+              [
+                0.54632,
+                0.52412,
+                1.32506
+              ],
+              [
+                0.94593,
+                0.52899,
+                1.3242
+              ],
+              [
+                0.95386,
+                0.23238,
+                1.32539
+              ],
+              [
+                0.38936,
+                0.16068,
+                1.38317
+              ],
+              [
+                0.54644,
+                0.52435,
+                1.38137
+              ],
+              [
+                0.94605,
+                0.52922,
+                1.38051
+              ],
+              [
+                0.95398,
+                0.2326,
+                1.3817
+              ]
+            ],
+            "depth_plane_candidate_count": 2,
+            "depth_supported_axes": [
+              0,
+              1
+            ],
+            "depth_supported_face_count": 2,
+            "final_face_validation": [],
+            "front_face_recovered": true,
+            "generated_shape_dimensions": [],
+            "geometry_coherence": "DERIVED_FROM_UNANCHORED_CORNERS_3D_0_1_3_4",
+            "geometry_coherence_corner_source": "unanchored_corners_3d",
+            "geometry_version": "FINAL_METRIC_VALIDATED_V1",
+            "inferred_unobserved_depth": 0.05631,
+            "label": "box",
+            "mask_id": 11,
+            "mask_reprojection_iou": 0.80819,
+            "mask_reprojection_iou_before_shape_refinement": 0.78593,
+            "maximum_completion_displacement_px": 32.832,
+            "mean_completion_displacement_px": 24.0,
+            "method": "moge_metric_pointmap+pyransac3d_planes+shared_orthogonal_cuboid",
+            "monocular_depth_warning": null,
+            "orthogonal_axes_3d": [
+              [
+                -0.00211716,
+                -0.0040678,
+                -0.99998949
+              ],
+              [
+                -0.00467721,
+                -0.99998082,
+                0.00406008
+              ],
+              [
+                -0.99998697,
+                0.00467084,
+                0.00205919
+              ]
+            ],
+            "orthogonal_axes_3d_before_adapter_coherence": [
+              [
+                -0.002093,
+                -0.00407,
+                -0.99999
+              ],
+              [
+                -0.004674,
+                -0.999981,
+                0.004079
+              ],
+              [
+                -0.999987,
+                0.004682,
+                0.002074
+              ]
+            ],
+            "orthogonal_plane_pair_diagnostics": {
+              "candidates": [
+                {
+                  "angle_degrees": 89.717,
+                  "indices": [
+                    0,
+                    1
+                  ],
+                  "orthogonal_pair_score": 0.34702,
+                  "support_ratios": [
+                    0.81467,
+                    0.14783
+                  ]
+                }
+              ],
+              "reliable": true,
+              "selected": {
+                "angle_degrees": 89.717,
+                "indices": [
+                  0,
+                  1
+                ],
+                "orthogonal_pair_score": 0.34702,
+                "support_ratios": [
+                  0.81467,
+                  0.14783
+                ]
+              }
+            },
+            "plane_equations": [
+              [
+                -0.002093,
+                -0.00407,
+                -0.99999,
+                1.328323
+              ],
+              [
+                -0.004684,
+                -0.999989,
+                -0.000856,
+                0.235329
+              ]
+            ],
+            "plane_inlier_counts": [
+              9776,
+              1774
+            ],
+            "plane_inlier_ratio": 0.9625,
+            "plane_residual_mean": 0.000525,
+            "projected_camera_facing_face_count": 0,
+            "quality_status": "high",
+            "registered_face_mask_coverage": 0.90688,
+            "registered_face_mask_iou": 0.81333,
+            "registered_face_mask_precision": 0.88744,
+            "registered_face_source": "mask_polygon_seed_fallback",
+            "sam_mask_bbox_fill_ratio": 0.71737,
+            "selected_plane_indices": [
+              0,
+              1
+            ],
+            "shape_certificate_scales": [
+              1.008,
+              1.05,
+              1.008
+            ],
+            "shape_dimensions": [
+              0.42037442,
+              0.30787591,
+              0.39821519
+            ],
+            "shape_dimensions_before_adapter_coherence": [
+              0.42038,
+              0.30787,
+              0.39821
+            ],
+            "unanchored_camera_facing_faces": [
+              {
+                "axis_index": 0,
+                "camera_facing_score": 0.847302,
+                "corner_indices": [
+                  1,
+                  2,
+                  6,
+                  5
+                ],
+                "corners_2d": [
+                  [
+                    1831.89,
+                    1579.82
+                  ],
+                  [
+                    1830.57,
+                    1224.13
+                  ],
+                  [
+                    1605.13,
+                    1226.12
+                  ],
+                  [
+                    1606.24,
+                    1581.59
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 80201.93,
+                "side": "high"
+              },
+              {
+                "axis_index": 1,
+                "camera_facing_score": 0.126773,
+                "corner_indices": [
+                  3,
+                  2,
+                  6,
+                  7
+                ],
+                "corners_2d": [
+                  [
+                    1701.91,
+                    1164.71
+                  ],
+                  [
+                    1830.57,
+                    1224.13
+                  ],
+                  [
+                    1605.13,
+                    1226.12
+                  ],
+                  [
+                    1530.87,
+                    1166.25
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 12004.43,
+                "side": "high"
+              },
+              {
+                "axis_index": 2,
+                "camera_facing_score": 0.325466,
+                "corner_indices": [
+                  4,
+                  5,
+                  6,
+                  7
+                ],
+                "corners_2d": [
+                  [
+                    1531.66,
+                    1435.93
+                  ],
+                  [
+                    1606.24,
+                    1581.59
+                  ],
+                  [
+                    1605.13,
+                    1226.12
+                  ],
+                  [
+                    1530.87,
+                    1166.25
+                  ]
+                ],
+                "evidence": "cuboid_constraint_completion",
+                "projected_area_px2": 23163.61,
+                "side": "high"
+              }
+            ],
+            "unanchored_corners_2d": [
+              [
+                1702.83,
+                1434.51
+              ],
+              [
+                1831.89,
+                1579.82
+              ],
+              [
+                1830.57,
+                1224.13
+              ],
+              [
+                1701.91,
+                1164.71
+              ],
+              [
+                1531.66,
+                1435.93
+              ],
+              [
+                1606.24,
+                1581.59
+              ],
+              [
+                1605.13,
+                1226.12
+              ],
+              [
+                1530.87,
+                1166.25
+              ]
+            ],
+            "unanchored_corners_3d": [
+              [
+                0.94824,
+                0.52861,
+                1.74189
+              ],
+              [
+                0.94735,
+                0.5269,
+                1.32152
+              ],
+              [
+                0.94591,
+                0.21903,
+                1.32277
+              ],
+              [
+                0.9468,
+                0.22074,
+                1.74314
+              ],
+              [
+                0.55003,
+                0.53047,
+                1.74271
+              ],
+              [
+                0.54915,
+                0.52876,
+                1.32235
+              ],
+              [
+                0.54771,
+                0.22089,
+                1.32359
+              ],
+              [
+                0.54859,
+                0.2226,
+                1.74397
+              ]
+            ],
+            "unanchored_mask_reprojection_iou": 0.80819,
+            "v4_path_audit": {
+              "face_checks_passed": 2,
+              "fallback_reason": "JOINT_RESULT_FAILED_INDEPENDENT_METRIC_GATE",
+              "final_published_face_count": 0,
+              "joint_accepted": false,
+              "joint_entered": true,
+              "joint_succeeded": true,
+              "raw_depth_plane_count": 2,
+              "rejected_joint_final_checks": [
+                {
+                  "mask_coverage": 0.8452300203487212,
+                  "mask_iou": 0.8346647491651974,
+                  "mask_precision": 0.9852450438927969,
+                  "ordinal": 0,
+                  "plane_normal": [
+                    0.08068908539734246,
+                    0.015601643312073947,
+                    -0.9966172084725926
+                  ],
+                  "plane_offset_m": 1.191680555818062,
+                  "plane_residual_m": 0.06492164463902687,
+                  "plane_residual_p95_m": 0.08519311695826565,
+                  "point_support_count": 84736,
+                  "point_support_ratio": 1.0,
+                  "reason": "FINAL_METRIC_PLANE_RESIDUAL",
+                  "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                  "status": "REJECTED"
+                },
+                {
+                  "mask_coverage": 0.13293500379044806,
+                  "mask_iou": 0.13251466640151138,
+                  "mask_precision": 0.9766947599853426,
+                  "ordinal": 1,
+                  "plane_normal": [
+                    -0.03461451815500898,
+                    0.9993187851681585,
+                    0.012798466428933798
+                  ],
+                  "plane_offset_m": -0.2027349327572581,
+                  "plane_residual_m": 0.020512225132854552,
+                  "plane_residual_p95_m": 0.028413746157095524,
+                  "point_support_count": 13327,
+                  "point_support_ratio": 1.0,
+                  "reason": "FINAL_METRIC_PLANE_RESIDUAL",
+                  "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                  "status": "REJECTED"
+                }
+              ],
+              "visible_candidates": 2
+            },
+            "visible_plane_count": 2
+          }
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/11"
+      },
+      {
+        "association_status": "UNASSOCIATED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "NO_CERTIFIED_OBSERVED_FACE",
+          "UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "INVALID",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "complete_cuboid_adaptation_error": null,
+          "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+          "instance_lineage": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "evaluation_entity_ids": [
+              "carton_l07_c03"
+            ],
+            "geometry_instance_identity": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/12",
+            "geometry_status": "PRESENT",
+            "identity_status": "RESOLVED",
+            "mask_bbox": [
+              1351,
+              1154,
+              1594,
+              1604
+            ],
+            "mask_id": 12,
+            "module_id": "module_0_upper",
+            "original_bbox": [
+              1347.0,
+              1153.0,
+              1595.0,
+              1582.0
+            ],
+            "proposal_id": 14,
+            "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+            "sam_instance_id": 12,
+            "sam_iou_score": 0.96451,
+            "sam_prompt_stability": 0.98778,
+            "sensor_epoch": "sim-j1-mast-v2",
+            "supporting_proposal_ids": [],
+            "validation_score": 0.82681
+          },
+          "observed_face_set": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+            "faces": [],
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "shared_edges": [],
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/12"
+          },
+          "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
+          "record": {
+            "accepted": true,
+            "anchored_front_spans_3d": [
+              0.34656,
+              0.40139
+            ],
+            "anchoring_status": "registered_2d_face_lifted_to_metric_plane",
+            "axis_nearest_plane_angle_degrees": [
+              0.0,
+              0.089,
+              90.0
+            ],
+            "back_face_status": "bounded_metric_completion_rendered_as_dashed_hypothesis",
+            "camera_facing_faces": [],
+            "certificate_status": "registered_face_anchored",
+            "complete_cuboid_consistency": {
+              "reason": "NONORTHOGONAL_CUBOID",
+              "status": "REJECTED"
+            },
+            "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+            "completion_displacement_budget_px": 24.0,
+            "completion_mode": "orthogonality_selected_multi_plane_cuboid",
+            "corners_2d": [
+              [
+                1353.0,
+                1156.0
+              ],
+              [
+                1373.0,
+                1590.0
+              ],
+              [
+                1585.0,
+                1599.0
+              ],
+              [
+                1591.0,
+                1237.0
+              ],
+              [
+                1350.1,
+                1146.7
+              ],
+              [
+                1369.09,
+                1558.83
+              ],
+              [
+                1570.41,
+                1567.38
+              ],
+              [
+                1576.11,
+                1223.62
+              ]
+            ],
+            "corners_3d": [
+              [
+                0.10182,
+                0.16023,
+                1.325
+              ],
+              [
+                0.13724,
+                0.53713,
+                1.325
+              ],
+              [
+                0.51265,
+                0.54494,
+                1.325
+              ],
+              [
+                0.52327,
+                0.23057,
+                1.325
+              ],
+              [
+                0.10182,
+                0.16023,
+                1.39532
+              ],
+              [
+                0.13724,
+                0.53713,
+                1.39532
+              ],
+              [
+                0.51265,
+                0.54494,
+                1.39532
+              ],
+              [
+                0.52327,
+                0.23057,
+                1.39532
+              ]
+            ],
+            "depth_plane_candidate_count": 2,
+            "depth_supported_axes": [
+              0,
+              1
+            ],
+            "depth_supported_face_count": 2,
+            "final_face_validation": [],
+            "front_face_recovered": true,
+            "generated_shape_dimensions": [],
+            "geometry_coherence": "DERIVED_FROM_UNANCHORED_CORNERS_3D_0_1_3_4",
+            "geometry_coherence_corner_source": "unanchored_corners_3d",
+            "geometry_version": "FINAL_METRIC_VALIDATED_V1",
+            "inferred_unobserved_depth": 0.07032,
+            "label": "box",
+            "mask_id": 12,
+            "mask_reprojection_iou": 0.89056,
+            "mask_reprojection_iou_before_shape_refinement": 0.87872,
+            "maximum_completion_displacement_px": 34.827,
+            "mean_completion_displacement_px": 24.0,
+            "method": "moge_metric_pointmap+pyransac3d_planes+shared_orthogonal_cuboid",
+            "monocular_depth_warning": null,
+            "orthogonal_axes_3d": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.00299686,
+                -0.99999551,
+                0.0
+              ],
+              [
+                -0.9999954,
+                -0.00303322,
+                0.0
+              ]
+            ],
+            "orthogonal_axes_3d_before_adapter_coherence": [
+              [
+                -0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.003037,
+                -0.999995,
+                0.0
+              ],
+              [
+                -0.999995,
+                -0.003037,
+                0.0
+              ]
+            ],
+            "orthogonal_plane_pair_diagnostics": {
+              "candidates": [
+                {
+                  "angle_degrees": 89.911,
+                  "indices": [
+                    0,
+                    1
+                  ],
+                  "orthogonal_pair_score": 0.355428,
+                  "support_ratios": [
+                    0.85167,
+                    0.14833
+                  ]
+                }
+              ],
+              "reliable": true,
+              "selected": {
+                "angle_degrees": 89.911,
+                "indices": [
+                  0,
+                  1
+                ],
+                "orthogonal_pair_score": 0.355428,
+                "support_ratios": [
+                  0.85167,
+                  0.14833
+                ]
+              }
+            },
+            "plane_equations": [
+              [
+                -0.0,
+                0.0,
+                -1.0,
+                1.325
+              ],
+              [
+                0.003037,
+                -0.999994,
+                -0.001546,
+                0.23156
+              ]
+            ],
+            "plane_inlier_counts": [
+              10220,
+              1780
+            ],
+            "plane_inlier_ratio": 1.0,
+            "plane_residual_mean": 0.000132,
+            "projected_camera_facing_face_count": 0,
+            "quality_status": "high",
+            "registered_face_mask_coverage": 0.91352,
+            "registered_face_mask_iou": 0.86287,
+            "registered_face_mask_precision": 0.93962,
+            "registered_face_source": "mask_polygon_seed_fallback",
+            "sam_mask_bbox_fill_ratio": 0.84525,
+            "selected_plane_indices": [
+              0,
+              1
+            ],
+            "shape_certificate_scales": [
+              1.008,
+              1.05,
+              1.05
+            ],
+            "shape_dimensions": [
+              0.42051,
+              0.31366141,
+              0.3923218
+            ],
+            "shape_dimensions_before_adapter_coherence": [
+              0.42051,
+              0.31367,
+              0.39231
+            ],
+            "unanchored_camera_facing_faces": [
+              {
+                "axis_index": 0,
+                "camera_facing_score": 0.935378,
+                "corner_indices": [
+                  1,
+                  2,
+                  6,
+                  5
+                ],
+                "corners_2d": [
+                  [
+                    1591.52,
+                    1588.75
+                  ],
+                  [
+                    1592.06,
+                    1227.12
+                  ],
+                  [
+                    1370.23,
+                    1225.74
+                  ],
+                  [
+                    1369.69,
+                    1587.38
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 80220.81,
+                "side": "high"
+              },
+              {
+                "axis_index": 1,
+                "camera_facing_score": 0.138974,
+                "corner_indices": [
+                  3,
+                  2,
+                  6,
+                  7
+                ],
+                "corners_2d": [
+                  [
+                    1520.55,
+                    1165.48
+                  ],
+                  [
+                    1592.06,
+                    1227.12
+                  ],
+                  [
+                    1370.23,
+                    1225.74
+                  ],
+                  [
+                    1352.21,
+                    1164.43
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 11937.85,
+                "side": "high"
+              },
+              {
+                "axis_index": 2,
+                "camera_facing_score": 0.083821,
+                "corner_indices": [
+                  4,
+                  5,
+                  6,
+                  7
+                ],
+                "corners_2d": [
+                  [
+                    1351.8,
+                    1438.87
+                  ],
+                  [
+                    1369.69,
+                    1587.38
+                  ],
+                  [
+                    1370.23,
+                    1225.74
+                  ],
+                  [
+                    1352.21,
+                    1164.43
+                  ]
+                ],
+                "evidence": "cuboid_constraint_completion",
+                "projected_area_px2": 5760.55,
+                "side": "high"
+              }
+            ],
+            "unanchored_corners_2d": [
+              [
+                1520.14,
+                1439.91
+              ],
+              [
+                1591.52,
+                1588.75
+              ],
+              [
+                1592.06,
+                1227.12
+              ],
+              [
+                1520.55,
+                1165.48
+              ],
+              [
+                1351.8,
+                1438.87
+              ],
+              [
+                1369.69,
+                1587.38
+              ],
+              [
+                1370.23,
+                1225.74
+              ],
+              [
+                1352.21,
+                1164.43
+              ]
+            ],
+            "unanchored_corners_3d": [
+              [
+                0.52354,
+                0.53537,
+                1.74384
+              ],
+              [
+                0.52354,
+                0.53537,
+                1.32333
+              ],
+              [
+                0.52448,
+                0.22171,
+                1.32333
+              ],
+              [
+                0.52448,
+                0.22171,
+                1.74384
+              ],
+              [
+                0.13122,
+                0.53418,
+                1.74384
+              ],
+              [
+                0.13122,
+                0.53418,
+                1.32333
+              ],
+              [
+                0.13217,
+                0.22051,
+                1.32333
+              ],
+              [
+                0.13217,
+                0.22051,
+                1.74384
+              ]
+            ],
+            "unanchored_mask_reprojection_iou": 0.89056,
+            "v4_path_audit": {
+              "face_checks_passed": 2,
+              "fallback_reason": "JOINT_RESULT_FAILED_INDEPENDENT_METRIC_GATE",
+              "final_published_face_count": 0,
+              "joint_accepted": false,
+              "joint_entered": true,
+              "joint_succeeded": true,
+              "raw_depth_plane_count": 2,
+              "rejected_joint_final_checks": [
+                {
+                  "mask_coverage": 0.8389990046306314,
+                  "mask_iou": 0.8175147854138335,
+                  "mask_precision": 0.969628388516555,
+                  "ordinal": 0,
+                  "plane_normal": [
+                    -0.03438035592891543,
+                    -0.025122093073540838,
+                    -0.9990930244806064
+                  ],
+                  "plane_offset_m": 1.2104585312082126,
+                  "plane_residual_m": 0.1354609436530267,
+                  "plane_residual_p95_m": 0.142564209070693,
+                  "point_support_count": 77547,
+                  "point_support_ratio": 1.0,
+                  "reason": "FINAL_METRIC_PLANE_RESIDUAL",
+                  "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                  "status": "REJECTED"
+                },
+                {
+                  "mask_coverage": 0.12109966676764616,
+                  "mask_iou": 0.12088517366511145,
+                  "mask_precision": 0.9855595667870036,
+                  "ordinal": 1,
+                  "plane_normal": [
+                    -0.05714524183508052,
+                    0.9980978281848486,
+                    -0.023133238171480056
+                  ],
+                  "plane_offset_m": -0.1529982236469501,
+                  "plane_residual_m": 0.019543909147114503,
+                  "plane_residual_p95_m": 0.029409914532248584,
+                  "point_support_count": 11193,
+                  "point_support_ratio": 1.0,
+                  "reason": "FINAL_METRIC_PLANE_RESIDUAL",
+                  "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                  "status": "REJECTED"
+                }
+              ],
+              "visible_candidates": 2
+            },
+            "visible_plane_count": 2
+          }
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/12"
+      },
+      {
+        "association_status": "UNASSOCIATED",
+        "axes_3d_rows": null,
+        "candidate_eligible": false,
+        "category": "box",
+        "corners_3d_m": null,
+        "depth_evidence": "OBSERVED",
+        "eligibility_reasons": [
+          "NO_CERTIFIED_OBSERVED_FACE",
+          "UNKNOWN_VOLUME"
+        ],
+        "full_dimensions_m": null,
+        "geometry_validity": "INVALID",
+        "metric_scale_validity": "VALID",
+        "object_id": null,
+        "observed_surfaces": [],
+        "occluded": false,
+        "pose": null,
+        "pose_evidence": null,
+        "raw_result": {
+          "complete_cuboid_adaptation_error": null,
+          "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+          "instance_lineage": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "evaluation_entity_ids": [
+              "carton_l07_c04"
+            ],
+            "geometry_instance_identity": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/13",
+            "geometry_status": "PRESENT",
+            "identity_status": "RESOLVED",
+            "mask_bbox": [
+              1133,
+              1154,
+              1358,
+              1623
+            ],
+            "mask_id": 13,
+            "module_id": "module_0_upper",
+            "original_bbox": [
+              1132.0,
+              1153.0,
+              1358.0,
+              1582.0
+            ],
+            "proposal_id": 15,
+            "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+            "sam_instance_id": 13,
+            "sam_iou_score": 0.98061,
+            "sam_prompt_stability": 0.97757,
+            "sensor_epoch": "sim-j1-mast-v2",
+            "supporting_proposal_ids": [],
+            "validation_score": 0.83261
+          },
+          "observed_face_set": {
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "capture_time": 1.6666666666666667,
+            "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+            "faces": [],
+            "frame_id": "world",
+            "module_id": "module_0_upper",
+            "shared_edges": [],
+            "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/13"
+          },
+          "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
+          "record": {
+            "accepted": true,
+            "anchored_front_spans_3d": [
+              0.36274,
+              0.36915
+            ],
+            "anchoring_status": "registered_2d_face_lifted_to_metric_plane",
+            "axis_nearest_plane_angle_degrees": [
+              0.0,
+              0.032,
+              90.0
+            ],
+            "back_face_status": "bounded_metric_completion_rendered_as_dashed_hypothesis",
+            "camera_facing_faces": [],
+            "certificate_status": "registered_face_anchored",
+            "complete_cuboid_consistency": {
+              "reason": "NONORTHOGONAL_CUBOID",
+              "status": "REJECTED"
+            },
+            "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+            "completion_displacement_budget_px": 24.0,
+            "completion_mode": "orthogonality_selected_multi_plane_cuboid",
+            "corners_2d": [
+              [
+                1333.0,
+                1155.0
+              ],
+              [
+                1135.0,
+                1233.0
+              ],
+              [
+                1140.0,
+                1622.0
+              ],
+              [
+                1348.0,
+                1615.0
+              ],
+              [
+                1331.01,
+                1145.26
+              ],
+              [
+                1143.52,
+                1219.12
+              ],
+              [
+                1148.25,
+                1587.47
+              ],
+              [
+                1345.21,
+                1580.84
+              ]
+            ],
+            "corners_3d": [
+              [
+                0.06641,
+                0.15936,
+                1.325
+              ],
+              [
+                -0.28421,
+                0.2271,
+                1.325
+              ],
+              [
+                -0.27536,
+                0.56492,
+                1.325
+              ],
+              [
+                0.09297,
+                0.55884,
+                1.325
+              ],
+              [
+                0.06641,
+                0.15936,
+                1.39927
+              ],
+              [
+                -0.28421,
+                0.2271,
+                1.39927
+              ],
+              [
+                -0.27536,
+                0.56492,
+                1.39927
+              ],
+              [
+                0.09297,
+                0.55884,
+                1.39927
+              ]
+            ],
+            "depth_plane_candidate_count": 2,
+            "depth_supported_axes": [
+              0,
+              1
+            ],
+            "depth_supported_face_count": 2,
+            "final_face_validation": [],
+            "front_face_recovered": true,
+            "generated_shape_dimensions": [],
+            "geometry_coherence": "DERIVED_FROM_UNANCHORED_CORNERS_3D_0_1_3_4",
+            "geometry_coherence_corner_source": "unanchored_corners_3d",
+            "geometry_version": "FINAL_METRIC_VALIDATED_V1",
+            "inferred_unobserved_depth": 0.07427,
+            "label": "box",
+            "mask_id": 13,
+            "mask_reprojection_iou": 0.9518,
+            "mask_reprojection_iou_before_shape_refinement": 0.89778,
+            "maximum_completion_displacement_px": 35.502,
+            "mean_completion_displacement_px": 24.0,
+            "method": "moge_metric_pointmap+pyransac3d_planes+shared_orthogonal_cuboid",
+            "monocular_depth_warning": null,
+            "orthogonal_axes_3d": [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.00132308,
+                -0.99999912,
+                0.0
+              ],
+              [
+                -0.99999916,
+                -0.00129471,
+                0.0
+              ]
+            ],
+            "orthogonal_axes_3d_before_adapter_coherence": [
+              [
+                -0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.001301,
+                -0.999999,
+                0.0
+              ],
+              [
+                -0.999999,
+                -0.001301,
+                0.0
+              ]
+            ],
+            "orthogonal_plane_pair_diagnostics": {
+              "candidates": [
+                {
+                  "angle_degrees": 89.968,
+                  "indices": [
+                    0,
+                    1
+                  ],
+                  "orthogonal_pair_score": 0.349988,
+                  "support_ratios": [
+                    0.85708,
+                    0.14292
+                  ]
+                }
+              ],
+              "reliable": true,
+              "selected": {
+                "angle_degrees": 89.968,
+                "indices": [
+                  0,
+                  1
+                ],
+                "orthogonal_pair_score": 0.349988,
+                "support_ratios": [
+                  0.85708,
+                  0.14292
+                ]
+              }
+            },
+            "plane_equations": [
+              [
+                -0.0,
+                0.0,
+                -1.0,
+                1.325
+              ],
+              [
+                0.001301,
+                -0.999999,
+                0.000562,
+                0.22847
+              ]
+            ],
+            "plane_inlier_counts": [
+              10285,
+              1715
+            ],
+            "plane_inlier_ratio": 1.0,
+            "plane_residual_mean": 7.6e-05,
+            "projected_camera_facing_face_count": 0,
+            "quality_status": "high",
+            "registered_face_mask_coverage": 0.85613,
+            "registered_face_mask_iou": 0.81711,
+            "registered_face_mask_precision": 0.94717,
+            "registered_face_source": "mask_polygon_seed_fallback",
+            "sam_mask_bbox_fill_ratio": 0.91448,
+            "selected_plane_indices": [
+              0,
+              1
+            ],
+            "shape_certificate_scales": [
+              1.008,
+              1.05,
+              1.05
+            ],
+            "shape_dimensions": [
+              0.40286,
+              0.32500028,
+              0.39391033
+            ],
+            "shape_dimensions_before_adapter_coherence": [
+              0.40286,
+              0.325,
+              0.39391
+            ],
+            "silhouette_warning": "SAM mask is nearly rectangular and cannot by itself reveal internal face boundaries",
+            "unanchored_camera_facing_faces": [
+              {
+                "axis_index": 0,
+                "camera_facing_score": 0.958488,
+                "corner_indices": [
+                  1,
+                  2,
+                  6,
+                  5
+                ],
+                "corners_2d": [
+                  [
+                    1356.21,
+                    1601.16
+                  ],
+                  [
+                    1356.45,
+                    1226.48
+                  ],
+                  [
+                    1133.73,
+                    1225.9
+                  ],
+                  [
+                    1133.49,
+                    1600.57
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 83447.21,
+                "side": "high"
+              },
+              {
+                "axis_index": 1,
+                "camera_facing_score": 0.143215,
+                "corner_indices": [
+                  3,
+                  2,
+                  6,
+                  7
+                ],
+                "corners_2d": [
+                  [
+                    1342.23,
+                    1166.97
+                  ],
+                  [
+                    1356.45,
+                    1226.48
+                  ],
+                  [
+                    1133.73,
+                    1225.9
+                  ],
+                  [
+                    1171.48,
+                    1166.53
+                  ]
+                ],
+                "evidence": "monocular_depth_plane",
+                "projected_area_px2": 11699.05,
+                "side": "high"
+              },
+              {
+                "axis_index": 2,
+                "camera_facing_score": -0.068579,
+                "corner_indices": [
+                  0,
+                  1,
+                  2,
+                  3
+                ],
+                "corners_2d": [
+                  [
+                    1342.04,
+                    1454.22
+                  ],
+                  [
+                    1356.21,
+                    1601.16
+                  ],
+                  [
+                    1356.45,
+                    1226.48
+                  ],
+                  [
+                    1342.23,
+                    1166.97
+                  ]
+                ],
+                "evidence": "cuboid_constraint_completion",
+                "projected_area_px2": 4720.35,
+                "side": "low"
+              }
+            ],
+            "unanchored_corners_2d": [
+              [
+                1342.04,
+                1454.22
+              ],
+              [
+                1356.21,
+                1601.16
+              ],
+              [
+                1356.45,
+                1226.48
+              ],
+              [
+                1342.23,
+                1166.97
+              ],
+              [
+                1171.3,
+                1453.76
+              ],
+              [
+                1133.49,
+                1600.57
+              ],
+              [
+                1133.73,
+                1225.9
+              ],
+              [
+                1171.48,
+                1166.53
+              ]
+            ],
+            "unanchored_corners_3d": [
+              [
+                0.10737,
+                0.54616,
+                1.72626
+              ],
+              [
+                0.10737,
+                0.54616,
+                1.3234
+              ],
+              [
+                0.1078,
+                0.22116,
+                1.3234
+              ],
+              [
+                0.1078,
+                0.22116,
+                1.72626
+              ],
+              [
+                -0.28654,
+                0.54565,
+                1.72626
+              ],
+              [
+                -0.28654,
+                0.54565,
+                1.3234
+              ],
+              [
+                -0.28612,
+                0.22066,
+                1.3234
+              ],
+              [
+                -0.28612,
+                0.22066,
+                1.72626
+              ]
+            ],
+            "unanchored_mask_reprojection_iou": 0.9518,
+            "v4_path_audit": {
+              "face_checks_passed": 2,
+              "fallback_reason": "JOINT_RESULT_FAILED_INDEPENDENT_METRIC_GATE",
+              "final_published_face_count": 0,
+              "joint_accepted": false,
+              "joint_entered": true,
+              "joint_succeeded": true,
+              "raw_depth_plane_count": 2,
+              "rejected_joint_final_checks": [
+                {
+                  "mask_coverage": 0.8694210422689921,
+                  "mask_iou": 0.8599571558890153,
+                  "mask_precision": 0.9875002942491937,
+                  "ordinal": 0,
+                  "plane_normal": [
+                    0.0022345918061437383,
+                    0.0018245113385535004,
+                    -0.9999958388702602
+                  ],
+                  "plane_offset_m": 1.2919720614824175,
+                  "plane_residual_m": 0.035058399010342245,
+                  "plane_residual_p95_m": 0.03319546605738107,
+                  "point_support_count": 83900,
+                  "point_support_ratio": 1.0,
+                  "reason": "FINAL_METRIC_PLANE_RESIDUAL",
+                  "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                  "status": "REJECTED"
+                },
+                {
+                  "mask_coverage": 0.1128900218650584,
+                  "mask_iou": 0.1119204413532367,
+                  "mask_precision": 0.9287297527706735,
+                  "ordinal": 1,
+                  "plane_normal": [
+                    0.01559269895944437,
+                    0.9998767278758749,
+                    0.0018430386305968499
+                  ],
+                  "plane_offset_m": -0.20853480084446818,
+                  "plane_residual_m": 0.022389472186844162,
+                  "plane_residual_p95_m": 0.025496035665119956,
+                  "point_support_count": 10894,
+                  "point_support_ratio": 1.0,
+                  "reason": "FINAL_METRIC_PLANE_RESIDUAL",
+                  "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+                  "status": "REJECTED"
+                }
+              ],
+              "visible_candidates": 2
+            },
+            "visible_plane_count": 2
+          }
+        },
+        "scale_evidence": "OBSERVED",
+        "size_evidence": null,
+        "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/13"
+      }
+    ],
+    "perception_source": {
+      "capture_time": 1.6666666666666667,
+      "clock_domain": "ros_sim_time",
+      "coverage": {
+        "absence_means_free_space": false,
+        "capture_time_range": [
+          1.6666666666666667,
+          1.6666666666666667
+        ],
+        "clock_domain": "ros_sim_time",
+        "coverage_status": "DEGRADED_MISSING_MODULE",
+        "direct_simulator_truth": false,
+        "expected_modules": [
+          "module_0_upper",
+          "module_1_lower"
+        ],
+        "historical_replay": true,
+        "module_bindings": {
+          "module_0_upper": {
+            "T_W_C_at_capture": [
+              [
+                0.0,
+                -0.0,
+                1.0,
+                -1.325
+              ],
+              [
+                -1.0,
+                -0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                2.6293411964178084
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "calibration_identity": "c155391544c4e3200e0576320879de938caa93ea8c5b41aca8697ca296955786",
+            "capture_id": "sim-j1-mast-v2:module_0_main:100",
+            "module_id": "module_0_upper"
+          }
+        },
+        "received_modules": [
+          "module_0_upper"
+        ],
+        "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD"
+      },
+      "processed_time": 15.509719835749516,
+      "provider": "registered-rgbd-fused-algorithm",
+      "source_epoch": "sim-j1-mast-v2",
+      "source_sequence": 100
+    },
+    "planning_admissible": false,
+    "unknown_regions": [
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-fusion-962f806aff3d2a010f61"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-fusion-d6b6fa43b267009bfff6"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-fusion-481222de43233dd17827"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-fusion-50f5f756680e5691e226"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-fusion-d010d2f4dfebbc874dcd"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-fusion-37ea36449e362572dc62"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-fusion-2dfc1fe0f19e72afbc08"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-fusion-630febab594139becfee"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/9"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/10"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/11"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/12"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "UNKNOWN_VOLUME_BEHIND_OBSERVED_PATCH",
+        "region_id": "unknown-volume-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/13"
+      },
+      {
+        "bbox_xyxy": null,
+        "frame_id": "world",
+        "reason": "DEGRADED_MISSING_MODULE",
+        "region_id": "missing-module-algorithm-fusion-78593a5448168c8a9009be65b4f1beff548a421567e2a848fa5bb7e2fe7bc021"
+      },
+      {
+        "bbox_xyxy": [
+          2070.0,
+          1914.0,
+          2307.0,
+          1944.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-fusion-962f806aff3d2a010f61"
+      },
+      {
+        "bbox_xyxy": [
+          1832.0,
+          1908.0,
+          2070.0,
+          1944.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-fusion-d6b6fa43b267009bfff6"
+      },
+      {
+        "bbox_xyxy": [
+          1132.0,
+          1926.0,
+          1358.0,
+          1944.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-fusion-481222de43233dd17827"
+      },
+      {
+        "bbox_xyxy": [
+          2070.0,
+          1574.0,
+          2307.0,
+          1926.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-fusion-50f5f756680e5691e226"
+      },
+      {
+        "bbox_xyxy": [
+          1832.0,
+          1569.0,
+          2070.0,
+          1926.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-fusion-d010d2f4dfebbc874dcd"
+      },
+      {
+        "bbox_xyxy": [
+          1595.0,
+          1559.0,
+          1832.0,
+          1926.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-fusion-37ea36449e362572dc62"
+      },
+      {
+        "bbox_xyxy": [
+          1358.0,
+          1490.0,
+          1595.0,
+          1926.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-fusion-2dfc1fe0f19e72afbc08"
+      },
+      {
+        "bbox_xyxy": [
+          1132.0,
+          1582.0,
+          1358.0,
+          1926.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-fusion-630febab594139becfee"
+      },
+      {
+        "bbox_xyxy": [
+          1836.0,
+          1153.0,
+          2307.0,
+          1582.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/9"
+      },
+      {
+        "bbox_xyxy": [
+          1673.0,
+          1153.0,
+          2070.0,
+          1582.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/10"
+      },
+      {
+        "bbox_xyxy": [
+          1510.0,
+          1153.0,
+          1832.0,
+          1582.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/11"
+      },
+      {
+        "bbox_xyxy": [
+          1347.0,
+          1153.0,
+          1595.0,
+          1582.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/12"
+      },
+      {
+        "bbox_xyxy": [
+          1132.0,
+          1153.0,
+          1358.0,
+          1582.0
+        ],
+        "frame_id": "source_image",
+        "reason": "OBJECT_WITHOUT_WORLD_GEOMETRY",
+        "region_id": "object-sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/13"
+      }
+    ]
+  },
+  "robot_state_revision": {
+    "__type__": "RobotStateRevision",
+    "sequence": 1,
+    "current_q": [
+      -1.5707963267948966,
+      0.7854566731593875,
+      0.6496218708958161,
+      0.06722349609001022,
+      -1.2117503086182402,
+      -1.9415185231007088
+    ],
+    "robot_state": {
+      "actual_efforts": [],
+      "actual_velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "joint_names": [
+        "J1",
+        "J2",
+        "J3",
+        "J4",
+        "J5",
+        "J6"
+      ]
+    },
+    "sample_time": 1.6666666669999999,
+    "clock_domain": "ros_sim_time",
+    "source": "joint_states"
+  },
+  "tool_attachment": {
+    "confirmed": true,
+    "details": {
+      "attached": true,
+      "identity": "8a956456318f4a1f492a1e760636e42c7981bcb7520a07c3f8bbd3788578ca46",
+      "verification_source": "ISAAC_MANIFEST_ATTACHED_STATE",
+      "verified": true
+    },
+    "identity": "8a956456318f4a1f492a1e760636e42c7981bcb7520a07c3f8bbd3788578ca46",
+    "source": "mechanism_state_topic",
+    "source_epoch": "sim-j1-mast-v2"
+  },
+  "payload_attachment": {
+    "confirmed": true,
+    "details": {
+      "identity": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "object_id": null
+    },
+    "identity": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "source": "mechanism_state_topic",
+    "source_epoch": "sim-j1-mast-v2"
+  },
+  "base_state": {
+    "confirmed": true,
+    "details": {
+      "T_W_A": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.95
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "identity": "78a15557f1012d2e9e2332565d97737960105346046bc1b89c92882363c4b50d",
+      "position_m": [
+        -1.95,
+        0.35,
+        0.0
+      ]
+    },
+    "identity": "78a15557f1012d2e9e2332565d97737960105346046bc1b89c92882363c4b50d",
+    "source": "mechanism_state_topic",
+    "source_epoch": "sim-j1-mast-v2"
+  },
+  "conveyor_state": {
+    "confirmed": true,
+    "details": {
+      "identity": "fca6480e2b867e432ab38bab61f79df6e30f1bdfe4cf8543df62b93a7e5606af",
+      "running": false
+    },
+    "identity": "fca6480e2b867e432ab38bab61f79df6e30f1bdfe4cf8543df62b93a7e5606af",
+    "source": "mechanism_state_topic",
+    "source_epoch": "sim-j1-mast-v2"
+  },
+  "config_identity": {
+    "identity": "21db85855185df092bfa0c38fb1ad9fbc5bc6aed59543ac2706f28b947abb496",
+    "robot_model_fingerprint": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+    "source": "mechanism_state_topic",
+    "source_epoch": "sim-j1-mast-v2",
+    "world_model_fingerprint": "b40dad50036e1fa1b3ec16d45fd4510c4046f26dd7c301eb97de0dfee6b9559f"
+  }
+}

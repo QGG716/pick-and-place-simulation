@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="5" time="11.009" timestamp="2026-09-12T10:39:28.814912" hostname="23c115bb98fa"><testcase classname="unloading_ros_bridge.test.test_bridge_integration_launch" name="test_bridge_integration_launch" time="10.061"><failure message="test_bridge_integration_launch.TestBridgeIntegration.test_world_gate_action_cancel_and_correlated_stop failed">
+=========================================================================================================================================================================================================
+FAIL: test_bridge_integration_launch.TestBridgeIntegration.test_world_gate_action_cancel_and_correlated_stop
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/__w/pick-and-place-simulation/pick-and-place-simulation/ros2_ws/src/unloading_ros_bridge/test/test_bridge_integration_launch.py", line 182, in test_world_gate_action_cancel_and_correlated_stop
+    self.wait_for(events, lambda item: item.command_id == competing.command_id and item.kind == "REJECTED")
+  File "/__w/pick-and-place-simulation/pick-and-place-simulation/ros2_ws/src/unloading_ros_bridge/test/test_bridge_integration_launch.py", line 63, in wait_for
+    raise AssertionError("timed out waiting for ROS integration output")
+AssertionError: timed out waiting for ROS integration output
+</failure></testcase><testcase classname="unloading_ros_bridge.test.test_humble_imports" name="test_humble_python_and_generated_interfaces_import" time="0.000" /><testcase classname="unloading_ros_bridge.test.test_humble_imports" name="test_cpu_bridge_import_does_not_load_cuda_frameworks" time="0.000" /><testcase classname="unloading_ros_bridge.test.test_humble_imports" name="test_domain_ros_domain_round_trip_preserves_fingerprint" time="0.003" /><testcase classname="unloading_ros_bridge.test.test_mock_action_launch" name="test_mock_action_launch" time="0.600" /></testsuite></testsuites>

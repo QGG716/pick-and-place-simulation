@@ -1,0 +1,17 @@
+{
+  "sensor_epoch": "sim-j1-mast-v2",
+  "capture_time_range": [
+    4.166666666666667,
+    4.166666666666667
+  ],
+  "expected_modules": [
+    "module_0_upper",
+    "module_1_lower"
+  ],
+  "received_modules": [
+    "module_0_upper",
+    "module_1_lower"
+  ],
+  "objects": [],
+  "coverage_status": "COMPLETE_MODULE_SET"
+}

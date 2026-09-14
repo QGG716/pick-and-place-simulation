@@ -1,0 +1,22 @@
+[ERROR] [1789394374.457382595] [unloading_world_bridge]: rejecting invalid perception observation: duplicate or out-of-order source sequence
+[ERROR] [1789394374.779898211] [unloading_world_bridge]: rejecting invalid perception observation: ALGORITHM_CAPTURE_TF_MISMATCH
+{
+  "status": "TRANSPORT_AND_SEMANTICS_PASS",
+  "planning_admissible": false,
+  "blocking_reasons": [
+    "DEGRADED_MISSING_MODULE",
+    "OBSERVATION_STALE",
+    "UNKNOWN_OR_UNTRANSFORMED_REGIONS",
+    "ROBOT_STATE_STALE_OR_TIME_JUMP",
+    "MECHANISM_STATE_STALE_OR_TIME_JUMP"
+  ],
+  "surface_count": 8,
+  "source_capture_time": 1.6666666666666667,
+  "processed_time": 15.509719835749516,
+  "round_trip_fingerprint": "03fd5cb9318084ac73b092994541bad02c3edd87c308bd3dfeb84e2359fc2fe7",
+  "stale_sequence_rejected": true,
+  "wrong_capture_tf_rejected": true,
+  "coverage_status": "DEGRADED_MISSING_MODULE",
+  "execution_commands_generated": 0,
+  "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD"
+}

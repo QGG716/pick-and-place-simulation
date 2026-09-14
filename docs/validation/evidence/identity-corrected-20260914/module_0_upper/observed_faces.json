@@ -1,0 +1,990 @@
+[
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            2293.0,
+            1885.0
+          ],
+          [
+            2089.0,
+            1896.0
+          ],
+          [
+            2079.0,
+            1938.0
+          ],
+          [
+            2297.0,
+            1943.0
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            -1.01638,
+            1.8360311964178084
+          ],
+          [
+            0.0,
+            -0.6551400000000001,
+            1.8264711964178084
+          ],
+          [
+            0.0,
+            -0.6374299999999999,
+            1.7900011964178084
+          ],
+          [
+            0.0,
+            -1.02346,
+            1.7856611964178084
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.9118,
+          "mask_iou": 0.79097,
+          "mask_precision": 0.85651
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 0.0,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/1"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            1842.0,
+            1907.0
+          ],
+          [
+            1848.0,
+            1942.0
+          ],
+          [
+            2069.0,
+            1938.0
+          ],
+          [
+            2060.0,
+            1892.0
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            -0.21775,
+            1.8169211964178085
+          ],
+          [
+            0.0,
+            -0.22836999999999996,
+            1.7865211964178083
+          ],
+          [
+            0.0,
+            -0.61972,
+            1.7900011964178084
+          ],
+          [
+            0.0,
+            -0.60378,
+            1.8299511964178083
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.85227,
+          "mask_iou": 0.84572,
+          "mask_precision": 0.991
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 0.0,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/2"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            1360.62,
+            1942.44
+          ],
+          [
+            1353.93,
+            1924.21
+          ],
+          [
+            1136.44,
+            1921.25
+          ],
+          [
+            1128.78,
+            1942.4
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            0.63468,
+            1.7861411964178084
+          ],
+          [
+            0.0,
+            0.64653,
+            1.8019711964178082
+          ],
+          [
+            0.0,
+            1.03166,
+            1.8045411964178084
+          ],
+          [
+            0.0,
+            1.04523,
+            1.7861811964178083
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.93183,
+          "mask_iou": 0.89084,
+          "mask_precision": 0.95295
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 0.0,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/3"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            2306.04,
+            1538.36
+          ],
+          [
+            2076.0,
+            1552.23
+          ],
+          [
+            2076.0,
+            1939.39
+          ],
+          [
+            2306.07,
+            1939.84
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            -1.03947,
+            2.1370611964178083
+          ],
+          [
+            0.0,
+            -0.63212,
+            2.1250111964178084
+          ],
+          [
+            0.0,
+            -0.63212,
+            1.7887911964178085
+          ],
+          [
+            0.0,
+            -1.03953,
+            1.7884011964178084
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.99881,
+          "mask_iou": 0.97543,
+          "mask_precision": 0.97657
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 0.0,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/4"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            2069.0,
+            1552.4
+          ],
+          [
+            1844.0,
+            1556.78
+          ],
+          [
+            1844.0,
+            1936.0
+          ],
+          [
+            2069.0,
+            1936.0
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            -0.61972,
+            2.1248711964178084
+          ],
+          [
+            0.0,
+            -0.22129,
+            2.1210611964178083
+          ],
+          [
+            0.0,
+            -0.22129,
+            1.7917411964178083
+          ],
+          [
+            0.0,
+            -0.61972,
+            1.7917411964178083
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.98593,
+          "mask_iou": 0.97107,
+          "mask_precision": 0.98472
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 0.0,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/5"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            1832.0,
+            1587.0
+          ],
+          [
+            1603.87,
+            1588.0
+          ],
+          [
+            1606.6,
+            1936.0
+          ],
+          [
+            1832.0,
+            1936.0
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            -0.20004,
+            2.0948211964178083
+          ],
+          [
+            0.0,
+            0.20394,
+            2.0939511964178084
+          ],
+          [
+            0.0,
+            0.19910000000000005,
+            1.7917411964178083
+          ],
+          [
+            0.0,
+            -0.20004,
+            1.7917411964178083
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.97639,
+          "mask_iou": 0.97288,
+          "mask_precision": 0.99633
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 0.0,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/6"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            1369.0,
+            1455.51
+          ],
+          [
+            1369.0,
+            1935.0
+          ],
+          [
+            1595.11,
+            1936.0
+          ],
+          [
+            1594.74,
+            1462.57
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            0.61985,
+            2.2090111964178085
+          ],
+          [
+            0.0,
+            0.61985,
+            1.7926011964178084
+          ],
+          [
+            0.0,
+            0.21945000000000003,
+            1.7917411964178083
+          ],
+          [
+            0.0,
+            0.22009999999999996,
+            2.2028811964178083
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.98855,
+          "mask_iou": 0.9727,
+          "mask_precision": 0.98378
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 0.0,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/7"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            1134.2,
+            1567.43
+          ],
+          [
+            1132.25,
+            1939.87
+          ],
+          [
+            1358.0,
+            1940.05
+          ],
+          [
+            1358.0,
+            1559.15
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            1.03563,
+            2.1118111964178086
+          ],
+          [
+            0.0,
+            1.03908,
+            1.7883711964178084
+          ],
+          [
+            0.0,
+            0.63932,
+            1.7882211964178083
+          ],
+          [
+            0.0,
+            0.63932,
+            2.119001196417808
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.99561,
+          "mask_iou": 0.98079,
+          "mask_precision": 0.98505
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 0.0,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/8"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            2305.26,
+            1601.14
+          ],
+          [
+            2302.62,
+            1232.98
+          ],
+          [
+            2086.98,
+            1235.0
+          ],
+          [
+            2089.27,
+            1602.51
+          ]
+        ],
+        "corner_indices": [
+          1,
+          2,
+          6,
+          5
+        ],
+        "corners_3d_m": [
+          [
+            -0.011639999999999873,
+            -1.02238,
+            2.0873411964178086
+          ],
+          [
+            -0.009530000000000038,
+            -1.02059,
+            2.4038911964178085
+          ],
+          [
+            -0.00719000000000003,
+            -0.6439600000000001,
+            2.401751196417808
+          ],
+          [
+            -0.00930999999999993,
+            -0.64574,
+            2.0852011964178083
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.802,
+          "mask_iou": 0.79539,
+          "mask_precision": 0.98975
+        },
+        "evidence": "registered_metric_depth_plane",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/9:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -0.9999586525504638,
+          0.006223694165165231,
+          0.006630144824911285
+        ],
+        "plane_offset_m": -0.0191133972504925,
+        "plane_residual_m": 0.000889,
+        "point_support_count": 10462,
+        "point_support_ratio": 0.9995
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/9"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            1853.81,
+            1565.95
+          ],
+          [
+            1852.74,
+            1228.87
+          ],
+          [
+            2066.86,
+            1231.2
+          ],
+          [
+            2068.66,
+            1568.62
+          ]
+        ],
+        "corner_indices": [
+          0,
+          3,
+          7,
+          4
+        ],
+        "corners_3d_m": [
+          [
+            -0.012149999999999883,
+            -0.22960000000000003,
+            2.1178411964178085
+          ],
+          [
+            -0.007739999999999858,
+            -0.23099000000000003,
+            2.4071411964178084
+          ],
+          [
+            -0.009090000000000042,
+            -0.6065499999999999,
+            2.4053611964178083
+          ],
+          [
+            -0.013499999999999845,
+            -0.60517,
+            2.1160711964178085
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.79379,
+          "mask_iou": 0.78353,
+          "mask_precision": 0.98378
+        },
+        "evidence": "registered_metric_depth_plane",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/10:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -0.9998773749367093,
+          0.003522183552249879,
+          0.01525874544973571
+        ],
+        "plane_offset_m": -0.0436553871395827,
+        "plane_residual_m": 0.001198,
+        "point_support_count": 10245,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/10"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            1515.0,
+            1156.0
+          ],
+          [
+            1604.0,
+            1575.0
+          ],
+          [
+            1830.0,
+            1581.0
+          ],
+          [
+            1834.0,
+            1239.0
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0018700000000000383,
+            0.36076,
+            2.4688911964178084
+          ],
+          [
+            5.999999999994898e-05,
+            0.20367999999999997,
+            2.1052211964178085
+          ],
+          [
+            -0.0007999999999999119,
+            -0.19593000000000005,
+            2.1003511964178085
+          ],
+          [
+            0.0003900000000001125,
+            -0.20386000000000004,
+            2.3969611964178084
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.90688,
+          "mask_iou": 0.81333,
+          "mask_precision": 0.88744
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/11:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -0.9999895117751294,
+          0.002102871516653889,
+          0.004068694031614047
+        ],
+        "plane_offset_m": -0.00893377640525374,
+        "plane_residual_m": 0.000525,
+        "point_support_count": 0,
+        "point_support_ratio": 0.9625
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/11"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            1353.0,
+            1156.0
+          ],
+          [
+            1373.0,
+            1590.0
+          ],
+          [
+            1585.0,
+            1599.0
+          ],
+          [
+            1591.0,
+            1237.0
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            0.64818,
+            2.4691111964178085
+          ],
+          [
+            0.0,
+            0.61276,
+            2.0922111964178085
+          ],
+          [
+            0.0,
+            0.23734999999999995,
+            2.0844011964178084
+          ],
+          [
+            0.0,
+            0.22673,
+            2.3987711964178082
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.91352,
+          "mask_iou": 0.86287,
+          "mask_precision": 0.93962
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/12:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 0.000132,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/12"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_0_main:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR",
+    "faces": [
+      {
+        "boundary_2d_px": [
+          [
+            1333.0,
+            1155.0
+          ],
+          [
+            1135.0,
+            1233.0
+          ],
+          [
+            1140.0,
+            1622.0
+          ],
+          [
+            1348.0,
+            1615.0
+          ]
+        ],
+        "corner_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "corners_3d_m": [
+          [
+            0.0,
+            0.68359,
+            2.4699811964178084
+          ],
+          [
+            0.0,
+            1.03421,
+            2.4022411964178083
+          ],
+          [
+            0.0,
+            1.02536,
+            2.0644211964178085
+          ],
+          [
+            0.0,
+            0.65703,
+            2.0705011964178084
+          ]
+        ],
+        "diagnostics": {
+          "mask_coverage": 0.85613,
+          "mask_iou": 0.81711,
+          "mask_precision": 0.94717
+        },
+        "evidence": "registered_sam_visible_face",
+        "face_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/13:face:0",
+        "frame_id": "world",
+        "plane_normal": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "plane_offset_m": -0.0,
+        "plane_residual_m": 7.6e-05,
+        "point_support_count": 0,
+        "point_support_ratio": 1.0
+      }
+    ],
+    "frame_id": "world",
+    "module_id": "module_0_upper",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_0_upper/sim-j1-mast-v2%3Amodule_0_main%3A100/13"
+  }
+]

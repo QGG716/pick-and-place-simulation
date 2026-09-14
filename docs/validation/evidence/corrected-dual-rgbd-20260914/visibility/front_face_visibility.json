@@ -1,0 +1,1104 @@
+{
+  "schema_version": "sampled_front_face_first_hit_v1",
+  "evaluation_only": true,
+  "sample_grid": [
+    128,
+    128
+  ],
+  "depth_consistency_tolerance_m": 0.005,
+  "method": "equal-area physical front samples projected to nearest registered first-hit pixel; uncertainty at silhouette pixels",
+  "scene_geometry_hidden": false,
+  "objects": {
+    "carton_l00_c00": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 1.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 10707,
+              "physical_face_area_fraction": 0.65350341796875
+            },
+            {
+              "prim": "/PerceptionValidation/Primitives/p_002_conveyor_longitudinal",
+              "sample_count": 5677,
+              "physical_face_area_fraction": 0.34649658203125
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.0,
+      "union_remaining_blind_area_fraction": 1.0
+    },
+    "carton_l00_c01": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 1.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 16384,
+              "physical_face_area_fraction": 1.0
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.0,
+      "union_remaining_blind_area_fraction": 1.0
+    },
+    "carton_l00_c02": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 1.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 16384,
+              "physical_face_area_fraction": 1.0
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.0,
+      "union_remaining_blind_area_fraction": 1.0
+    },
+    "carton_l00_c03": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 1.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 16384,
+              "physical_face_area_fraction": 1.0
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.0,
+      "union_remaining_blind_area_fraction": 1.0
+    },
+    "carton_l00_c04": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 1.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 16384,
+              "physical_face_area_fraction": 1.0
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.0,
+      "union_remaining_blind_area_fraction": 1.0
+    },
+    "carton_l01_c00": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.609375,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.390625,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_002_conveyor_longitudinal",
+              "sample_count": 5844,
+              "physical_face_area_fraction": 0.356689453125
+            },
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 556,
+              "physical_face_area_fraction": 0.033935546875
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.609375,
+      "union_remaining_blind_area_fraction": 0.390625
+    },
+    "carton_l01_c01": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.609375,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.390625,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 6384,
+              "physical_face_area_fraction": 0.3896484375
+            },
+            {
+              "prim": "/PerceptionValidation/Primitives/p_002_conveyor_longitudinal",
+              "sample_count": 16,
+              "physical_face_area_fraction": 0.0009765625
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.609375,
+      "union_remaining_blind_area_fraction": 0.390625
+    },
+    "carton_l01_c02": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.609375,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.390625,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 6400,
+              "physical_face_area_fraction": 0.390625
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.609375,
+      "union_remaining_blind_area_fraction": 0.390625
+    },
+    "carton_l01_c03": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.609375,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.390625,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 6400,
+              "physical_face_area_fraction": 0.390625
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.609375,
+      "union_remaining_blind_area_fraction": 0.390625
+    },
+    "carton_l01_c04": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.609375,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.390625,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [
+            {
+              "prim": "/PerceptionValidation/Primitives/p_001_conveyor_transverse",
+              "sample_count": 6400,
+              "physical_face_area_fraction": 0.390625
+            }
+          ],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 0.609375,
+      "union_remaining_blind_area_fraction": 0.390625
+    },
+    "carton_l02_c00": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l02_c01": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l02_c02": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l02_c03": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l02_c04": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l03_c00": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l03_c01": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l03_c02": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l03_c03": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l03_c04": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l04_c00": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l04_c01": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l04_c02": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l04_c03": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l04_c04": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l05_c00": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.046875,
+          "in_frustum_area_fraction": 0.046875,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l05_c01": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.046875,
+          "in_frustum_area_fraction": 0.046875,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l05_c02": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.046875,
+          "in_frustum_area_fraction": 0.046875,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l05_c03": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.046875,
+          "in_frustum_area_fraction": 0.046875,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l05_c04": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 0.046875,
+          "in_frustum_area_fraction": 0.046875,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l06_c00": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.4140625,
+          "in_frustum_area_fraction": 0.4140625,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l06_c01": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.4140625,
+          "in_frustum_area_fraction": 0.4140625,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l06_c02": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.4140625,
+          "in_frustum_area_fraction": 0.4140625,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l06_c03": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.4140625,
+          "in_frustum_area_fraction": 0.4140625,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l06_c04": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.4140625,
+          "in_frustum_area_fraction": 0.4140625,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l07_c00": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l07_c01": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l07_c02": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l07_c03": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    },
+    "carton_l07_c04": {
+      "front_axis": 0,
+      "front_sign": -1,
+      "physical_front_area_m2": 0.12,
+      "modules": {
+        "module_0_upper": {
+          "visible_area_fraction": 1.0,
+          "in_frustum_area_fraction": 1.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_0_main:100"
+        },
+        "module_1_lower": {
+          "visible_area_fraction": 0.0,
+          "in_frustum_area_fraction": 0.0,
+          "blocked_area_fraction": 0.0,
+          "unresolved_area_fraction": 0.0,
+          "first_blocking_prims": [],
+          "capture_id": "sim-j1-mast-v2:module_1_lower:100"
+        }
+      },
+      "union_visible_front_area_fraction": 1.0,
+      "union_remaining_blind_area_fraction": 0.0
+    }
+  },
+  "input_sha256": {
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/camera_info.json": "b81053039f511c06ff2ca17265556918d12f6bf1341414fdc3c83968e1f25852",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/capture_metadata.json": "451b2664c2e033fbcd2cb6d7bfd421e306338cc4bd776840005f65393be18a35",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/gt_annotations.json": "3e6f14d242cf39949e815a7bb687bdf597920ad9c828932fe6075ba2c1a4fb30",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/first_hit_instance_ids.npy": "ef581374922c579f2137f0b9353576f784018454a501fa8b48d9ad7dac5552af",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/metric_depth_m.npy": "fecec441e42a2c5194916116a358cf64a2a5ccabeac1a5dae76c4b5a012a7794",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/instance_segmentation_info.json": "14b9bb78527ce49b9108fd9fe8568037ff9dc7a5b8aedad5c3f9a56f4403468e",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/sensor_rgb.png": "42846b1ff24fd28ea6e5dc3447e7a1ea1650775ff7b93d1b56147966c51de16b",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/modules/module_1_lower/camera_info.json": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/modules/module_1_lower/capture_metadata.json": "d3e60c1ee0ae6ed38fd3871d7f8ac733e255642694b4738a1956915d104e0cec",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/modules/module_1_lower/gt_annotations.json": "220e11c9da5f46b25510d7dd20f150511cf68180c6a2804ac2d6c3ae6017ca8f",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/modules/module_1_lower/first_hit_instance_ids.npy": "642df1afb57aae7bf15d54bfc1e414c854091e028bdca0e7ea2f49ba3dda632d",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy": "36342745d56e74615bfc62a9b594407a523478d32bebafdf11e9e134931b108c",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/modules/module_1_lower/instance_segmentation_info.json": "14b9bb78527ce49b9108fd9fe8568037ff9dc7a5b8aedad5c3f9a56f4403468e",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/visibility-capture-v2/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.png": "02a9538466759f0f7a4ae4e9927a5f222fd8e530861ffa7dc9682cefc1adfce9"
+  }
+}

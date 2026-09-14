@@ -1,0 +1,530 @@
+[
+  {
+    "fusion_id": "fused-0000",
+    "members": [
+      [
+        "module_0_upper",
+        "1"
+      ],
+      [
+        "module_1_lower",
+        "27"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c00",
+      "carton_l06_c00"
+    ],
+    "status": "WRONG_MERGE"
+  },
+  {
+    "fusion_id": "fused-0001",
+    "members": [
+      [
+        "module_0_upper",
+        "2"
+      ],
+      [
+        "module_1_lower",
+        "28"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c01",
+      "carton_l06_c01"
+    ],
+    "status": "WRONG_MERGE"
+  },
+  {
+    "fusion_id": "fused-0002",
+    "members": [
+      [
+        "module_0_upper",
+        "3"
+      ],
+      [
+        "module_1_lower",
+        "31"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c04",
+      "carton_l06_c04"
+    ],
+    "status": "WRONG_MERGE"
+  },
+  {
+    "fusion_id": "fused-0003",
+    "members": [
+      [
+        "module_0_upper",
+        "4"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l06_c00"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0004",
+    "members": [
+      [
+        "module_0_upper",
+        "5"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l06_c01"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0005",
+    "members": [
+      [
+        "module_0_upper",
+        "6"
+      ],
+      [
+        "module_1_lower",
+        "29"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c02",
+      "carton_l06_c02"
+    ],
+    "status": "AMBIGUOUS_SAM_SOURCE"
+  },
+  {
+    "fusion_id": "fused-0006",
+    "members": [
+      [
+        "module_0_upper",
+        "7"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c03",
+      "carton_l06_c03"
+    ],
+    "status": "AMBIGUOUS_SAM_SOURCE"
+  },
+  {
+    "fusion_id": "fused-0007",
+    "members": [
+      [
+        "module_0_upper",
+        "8"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l06_c04"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0008",
+    "members": [
+      [
+        "module_0_upper",
+        "9"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l07_c00"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0009",
+    "members": [
+      [
+        "module_0_upper",
+        "10"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l07_c01"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0010",
+    "members": [
+      [
+        "module_0_upper",
+        "11"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l07_c02"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0011",
+    "members": [
+      [
+        "module_0_upper",
+        "12"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l07_c03"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0012",
+    "members": [
+      [
+        "module_0_upper",
+        "13"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l07_c04"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0013",
+    "members": [
+      [
+        "module_1_lower",
+        "2"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l01_c00"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0014",
+    "members": [
+      [
+        "module_1_lower",
+        "3"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l01_c01"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0015",
+    "members": [
+      [
+        "module_1_lower",
+        "4"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l01_c02"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0016",
+    "members": [
+      [
+        "module_1_lower",
+        "5"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l01_c03"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0017",
+    "members": [
+      [
+        "module_1_lower",
+        "6"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l01_c04"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0018",
+    "members": [
+      [
+        "module_1_lower",
+        "7"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l02_c00"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0019",
+    "members": [
+      [
+        "module_1_lower",
+        "8"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l02_c01"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0020",
+    "members": [
+      [
+        "module_1_lower",
+        "9"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l02_c02"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0021",
+    "members": [
+      [
+        "module_1_lower",
+        "10"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l02_c03"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0022",
+    "members": [
+      [
+        "module_1_lower",
+        "11"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l02_c04"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0023",
+    "members": [
+      [
+        "module_1_lower",
+        "12"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l03_c00"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0024",
+    "members": [
+      [
+        "module_1_lower",
+        "13"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l03_c01"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0025",
+    "members": [
+      [
+        "module_1_lower",
+        "14"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l03_c02"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0026",
+    "members": [
+      [
+        "module_1_lower",
+        "15"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l03_c03"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0027",
+    "members": [
+      [
+        "module_1_lower",
+        "16"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l03_c04"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0028",
+    "members": [
+      [
+        "module_1_lower",
+        "17"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l04_c00"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0029",
+    "members": [
+      [
+        "module_1_lower",
+        "18"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l04_c01"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0030",
+    "members": [
+      [
+        "module_1_lower",
+        "19"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l04_c02"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0031",
+    "members": [
+      [
+        "module_1_lower",
+        "20"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l04_c03"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0032",
+    "members": [
+      [
+        "module_1_lower",
+        "21"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l04_c04"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0033",
+    "members": [
+      [
+        "module_1_lower",
+        "22"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c00"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0034",
+    "members": [
+      [
+        "module_1_lower",
+        "23"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c01"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0035",
+    "members": [
+      [
+        "module_1_lower",
+        "24"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c02"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0036",
+    "members": [
+      [
+        "module_1_lower",
+        "25"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c03"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0037",
+    "members": [
+      [
+        "module_1_lower",
+        "26"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l05_c04"
+    ],
+    "status": "SINGLE"
+  },
+  {
+    "fusion_id": "fused-0038",
+    "members": [
+      [
+        "module_1_lower",
+        "30"
+      ]
+    ],
+    "corrected_gt_entities": [
+      "carton_l06_c03"
+    ],
+    "status": "SINGLE"
+  }
+]

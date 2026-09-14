@@ -1,0 +1,312 @@
+[
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/1"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/2"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/3"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/4"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/5"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/6"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/7"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/8"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/9"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/10"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/11"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/12"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/13"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/14"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/15"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/16"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/17"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/18"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/19"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/20"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/21"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/22"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/23"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/24"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/25"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/26"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/27"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/28"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/29"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/30"
+  },
+  {
+    "capture_id": "sim-j1-mast-v2:module_1_lower:100",
+    "capture_time": 1.6666666666666667,
+    "complete_cuboid_status": "NO_CERTIFIED_OBSERVED_FACE",
+    "faces": [],
+    "frame_id": "world",
+    "module_id": "module_1_lower",
+    "shared_edges": [],
+    "source_instance_id": "sim-j1-mast-v2/module_1_lower/sim-j1-mast-v2%3Amodule_1_lower%3A100/31"
+  }
+]

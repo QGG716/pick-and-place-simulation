@@ -1,0 +1,27 @@
+{
+  "code_sha": "6f6e2b34dd9cbf2dee7ea567e5ebf2b05018b4c5",
+  "conflicting_merges_excluded_from_unique_gt_metrics": true,
+  "geometry_recomputed": false,
+  "historical_metrics_affected": [
+    "mask_iou",
+    "center_translation_error_m",
+    "orientation",
+    "dimensions",
+    "object_correspondence"
+  ],
+  "inference_rerun": false,
+  "inputs": {
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/capture_metadata.json": "451b2664c2e033fbcd2cb6d7bfd421e306338cc4bd776840005f65393be18a35",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/mode_b_rgbd_evaluation.json": "98c57dc84a835139bf7aa02435751faebb4910dadc988e5fff215b99dffe24e0",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/capture_metadata.json": "d3e60c1ee0ae6ed38fd3871d7f8ac733e255642694b4738a1956915d104e0cec",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/mode_b_rgbd_evaluation.json": "463530f85b7607704334c0ecc4a03186195e5f3f176061a42e9208022aa7a103",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/oracle_proposals.json": "57cbf68e091251aad8a37bc06cc730389b5af3d71cd1be683ef1e5fe12e09e4b",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/rgbd_cuboids.json": "14d54c58c15ae8c09fa45c059ae9a269bf82d77ff81379f799167b5cf168ffd4",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/oracle_proposals.json": "62c00dcb286c49b8216705ffdf610182b1890634a63d4c482dfe306c052135aa",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/rgbd_cuboids.json": "51fae4dd3c727bcbe5348be50496704bd7081110dd4c7d79f3d293af170f2124",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/mode_b1_worker_runs/sim-j1-mast-v2-000100-isaac-b1-resident-FULL_STACK_NOMINAL-100/cargo_instances.json": "0474bfa7e6778c3ac2255d9e6cfe1addbf05f6bc13d85a27847308104bf84af2",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/mode_b1_worker_runs/sim-j1-mast-v2-000100-isaac-b1-resident-FULL_STACK_NOMINAL-100/cargo_masks.npz": "7ed9d90ab266be99f7cf24dfa0bb4c3780d63322a28f9fd824028cf0c5c23dc2",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/mode_b1_worker_runs/sim-j1-mast-v2-000100-isaac-b1-resident-FULL_STACK_NOMINAL-module_1_lower-100/cargo_instances.json": "eadb10875b057f48d411239c3179cbd83bf9d85144fb0fc3f6d8241145394437",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/mode_b1_worker_runs/sim-j1-mast-v2-000100-isaac-b1-resident-FULL_STACK_NOMINAL-module_1_lower-100/cargo_masks.npz": "4a6c0ab7d07db6a280b9ca1ffdc3208d805f93fd800456c4e9e4bea6612b8eae"
+  }
+}

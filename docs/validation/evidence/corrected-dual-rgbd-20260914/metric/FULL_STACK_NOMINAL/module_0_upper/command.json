@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/root/v05-gpu-venv/bin/python",
+    "/root/vision-fixed/pipeline/geometry/refine_multiplane_cuboids.py",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/sensor_rgb.png",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/mode_b1_worker_runs/sim-j1-mast-v2-000100-isaac-b1-resident-FULL_STACK_NOMINAL-100/cargo_masks.npz",
+    "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/registered_metric_pointmap.npz",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/v4-final-6f6e2b3/FULL_STACK_NOMINAL/module_0_upper/metric_multiplane_input.json",
+    "--fallback",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/v4-final-6f6e2b3/FULL_STACK_NOMINAL/module_0_upper/registered_fallback.json",
+    "--suppress-hidden-fallback",
+    "--json-output",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/v4-final-6f6e2b3/FULL_STACK_NOMINAL/module_0_upper/worker.json",
+    "--output",
+    "/root/autodl-tmp/v05-acceptance/lineage-bd00dfe-20260914/v4-final-6f6e2b3/FULL_STACK_NOMINAL/module_0_upper/worker.png",
+    "--min-face-precision",
+    "0.72",
+    "--min-face-coverage",
+    "0.04",
+    "--max-pnp-rmse",
+    "6"
+  ],
+  "upstream_sha": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+  "returncode": 0
+}
