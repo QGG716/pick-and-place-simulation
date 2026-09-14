@@ -54,6 +54,8 @@ jobs:
           name: humble-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: warn
           path: |
-            ${{ runner.temp }}/acceptance
-            ros2_ws/log
-            ros2_ws/build/**/pytest.xml
+            ${{ runner.temp }}/acceptance/**/*.log
+            ${{ runner.temp }}/acceptance/**/pytest.xml
+            ${{ runner.temp }}/acceptance/core-pytest.xml
+            ${{ runner.temp }}/acceptance/**/summary.json
+            ${{ runner.temp }}/acceptance/**/sha256.txt

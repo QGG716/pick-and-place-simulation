@@ -6,6 +6,7 @@ import unittest
 
 from builtin_interfaces.msg import Duration
 from launch import LaunchDescription
+from launch.actions import TimerAction
 from launch_ros.actions import Node
 from launch_testing.actions import ReadyToTest
 import launch_testing.markers
@@ -37,7 +38,8 @@ def generate_test_description():
     return LaunchDescription([
         Node(package="unloading_ros_bridge", executable="mock_follow_joint_trajectory", output="screen", parameters=[{"controller_epoch": CONTROLLER_EPOCH}]),
         Node(package="unloading_ros_bridge", executable="world_bridge_node", output="screen", parameters=[common]),
-        Node(package="unloading_ros_bridge", executable="execution_bridge_node", output="screen", parameters=[{"controller_epoch": CONTROLLER_EPOCH}]),
+        # Exercise discovery after the former fixed one-second startup delay.
+        TimerAction(period=2.0, actions=[Node(package="unloading_ros_bridge", executable="execution_bridge_node", output="screen", parameters=[{"controller_epoch": CONTROLLER_EPOCH}])]),
         ReadyToTest(),
     ])
 
@@ -60,7 +62,18 @@ class TestBridgeIntegration(unittest.TestCase):
             for value in values:
                 if predicate(value):
                     return value
-        raise AssertionError("timed out waiting for ROS integration output")
+        raise AssertionError(f"timed out waiting for ROS integration output; received={values!r}")
+
+    def wait_for_endpoints(self, publishers):
+        deadline = time.monotonic() + 15.0
+        while time.monotonic() < deadline:
+            rclpy.spin_once(self.node, timeout_sec=0.05)
+            if (all(pub.get_subscription_count() > 0 for pub in publishers)
+                    and self.node.count_publishers('/unloading/execution_events') > 0
+                    and self.node.count_publishers('/unloading/stop_acknowledgements') > 0
+                    and self.node.count_subscribers('/unloading/world_snapshot') >= 2):
+                return
+        raise AssertionError('ROS integration endpoints were not discovered')
 
     def test_world_gate_action_cancel_and_correlated_stop(self):
         snapshots, events, stops = [], [], []
@@ -74,7 +87,8 @@ class TestBridgeIntegration(unittest.TestCase):
         grant_pub = self.node.create_publisher(ExecutionGrant, "/unloading/execution_grant", 10)
         command_pub = self.node.create_publisher(ExecutionAuthorization, "/unloading/execution_authorization", 10)
         cancel_pub = self.node.create_publisher(ExecutionCancel, "/unloading/execution_cancel", 10)
-        time.sleep(1.0)
+        self.wait_for_endpoints((joints_pub, mechanism_pub, perception_pub,
+                                context_pub, grant_pub, command_pub, cancel_pub))
 
         now = self.node.get_clock().now().to_msg()
         joints = JointState(name=[f"joint_{i}" for i in range(1, 7)], position=[0.0] * 6, velocity=[0.0] * 6)

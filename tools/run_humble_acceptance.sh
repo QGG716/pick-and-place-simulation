@@ -20,8 +20,14 @@ colcon --log-base "$RUN/build-log" build --base-paths "$ROOT/ros2_ws/src" \
 set +u
 source "$RUN/install/setup.bash"
 set -u
+set +e
 colcon --log-base "$RUN/test-log" test --base-paths "$ROOT/ros2_ws/src" \
   --build-base "$RUN/build" --install-base "$RUN/install" --return-code-on-test-failure \
   2>&1 | tee "$RUN/colcon-test.log"
+test_status=${PIPESTATUS[0]}
 colcon test-result --test-result-base "$RUN/build" --verbose \
   2>&1 | tee "$RUN/colcon-test-result.log"
+result_status=${PIPESTATUS[0]}
+set -e
+if (( test_status != 0 )); then exit "$test_status"; fi
+exit "$result_status"
