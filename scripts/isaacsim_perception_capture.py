@@ -34,6 +34,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--video-height", type=int, default=720)
     result.add_argument("--fps", type=int, default=20)
     result.add_argument("--seconds", type=float, default=12.0)
+    result.add_argument("--visibility-only", action="store_true", help="Capture only the unchanged full stack, retaining first-hit instance IDs; no models or lighting acceptance")
     return result
 
 
@@ -116,6 +117,10 @@ try:
         if manifest.manifest_fingerprint != record["manifest_fingerprint"]:
             raise ValueError("bundle index/manifest identity mismatch")
         manifests.append((record["scene"], manifest))
+    if args.visibility_only:
+        manifests = [(name, manifest) for name, manifest in manifests if name == "FULL_STACK_NOMINAL"]
+        if len(manifests) != 1:
+            raise ValueError("visibility diagnostic needs exactly one full-stack manifest")
     expected_resolution = tuple(int(value) for value in manifests[0][1].cameras[0]["resolution"])
     if (args.width, args.height) != expected_resolution:
         raise ValueError(f"sensor render must use declared full resolution {expected_resolution}")
@@ -618,6 +623,8 @@ try:
         }
         (module_dir / "camera_info.json").write_text(json.dumps(camera_info, indent=2), encoding="utf-8")
         segmentation_info = instance_result.get("info", {})
+        if args.visibility_only:
+            np.save(module_dir / "first_hit_instance_ids.npy", instance_ids)
         masks_by_object = {}
         identity = {}
         for numeric_id, labels in segmentation_info.get("idToSemantics", {}).items():
@@ -875,6 +882,8 @@ try:
         masks_by_object = {}
         instance_identity = {}
         segmentation_info = instance_result.get("info", {})
+        if args.visibility_only:
+            np.save(scene_dir / "first_hit_instance_ids.npy", instance_ids)
         instance_values, instance_counts = np.unique(instance_ids, return_counts=True)
         instance_histogram = {
             str(int(value)): int(count)
@@ -1083,6 +1092,20 @@ try:
                 "prediction_overlay.png", "comparison.png",
             )},
         })
+
+    if args.visibility_only:
+        diagnostic = {
+            "status": "CAPTURE_COMPLETE", "scope": "FIRST_HIT_VISIBILITY_DIAGNOSTIC_ONLY",
+            "perception_code_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=project_root, text=True).strip(),
+            "feasibility_reference_commit": actual_feasibility_commit,
+            "robot_and_scene_geometry_visible": True, "scenes": scene_records,
+            "rendered_visibility": rendered_visibility_records,
+            "lighting_acceptance": "NOT_RUN", "inference": "NOT_RUN",
+        }
+        (args.output / "summary.json").write_text(json.dumps(diagnostic, indent=2), encoding="utf-8")
+        status_path.write_text(json.dumps(diagnostic, indent=2), encoding="utf-8")
+        print(json.dumps(diagnostic, indent=2), flush=True)
+        raise SystemExit(0)
 
     if set(lighting_samples) != {"DARK_LIGHT_OFF", "DARK_LIGHT_ON"}:
         raise RuntimeError("controlled LIGHT_OFF/LIGHT_ON captures are incomplete")
