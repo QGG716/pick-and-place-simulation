@@ -17,6 +17,13 @@ def test_formal_surface_roundtrip_and_fingerprint():
     assert canonical_fingerprint(obs)==canonical_fingerprint(restored)
     assert restored.cargo[0].full_dimensions_m is None
     assert restored.cargo[0].observed_surfaces[0]['point_support_count']==100
+    with pytest.raises(TypeError): restored.cargo[0].observed_surfaces[0]['point_support_count']=0
+
+
+@pytest.mark.parametrize('field,value',[('plane_offset_m',float('nan')),('plane_offset_m',5.),('plane_normal',(0.,0.,2.)),('plane_residual_m',-.1),('point_support_count',0)])
+def test_invalid_formal_surface_geometry_is_rejected(field,value):
+    cargo=observation().cargo[0]
+    with pytest.raises(ValueError): replace(cargo,observed_surfaces=({**cargo.observed_surfaces[0],field:value},))
 
 
 @pytest.mark.parametrize('field,value',[('capture_id','old'),('calibration_identity','wrong'),('sensor_epoch','retired'),('clock_domain','wrong'),('T_W_C_at_capture',((1.,0.,0.,1.),(0.,1.,0.,0.),(0.,0.,1.,0.),(0.,0.,0.,1.)))])

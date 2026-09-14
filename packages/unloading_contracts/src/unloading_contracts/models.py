@@ -424,10 +424,15 @@ class CargoObservation:
                 raise ValueError("observed surface requires boundary and measured support")
             for point in surface["corners_3d_m"]:
                 _finite_tuple(point, 3, "observed surface boundary")
-            _finite_tuple(surface["plane_normal"], 3, "observed surface normal")
+            normal = _finite_tuple(surface["plane_normal"], 3, "observed surface normal")
+            if abs(sum(v*v for v in normal)-1.0) > 1e-6:
+                raise ValueError("observed surface normal must be unit length")
+            offset, residual = _finite_tuple((surface["plane_offset_m"], surface["plane_residual_m"]), 2, "observed surface plane")
+            if residual < 0 or any(abs(sum(a*b for a,b in zip(normal, point))+offset) > 1e-4 for point in surface["corners_3d_m"]):
+                raise ValueError("observed surface boundary must lie on its plane")
             if surface.get("volume_status") != "UNKNOWN":
                 raise ValueError("observed patch cannot assert complete volume")
-        object.__setattr__(self, "observed_surfaces", surfaces)
+        object.__setattr__(self, "observed_surfaces", deep_freeze(surfaces))
         object.__setattr__(self, "raw_result", deep_freeze(self.raw_result))
 
 
