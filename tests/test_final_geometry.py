@@ -48,3 +48,10 @@ def test_crossed_or_diagonal_face_topology_is_rejected():
     checked=validate_final_record(r,np.full((40,40),2.),np.ones((40,40),bool),[100,0,20,0,100,20,0,0,1])
     assert not checked['camera_facing_faces']
     assert checked['final_face_validation'][0]['reason']=='INVALID_CUBOID_FACE_TOPOLOGY'
+
+
+def test_rejected_final_faces_cannot_inherit_old_multiplane_qualification():
+    from unloading_perception.rgbd import hypotheses_from_geometry_record,MetricPointMapSource
+    r=record(); r.update(accepted=True,depth_supported_face_count=3)
+    checked=validate_final_record(r,np.full((40,40),2.1),np.ones((40,40),bool),[100,0,20,0,100,20,0,0,1])
+    assert hypotheses_from_geometry_record(checked,source_instance_id='capture/1',pointmap_source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,presence_score=.8)==()

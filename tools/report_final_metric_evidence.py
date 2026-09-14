@@ -19,6 +19,16 @@ def main():
             truth={o['simulation_object_id']:o for o in json.loads((source/'gt_annotations.json').read_text())['objects']}
             obs=loads((dest/'observation.json').read_text()); image=cv2.imread(str(source/'sensor_rgb.png'))
             records=json.loads((dest/'validated_geometry.json').read_text())['instances']
+            if scene_dir.name=='RGBD_CALIBRATION_BOX':
+                tiles=[]
+                box=obs.cargo[0].bbox_xyxy
+                x0,y0=np.maximum(np.asarray(box[:2],int)-60,0); x1,y1=np.minimum(np.asarray(box[2:],int)+60,[image.shape[1],image.shape[0]])
+                K=np.asarray(json.loads((source/'camera_info.json').read_text())['K']).reshape(3,3)
+                for name,label,color in [('metric_multiplane_input.json','METRIC MULTIPLANE INPUT',(255,160,0)),('worker.json','V4 JOINT RESULT: REJECTED',(0,0,255)),('registered_fallback.json','ANCHORED FALLBACK: REJECTED',(255,0,255))]:
+                    canvas=image.copy(); record=json.loads((dest/name).read_text())['instances'][0]; p=np.asarray(record['corners_3d']); projection=p@K.T; projection=projection[:,:2]/projection[:,2:]
+                    for face in record['camera_facing_faces']: cv2.polylines(canvas,[projection[face['corner_indices']].round().astype('int32')],True,color,2)
+                    tile=cv2.resize(canvas[y0:y1,x0:x1],(600,600)); cv2.rectangle(tile,(0,0),(600,40),(15,15,15),-1); cv2.putText(tile,label,(10,27),cv2.FONT_HERSHEY_SIMPLEX,.65,(255,255,255),2); tiles.append(tile)
+                cv2.imwrite(str(dest/'v4_metric_fallback_comparison.png'),np.hstack(tiles))
             for cargo in obs.cargo:
                 lineage=cargo.raw_result.get('instance_lineage',{}); entities=lineage.get('evaluation_entity_ids',[])
                 for face in cargo.observed_surfaces:
@@ -38,6 +48,12 @@ def main():
                     polygon=np.asarray(face['boundary_2d_px']).round().astype('int32')
                     cv2.polylines(image,[polygon],True,(0,255,255),2)
                     cv2.putText(image,f"SAM{lineage['mask_id']} {face['plane_residual_m']*1000:.2f}mm",tuple(polygon[0]),cv2.FONT_HERSHEY_SIMPLEX,.55,(255,255,255),2)
+                if scene_dir.name=='FULL_STACK_NOMINAL' and (module,lineage['mask_id']) in [('module_0_upper',1),('module_0_upper',6),('module_1_lower',27)]:
+                    tile=image.copy(); box=np.asarray(cargo.bbox_xyxy,int); x0,y0=np.maximum(box[:2]-40,0); x1,y1=np.minimum(box[2:]+40,[image.shape[1],image.shape[0]])
+                    tile=cv2.resize(tile[y0:y1,x0:x1],(700,600)); cv2.rectangle(tile,(0,0),(700,85),(15,15,15),-1)
+                    cv2.putText(tile,f"{module} SAM {lineage['mask_id']} -> P {lineage['proposal_id']} + {lineage['supporting_proposal_ids']}",(10,27),cv2.FONT_HERSHEY_SIMPLEX,.65,(255,255,255),2)
+                    cv2.putText(tile,'GT audit: '+', '.join(lineage['evaluation_entity_ids']),(10,58),cv2.FONT_HERSHEY_SIMPLEX,.55,(0,220,255),1)
+                    cv2.imwrite(str(dest/f"source_identity_zoom_{lineage['mask_id']}.png"),tile)
             for record in records:
                 for check in record['final_face_validation']:
                     if check['status']=='REJECTED': all_rows.append({'scene':scene_dir.name,'module':module,'mask_id':record['mask_id'],'rejected_face':check})

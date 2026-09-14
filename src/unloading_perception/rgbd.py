@@ -602,6 +602,9 @@ def hypotheses_from_geometry_record(
         return ()
     source = MetricPointMapSource(pointmap_source)
     surfaces = int(record.get("depth_supported_face_count", record.get("visible_plane_count", 0)))
+    final_metric = record.get("geometry_version") == "FINAL_METRIC_VALIDATED_V1"
+    if final_metric:
+        surfaces = len(record.get("camera_facing_faces", ()))
     size_prior = record.get("dimension_prior") or record.get("known_dimensions_m")
     if surfaces < 2 and not size_prior:
         # A metric plane fully determines its own boundary, distance and
@@ -658,6 +661,12 @@ def hypotheses_from_geometry_record(
         return ()
     support = min(1.0, max(0.0, float(record.get("plane_inlier_ratio", 0.0))))
     residual = max(0.0, float(record.get("plane_residual_mean", 0.0)))
+    if final_metric:
+        final_support = [face["final_support"] for face in record["camera_facing_faces"]]
+        if not final_support or any(item["status"] != "PASS" or item["point_support_count"] <= 0 for item in final_support):
+            return ()
+        support = min(item["point_support_ratio"] for item in final_support)
+        residual = max(item["plane_residual_m"] for item in final_support)
     completion = str(record.get("completion_mode", "UNKNOWN"))
     ambiguous = surfaces < 2 or "single_visible_plane" in completion
     verified_metric = source is not MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE
