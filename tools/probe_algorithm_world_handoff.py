@@ -65,10 +65,18 @@ def main():
         end=time.monotonic()+.3
         while time.monotonic()<end: executor.spin_once(timeout_sec=.02)
         assert bridge.algorithm_observation_guard.sequence==before
+        index=next(i for i,c in enumerate(observation.cargo) if c.observed_surfaces)
+        original=observation.cargo[index]; face=dict(original.observed_surfaces[0]); T=[list(row) for row in face['T_W_C_at_capture']]; T[0][3]+=.1; face['T_W_C_at_capture']=T
+        bad=list(observation.cargo); bad[index]=replace(original,observed_surfaces=(face,)+original.observed_surfaces[1:])
+        observations.publish(observation_to_msg(replace(observation,source_sequence=before+1,cargo=tuple(bad))))
+        end=time.monotonic()+.3
+        while time.monotonic()<end: executor.spin_once(timeout_sec=.02)
+        assert bridge.algorithm_observation_guard.sequence==before
+        assert canonical_fingerprint(bridge.last_observation)==canonical_fingerprint(observation)
         out=args.output_directory; out.mkdir(parents=True,exist_ok=False)
         (out/'perception_world_snapshot.json').write_text(json.dumps(to_wire(snapshot),indent=2))
         (out/'perception_feasibility_handoff.json').write_text(json.dumps(build_feasibility_handoff(snapshot,manifest,evidence_mode='VISION_ESTIMATE'),indent=2))
-        (out/'ros_handoff_report.json').write_text(json.dumps({'status':'TRANSPORT_AND_SEMANTICS_PASS','planning_admissible':world.planning_admissible,'blocking_reasons':list(world.blocking_reasons),'surface_count':actual,'source_capture_time':observation.capture_time,'processed_time':observation.processed_time,'round_trip_fingerprint':canonical_fingerprint(observation),'stale_sequence_rejected':True,'execution_commands_generated':0,'source_kind':'ALGORITHM_FROM_ISAAC_RENDERED_RGBD'},indent=2))
+        (out/'ros_handoff_report.json').write_text(json.dumps({'status':'TRANSPORT_AND_SEMANTICS_PASS','planning_admissible':world.planning_admissible,'blocking_reasons':list(world.blocking_reasons),'surface_count':actual,'source_capture_time':observation.capture_time,'processed_time':observation.processed_time,'round_trip_fingerprint':canonical_fingerprint(observation),'stale_sequence_rejected':True,'wrong_capture_tf_rejected':True,'coverage_status':observation.coverage['coverage_status'],'execution_commands_generated':0,'source_kind':'ALGORITHM_FROM_ISAAC_RENDERED_RGBD'},indent=2))
         print((out/'ros_handoff_report.json').read_text())
     finally:
         executor.shutdown(); node.destroy_node(); bridge.destroy_node(); rclpy.shutdown()

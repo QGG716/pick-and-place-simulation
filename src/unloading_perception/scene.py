@@ -162,6 +162,9 @@ def build_scene_update(observation: PerceptionObservation, tracked: tuple[CargoO
     cargo = observation.cargo if tracked is None else tracked
     unknown = list(observation.unknown_regions)
     blocking = []
+    if observation.coverage.get("coverage_status") == "DEGRADED_MISSING_MODULE":
+        unknown.append(UnknownRegion(f"missing-module-{observation.observation_id}", "world", "DEGRADED_MISSING_MODULE"))
+        blocking.append("DEGRADED_MISSING_MODULE")
     if observation.status in (ObservationStatus.FAILED, ObservationStatus.BACKEND_UNAVAILABLE, ObservationStatus.STALE):
         unknown.append(UnknownRegion(f"observation-{observation.observation_id}", "coverage", observation.failure_code or observation.status.value))
         blocking.append("PERCEPTION_NOT_USABLE")
@@ -216,6 +219,15 @@ class SnapshotAssembler:
         assert self.update is not None and self.robot_state is not None
         scene = {
             "geometry_fingerprint": self.update.geometry_fingerprint,
+            "perception_source": {
+                "provider": self.update.observation.provider,
+                "source_epoch": self.update.observation.source_epoch,
+                "source_sequence": self.update.observation.source_sequence,
+                "capture_time": self.update.observation.capture_time,
+                "processed_time": self.update.observation.processed_time,
+                "clock_domain": self.update.observation.clock_domain,
+                "coverage": self.update.observation.coverage,
+            },
             "obstacles": tuple({
                 "object_id": item.object_id,
                 "source_instance_id": item.source_instance_id,

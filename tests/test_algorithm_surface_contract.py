@@ -30,3 +30,11 @@ def test_invalid_formal_surface_geometry_is_rejected(field,value):
 def test_invalid_capture_surface_binding_rejected(field,value):
     obs=observation(); cargo=obs.cargo[0]; face={**cargo.observed_surfaces[0],field:value}
     with pytest.raises(ValueError): validate_algorithm_capture(replace(obs,cargo=(replace(cargo,observed_surfaces=(face,)),)))
+
+
+def test_missing_module_is_explicit_world_blocker():
+    from unloading_perception.scene import build_scene_update
+    obs=observation(); obs=replace(obs,coverage={**obs.coverage,'coverage_status':'DEGRADED_MISSING_MODULE'})
+    update=build_scene_update(obs)
+    assert not update.planning_admissible
+    assert 'DEGRADED_MISSING_MODULE' in update.blocking_reasons
