@@ -416,9 +416,9 @@ try:
         cameras.append(scene_cameras)
 
     rig_spec = load_vision_rig_spec(project_root / "configs/isaac/perception_sensing_pose.yaml")
-    sweep_manifest = next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
+    sweep_manifest = first_manifest if args.visibility_only else next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
     sweep_sensors = []
-    for angle_deg in (-90.0, -45.0, 0.0, 45.0, 90.0):
+    for angle_deg in (() if args.visibility_only else (-90.0, -45.0, 0.0, 45.0, 90.0)):
         angle_rad = math.radians(angle_deg)
         rig_pose = evaluate_vision_rig_pose(sweep_manifest.robot["T_W_robot"], angle_rad, rig_spec)
         position = np.asarray(rig_pose.camera_center_world_m, dtype=float)

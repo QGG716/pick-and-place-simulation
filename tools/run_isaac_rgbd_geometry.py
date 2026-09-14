@@ -65,13 +65,32 @@ def _scalar_mean(value) -> float | None:
 def _worker_artifacts(scene_dir: Path) -> dict:
     response = json.loads((scene_dir / "mode_b1_worker_response.json").read_text(encoding="utf-8").strip().splitlines()[-1])
     if response.get("status") != "COMPLETE":
-        raise RuntimeError(f"Mode C worker response is incomplete for {scene_dir.name}")
-    metrics = json.loads(Path(response["metrics_reference"]["path"]).read_text(encoding="utf-8"))
+        raise RuntimeError(f"SAM/2D worker response is incomplete for {scene_dir.name}")
+    metrics_path = Path(response["metrics_reference"]["path"])
+    if sha256(metrics_path) != response["metrics_reference"]["sha256"]:
+        raise ValueError("worker metrics digest mismatch")
+    metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+    if response["input_sha256"] != sha256(scene_dir / "sensor_rgb.png"):
+        raise ValueError("cached SAM image hash mismatch")
+    if metrics["config"]["proposal_sha256"] != sha256(scene_dir / "oracle_proposals.json"):
+        raise ValueError("cached SAM proposal hash mismatch")
+    from unloading_perception.upstream_v4 import UPSTREAM_V4_SHA
+    config = metrics["config"]
+    if (metrics.get("upstream_commit", config.get("upstream_sha")) != UPSTREAM_V4_SHA
+            or config.get("sam_revision") != "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f"):
+        raise ValueError("cached SAM model/upstream identity mismatch")
     artifacts = metrics["artifacts"]
     for name in ("cargo_masks.npz", "cargo_instances.json", "box_geometry_2d.json"):
         item = artifacts[name]
         if sha256(Path(item["path"])) != item["sha256"]:
             raise ValueError(f"worker artifact digest mismatch: {name}")
+    metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text()))
+    load_instance_lineage(
+        Path(artifacts["cargo_masks.npz"]["path"]), Path(artifacts["cargo_instances.json"]["path"]),
+        json.loads((scene_dir / "oracle_proposals.json").read_text()), {"instances": []},
+        sensor_epoch=metadata.sensor_epoch, module_id=metadata.rgb_frame_id.removesuffix("_rgb_optical"),
+        capture_id=metadata.capture_id, source_path=scene_dir / "sensor_rgb.png", proposal_path=scene_dir / "oracle_proposals.json",
+    )
     return artifacts
 
 
