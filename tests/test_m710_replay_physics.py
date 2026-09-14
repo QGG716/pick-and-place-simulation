@@ -152,9 +152,9 @@ def test_payload_release_support_uses_actual_bottom_face_after_reorientation():
 
 @pytest.mark.parametrize(
     ("support_width_m", "accepted"),
-    [(0.58, True), (0.50, False)],
+    [(0.60, True), (0.58, False), (0.50, False)],
 )
-def test_payload_release_support_union_honors_configured_overlap_ratio(
+def test_payload_release_support_union_requires_full_footprint_even_with_legacy_ratio(
     support_width_m, accepted
 ):
     support = _surface(

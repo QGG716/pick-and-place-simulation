@@ -63,6 +63,9 @@ DEFAULT_CONFIG_PATH = (
     / "m710id70_dynamic_execution_v1.yaml"
 )
 EXECUTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/release_motion.py",
+    "src/unloading_sim/layout_trajectory.py",
+    "src/unloading_sim/serial_unloading.py",
     "src/unloading_sim/collision_policy.py",
     "src/unloading_sim/conveyor_placement.py",
     "src/unloading_sim/tool_geometry.py",
@@ -574,6 +577,9 @@ def _bridge_configuration(
         },
         "simulation_validation": {
             "actual_state_gates": {
+                "support_minimum_footprint_overlap_ratio": 1.0,
+                "support_footprint_boundary_tolerance_m": float(
+                    scene.policy.data.get("search_strategy", {}).get("conveyor_footprint_boundary_tolerance_m", 1e-6)),
                 # Pause the trajectory clock at the extraction/free-transit
                 # boundary.  The original 20.2 mm clearance still has to be
                 # observed; this only gives the finite drive time to converge.
@@ -1069,6 +1075,17 @@ def _initialization_blocked_preflight(execution, policy, dynamics, motion, backe
     return result
 
 
+def _validate_motion_task_population(motion: Mapping[str, Any], expected_carton_ids) -> None:
+    """Bind the remaining row identities without freezing its cost-based order."""
+    expected = tuple(expected_carton_ids)
+    if motion.get("statistics", {}).get("task_count") != len(expected):
+        raise ValueError("motion task count must match the actual remaining scene")
+    actual = motion.get("task_population", {}).get("carton_ids", [])
+    if (not isinstance(actual, list) or any(not isinstance(name, str) for name in actual)
+            or sorted(actual) != sorted(expected)):
+        raise ValueError("motion result task population does not match the frozen support graph")
+
+
 def build_m710_execution_preflight(
     config: str | Path | M710ExecutionConfig | None = None,
     *,
@@ -1081,7 +1098,16 @@ def build_m710_execution_preflight(
     policy = load_layout_motion_policy(execution.motion_policy_path)
     if motion_input is not None:
         if motion_input.policy.policy_fingerprint != policy.policy_fingerprint:
-            raise ValueError("actual motion input policy mismatch")
+            # CLI comparisons may override search strategy only. Physical,
+            # contact and fixed-layout inputs must still match byte for byte;
+            # the resulting policy/scene hashes bind the effective strategy.
+            original = copy.deepcopy(dict(policy.data))
+            effective = copy.deepcopy(dict(motion_input.policy.data))
+            for document in (original, effective):
+                for key in ("approach_mode", "planning_wall_time_s"):
+                    document.get("search_strategy", {}).pop(key, None)
+            if original != effective:
+                raise ValueError("actual motion input policy mismatch")
         policy = motion_input.policy
     dynamics = load_m710id70_dynamics(execution.dynamics_path)
     motion = (
@@ -1119,10 +1145,7 @@ def build_m710_execution_preflight(
     assets, official_manifest, official_model_audit = _audited_execution_assets(execution, scene, dynamics)
     if motion.get("scene_fingerprint") != scene.snapshot["scene_fingerprint"]:
         raise ValueError("motion result belongs to a different frozen scene")
-    if motion.get("statistics", {}).get("task_count") != len(scene.removable_cartons):
-        raise ValueError("motion task count must match the actual remaining scene")
-    if motion.get("task_population", {}).get("carton_ids") != list(scene.removable_cartons):
-        raise ValueError("motion result task population does not match the frozen support graph")
+    _validate_motion_task_population(motion, scene.removable_cartons)
     if backend_execution_status not in {"NOT_RUN", "NOT_RUN_PER_USER_REQUEST", "PASS", "FAIL"}:
         raise ValueError("unsupported backend execution status")
 

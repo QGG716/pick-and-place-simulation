@@ -70,6 +70,7 @@ EXECUTION_GATE_REASON = "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED"
 PATH_BACKEND_UNAVAILABLE_REASON = "EXECUTION_PATH_BACKEND_UNAVAILABLE"
 TOOL_FRAME_SCHEMA = "m710id70_planner_tool_frames_v1"
 MOTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/release_motion.py",
     "src/unloading_sim/collision_policy.py",
     "src/unloading_sim/conveyor_placement.py",
     "src/unloading_sim/unloading_sequence.py",
@@ -363,7 +364,22 @@ class FrozenLayoutMotionInput:
     def all_obstacles(self) -> tuple[OBB, ...]:
         # The target is not deleted here.  Contact semantics are applied only
         # to that named target during the final state check.
-        return (*self.fixed_components, *self.cartons)
+        context = self.snapshot.get("actual_state_context", {})
+        transport = context.get("receiver_transport_state", {})
+        if not transport:
+            return (*self.fixed_components, *self.cartons)
+        from .release_motion import retained_receiver_envelope
+        fixed = {box.name: box for box in self.fixed_components}
+        obstacles = []
+        for box in self.cartons:
+            state = transport.get(box.name)
+            if state is None:
+                obstacles.append(box)
+                continue
+            receiver = fixed[state["receiver"]]
+            obstacles.append(retained_receiver_envelope(box, receiver, state["direction_world"],
+                held=state.get("held", False)))
+        return (*self.fixed_components, *obstacles)
 
 
 def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
@@ -767,7 +783,9 @@ def audit_execution_collision_geometry(
 
 
 def _exposed_faces(scene: FrozenLayoutMotionInput, target_name: str) -> tuple[str, ...]:
-    active = tuple(box.name for box in scene.cartons)
+    # The support graph describes the remaining stack. Received bodies still
+    # exist in scene.cartons/all_obstacles, but no longer belong to this graph.
+    active = tuple(scene.support_graph.cartons)
     faces: list[str] = []
     modes = scene.policy.data["task_population"]["face_modes"]
     # The currently removable population is the exposed top layer.  Try the
@@ -1004,6 +1022,7 @@ def _audit_pose(
     shapes: Sequence[tuple[str, np.ndarray, np.ndarray]],
     exact_state_failure: Callable[[np.ndarray], Mapping[str, Any] | None] | None = None,
     deadline_monotonic: float | None = None,
+    consume_candidate: Callable[[Mapping[str, Any]], Any] | None = None,
 ) -> dict[str, Any]:
     policy = scene.policy.data
     coverage_started = perf_counter()
@@ -1133,6 +1152,13 @@ def _audit_pose(
                     ),
                 }
             )
+            if consume_candidate is not None:
+                downstream_started = perf_counter()
+                outcome = consume_candidate(attempt["strict_grasp_candidates"][-1])
+                # Keep IK time separate from downstream geometric search.
+                ik_started += perf_counter() - downstream_started
+                if outcome.success:
+                    break
     attempt["planning_timing_seconds"]["grasp_ik_inclusive_of_endpoint_validation"] = (
         perf_counter() - ik_started
     )
@@ -1228,6 +1254,13 @@ def _build_automatic_trajectory_connector(
         official_radial_reach_m=float(validity["official_radial_reach_m"]),
         radial_guard_tolerance_m=float(validity["radial_guard_tolerance_m"]),
         budget=LayoutTrajectoryBudget(
+            stage_connection_iterations=int(strategy.get(
+                "continuation_stage_connection_iterations" if isinstance(scene, FrozenLayoutMotionInput)
+                and scene.snapshot.get("actual_state_context", {}).get("completed_carton_ids")
+                else "stage_connection_iterations", 600)),
+            approach_mode=str(strategy.get("approach_mode", "auto")),
+            maximum_drop_m=float(strategy.get("maximum_drop_m", 0.05)),
+            receiver_edge_reserve_m=float(strategy.get("receiver_edge_reserve_m", 0.01)),
             extraction_runtime_clearance_reserve_m=float(
                 strategy.get("extraction_runtime_clearance_reserve_m", 0.0)
             ),
@@ -1483,6 +1516,31 @@ def run_layout_single_carton_audit(
     )
     model_initialization_seconds = perf_counter() - planning_request_started
     cartons_by_name = {box.name: box for box in scene.cartons}
+    if trajectory_connector is not None:
+        next_pose_cache = {}
+
+        def next_contact_provider(current_name):
+            if current_name in next_pose_cache:
+                return next_pose_cache[current_name]
+            future_stack = tuple(box for box in remaining if box.name != current_name)
+            # Clone the existing selector so removing this carton preserves the
+            # row centre, and speculative search cannot mutate task ordering.
+            next_row = copy.deepcopy(sequence).rank(future_stack)
+            candidates = []
+            for ranked in next_row.candidates[:2]:
+                poses = _scheduled_contact_poses(scene, ranked.carton, ranked.available_faces)
+                for next_face, (_, physical, _) in list(poses)[:2]:
+                    requested = virtual_tcp_from_physical_contact(physical,
+                        policy.tool_frames.flange_from_virtual_task_tcp,
+                        policy.tool_frames.flange_from_physical_contact)
+                    candidates.append({"target": ranked.carton, "face": next_face,
+                        "requested_virtual_contact": requested,
+                        "suction": policy.data["suction"], "row_id": ranked.row_id})
+            next_pose_cache[current_name] = candidates
+            return candidates
+
+        trajectory_connector.next_contact_provider = next_contact_provider
+        trajectory_connector.stack_carton_names = {box.name for box in remaining}
     tasks: list[dict[str, Any]] = []
     selected_trajectory_segment: Mapping[str, Any] | None = None
     base_seed = int(policy.data["ik"]["seed"])
@@ -1523,6 +1581,17 @@ def run_layout_single_carton_audit(
                 policy.tool_frames.flange_from_physical_contact,
             )
             rng_seed = base_seed + task_index * 10000 + pose_index * 101
+            progressive_outcomes = []
+            def consume_candidate(candidate):
+                started = perf_counter()
+                outcome = trajectory_connector.plan(
+                    target=target, face=face, requested_virtual_contact=requested_virtual_task_tcp,
+                    grasp_candidates=[candidate], home_q=policy.layout_validation.initial_q,
+                    all_obstacles=scene.all_obstacles, receiver=scene.receiver,
+                    support_names=sorted(scene.support_graph.supported_by[target.name]),
+                    suction=policy.data["suction"], seed=rng_seed + 50000 + len(progressive_outcomes) * 10000)
+                progressive_outcomes.append((outcome, perf_counter() - started))
+                return outcome
             attempt = _audit_pose(
                     scene,
                     target,
@@ -1549,6 +1618,9 @@ def run_layout_single_carton_audit(
                     ),
                     deadline_monotonic=(None if trajectory_connector is None else
                                         trajectory_connector._deadline_monotonic),
+                    consume_candidate=(consume_candidate if trajectory_connector is not None
+                        and execution["qualified"] and trajectory_pose_attempts < trajectory_connector.budget.task_pose_connection_attempts
+                        else None),
                 )
             attempts.append(attempt)
             if progress_callback is not None:
@@ -1583,22 +1655,24 @@ def run_layout_single_carton_audit(
                         scene.support_graph.supported_by[target.name]
                     )
                     trajectory_started = perf_counter()
-                    outcome = trajectory_connector.plan(
-                        target=target,
-                        face=face,
-                        requested_virtual_contact=requested_virtual_task_tcp,
-                        grasp_candidates=attempt["strict_grasp_candidates"],
-                        home_q=policy.layout_validation.initial_q,
-                        all_obstacles=scene.all_obstacles,
-                        receiver=scene.receiver,
-                        support_names=support_names,
-                        suction=policy.data["suction"],
-                        seed=rng_seed + 50000,
-                    )
-                    trajectory_search_seconds += perf_counter() - trajectory_started
+                    if progressive_outcomes:
+                        outcome = progressive_outcomes[-1][0]
+                        trajectory_search_seconds += sum(seconds for _, seconds in progressive_outcomes)
+                    else:
+                        outcome = trajectory_connector.plan(
+                            target=target, face=face, requested_virtual_contact=requested_virtual_task_tcp,
+                            grasp_candidates=attempt["strict_grasp_candidates"],
+                            home_q=policy.layout_validation.initial_q, all_obstacles=scene.all_obstacles,
+                            receiver=scene.receiver, support_names=support_names,
+                            suction=policy.data["suction"], seed=rng_seed + 50000)
+                        trajectory_search_seconds += perf_counter() - trajectory_started
                     attempt["trajectory_search"] = {
-                        "attempts": list(outcome.attempts),
-                        "statistics": dict(outcome.statistics),
+                        "attempts": [record for trial, _ in progressive_outcomes for record in trial.attempts]
+                            if progressive_outcomes else list(outcome.attempts),
+                        "statistics": {key: sum(trial.statistics.get(key, 0) for trial, _ in progressive_outcomes)
+                            if isinstance(value, (int, float)) and not isinstance(value, bool) else value
+                            for key, value in outcome.statistics.items()}
+                            if progressive_outcomes else dict(outcome.statistics),
                         "failure": outcome.failure,
                     }
                     if progress_callback is not None:
@@ -1606,7 +1680,7 @@ def run_layout_single_carton_audit(
                             "trajectory_success": outcome.success, "failure": outcome.failure,
                             "statistics": outcome.statistics})
                     attempt["path_connection_attempts"] = int(
-                        outcome.statistics.get("connection_attempts", 0)
+                        attempt["trajectory_search"]["statistics"].get("connection_attempts", 0)
                     )
                     if outcome.success:
                         if outcome.segment is None:

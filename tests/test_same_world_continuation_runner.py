@@ -17,7 +17,7 @@ def test_request_is_complete_and_never_overwrites_previous_plan(tmp_path):
     assert [item.name for item in tmp_path.iterdir()] == ["request.json"]
 
 
-@pytest.mark.parametrize("returncode", [0, 2])
+@pytest.mark.parametrize("returncode", [0, 1, 2])
 def test_actual_state_drives_next_plan_and_failure_stops_without_deleting_boxes(monkeypatch, tmp_path, returncode):
     actual = tmp_path / "actual.json"
     actual.write_text(json.dumps({"cartons": [{"name": "remaining"}]}))
@@ -35,6 +35,13 @@ def test_actual_state_drives_next_plan_and_failure_stops_without_deleting_boxes(
         return SimpleNamespace(returncode=returncode)
     monkeypatch.setattr(continuation.subprocess, "run", plan)
     assert continuation.main(["--ready-file", str(ready), "--output", str(output)]) == returncode
+    if returncode == 1:
+        assert not request.exists()
+        failure = json.loads((output / "continuation_failure.json").read_text())
+        assert failure["status"] == "OFFLINE_PLANNING_FAILED_WORLD_RETAINED"
+        assert failure["request_published"] is False
+        assert json.loads(actual.read_text())["cartons"] == [{"name": "remaining"}]
+        return
     payload = json.loads(request.read_text())
     assert payload["world_session_id"] == "same-world"
     assert json.loads(actual.read_text())["cartons"] == [{"name": "remaining"}]

@@ -9,7 +9,7 @@ audit, but can never be promoted to an executable trajectory by this class.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 from pathlib import Path
@@ -27,7 +27,11 @@ from .conveyor_placement import (
     effective_process_and_receiver,
     generate_conveyor_placements,
     support_union_audit,
+    placement_working_normal, PLACEMENT_SEMANTICS,
 )
+from .release_motion import (MOTION_SEMANTICS, ReleasePolicy, predict_release,
+                             SUPPORTED_RELEASE, SHORT_DROP_RELEASE, departure_sweep, verify_release_prediction,
+                             receiver_transport_support, receiver_footprint_reserve)
 from .geometry import OBB, rotation_matrix_from_rotation_vector, rotation_vector_from_matrix
 from .ik import iter_ik_solutions, pose_error, solve_ik_multistart
 from .planner import RRTConnectPlanner
@@ -122,10 +126,14 @@ def validate_layout_trajectory_stage_contract(
     if not np.all(np.isfinite(path)):
         raise ValueError("complete trajectory path must be finite")
     ranges = segment.get("stage_ranges")
-    if not isinstance(ranges, Mapping) or set(ranges) != set(TRAJECTORY_STAGES):
+    adaptive = segment.get("motion_semantics") == MOTION_SEMANTICS
+    required = {"home", "contact", "extraction", "transit", "place", "withdrawal"}
+    if not isinstance(ranges, Mapping) or (not adaptive and set(ranges) != set(TRAJECTORY_STAGES)) or (adaptive and (not required <= set(ranges) or not set(ranges) <= set(TRAJECTORY_STAGES))):
         raise ValueError("complete trajectory must contain exactly the eight required stages")
     previous_end = 0
     for stage in TRAJECTORY_STAGES:
+        if stage not in ranges:
+            continue
         interval = ranges[stage]
         if (
             not isinstance(interval, (list, tuple))
@@ -247,12 +255,22 @@ def validate_layout_trajectory_stage_contract(
             )
     place = segment.get("place")
     support = place.get("support") if isinstance(place, Mapping) else None
-    if not isinstance(support, Mapping) or support.get("supported") is not True:
+    drop = isinstance(place, Mapping) and place.get("release_mode") == SHORT_DROP_RELEASE
+    prediction = place.get("release_prediction", {}) if isinstance(place, Mapping) else {}
+    if drop and (not adaptive or prediction.get("accepted") is not True
+                 or prediction.get("mode") != SHORT_DROP_RELEASE
+                 or prediction.get("actual_landing_state") is not None):
+        raise ValueError("short drop requires qualified prediction, never fabricated actual landing")
+    if not isinstance(support, Mapping) or (not drop and support.get("supported") is not True):
         raise ValueError("trajectory place endpoint must pass the actual-pose support audit")
     actual_box_pose = LayoutTrajectoryConnector._se3(
         np.asarray(place.get("actual_box_pose_world")),
         "place.actual_box_pose_world",
     )
+    if drop:
+        verify_release_prediction(place, str(segment["target"]))
+    if adaptive and segment.get("placement_semantics") != PLACEMENT_SEMANTICS:
+        raise ValueError("adaptive trajectory requires current placement semantics")
     release_center = np.asarray(place.get("release_center_world_m"), dtype=float)
     if release_center.shape != (3,) or not np.allclose(
         release_center, actual_box_pose[:3, 3], atol=1e-12, rtol=0.0
@@ -282,10 +300,13 @@ class LayoutTrajectoryBudget:
     cartesian_orientation_step_rad: float = np.deg2rad(3.0)
     cartesian_max_branch_step_rad: float = 0.45
     cartesian_max_samples_per_stage: int = 80
-    pregrasp_standoff_m: float = 0.10
+    approach_mode: str = "auto"
+    pregrasp_standoff_m: float = 0.10  # historical candidate only
     preplace_standoff_m: float = 0.10
-    withdrawal_distance_m: float = 0.10
-    post_release_vertical_lift_m: float = 0.30
+    withdrawal_distance_m: float = 0.0  # optional historical comparison
+    post_release_vertical_lift_m: float = 0.0
+    maximum_drop_m: float = 0.05
+    receiver_edge_reserve_m: float = 0.01
     extraction_scan_step_m: float = 0.01
     maximum_extraction_m: float = 0.80
     extraction_direction_attempts: int = 5
@@ -322,8 +343,6 @@ class LayoutTrajectoryBudget:
             "cartesian_max_branch_step_rad",
             "pregrasp_standoff_m",
             "preplace_standoff_m",
-            "withdrawal_distance_m",
-            "post_release_vertical_lift_m",
             "extraction_scan_step_m",
             "maximum_extraction_m",
             "local_transit_outward_step_m",
@@ -332,6 +351,11 @@ class LayoutTrajectoryBudget:
             value = float(getattr(self, name))
             if not np.isfinite(value) or value <= 0.0:
                 raise ValueError(f"{name} must be finite and positive")
+        if self.approach_mode not in {"auto", "direct", "adaptive_pregrasp"}:
+            raise ValueError("unsupported approach mode")
+        for name in ("withdrawal_distance_m", "post_release_vertical_lift_m", "maximum_drop_m", "receiver_edge_reserve_m"):
+            if not np.isfinite(getattr(self, name)) or getattr(self, name) < 0:
+                raise ValueError(f"{name} must be finite and nonnegative")
         if not 0.0 <= float(self.rrt_goal_bias) <= 1.0:
             raise ValueError("rrt_goal_bias must be in [0, 1]")
         if (
@@ -729,6 +753,8 @@ class LayoutTrajectoryConnector:
         self._state_cache: dict[tuple[Any, ...], Mapping[str, Any] | None] = {}
         self._state_cache_limit = 4096
         self._deadline_monotonic: float | None = None
+        self.next_contact_provider = None
+        self.stack_carton_names = None
 
     def start_planning_request(self, start_monotonic: float | None = None) -> None:
         """Reset bounded reuse and bind every nested search to one deadline."""
@@ -848,8 +874,8 @@ class LayoutTrajectoryConnector:
             )
             cache_key = (
                 stage, tuple(np.round(q_array, 10)), attachment_key,
-                tuple(box.name for box in obstacles), tuple(support_names),
-                None if target_contact is None else target_contact.name,
+                tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in obstacles), tuple(support_names),
+                None if target_contact is None else (target_contact.name, target_contact.world_from_local.tobytes()),
             )
             if cache_key in self._state_cache:
                 self._statistics["state_cache_hits"] += 1
@@ -926,7 +952,7 @@ class LayoutTrajectoryConnector:
             return finish(None)
         if initial_proximity is not None and (
             not isinstance(initial_proximity, PhysicsCheckedStackTracker)
-            or self.collision_policy.allows_stack_planning_contact(stage)
+            or self.collision_policy.stack_contact_mode == "planner_relaxed_physics_checked"
         ):
             proximity_failure = initial_proximity.state_failure(
                 payload, list(obstacles), support_names
@@ -1184,6 +1210,9 @@ class LayoutTrajectoryConnector:
                     getattr(self, "_placement_remaining", self.budget.stage_connection_iterations)
                     - consumed,
                 )
+                self._placement_candidate_allowance = max(
+                    0, getattr(self, "_placement_candidate_allowance",
+                               self.budget.stage_connection_iterations) - consumed)
             attempts.append(
                 {
                     "candidate_index": index,
@@ -1373,7 +1402,8 @@ class LayoutTrajectoryConnector:
     ) -> tuple[InitialProximityTracker, Mapping[str, Any] | None]:
         if self.collision_policy.stack_contact_mode == "planner_relaxed_physics_checked":
             return PhysicsCheckedStackTracker(
-                target, [o for o in obstacles if o.category == "carton"], self.collision_policy,
+                target, [o for o in obstacles if o.category == "carton"
+                         and (self.stack_carton_names is None or o.name in self.stack_carton_names)], self.collision_policy,
                 self.collision_margin_m, self.contact_tolerance_m), None
         supports = set(support_names)
         neighbors = [
@@ -1474,7 +1504,7 @@ class LayoutTrajectoryConnector:
         evidence["failure"] = failure
         return path, failure, evidence
 
-    def _extraction(
+    def _extraction_options(
         self,
         start: np.ndarray,
         attachment: PhysicalContactAttachment,
@@ -1511,7 +1541,15 @@ class LayoutTrajectoryConnector:
         fk_boundary_guard = (2.0 * float(self.ik["position_tolerance_m"])
             + 2.0 * float(np.linalg.norm(box.half_extents)) * float(self.ik["orientation_tolerance_rad"])
             + self.contact_tolerance_m)
-        for index, direction in enumerate(unique[: self.budget.extraction_direction_attempts]):
+        # Bias the bent exit away from actual remaining neighbors. Rotation
+        # happens while the same attachment is still under stack monitoring.
+        lateral = sum((box.center[1] - other.center[1]) /
+                      max(0.01, np.linalg.norm(box.center - other.center)) for other in constraints)
+        turn_sign = 1. if lateral >= 0 else -1.
+        routes = [(unique[0], "straight")]
+        routes += [(unique[0], "outward_then_turn"), (unique[0], "coupled_lift_turn")]
+        routes += [(direction, "straight") for direction in unique[1:]]
+        for index, (direction, route) in enumerate(routes[: self.budget.extraction_direction_attempts]):
             distance = minimum_clearance_extraction_distance(
                 box,
                 direction,
@@ -1532,15 +1570,27 @@ class LayoutTrajectoryConnector:
             branch_tracker = tracker.clone()
             destination = self.robot.fk(start).copy()
             destination[:3, 3] += direction * float(distance)
-            path, failure, search = self._cartesian(
-                start,
-                destination,
-                obstacles,
-                seed=seed + index * 101,
-                attachment=attachment,
-                initial_proximity=branch_tracker,
-                stage="extraction",
-            )
+            goals = []
+            if route != "straight":
+                intermediate = self.robot.fk(start).copy()
+                intermediate[:3, 3] += direction * float(distance) / 3
+                goals.append(intermediate)
+                if route == "coupled_lift_turn":
+                    destination[2, 3] += min(float(distance) / 3, box.half_extents[2] / 3)
+                destination[:3, :3] = rotation_matrix_from_rotation_vector(
+                    np.array([0., 0., turn_sign * min(self.budget.cartesian_orientation_step_rad * 2, 0.12)])
+                ) @ destination[:3, :3]
+            goals.append(destination)
+            path, searches, failure = [start.copy()], [], None
+            for goal in goals:
+                part, failure, search = self._cartesian(path[-1], goal, obstacles,
+                    seed=seed + index * 101 + len(searches), attachment=attachment,
+                    initial_proximity=branch_tracker, stage="extraction")
+                searches.append(search)
+                if failure is not None:
+                    break
+                path.extend(part[1:])
+            search = {"route": route, "parts": searches}
             released = failure is None and branch_tracker.fully_released
             if failure is None and not released:
                 failure = {"reason": "ACTUAL_EXTRACTION_CLEARANCE_NOT_REACHED", "stage": "extraction"}
@@ -1561,21 +1611,21 @@ class LayoutTrajectoryConnector:
             }
             attempts.append(attempt)
             if released:
-                return path, branch_tracker, None, {
+                yield path, branch_tracker, None, {
                     "stage": "extraction",
                     "attempts": attempts,
                     "selected_attempt": index,
                 }
-        failure = {
-            "reason": "NO_BOUNDED_EXTRACTION_PATH",
-            "stage": "extraction",
-            "attempts": attempts,
-        }
-        return [], tracker, failure, {
-            "stage": "extraction",
-            "attempts": attempts,
-            "selected_attempt": None,
-        }
+        self._last_extraction_attempts = attempts
+
+    def _extraction(self, *args, **kwargs):
+        # Compatibility for focused callers; production consumes all exits lazily.
+        for option in self._extraction_options(*args, **kwargs):
+            return option
+        tracker = args[3]
+        failure = {"reason": "NO_BOUNDED_EXTRACTION_PATH", "stage": "extraction"}
+        return [], tracker, failure, {"attempts": getattr(self, "_last_extraction_attempts", []),
+                                     "selected_attempt": None}
 
     @staticmethod
     def _append_stage(
@@ -1592,6 +1642,52 @@ class LayoutTrajectoryConnector:
         begin = len(full) - 1
         full.extend(q.copy() for q in arrays[1:])
         stages[name] = [begin, len(full) - 1]
+
+    def _approach(self, start, grasp_q, requested, obstacles, target, *, seed):
+        """Both routes share strict collision edges and the controlled terminal arc.
+
+        Direct approach merges the free connector and terminal arc into contact;
+        its transition is a geometric sample, not a process station. Adaptive
+        branches retry the entire approach when a terminal arc fails.
+        """
+        physical = self.physical_from_virtual(requested)
+        outward = -physical[:3, 2]
+        tool = list(self.tool_collision_obbs_provider(grasp_q))
+        depth = max((float(np.ptp(b.corners() @ outward)) for b in tool), default=0.03)
+        error = 2 * float(self.ik["position_tolerance_m"]) + self.contact_tolerance_m
+        terminal = max(2 * self.collision_margin_m + error, min(depth / 4, self.budget.pregrasp_standoff_m))
+        current_distance = float(np.linalg.norm(self.robot.fk(start)[:3, 3] - requested[:3, 3]))
+        adaptive_distances = sorted({terminal, min(max(terminal, current_distance / 3), depth),
+                                     self.budget.pregrasp_standoff_m})
+        modes = ([self.budget.approach_mode] if self.budget.approach_mode != "auto"
+                 else ["direct", "adaptive_pregrasp"])
+        attempts = []
+        last_failure = {"reason": "APPROACH_NOT_SEARCHED", "stage": "contact"}
+        for mode in modes:
+            for distance in ([terminal] if mode == "direct" else adaptive_distances):
+                before = perf_counter()
+                gate = physical.copy()
+                gate[:3, 3] += outward * distance
+                q, prefix, failure, search = self._connect_pose(self.virtual_from_physical(gate),
+                    [start, grasp_q], start, obstacles, ik_seed=seed + len(attempts) * 100,
+                    connection_seed=seed + len(attempts) * 100 + 1, stage="pregrasp")
+                terminal_path = []
+                if failure is None and q is not None:
+                    terminal_path, failure, terminal_search = self._cartesian(q, requested, obstacles,
+                        seed=seed + len(attempts) * 100 + 2, target_contact=target, stage="contact")
+                    search = {"connection": search, "terminal": terminal_search}
+                attempts.append({"mode": mode, "terminal_distance_m": distance,
+                    "planning_wall_seconds": perf_counter() - before, "failure": failure, "search": search})
+                if failure is None and terminal_path:
+                    approach = [*prefix, *terminal_path[1:]]
+                    evidence = {"selected_mode": mode, "attempts": attempts,
+                        "joint_path_length_rad": float(np.sum(np.linalg.norm(np.diff(approach, axis=0), axis=1))),
+                        "independent_pregrasp_station": mode != "direct"}
+                    if mode == "direct":
+                        return [start.copy()], approach, None, evidence
+                    return prefix, terminal_path, None, evidence
+                last_failure = failure or {"reason": "APPROACH_CONNECTION_FAILED", "stage": "contact"}
+        return [], [], last_failure, {"attempts": attempts}
 
     def _plan_branch(
         self,
@@ -1623,31 +1719,9 @@ class LayoutTrajectoryConnector:
 
         actual_physical = self.physical_from_virtual(actual)
         outward = -actual_physical[:3, 2]
-        pregrasp_physical = actual_physical.copy()
-        pregrasp_physical[:3, 3] += outward * self.budget.pregrasp_standoff_m
-        pregrasp_virtual = self.virtual_from_physical(pregrasp_physical)
-        pre_q, pregrasp, failure, evidence = self._connect_pose(
-            pregrasp_virtual,
-            [grasp_q, home_q],
-            home_q,
-            all_obstacles,
-            ik_seed=seed + 10,
-            connection_seed=seed + 20,
-            stage="pregrasp",
-        )
-        trace["stages"]["pregrasp"] = evidence
-        if pre_q is None or failure is not None:
-            return None, failure, trace
-
-        contact, failure, evidence = self._cartesian(
-            pre_q,
-            requested_virtual_contact,
-            all_obstacles,
-            seed=seed + 30,
-            target_contact=target,
-            stage="contact",
-        )
-        trace["stages"]["contact"] = evidence
+        pregrasp, contact, failure, evidence = self._approach(
+            home_q, grasp_q, requested_virtual_contact, all_obstacles, target, seed=seed + 10)
+        trace["stages"]["approach"] = evidence
         if failure is not None:
             return None, failure, trace
         contact_q = contact[-1]
@@ -1707,75 +1781,120 @@ class LayoutTrajectoryConnector:
         if failure is not None:
             return None, failure, trace
 
-        extraction, released_tracker, failure, evidence = self._extraction(
-            support_release[-1],
-            attachment,
-            payload_obstacles,
-            tracker,
-            outward,
-            seed=seed + 50,
-        )
-        trace["stages"]["extraction"] = evidence
-        if failure is not None:
-            return None, failure, trace
-
-        supports = tuple(
-            ConveyorSupport(box, self.surface_directions_world.get(box.name))
-            for box in all_obstacles
-            if box.category == "conveyor"
-        ) or (ConveyorSupport(receiver, self.surface_directions_world.get(receiver.name)),)
-        process_rank = {
-            name: index
-            for index, name in enumerate(self.placement_policy.overlap_process_priority)
-        }
-        supports = tuple(sorted(supports, key=lambda item: (
-            process_rank.get(self.placement_policy.process_family_by_support.get(item.name, ""), 999),
-            item.name,
-        )))
-        support_bodies = tuple(item.body for item in supports)
-        occupied = [box for box in payload_obstacles if box.category == "carton"
-                    and any(contact_separated(box, surface, self.contact_tolerance_m)
-                            and support_union_audit(box, support_bodies)["supported"]
-                            for surface in support_bodies)]
-        placement_generation_started = perf_counter()
-        placements = generate_conveyor_placements(target, supports or (receiver,),
-            occupied=occupied, preferred_point_world=attachment.box_at(extraction[-1]).center,
-            policy=self.placement_policy,
-            contact_normal_local=(np.linalg.inv(rigid.tcp_from_box)[:3, :3]
-                                  @ np.array([0.0, 0.0, 1.0])))
-        self._statistics["placement_candidate_generation_wall_seconds"] += (
-            perf_counter() - placement_generation_started
-        )
-        self._statistics["placement_candidates_generated"] += len(placements)
+        extraction_options = self._extraction_options(
+            support_release[-1], attachment, payload_obstacles, tracker, outward, seed=seed + 50)
+        all_exit_attempts = []
         self._placement_remaining = self.budget.stage_connection_iterations
         self._local_transit_remaining = self.budget.local_transit_cartesian_sample_budget
-        placement_attempts = []
-        for placement_index, placement in enumerate(placements):
-            # One shared downstream budget; reserve real connection work for
-            # alternate supports instead of allowing the first location to
-            # consume all of it. Unused direct-edge budget remains available.
-            self._placement_candidate_allowance = max(1, int(np.ceil(
-                self._placement_remaining / (len(placements) - placement_index))))
-            branch_trace = {**trace, "stages": dict(trace["stages"])}
-            segment, failure, branch_trace = self._finish_place_branch(
-                target=target, face=face, requested_virtual_contact=requested_virtual_contact,
-                home_q=home_q, contact_q=contact_q, physical_contact=physical_contact,
-                rigid=rigid, attachment=attachment, selection=selection, pregrasp=pregrasp,
-                contact=contact, support_release=support_release, extraction=extraction,
-                released_tracker=released_tracker, payload_obstacles=payload_obstacles,
-                placement=placement, selected_supports=[box for box in support_bodies if box.name in placement.receiver_names],
-                trace=branch_trace, seed=seed + placement_index * 1000)
-            placement_attempts.append({"candidate": placement.as_dict(), "failure": failure,
-                "allocated_connection_iterations": self._placement_candidate_allowance,
-                "shared_remaining_connection_iterations": self._placement_remaining,
-                "downstream_stages": {key: value for key, value in branch_trace["stages"].items()
-                                      if key in {"local_transit", "transit", "place", "withdrawal"}}})
-            if segment is not None:
-                branch_trace["placement_attempts"] = placement_attempts
-                return segment, None, branch_trace
-        trace["placement_attempts"] = placement_attempts
-        return None, {"reason": "PLACEMENT_CANDIDATES_EXHAUSTED", "stage": "place",
-                      "attempts": placement_attempts}, trace
+        for exit_index, (extraction, released_tracker, failure, evidence) in enumerate(extraction_options):
+            trace["stages"]["extraction"] = evidence
+            supports = tuple(
+                ConveyorSupport(box, self.surface_directions_world.get(box.name))
+                for box in all_obstacles
+                if box.category == "conveyor"
+            ) or (ConveyorSupport(receiver, self.surface_directions_world.get(receiver.name)),)
+            process_rank = {
+                name: index
+                for index, name in enumerate(self.placement_policy.overlap_process_priority)
+            }
+            supports = tuple(sorted(supports, key=lambda item: (
+                process_rank.get(self.placement_policy.process_family_by_support.get(item.name, ""), 999),
+                item.name,
+            )))
+            support_bodies = tuple(item.body for item in supports)
+            occupied = [box for box in payload_obstacles if box.category == "carton"
+                        and any(contact_separated(box, surface, self.contact_tolerance_m)
+                                and support_union_audit(box, support_bodies)["supported"]
+                                for surface in support_bodies)]
+            placement_generation_started = perf_counter()
+            placements = generate_conveyor_placements(target, supports or (receiver,),
+                occupied=occupied, preferred_point_world=attachment.box_at(extraction[-1]).center,
+                policy=replace(self.placement_policy, sampling_edge_reserve_m=self.budget.receiver_edge_reserve_m),
+                contact_normal_local=(np.linalg.inv(rigid.tcp_from_box)[:3, :3]
+                                      @ np.array([0.0, 0.0, 1.0])))
+            placements = sorted(placements, key=lambda placement: (
+                not receiver_footprint_reserve(placement.payload, support_bodies,
+                    self.budget.receiver_edge_reserve_m,
+                    contact_tolerance_m=self.contact_tolerance_m,
+                    edge_tolerance_m=self.placement_policy.edge_tolerance_m)["supported"],))
+            self._statistics["placement_candidate_generation_wall_seconds"] += (
+                perf_counter() - placement_generation_started
+            )
+            self._statistics["placement_candidates_generated"] += len(placements)
+            placement_attempts = []
+            residence_fallback = None
+            for placement_index, placement in enumerate(placements):
+                # One shared downstream budget; reserve real connection work for
+                # alternate supports instead of allowing the first location to
+                # consume all of it. Unused direct-edge budget remains available.
+                self._placement_candidate_allowance = min(self._placement_remaining,
+                    max(1, self.budget.stage_connection_iterations // 3))
+                branch_trace = {**trace, "stages": dict(trace["stages"])}
+                segment = None
+                release_attempts, release_choices, transit_hint = [], [], None
+                upper_drop_goal = max(0., self.budget.maximum_drop_m - 2 * float(self.ik["position_tolerance_m"])
+                                      - self.contact_tolerance_m)
+                for height in dict.fromkeys((0., self.budget.maximum_drop_m / 2, upper_drop_goal)):
+                    remaining_wall = self._remaining_wall_time()
+                    if release_choices and remaining_wall is not None and remaining_wall < 30.:
+                        break
+                    branch_trace = {**trace, "stages": dict(trace["stages"])}
+                    segment, failure, branch_trace = self._finish_place_branch(
+                        target=target, face=face, requested_virtual_contact=requested_virtual_contact,
+                        home_q=home_q, contact_q=contact_q, physical_contact=physical_contact,
+                        rigid=rigid, attachment=attachment, selection=selection, pregrasp=pregrasp,
+                        contact=contact, support_release=support_release, extraction=extraction,
+                        released_tracker=released_tracker, payload_obstacles=payload_obstacles,
+                        placement=placement, selected_supports=[box for box in support_bodies if box.name in placement.receiver_names],
+                        trace=branch_trace, seed=seed + placement_index * 1000, release_height=height,
+                        transit_hint=transit_hint)
+                    record = {"height_m": height, "failure": failure}
+                    if segment is not None:
+                        transit_start, transit_end = segment["stage_ranges"]["transit"]
+                        transit_hint = [np.asarray(q) for q in segment["path"][transit_start:transit_end + 1]]
+                        departure = segment["post_release_safe_residence"]
+                        lookahead = departure.get("next_contact", {})
+                        cost = float(np.sum(np.linalg.norm(np.diff(segment["path"], axis=0), axis=1)))
+                        cost += float(lookahead.get("joint_path_length_rad", 0.))
+                        rank = (lookahead.get("status") == "BOUNDED_NEXT_CONTACT_SEARCH_FAILED", cost,
+                                segment["place"]["release_prediction"]["flight_time_s"])
+                        record["complete_motion_cost_rad"] = cost
+                        release_choices.append((rank, segment, branch_trace))
+                    release_attempts.append(record)
+                    # Compare supported release with one feasible bounded drop;
+                    # higher candidates are fallback, never compulsory motions.
+                    if len(release_choices) >= 2:
+                        break
+                if release_choices:
+                    _, segment, branch_trace = min(release_choices, key=lambda item: item[0])
+                    failure = None
+                    segment["place"]["release_selection"] = {
+                        "objective": "checked_current_and_next_contact_joint_path_length_then_flight_time",
+                        "attempts": release_attempts}
+                branch_trace["release_attempts"] = release_attempts
+                placement_attempts.append({"candidate": placement.as_dict(), "failure": failure,
+                    "allocated_connection_iterations": self._placement_candidate_allowance,
+                    "shared_remaining_connection_iterations": self._placement_remaining,
+                    "downstream_stages": {key: value for key, value in branch_trace["stages"].items()
+                                          if key in {"local_transit", "transit", "place", "withdrawal"}}})
+                if segment is not None:
+                    branch_trace["placement_attempts"] = placement_attempts
+                    lookahead = segment["post_release_safe_residence"].get("next_contact", {})
+                    if lookahead.get("status") == "BOUNDED_NEXT_CONTACT_SEARCH_FAILED":
+                        if residence_fallback is None:
+                            residence_fallback = (segment, None, branch_trace)
+                            continue
+                        return residence_fallback
+                    return segment, None, branch_trace
+            if residence_fallback is not None:
+                return residence_fallback
+            all_exit_attempts.append({"exit": exit_index, "extraction": evidence,
+                                      "placements": placement_attempts})
+
+        trace["exit_attempts"] = all_exit_attempts
+        return None, {"reason": "EXTRACTION_AND_PLACEMENT_CANDIDATES_EXHAUSTED", "stage": "place",
+                      "attempts": all_exit_attempts,
+                      "extraction_attempts": getattr(self, "_last_extraction_attempts", [])}, trace
 
     def _local_cartesian_transit(self, start, destination, obstacles, attachment, *, seed):
         """Reuse strict Cartesian continuation with a shared finite sample pool.
@@ -1852,11 +1971,174 @@ class LayoutTrajectoryConnector:
         evidence["remaining_samples"] = self._local_transit_remaining
         return [], last_failure, evidence
 
+    def _next_contact_cost(self, start, placed, obstacles, sweep, *, seed):
+        """One bounded lookahead through the production contact/path predicates.
+
+        This is a cost preview, never an executable next task. The executor
+        still replans from measured poses and preserves the released rigid body.
+        """
+        candidates = ([] if self.next_contact_provider is None else
+                      self.next_contact_provider(placed.name))
+        if not candidates:
+            return {"status": "NO_NEXT_CONTACT_CANDIDATE", "attempts": []}
+        before = perf_counter()
+        outer_deadline = self._deadline_monotonic
+        self._deadline_monotonic = min(outer_deadline or float("inf"), before + 8.)
+        # A single conservative union encloses zero progress and all bounded
+        # belt progress. It cannot assume the box already took the belt speed.
+        delta = sweep[-1].center - sweep[0].center
+        future = OBB(sweep[0].center + delta / 2,
+            sweep[0].half_extents + np.abs(sweep[0].rotation.T @ delta) / 2,
+            sweep[0].rotation, placed.name, placed.category)
+        world = [*obstacles, future]
+        attempts = []
+        try:
+            for index, candidate in enumerate(candidates):
+                if self._deadline_reached():
+                    break
+                target = candidate["target"]
+                requested = candidate["requested_virtual_contact"]
+                stream = self._ik_stream(requested, [start], world, seed=seed + index * 100,
+                    attachment=None, support_names=(), target_contact=target, stage="next_contact")
+                solved = next(stream, None)
+                self._statistics["ik_calls"] += 1
+                self._statistics["ik_seeds_attempted"] += int(stream.evidence().get("seeds_attempted", 0))
+                self._statistics["ik_iterations_consumed"] += int(stream.evidence().get("iterations_consumed", 0))
+                failure = {"reason": "NO_NEXT_CONTACT_IK"}
+                if solved is not None:
+                    prefix, terminal, failure, approach = self._approach(start, solved.q,
+                        requested, world, target, seed=seed + index * 100 + 1)
+                    if failure is None:
+                        try:
+                            cups = self._contact_selection(terminal[-1], target,
+                                candidate["face"], candidate["suction"])
+                        except ValueError as exc:
+                            failure = {"reason": "NEXT_CONTACT_COVERAGE_FAILED", "detail": str(exc)}
+                        if failure is None:
+                            path = [*prefix, *terminal[1:]]
+                            cost = float(np.sum(np.linalg.norm(np.diff(path, axis=0), axis=1)))
+                            return {"status": "CHECKED_NEXT_CONTACT_CONNECTION", "target": target.name,
+                                "row_id": candidate["row_id"], "face": candidate["face"],
+                                "approach_mode": approach["selected_mode"], "joint_path_length_rad": cost,
+                                "start_q_rad": start.tolist(), "contact_q_rad": terminal[-1].tolist(),
+                                "commanded_active_mask": cups["commanded_active_mask"],
+                                "planning_wall_seconds": perf_counter() - before,
+                                "attempts": attempts, "requires_actual_state_replan": True,
+                                "released_carton_swept_occupancy_retained": True}
+                attempts.append({"target": target.name, "face": candidate["face"], "failure": failure})
+            return {"status": "BOUNDED_NEXT_CONTACT_SEARCH_FAILED", "attempts": attempts,
+                "planning_wall_seconds": perf_counter() - before,
+                "safe_current_residence_remains_valid": True}
+        finally:
+            self._deadline_monotonic = outer_deadline
+
+    def _departure(self, start, placed, obstacles, direction, *, seed, working_normal,
+                   release_prediction):
+        if direction is None:
+            return [], {"reason": "POST_RELEASE_CONVEYOR_DIRECTION_UNAVAILABLE"}, {}
+        direction = np.asarray(direction, float)
+        tool = list(self.tool_collision_obbs_provider(start))
+        if not tool:
+            return [], {"reason": "POST_RELEASE_TOOL_ENVELOPE_UNAVAILABLE"}, {}
+        clearance = 2 * self.collision_margin_m + self.contact_tolerance_m
+        # Sweep far enough to pass the entire tool, including a stalled carton.
+        span = max(float(np.max(b.corners() @ direction)) for b in tool) - float(np.min(placed.corners() @ direction))
+        landing_pose = np.asarray(release_prediction["predicted_landing_pose_world"])
+        drift = landing_pose[:3, 3] - placed.center
+        flight_envelope = OBB(placed.center + drift / 2,
+            placed.half_extents + np.abs(placed.rotation.T @ drift) / 2,
+            placed.rotation, placed.name, placed.category)
+        sweep = departure_sweep(flight_envelope, direction, distance_m=max(clearance, span + clearance),
+                                resolution_m=self.budget.cartesian_step_m)
+        candidates = [-np.asarray(working_normal), np.array([0., 0., 1.]), -direction]
+        candidates += [candidates[0] + candidates[1], candidates[0] - direction]
+        future_contacts = ([] if self.next_contact_provider is None else self.next_contact_provider(placed.name))
+        remaining = [entry["target"] for entry in future_contacts]
+        if remaining:
+            top = max(float(np.max(b.corners()[:, 2])) for b in remaining)
+            row = [b for b in remaining if abs(float(np.max(b.corners()[:, 2])) - top) < 0.02]
+            center_y = float(np.mean([b.center[1] for b in row]))
+            next_box = min(row, key=lambda b: (abs(b.center[1] - center_y), b.name))
+            candidates.insert(0, next_box.center - placed.center)
+        attempts, safe_choices, tested_directions = [], [], []
+        for index, vector in enumerate(candidates):
+            if np.linalg.norm(vector) < 1e-10:
+                continue
+            vector = vector / np.linalg.norm(vector)
+            if any(np.allclose(vector, tested, atol=1e-10, rtol=0) for tested in tested_directions):
+                continue
+            tested_directions.append(vector)
+            # Project complete solids, rather than imposing a normal retreat
+            # or a vertical lift. Each direction derives its own distance.
+            minimum_tool = min(float(np.min(b.corners() @ vector)) for b in tool)
+            maximum_box = max(float(np.max(b.corners() @ vector)) for b in sweep)
+            distance = max(0., maximum_box + clearance - minimum_tool)
+            if distance > self.budget.maximum_extraction_m:
+                continue
+            destination = self.robot.fk(start).copy()
+            destination[:3, 3] += distance * vector
+            path, failure, search = self._cartesian(start, destination, [*obstacles, placed],
+                seed=seed + index, target_contact=placed, stage="withdrawal")
+            if failure is None:
+                for predicted in sweep:
+                    failure = self._path_failure(path, [*obstacles, predicted],
+                        target_contact=predicted, stage="withdrawal")
+                    if failure is not None:
+                        break
+            if failure is None:
+                for predicted in sweep:
+                    failure = self._state_failure(path[-1], [*obstacles, predicted], stage="residence")
+                    if failure is not None:
+                        break
+            attempts.append({"direction_world": vector.tolist(), "distance_m": distance,
+                             "failure": failure, "search": search})
+            if failure is None:
+                lookahead = self._next_contact_cost(path[-1], placed, obstacles, sweep, seed=seed + index * 1000)
+                departure_cost = float(np.sum(np.linalg.norm(np.diff(path, axis=0), axis=1)))
+                evidence = {"model": "bounded_departure_swept_occupancy_v2",
+                    "selected_direction_world": vector.tolist(), "distance_m": distance,
+                    "attempts": attempts, "conveyor_surface": release_prediction["landing_support"]["receiver_names"],
+                    "stationary_carton_included": True, "sweep_samples": len(sweep),
+                    "next_approach_start_q_rad": path[-1].tolist(),
+                    "next_contact": lookahead, "departure_joint_path_length_rad": departure_cost,
+                    "fixed_normal_retreat_or_vertical_lift": False}
+                cost = departure_cost + float(lookahead.get("joint_path_length_rad", 0.))
+                rank = (lookahead["status"] == "BOUNDED_NEXT_CONTACT_SEARCH_FAILED", cost)
+                safe_choices.append((rank, path, evidence))
+                if not future_contacts or len(safe_choices) >= 2:
+                    break
+        if safe_choices:
+            _, selected_path, selected_evidence = min(safe_choices, key=lambda item: item[0])
+            selected_evidence["compared_safe_departures"] = [{"cost_rad": rank[1],
+                "next_contact_status": evidence["next_contact"]["status"],
+                "direction_world": evidence["selected_direction_world"]}
+                for rank, _, evidence in safe_choices]
+            return selected_path, None, selected_evidence
+        # A bounded wait is a real fallback only if the entire uncertain
+        # moving-carton sweep is safe at this pose, including legal cup contact,
+        # and a later measured separation can restore the ordinary rules.
+        wait_failure = None
+        for predicted in sweep:
+            wait_failure = self._state_failure(start, [*obstacles, predicted],
+                target_contact=predicted, stage="withdrawal")
+            if wait_failure is not None:
+                break
+        if wait_failure is None:
+            wait_failure = self._state_failure(start, [*obstacles, sweep[-1]], stage="residence")
+        if wait_failure is None:
+            return [start.copy()], None, {"model": "bounded_wait_for_actual_carton_separation_v2",
+                "attempts": attempts, "required_observed_progress_m": max(clearance, span + clearance),
+                "stationary_carton_included": True, "next_approach_start_q_rad": start.tolist(),
+                "fixed_normal_retreat_or_vertical_lift": False, "actual_separation_required": True}
+        failure = {"reason": "NO_SAFE_MOVING_CARTON_DEPARTURE", "stage": "withdrawal"}
+        return [], failure, {"attempts": attempts, "failure": failure}
+
     def _finish_place_branch(self, *, target, face, requested_virtual_contact, home_q,
             contact_q, physical_contact, rigid, attachment, selection, pregrasp, contact,
             support_release, extraction, released_tracker, payload_obstacles, placement,
-            selected_supports, trace, seed):
+            selected_supports, trace, seed, release_height=0., transit_hint=None):
         desired_box = placement.payload.world_from_local.copy()
+        desired_box[2, 3] += release_height
         support_z = float(np.min(placement.payload.corners()[:, 2]))
         # A footprint may end exactly at an adjoining conveyor seam. Its
         # zero-area contact with that second coplanar top is still a legal
@@ -1874,14 +2156,21 @@ class LayoutTrajectoryConnector:
         ) or tuple(placement.receiver_names)
         desired_physical = desired_box @ np.linalg.inv(rigid.tcp_from_box)
         preplace_physical = desired_physical.copy()
-        # Approach opposite the actual cup working normal. This is +Z for
-        # TOP_DOWN, +Y for RIGHT_WALL_FACING and +X for TRANSVERSE_SIDE.
-        preplace_physical[:3, 3] -= (
-            desired_physical[:3, 2] * self.budget.preplace_standoff_m
-        )
+        # Receiver approach and final working normal are independent.
+        # Derive clearance from the unchanged margins and strict FK residual.
+        receiver_clearance = (2 * self.collision_margin_m + self.contact_tolerance_m
+                              + 2 * float(self.ik["position_tolerance_m"]))
+        preplace_physical[2, 3] += max(0., receiver_clearance - release_height)
         preplace_virtual = self.virtual_from_physical(preplace_physical)
         transit = []
-        if getattr(self, "_local_transit_remaining", 0) > 0:
+        if transit_hint:
+            suffix, reuse_failure, local_evidence = self._cartesian(
+                transit_hint[-1], preplace_virtual, payload_obstacles, seed=seed + 54,
+                attachment=attachment, stage="transit")
+            if reuse_failure is None:
+                transit = [*transit_hint, *suffix[1:]]
+                local_evidence = {"reused_verified_loaded_prefix": True, "suffix": local_evidence}
+        if not transit and getattr(self, "_local_transit_remaining", 0) > 0:
             transit, local_failure, local_evidence = self._local_cartesian_transit(
                 extraction[-1], preplace_virtual, payload_obstacles, attachment, seed=seed + 55)
             trace["stages"]["local_transit"] = local_evidence
@@ -1923,14 +2212,22 @@ class LayoutTrajectoryConnector:
             edge_tolerance_m=self.placement_policy.edge_tolerance_m,
             engineering_edge_margin_m=self.placement_policy.engineering_edge_margin_m,
         )
-        if not support["supported"]:
+        release_mode = SHORT_DROP_RELEASE if release_height > 0 else SUPPORTED_RELEASE
+        release_prediction = predict_release(placed, selected_supports, mode=release_mode,
+            obstacles=payload_obstacles, policy=ReleasePolicy(maximum_drop_m=self.budget.maximum_drop_m),
+            contact_tolerance_m=self.contact_tolerance_m,
+            edge_tolerance_m=self.placement_policy.edge_tolerance_m)
+        if not release_prediction["accepted"]:
             return None, {
-                "reason": "ACTUAL_FK_SUPPORT_FAILED",
+                "reason": ("ACTUAL_FK_SUPPORT_FAILED" if release_mode == SUPPORTED_RELEASE
+                           else release_prediction["reason"]),
                 "stage": "place",
                 "support": support,
+                "release_prediction": release_prediction,
             }, trace
 
-        actual_support_names = tuple(str(name) for name in support["receiver_names"])
+        actual_support_names = tuple(str(name) for name in
+            release_prediction["landing_support"]["receiver_names"])
         support_descriptors = tuple(
             ConveyorSupport(box, self.surface_directions_world.get(box.name))
             for box in selected_supports
@@ -1952,11 +2249,7 @@ class LayoutTrajectoryConnector:
             process: tuple(families)
             for process, families in self.placement_policy.allowed_families_by_process.items()
         }.get(actual_process_family, ())
-        required_normal = {
-            "TOP_DOWN": np.array([0.0, 0.0, -1.0]),
-            "RIGHT_WALL_FACING": np.array([0.0, -1.0, 0.0]),
-            "TRANSVERSE_SIDE": np.array([-1.0, 0.0, 0.0]),
-        }.get(placement.placement_family)
+        required_normal = placement_working_normal(placement.placement_family)
         minimum_alignment = float(np.cos(self.placement_policy.normal_tolerance_rad))
         if (required_normal is None
                 or placement.placement_family not in actual_placement_family
@@ -1971,110 +2264,38 @@ class LayoutTrajectoryConnector:
             }
             trace["stages"]["place"]["process_relation_failure"] = failure
             return None, failure, trace
-        withdrawal_virtual = self.robot.fk(place[-1]).copy()
-        withdrawal_virtual[:3, 3] -= (
-            place_physical[:3, 2] * self.budget.withdrawal_distance_m
-        )
-        withdrawal_obstacles = [*payload_obstacles, placed]
-        normal_withdrawal, failure, normal_evidence = self._cartesian(
-            place[-1],
-            withdrawal_virtual,
-            withdrawal_obstacles,
-            seed=seed + 90,
-            target_contact=placed,
-            stage="withdrawal",
-        )
-        if failure is not None:
-            trace["stages"]["withdrawal"] = {
-                "model": "normal_then_belt_aware_safe_residence_v1",
-                "normal_disengage": normal_evidence,
-            }
-            return None, failure, trace
-
         place_surface = actual_effective_receiver
-        direction_map = {
-            str(name): self.surface_directions_world.get(str(name))
-            for name in actual_support_names
-        }
-        configured_direction = direction_map.get(place_surface)
-        if configured_direction is None:
-            failure = {
-                "reason": "POST_RELEASE_CONVEYOR_DIRECTION_UNAVAILABLE",
-                "stage": "withdrawal",
-                "surface": place_surface,
-            }
-            trace["stages"]["withdrawal"] = {
-                "model": "normal_then_vertical_swept_path_separation_v2",
-                "normal_disengage": normal_evidence,
-                "failure": failure,
-            }
-            return None, failure, trace
-        belt_direction = np.asarray(configured_direction, dtype=float)
-        if abs(float(belt_direction[2])) > 1e-12:
-            raise ValueError("conveyor swept-path separation requires horizontal belt motion")
-        tool_obbs = list(self.tool_collision_obbs_provider(normal_withdrawal[-1]))
-        if not tool_obbs:
-            failure = {
-                "reason": "POST_RELEASE_TOOL_ENVELOPE_UNAVAILABLE",
-                "stage": "withdrawal",
-                "surface": place_surface,
-            }
-            trace["stages"]["withdrawal"] = {
-                "model": "normal_then_vertical_swept_path_separation_v2",
-                "normal_disengage": normal_evidence,
-                "failure": failure,
-            }
-            return None, failure, trace
-        tool_minimum_z = min(float(np.min(box.corners()[:, 2])) for box in tool_obbs)
-        payload_maximum_z = float(np.max(placed.corners()[:, 2]))
-        swept_path_clearance = 2.0 * self.collision_margin_m + self.contact_tolerance_m
-        derived_lift = max(
-            0.0,
-            payload_maximum_z + swept_path_clearance - tool_minimum_z,
-        )
-        residence_lift = max(self.budget.post_release_vertical_lift_m, derived_lift)
-        escape_audit = {
-            "model": "normal_then_vertical_swept_path_separation_v2",
-            "conveyor_escape_enabled": True,
-            "conveyor_surface": place_surface,
-            "conveyor_direction_world": belt_direction.tolist(),
-            "separation_axis_world": [0.0, 0.0, 1.0],
-            "tool_solid_count": len(tool_obbs),
-            "tool_minimum_z_before_lift_m": tool_minimum_z,
-            "payload_maximum_z_m": payload_maximum_z,
-            "unchanged_pair_clearance_m": swept_path_clearance,
-            "minimum_derived_vertical_lift_m": derived_lift,
-            "configured_minimum_vertical_lift_m": self.budget.post_release_vertical_lift_m,
-            "actual_vertical_lift_m": residence_lift,
-            "future_horizontal_translation_cannot_reduce_vertical_separation": True,
-        }
-        residence_virtual = self.robot.fk(normal_withdrawal[-1]).copy()
-        residence_virtual[2, 3] += residence_lift
-        safe_residence, failure, residence_evidence = self._cartesian(
-            normal_withdrawal[-1],
-            residence_virtual,
-            withdrawal_obstacles,
-            seed=seed + 91,
-            target_contact=placed,
-            stage="withdrawal",
-        )
-        evidence = {
-            "model": "normal_then_belt_aware_safe_residence_v1",
-            "normal_disengage": normal_evidence,
-            "safe_residence": residence_evidence,
-            "safe_residence_target": escape_audit,
-        }
-        trace["stages"]["withdrawal"] = evidence
+        direction = self.surface_directions_world.get(place_surface)
+        if direction is None:
+            return None, {"reason": "POST_RELEASE_CONVEYOR_DIRECTION_UNAVAILABLE", "stage": "place"}, trace
+        landing_pose = np.asarray(release_prediction["predicted_landing_pose_world"])
+        landing_box = OBB(landing_pose[:3, 3], placed.half_extents, landing_pose[:3, :3], placed.name, placed.category)
+        edge_reserve = receiver_footprint_reserve(landing_box, selected_supports, self.budget.receiver_edge_reserve_m,
+            contact_tolerance_m=self.contact_tolerance_m, edge_tolerance_m=self.placement_policy.edge_tolerance_m)
+        if not edge_reserve["supported"]:
+            return None, {"reason": "RECEIVER_EDGE_RESERVE_UNAVAILABLE", "stage": "place",
+                          "edge_reserve": edge_reserve}, trace
+        transport_support = receiver_transport_support(landing_box,
+            next(box for box in selected_supports if box.name == place_surface), selected_supports, direction,
+            contact_tolerance_m=self.contact_tolerance_m, edge_tolerance_m=self.placement_policy.edge_tolerance_m)
+        if not transport_support["accepted"]:
+            return None, {"reason": transport_support["reason"], "stage": "place",
+                          "transport_support": transport_support}, trace
+        withdrawal, failure, escape_audit = self._departure(
+            place[-1], placed, payload_obstacles, direction, seed=seed + 90,
+            working_normal=place_physical[:3, 2], release_prediction=release_prediction)
+        trace["stages"]["withdrawal"] = escape_audit
         if failure is not None:
             return None, failure, trace
-        withdrawal = [*normal_withdrawal, *safe_residence[1:]]
 
         full = [home_q.copy()]
         stages: dict[str, list[int]] = {"home": [0, 0]}
-        self._append_stage(full, stages, "pregrasp", pregrasp)
+        if len(pregrasp) > 1:
+            self._append_stage(full, stages, "pregrasp", pregrasp)
         self._append_stage(full, stages, "contact", contact)
         grasp_index = stages["contact"][1]
-        self._append_stage(full, stages, "support-release", support_release)
+        if len(support_release) > 1:
+            self._append_stage(full, stages, "support-release", support_release)
         self._append_stage(full, stages, "extraction", extraction)
         self._append_stage(full, stages, "transit", transit)
         self._append_stage(full, stages, "place", place)
@@ -2083,6 +2304,9 @@ class LayoutTrajectoryConnector:
         release_retreat_index = stages["withdrawal"][1]
         segment: dict[str, Any] = {
             "schema": TRAJECTORY_SEGMENT_SCHEMA,
+            "motion_semantics": MOTION_SEMANTICS,
+            "placement_semantics": PLACEMENT_SEMANTICS,
+            "approach": trace["stages"].get("approach", {}),
             "target": target.name,
             "face": face,
             "path": [q.tolist() for q in full],
@@ -2110,10 +2334,14 @@ class LayoutTrajectoryConnector:
                 "cup_selection": selection,
             },
             "place": {
+                "release_mode": release_mode,
+                "release_prediction": release_prediction,
+                "receiver_transport_support": transport_support,
+                "receiver_edge_reserve_m": self.budget.receiver_edge_reserve_m,
                 "actual_box_pose_world": placed.world_from_local.tolist(),
                 "release_center_world_m": placed.center.tolist(),
                 "place_surface": place_surface,
-                "support_names": list(actual_support_names),
+                "support_names": [box.name for box in selected_supports],
                 "load_bearing_support_names": list(actual_support_names),
                 "selection": placement.as_dict(),
                 "support": support,

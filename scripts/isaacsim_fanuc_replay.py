@@ -547,6 +547,7 @@ try:
     )
     from unloading_sim.m710_replay_physics import (
         audit_payload_support_contact,
+        audit_runtime_short_drop,
         audit_surface_attachment_contact,
         select_active_conveyor_surfaces,
         replay_command_arrays,
@@ -2967,6 +2968,10 @@ try:
     session_output_root = args.output
     session_segment_index = 0
     session_time_offset_s = 0.0
+    retained_receiver_records = {}
+    held_conveyor_surfaces = set()
+    receiver_instability_started = {}
+    conveyor_visual_phase_m = {name: 0.0 for name in conveyor_visual_markers}
     hud_fonts = _load_hud_fonts(args.height)
     hud_chinese_enabled = bool(hud_fonts[2])
     hud_font_path = str(hud_fonts[3])
@@ -2982,6 +2987,7 @@ try:
         stack_monitor = None
         runtime_stop_reason = None
         stack_monitor_history = []
+        retained_receiver_history = []
         def _state_obb(item):
             return OBB(np.asarray(item["center_m"], dtype=float),
                        0.5 * np.asarray(item["size_m"], dtype=float),
@@ -3016,6 +3022,13 @@ try:
         )
         free_transit_gate = (BoundedFreeTransitGate(metadata["free_transit_start_time_seconds"], maximum_free_transit_wait_s)
                              if metadata.get("free_transit_start_time_seconds") is not None else None)
+        departure_policy = metadata.get("departure", {})
+        if departure_policy.get("actual_separation_required"):
+            nominal_speed = float(metadata.get("conveyor", {}).get("speed_m_s", 0.))
+            if nominal_speed <= 0:
+                raise ValueError("moving-carton wait requires a positive configured conveyor speed")
+            expected_wait = float(departure_policy["required_observed_progress_m"]) / nominal_speed
+            maximum_release_clearance_wait_s = min(5., max(maximum_release_clearance_wait_s, 2 * expected_wait))
         target_cup_release_gate = BoundedTargetCupReleaseClearance(
             maximum_release_clearance_wait_s
         )
@@ -3076,6 +3089,7 @@ try:
         release_executed = False
         release_command_succeeded = False
         release_open_confirmed = False
+        post_release_wait_s = 0.0
         release_executed_time_s = None
         ideal_release_request_step = None
         ideal_release_request_time_s = None
@@ -3163,6 +3177,9 @@ try:
         )
         if not np.isfinite(conveyor_transport_audit_window_s) or conveyor_transport_audit_window_s <= 0.0:
             raise ValueError("conveyor transport audit window must be finite and positive")
+        actual_release_prediction = None
+        actual_reception_audit = None
+        actual_reception_state = None
         target_landing_center = None
         target_landing_time_s = None
         conveyor_transport_samples: list[
@@ -3186,9 +3203,6 @@ try:
         conveyor_running = conveyor_started
         conveyor_stopped_time_s = None
         conveyor_stop_reason = None
-        conveyor_visual_phase_m = {
-            name: 0.0 for name in conveyor_visual_markers
-        }
         conveyor_start_interlock_history = []
         target_center_at_conveyor_start = None
 
@@ -3242,6 +3256,7 @@ try:
             desired: tuple[str, ...], simulation_time_s: float
         ) -> None:
             global active_conveyor_surfaces, active_conveyor_surface
+            desired = tuple(name for name in desired if name not in held_conveyor_surfaces)
             if desired == active_conveyor_surfaces:
                 return
             unknown = set(desired) - set(conveyor_surface_enabled_attrs)
@@ -3263,6 +3278,10 @@ try:
                     "active_surfaces": list(desired),
                 }
             )
+
+        def _actual_receiver_velocity():
+            return (conveyor_directions_world[active_conveyor_surface] * conveyor_speed_m_s
+                    if active_conveyor_surface in active_conveyor_surfaces else np.zeros(3))
 
         def _update_conveyor_visual_markers(time_step_s: float) -> None:
             for surface_name, records in conveyor_visual_markers.items():
@@ -3649,6 +3668,7 @@ try:
                     payload_angular_velocity_rad_s=release_angular_velocity_before_rad_s,
                     support=release_support_primitive,
                     supports=release_support_primitives,
+                    footprint_boundary_tolerance_m=float(actual_state_gates.get("support_footprint_boundary_tolerance_m", 1e-6)),
                     max_support_gap_m=float(
                         actual_state_gates.get("support_max_gap_m", 0.003)
                     ),
@@ -3669,20 +3689,24 @@ try:
                     max_angular_speed_rad_s=float(
                         actual_state_gates.get("support_max_angular_speed_rad_s", 0.08)
                     ),
-                    support_surface_velocity_world_m_s=(
-                        None
-                        if not conveyor_running or conveyor_initial_direction_world is None
-                        else conveyor_initial_direction_world * conveyor_speed_m_s
-                    ),
+                    support_surface_velocity_world_m_s=_actual_receiver_velocity(),
                 )
                 support_prim_path = conveyor_surface_paths.get(
                     place_surface,
                     f"/Validation/Scene/{_safe_prim_name(place_surface)}",
                 )
                 support_contact_report_observed = _actual_support_contact_observed()
-                support_release_accepted = bool(
-                    support_contact_audit.accepted and support_contact_report_observed
-                )
+                if metadata.get("release_mode") == "SHORT_DROP_RELEASE":
+                    actual_release_prediction = audit_runtime_short_drop(metadata,
+                        position=target_center_at_release,
+                        rotation=_rotation_matrix_from_quaternion_wxyz(target_orientation_at_release),
+                        linear_velocity=release_linear_velocity_before_m_s,
+                        angular_velocity=release_angular_velocity_before_rad_s,
+                        current_cartons=_capture_carton_states())
+                    support_release_accepted = bool(actual_release_prediction["accepted"])
+                else:
+                    support_release_accepted = bool(
+                        support_contact_audit.accepted and support_contact_report_observed)
                 if not support_release_accepted:
                     hold_trajectory = True
                     if simulation_time - float(support_wait_started_s) > maximum_support_wait_s:
@@ -3695,6 +3719,11 @@ try:
                         enabled_attr.Set(False)
                     stage.RemovePrim(grasp_joint_path)
                     grasp_joint = None
+                    cup_mask_change_log.append({
+                        "simulation_time_s": simulation_time, "reason": "RELEASE_ALL_CUPS",
+                        "previous_commanded_mask": list(commanded_cup_mask),
+                        "commanded_mask": [False] * len(commanded_cup_mask), "commanded_ids": [],
+                    })
                     release_command_succeeded = True
                     ideal_release_request_step = step
                     ideal_release_request_time_s = simulation_time
@@ -3742,7 +3771,9 @@ try:
                 )
                 event_log.append(
                     {
-                        "event": "release_support_attempt",
+                        "event": "release_region_attempt",
+                        "release_mode": metadata.get("release_mode", "SUPPORTED_RELEASE"),
+                        "actual_release_prediction": actual_release_prediction,
                         "simulation_time_s": simulation_time,
                         "trajectory_time_s": trajectory_time,
                         "support": place_surface,
@@ -3818,6 +3849,44 @@ try:
                 if not stack_observation["accepted"]:
                     runtime_stop_reason = stack_observation["reason"]
                     break
+            if render and retained_receiver_records:
+                from unloading_sim.release_motion import receiver_outlet_clearance, retained_receiver_envelope
+                from unloading_sim.conveyor_placement import support_union_audit
+                receiver_boxes = {name: OBB(item["center_m"], np.asarray(item["size_m"]) / 2,
+                    item["rotation_matrix"], name, "conveyor") for name, item in conveyor_primitives.items()}
+                prior_states = {item["name"]: item for item in _capture_carton_states()}
+                for prior_name, transport in retained_receiver_records.items():
+                    prior = _state_obb(prior_states[prior_name])
+                    receiver_name = transport["receiver"]
+                    direction = np.asarray(transport["direction_world"])
+                    receiver = receiver_boxes[receiver_name]
+                    clearance = receiver_outlet_clearance(prior, receiver, direction)
+                    if clearance <= conveyor_safe_tail_margin_m and receiver_name not in held_conveyor_surfaces:
+                        held_conveyor_surfaces.add(receiver_name)
+                        transport["held"] = True
+                        _apply_conveyor_surface_selection(active_conveyor_surfaces, simulation_time)
+                        event = {"event": "retained_carton_outlet_surface_hold", "target": prior_name,
+                            "receiver": receiver_name, "time_s": simulation_time,
+                            "outlet_clearance_m": clearance, "reason": "PREVENT_UNSUPPORTED_OUTLET_EXIT",
+                            "actual_linear_velocity_m_s": prior_states[prior_name]["linear_velocity_m_s"],
+                            "body_velocity_reset": False}
+                        event_log.append(event)
+                        print("FANUC_REPLAY_EVENT=" + json.dumps(event), flush=True)
+                    support = support_union_audit(prior, list(receiver_boxes.values()),
+                        contact_tolerance_m=float(actual_state_gates.get("support_max_gap_m", 0.003)),
+                        edge_tolerance_m=float(actual_state_gates.get("support_footprint_boundary_tolerance_m", 1e-6)))
+                    if support["supported"]:
+                        receiver_instability_started.pop(prior_name, None)
+                    else:
+                        receiver_instability_started.setdefault(prior_name, simulation_time)
+                        if simulation_time - receiver_instability_started[prior_name] >= 0.5:
+                            runtime_stop_reason = "RETAINED_CARTON_RECEIVER_SUPPORT_LOST"
+                    if step % int(physics_hz) < args.render_every or not support["supported"]:
+                        retained_receiver_history.append({"target": prior_name, "time_s": simulation_time,
+                            "position_m": prior.center.tolist(), "outlet_clearance_m": clearance,
+                            "held": transport.get("held", False), "support": support})
+                if runtime_stop_reason is not None:
+                    break
             if render and (args.record_replay or args.record_video):
                 capture_q = np.asarray(articulation.get_dof_positions().numpy(), dtype=float)[0].copy()
                 capture_qd = np.asarray(articulation.get_dof_velocities().numpy(), dtype=float)[0].copy()
@@ -3855,12 +3924,20 @@ try:
                         replay_frames.append(Image.fromarray(rendered_rgb))
                     if replay_video_writer is not None:
                         phase = contact_runtime_context["stage"]
-                        display_phase = "conveyor_transport" if conveyor_running else phase
+                        display_phase = phase
+                        shown_carton = next(item for item in capture_cartons if item["name"] == metadata["target"])
+                        shown_rotation = _rotation_matrix_from_quaternion_wxyz(shown_carton["quaternion_wxyz"])
+                        receiver_top = max(float(item["center_m"][2]) + 0.5 * float(item["size_m"][2])
+                                           for item in release_support_primitives)
+                        shown_height = (float(shown_carton["center_m"][2]) - receiver_top
+                            - float(np.abs(shown_rotation[2]) @ (0.5 * np.asarray(shown_carton["size_m"]))))
+                        departure_label = ("等待实际分离" if release_commanded and np.linalg.norm(command_velocity) < 1e-6
+                                           else "转向下一箱" if release_commanded else "当前箱动作")
                         actual_cups = int(
                             ideal_actual_contact_count_at_attach
                             if ideal_actual_contact_count_at_attach is not None
                             else sum(commanded_cup_mask)
-                        )
+                        ) if grasp_commanded and not release_commanded else 0
                         if conveyor_running:
                             state_key = "belt_running"
                         elif conveyor_started:
@@ -3892,20 +3969,22 @@ try:
                                 "conveyor_longitudinal": "纵向传送带",
                             }
                             lines = [
-                                f"首箱 {metadata.get('target')} · 行 {metadata.get('row_selection', {}).get('row_id', '派生')} · {face_names.get(str(gripper_cfg.get('target_face')), gripper_cfg.get('target_face'))}",
-                                f"阶段 {phase_names.get(display_phase, display_phase)} · 仿真 {simulation_time:.2f} s",
+                                f"目标箱 {metadata.get('target')} · 行 {metadata.get('row_selection', {}).get('row_id', '派生')} · {face_names.get(str(gripper_cfg.get('target_face')), gripper_cfg.get('target_face'))}",
+                                f"阶段 {phase_names.get(display_phase, display_phase)} · 仿真 {session_time_offset_s + simulation_time:.2f} s",
                                 f"吸盘 {actual_cups}/72 · {'已释放' if release_open_confirmed else '已吸附' if grasp_joint is not None else '待吸附'} · {metadata.get('place_placement_family', 'N/A')} · 带速 {conveyor_speed_m_s:.2f} m/s",
-                                f"接收 {belt_names.get(place_surface, place_surface)} · 实际带速 {conveyor_speed_m_s if conveyor_running else 0.0:.2f} m/s",
-                                f"状态 {state_names[state_key]}",
+                                f"接收 {belt_names.get(place_surface, place_surface)} · 实际带速 {conveyor_speed_m_s if place_surface in active_conveyor_surfaces else 0.0:.2f} m/s",
+                                f"{metadata.get('approach', {}).get('selected_mode', 'legacy')} · {metadata.get('release_mode', 'SUPPORTED_RELEASE')} · 状态 {state_names[state_key]}",
+                                f"离带高度 {shown_height * 1000:.1f} mm · {departure_label} · 已等待 {post_release_wait_s:.2f} s",
                             ]
                             assumption = "物理：保留箱间接触；仅免除 J5/J6 与自有吸具内部碰撞"
                         else:
                             lines = [
-                                f"First carton {metadata.get('target')} · row {metadata.get('row_selection', {}).get('row_id', 'derived')} · {gripper_cfg.get('target_face')}",
-                                f"Phase {display_phase} · simulation {simulation_time:.2f} s",
-                                f"Cups {actual_cups}/72 · {'released' if release_open_confirmed else 'attached' if grasp_joint is not None else 'open'} · {metadata.get('place_placement_family', 'N/A')} · belt {conveyor_speed_m_s:.2f} m/s",
-                                f"Receiver {place_surface} · actual belt {conveyor_speed_m_s if conveyor_running else 0.0:.2f} m/s",
-                                f"State {state_key.replace('_', ' ')}",
+                                f"Carton {metadata.get('target')} · row {metadata.get('row_selection', {}).get('row_id', 'derived')} · {gripper_cfg.get('target_face')}",
+                                f"Phase {display_phase} · simulation {session_time_offset_s + simulation_time:.2f} s",
+                                f"Active cups {actual_cups}/72 · {'released' if release_open_confirmed else 'attached' if grasp_joint is not None else 'open'} · {metadata.get('place_placement_family', 'N/A')} · belt {conveyor_speed_m_s:.2f} m/s",
+                                f"Receiver {place_surface} · actual belt {conveyor_speed_m_s if place_surface in active_conveyor_surfaces else 0.0:.2f} m/s",
+                                f"{metadata.get('approach', {}).get('selected_mode', 'legacy')} · {metadata.get('release_mode', 'SUPPORTED_RELEASE')} · {state_key.replace('_', ' ')}",
+                                f"Height {shown_height * 1000:.1f} mm · wait {post_release_wait_s:.2f} s · {'wait for separation' if release_commanded and np.linalg.norm(command_velocity) < 1e-6 else 'turn to next carton' if release_commanded else 'current carton'}",
                             ]
                             assumption = "Physics: stack contact kept; only J5/J6-owned-tool internal pairs exempt"
                         status_color = ((72, 232, 150, 255) if conveyor_running
@@ -3961,7 +4040,6 @@ try:
                 support_contact_still_active = _actual_support_contact_observed()
                 release_open_confirmed = bool(
                     not stage.GetPrimAtPath(grasp_joint_path).IsValid()
-                    and support_contact_still_active
                     and (
                         released_relative_position_delta_m > float(actual_state_gates.get("release_independence_translation_m", 0.002))
                         or released_relative_rotation_delta_rad > float(actual_state_gates.get("release_independence_rotation_rad", 0.01))
@@ -4142,15 +4220,32 @@ try:
                             flush=True,
                         )
                 elapsed_after_release = simulation_time - float(release_executed_time_s)
-                if (
-                    target_landing_center is None
-                    and expected_place_center.shape == (3,)
-                    and elapsed_after_release >= conveyor_landing_capture_delay_s
-                    and abs(float(payload_center[2] - expected_place_center[2]))
-                    <= conveyor_landing_height_tolerance_m
-                ):
+                landing_positions, landing_orientations = target_body.get_world_poses()
+                landing_linear, landing_angular = target_body.get_velocities()
+                landing_rotation = _rotation_matrix_from_quaternion_wxyz(np.asarray(landing_orientations.numpy())[0])
+                actual_reception_audit = audit_payload_support_contact(
+                    payload_center_m=payload_center, payload_rotation=landing_rotation,
+                    payload_size_m=target_primitive["size_m"],
+                    payload_linear_velocity_m_s=np.asarray(landing_linear.numpy())[0],
+                    payload_angular_velocity_rad_s=np.asarray(landing_angular.numpy())[0],
+                    support=release_support_primitive, supports=release_support_primitives,
+                    footprint_boundary_tolerance_m=float(actual_state_gates.get("support_footprint_boundary_tolerance_m", 1e-6)),
+                    max_support_gap_m=float(actual_state_gates.get("support_max_gap_m", 0.003)),
+                    maximum_penetration_m=float(actual_state_gates.get("support_maximum_penetration_m", 0.001)),
+                    minimum_footprint_overlap_ratio=1.0,
+                    max_linear_speed_m_s=float(actual_state_gates.get("support_max_linear_speed_m_s", 0.03)),
+                    max_angular_speed_rad_s=float(actual_state_gates.get("support_max_angular_speed_rad_s", 0.08)),
+                    support_surface_velocity_world_m_s=_actual_receiver_velocity())
+                if (target_landing_center is None and actual_reception_audit.accepted
+                        and _actual_support_contact_observed()):
                     target_landing_center = payload_center.copy()
                     target_landing_time_s = simulation_time
+                    actual_reception_state = {"time_s": simulation_time, "position_m": payload_center.tolist(),
+                        "rotation_matrix": landing_rotation.tolist(),
+                        "linear_velocity_m_s": np.asarray(landing_linear.numpy())[0].tolist(),
+                        "angular_velocity_rad_s": np.asarray(landing_angular.numpy())[0].tolist(),
+                        "support": actual_reception_audit.to_dict()}
+                    event_log.append({"event": "actual_receiver_reception", **actual_reception_state})
                 if (
                     target_landing_center is not None
                     and conveyor_started
@@ -4161,7 +4256,11 @@ try:
                     # start and stop sampling when the physical drive stops.
                     # An L-shaped conveyor can subsequently transfer the carton
                     # to a different surface with a different travel direction.
-                    elapsed_after_belt_start = simulation_time - float(conveyor_started_time_s)
+                    # An immediate-start belt may run throughout the whole
+                    # pick. Its payload observation window begins at actual
+                    # reception, rather than expiring before release.
+                    elapsed_after_belt_start = simulation_time - max(
+                        float(conveyor_started_time_s), float(target_landing_time_s))
                     if elapsed_after_belt_start <= conveyor_transport_audit_window_s + 1e-9:
                         conveyor_transport_samples.append(
                             (
@@ -4228,6 +4327,9 @@ try:
             # external-load estimator, so leave this unavailable channel empty.
             external_joint_load = np.full_like(projected_forces, np.nan, dtype=float)
             measured_times.append(simulation_time)
+            if (release_commanded and np.linalg.norm(command_velocity) < 1e-6
+                    and np.linalg.norm(measured_velocity) < 0.01):
+                post_release_wait_s += physics_dt
             commanded_rows.append(command.astype(float))
             commanded_velocity_rows.append(command_velocity.copy())
             payload_gravity_feedforward_rows.append(last_drive_feedforward["payload_gravity_nm"].copy())
@@ -4248,6 +4350,12 @@ try:
             if not hold_trajectory:
                 trajectory_time = (free_transit_gate.advance(trajectory_time, physics_dt, requested_duration)
                                    if free_transit_gate is not None else min(requested_duration, trajectory_time + physics_dt))
+            if (metadata.get("motion_semantics") == "m710_adaptive_contact_release_v2"
+                    and trajectory_time >= requested_duration - 1e-12
+                    and release_open_confirmed and not target_cup_release_gate.pending
+                    and actual_reception_state is not None
+                    and actual_reception_audit is not None and actual_reception_audit.accepted):
+                break
             if (
                 trajectory_time >= requested_duration - 1e-12
                 and (
@@ -4562,12 +4670,16 @@ try:
                                         and not target_cup_release_gate.pending
                                         and payload_motion_verified and not unexpected_contacts
                                         and runtime_stop_reason is None
-                                        and support_contact_audit is not None and support_contact_audit.accepted
+                                        and actual_reception_state is not None
+                                        and actual_reception_audit is not None and actual_reception_audit.accepted
                                         and joint_positions_within_limits is True
                                         and float(np.max(peak_error)) <= tracking_error_limit_rad
                                         and np.all(np.max(np.abs(measured_velocity_array), axis=0) <= velocity_limits + 1e-5))
         if physical_cycle_completed and str(metadata["target"]) not in completed_carton_ids:
             completed_carton_ids.append(str(metadata["target"]))
+            retained_receiver_records[str(metadata["target"])] = {
+                "receiver": place_surface, "direction_world": conveyor_initial_direction_world.tolist(),
+                "held": place_surface in held_conveyor_surfaces}
         (args.output / "actual_remaining_state.json").write_text(json.dumps({
             "schema": "m710id70_actual_motion_state_v1",
             "q_rad": np.asarray(articulation.get_dof_positions().numpy())[0].tolist(),
@@ -4581,6 +4693,7 @@ try:
                          "angular_velocity_rad_s": item["angular_velocity_rad_s"]} for item in final_carton_states],
             "completed_carton_ids": completed_carton_ids,
             "handed_off_ids": list(metadata.get("handed_off_ids", [])),
+            "receiver_transport_state": retained_receiver_records,
         }, indent=2), encoding="utf-8")
 
         rgba = np.asarray(rgb_annotator.get_data())
@@ -4957,7 +5070,7 @@ try:
             "payload_release_executed": release_completed,
             "payload_release_open_confirmed": release_open_confirmed,
             "payload_release_model": (
-                "usd_fixed_joint_removed_after_actual_receiver_support_same_rigid_body"
+                "usd_fixed_joint_removed_after_qualified_release_gate_same_rigid_body"
                 if ideal_independent_mode
                 else "isaac_surface_gripper_open_same_rigid_body"
                 if args.gripper_model == "surface_gripper"
@@ -4969,7 +5082,15 @@ try:
             "payload_release_support_contact_report_observed": (
                 support_contact_report_observed
             ),
-            "release_requires_actual_receiver_support": True,
+            "release_requires_actual_receiver_support": metadata.get("release_mode", "SUPPORTED_RELEASE") == "SUPPORTED_RELEASE",
+            "release_mode": metadata.get("release_mode", "SUPPORTED_RELEASE"),
+            "actual_release_prediction": actual_release_prediction,
+            "actual_landing_state": actual_reception_state,
+            "actual_reception_succeeded": actual_reception_state is not None,
+            "final_receiver_support_audit": None if actual_reception_audit is None else actual_reception_audit.to_dict(),
+            "post_release_stationary_wait_seconds": post_release_wait_s,
+            "retained_receiver_monitor": retained_receiver_history,
+            "held_conveyor_surfaces": sorted(held_conveyor_surfaces),
             "release_linear_velocity_before_m_s": (
                 None
                 if release_linear_velocity_before_m_s is None

@@ -630,6 +630,19 @@ def verify_m710_replay_bundle(
         raise M710ReplayContractError("M-710 bundle is not simulation-execution ready")
     if metadata.get("scene_primitives") != preflight["scene"]["primitives"]:
         raise M710ReplayContractError("bundle scene primitives disagree with preflight")
+    segment = preflight["replay_adapter_inputs"].get("trajectory_segment", {})
+    if segment.get("motion_semantics") is not None:
+        expected_fields = {
+            "motion_semantics": segment["motion_semantics"],
+            "placement_semantics": segment.get("placement_semantics"),
+            "approach": segment.get("approach", {}),
+            "departure": segment.get("post_release_safe_residence", {}),
+            "release_mode": segment.get("place", {}).get("release_mode", "SUPPORTED_RELEASE"),
+            "release_prediction": segment.get("place", {}).get("release_prediction"),
+        }
+        for field, expected in expected_fields.items():
+            if metadata.get(field) != expected:
+                raise M710ReplayContractError(f"bundle {field} disagrees with bound motion evidence")
     if project_root is not None:
         verify_workspace_preflight_identity(
             preflight, project_root, current_asset_audit=current_asset_audit

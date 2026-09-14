@@ -69,6 +69,14 @@ def main(argv: list[str] | None = None) -> int:
     request = {"world_session_id": ready["world_session_id"],
                "actual_state_sha256": hashlib.sha256(actual_bytes).hexdigest(),
                "planning_output": str(args.output.resolve())}
+    if process.returncode not in (0, 2, 3):
+        # A planner crash is not an explicit row-stop decision. Keep the same
+        # world available for a repaired retry within its existing wait budget.
+        failure = {**request, "status": "OFFLINE_PLANNING_FAILED_WORLD_RETAINED",
+                   "planner_returncode": process.returncode, "request_published": False}
+        (args.output / "continuation_failure.json").write_text(json.dumps(failure, indent=2), encoding="utf-8")
+        print(json.dumps(failure), flush=True)
+        return process.returncode
     if process.returncode:
         request.update(stop=True, reason={2: "ROW_BLOCKED", 3: "PREFLIGHT_BLOCKED"}.get(
             process.returncode, "OFFLINE_PLANNING_FAILED"), planner_returncode=process.returncode)

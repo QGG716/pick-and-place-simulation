@@ -98,19 +98,24 @@ class PhysicsCheckedStackTracker:
 
     def _update_released(self, box):
         self.last_box = box
-        self.fully_released = all(
+        self.fully_released = self.fully_released or all(
             box.signed_distance_obb(other) >= self.policy.free_space_clearance_m
             for other in self.neighbors.values())
 
     def clone(self):
-        return PhysicsCheckedStackTracker(self.last_box, tuple(self.neighbors.values()),
-                                          self.policy, self.margin_m, self.tolerance_m)
+        result = PhysicsCheckedStackTracker(self.last_box, tuple(self.neighbors.values()),
+                                           self.policy, self.margin_m, self.tolerance_m)
+        result.fully_released = self.fully_released
+        return result
 
     def state_failure(self, box, obstacles, support_names=()):
         supports = set(support_names)
         for obstacle in obstacles:
             if obstacle.name in self.neighbors:
                 distance = box.signed_distance_obb(obstacle)
+                if self.fully_released and box.intersects_obb(obstacle, margin=self.margin_m):
+                    return {"reason": "PAYLOAD_COLLISION", "pair": [box.name, obstacle.name],
+                            "contact_state": "FREE_SPACE_RULES_RESTORED"}
                 if distance < -self.policy.maximum_planned_stack_penetration_m:
                     return {"reason": "GROSS_PLANNED_STACK_PENETRATION", "pair": [box.name, obstacle.name],
                             "signed_distance_m": distance}

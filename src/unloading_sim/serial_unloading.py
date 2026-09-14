@@ -196,6 +196,19 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
         "state": "OCCUPIED" if completed - handed_off else "EMPTY",
         "occupied_carton_ids": sorted(completed - handed_off)}
     state_fingerprint = canonical_digest(state)
+    transport_state = copy.deepcopy(state.get("receiver_transport_state", {}))
+    if not set(transport_state) <= completed - handed_off:
+        raise ValueError("receiver transport state must refer to retained completed cartons")
+    fixed_names = {box.name for box in scene.fixed_components if box.category == "conveyor"}
+    for record in transport_state.values():
+        if type(record.get("held")) is not bool:
+            raise ValueError("receiver held state must be an observed boolean")
+        if record.get("receiver") not in fixed_names:
+            raise ValueError("receiver transport state refers to an unknown conveyor")
+        direction = _vector(record.get("direction_world"), 3, "receiver transport direction")
+        expected = scene.policy.data["search_strategy"]["surface_directions_world"][record["receiver"]]
+        if not np.allclose(direction, expected, atol=1e-12, rtol=0):
+            raise ValueError("receiver transport direction disagrees with fixed conveyor policy")
     snapshot["actual_state_context"] = {
         "schema": expected_schema, "source": source,
         "parent_scene_fingerprint": scene.snapshot["scene_fingerprint"],
@@ -206,6 +219,7 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
         "row_selection": selection.as_dict(), "actual_state_fingerprint": state_fingerprint,
         "motion_state_fingerprint": state_fingerprint,
         "completion_source": "EXPLICIT_EXECUTION_EVENTS_NOT_POSITION_CLASSIFICATION",
+        "receiver_transport_state": transport_state,
     }
     # Historical initial audit is retained with its original scope; it cannot
     # be mistaken for validation of the newly observed planner start.

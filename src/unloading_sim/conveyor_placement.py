@@ -26,10 +26,16 @@ TRANSVERSE = "transverse"
 _PLACEMENT_NORMALS_WORLD = {
     TOP_DOWN: np.array([0.0, 0.0, -1.0]),
     RIGHT_WALL_FACING: np.array([0.0, -1.0, 0.0]),
-    # Viewed along -X from the trailer interior, the carton is in front and
-    # the suction tool remains behind it on the +X side.
-    TRANSVERSE_SIDE: np.array([-1.0, 0.0, 0.0]),
+    # Working face points into the carton, in the fixed world convention.
+    TRANSVERSE_SIDE: np.array([1.0, 0.0, 0.0]),
 }
+
+PLACEMENT_SEMANTICS = "working_normal_into_carton_transverse_plus_x_v2"
+
+
+def placement_working_normal(family: str) -> np.ndarray:
+    """One source for planning, export and actual-pose acceptance."""
+    return _PLACEMENT_NORMALS_WORLD[family].copy()
 
 
 def _cross(a: np.ndarray, b: np.ndarray) -> float:
@@ -325,6 +331,7 @@ class PlacementPolicy:
     maximum_candidates: int = 24
     edge_tolerance_m: float = 1e-6
     engineering_edge_margin_m: float = 0.0
+    sampling_edge_reserve_m: float = 0.0
     occupancy_clearance_m: float = 0.02
     contact_tolerance_m: float = 0.002
     normal_tolerance_rad: float = np.deg2rad(5.0)
@@ -349,7 +356,7 @@ class PlacementPolicy:
             raise ValueError("placement sampling needs a coarse grid and a finer grid")
         if self.maximum_candidates < 1:
             raise ValueError("placement candidate budget must be positive")
-        for name in ("edge_tolerance_m", "engineering_edge_margin_m", "occupancy_clearance_m", "contact_tolerance_m"):
+        for name in ("edge_tolerance_m", "engineering_edge_margin_m", "sampling_edge_reserve_m", "occupancy_clearance_m", "contact_tolerance_m"):
             if not np.isfinite(getattr(self, name)) or getattr(self, name) < 0:
                 raise ValueError(f"{name} must be finite and nonnegative")
         if (not np.isfinite(self.normal_tolerance_rad)
@@ -465,8 +472,8 @@ def _placement_stream(target: OBB, family: tuple[ConveyorSupport, ...], all_supp
                 if not len(relative):
                     continue
                 relative = relative[:, :2]
-                low_center = lower - relative.min(axis=0)
-                high_center = upper - relative.max(axis=0)
+                low_center = lower - relative.min(axis=0) + policy.sampling_edge_reserve_m
+                high_center = upper - relative.max(axis=0) - policy.sampling_edge_reserve_m
                 if np.any(low_center > high_center + policy.edge_tolerance_m):
                     continue
                 grid = [np.clip(preferred[:2], low_center, high_center), 0.5 * (low_center + high_center)]

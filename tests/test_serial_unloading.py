@@ -74,6 +74,16 @@ def actual(scene, completed=(), handed=()):
             "completed_carton_ids": list(completed), "handed_off_ids": list(handed)}
 
 
+def test_next_exposed_faces_use_remaining_stack_but_keep_received_body(scene):
+    from unloading_sim.layout_single_carton import _exposed_faces
+    completed = scene.cartons[-3].name
+    updated = apply_actual_motion_state(scene, actual(scene, [completed]))
+    assert completed not in updated.support_graph.cartons
+    assert completed in {box.name for box in updated.all_obstacles}
+    for name in updated.support_graph.removable_cartons():
+        assert _exposed_faces(updated, name)
+
+
 def test_actual_update_keeps_all_40_identities_and_completed_receiver_occupancy(scene):
     original_fingerprint = scene.snapshot["scene_fingerprint"]
     completed = scene.cartons[-3].name
@@ -108,6 +118,26 @@ def test_identity_loss_duplication_and_fake_handoff_are_rejected(scene):
         apply_actual_motion_state(scene, duplicate)
     with pytest.raises(ValueError, match="subset"):
         apply_actual_motion_state(scene, actual(scene, handed=[scene.cartons[0].name]))
+
+
+def test_retained_receiver_has_swept_planning_occupancy_and_unchanged_actual_body(scene):
+    scene.policy.data["search_strategy"] = {"surface_directions_world": {"receiver": [0., -1., 0.]}}
+    name = scene.cartons[-3].name
+    state = actual(scene, [name])
+    record = next(item for item in state["cartons"] if item["name"] == name)
+    record["position_m"] = [-.55, .35, .75]
+    state["receiver_transport_state"] = {name: {"receiver": "receiver", "direction_world": [0., -1., 0.], "held": False}}
+    changed = apply_actual_motion_state(scene, state)
+    observed = next(box for box in changed.cartons if box.name == name)
+    occupancy = next(box for box in changed.all_obstacles if box.name == name)
+    assert len(changed.cartons) == 40
+    assert np.array_equal(observed.half_extents, [.3, .2, .15])
+    assert occupancy.half_extents[1] > observed.half_extents[1]
+    assert occupancy.center[1] < observed.center[1]
+    assert changed.snapshot["actual_state_context"]["receiver_transport_state"][name]["held"] is False
+    state["receiver_transport_state"][name]["held"] = "false"
+    with pytest.raises(ValueError, match="observed boolean"):
+        apply_actual_motion_state(scene, state)
 
 
 def test_explicit_handoff_reduces_active_population_without_resurrecting_objects(scene):

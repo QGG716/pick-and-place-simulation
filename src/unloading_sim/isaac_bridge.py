@@ -17,6 +17,8 @@ from typing import Any, Mapping, Sequence
 import numpy as np
 
 from .geometry import OBB, rotation_matrix_from_rpy
+from .conveyor_placement import placement_working_normal, PLACEMENT_SEMANTICS
+from .release_motion import MOTION_SEMANTICS, SHORT_DROP_RELEASE, SUPPORTED_RELEASE, ReleasePolicy, predict_release
 from .identity import normalize_robot_model_id
 from .independent_cups import (
     HOLDING_CAPACITY_ASSUMPTION,
@@ -276,7 +278,31 @@ def _validated_place_evidence(segment: Mapping[str, Any], *,
     support = raw.get("support")
     if not isinstance(support, Mapping):
         raise ValueError("place evidence requires a support audit mapping")
-    if support.get("schema") == "complete_bottom_support_union_v1":
+    release_mode = raw.get("release_mode", SUPPORTED_RELEASE)
+    if release_mode == SHORT_DROP_RELEASE:
+        if segment.get("motion_semantics") != MOTION_SEMANTICS:
+            raise ValueError("short drop requires current motion semantics")
+        prediction = raw.get("release_prediction", {})
+        if prediction.get("accepted") is not True or prediction.get("actual_landing_state") is not None:
+            raise ValueError("short drop requires predicted landing evidence")
+        landing_support = prediction.get("landing_support", {})
+        landing_pose = np.asarray(prediction.get("predicted_landing_pose_world"), float)
+        landing_raw = {**raw, "actual_box_pose_world": landing_pose.tolist(),
+                       "support_names": [b["name"] for b in landing_support.get("support_obbs", [])]}
+        _validated_union_support_evidence(landing_support, landing_raw, landing_pose, segment, scene_primitives)
+        bodies = [OBB(np.asarray(b["pose_world"])[:3, 3], b["half_extents_m"],
+                       np.asarray(b["pose_world"])[:3, :3], b["name"], b["category"])
+                  for b in landing_support["support_obbs"]]
+        payload = OBB(pose[:3, 3], landing_support["payload_half_extents_m"], pose[:3, :3], segment["target"], "carton")
+        recomputed = predict_release(payload, bodies, mode=release_mode,
+            linear_velocity=prediction["linear_velocity_m_s"], angular_velocity=prediction["angular_velocity_rad_s"],
+            policy=ReleasePolicy(**prediction["policy"]), contact_tolerance_m=landing_support["tolerance_m"],
+            edge_tolerance_m=landing_support["edge_tolerance_m"])
+        if not recomputed["accepted"] or not np.allclose(recomputed["predicted_landing_pose_world"], landing_pose, atol=1e-10, rtol=0):
+            raise ValueError("short drop prediction does not match release state")
+    elif release_mode != SUPPORTED_RELEASE:
+        raise ValueError("unknown release mode")
+    elif support.get("schema") == "complete_bottom_support_union_v1":
         _validated_union_support_evidence(support, raw, pose, segment, scene_primitives)
     else:
         # Historical single-deck evidence keeps its exact old contract. A union
@@ -314,11 +340,8 @@ def _validated_place_evidence(segment: Mapping[str, Any], *,
     }
     working_normal = np.asarray(raw.get("actual_working_normal_world", []), dtype=float)
     payload_relative = np.asarray(raw.get("payload_relative_to_tool_world_m", []), dtype=float)
-    required_normal = {
-        "TOP_DOWN": np.array([0.0, 0.0, -1.0]),
-        "RIGHT_WALL_FACING": np.array([0.0, -1.0, 0.0]),
-        "TRANSVERSE_SIDE": np.array([-1.0, 0.0, 0.0]),
-    }.get(placement_family)
+    required_normal = placement_working_normal(placement_family) if placement_family in {
+        "TOP_DOWN", "RIGHT_WALL_FACING", "TRANSVERSE_SIDE"} else None
     requires_layout_process_evidence = (
         scene_primitives is not None
         and surface in {"conveyor_transverse", "conveyor_longitudinal"}
@@ -334,13 +357,16 @@ def _validated_place_evidence(segment: Mapping[str, Any], *,
         raise ValueError("place evidence does not satisfy its declared process pose family")
     return {
         "place_surface": surface,
-        "place_center_m": release_center.tolist(),
+        "place_center_m": (np.asarray(raw["release_prediction"]["predicted_landing_pose_world"])[:3, 3].tolist()
+                           if release_mode == SHORT_DROP_RELEASE else release_center.tolist()),
         "release_center_m": release_center.tolist(),
         "planned_support_audit": copy.deepcopy(dict(support)),
         "actual_box_pose_world": pose.tolist(),
         "process_family": process_family,
         "placement_family": placement_family,
         "actual_working_normal_world": working_normal.tolist(),
+        "release_mode": release_mode,
+        "release_prediction": copy.deepcopy(raw.get("release_prediction")),
     }
 
 
@@ -1163,6 +1189,9 @@ def _sample_trajectory(
         command_times = np.append(command_times, duration)
     else:
         command_times[-1] = duration
+    # Keep every collision-checked corner and event endpoint. Sampling only on
+    # the controller grid would otherwise cut across an unchecked joint edge.
+    command_times = np.unique(np.r_[command_times, timestamps])
     commands = np.column_stack(
         [np.interp(command_times, timestamps, positions[:, joint]) for joint in range(positions.shape[1])]
     )
@@ -1381,6 +1410,7 @@ def build_fanuc_isaac_replay_bundle(
             and (empty_audit is None or empty_audit["within_limits"])
         ),
         "phase_model": "stopped_release_then_empty_tool",
+        "controller_reference": "piecewise_linear_verified_edges_no_waypoint_dwell",
         "pre_release": prefix_audit,
         "post_release": empty_audit,
     }
@@ -2157,8 +2187,16 @@ def build_fanuc_isaac_replay_bundle(
         "joint_velocity_feedforward_enabled": bool(cfg.get("execution", {}).get("joint_velocity_feedforward_enabled", False)),
         "attached_payload_gravity_feedforward_enabled": bool(cfg.get("execution", {}).get("attached_payload_gravity_feedforward_enabled", False)),
         "planned_place_support_audit": place_evidence["planned_support_audit"],
+        "motion_semantics": segment.get("motion_semantics"),
+        "placement_semantics": segment.get("placement_semantics"),
+        "approach": copy.deepcopy(segment.get("approach", {})),
+        "departure": copy.deepcopy(segment.get("post_release_safe_residence", {})),
+        "release_mode": place_evidence.get("release_mode", SUPPORTED_RELEASE),
+        "release_prediction": place_evidence.get("release_prediction"),
         "planned_actual_box_pose_world": place_evidence["actual_box_pose_world"],
-        "free_fall_height_m": float(segment.get("free_fall_height_m", 0.0)),
+        "free_fall_height_m": (float(place_evidence["release_prediction"]["height_m"])
+            if place_evidence.get("release_mode") == SHORT_DROP_RELEASE
+            else float(segment.get("free_fall_height_m", 0.0))),
         "collision_geometry": str(plan.get("collision_geometry", "urdf_collision_mesh")),
         "scene_primitives": _build_scene_primitives(plan, cfg, segment_index),
         "camera": dict(cfg.get("simulation_validation", {}).get("camera", {})),

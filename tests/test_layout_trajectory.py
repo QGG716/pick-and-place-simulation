@@ -119,7 +119,6 @@ def test_complete_segment_rejects_cup_mask_or_nested_actual_pose_tampering():
     segment["contact"]["cup_selection"]["actual_contact_mask"][1] = True
     with pytest.raises(ValueError, match="counts, target, or enforcement"):
         validate_layout_trajectory_stage_contract(segment)
-
     segment = _segment()
     segment["contact"]["cup_selection"][
         "actual_physical_contact_pose_world"
@@ -127,6 +126,26 @@ def test_complete_segment_rejects_cup_mask_or_nested_actual_pose_tampering():
     with pytest.raises(ValueError, match="disagrees with contact evidence"):
         validate_layout_trajectory_stage_contract(segment)
 
+
+def test_adaptive_contract_omits_pregrasp_and_support_lift_and_accepts_real_drop_prediction():
+    from unloading_sim.conveyor_placement import PLACEMENT_SEMANTICS
+    from unloading_sim.release_motion import MOTION_SEMANTICS, SHORT_DROP_RELEASE, predict_release
+    segment = _segment()
+    segment.update(motion_semantics=MOTION_SEMANTICS, placement_semantics=PLACEMENT_SEMANTICS)
+    del segment["stage_ranges"]["pregrasp"]
+    del segment["stage_ranges"]["support-release"]
+    segment["stage_ranges"]["contact"][0] = 0
+    segment["stage_ranges"]["extraction"][0] = 2
+    box = OBB([0, 0, .775], [.3, .2, .15], np.eye(3), segment["target"], "carton")
+    belt = OBB([0, 0, .3], [1, 1, .3], np.eye(3), "conveyor_transverse", "conveyor")
+    prediction = predict_release(box, [belt], mode=SHORT_DROP_RELEASE)
+    segment["place"].update(release_mode=SHORT_DROP_RELEASE, release_prediction=prediction,
+        support=prediction["actual_support"], actual_box_pose_world=box.world_from_local.tolist(),
+        release_center_world_m=box.center.tolist())
+    validate_layout_trajectory_stage_contract(segment)
+    segment["place"]["release_prediction"]["predicted_landing_pose_world"][0][3] += .01
+    with pytest.raises(ValueError, match="disagrees"):
+        validate_layout_trajectory_stage_contract(segment)
 
 class _Robot:
     dof = 6

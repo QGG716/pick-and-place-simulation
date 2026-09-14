@@ -31,6 +31,24 @@ from unloading_sim.workcell_layout import canonical_digest
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.mark.parametrize("population,accepted", [
+    (["near", "far", "left", "right"], True),
+    (["near", "far", "right", "left"], True),
+    (["near", "far", "left", "left"], False),
+    (["near", "far", "left"], False),
+    (["near", "far", "left", "received"], False),
+])
+def test_remaining_population_allows_cost_reordering_but_never_changes_identities(population, accepted):
+    from unloading_sim.m710_execution import _validate_motion_task_population
+    motion = {"statistics": {"task_count": 4}, "task_population": {"carton_ids": population}}
+    expected = ("near", "far", "left", "right")
+    if accepted:
+        _validate_motion_task_population(motion, expected)
+    else:
+        with pytest.raises(ValueError, match="population"):
+            _validate_motion_task_population(motion, expected)
+
+
 def _compact_motion_result() -> dict:
     execution = load_m710_execution_config(DEFAULT_CONFIG_PATH)
     return run_layout_single_carton_audit(execution.motion_policy_path, project_root=ROOT)

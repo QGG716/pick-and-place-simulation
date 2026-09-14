@@ -272,6 +272,49 @@ def payload_gravity_compensation(jacobian_world, tcp_position_world, payload_com
     return jacobian[:3].T @ force + jacobian[3:].T @ np.cross(com - tcp, force)
 
 
+def audit_runtime_short_drop(metadata, *, position, rotation, linear_velocity,
+                             angular_velocity, current_cartons):
+    """Recheck the real release state and current receiver occupancy."""
+    from .geometry import OBB
+    from .release_motion import ReleasePolicy, SHORT_DROP_RELEASE, predict_release
+    primitives = {item["name"]: item for item in metadata["scene_primitives"]}
+    target = primitives[metadata["target"]]
+    planned = metadata["release_prediction"]
+    policy = ReleasePolicy(**planned["policy"])
+    release_pose = np.asarray(planned["release_pose_world"], float)
+    if (np.linalg.norm(np.asarray(position) - release_pose[:3, 3]) > 0.003
+            or np.linalg.norm(np.asarray(rotation) - release_pose[:3, :3]) > 0.02):
+        return {"accepted": False, "reason": "ACTUAL_RELEASE_REGION_MISMATCH"}
+    supports = [OBB(p["center_m"], np.asarray(p["size_m"]) / 2, p["rotation_matrix"], p["name"], "conveyor")
+                for p in primitives.values() if p["name"] in metadata["selected_place_support_names"]]
+    actual = {p["name"]: p for p in current_cartons}
+    obstacles = []
+    for name, primitive in primitives.items():
+        if name == target["name"]:
+            continue
+        if primitive.get("dynamic"):
+            if name not in actual:
+                return {"accepted": False, "reason": "ACTUAL_RELEASE_OBSTACLE_MISSING", "target": name}
+            record = actual[name]
+            from .serial_unloading import rotation_from_actual_quaternion
+            pose_rotation = rotation_from_actual_quaternion(record["quaternion_wxyz"])
+            # Flight-time swept displacement from the actual velocity; never
+            # replace it by commanded belt speed.
+            drift = np.linalg.norm(record["linear_velocity_m_s"]) * policy.maximum_flight_s
+            spin = np.linalg.norm(record["angular_velocity_rad_s"]) * policy.maximum_flight_s
+            expansion = drift + spin * np.linalg.norm(np.asarray(primitive["size_m"]) / 2)
+            obstacles.append(OBB(record["center_m"], np.asarray(primitive["size_m"]) / 2 + expansion,
+                                 pose_rotation, name, "carton"))
+        else:
+            obstacles.append(OBB(primitive["center_m"], np.asarray(primitive["size_m"]) / 2,
+                                 primitive["rotation_matrix"], name, primitive.get("category", "fixed")))
+    box = OBB(position, np.asarray(target["size_m"]) / 2, rotation, target["name"], "carton")
+    return predict_release(box, supports, mode=SHORT_DROP_RELEASE,
+        linear_velocity=linear_velocity, angular_velocity=angular_velocity, obstacles=obstacles,
+        policy=policy, contact_tolerance_m=planned["landing_support"]["tolerance_m"],
+        edge_tolerance_m=planned["landing_support"]["edge_tolerance_m"])
+
+
 class BoundedFreeTransitGate:
     """Pause command time, never physics, until unchanged actual clearance passes."""
 
@@ -354,6 +397,32 @@ class BoundedTargetCupReleaseClearance:
         return None
 
 
+def _same_tool_collision_boxes(previous, current):
+    """Ignore only roundoff from world/flange round trips, never shape changes."""
+    if previous is None or current is None:
+        return previous is current
+    if not isinstance(previous, list) or not isinstance(current, list) or len(previous) != len(current):
+        return False
+    numeric_fields = {"center_m": (3,), "size_m": (3,), "rotation_matrix": (3, 3)}
+    for before, after in zip(previous, current):
+        if not isinstance(before, dict) or not isinstance(after, dict) or before.keys() != after.keys():
+            return False
+        for field in before:
+            if field not in numeric_fields:
+                if before[field] != after[field]:
+                    return False
+                continue
+            try:
+                left, right = np.asarray(before[field], dtype=float), np.asarray(after[field], dtype=float)
+            except (ValueError, TypeError):
+                return False
+            if (left.shape != numeric_fields[field] or right.shape != left.shape
+                    or not np.all(np.isfinite(left)) or not np.all(np.isfinite(right))
+                    or not np.allclose(left, right, rtol=0.0, atol=1e-12)):
+                return False
+    return True
+
+
 def validate_same_world_continuation(previous_metadata, next_bundle, actual_state, *,
                                      position_tolerance_m=0.001,
                                      joint_tolerance_rad=0.001):
@@ -386,10 +455,13 @@ def validate_same_world_continuation(previous_metadata, next_bundle, actual_stat
                   "step_path", "visual_mesh_path", "collision_mesh_path",
                   "flange_origin_step_mm", "step_from_tool_rotation_matrix", "frame_contract",
                   "suction_mode", "holding_capacity_assumption",
-                  "qualified_rigid_collision_boxes_tool_frame",
                   "max_grip_distance_m", "max_normal_misalignment_rad", "maximum_contact_penetration_m"):
         if metadata.get("gripper", {}).get(field) != previous_metadata.get("gripper", {}).get(field):
             raise ValueError(f"continuation changed tool physical input: {field}")
+    box_field = "qualified_rigid_collision_boxes_tool_frame"
+    if not _same_tool_collision_boxes(previous_metadata.get("gripper", {}).get(box_field),
+                                      metadata.get("gripper", {}).get(box_field)):
+        raise ValueError(f"continuation changed tool physical input: {box_field}")
     if (not metadata.get("simulation_execution_ready") or metadata.get("execution_blockers")):
         raise ValueError("continuation bundle is not simulation ready")
     current = {item["name"]: item for item in actual_state["cartons"]}
@@ -734,11 +806,12 @@ def audit_payload_support_contact(
     supports: Sequence[Mapping[str, Any]] | None = None,
     max_support_gap_m: float = 0.003,
     maximum_penetration_m: float = 0.001,
-    minimum_footprint_overlap_ratio: float = 0.90,
+    minimum_footprint_overlap_ratio: float = 1.0,
     max_support_tilt_rad: float = np.deg2rad(5.0),
     max_linear_speed_m_s: float = 0.03,
     max_angular_speed_rad_s: float = 0.08,
     support_surface_velocity_world_m_s: Sequence[float] | None = None,
+    footprint_boundary_tolerance_m: float = 1e-6,
 ) -> PayloadSupportAudit:
     """Require real, non-penetrating receiver support before vacuum release.
 
@@ -842,6 +915,7 @@ def audit_payload_support_contact(
             actual_box, support_boxes,
             contact_tolerance_m=max(max_support_gap_m, maximum_penetration_m),
             max_support_tilt_rad=max_support_tilt_rad,
+            edge_tolerance_m=footprint_boundary_tolerance_m,
         )
         overlap_ratio = (1.0 - union_audit["unsupported_area_m2"] / union_audit["footprint_area_m2"]
                          if union_audit["footprint_area_m2"] > 0 else 0.0)
@@ -876,12 +950,9 @@ def audit_payload_support_contact(
     elif (
         union_audit is not None
         and not union_audit["supported"]
-        and union_audit["reason"] != "UNSUPPORTED_FOOTPRINT"
     ):
-        # Plane/contact failures remain fail-closed.  A small uncovered edge is
-        # instead decided by the explicit runtime overlap-ratio gate below;
-        # otherwise a configured 90% threshold would silently become 100%.
-        reason = "PAYLOAD_NOT_IN_SUPPORT_CONTACT"
+        reason = ("PAYLOAD_SUPPORT_FOOTPRINT_INSUFFICIENT" if union_audit["reason"] == "UNSUPPORTED_FOOTPRINT"
+                  else "PAYLOAD_NOT_IN_SUPPORT_CONTACT")
     elif overlap_ratio + epsilon < minimum_footprint_overlap_ratio:
         reason = "PAYLOAD_SUPPORT_FOOTPRINT_INSUFFICIENT"
     elif angular_speed > max_angular_speed_rad_s + epsilon:

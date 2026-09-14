@@ -151,6 +151,19 @@ def test_same_world_continuation_rejects_stale_poses_and_retains_occupied_carton
     result = validate_same_world_continuation(metadata, bundle, actual)
     assert result["accepted"] and result["retained_carton_count"] == 2
     assert not result["scene_restored_or_teleported"]
+    boxes = [{"name": "tool_rigid_0", "frame": "flange", "center_m": [0.162, 0, 0],
+              "size_m": [0.2, 0.5, 0.02], "rotation_matrix": np.eye(3).tolist()}]
+    metadata["gripper"] = {"qualified_rigid_collision_boxes_tool_frame": boxes}
+    bundle["metadata"]["gripper"] = copy.deepcopy(metadata["gripper"])
+    next_boxes = bundle["metadata"]["gripper"]["qualified_rigid_collision_boxes_tool_frame"]
+    next_boxes[0]["center_m"][0] += 7e-16
+    assert validate_same_world_continuation(metadata, bundle, actual)["accepted"]
+    for field, changed in (("center_m", [0.162001, 0, 0]), ("size_m", [0.2, 0.5, 0.021]),
+                           ("name", "other"), ("center_m", [float("nan"), 0, 0])):
+        different = copy.deepcopy(bundle)
+        different["metadata"]["gripper"]["qualified_rigid_collision_boxes_tool_frame"][0][field] = changed
+        with pytest.raises(ValueError, match="tool physical input"):
+            validate_same_world_continuation(metadata, different, actual)
     stale = copy.deepcopy(bundle)
     stale["metadata"]["scene_primitives"][0]["center_m"][0] += 0.02
     with pytest.raises(ValueError, match="stale actual carton position"):

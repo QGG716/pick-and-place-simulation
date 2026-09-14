@@ -1,3 +1,7 @@
+# Runtime source/config hashes must survive Windows and Linux checkouts.
+*.py text eol=lf
+*.yaml text eol=lf
+
 *.STEP binary
 *.stl binary
 *.dae binary

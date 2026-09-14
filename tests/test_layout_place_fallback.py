@@ -76,7 +76,7 @@ class PlacementFallbackConnector(LayoutTrajectoryConnector):
             collision_margin_m=.01, contact_tolerance_m=.0002, joint_margin_rad=.01,
             maximum_jacobian_condition=1e4, validator_identity="analytic_geometry_connector",
             execution_qualified=True, budget=LayoutTrajectoryBudget(stage_connection_iterations=24,
-                local_transit_cartesian_sample_budget=0),
+                local_transit_cartesian_sample_budget=0, maximum_drop_m=0, receiver_edge_reserve_m=0),
             surface_directions_world={
                 "cross-support": [0., -1., 0.],
                 "long-support": [-1., 0., 0.],
@@ -144,7 +144,9 @@ def test_failed_first_place_path_retries_second_receiver_from_same_extraction_en
     assert attempts[0]["failure"]["reason"] == "FIRST_PLACE_PATH_BLOCKED"
     assert attempts[1]["failure"] is None
     assert result.segment["place"]["support"]["supported"]
-    assert result.segment["place"]["load_bearing_support_names"] == ["long-support"]
+    assert "long-support" in result.segment["place"]["load_bearing_support_names"]
+    assert result.segment["place"]["effective_receiver"] == "long-support"
+    assert result.segment["place"]["load_bearing_support_names"] == result.segment["place"]["support"]["receiver_names"]
     assert set(result.segment["place"]["support_names"]) == {"cross-support", "long-support"}
     assert len(connector.place_calls) == 2
     np.testing.assert_allclose(connector.transit_calls[0]["start"], connector.transit_calls[1]["start"])
@@ -155,7 +157,7 @@ def test_first_receiver_exhaustion_preserves_shared_budget_for_alternative():
     connector = PlacementFallbackConnector("connection")
     result = plan(connector)
     assert result.success
-    assert result.segment["place"]["load_bearing_support_names"] == ["long-support"]
+    assert result.segment["place"]["effective_receiver"] == "long-support"
     calls = connector.transit_calls
     assert any(item["goal"][1] > -.4 for item in calls)
     assert any(item["goal"][1] < -.4 for item in calls)
@@ -166,23 +168,23 @@ def test_first_receiver_exhaustion_preserves_shared_budget_for_alternative():
     assert all(item["budget"] > 0 for item in calls)
 
 
-def test_withdrawal_ends_at_belt_aware_safe_residence_before_conveyor_start():
+def test_departure_checks_moving_carton_sweep_without_a_fixed_vertical_lift():
     connector = PlacementFallbackConnector(None)
     result = plan(connector)
     assert result.success
     residence = result.segment["post_release_safe_residence"]
-    assert residence["conveyor_escape_enabled"] is True
-    assert residence["conveyor_surface"] == "cross-support"
-    np.testing.assert_allclose(residence["conveyor_direction_world"], [0., -1., 0.])
-    assert residence["tool_solid_count"] == 1
-    np.testing.assert_allclose(
-        residence["unchanged_pair_clearance_m"], .0202, atol=1e-12
-    )
+    assert residence["model"] == "bounded_departure_swept_occupancy_v2"
+    assert residence["stationary_carton_included"] is True
+    assert residence["sweep_samples"] > 1
+    assert not residence["fixed_normal_retreat_or_vertical_lift"]
     release_q = np.asarray(result.segment["path"])[result.segment["release_index"]]
     residence_q = np.asarray(result.segment["path"])[result.segment["release_retreat_index"]]
-    # The empty tool first disengages normally, then ends above the released
-    # carton by a full 3-D pair-clearance certificate. Horizontal belt travel
-    # can only preserve that separation. This is part of the real segment,
-    # not a replay-only pose edit.
-    np.testing.assert_allclose(residence_q[1], release_q[1], atol=1e-12)
-    assert residence_q[2] > release_q[2] + .39
+    from unloading_sim.release_motion import departure_sweep
+    place = result.segment["place"]
+    pose = np.asarray(place["actual_box_pose_world"])
+    payload = OBB(pose[:3, 3], [.3, .2, .15], pose[:3, :3], "payload", "carton")
+    direction = connector.surface_directions_world[place["effective_receiver"]]
+    for occupied in departure_sweep(payload, direction, distance_m=.8, resolution_m=.04):
+        assert all(not body.intersects_obb(occupied, margin=.01)
+                   for body in connector.robot.audited_tool_collision_obbs(residence_q))
+    assert np.linalg.norm(residence_q[:3] - release_q[:3]) < .3

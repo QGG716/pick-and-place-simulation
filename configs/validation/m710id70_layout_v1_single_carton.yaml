@@ -18,6 +18,12 @@ receiver:
   fixed: true
 
 search_strategy:
+  motion_semantics: m710_adaptive_contact_release_v2
+  placement_semantics: working_normal_into_carton_transverse_plus_x_v2
+  approach_mode: auto
+  maximum_drop_m: 0.05
+  # Receiver-only robustness after observed lip friction; not a robot margin or motion station.
+  receiver_edge_reserve_m: 0.01
   grasp_poses_per_task: 48
   face_height_transition_m: 0.35
   placement_candidates: 12
@@ -25,6 +31,10 @@ search_strategy:
   fine_place_samples_per_axis: 7
   row_height_fraction: 0.05
   planning_wall_time_s: 900.0
+  stage_connection_iterations: 600
+  # A retained moving carton leaves less room for next-cycle transit. The
+  # shared budget still covers all exits/receivers/IK branches, not each one.
+  continuation_stage_connection_iterations: 1800
   # Create real free-space room for the attached 0.6 x 0.4 x 0.3 m carton
   # before changing its placement face; every increment remains collision checked.
   local_transit_outward_step_m: 0.12

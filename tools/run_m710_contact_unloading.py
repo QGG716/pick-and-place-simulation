@@ -7,6 +7,8 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+import copy
+from dataclasses import replace
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -23,6 +25,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/validation/m710id70_layout_v1_single_carton.yaml")
     parser.add_argument("--output", default="outputs/m710_contact_unloading_round01")
+    parser.add_argument("--approach-mode", choices=("auto", "direct", "adaptive_pregrasp"))
+    parser.add_argument("--planning-wall-time-s", type=float)
     parser.add_argument("--actual-state", type=Path,
                         help="actual_remaining_state.json from the still-running physical world")
     parser.add_argument("--execution-config", type=Path,
@@ -35,6 +39,16 @@ def main(argv: list[str] | None = None) -> int:
     start = time.monotonic()
     scene = None
     planning_policy = load_layout_motion_policy(args.config)
+    if args.approach_mode is not None or args.planning_wall_time_s is not None:
+        data = copy.deepcopy(planning_policy.data)
+        if args.approach_mode is not None:
+            data["search_strategy"]["approach_mode"] = args.approach_mode
+        if args.planning_wall_time_s is not None:
+            if not 0 < args.planning_wall_time_s < float("inf"):
+                raise ValueError("planning-wall-time-s must be finite and positive")
+            data["search_strategy"]["planning_wall_time_s"] = args.planning_wall_time_s
+        planning_policy = replace(planning_policy, data=data)
+        scene = build_verified_motion_input(planning_policy)
     strategy = planning_policy.data.get("search_strategy", {})
     row_state = RowUnloadingState(RowSequencePolicy(
         row_height_fraction=float(strategy.get("row_height_fraction", 0.05))))

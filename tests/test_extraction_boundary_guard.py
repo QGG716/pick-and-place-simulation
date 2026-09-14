@@ -89,7 +89,7 @@ def test_guard_reaches_actual_free_space_with_nonzero_strict_fk_residual():
     chosen = evidence["attempts"][evidence["selected_attempt"]]
     # Actual IK retains a small admissible residual.  The added goal guard,
     # rather than a relaxed release predicate, leaves the actual box clear.
-    residual = chosen["search"]["samples"][-1]["position_error_m"]
+    residual = chosen["search"]["parts"][-1]["samples"][-1]["position_error_m"]
     assert 0.0 < residual < 1e-4
     assert chosen["fk_boundary_guard_m"] > residual
     actual_distance = attachment.box_at(path[-1]).signed_distance_obb(neighbor)
@@ -119,6 +119,9 @@ def test_runtime_clearance_reserve_moves_goal_without_relaxing_release_predicate
 
 def test_unbuffered_boundary_goal_cannot_falsely_complete_or_report_null_failure(monkeypatch):
     connector, start, attachment, tracker, neighbor = fixture()
+    # Isolate the historical straight boundary failure. Bent exits are now
+    # independent alternatives and may legitimately clear this neighbor.
+    connector.budget = LayoutTrajectoryBudget(cartesian_step_m=.04, extraction_direction_attempts=1)
     original = trajectory_module.minimum_clearance_extraction_distance
 
     def old_boundary_goal(*args, **kwargs):
@@ -134,9 +137,9 @@ def test_unbuffered_boundary_goal_cannot_falsely_complete_or_report_null_failure
     assert not final_tracker.fully_released
     assert failure["reason"] == "NO_BOUNDED_EXTRACTION_PATH"
     assert evidence["selected_attempt"] is None
-    assert len(evidence["attempts"]) == 2
+    assert len(evidence["attempts"]) == 1
     for attempt in evidence["attempts"]:
         assert attempt["status"] == "REJECTED"
-        assert 0.0 < attempt["search"]["samples"][-1]["position_error_m"] < 1e-4
+        assert 0.0 < attempt["search"]["parts"][-1]["samples"][-1]["position_error_m"] < 1e-4
         assert attempt["failure"]["reason"] == "ACTUAL_EXTRACTION_CLEARANCE_NOT_REACHED"
         assert not attempt["initial_proximity"]["fully_released"]
