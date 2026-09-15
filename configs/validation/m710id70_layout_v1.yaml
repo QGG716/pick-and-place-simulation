@@ -34,6 +34,9 @@ collision_policy:
   # against an original stack carton is classified as expected; rigid inserts,
   # robot links and over-compression remain failures.
   inactive_compliant_cup_stack_contact_mode: physical_contact_within_compression
+  # September 15 user update: flexible cup / non-target stack contact is not
+  # a rejection criterion, regardless of command, stage or compression.
+  compliant_cup_neighbor_contact_mode: ignore
   # The runtime bellows shape is already at 10 mm nominal compression; the
   # immutable tool manifest records 15 mm total travel, leaving 5 mm only.
   maximum_compliant_cup_additional_compression_m: 0.005

@@ -9,6 +9,8 @@ audit, but can never be promoted to an executable trajectory by this class.
 
 from __future__ import annotations
 
+from contextlib import contextmanager, nullcontext
+from copy import deepcopy
 from dataclasses import dataclass, replace
 import hashlib
 import json
@@ -552,6 +554,7 @@ class ExactM710LayoutStateValidator:
         self.performance_counters = {}
         self.commanded_cup_mask = None
         self.stack_carton_names = set()
+        self.contact_target_name = None
 
     def _profile_call(self, name, function, *args, **kwargs):
         started = perf_counter()
@@ -702,6 +705,12 @@ class ExactM710LayoutStateValidator:
         ):
             tool, obstacle = tool_boxes[tool_index], dynamic[obstacle_index]
             if tool.name in compliant_names:
+                target_name = (payload.name if payload is not None else
+                               target_contact.name if target_contact is not None else self.contact_target_name)
+                if (self.collision_policy.compliant_cup_neighbor_contact_mode == "ignore"
+                        and target_name is not None and obstacle.name != target_name
+                        and obstacle.name in self.stack_carton_names):
+                    continue
                 current_target = (payload is not None and obstacle.name == payload.name) or (
                     target_contact is not None and obstacle.name == target_contact.name
                     and stage in {"contact", "contact_endpoint", "next_contact", "withdrawal"})
@@ -964,6 +973,7 @@ class LayoutTrajectoryConnector:
         cacheable = initial_proximity is None
         cache_key = None
         if cacheable and q_array.shape == (6,) and np.all(np.isfinite(q_array)):
+            commanded_mask = getattr(self.robot_state_validator, "commanded_cup_mask", None)
             attachment_key = () if attachment is None else tuple(
                 attachment.rigid.tcp_from_box.flatten()
             )
@@ -973,7 +983,8 @@ class LayoutTrajectoryConnector:
                 self.joint_margin_rad, self.maximum_jacobian_condition, self.official_radial_reach_m,
                 self.radial_guard_tolerance_m,
                 getattr(self.robot_state_validator, "nominal_cup_compression_m", None),
-                tuple(getattr(self.robot_state_validator, "commanded_cup_mask", None) or ()),
+                None if commanded_mask is None else tuple(commanded_mask),
+                getattr(self.robot_state_validator, "contact_target_name", None),
                 tuple(sorted(getattr(self.robot_state_validator, "stack_carton_names", []))),
                 self.validator_identity, np.asarray(self.robot.base_transform).tobytes(),
                 getattr(getattr(self.robot_state_validator, "mesh_robot", None), "geometry_revision", 0),
@@ -1227,7 +1238,38 @@ class LayoutTrajectoryConnector:
         support_names: Sequence[str],
         target_contact: OBB | None,
         stage: str,
+        contact_candidate: Mapping[str, Any] | None = None,
+        endpoint_checks: list[dict[str, Any]] | None = None,
     ):
+        # Only this named contact search shares the normal grasp endpoint.
+        # Unknown stages (including other *_ik_endpoint names) stay strict.
+        endpoint_stage = "contact_endpoint" if stage == "next_contact" else f"{stage}_ik_endpoint"
+        if stage == "next_contact" and (target_contact is None or contact_candidate is None):
+            raise ValueError("next_contact IK requires candidate target, face and suction context")
+
+        def endpoint_valid(q):
+            with self._contact_context() if stage == "next_contact" else nullcontext():
+                cups = None
+                failure = None
+                if stage == "next_contact":
+                    try:
+                        cups = self._contact_selection(q, target_contact,
+                            contact_candidate["face"], contact_candidate["suction"])
+                    except ValueError as exc:
+                        failure = {"reason": "NEXT_CONTACT_COVERAGE_FAILED", "detail": str(exc)}
+                if failure is None:
+                    failure = self._state_failure(q, obstacles, attachment=attachment,
+                        support_names=support_names, target_contact=target_contact, stage=endpoint_stage)
+                if endpoint_checks is not None:
+                    endpoint_checks.append({"requested_stage": stage, "endpoint_stage": endpoint_stage,
+                        "target": None if target_contact is None else target_contact.name,
+                        "q_rad": np.asarray(q).tolist(),
+                        "mask_source": "candidate_fk_target_face_suction" if cups is not None else None,
+                        "geometrically_eligible_mask": None if cups is None else cups["geometrically_eligible_mask"],
+                        "commanded_active_mask": None if cups is None else cups["commanded_active_mask"],
+                        "failure": failure})
+                return failure is None
+
         unique = list(
             {
                 tuple(np.asarray(q, dtype=float)): np.asarray(q, dtype=float)
@@ -1249,14 +1291,7 @@ class LayoutTrajectoryConnector:
             position_tolerance=float(self.ik["position_tolerance_m"]),
             orientation_tolerance=float(self.ik["orientation_tolerance_rad"]),
             orientation_weight=float(self.ik["orientation_weight"]),
-            extra_state_valid=lambda q: self._state_failure(
-                q,
-                obstacles,
-                attachment=attachment,
-                support_names=support_names,
-                target_contact=target_contact,
-                stage=f"{stage}_ik_endpoint",
-            ) is None,
+            extra_state_valid=endpoint_valid,
             collision_check_stride=int(self.ik["max_iterations"]) + 1,
             deadline_monotonic=self._deadline_monotonic,
         )
@@ -1501,6 +1536,22 @@ class LayoutTrajectoryConnector:
             path.append(ik.q.copy())
         return path, None, {"stage": stage, "samples": samples}
 
+    @contextmanager
+    def _contact_context(self):
+        """Isolate speculative cup permissions, including mutable input values."""
+        validator = self.robot_state_validator
+        saved = {name: deepcopy(getattr(validator, name))
+                 for name in ("commanded_cup_mask", "stack_carton_names", "contact_target_name")
+                 if hasattr(validator, name)}
+        saved_stack = deepcopy(self.stack_carton_names)
+        try:
+            yield
+        finally:
+            self.stack_carton_names = saved_stack
+            for name, value in saved.items():
+                setattr(validator, name, value)
+            self._state_cache.clear()
+
     def _contact_selection(
         self, q: np.ndarray, target: OBB, face: str, suction: Mapping[str, Any]
     ) -> Mapping[str, Any]:
@@ -1525,8 +1576,9 @@ class LayoutTrajectoryConnector:
         )
         result = selection.to_dict()
         if isinstance(self.robot_state_validator, ExactM710LayoutStateValidator):
-            self.robot_state_validator.commanded_cup_mask = result["commanded_active_mask"]
+            self.robot_state_validator.commanded_cup_mask = tuple(result["commanded_active_mask"])
             self.robot_state_validator.stack_carton_names = set(self.stack_carton_names or ())
+            self.robot_state_validator.contact_target_name = target.name
             # Contact pair permissions depend on the commanded mask.
             self._state_cache.clear()
         return result
@@ -2134,7 +2186,6 @@ class LayoutTrajectoryConnector:
         candidates = [c for c in candidates if c["target"].name == candidates[0]["target"].name][:2]
         before = perf_counter()
         outer_deadline = self._deadline_monotonic
-        self._deadline_monotonic = min(outer_deadline or float("inf"), before + min(4., remaining))
         # A single conservative union encloses zero progress and all bounded
         # belt progress. It cannot assume the box already took the belt speed.
         delta = sweep[-1].center - sweep[0].center
@@ -2143,59 +2194,71 @@ class LayoutTrajectoryConnector:
             sweep[0].rotation, placed.name, placed.category)
         world = [*obstacles, future]
         attempts = []
-        saved_mask = getattr(self.robot_state_validator, "commanded_cup_mask", None)
-        saved_stack = getattr(self.robot_state_validator, "stack_carton_names", set()).copy()
         try:
+            self._deadline_monotonic = min(outer_deadline or float("inf"), before + min(4., remaining))
             for index, candidate in enumerate(candidates):
-                if self._deadline_reached():
-                    break
-                target = candidate["target"]
-                requested = candidate["requested_virtual_contact"]
-                stream = self._ik_stream(requested, [start], world, seed=seed + index * 100,
-                    attachment=None, support_names=(), target_contact=target, stage="next_contact")
-                solved = next(stream, None)
-                self._statistics["ik_calls"] += 1
-                self._statistics["ik_seeds_attempted"] += int(stream.evidence().get("seeds_attempted", 0))
-                self._statistics["ik_iterations_consumed"] += int(stream.evidence().get("iterations_consumed", 0))
-                failure = {"reason": "LOOKAHEAD_DEADLINE" if self._deadline_reached() else "NO_NEXT_CONTACT_IK"}
-                if solved is not None:
-                    try:
-                        self._contact_selection(solved.q, target, candidate["face"], candidate["suction"])
-                        failure = self._state_failure(solved.q, world, target_contact=target, stage="next_contact")
-                    except ValueError as exc:
-                        failure = {"reason": "NEXT_CONTACT_COVERAGE_FAILED", "detail": str(exc)}
-                    if failure is not None:
-                        attempts.append({"target": target.name, "face": candidate["face"], "failure": failure})
-                        continue
-                    prefix, terminal, failure, approach = self._approach(start, solved.q,
-                        requested, world, target, seed=seed + index * 100 + 1)
-                    if failure is None:
+                with self._contact_context():
+                    if self._deadline_reached():
+                        break
+                    target = candidate["target"]
+                    requested = candidate["requested_virtual_contact"]
+                    endpoint_checks = []
+                    stream = self._ik_stream(requested, [start], world, seed=seed + index * 100,
+                        attachment=None, support_names=(), target_contact=target, stage="next_contact",
+                        contact_candidate=candidate, endpoint_checks=endpoint_checks)
+                    solved = next(stream, None)
+                    self._statistics["ik_calls"] += 1
+                    self._statistics["ik_seeds_attempted"] += int(stream.evidence().get("seeds_attempted", 0))
+                    self._statistics["ik_iterations_consumed"] += int(stream.evidence().get("iterations_consumed", 0))
+                    failure = {"reason": "LOOKAHEAD_DEADLINE" if self._deadline_reached() else "NO_NEXT_CONTACT_IK"}
+                    if solved is not None:
                         try:
-                            cups = self._contact_selection(terminal[-1], target,
-                                candidate["face"], candidate["suction"])
+                            selected_cups = self._contact_selection(solved.q, target, candidate["face"], candidate["suction"])
+                            failure = self._state_failure(solved.q, world, target_contact=target, stage="contact_endpoint")
                         except ValueError as exc:
                             failure = {"reason": "NEXT_CONTACT_COVERAGE_FAILED", "detail": str(exc)}
+                        if failure is not None:
+                            attempts.append({"target": target.name, "face": candidate["face"], "failure": failure,
+                                             "endpoint_checks": endpoint_checks})
+                            continue
+                        prefix, terminal, failure, approach = self._approach(start, solved.q,
+                            requested, world, target, seed=seed + index * 100 + 1)
                         if failure is None:
-                            path = [*prefix, *terminal[1:]]
-                            cost = float(np.sum(np.linalg.norm(np.diff(path, axis=0), axis=1)))
-                            return {"status": "CHECKED_NEXT_CONTACT_CONNECTION", "target": target.name,
-                                "row_id": candidate["row_id"], "face": candidate["face"],
-                                "approach_mode": approach["selected_mode"], "joint_path_length_rad": cost,
-                                "start_q_rad": start.tolist(), "contact_q_rad": terminal[-1].tolist(),
-                                "commanded_active_mask": cups["commanded_active_mask"],
-                                "planning_wall_seconds": perf_counter() - before,
-                                "attempts": attempts, "requires_actual_state_replan": True,
-                                "released_carton_swept_occupancy_retained": True}
-                attempts.append({"target": target.name, "face": candidate["face"], "failure": failure})
+                            try:
+                                cups = self._contact_selection(terminal[-1], target,
+                                    candidate["face"], candidate["suction"])
+                            except ValueError as exc:
+                                failure = {"reason": "NEXT_CONTACT_COVERAGE_FAILED", "detail": str(exc)}
+                            if failure is None:
+                                path = [*prefix, *terminal[1:]]
+                                failure = self._state_failure(terminal[-1], world,
+                                    target_contact=target, stage="contact_endpoint")
+                                if cups["commanded_active_mask"] != selected_cups["commanded_active_mask"]:
+                                    # Cartesian IK can end at a slightly different q. Recheck
+                                    # the complete approach under the final command if it changed.
+                                    gate = approach["free_connection_end_index"]
+                                    failure = failure or self._path_failure(path[:gate + 1], world, stage="pregrasp")
+                                    failure = failure or self._path_failure(path[gate:], world,
+                                        target_contact=target, stage="contact")
+                            if failure is None:
+                                cost = float(np.sum(np.linalg.norm(np.diff(path, axis=0), axis=1)))
+                                return {"status": "CHECKED_NEXT_CONTACT_CONNECTION", "target": target.name,
+                                    "row_id": candidate["row_id"], "face": candidate["face"],
+                                    "approach_mode": approach["selected_mode"], "joint_path_length_rad": cost,
+                                    "start_q_rad": start.tolist(), "contact_q_rad": terminal[-1].tolist(),
+                                    "commanded_active_mask": cups["commanded_active_mask"],
+                                    "endpoint_checks": endpoint_checks,
+                                    "planning_wall_seconds": perf_counter() - before,
+                                    "attempts": attempts, "requires_actual_state_replan": True,
+                                    "released_carton_swept_occupancy_retained": True}
+                    attempts.append({"target": target.name, "face": candidate["face"], "failure": failure,
+                                     "endpoint_checks": endpoint_checks})
             return {"status": "BOUNDED_NEXT_CONTACT_SEARCH_FAILED", "cost_status": "UNKNOWN",
                 "requires_actual_state_replan": True, "joint_path_length_rad": None, "attempts": attempts,
                 "planning_wall_seconds": perf_counter() - before,
                 "safe_current_residence_remains_valid": True}
         finally:
             self._lookahead_remaining_s = max(0., remaining - (perf_counter() - before))
-            self.robot_state_validator.commanded_cup_mask = saved_mask
-            self.robot_state_validator.stack_carton_names = saved_stack
-            self._state_cache.clear()
             self._deadline_monotonic = outer_deadline
 
     def _departure(self, start, placed, obstacles, direction, *, seed, working_normal,

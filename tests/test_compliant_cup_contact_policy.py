@@ -129,3 +129,28 @@ def test_target_and_release_share_five_mm_additional_compression_budget(active):
                    release_validation_pending=True)
     assert classify(**release, minimum_separation_m=-.005) == "EXPECTED_TARGET_COMPLIANT_CUP_RELEASE_CLEARANCE"
     assert classify(**release, minimum_separation_m=-.00500001) is None
+
+
+@pytest.mark.parametrize("stage", ["pregrasp", "contact", "transit", "withdrawal", "unknown"])
+@pytest.mark.parametrize("active", [False, True])
+def test_user_neighbor_ignore_policy_is_owned_flexible_shape_and_non_target_only(stage, active):
+    policy = replace(POLICY, compliant_cup_neighbor_contact_mode="ignore")
+    mask = [False] * 72
+    mask[17] = active
+    values = dict(policy=policy, stage=stage, commanded_mask=mask,
+                  minimum_separation_m=-.02, actual_free_space=True)
+    assert classify(**values, collider1=NEIGHBOR, actor1=NEIGHBOR) == "IGNORED_COMPLIANT_CUP_NEIGHBOR_CONTACT"
+    assert classify(**values) is None  # Target compression never exempted.
+    assert classify(**values, collider1="/Scene/wall", actor1="/Scene/wall") is None
+    assert classify(**values, collider0="/Robot/J6/Tool/RigidInsert17",
+                    collider1=NEIGHBOR, actor1=NEIGHBOR) is None
+    assert classify(**values, actor0="/Robot/wrong",
+                    collider1=NEIGHBOR, actor1=NEIGHBOR) is None
+
+
+def test_neighbor_ignore_does_not_grant_early_or_unknown_target_contact():
+    policy = replace(POLICY, compliant_cup_neighbor_contact_mode="ignore")
+    for stage in ("pregrasp", "unknown", "next_contact_ik_endpoint"):
+        assert classify(policy=policy, stage=stage, minimum_separation_m=0.) is None
+    assert classify(policy=policy, minimum_separation_m=-.005) == TARGET_REASON
+    assert classify(policy=policy, minimum_separation_m=-.00500001) is None

@@ -27,6 +27,7 @@ class SimulationCollisionPolicy:
     progress_timeout_s: float = 3.0
     minimum_progress_m: float = 0.002
     inactive_compliant_cup_stack_contact_mode: str = "physical_contact_within_compression"
+    compliant_cup_neighbor_contact_mode: str = "check"
     maximum_compliant_cup_additional_compression_m: float = 0.005
 
     def __post_init__(self):
@@ -42,6 +43,8 @@ class SimulationCollisionPolicy:
             "reject", "physical_contact_within_compression"
         }:
             raise ValueError("unsupported inactive compliant cup contact mode")
+        if self.compliant_cup_neighbor_contact_mode not in {"check", "ignore"}:
+            raise ValueError("unsupported compliant cup neighbor contact mode")
         for name, value in asdict(self).items():
             if isinstance(value, (int, float)) and (not np.isfinite(value) or value < 0):
                 raise ValueError(f"invalid collision policy threshold: {name}")

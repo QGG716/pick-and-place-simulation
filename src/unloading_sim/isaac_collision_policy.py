@@ -172,7 +172,9 @@ def classify_compliant_cup_contact(
     The path/index map comes from actual compliant shape creation, not naming
     conventions. Rigid inserts, mounts and robot shapes cannot inherit this
     rule. Positive contact-offset proximity uses the same pair/lifecycle scope
-    as measured contact; missing separation never supplies permission.
+    as measured contact. The explicit neighbor-ignore policy excludes only
+    known flexible shapes against named non-target stack actors from rejection;
+    target contacts still require measured separation and lifecycle checks.
     """
     import math
     import numbers
@@ -199,6 +201,9 @@ def classify_compliant_cup_contact(
     if (not isinstance(active, bool) or not isinstance(attached, bool)
             or not isinstance(actual_free_space, bool) or not isinstance(release_validation_pending, bool)):
         return None
+    if (getattr(policy, "compliant_cup_neighbor_contact_mode", "check") == "ignore"
+            and other_actor != target_path and other_actor in stack_paths):
+        return "IGNORED_COMPLIANT_CUP_NEIGHBOR_CONTACT"
     try:
         separation = float(minimum_separation_m)
         physical_limit = float(physical_compression_m)
