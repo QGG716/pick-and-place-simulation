@@ -25,6 +25,7 @@ def normalization(bounds_min, bounds_max, nominal_size, max_anisotropy=1.35):
 
 def attach_usd_carton(stage, path, nominal_size, entry, cache):
     """Reference complete mesh/UV/material hierarchy under the unchanged entity."""
+    import numpy as np
     from pxr import Gf, Sdf, Usd, UsdGeom, UsdShade
     source = (Path(cache)/entry['path']).resolve()
     if not source.is_relative_to(Path(cache).resolve()) or not source.is_file():
@@ -62,8 +63,19 @@ def attach_usd_carton(stage, path, nominal_size, entry, cache):
             if attr.GetName().startswith(('physics:','physx','semantic:','semantics:')):
                 attr.Block()
     # Measure composed transforms (including internal cm->m scaling) once.
-    bound = UsdGeom.BBoxCache(0,['default','render']).ComputeLocalBound(root.GetPrim()).ComputeAlignedRange()
-    low, high = list(bound.GetMin()), list(bound.GetMax())
+    # Rotating an authored AABB overestimates a scan's envelope and creates gaps.
+    # Measure the actual visible vertices in the visual adapter's coordinates.
+    xforms=UsdGeom.XformCache()
+    to_root=xforms.GetLocalToWorldTransform(root.GetPrim()).GetInverse()
+    vertices=[]
+    for prim in Usd.PrimRange(reference):
+        if prim.IsA(UsdGeom.Mesh) and UsdGeom.Imageable(prim).ComputeVisibility()!='invisible':
+            transform=xforms.GetLocalToWorldTransform(prim)*to_root
+            vertices.extend([list(transform.Transform(v)) for v in UsdGeom.Mesh(prim).GetPointsAttr().Get()])
+    if not vertices:
+        raise ValueError('CARTON_HAS_NO_RENDER_MESH')
+    points=np.asarray(vertices)
+    low, high=points.min(0).tolist(),points.max(0).tolist()
     scale, translate = normalization(low,high,nominal_size,entry.get('max_anisotropy',1.35))
     matrix=Gf.Matrix4d(1)
     matrix.SetScale(Gf.Vec3d(*scale));matrix.SetTranslateOnly(Gf.Vec3d(*translate))
