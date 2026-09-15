@@ -1,0 +1,40 @@
+{
+  "comparison_mode": "STAGED_MONOCULAR_MOGE",
+  "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+  "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+  "layout_id": "m710id70_unloading_layout_v1",
+  "perception_commit": "221b2969ac92cfefc9eaf37ba3c262de1f210c9c",
+  "primary_mode": "STAGED_RGBD",
+  "raw_image_automatic": false,
+  "rig_id": "m710id70_j1_perception_mast_v3",
+  "run_id": "isaac-perception-221b2969ac92",
+  "scenes": [
+    {
+      "dynamic_scene_fingerprint": "9c73809bc770fb540abca590207eedfb8618c7cafe255694d7084fed21743c57",
+      "illumination_state": "LIGHT_ON_NOMINAL",
+      "inference_time_q1_rad": -1.5707963267948966,
+      "manifest_fingerprint": "e6e290ae7e9b1d7a4c685f9d3924f41df25c209b174bac4b2237ff7916d69bad",
+      "path": "GEOMETRY_ADJACENT_TWO.manifest.json",
+      "q1_at_capture_rad": -1.5707963267948966,
+      "scene": "GEOMETRY_ADJACENT_TWO",
+      "simulation_epoch": "metric-algorithm-only-20260915",
+      "simulation_frame": 301,
+      "world_fingerprint": "89fca1a8fd4aa243a76ef1a65c0994167a315b0c0c30e50e67bbdcaf2731e9c1"
+    },
+    {
+      "dynamic_scene_fingerprint": "b9239024e5e43bde94b72aee0c4d5b6411feaa35be242567d3ff64a4c5347a4f",
+      "illumination_state": "LIGHT_ON_NOMINAL",
+      "inference_time_q1_rad": -1.5707963267948966,
+      "manifest_fingerprint": "b823d4a8f8af72e045dda6792882cab1eb554f3fbfabc4eef2a8876f112ffdae",
+      "path": "GEOMETRY_PARTIAL_TWO.manifest.json",
+      "q1_at_capture_rad": -1.5707963267948966,
+      "scene": "GEOMETRY_PARTIAL_TWO",
+      "simulation_epoch": "metric-algorithm-only-20260915",
+      "simulation_frame": 302,
+      "world_fingerprint": "66f9215b9d0a95dde33744752f51a9d69250112127de8ca8c11a138b8ba0ec08"
+    }
+  ],
+  "schema_version": "isaac_perception_scene_bundle_v2",
+  "source_scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+  "validation_scope": "GEOMETRY_ALGORITHM_ONLY"
+}

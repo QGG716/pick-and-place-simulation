@@ -1,0 +1,2344 @@
+{
+  "cameras": [
+    {
+      "K": [
+        748.2459488697552,
+        0.0,
+        1295.5,
+        0.0,
+        1525.7343809582005,
+        971.5,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "T_W_C": [
+        [
+          0.0,
+          -0.0,
+          1.0,
+          -1.325
+        ],
+        [
+          -1.0,
+          -0.0,
+          0.0,
+          0.75
+        ],
+        [
+          0.0,
+          -1.0,
+          -0.0,
+          2.6293411964178084
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_rgb_depth": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "calibration_identity": "m710id70_module0_upper_ideal_registered_rgbd_120x65_v1",
+      "camera_id": "module_0_upper_rgbd",
+      "compatibility_aliases": [
+        "module_0_main"
+      ],
+      "depth_frame_id": "module_0_upper_depth_optical",
+      "depth_semantics": "optical_z_m",
+      "distortion": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "distortion_model": "plumb_bob",
+      "far_clip_m": 12.0,
+      "focal_length_mm": 10.392304845413268,
+      "frame_id": "module_0_upper_rgb_optical",
+      "horizontal_aperture_mm": 36.0,
+      "intrinsics_mode": "EXACT_USER_SPEC_RESAMPLED",
+      "look_at_world_m": [
+        -0.32499999999999996,
+        0.75,
+        2.6293411964178084
+      ],
+      "modalities": [
+        "rgb",
+        "metric_depth",
+        "camera_info",
+        "capture_metadata",
+        "pointcloud_on_demand",
+        "gt_annotations"
+      ],
+      "module_id": "module_0_upper",
+      "native_square_pixel_focal_px": 748.2459488697552,
+      "near_clip_m": 0.05,
+      "optical_depression_rad": 0.0,
+      "pose_source": "J1_CAPTURE_TIME_TRANSFORM_CHAIN",
+      "publish_rate_hz": 30.0,
+      "q1_at_capture_rad": -1.5707963267948966,
+      "registration_mode": "SIMULATION_IDEAL_REGISTERED_DEPTH",
+      "resolution": [
+        2592,
+        1944
+      ],
+      "rig_id": "m710id70_j1_perception_mast_v3",
+      "vertical_aperture_mm": 27.0
+    },
+    {
+      "K": [
+        748.2459488697552,
+        0.0,
+        1295.5,
+        0.0,
+        1525.7343809582005,
+        971.5,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "T_W_C": [
+        [
+          0.0,
+          -0.3420201433256687,
+          0.9396926207859084,
+          -1.325
+        ],
+        [
+          -1.0,
+          -0.0,
+          0.0,
+          0.75
+        ],
+        [
+          0.0,
+          -0.9396926207859084,
+          -0.3420201433256687,
+          1.6293411964178086
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_rgb_depth": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "calibration_identity": "m710id70_module1_lower_ideal_registered_rgbd_120x65_v1",
+      "camera_id": "module_1_lower_rgbd",
+      "compatibility_aliases": [],
+      "depth_frame_id": "module_1_lower_depth_optical",
+      "depth_semantics": "optical_z_m",
+      "distortion": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "distortion_model": "plumb_bob",
+      "far_clip_m": 12.0,
+      "focal_length_mm": 10.392304845413268,
+      "frame_id": "module_1_lower_rgb_optical",
+      "horizontal_aperture_mm": 36.0,
+      "intrinsics_mode": "EXACT_USER_SPEC_RESAMPLED",
+      "look_at_world_m": [
+        -0.3853073792140915,
+        0.75,
+        1.28732105309214
+      ],
+      "modalities": [
+        "rgb",
+        "metric_depth",
+        "camera_info",
+        "capture_metadata",
+        "pointcloud_on_demand",
+        "gt_annotations"
+      ],
+      "module_id": "module_1_lower",
+      "native_square_pixel_focal_px": 748.2459488697552,
+      "near_clip_m": 0.05,
+      "optical_depression_rad": 0.3490658503988659,
+      "pose_source": "J1_CAPTURE_TIME_TRANSFORM_CHAIN",
+      "publish_rate_hz": 30.0,
+      "q1_at_capture_rad": -1.5707963267948966,
+      "registration_mode": "SIMULATION_IDEAL_REGISTERED_DEPTH",
+      "resolution": [
+        2592,
+        1944
+      ],
+      "rig_id": "m710id70_j1_perception_mast_v3",
+      "vertical_aperture_mm": 27.0
+    }
+  ],
+  "dynamic_scene_fingerprint": "b9239024e5e43bde94b72aee0c4d5b6411feaa35be242567d3ff64a4c5347a4f",
+  "layout": {
+    "T_W_A": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.95
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.35
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "asset_manifest_fingerprint": "2624737e5b5c8ec47a18e4b79f0e0db93ff2830e76e9e6aa6c2ede9da65bbfa6",
+    "axis_convention": "+X into trailer, +Y left, +Z up",
+    "layout_fingerprint": "dada3b46c570791cf49745e2fb61003b9aac39c9529e8be94c9caf27a7938804",
+    "layout_id": "m710id70_unloading_layout_v1",
+    "layout_schema_version": "m710id70_workcell_snapshot_v1",
+    "units": {
+      "angle": "radian",
+      "length": "metre",
+      "mass": "kilogram"
+    },
+    "world_frame": "world"
+  },
+  "mechanisms": {
+    "base_state": {
+      "T_W_A": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.95
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "identity": "78a15557f1012d2e9e2332565d97737960105346046bc1b89c92882363c4b50d"
+    },
+    "components": [
+      {
+        "T_A_component": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.3
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "chassis",
+        "component_id": "chassis",
+        "state_identity": "a00c7978644ce4b4b9926f092545320eca867917d283d91b1d87dc20a243472a"
+      },
+      {
+        "T_A_component": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            1.4
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.54
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "conveyor",
+        "component_id": "conveyor_transverse",
+        "state_identity": "305201e5df11053c22f9edc4fc9a7552462a3950dac1238942918498ac80f2b3"
+      },
+      {
+        "T_A_component": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.34999999999999987
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -1.1
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.54
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "conveyor",
+        "component_id": "conveyor_longitudinal",
+        "state_identity": "a12bb6b8e842f39c3de21c1c9498d7981c69910bf8f9f88fbfc7b3576c86ba3b"
+      }
+    ],
+    "conveyor_state": {
+      "identity": "fca6480e2b867e432ab38bab61f79df6e30f1bdfe4cf8543df62b93a7e5606af",
+      "running": false
+    },
+    "payload_state": {
+      "identity": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "object_id": null
+    },
+    "tool_state": {
+      "attached": true,
+      "identity": "8a956456318f4a1f492a1e760636e42c7981bcb7520a07c3f8bbd3788578ca46"
+    },
+    "vision_rig": {
+      "T_W_J1": [
+        [
+          6.123233995736766e-17,
+          1.0,
+          0.0,
+          -1.325
+        ],
+        [
+          -1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.165
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_W_mast_top": [
+        [
+          6.123233995736766e-17,
+          1.0,
+          0.0,
+          -1.325
+        ],
+        [
+          -1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.8293411964178086
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_W_module_0_main": [
+        [
+          6.123233995736766e-17,
+          1.0,
+          0.0,
+          -1.325
+        ],
+        [
+          -1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.6293411964178084
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_W_vision_flange": [
+        [
+          6.123233995736766e-17,
+          1.0,
+          0.0,
+          -1.325
+        ],
+        [
+          -1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3293411964178086
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "capture_timing": {
+        "maximum_inter_module_skew_s": 0.0,
+        "mode": "SIMULTANEOUS_CAPTURE_TIME_GROUP",
+        "module_ids": [
+          "module_0_upper",
+          "module_1_lower"
+        ]
+      },
+      "geometry_qualification": "VISION_RIG_GEOMETRY_NOT_EXECUTION_QUALIFIED",
+      "independent_mast_yaw": false,
+      "mast_height_m": 1.5,
+      "mast_j1_radius_m": 0.4,
+      "mast_j1_yaw_offset_rad": 1.5707963267948966,
+      "module_height_m": 1.3,
+      "modules": [
+        {
+          "T_W_camera_optical": [
+            [
+              0.0,
+              -0.0,
+              1.0,
+              -1.325
+            ],
+            [
+              -1.0,
+              -0.0,
+              0.0,
+              0.75
+            ],
+            [
+              0.0,
+              -1.0,
+              -0.0,
+              2.6293411964178084
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "T_W_module": [
+            [
+              6.123233995736766e-17,
+              1.0,
+              0.0,
+              -1.325
+            ],
+            [
+              -1.0,
+              6.123233995736766e-17,
+              0.0,
+              0.75
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              2.6293411964178084
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aliases": [
+            "module_0_main"
+          ],
+          "calibration_identity": "m710id70_module0_upper_ideal_registered_rgbd_120x65_v1",
+          "fill_lights": [
+            [
+              0.0,
+              0.12,
+              0.0
+            ],
+            [
+              0.0,
+              -0.12,
+              0.0
+            ]
+          ],
+          "height_from_flange_m": 1.3,
+          "module_id": "module_0_upper",
+          "optical_depression_rad": 0.0
+        },
+        {
+          "T_W_camera_optical": [
+            [
+              0.0,
+              -0.3420201433256687,
+              0.9396926207859084,
+              -1.325
+            ],
+            [
+              -1.0,
+              -0.0,
+              0.0,
+              0.75
+            ],
+            [
+              0.0,
+              -0.9396926207859084,
+              -0.3420201433256687,
+              1.6293411964178086
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "T_W_module": [
+            [
+              6.123233995736766e-17,
+              1.0,
+              0.0,
+              -1.325
+            ],
+            [
+              -1.0,
+              6.123233995736766e-17,
+              0.0,
+              0.75
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              1.6293411964178086
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "aliases": [],
+          "calibration_identity": "m710id70_module1_lower_ideal_registered_rgbd_120x65_v1",
+          "fill_lights": [
+            [
+              0.0,
+              0.12,
+              0.0
+            ],
+            [
+              0.0,
+              -0.12,
+              0.0
+            ]
+          ],
+          "height_from_flange_m": 0.3,
+          "module_id": "module_1_lower",
+          "optical_depression_rad": 0.3490658503988659
+        }
+      ],
+      "moving_obstacle": true,
+      "parent_frame": "J1_link",
+      "rig_id": "m710id70_j1_perception_mast_v3",
+      "sensor_configuration_fingerprint": "fa5aaa2b7c5087a8ff6917029d868474c95966e968142dcb22459c3863697a4a",
+      "vision_flange_height_status": "PROVISIONAL_ENGINEERING_DATUM"
+    }
+  },
+  "objects": [
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l00_c00",
+      "simulation_object_id": "carton_l00_c00",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l00_c01",
+      "simulation_object_id": "carton_l00_c01",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l00_c02",
+      "simulation_object_id": "carton_l00_c02",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l00_c03",
+      "simulation_object_id": "carton_l00_c03",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l00_c04",
+      "simulation_object_id": "carton_l00_c04",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l01_c00",
+      "simulation_object_id": "carton_l01_c00",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l01_c01",
+      "simulation_object_id": "carton_l01_c01",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l01_c02",
+      "simulation_object_id": "carton_l01_c02",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l01_c03",
+      "simulation_object_id": "carton_l01_c03",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l01_c04",
+      "simulation_object_id": "carton_l01_c04",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l02_c00",
+      "simulation_object_id": "carton_l02_c00",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l02_c01",
+      "simulation_object_id": "carton_l02_c01",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l02_c02",
+      "simulation_object_id": "carton_l02_c02",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l02_c03",
+      "simulation_object_id": "carton_l02_c03",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l02_c04",
+      "simulation_object_id": "carton_l02_c04",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l03_c00",
+      "simulation_object_id": "carton_l03_c00",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l03_c01",
+      "simulation_object_id": "carton_l03_c01",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l03_c02",
+      "simulation_object_id": "carton_l03_c02",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l03_c03",
+      "simulation_object_id": "carton_l03_c03",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l03_c04",
+      "simulation_object_id": "carton_l03_c04",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l04_c00",
+      "simulation_object_id": "carton_l04_c00",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l04_c01",
+      "simulation_object_id": "carton_l04_c01",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l04_c02",
+      "simulation_object_id": "carton_l04_c02",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l04_c03",
+      "simulation_object_id": "carton_l04_c03",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l04_c04",
+      "simulation_object_id": "carton_l04_c04",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l05_c00",
+      "simulation_object_id": "carton_l05_c00",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l05_c01",
+      "simulation_object_id": "carton_l05_c01",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l05_c02",
+      "simulation_object_id": "carton_l05_c02",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l05_c03",
+      "simulation_object_id": "carton_l05_c03",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l05_c04",
+      "simulation_object_id": "carton_l05_c04",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l06_c00",
+      "simulation_object_id": "carton_l06_c00",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l06_c01",
+      "simulation_object_id": "carton_l06_c01",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l06_c02",
+      "simulation_object_id": "carton_l06_c02",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l06_c03",
+      "simulation_object_id": "carton_l06_c03",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l06_c04",
+      "simulation_object_id": "carton_l06_c04",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l07_c00",
+      "simulation_object_id": "carton_l07_c00",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          0.9396926207859084,
+          -0.3420201433256687,
+          0.0,
+          1.0608319697031943
+        ],
+        [
+          0.3420201433256687,
+          0.9396926207859084,
+          0.0,
+          0.09555857452486391
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l07_c01",
+      "simulation_object_id": "carton_l07_c01",
+      "state": "ALGORITHM_DIAGNOSTIC_SECOND_BOX",
+      "visible": true
+    },
+    {
+      "T_W_object": [
+        [
+          0.9396926207859084,
+          -0.3420201433256687,
+          0.0,
+          1.5
+        ],
+        [
+          0.3420201433256687,
+          0.9396926207859084,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l07_c02",
+      "simulation_object_id": "carton_l07_c02",
+      "state": "RGBD_CALIBRATION_TARGET",
+      "visible": true
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l07_c03",
+      "simulation_object_id": "carton_l07_c03",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    },
+    {
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "box",
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "occluded": false,
+      "semantic_id": "carton:carton_l07_c04",
+      "simulation_object_id": "carton_l07_c04",
+      "state": "CALIBRATION_SCENE_HIDDEN",
+      "visible": false
+    }
+  ],
+  "provenance": {
+    "algorithm_estimate": "MODEL_ESTIMATED",
+    "exact_isaac_state": "ISAAC_GROUND_TRUTH",
+    "oracle_proposal": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+    "raw_image_automatic": false,
+    "rendered_sensor": "ISAAC_SENSOR",
+    "validation_scope": "GEOMETRY_ALGORITHM_ONLY",
+    "source_manifest_fingerprint": "83b183087f58404750661d978f6ff62f858920d2c97b827e07ad796b5be21946",
+    "omitted_mechanical_entities": [
+      "chassis",
+      "conveyor_transverse",
+      "conveyor_longitudinal"
+    ],
+    "camera_geometry_unchanged": true,
+    "full_mechanical_visibility_acceptance": "NOT_CLAIMED",
+    "fixture_scene": "GEOMETRY_PARTIAL_TWO"
+  },
+  "robot": {
+    "T_A_robot": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.625
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.6
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "T_W_robot": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.325
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.35
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.6
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "q_rad": [
+      -1.5707963267948966,
+      0.7854566731593875,
+      0.6496218708958161,
+      0.06722349609001022,
+      -1.2117503086182402,
+      -1.9415185231007088
+    ],
+    "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+    "robot_asset_path": "assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+    "robot_asset_status": "LATEST_FEASIBILITY_OFFICIAL_URDF",
+    "robot_model_identity": "fanuc_m710id_70"
+  },
+  "run_id": "geometry_partial_two-20260915",
+  "schema_version": "isaac_scene_manifest_v2",
+  "source": {
+    "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+    "isaac_version": "6.0.1.0",
+    "layout_contract_fingerprint": "33ca659b731678a3f8fa0784b413c152054c07f54af046b54a9465d456758863",
+    "perception_commit": "221b2969ac92cfefc9eaf37ba3c262de1f210c9c",
+    "source_scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698"
+  },
+  "timing": {
+    "simulation_epoch": "metric-algorithm-only-20260915",
+    "simulation_frame": 302,
+    "simulation_time": 10.066666666666666
+  },
+  "world_fingerprint": "66f9215b9d0a95dde33744752f51a9d69250112127de8ca8c11a138b8ba0ec08",
+  "manifest_fingerprint": "b823d4a8f8af72e045dda6792882cab1eb554f3fbfabc4eef2a8876f112ffdae"
+}

@@ -1,0 +1,814 @@
+{
+  "sam_denominator": 44,
+  "unique_identity_denominator": 42,
+  "ambiguous_source_denominator": 2,
+  "old_instances_with_faces": 38,
+  "new_instances_with_faces": 43,
+  "old_faces": 38,
+  "new_faces": 49,
+  "new_complete_accepted": 0,
+  "common_face_pairs": 36,
+  "old_common": {
+    "count": 36,
+    "plane_distance_m": {
+      "mean": 0.0005480016269915899,
+      "max": 0.0023844972655433505
+    },
+    "normal_error_degrees": {
+      "mean": 0.22859270893340314,
+      "max": 0.7741444332050346
+    },
+    "boundary_outside_m": {
+      "mean": 0.033473738809941665,
+      "max": 0.16874311913469567
+    },
+    "gt_boundary_over_10mm": 35
+  },
+  "new_common": {
+    "count": 36,
+    "plane_distance_m": {
+      "mean": 7.431535026176785e-06,
+      "max": 2.452619792786548e-05
+    },
+    "normal_error_degrees": {
+      "mean": 0.004402722167448468,
+      "max": 0.022720890592002
+    },
+    "boundary_outside_m": {
+      "mean": 0.015439753164140495,
+      "max": 0.1450044081800336
+    },
+    "gt_boundary_over_10mm": 13
+  },
+  "old_all_unique": {
+    "count": 36,
+    "plane_distance_m": {
+      "mean": 0.0005480016269915899,
+      "max": 0.0023844972655433505
+    },
+    "normal_error_degrees": {
+      "mean": 0.22859270893340314,
+      "max": 0.7741444332050346
+    },
+    "boundary_outside_m": {
+      "mean": 0.033473738809941665,
+      "max": 0.16874311913469567
+    },
+    "gt_boundary_over_10mm": 35
+  },
+  "new_all_unique": {
+    "count": 47,
+    "plane_distance_m": {
+      "mean": 1.5219214549157226e-05,
+      "max": 8.035834289780996e-05
+    },
+    "normal_error_degrees": {
+      "mean": 0.005410879255005509,
+      "max": 0.022720890592002
+    },
+    "boundary_outside_m": {
+      "mean": 0.011880787112460144,
+      "max": 0.1450044081800336
+    },
+    "gt_boundary_over_10mm": 13
+  },
+  "new_patch_coverage_range": [
+    0.624977672989676,
+    0.9814254408849004
+  ],
+  "depth_residual_comparison": "Legacy predicted-polygon support and new frozen observation support differ; use paired GT geometry for symmetric comparison.",
+  "mechanical_occlusion": "DEFERRED_MECHANICAL_OCCLUSION",
+  "unresolved_boundary_cases": [
+    {
+      "module": "module_0_upper",
+      "mask_id": 1,
+      "entities": [
+        "carton_l05_c00"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 1.8028289805460673e-07,
+          "normal_error_degrees": 1.9090959104164224e-06,
+          "boundary_outside_m": 0.02213166814886494,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 10110,
+            "excluded_invalid": 0,
+            "excluded_boundary": 1166,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 8944,
+            "raw": {
+              "count": 10110,
+              "mean_m": 3.5736957707703586e-05,
+              "p95_m": 1.3719021163538514e-08
+            },
+            "interior": {
+              "count": 8944,
+              "mean_m": 1.8988377771605833e-08,
+              "p95_m": 1.354563795574748e-08
+            },
+            "excluded": {
+              "count": 1166,
+              "mean_m": 0.00030971767613558664,
+              "p95_m": 0.0007634023028304515
+            },
+            "status": "PASS",
+            "point_support_count": 8944,
+            "point_support_ratio": 0.8846686449060336,
+            "plane_residual_m": 1.8988377771605833e-08,
+            "plane_residual_p95_m": 1.354563795574748e-08,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 2530,
+              "mean_m": 1.5116694480740723e-05,
+              "p95_m": 1.3600482873243891e-08
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.8881305637982195,
+            "patch_pixel_support_count": 8979
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_0_upper",
+      "mask_id": 2,
+      "entities": [
+        "carton_l05_c01"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 1.8895922959671907e-07,
+          "normal_error_degrees": 9.075738350724584e-06,
+          "boundary_outside_m": 0.02300010524345822,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 10690,
+            "excluded_invalid": 0,
+            "excluded_boundary": 1168,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 9522,
+            "raw": {
+              "count": 10690,
+              "mean_m": 1.151919663515981e-05,
+              "p95_m": 5.83747635785059e-09
+            },
+            "interior": {
+              "count": 9522,
+              "mean_m": 4.645027293164285e-09,
+              "p95_m": 5.511277323400062e-09
+            },
+            "excluded": {
+              "count": 1168,
+              "mean_m": 0.00010539039561641512,
+              "p95_m": 0.0006589876402969929
+            },
+            "status": "PASS",
+            "point_support_count": 9522,
+            "point_support_ratio": 0.8907390084190833,
+            "plane_residual_m": 4.645027293164285e-09,
+            "plane_residual_p95_m": 5.511277323400062e-09,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 2659,
+              "mean_m": 1.2259783332280498e-05,
+              "p95_m": 5.716707107694673e-09
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.8643592142188962,
+            "patch_pixel_support_count": 9240
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_0_upper",
+      "mask_id": 4,
+      "entities": [
+        "carton_l06_c00"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 1.8170153948116052e-07,
+          "normal_error_degrees": 8.537736462515939e-07,
+          "boundary_outside_m": 0.018267709381290326,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 88780,
+            "excluded_invalid": 0,
+            "excluded_boundary": 3537,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 85243,
+            "raw": {
+              "count": 88780,
+              "mean_m": 2.184492006022252e-05,
+              "p95_m": 1.2707034735548461e-08
+            },
+            "interior": {
+              "count": 85243,
+              "mean_m": 1.7528933349895324e-08,
+              "p95_m": 1.2441882923930336e-08
+            },
+            "excluded": {
+              "count": 3537,
+              "mean_m": 0.0005478930687251938,
+              "p95_m": 0.004151332098227068
+            },
+            "status": "PASS",
+            "point_support_count": 85243,
+            "point_support_ratio": 0.9601599459337689,
+            "plane_residual_m": 1.7528933349895324e-08,
+            "plane_residual_p95_m": 1.2441882923930336e-08,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 22224,
+              "mean_m": 2.092315015745566e-05,
+              "p95_m": 1.2693605777602807e-08
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.9452128857850868,
+            "patch_pixel_support_count": 83916
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_0_upper",
+      "mask_id": 8,
+      "entities": [
+        "carton_l06_c04"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 1.8938883933339312e-07,
+          "normal_error_degrees": 0.0,
+          "boundary_outside_m": 0.010000392468623526,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 84514,
+            "excluded_invalid": 0,
+            "excluded_boundary": 2590,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 81924,
+            "raw": {
+              "count": 84514,
+              "mean_m": 2.569464288922367e-09,
+              "p95_m": 3.237324275318087e-09
+            },
+            "interior": {
+              "count": 81924,
+              "mean_m": 2.576869407546361e-09,
+              "p95_m": 3.210490062688358e-09
+            },
+            "excluded": {
+              "count": 2590,
+              "mean_m": 2.335233810871378e-09,
+              "p95_m": 3.778462609460576e-09
+            },
+            "status": "PASS",
+            "point_support_count": 81924,
+            "point_support_ratio": 0.96935418983837,
+            "plane_residual_m": 2.576869407546361e-09,
+            "plane_residual_p95_m": 3.210490062688358e-09,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 21008,
+              "mean_m": 2.35516059536087e-09,
+              "p95_m": 3.2314068310057563e-09
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.9423290815722839,
+            "patch_pixel_support_count": 79640
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "mask_id": 5,
+      "entities": [
+        "carton_l01_c03"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 9.876521295748564e-06,
+          "normal_error_degrees": 0.004199766979599131,
+          "boundary_outside_m": 0.1450044081800336,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 48536,
+            "excluded_invalid": 0,
+            "excluded_boundary": 1824,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 46712,
+            "raw": {
+              "count": 48536,
+              "mean_m": 0.00018426261495970832,
+              "p95_m": 0.0003470854874445539
+            },
+            "interior": {
+              "count": 46712,
+              "mean_m": 0.00018295805734068246,
+              "p95_m": 0.0003474357291796903
+            },
+            "excluded": {
+              "count": 1824,
+              "mean_m": 0.0002176718778434448,
+              "p95_m": 0.0003363309088861841
+            },
+            "status": "PASS",
+            "point_support_count": 46712,
+            "point_support_ratio": 0.9624196472721279,
+            "plane_residual_m": 0.00018295805734068246,
+            "plane_residual_p95_m": 0.0003474357291796903,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 12074,
+              "mean_m": 0.00018297893515065286,
+              "p95_m": 0.0003467928984098534
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.8982198780286798,
+            "patch_pixel_support_count": 43596
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "mask_id": 7,
+      "entities": [
+        "carton_l02_c00"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 5.653003430639014e-06,
+          "normal_error_degrees": 0.002207014949212012,
+          "boundary_outside_m": 0.015948881639089724,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 55986,
+            "excluded_invalid": 0,
+            "excluded_boundary": 2306,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 53680,
+            "raw": {
+              "count": 55986,
+              "mean_m": 0.00017675785886700815,
+              "p95_m": 0.00033654613341871364
+            },
+            "interior": {
+              "count": 53680,
+              "mean_m": 0.00017673799384364632,
+              "p95_m": 0.00033655079102042903
+            },
+            "excluded": {
+              "count": 2306,
+              "mean_m": 0.00017722028490953435,
+              "p95_m": 0.00033621490993401837
+            },
+            "status": "PASS",
+            "point_support_count": 53680,
+            "point_support_ratio": 0.9588111313542671,
+            "plane_residual_m": 0.00017673799384364632,
+            "plane_residual_p95_m": 0.00033655079102042903,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 14037,
+              "mean_m": 0.0001766257609711423,
+              "p95_m": 0.0003365640081916421
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.624977672989676,
+            "patch_pixel_support_count": 34990
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "mask_id": 9,
+      "entities": [
+        "carton_l02_c02"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 6.208882724068054e-07,
+          "normal_error_degrees": 0.0002139652830437835,
+          "boundary_outside_m": 0.027399542705831365,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 58002,
+            "excluded_invalid": 0,
+            "excluded_boundary": 1982,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 56020,
+            "raw": {
+              "count": 58002,
+              "mean_m": 0.00017617074922542542,
+              "p95_m": 0.00033650047317932417
+            },
+            "interior": {
+              "count": 56020,
+              "mean_m": 0.00017617254192836733,
+              "p95_m": 0.0003367419183037179
+            },
+            "excluded": {
+              "count": 1982,
+              "mean_m": 0.0001761200795892973,
+              "p95_m": 0.00032607877590778983
+            },
+            "status": "PASS",
+            "point_support_count": 56020,
+            "point_support_ratio": 0.9658287645253611,
+            "plane_residual_m": 0.00017617254192836733,
+            "plane_residual_p95_m": 0.0003367419183037179,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 14509,
+              "mean_m": 0.00017616363887028148,
+              "p95_m": 0.0003362722538568175
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.923554360194476,
+            "patch_pixel_support_count": 53568
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "mask_id": 10,
+      "entities": [
+        "carton_l02_c03"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 9.711385120569904e-06,
+          "normal_error_degrees": 0.002875620543124012,
+          "boundary_outside_m": 0.11462057989480937,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 74854,
+            "excluded_invalid": 0,
+            "excluded_boundary": 2385,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 72469,
+            "raw": {
+              "count": 74854,
+              "mean_m": 0.00017450846187387612,
+              "p95_m": 0.00033334424503898006
+            },
+            "interior": {
+              "count": 72469,
+              "mean_m": 0.00017449478306012285,
+              "p95_m": 0.00033347329410085
+            },
+            "excluded": {
+              "count": 2385,
+              "mean_m": 0.00017492409707466755,
+              "p95_m": 0.0003265309067345345
+            },
+            "status": "PASS",
+            "point_support_count": 72469,
+            "point_support_ratio": 0.9681379752585032,
+            "plane_residual_m": 0.00017449478306012285,
+            "plane_residual_p95_m": 0.00033347329410085,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 18716,
+              "mean_m": 0.00017447658210076444,
+              "p95_m": 0.0003331876948234891
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.8639752050658616,
+            "patch_pixel_support_count": 64672
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "mask_id": 11,
+      "entities": [
+        "carton_l02_c04"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 1.3596890898914804e-05,
+          "normal_error_degrees": 0.0053869176200221774,
+          "boundary_outside_m": 0.015715309411130113,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 50548,
+            "excluded_invalid": 0,
+            "excluded_boundary": 1852,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 48696,
+            "raw": {
+              "count": 50548,
+              "mean_m": 0.00017705111460430132,
+              "p95_m": 0.0003376336250483723
+            },
+            "interior": {
+              "count": 48696,
+              "mean_m": 0.0001770638313971882,
+              "p95_m": 0.00033785280670500795
+            },
+            "excluded": {
+              "count": 1852,
+              "mean_m": 0.0001767167426029954,
+              "p95_m": 0.0003293317838997667
+            },
+            "status": "PASS",
+            "point_support_count": 48696,
+            "point_support_ratio": 0.9633615573316452,
+            "plane_residual_m": 0.0001770638313971882,
+            "plane_residual_p95_m": 0.00033785280670500795,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 12592,
+              "mean_m": 0.00017692621257006235,
+              "p95_m": 0.00033700091521524637
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.9044868244045264,
+            "patch_pixel_support_count": 45720
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "mask_id": 15,
+      "entities": [
+        "carton_l03_c03"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 1.2485411469309593e-05,
+          "normal_error_degrees": 0.0041039517351178344,
+          "boundary_outside_m": 0.062281336779666324,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 74043,
+            "excluded_invalid": 0,
+            "excluded_boundary": 2485,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 71558,
+            "raw": {
+              "count": 74043,
+              "mean_m": 0.00016338206612477623,
+              "p95_m": 0.0003098049161867067
+            },
+            "interior": {
+              "count": 71558,
+              "mean_m": 0.00016335764046983696,
+              "p95_m": 0.0003097449197556279
+            },
+            "excluded": {
+              "count": 2485,
+              "mean_m": 0.00016408542669465437,
+              "p95_m": 0.00032432780201276936
+            },
+            "status": "PASS",
+            "point_support_count": 71558,
+            "point_support_ratio": 0.9664384209175749,
+            "plane_residual_m": 0.00016335764046983696,
+            "plane_residual_p95_m": 0.0003097449197556279,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 18532,
+              "mean_m": 0.00016346271404391442,
+              "p95_m": 0.00030980660203684397
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.8738435773807112,
+            "patch_pixel_support_count": 64702
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "mask_id": 20,
+      "entities": [
+        "carton_l04_c03"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 3.4931482457700724e-06,
+          "normal_error_degrees": 0.0013358873226549655,
+          "boundary_outside_m": 0.029419152985009328,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 84335,
+            "excluded_invalid": 0,
+            "excluded_boundary": 2550,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 81785,
+            "raw": {
+              "count": 84335,
+              "mean_m": 0.0001522261998227463,
+              "p95_m": 0.0002908054182658715
+            },
+            "interior": {
+              "count": 81785,
+              "mean_m": 0.00015221236902001692,
+              "p95_m": 0.0002908999150239122
+            },
+            "excluded": {
+              "count": 2550,
+              "mean_m": 0.00015266978892126523,
+              "p95_m": 0.0002820715026532805
+            },
+            "status": "PASS",
+            "point_support_count": 81785,
+            "point_support_ratio": 0.9697634434102093,
+            "plane_residual_m": 0.00015221236902001692,
+            "plane_residual_p95_m": 0.0002908999150239122,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 21074,
+              "mean_m": 0.00015224697158384572,
+              "p95_m": 0.0002908588133959
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.8746902235133693,
+            "patch_pixel_support_count": 73767
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "mask_id": 25,
+      "entities": [
+        "carton_l05_c03"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 2.1810879859973653e-06,
+          "normal_error_degrees": 0.000712081002587526,
+          "boundary_outside_m": 0.011585607012734839,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 97340,
+            "excluded_invalid": 0,
+            "excluded_boundary": 2724,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 94616,
+            "raw": {
+              "count": 97340,
+              "mean_m": 0.00014083782855568887,
+              "p95_m": 0.00026663338069259356
+            },
+            "interior": {
+              "count": 94616,
+              "mean_m": 0.00014082412278391046,
+              "p95_m": 0.00026652813250943597
+            },
+            "excluded": {
+              "count": 2724,
+              "mean_m": 0.00014131388777102874,
+              "p95_m": 0.00026980616571316003
+            },
+            "status": "PASS",
+            "point_support_count": 94616,
+            "point_support_ratio": 0.9720156153688103,
+            "plane_residual_m": 0.00014082412278391046,
+            "plane_residual_p95_m": 0.00026652813250943597,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 24299,
+              "mean_m": 0.00014094279594039312,
+              "p95_m": 0.0002661815549577229
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.8995274296281076,
+            "patch_pixel_support_count": 87560
+          }
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "mask_id": 26,
+      "entities": [
+        "carton_l05_c04"
+      ],
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 5.6684866302503245e-06,
+          "normal_error_degrees": 0.0020563426730044283,
+          "boundary_outside_m": 0.010892962273592183,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 99361,
+            "excluded_invalid": 0,
+            "excluded_boundary": 2848,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 96513,
+            "raw": {
+              "count": 99361,
+              "mean_m": 0.00014095469269475962,
+              "p95_m": 0.00026732244016458573
+            },
+            "interior": {
+              "count": 96513,
+              "mean_m": 0.00014093430523387572,
+              "p95_m": 0.0002672402673120633
+            },
+            "excluded": {
+              "count": 2848,
+              "mean_m": 0.0001416455827973884,
+              "p95_m": 0.0002705349002931068
+            },
+            "status": "PASS",
+            "point_support_count": 96513,
+            "point_support_ratio": 0.9713368424230835,
+            "plane_residual_m": 0.00014093430523387572,
+            "plane_residual_p95_m": 0.0002672402673120633,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 24792,
+              "mean_m": 0.00014104020778516838,
+              "p95_m": 0.00026728336328576404
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.9155704954660279,
+            "patch_pixel_support_count": 90972
+          }
+        }
+      ]
+    }
+  ],
+  "new_raw_depth_max_mean_m": 0.000643963509504385,
+  "new_interior_depth_max_mean_m": 0.0005233043639259633,
+  "new_holdout_depth_max_mean_m": 0.000549333266751239
+}

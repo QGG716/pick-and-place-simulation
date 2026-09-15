@@ -1,0 +1,110 @@
+{
+  "target": "c50ff4c2a6b6ece69aafb1de1f62bce14c68b5d9",
+  "files": [
+    {
+      "path": ".github/workflows/ros2-humble.yml",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "configs/perception/metric_geometry_acceptance.json",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "pyproject.toml",
+      "exact": false,
+      "same_text": true
+    },
+    {
+      "path": "scripts/isaacsim_perception_capture.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "src/unloading_perception/final_geometry.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "src/unloading_perception/metric_faces.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "src/unloading_perception/metric_support.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "src/unloading_perception/observed_faces.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "src/unloading_perception/rgbd.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tests/test_metric_patch_adapter.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tests/test_metric_support.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tests_metric/test_depth_solver.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tools/check_metric_small_gates.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tools/complete_metric_stage_evidence.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tools/diagnose_metric_calibration.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tools/metric_depth_runner.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tools/prepare_metric_small_scenes.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tools/regress_metric_frozen_stack.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tools/run_isaac_rgbd_geometry.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tools/run_metric_small_matrix.py",
+      "exact": true,
+      "same_text": true
+    },
+    {
+      "path": "tools/validate_metric_analytic.py",
+      "exact": true,
+      "same_text": true
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+Starting >>> unloading_interfaces
+Finished <<< unloading_interfaces [0.04s]
+Starting >>> unloading_ros_bridge
+Finished <<< unloading_ros_bridge [4.68s]
+Starting >>> unloading_bringup
+Finished <<< unloading_bringup [0.02s]
+
+Summary: 3 packages finished [4.92s]

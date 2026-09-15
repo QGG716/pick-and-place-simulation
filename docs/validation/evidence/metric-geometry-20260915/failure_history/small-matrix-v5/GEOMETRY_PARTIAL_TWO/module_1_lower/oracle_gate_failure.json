@@ -1,0 +1,121 @@
+{
+  "scene": "GEOMETRY_PARTIAL_TWO",
+  "module": "module_1_lower",
+  "gt_visible_denominator": 2,
+  "ORACLE_MASK_DIAGNOSTIC": [
+    {
+      "entity": "carton_l07_c01",
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 2.3588660606380096e-05,
+          "normal_error_degrees": 0.009585458639295729,
+          "boundary_outside_m": 0.0,
+          "gt_axis": 0,
+          "gt_sign": -1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 24724,
+            "excluded_invalid": 0,
+            "excluded_boundary": 1594,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 23130,
+            "raw": {
+              "count": 24724,
+              "mean_m": 0.002132848805590925,
+              "p95_m": 0.00043441531651777776
+            },
+            "interior": {
+              "count": 23130,
+              "mean_m": 0.00022635716496441623,
+              "p95_m": 0.0004298000768886978
+            },
+            "excluded": {
+              "count": 1594,
+              "mean_m": 0.029797310316062163,
+              "p95_m": 0.2584658697639339
+            },
+            "status": "PASS",
+            "point_support_count": 23130,
+            "point_support_ratio": 0.935528231677722,
+            "plane_residual_m": 0.00022635716496441623,
+            "plane_residual_p95_m": 0.0004298000768886978,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 6009,
+              "mean_m": 0.00023520377352227774,
+              "p95_m": 0.00042968816458315294
+            },
+            "label": 0,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.8934638408024591,
+            "patch_pixel_support_count": 22090
+          }
+        },
+        {
+          "label": 1,
+          "plane_distance_m": 2.9679937605595064e-06,
+          "normal_error_degrees": 0.0008140139605534955,
+          "boundary_outside_m": 0.0,
+          "gt_axis": 1,
+          "gt_sign": 1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 20838,
+            "excluded_invalid": 0,
+            "excluded_boundary": 1503,
+            "excluded_discontinuity": 0,
+            "retained_pixels": 19335,
+            "raw": {
+              "count": 20838,
+              "mean_m": 0.0018740302004522143,
+              "p95_m": 0.00017463373192339038
+            },
+            "interior": {
+              "count": 19335,
+              "mean_m": 8.909041605846873e-05,
+              "p95_m": 0.00017082499818130704
+            },
+            "excluded": {
+              "count": 1503,
+              "mean_m": 0.024835980121445604,
+              "p95_m": 0.2131976383677953
+            },
+            "status": "PASS",
+            "point_support_count": 19335,
+            "point_support_ratio": 0.9278721566369134,
+            "plane_residual_m": 8.909041605846873e-05,
+            "plane_residual_p95_m": 0.00017082499818130704,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 5061,
+              "mean_m": 8.878839018178343e-05,
+              "p95_m": 0.00017185436267408427
+            },
+            "label": 1,
+            "observation_region_precision": 1.0,
+            "patch_observation_coverage": 0.8883770035512045,
+            "patch_pixel_support_count": 18512
+          }
+        }
+      ],
+      "complete_accepted": true,
+      "center_error_m": 0.002012015400882445,
+      "dimension_error_m": [
+        0.0003305376710647234,
+        0.0004238105942719339,
+        0.0035732414469383245
+      ],
+      "orientation_error_degrees": 0.009610264849832439,
+      "corner_set_max_error_m": 0.0038631321681737215
+    },
+    {
+      "entity": "carton_l07_c02",
+      "faces": [],
+      "complete_accepted": false
+    }
+  ],
+  "SAM_PAIRED": []
+}

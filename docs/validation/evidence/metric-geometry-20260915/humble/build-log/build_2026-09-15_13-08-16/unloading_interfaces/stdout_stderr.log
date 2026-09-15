@@ -1,0 +1,518 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found builtin_interfaces: 1.2.3 (/opt/ros/humble/share/builtin_interfaces/cmake)
+-- Found rosidl_generator_c: 3.1.9 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.9 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.9 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found geometry_msgs: 4.9.2 (/opt/ros/humble/share/geometry_msgs/cmake)
+-- Found rosidl_default_generators: 1.2.1 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+-- Found trajectory_msgs: 4.9.2 (/opt/ros/humble/share/trajectory_msgs/cmake)
+-- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+-- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+-- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+-- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+-- Found PythonExtra: .so  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/build/unloading_interfaces
+[  1%] Generating C code for ROS interfaces
+[  2%] Generating Rust code for ROS interfaces
+[  2%] Generating C++ code for ROS interfaces
+[  2%] Built target ament_cmake_python_symlink_unloading_interfaces
+running egg_info
+creating unloading_interfaces.egg-info
+writing unloading_interfaces.egg-info/PKG-INFO
+writing dependency_links to unloading_interfaces.egg-info/dependency_links.txt
+writing top-level names to unloading_interfaces.egg-info/top_level.txt
+writing manifest file 'unloading_interfaces.egg-info/SOURCES.txt'
+reading manifest file 'unloading_interfaces.egg-info/SOURCES.txt'
+writing manifest file 'unloading_interfaces.egg-info/SOURCES.txt'
+[  2%] Built target ament_cmake_python_build_unloading_interfaces_egg
+[  2%] Built target unloading_interfaces__rs
+[  2%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/controller_stop_fact__functions.c.o
+[  3%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/execution_cancel__functions.c.o
+[  4%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/cargo_observation__functions.c.o
+[  6%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/execution_context__functions.c.o
+[  7%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/mechanism_state__functions.c.o
+[  8%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/execution_event__functions.c.o
+[  9%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/planning_world_snapshot__functions.c.o
+[ 11%] Built target unloading_interfaces__cpp
+[ 11%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/stop_acknowledgement__functions.c.o
+[ 11%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/perception_observation__functions.c.o
+[ 11%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/execution_grant__functions.c.o
+[ 12%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/unknown_region__functions.c.o
+[ 12%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/execution_authorization__functions.c.o
+[ 12%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_c.dir/rosidl_generator_c/unloading_interfaces/msg/detail/rgbd_capture_metadata__functions.c.o
+[ 13%] Generating C++ type support for eProsima Fast-RTPS
+[ 14%] Generating C++ introspection for ROS interfaces
+[ 15%] Generating C++ type support dispatch for ROS interfaces
+[ 16%] Linking C shared library libunloading_interfaces__rosidl_generator_c.so
+[ 16%] Built target unloading_interfaces__rosidl_generator_c
+[ 18%] Generating C type support for eProsima Fast-RTPS
+[ 19%] Generating C introspection for ROS interfaces
+[ 19%] Generating C type support dispatch for ROS interfaces
+[ 20%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/cargo_observation__type_support.cpp.o
+[ 20%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/controller_stop_fact__type_support.cpp.o
+[ 21%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/execution_authorization__type_support.cpp.o
+[ 22%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/execution_cancel__type_support.cpp.o
+[ 22%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/execution_event__type_support.cpp.o
+[ 23%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/execution_context__type_support.cpp.o
+[ 24%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/perception_observation__type_support.cpp.o
+[ 24%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/rgbd_capture_metadata__type_support.cpp.o
+[ 25%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/stop_acknowledgement__type_support.cpp.o
+[ 27%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/cargo_observation__type_support.cpp.o
+[ 27%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/execution_grant__type_support.cpp.o
+[ 28%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/mechanism_state__type_support.cpp.o
+[ 29%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/execution_authorization__type_support.cpp.o
+[ 31%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/unknown_region__type_support.cpp.o
+[ 31%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/execution_cancel__type_support.cpp.o
+[ 32%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/execution_grant__type_support.cpp.o
+[ 32%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/controller_stop_fact__type_support.cpp.o
+[ 32%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/execution_event__type_support.cpp.o
+[ 33%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/unloading_interfaces/msg/planning_world_snapshot__type_support.cpp.o
+[ 34%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/execution_context__type_support.cpp.o
+[ 35%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/perception_observation__type_support.cpp.o
+[ 36%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/stop_acknowledgement__type_support.cpp.o
+[ 37%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/unknown_region__type_support.cpp.o
+[ 38%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/mechanism_state__type_support.cpp.o
+[ 38%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/rgbd_capture_metadata__type_support.cpp.o
+[ 39%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/unloading_interfaces/msg/detail/planning_world_snapshot__type_support.cpp.o
+[ 39%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/cargo_observation__type_support.cpp.o
+[ 40%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/execution_cancel__type_support.cpp.o
+[ 41%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/controller_stop_fact__type_support.cpp.o
+[ 43%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/mechanism_state__type_support.cpp.o
+[ 43%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/execution_authorization__type_support.cpp.o
+[ 44%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/execution_event__type_support.cpp.o
+[ 45%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/execution_grant__type_support.cpp.o
+[ 45%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/planning_world_snapshot__type_support.cpp.o
+[ 45%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/execution_context__type_support.cpp.o
+[ 46%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/perception_observation__type_support.cpp.o
+[ 47%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/rgbd_capture_metadata__type_support.cpp.o
+[ 48%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/stop_acknowledgement__type_support.cpp.o
+[ 49%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/unloading_interfaces/msg/unknown_region__type_support.cpp.o
+[ 49%] Linking CXX shared library libunloading_interfaces__rosidl_typesupport_c.so
+[ 50%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/execution_cancel__type_support.cpp.o
+[ 52%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/mechanism_state__type_support.cpp.o
+[ 52%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/execution_event__type_support.cpp.o
+[ 52%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/cargo_observation__type_support.cpp.o
+[ 53%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/execution_grant__type_support.cpp.o
+[ 53%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/controller_stop_fact__type_support.cpp.o
+[ 54%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/execution_authorization__type_support.cpp.o
+[ 55%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/execution_context__type_support.cpp.o
+[ 56%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/unknown_region__type_support.cpp.o
+[ 57%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/perception_observation__type_support.cpp.o
+[ 58%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/planning_world_snapshot__type_support.cpp.o
+[ 58%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/rgbd_capture_metadata__type_support.cpp.o
+[ 59%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/unloading_interfaces/msg/detail/dds_fastrtps/stop_acknowledgement__type_support.cpp.o
+[ 60%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/controller_stop_fact__type_support.c.o
+[ 60%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/cargo_observation__type_support.c.o
+[ 62%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/stop_acknowledgement__type_support.c.o
+[ 62%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/mechanism_state__type_support.c.o
+[ 63%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/execution_cancel__type_support.c.o
+[ 64%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/perception_observation__type_support.c.o
+[ 64%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/execution_context__type_support.c.o
+[ 65%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/execution_authorization__type_support.c.o
+[ 66%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/execution_grant__type_support.c.o
+[ 67%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/execution_event__type_support.c.o
+[ 68%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/planning_world_snapshot__type_support.c.o
+[ 68%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/rgbd_capture_metadata__type_support.c.o
+[ 69%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/unloading_interfaces/msg/detail/unknown_region__type_support.c.o
+[ 69%] Built target unloading_interfaces__rosidl_typesupport_c
+[ 70%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/perception_observation__type_support_c.cpp.o
+[ 71%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/execution_cancel__type_support_c.cpp.o
+[ 72%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/execution_event__type_support_c.cpp.o
+[ 73%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/controller_stop_fact__type_support_c.cpp.o
+[ 73%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/cargo_observation__type_support_c.cpp.o
+[ 73%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/execution_context__type_support_c.cpp.o
+[ 74%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/execution_authorization__type_support_c.cpp.o
+[ 75%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/rgbd_capture_metadata__type_support_c.cpp.o
+[ 75%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/planning_world_snapshot__type_support_c.cpp.o
+[ 76%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/execution_grant__type_support_c.cpp.o
+[ 77%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/unknown_region__type_support_c.cpp.o
+[ 78%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/mechanism_state__type_support_c.cpp.o
+[ 79%] Building CXX object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/unloading_interfaces/msg/detail/stop_acknowledgement__type_support_c.cpp.o
+[ 79%] Linking C shared library libunloading_interfaces__rosidl_typesupport_introspection_c.so
+[ 79%] Built target unloading_interfaces__rosidl_typesupport_introspection_c
+[ 80%] Linking CXX shared library libunloading_interfaces__rosidl_typesupport_cpp.so
+[ 80%] Built target unloading_interfaces__rosidl_typesupport_cpp
+[ 81%] Linking CXX shared library libunloading_interfaces__rosidl_typesupport_introspection_cpp.so
+[ 81%] Linking CXX shared library libunloading_interfaces__rosidl_typesupport_fastrtps_c.so
+[ 82%] Linking CXX shared library libunloading_interfaces__rosidl_typesupport_fastrtps_cpp.so
+[ 82%] Built target unloading_interfaces__rosidl_typesupport_introspection_cpp
+[ 82%] Built target unloading_interfaces__rosidl_typesupport_fastrtps_c
+[ 82%] Built target unloading_interfaces__rosidl_typesupport_fastrtps_cpp
+[ 82%] Built target unloading_interfaces
+[ 83%] Generating Python code for ROS interfaces
+[ 83%] Built target unloading_interfaces__py
+[ 84%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_cargo_observation_s.c.o
+[ 84%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_controller_stop_fact_s.c.o
+[ 85%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_execution_authorization_s.c.o
+[ 86%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_execution_cancel_s.c.o
+[ 91%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_stop_acknowledgement_s.c.o
+[ 91%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_mechanism_state_s.c.o
+[ 91%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_rgbd_capture_metadata_s.c.o
+[ 91%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_execution_event_s.c.o
+[ 91%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_execution_context_s.c.o
+[ 91%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_execution_grant_s.c.o
+[ 91%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_perception_observation_s.c.o
+[ 92%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_planning_world_snapshot_s.c.o
+[ 93%] Building C object CMakeFiles/unloading_interfaces__rosidl_generator_py.dir/rosidl_generator_py/unloading_interfaces/msg/_unknown_region_s.c.o
+[ 94%] Linking C shared library rosidl_generator_py/unloading_interfaces/libunloading_interfaces__rosidl_generator_py.so
+[ 94%] Built target unloading_interfaces__rosidl_generator_py
+[ 95%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/unloading_interfaces/_unloading_interfaces_s.ep.rosidl_typesupport_c.c.o
+[ 96%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/unloading_interfaces/_unloading_interfaces_s.ep.rosidl_typesupport_introspection_c.c.o
+[ 97%] Building C object CMakeFiles/unloading_interfaces__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/unloading_interfaces/_unloading_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c.o
+[ 98%] Linking C shared library rosidl_generator_py/unloading_interfaces/unloading_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[ 99%] Linking C shared library rosidl_generator_py/unloading_interfaces/unloading_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[100%] Linking C shared library rosidl_generator_py/unloading_interfaces/unloading_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[100%] Built target unloading_interfaces__rosidl_typesupport_c__pyext
+[100%] Built target unloading_interfaces__rosidl_typesupport_fastrtps_c__pyext
+[100%] Built target unloading_interfaces__rosidl_typesupport_introspection_c__pyext
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/ament_index/resource_index/rosidl_interfaces/unloading_interfaces
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/cargo_observation.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/controller_stop_fact.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__functions.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__struct.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__type_support.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_authorization.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_cancel.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_context.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_event.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_grant.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/mechanism_state.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/perception_observation.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/planning_world_snapshot.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/rgbd_capture_metadata.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/rosidl_generator_c__visibility_control.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/stop_acknowledgement.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/unknown_region.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/environment/library_path.sh
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/environment/library_path.dsv
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__rosidl_typesupport_fastrtps_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/cargo_observation.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/controller_stop_fact.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__builder.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__struct.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__traits.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__type_support.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_authorization.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_cancel.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_context.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_event.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/execution_grant.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/mechanism_state.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/perception_observation.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/planning_world_snapshot.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/rgbd_capture_metadata.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/stop_acknowledgement.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/unknown_region.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__rosidl_typesupport_fastrtps_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__rosidl_typesupport_introspection_c.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/cargo_observation__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/controller_stop_fact__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_authorization__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_cancel__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_context__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_event__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/execution_grant__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/mechanism_state__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/perception_observation__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/planning_world_snapshot__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/rgbd_capture_metadata__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/stop_acknowledgement__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/include/unloading_interfaces/unloading_interfaces/msg/detail/unknown_region__rosidl_typesupport_introspection_cpp.hpp
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/environment/pythonpath.sh
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/environment/pythonpath.dsv
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces-1.1.0-py3.10.egg-info/PKG-INFO
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces-1.1.0-py3.10.egg-info/SOURCES.txt
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces-1.1.0-py3.10.egg-info/dependency_links.txt
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces-1.1.0-py3.10.egg-info/top_level.txt
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/__init__.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/_unloading_interfaces_s.ep.rosidl_typesupport_c.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/_unloading_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/_unloading_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/libunloading_interfaces__rosidl_generator_py.so
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/__init__.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_cargo_observation.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_cargo_observation_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_controller_stop_fact.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_controller_stop_fact_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_authorization.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_authorization_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_cancel.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_cancel_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_context.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_context_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_event.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_event_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_grant.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_grant_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_mechanism_state.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_mechanism_state_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_perception_observation.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_perception_observation_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_planning_world_snapshot.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_planning_world_snapshot_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_rgbd_capture_metadata.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_rgbd_capture_metadata_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_stop_acknowledgement.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_stop_acknowledgement_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_unknown_region.py
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_unknown_region_s.c
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/unloading_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/unloading_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/unloading_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+-- Up-to-date symlink: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/unloading_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+-- Up-to-date symlink: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/unloading_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+-- Up-to-date symlink: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/unloading_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/ament_index/resource_index/rust_packages/unloading_interfaces
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/rust/Cargo.toml
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/rust/build.rs
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/rust/src/lib.rs
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/rust/src/msg.rs
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/rust/src/msg/rmw.rs
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/CargoObservation.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ControllerStopFact.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionAuthorization.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionCancel.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionContext.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionEvent.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionGrant.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/MechanismState.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/PerceptionObservation.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/PlanningWorldSnapshot.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/RgbdCaptureMetadata.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/StopAcknowledgement.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/UnknownRegion.idl
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/CargoObservation.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ControllerStopFact.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionAuthorization.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionCancel.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionContext.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionEvent.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/ExecutionGrant.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/MechanismState.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/PerceptionObservation.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/PlanningWorldSnapshot.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/RgbdCaptureMetadata.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/StopAcknowledgement.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/msg/UnknownRegion.msg
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/ament_index/resource_index/package_run_dependencies/unloading_interfaces
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/ament_index/resource_index/parent_prefix_path/unloading_interfaces
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/environment/ament_prefix_path.sh
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/environment/ament_prefix_path.dsv
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/environment/path.sh
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/environment/path.dsv
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/local_setup.bash
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/local_setup.sh
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/local_setup.zsh
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/local_setup.dsv
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/package.dsv
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/ament_index/resource_index/packages/unloading_interfaces
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/rosidl_cmake-extras.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/rosidl_cmake_aggregate_target-extras.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfacesConfig.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfacesConfig-version.cmake
+-- Symlinking: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/package.xml
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_generator_c.so
+-- Set runtime path of "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_generator_c.so" to ""
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_fastrtps_c.so
+-- Set runtime path of "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_fastrtps_c.so" to ""
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_fastrtps_cpp.so
+-- Set runtime path of "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_fastrtps_cpp.so" to ""
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_introspection_c.so
+-- Set runtime path of "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_introspection_c.so" to ""
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_c.so
+-- Set runtime path of "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_c.so" to ""
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_introspection_cpp.so
+-- Set runtime path of "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_introspection_cpp.so" to ""
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_cpp.so
+-- Set runtime path of "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_typesupport_cpp.so" to ""
+Listing '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/__init__.py'...
+Listing '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/__init__.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_cargo_observation.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_controller_stop_fact.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_authorization.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_cancel.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_context.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_event.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_execution_grant.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_mechanism_state.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_perception_observation.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_planning_world_snapshot.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_rgbd_capture_metadata.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_stop_acknowledgement.py'...
+Compiling '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages/unloading_interfaces/msg/_unknown_region.py'...
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_generator_py.so
+-- Set runtime path of "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib/libunloading_interfaces__rosidl_generator_py.so" to ""
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/export_unloading_interfaces__rosidl_generator_cExport.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/export_unloading_interfaces__rosidl_generator_cExport-noconfig.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/export_unloading_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/export_unloading_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/export_unloading_interfaces__rosidl_generator_cppExport.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/export_unloading_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/export_unloading_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfaces__rosidl_typesupport_introspection_cExport.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfaces__rosidl_typesupport_cExport.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfaces__rosidl_typesupport_cppExport.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/unloading_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/export_unloading_interfaces__rosidl_generator_pyExport.cmake
+-- Installing: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/share/unloading_interfaces/cmake/export_unloading_interfaces__rosidl_generator_pyExport-noconfig.cmake

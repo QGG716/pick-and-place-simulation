@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/root/v05-gpu-venv/bin/python",
+    "/root/vision-fixed/pipeline/geometry/refine_multiplane_cuboids.py",
+    "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/sensor_rgb.png",
+    "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/sam-runs/metric-algorithm-only-20260915-000301-GEOMETRY_ADJACENT_TWO-module_0_upper/cargo_masks.npz",
+    "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/registered_metric_pointmap.npz",
+    "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/metric_multiplane_input.json",
+    "--fallback",
+    "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/registered_fallback.json",
+    "--suppress-hidden-fallback",
+    "--json-output",
+    "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/worker.json",
+    "--output",
+    "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/worker.png",
+    "--min-face-precision",
+    "0.72",
+    "--min-face-coverage",
+    "0.04",
+    "--max-pnp-rmse",
+    "6"
+  ],
+  "upstream_sha": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+  "returncode": 0
+}

@@ -1,0 +1,59 @@
+{
+  "scene": "GEOMETRY_ADJACENT_TWO",
+  "module": "module_1_lower",
+  "gt_visible_denominator": 2,
+  "ORACLE_MASK_DIAGNOSTIC": [
+    {
+      "entity": "carton_l07_c01",
+      "faces": [
+        {
+          "label": 0,
+          "plane_distance_m": 2.903010322334587e-05,
+          "normal_error_degrees": 0.01322102357961181,
+          "boundary_outside_m": 0.04890542601382411,
+          "gt_axis": 1,
+          "gt_sign": 1,
+          "depth": {
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+            "candidate_plane_used_for_selection": false,
+            "selected_pixels": 10803,
+            "excluded_invalid": 0,
+            "excluded_boundary": 1169,
+            "excluded_discontinuity": 1365,
+            "retained_pixels": 8269,
+            "raw": {
+              "count": 10803,
+              "mean_m": 0.03420414502601249,
+              "p95_m": 0.2793592421852805
+            },
+            "interior": {
+              "count": 8269,
+              "mean_m": 0.0020613145735887935,
+              "p95_m": 0.00025313702751743604
+            },
+            "excluded": {
+              "count": 2534,
+              "mean_m": 0.13909327881097364,
+              "p95_m": 0.369040653271917
+            },
+            "status": "PASS",
+            "point_support_count": 8269,
+            "point_support_ratio": 0.7654355271683791,
+            "plane_residual_m": 0.0020613145735887935,
+            "plane_residual_p95_m": 0.00025313702751743604,
+            "maximum_mean_m": 0.003,
+            "spatial_holdout": {
+              "count": 2218,
+              "mean_m": 0.0020908394158821917,
+              "p95_m": 0.0002535859662162965
+            },
+            "label": 0,
+            "observation_region_precision": 0.9952960708356392
+          }
+        }
+      ],
+      "complete_accepted": false
+    }
+  ],
+  "SAM_PAIRED": []
+}

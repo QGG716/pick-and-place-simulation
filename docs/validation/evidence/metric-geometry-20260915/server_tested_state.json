@@ -1,0 +1,11 @@
+{
+  "starting_sha": "343eb22b8261d67f724a9c78d119d5ee6200288a",
+  "tested_geometry_sha": "c50ff4c2a6b6ece69aafb1de1f62bce14c68b5d9",
+  "branch": "feat/v0.5-perception-ros2",
+  "upstream_sha": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+  "upstream_status": "",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition, 580.95.05, 97887 MiB",
+  "full_stack_solver_runs": 1,
+  "report_rebuilt_from_persisted_outputs": true,
+  "threshold_sha256": "e30907d8e6dd3755149c28869f6d4f02f97bedeb6999a3a931d1ec34b8e6c0e3"
+}

@@ -1,0 +1,19 @@
+{
+  "status": "TRANSPORT_AND_SEMANTICS_PASS",
+  "planning_admissible": false,
+  "blocking_reasons": [
+    "OBSERVATION_STALE",
+    "UNKNOWN_OR_UNTRANSFORMED_REGIONS",
+    "ROBOT_STATE_STALE_OR_TIME_JUMP",
+    "MECHANISM_STATE_STALE_OR_TIME_JUMP"
+  ],
+  "surface_count": 49,
+  "source_capture_time": 1.6666666666666667,
+  "processed_time": 71.1821539166073,
+  "round_trip_fingerprint": "47bf275094560d1a1ebf006f06e2e0c4d0639f1ffdf10dbbe8e68e22454ebfbe",
+  "stale_sequence_rejected": true,
+  "wrong_capture_tf_rejected": true,
+  "coverage_status": "COMPLETE_MODULE_SET",
+  "execution_commands_generated": 0,
+  "source_kind": "ALGORITHM_FROM_ISAAC_RENDERED_RGBD"
+}

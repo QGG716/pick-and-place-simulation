@@ -1,0 +1,1197 @@
+[
+  {
+    "stage": "A_RAW_REGISTERED_DEPTH",
+    "pixel_count": 47107,
+    "residual_reference": "ORIGINAL_INITIAL_PLANE_REEVALUATED_ON_FROZEN_OBSERVATION_LABELS",
+    "planes": [
+      {
+        "normal": [
+          0.34311914323391535,
+          -0.01692500706528644,
+          -0.9391393920405341
+        ],
+        "offset_m": 2.117944884128864,
+        "support_label": 0,
+        "audit": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 16841,
+          "excluded_invalid": 0,
+          "excluded_boundary": 0,
+          "excluded_discontinuity": 219,
+          "retained_pixels": 16622,
+          "raw": {
+            "count": 16841,
+            "mean_m": 0.0015390474146475715,
+            "p95_m": 0.0034455734422591533
+          },
+          "interior": {
+            "count": 16622,
+            "mean_m": 0.0015342496416870278,
+            "p95_m": 0.0034340902893516653
+          },
+          "excluded": {
+            "count": 219,
+            "mean_m": 0.0019031961915889314,
+            "p95_m": 0.0038034797408610377
+          },
+          "status": "PASS",
+          "point_support_count": 16622,
+          "point_support_ratio": 0.9869960216139184,
+          "plane_residual_m": 0.0015342496416870278,
+          "plane_residual_p95_m": 0.0034340902893516653,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.021696009120689558,
+          0.999738420275624,
+          0.007237003042331782
+        ],
+        "offset_m": -1.2676205328894035,
+        "support_label": 1,
+        "audit": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14855,
+          "excluded_invalid": 0,
+          "excluded_boundary": 0,
+          "excluded_discontinuity": 187,
+          "retained_pixels": 14668,
+          "raw": {
+            "count": 14855,
+            "mean_m": 0.0034019714556353746,
+            "p95_m": 0.006470575167693536
+          },
+          "interior": {
+            "count": 14668,
+            "mean_m": 0.002817825045407118,
+            "p95_m": 0.006468091725827984
+          },
+          "excluded": {
+            "count": 187,
+            "mean_m": 0.04922154121621328,
+            "p95_m": 0.006673705028153697
+          },
+          "status": "PASS",
+          "point_support_count": 14668,
+          "point_support_ratio": 0.9874116459104678,
+          "plane_residual_m": 0.002817825045407118,
+          "plane_residual_p95_m": 0.006468091725827984,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.9421047620837198,
+          0.028031992920885502,
+          0.33414491561605614
+        ],
+        "offset_m": -1.4895646238298663,
+        "support_label": 2,
+        "audit": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14148,
+          "excluded_invalid": 0,
+          "excluded_boundary": 0,
+          "excluded_discontinuity": 75,
+          "retained_pixels": 14073,
+          "raw": {
+            "count": 14148,
+            "mean_m": 0.0024508222747077,
+            "p95_m": 0.005121221474786186
+          },
+          "interior": {
+            "count": 14073,
+            "mean_m": 0.002286510586101577,
+            "p95_m": 0.0050913845309042745
+          },
+          "excluded": {
+            "count": 75,
+            "mean_m": 0.03328226752476066,
+            "p95_m": 0.006040739504044423
+          },
+          "status": "PASS",
+          "point_support_count": 14073,
+          "point_support_ratio": 0.9946988973706531,
+          "plane_residual_m": 0.002286510586101577,
+          "plane_residual_p95_m": 0.0050913845309042745,
+          "maximum_mean_m": 0.003
+        }
+      }
+    ]
+  },
+  {
+    "stage": "B_ORIGINAL_FILTERED_CLOUD",
+    "pixel_count": 44684,
+    "residual_reference": "ORIGINAL_INITIAL_PLANE_REEVALUATED_ON_FROZEN_OBSERVATION_LABELS",
+    "planes": [
+      {
+        "normal": [
+          0.34311914323391535,
+          -0.01692500706528644,
+          -0.9391393920405341
+        ],
+        "offset_m": 2.117944884128864,
+        "support_label": 0,
+        "audit": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 16307,
+          "excluded_invalid": 0,
+          "excluded_boundary": 0,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 16307,
+          "raw": {
+            "count": 16307,
+            "mean_m": 0.0015170392642223228,
+            "p95_m": 0.0033969592863120736
+          },
+          "interior": {
+            "count": 16307,
+            "mean_m": 0.0015170392642223228,
+            "p95_m": 0.0033969592863120736
+          },
+          "excluded": {
+            "count": 0,
+            "mean_m": null,
+            "p95_m": null
+          },
+          "status": "PASS",
+          "point_support_count": 16307,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0015170392642223228,
+          "plane_residual_p95_m": 0.0033969592863120736,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.021696009120689558,
+          0.999738420275624,
+          0.007237003042331782
+        ],
+        "offset_m": -1.2676205328894035,
+        "support_label": 1,
+        "audit": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14026,
+          "excluded_invalid": 0,
+          "excluded_boundary": 0,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 14026,
+          "raw": {
+            "count": 14026,
+            "mean_m": 0.002866028816620939,
+            "p95_m": 0.006507058461439286
+          },
+          "interior": {
+            "count": 14026,
+            "mean_m": 0.002866028816620939,
+            "p95_m": 0.006507058461439286
+          },
+          "excluded": {
+            "count": 0,
+            "mean_m": null,
+            "p95_m": null
+          },
+          "status": "PASS",
+          "point_support_count": 14026,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.002866028816620939,
+          "plane_residual_p95_m": 0.006507058461439286,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.9421047620837198,
+          0.028031992920885502,
+          0.33414491561605614
+        ],
+        "offset_m": -1.4895646238298663,
+        "support_label": 2,
+        "audit": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 13514,
+          "excluded_invalid": 0,
+          "excluded_boundary": 0,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 13514,
+          "raw": {
+            "count": 13514,
+            "mean_m": 0.0022432254726099197,
+            "p95_m": 0.00499415690532371
+          },
+          "interior": {
+            "count": 13514,
+            "mean_m": 0.0022432254726099197,
+            "p95_m": 0.00499415690532371
+          },
+          "excluded": {
+            "count": 0,
+            "mean_m": null,
+            "p95_m": null
+          },
+          "status": "PASS",
+          "point_support_count": 13514,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.0022432254726099197,
+          "plane_residual_p95_m": 0.00499415690532371,
+          "maximum_mean_m": 0.003
+        }
+      }
+    ]
+  },
+  {
+    "stage": "C_INITIAL_PLANES",
+    "planes": [
+      {
+        "normal": [
+          0.343119,
+          -0.016925,
+          -0.939139
+        ],
+        "offset_m": 2.117944,
+        "support_label": 0,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 16841,
+          "excluded_invalid": 0,
+          "excluded_boundary": 1121,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 15720,
+          "raw": {
+            "count": 16841,
+            "mean_m": 0.0015390467721775043,
+            "p95_m": 0.003445572003916375
+          },
+          "interior": {
+            "count": 15720,
+            "mean_m": 0.0015142176532409648,
+            "p95_m": 0.003387190639150916
+          },
+          "excluded": {
+            "count": 1121,
+            "mean_m": 0.0018872303133750062,
+            "p95_m": 0.0037934880567651597
+          },
+          "status": "PASS",
+          "point_support_count": 15720,
+          "point_support_ratio": 0.9334362567543495,
+          "plane_residual_m": 0.0015142176532409648,
+          "plane_residual_p95_m": 0.003387190639150916,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.021696,
+          0.999738,
+          0.007237
+        ],
+        "offset_m": -1.26762,
+        "support_label": 1,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14855,
+          "excluded_invalid": 0,
+          "excluded_boundary": 935,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 13920,
+          "raw": {
+            "count": 14855,
+            "mean_m": 0.0034019700254955985,
+            "p95_m": 0.006470572447556887
+          },
+          "interior": {
+            "count": 13920,
+            "mean_m": 0.002756087754677093,
+            "p95_m": 0.006339326637901288
+          },
+          "excluded": {
+            "count": 935,
+            "mean_m": 0.013017671854151858,
+            "p95_m": 0.007596448078339634
+          },
+          "status": "PASS",
+          "point_support_count": 13920,
+          "point_support_ratio": 0.9370582295523393,
+          "plane_residual_m": 0.002756087754677093,
+          "plane_residual_p95_m": 0.006339326637901288,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.942105,
+          0.028032,
+          0.334145
+        ],
+        "offset_m": -1.489565,
+        "support_label": 2,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14148,
+          "excluded_invalid": 0,
+          "excluded_boundary": 1269,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 12879,
+          "raw": {
+            "count": 14148,
+            "mean_m": 0.0024508228936309237,
+            "p95_m": 0.005121222768083833
+          },
+          "interior": {
+            "count": 12879,
+            "mean_m": 0.002192619910770155,
+            "p95_m": 0.0048734381035417705
+          },
+          "excluded": {
+            "count": 1269,
+            "mean_m": 0.0050713084856434075,
+            "p95_m": 0.006077997320166695
+          },
+          "status": "PASS",
+          "point_support_count": 12879,
+          "point_support_ratio": 0.9103053435114504,
+          "plane_residual_m": 0.002192619910770155,
+          "plane_residual_p95_m": 0.0048734381035417705,
+          "maximum_mean_m": 0.003
+        }
+      }
+    ],
+    "corners_3d": [
+      [
+        0.63912,
+        0.95974,
+        2.47141
+      ],
+      [
+        0.36208,
+        1.18405,
+        2.36615
+      ],
+      [
+        0.68374,
+        1.52558,
+        2.47751
+      ],
+      [
+        1.03871,
+        1.23369,
+        2.61246
+      ],
+      [
+        0.6135,
+        0.961,
+        2.54153
+      ],
+      [
+        0.33646,
+        1.18532,
+        2.43627
+      ],
+      [
+        0.65812,
+        1.52684,
+        2.54763
+      ],
+      [
+        1.01309,
+        1.23495,
+        2.68258
+      ]
+    ],
+    "scale_changes": [
+      1.05,
+      1.008,
+      1.05
+    ],
+    "reprojection_rmse": null,
+    "cross_entity": "EVALUATED_SEPARATELY_WITH_GT_ONLY",
+    "cuboid_consistency": "NONORTHOGONAL_CUBOID"
+  },
+  {
+    "stage": "D_UNANCHORED",
+    "planes": [
+      {
+        "normal": [
+          0.3431341565608913,
+          -0.01693680425717612,
+          -0.939133694030195
+        ],
+        "offset_m": 2.1030828946185833,
+        "support_label": 0,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 16841,
+          "excluded_invalid": 0,
+          "excluded_boundary": 1121,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 15720,
+          "raw": {
+            "count": 16841,
+            "mean_m": 0.016045420863354372,
+            "p95_m": 0.018298855484808918
+          },
+          "interior": {
+            "count": 15720,
+            "mean_m": 0.0160452744061328,
+            "p95_m": 0.01823979696943725
+          },
+          "excluded": {
+            "count": 1121,
+            "mean_m": 0.016047474661323252,
+            "p95_m": 0.018647959596044483
+          },
+          "status": "REJECTED",
+          "point_support_count": 15720,
+          "point_support_ratio": 0.9334362567543495,
+          "plane_residual_m": 0.0160452744061328,
+          "plane_residual_p95_m": 0.01823979696943725,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          -0.027265708797673375,
+          -0.9995958533472958,
+          0.008044320645776358
+        ],
+        "offset_m": 1.2195139068848,
+        "support_label": 1,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14855,
+          "excluded_invalid": 0,
+          "excluded_boundary": 935,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 13920,
+          "raw": {
+            "count": 14855,
+            "mean_m": 0.008138605355734569,
+            "p95_m": 0.014091221737244374
+          },
+          "interior": {
+            "count": 13920,
+            "mean_m": 0.007540204058381573,
+            "p95_m": 0.013826426772686928
+          },
+          "excluded": {
+            "count": 935,
+            "mean_m": 0.017047424670337454,
+            "p95_m": 0.016380083694629306
+          },
+          "status": "REJECTED",
+          "point_support_count": 13920,
+          "point_support_ratio": 0.9370582295523393,
+          "plane_residual_m": 0.007540204058381573,
+          "plane_residual_p95_m": 0.013826426772686928,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.9388958245303124,
+          -0.022878564116971,
+          0.3434402451424272
+        ],
+        "offset_m": -1.430451689734252,
+        "support_label": 2,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14148,
+          "excluded_invalid": 0,
+          "excluded_boundary": 1269,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 12879,
+          "raw": {
+            "count": 14148,
+            "mean_m": 0.01251429825661553,
+            "p95_m": 0.015402420761140855
+          },
+          "interior": {
+            "count": 12879,
+            "mean_m": 0.012385774553982229,
+            "p95_m": 0.015281052362460312
+          },
+          "excluded": {
+            "count": 1269,
+            "mean_m": 0.013818677111000276,
+            "p95_m": 0.01597789788395354
+          },
+          "status": "REJECTED",
+          "point_support_count": 12879,
+          "point_support_ratio": 0.9103053435114504,
+          "plane_residual_m": 0.012385774553982229,
+          "plane_residual_p95_m": 0.015281052362460312,
+          "maximum_mean_m": 0.003
+        }
+      }
+    ],
+    "corners_3d": [
+      [
+        0.45657,
+        1.23169,
+        2.99895
+      ],
+      [
+        0.65473,
+        1.22192,
+        2.45657
+      ],
+      [
+        0.66276,
+        1.51602,
+        2.4542
+      ],
+      [
+        0.4646,
+        1.5258,
+        2.99659
+      ],
+      [
+        0.83466,
+        1.22249,
+        3.13726
+      ],
+      [
+        1.03282,
+        1.21271,
+        2.59488
+      ],
+      [
+        1.04085,
+        1.50682,
+        2.59251
+      ],
+      [
+        0.84269,
+        1.51659,
+        3.13489
+      ]
+    ],
+    "scale_changes": [
+      1.05,
+      1.008,
+      1.05
+    ],
+    "reprojection_rmse": null,
+    "cross_entity": "EVALUATED_SEPARATELY_WITH_GT_ONLY",
+    "center": [
+      0.74871,
+      1.3692549999999999,
+      2.79573125
+    ],
+    "axes": [
+      [
+        0.34311740259138523,
+        -0.016916920787837363,
+        -0.9391401736854831
+      ],
+      [
+        0.02729166135986594,
+        0.9995953328206896,
+        -0.008020961495551815
+      ],
+      [
+        0.9388902472369446,
+        -0.022845857532809048,
+        0.3434576690611811
+      ]
+    ],
+    "dimensions": [
+      0.577528270217138,
+      0.29422906484574235,
+      0.4026988256749702
+    ]
+  },
+  {
+    "stage": "E_2D_REGISTERED_TARGET",
+    "homography": [
+      [
+        0.93478098827246,
+        0.0258157495008907,
+        50.30890196673272
+      ],
+      [
+        -0.0023178086552537633,
+        1.037733122159122,
+        -64.76486867554627
+      ],
+      [
+        -4.048464604477301e-05,
+        1.9443619164645763e-05,
+        1.0261279163934558
+      ]
+    ],
+    "registration": {
+      "ecc_correlation": 0.9975790029519618,
+      "union_iou_before": 0.9690689309017902,
+      "union_iou_after_ecc": 0.9911347517730497,
+      "mean_corner_displacement_px": 4.450031100305659,
+      "max_corner_displacement_px": 7.974125379851338
+    },
+    "target_boundaries_2d": [
+      [
+        [
+          1493.5206298828125,
+          1728.76708984375
+        ],
+        [
+          1495.55078125,
+          1912.7724609375
+        ],
+        [
+          1593.85400390625,
+          1864.3265380859375
+        ],
+        [
+          1592.1552734375,
+          1689.1541748046875
+        ]
+      ],
+      [
+        [
+          1408.8555908203125,
+          1590.1751708984375
+        ],
+        [
+          1493.5206298828125,
+          1728.76708984375
+        ],
+        [
+          1592.1552734375,
+          1689.1541748046875
+        ],
+        [
+          1493.702880859375,
+          1563.0347900390625
+        ]
+      ],
+      [
+        [
+          1408.8555908203125,
+          1590.1751708984375
+        ],
+        [
+          1493.5206298828125,
+          1728.76708984375
+        ],
+        [
+          1495.55078125,
+          1912.7724609375
+        ],
+        [
+          1410.6959228515625,
+          1741.1197509765625
+        ]
+      ]
+    ],
+    "metric_plane_residual": "NOT_DEFINED_FOR_2D_TARGET_UNTIL_PNP",
+    "scale_change": "PROJECTIVE_2D_TRANSFORM_ONLY"
+  },
+  {
+    "stage": "F_PNP_SCALE",
+    "planes": [
+      {
+        "normal": [
+          0.3203946212407989,
+          -0.011379447613738628,
+          -0.9472158121843044
+        ],
+        "offset_m": 2.1197049422058005,
+        "support_label": 0,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 16841,
+          "excluded_invalid": 0,
+          "excluded_boundary": 1121,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 15720,
+          "raw": {
+            "count": 16841,
+            "mean_m": 0.031650384587448975,
+            "p95_m": 0.036130708918411525
+          },
+          "interior": {
+            "count": 15720,
+            "mean_m": 0.031648226900457835,
+            "p95_m": 0.03595987447885056
+          },
+          "excluded": {
+            "count": 1121,
+            "mean_m": 0.03168064224980461,
+            "p95_m": 0.03732936771374584
+          },
+          "status": "REJECTED",
+          "point_support_count": 15720,
+          "point_support_ratio": 0.9334362567543495,
+          "plane_residual_m": 0.031648226900457835,
+          "plane_residual_p95_m": 0.03595987447885056,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          -0.015145664742413757,
+          -0.9998615004909199,
+          0.006898454577394646
+        ],
+        "offset_m": 1.2046321936453972,
+        "support_label": 1,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14855,
+          "excluded_invalid": 0,
+          "excluded_boundary": 935,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 13920,
+          "raw": {
+            "count": 14855,
+            "mean_m": 0.017304605654465822,
+            "p95_m": 0.02097712182129221
+          },
+          "interior": {
+            "count": 13920,
+            "mean_m": 0.01673169467316934,
+            "p95_m": 0.020829891804787913
+          },
+          "excluded": {
+            "count": 935,
+            "mean_m": 0.025833932777082968,
+            "p95_m": 0.022650627543049293
+          },
+          "status": "REJECTED",
+          "point_support_count": 13920,
+          "point_support_ratio": 0.9370582295523393,
+          "plane_residual_m": 0.01673169467316934,
+          "plane_residual_p95_m": 0.020829891804787913,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.9471784891133466,
+          -0.012241031794766492,
+          0.32047319217300785
+        ],
+        "offset_m": -1.3804202113456283,
+        "support_label": 2,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14148,
+          "excluded_invalid": 0,
+          "excluded_boundary": 1269,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 12879,
+          "raw": {
+            "count": 14148,
+            "mean_m": 0.019320721363371363,
+            "p95_m": 0.025077305481943424
+          },
+          "interior": {
+            "count": 12879,
+            "mean_m": 0.019196450743380625,
+            "p95_m": 0.024831560311411604
+          },
+          "excluded": {
+            "count": 1269,
+            "mean_m": 0.020581935953490116,
+            "p95_m": 0.026349303874159832
+          },
+          "status": "REJECTED",
+          "point_support_count": 12879,
+          "point_support_ratio": 0.9103053435114504,
+          "plane_residual_m": 0.019196450743380625,
+          "plane_residual_p95_m": 0.024831560311411604,
+          "maximum_mean_m": 0.003
+        }
+      }
+    ],
+    "corners_3d": [
+      [
+        0.45693,
+        1.2186,
+        3.00351
+      ],
+      [
+        0.64681,
+        1.21185,
+        2.44205
+      ],
+      [
+        0.65129,
+        1.50613,
+        2.44003
+      ],
+      [
+        0.46141,
+        1.51289,
+        3.00151
+      ],
+      [
+        0.82843,
+        1.21384,
+        3.12923
+      ],
+      [
+        1.01832,
+        1.20709,
+        2.56777
+      ],
+      [
+        1.02279,
+        1.50138,
+        2.56575
+      ],
+      [
+        0.83291,
+        1.50812,
+        3.12721
+      ]
+    ],
+    "scale_changes": [
+      1.02635,
+      1.00035,
+      0.97399
+    ],
+    "reprojection_rmse": 0.45033,
+    "cross_entity": "EVALUATED_SEPARATELY_WITH_GT_ONLY",
+    "cuboid_consistency": "NONORTHOGONAL_CUBOID"
+  },
+  {
+    "stage": "G_FALLBACK",
+    "planes": [
+      {
+        "normal": [
+          0.3431128786418064,
+          -0.016932138083772922,
+          -0.9391415522752921
+        ],
+        "offset_m": 2.1179639578749496,
+        "support_label": 0,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 16841,
+          "excluded_invalid": 0,
+          "excluded_boundary": 1121,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 15720,
+          "raw": {
+            "count": 16841,
+            "mean_m": 0.001540173023788856,
+            "p95_m": 0.0034482030761235904
+          },
+          "interior": {
+            "count": 15720,
+            "mean_m": 0.0015153501466453202,
+            "p95_m": 0.0033899778242957755
+          },
+          "excluded": {
+            "count": 1121,
+            "mean_m": 0.0018882690351147975,
+            "p95_m": 0.003795382615356946
+          },
+          "status": "PASS",
+          "point_support_count": 15720,
+          "point_support_ratio": 0.9334362567543495,
+          "plane_residual_m": 0.0015153501466453202,
+          "plane_residual_p95_m": 0.0033899778242957755,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.5715500945323779,
+          0.797181559206593,
+          0.19450463002451954
+        ],
+        "offset_m": -1.6110788066932649,
+        "support_label": 1,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14855,
+          "excluded_invalid": 0,
+          "excluded_boundary": 935,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 13920,
+          "raw": {
+            "count": 14855,
+            "mean_m": 0.3466996023538435,
+            "p95_m": 0.45461447816830014
+          },
+          "interior": {
+            "count": 13920,
+            "mean_m": 0.3453183154034531,
+            "p95_m": 0.4497414788023039
+          },
+          "excluded": {
+            "count": 935,
+            "mean_m": 0.3672637888238272,
+            "p95_m": 0.468304275629125
+          },
+          "status": "REJECTED",
+          "point_support_count": 13920,
+          "point_support_ratio": 0.9370582295523393,
+          "plane_residual_m": 0.3453183154034531,
+          "plane_residual_p95_m": 0.4497414788023039,
+          "maximum_mean_m": 0.003
+        }
+      },
+      {
+        "normal": [
+          0.6612466257977727,
+          -0.7057206931336057,
+          0.25438396795805224
+        ],
+        "offset_m": -0.005727981649689768,
+        "support_label": 2,
+        "check": {
+          "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+          "candidate_plane_used_for_selection": false,
+          "selected_pixels": 14148,
+          "excluded_invalid": 0,
+          "excluded_boundary": 1269,
+          "excluded_discontinuity": 0,
+          "retained_pixels": 12879,
+          "raw": {
+            "count": 14148,
+            "mean_m": 0.09346824777669287,
+            "p95_m": 0.18628138287376156
+          },
+          "interior": {
+            "count": 12879,
+            "mean_m": 0.09362456952550513,
+            "p95_m": 0.1826128783728892
+          },
+          "excluded": {
+            "count": 1269,
+            "mean_m": 0.09188174832598103,
+            "p95_m": 0.19659465806047163
+          },
+          "status": "REJECTED",
+          "point_support_count": 12879,
+          "point_support_ratio": 0.9103053435114504,
+          "plane_residual_m": 0.09362456952550513,
+          "plane_residual_p95_m": 0.1826128783728892,
+          "maximum_mean_m": 0.003
+        }
+      }
+    ],
+    "corners_3d": [
+      [
+        0.63912,
+        0.95974,
+        2.47141
+      ],
+      [
+        0.36208,
+        1.18405,
+        2.36615
+      ],
+      [
+        0.68374,
+        1.52558,
+        2.47751
+      ],
+      [
+        1.03871,
+        1.23369,
+        2.61246
+      ],
+      [
+        0.6135,
+        0.961,
+        2.54153
+      ],
+      [
+        0.33646,
+        1.18532,
+        2.43627
+      ],
+      [
+        0.65812,
+        1.52684,
+        2.54763
+      ],
+      [
+        1.01309,
+        1.23495,
+        2.68258
+      ]
+    ],
+    "scale_changes": [
+      1.05,
+      1.008,
+      1.05
+    ],
+    "reprojection_rmse": null,
+    "cross_entity": "EVALUATED_SEPARATELY_WITH_GT_ONLY",
+    "cuboid_consistency": "NONORTHOGONAL_CUBOID"
+  },
+  {
+    "stage": "H_FINAL_INDEPENDENT_CHECK",
+    "legacy": "REJECTED",
+    "metric_complete_accepted": true,
+    "metric_final_checks": [
+      {
+        "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+        "candidate_plane_used_for_selection": false,
+        "selected_pixels": 16841,
+        "excluded_invalid": 0,
+        "excluded_boundary": 1121,
+        "excluded_discontinuity": 0,
+        "retained_pixels": 15720,
+        "raw": {
+          "count": 16841,
+          "mean_m": 1.978225674733455e-05,
+          "p95_m": 3.7513523754029166e-05
+        },
+        "interior": {
+          "count": 15720,
+          "mean_m": 1.9247018999053884e-05,
+          "p95_m": 3.659946279053194e-05
+        },
+        "excluded": {
+          "count": 1121,
+          "mean_m": 2.7287999301279286e-05,
+          "p95_m": 3.964560858715771e-05
+        },
+        "status": "PASS",
+        "point_support_count": 15720,
+        "point_support_ratio": 0.9334362567543495,
+        "plane_residual_m": 1.9247018999053884e-05,
+        "plane_residual_p95_m": 3.659946279053194e-05,
+        "maximum_mean_m": 0.003,
+        "spatial_holdout": {
+          "count": 4132,
+          "mean_m": 1.9561608842541817e-05,
+          "p95_m": 3.734704242870368e-05
+        },
+        "label": 0,
+        "observation_region_precision": 1.0,
+        "patch_observation_coverage": 0.9049937652158423,
+        "patch_pixel_support_count": 15241
+      },
+      {
+        "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+        "candidate_plane_used_for_selection": false,
+        "selected_pixels": 14855,
+        "excluded_invalid": 0,
+        "excluded_boundary": 935,
+        "excluded_discontinuity": 0,
+        "retained_pixels": 13920,
+        "raw": {
+          "count": 14855,
+          "mean_m": 0.0014981982792069935,
+          "p95_m": 0.0017619506211259406
+        },
+        "interior": {
+          "count": 13920,
+          "mean_m": 0.0009343201227238067,
+          "p95_m": 0.0017572279634255668
+        },
+        "excluded": {
+          "count": 935,
+          "mean_m": 0.009893047411020857,
+          "p95_m": 0.0019015523150157864
+        },
+        "status": "PASS",
+        "point_support_count": 13920,
+        "point_support_ratio": 0.9370582295523393,
+        "plane_residual_m": 0.0009343201227238067,
+        "plane_residual_p95_m": 0.0017572279634255668,
+        "maximum_mean_m": 0.003,
+        "spatial_holdout": {
+          "count": 3685,
+          "mean_m": 0.000935254629851637,
+          "p95_m": 0.0017503923417728552
+        },
+        "label": 1,
+        "observation_region_precision": 1.0,
+        "patch_observation_coverage": 0.9033995287781892,
+        "patch_pixel_support_count": 13420
+      },
+      {
+        "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+        "candidate_plane_used_for_selection": false,
+        "selected_pixels": 14148,
+        "excluded_invalid": 0,
+        "excluded_boundary": 1269,
+        "excluded_discontinuity": 0,
+        "retained_pixels": 12879,
+        "raw": {
+          "count": 14148,
+          "mean_m": 0.0001675298938555277,
+          "p95_m": 3.4021764928016116e-05
+        },
+        "interior": {
+          "count": 12879,
+          "mean_m": 1.709492459715677e-05,
+          "p95_m": 3.249406635701391e-05
+        },
+        "excluded": {
+          "count": 1269,
+          "mean_m": 0.0016942847946266543,
+          "p95_m": 3.613352044551377e-05
+        },
+        "status": "PASS",
+        "point_support_count": 12879,
+        "point_support_ratio": 0.9103053435114504,
+        "plane_residual_m": 1.709492459715677e-05,
+        "plane_residual_p95_m": 3.249406635701391e-05,
+        "maximum_mean_m": 0.003,
+        "spatial_holdout": {
+          "count": 3518,
+          "mean_m": 1.779388332364575e-05,
+          "p95_m": 3.3843779731235194e-05
+        },
+        "label": 2,
+        "observation_region_precision": 1.0,
+        "patch_observation_coverage": 0.8279615493355952,
+        "patch_pixel_support_count": 11714
+      }
+    ],
+    "metric_solver": {
+      "success": true,
+      "cost": 0.430336825928722,
+      "rotation_determinant": 1.0000000000000007,
+      "objective": "ROBUST_METRIC_POINT_TO_SHARED_SO3_PLANES",
+      "calibration_optimised": false,
+      "scale_optimised": false,
+      "boundary_fit": {
+        "objective": "SILHOUETTE_SIGNED_PIXEL_DISTANCE_ON_FREE_BOUNDS",
+        "initial_free_bounds_m": [
+          -2.690782769892684,
+          -1.525581706853407,
+          -1.8653521550170447
+        ],
+        "final_free_bounds_m": [
+          -2.694854973333009,
+          -1.5274097762368308,
+          -1.870386478331673
+        ],
+        "normalised_cost": 2.2958271503448486,
+        "observed_plane_motion_m": 0.0,
+        "rotation_motion_rad": 0.0
+      }
+    }
+  }
+]

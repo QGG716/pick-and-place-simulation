@@ -1,0 +1,4 @@
+{"scene": "GEOMETRY_ADJACENT_TWO", "module": "module_0_upper", "oracle_faces": [2, 3], "sam": [[1, 0, 2, false], [2, 0, 3, false]]}
+{"scene": "GEOMETRY_ADJACENT_TWO", "module": "module_1_lower", "oracle_faces": [1, 2], "sam": [[1, 0, 1, false], [2, 0, 2, false]]}
+{"scene": "GEOMETRY_PARTIAL_TWO", "module": "module_0_upper", "oracle_faces": [3, 3], "sam": [[1, 0, 3, false], [2, 0, 3, false]]}
+{"scene": "GEOMETRY_PARTIAL_TWO", "module": "module_1_lower", "oracle_faces": [2, 2], "sam": [[1, 0, 2, false]]}

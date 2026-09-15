@@ -1,0 +1,7 @@
+{"scene": "GEOMETRY_ADJACENT_TWO", "module": "module_0_upper", "oracle_faces": [2, 3], "sam": [[1, 0, 2, false], [2, 0, 3, false]]}
+Traceback (most recent call last):
+  File "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/tools/run_metric_small_matrix.py", line 137, in <module>
+    if __name__=='__main__': main()
+  File "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/tools/run_metric_small_matrix.py", line 106, in main
+    (output/'oracle_gate_failure.json').write_text(json.dumps(row,indent=2)); raise RuntimeError('ORACLE_GEOMETRY_GATE_FAILED')
+RuntimeError: ORACLE_GEOMETRY_GATE_FAILED

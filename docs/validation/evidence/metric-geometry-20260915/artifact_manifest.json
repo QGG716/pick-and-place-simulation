@@ -1,0 +1,947 @@
+[
+  {
+    "artifact": "gate1.log",
+    "bytes": 1024,
+    "sha256": "d3499df996ea9258d659e66a5c085b2073f9c3d50dd573e5ee86943f94c595db"
+  },
+  {
+    "artifact": "calibration-v1.log",
+    "bytes": 420,
+    "sha256": "ac0f7430392d5ad06c6b8bed28c4c77a801cef6815389108534856c1db3b8c5a"
+  },
+  {
+    "artifact": "calibration-v2.log",
+    "bytes": 12731,
+    "sha256": "a274ce6588a6b3137c86067c087c4b28613e46ed9775c55b071b32d9771d449c"
+  },
+  {
+    "artifact": "calibration-v3.log",
+    "bytes": 13643,
+    "sha256": "93a9f226ef89ad0e5f4900a2990e12d47c9c38dc6da6fd3070b7f9d8ee82bcb6"
+  },
+  {
+    "artifact": "cpu-step2.log",
+    "bytes": 2929,
+    "sha256": "41ee367a0d91466a7b364f7168ea5ebce22abb9783cc1848d71754f96cbf4805"
+  },
+  {
+    "artifact": "calibration-v4.log",
+    "bytes": 14091,
+    "sha256": "f460974a70b89624400d0262fb079bf84e08858a1bb27695c86e1b7f672cb566"
+  },
+  {
+    "artifact": "small-capture.log",
+    "bytes": 79462,
+    "sha256": "8a1adfb6740183ad74543d92d91e1998cab16060ff229c9463ded6e92a4e3e97"
+  },
+  {
+    "artifact": "small-matrix-v1.log",
+    "bytes": 1245,
+    "sha256": "91c54ce5d194be7bdaf017aab8af9836d7fa6bf8bc43bae1d570f15eeb992561"
+  },
+  {
+    "artifact": "analytic-v1.log",
+    "bytes": 11613,
+    "sha256": "b3fe064b3016734a13347efbdc04c51dbf4f6f592aba816e88424aeb64525450"
+  },
+  {
+    "artifact": "small-matrix-v2.log",
+    "bytes": 1269,
+    "sha256": "734fc1c6171efef0bc878f16f3592a6a2041da37bf411d0c0e4a6ae1b27c3eae"
+  },
+  {
+    "artifact": "small-matrix-v3.log",
+    "bytes": 627,
+    "sha256": "fcde119015b213331a2e535625fc1dc366d0db86cebfa24ed56b507b7cfc08b1"
+  },
+  {
+    "artifact": "narrow_face_fixed.json",
+    "bytes": 16979,
+    "sha256": "52a738bc69e1bafbbba56c2fc8a7999aefd02db832f50ec9b6cf5b5f739b4872"
+  },
+  {
+    "artifact": "small-matrix-v4.log",
+    "bytes": 759,
+    "sha256": "73a8017704842069e5dc4e912bf5f631067baaa37b326f1bcc8d5c1dc527a418"
+  },
+  {
+    "artifact": "calibration-v5.log",
+    "bytes": 13233,
+    "sha256": "80752e3340a482b65be760d346f5632a4086e22e0f66de160a034d32f41b638e"
+  },
+  {
+    "artifact": "metric-cpu.log",
+    "bytes": 511,
+    "sha256": "fff080d18e463001793261650dd9cbaabec3b7e4b9bcab03d5c739abcd0d28a6"
+  },
+  {
+    "artifact": "calibration-v6.log",
+    "bytes": 14090,
+    "sha256": "7015218518a2e106835e32e7017a1164664fa68d50d84197a774839a8ec96284"
+  },
+  {
+    "artifact": "small-matrix-v5.log",
+    "bytes": 890,
+    "sha256": "ceb607dcd1a4a95d8a4d71a7fc2d2c00841456a7da7fc20c70ea1b9501e8b601"
+  },
+  {
+    "artifact": "small-matrix-v6.log",
+    "bytes": 508,
+    "sha256": "9576b25e703633d48281310ef836f84d3b98cda1c671cd56d2855260672bfddd"
+  },
+  {
+    "artifact": "stage-evidence.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "artifact": "cpu-step3.log",
+    "bytes": 2929,
+    "sha256": "b6aeab5579d6fd9285270b1dbead6dbf16e01ff991a476af4681bbea95c512ed"
+  },
+  {
+    "artifact": "small-matrix-final.log",
+    "bytes": 508,
+    "sha256": "e5d1ccd109ea1b64c8814db57a379208c2231d22879870ef6b110352421bc37c"
+  },
+  {
+    "artifact": "calibration-final.log",
+    "bytes": 14090,
+    "sha256": "7015218518a2e106835e32e7017a1164664fa68d50d84197a774839a8ec96284"
+  },
+  {
+    "artifact": "metric-cpu-final.log",
+    "bytes": 511,
+    "sha256": "84d60a07e687fde4255ef356ebffb14aa02c8f6fb27936926081a9e812ba7d18"
+  },
+  {
+    "artifact": "small_gate_report.json",
+    "bytes": 24211,
+    "sha256": "e39994ebe1b58d57f3f6bb0166f469f822f3c897771e6949e81d05cd72cf0298"
+  },
+  {
+    "artifact": "frozen-stack-final.log",
+    "bytes": 1430,
+    "sha256": "82f6bbeb0f0b0af261157c247a22aeba4a265661de1e9682987b737b143027d9"
+  },
+  {
+    "artifact": "humble-final.log",
+    "bytes": 570,
+    "sha256": "ad5ec649171877426d280537709607c6060ba9446c655f6613322875f904f91a"
+  },
+  {
+    "artifact": "server_code_equivalence.json",
+    "bytes": 2405,
+    "sha256": "66fa85afc977da04f80c2175f0b35f1ddb9f0fb622eaaa238975de213082a350"
+  },
+  {
+    "artifact": "stack-report-rebuild.log",
+    "bytes": 439,
+    "sha256": "4cf66ca1fb5bc3940ef007736f6da5749095fa5f12b86e72cc44e996f47252ec"
+  },
+  {
+    "artifact": "calibration-c50ff4c.log",
+    "bytes": 14090,
+    "sha256": "7015218518a2e106835e32e7017a1164664fa68d50d84197a774839a8ec96284"
+  },
+  {
+    "artifact": "ros-final.log",
+    "bytes": 932,
+    "sha256": "627058d09918bcc0573534decafc3013c7efaf15c908c39b16ede5cdf6058a87"
+  },
+  {
+    "artifact": "stack-visuals.log",
+    "bytes": 178,
+    "sha256": "4efb03b518aa441feb3a524f2b73f5df620b7c656b1f90f397705d72b23a441f"
+  },
+  {
+    "artifact": "stages-final.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "artifact": "analytic-final.log",
+    "bytes": 15647,
+    "sha256": "5c1996fddbd6670637c29fef41f95dd141a302a63a95cf5873bc07f116dc1067"
+  },
+  {
+    "artifact": "small_gate_final.json",
+    "bytes": 24211,
+    "sha256": "e39994ebe1b58d57f3f6bb0166f469f822f3c897771e6949e81d05cd72cf0298"
+  },
+  {
+    "artifact": "delivery.log",
+    "bytes": 1915,
+    "sha256": "5e743cd38f731ea8439d8e0a1b4e20e38f6ffb8762451aada8a137b29b678e00"
+  },
+  {
+    "artifact": "pytest-final.log",
+    "bytes": 3026,
+    "sha256": "d7fd6ce4bccbf85d4ad108a6590821f6d439b5c7d54bf4ebdacf327d2da478ba"
+  },
+  {
+    "artifact": "pytest-final.xml",
+    "bytes": 51229,
+    "sha256": "440177f9b39f453e071c7c2b8861968bd1d59ff13b8349ea4b91a0f9135dbf46"
+  },
+  {
+    "artifact": "pytest-metric-final.log",
+    "bytes": 615,
+    "sha256": "cb5f45585308ad40be122213544cb0c923d9a7fc8179d48de0298895b293041e"
+  },
+  {
+    "artifact": "pytest-metric-final.xml",
+    "bytes": 525,
+    "sha256": "f3d938ae1f1b68c54e0171e95e9ad1ab5e2a8c9150d654dc6a0abad000ad6722"
+  },
+  {
+    "artifact": "frozen_input_manifest.json",
+    "bytes": 23958,
+    "sha256": "ef6cd2f3b7b96f6c9b05fe6879eb6249511ac4093b3656e2c5b0e7a4a1a0f22d"
+  },
+  {
+    "artifact": "server_tested_state.json",
+    "bytes": 510,
+    "sha256": "f8230e264e7bf2f303f8e665aa887cb75ae39ce6be9746e24b9c2c2dc436b594"
+  },
+  {
+    "artifact": "calibration-c50ff4c/summary.json",
+    "bytes": 20282,
+    "sha256": "fe3f747165b4480d0fdac1c25a1d0d156b5f4d5a8d913752ab0368f039485a31"
+  },
+  {
+    "artifact": "small-matrix-final/summary.json",
+    "bytes": 72000,
+    "sha256": "e258f7459d33c6a0c1238434b71af22f430c37a11bece6d938d7724b395a47c5"
+  },
+  {
+    "artifact": "frozen-stack-final/paired_stack_report.json",
+    "bytes": 362902,
+    "sha256": "e098441b692882d5c48a1628b0df2d3a87193fe3d932d95b3a39f9bdedbb223c"
+  },
+  {
+    "artifact": "frozen-stack-final/independent_final_face_accuracy.json",
+    "bytes": 38806,
+    "sha256": "ae09a433b0133f14157174593417bf8783a90680e2074c4b67f980a2d126f242"
+  },
+  {
+    "artifact": "frozen-stack-final/metric_evidence_12s.mp4",
+    "bytes": 893942,
+    "sha256": "83acbea87ecc56038464eb671828b41714dc0e5732fe0de0a0aa32a84b2df9b0"
+  },
+  {
+    "artifact": "delivery/quantitative_summary.json",
+    "bytes": 26687,
+    "sha256": "204ab0f36fe7dc4088352ec1fc018c1af278819251c982dd4495fba0a2a8de4e"
+  },
+  {
+    "artifact": "delivery/module_0_upper_stack_comparison.png",
+    "bytes": 596359,
+    "sha256": "2d2728a6c63701938a487b62032b972060838eddbc40ddabfc584c07353c98c9"
+  },
+  {
+    "artifact": "delivery/module_1_lower_stack_comparison.png",
+    "bytes": 928607,
+    "sha256": "ea970f0b7eb306cecaa261c5541125d8d3c89ef51d096c0c18c8afd64796a37d"
+  },
+  {
+    "artifact": "delivery/metric_comparison_16s.mp4",
+    "bytes": 2114289,
+    "sha256": "fda51b84b8059a2504d29b58b6398d9904efa3e74d597afd653aafc9840274ab"
+  },
+  {
+    "artifact": "ros-final/perception_world_snapshot.json",
+    "bytes": 325915,
+    "sha256": "67881c667999f11bcb04fee1d299a3978b6eba3b1e1bc91e0e89a15790491d6b"
+  },
+  {
+    "artifact": "ros-final/perception_feasibility_handoff.json",
+    "bytes": 654628,
+    "sha256": "8e8f4e123d75c73b9a5dbb09043ab0afd6aa74b3a8af8f3074dcffcca2ba63c6"
+  },
+  {
+    "artifact": "ros-final/ros_handoff_report.json",
+    "bytes": 661,
+    "sha256": "e4a1004c7c47c32e61a6a4799ed872ed2938a95f75da9fc0b0c3170360ef3ba2"
+  },
+  {
+    "artifact": "analytic-final/analytic_matrix.json",
+    "bytes": 23468,
+    "sha256": "1b2c5a1e1813cd589bfafefc3e2c7081dacb0a647bebfe9d0dae688fbda55c34"
+  },
+  {
+    "artifact": "small-scene-bundle/GEOMETRY_ADJACENT_TWO.manifest.json",
+    "bytes": 43042,
+    "sha256": "fb90d9dcb2d18892563ebdab9bcbb5f3ed7a920f91a285c015a6a2f9e8cadd44"
+  },
+  {
+    "artifact": "small-scene-bundle/GEOMETRY_PARTIAL_TWO.manifest.json",
+    "bytes": 43041,
+    "sha256": "88de3fcb1251a8a23b25a41c05badaab9a67b37b1725abea1f40c2bb4237d6f7"
+  },
+  {
+    "artifact": "small-scene-bundle/index.json",
+    "bytes": 1987,
+    "sha256": "c92fb8eb93c33f2fee3ef225fa3ab8fb465e1aa7b04627e09606e6b01148633b"
+  },
+  {
+    "artifact": "humble/colcon-build.log",
+    "bytes": 260,
+    "sha256": "fbe4b9506f530ad1e1411b02c0c262761b94650f405bedddcab975ee3e65e066"
+  },
+  {
+    "artifact": "humble/colcon-test.log",
+    "bytes": 260,
+    "sha256": "5979435f19e1d48ceabf264129a8aa93ac191d6f426715f4b43055092a7369a9"
+  },
+  {
+    "artifact": "humble/colcon-test-result.log",
+    "bytes": 50,
+    "sha256": "86cf30b7bc388dac603c85e0f56b7039e658e7212070c051e2799357946cb0b0"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_0_upper/ORACLE_MASK_DIAGNOSTIC.json",
+    "bytes": 63823,
+    "sha256": "e07c758dc7caf38571d8ac7863147350ad728973abd9ffbd802b13928fa5aa3b"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_0_upper/ORACLE_MASK_DIAGNOSTIC_support.npz",
+    "bytes": 12322,
+    "sha256": "eb8b1dca78792868c5e5abba6d866feced48a1d1f3a3e7cfb988bc001333bc58"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_0_upper/SAM.json",
+    "bytes": 64117,
+    "sha256": "21b539076685bfa76e97ce1720ebd53d28115d3f88373c93c976084a144d6fe5"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_0_upper/SAM_support.npz",
+    "bytes": 12356,
+    "sha256": "9c9ccfe5ebe1999efc596c27e853d66d7ea5ef506624a92b3873f69250009219"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_0_upper/stages.json",
+    "bytes": 18743,
+    "sha256": "9ce175d5a096fdcf726e96ba4bccae3331b5a923acc14da13f54d7cc7406274b"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_0_upper/single_box_comparison.png",
+    "bytes": 498341,
+    "sha256": "ff84ff6d64242dfee57087fffb67dfb7137b69fa28026f70c02dca3d6b73956c"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_0_upper/stages_complete.json",
+    "bytes": 33148,
+    "sha256": "f21e8fb8df7ee9c1bf40e690d9b6e1cee7c819f2f2f5cda58b5a206a9d512102"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_0_upper/legacy_rejected_geometry.json",
+    "bytes": 12451,
+    "sha256": "20174853de8b5aac992271df69f28021eaa3eda1ebf4f48be7b9348a5074d4cd"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_0_upper/raw_cloud_metric_comparison.png",
+    "bytes": 611087,
+    "sha256": "529462a87e45c8c9c54f478047510d10c25b61326e161b04981d3eaedbdd04a5"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_1_lower/ORACLE_MASK_DIAGNOSTIC.json",
+    "bytes": 41808,
+    "sha256": "eb9200378977db1209620a2cb4526375ea5e41b45a71bf9b7ba54ba2aba91a2b"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_1_lower/ORACLE_MASK_DIAGNOSTIC_support.npz",
+    "bytes": 11394,
+    "sha256": "52879db66230420dd616234947280eae6f5cb3abd9feaf6e1a4ddc1fd77e2ce0"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_1_lower/SAM.json",
+    "bytes": 42298,
+    "sha256": "ae80488ebd1230bbcb361b2dea2c5e7bcb90036a0b7fe355c14aa44122835dfe"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_1_lower/SAM_support.npz",
+    "bytes": 11468,
+    "sha256": "a471115b08a80e13f196e74b850eec850a845a5217ae54aa6eb220405005bab4"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_1_lower/stages.json",
+    "bytes": 16921,
+    "sha256": "314aa0463d8921d24d45590a79f19b42c1b1823bb4d1b6b6498e62673547b678"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_1_lower/single_box_comparison.png",
+    "bytes": 596626,
+    "sha256": "1e3d3281a9928d8310efe79827171dd287cc0658b5681a7276f26e5258200625"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_1_lower/stages_complete.json",
+    "bytes": 27367,
+    "sha256": "3c7c2885fc585d116780cafb17a5870f9e643761ddf900d07c683a5da0ecf115"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_1_lower/legacy_rejected_geometry.json",
+    "bytes": 10300,
+    "sha256": "3d5bc23ab03955c157ad8027aac8505e870b556af4b1e04392f8500037eb7321"
+  },
+  {
+    "artifact": "calibration-c50ff4c/module_1_lower/raw_cloud_metric_comparison.png",
+    "bytes": 577426,
+    "sha256": "a2e6385f9328c02419b6c12a3f5f591513f69a8b614112d68dc8d4402a7ba758"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_1.json",
+    "bytes": 34615,
+    "sha256": "067ea4411501d63082719ed80e3aab1bf275cdd9162f2509dc5b39e27a6b8707"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_2.json",
+    "bytes": 60585,
+    "sha256": "bb217e5fd07e2bf7a5d2b690cc177dc4c0cdc18907b96b9a4c1eb60e835943a2"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/metric_final.json",
+    "bytes": 126129,
+    "sha256": "3777a141c3bb36fe75b931974d97920c3e8fd95e0db61d1d268f1ca4129e97a4"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/two_box_comparison.png",
+    "bytes": 314395,
+    "sha256": "137eb064d67e7eace3505354f764afd5d29c8b0fbc50c11253fc5c6c2cff20ef"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_1.json",
+    "bytes": 17189,
+    "sha256": "3fdcecac11a612d45531339cab688d9efd6da2858ef5e77cfaa634c1fe882361"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_2.json",
+    "bytes": 38919,
+    "sha256": "1c464168c2c5275944046c39e2e8fa32b0e516d48284af67de2b8b461cc861b3"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/metric_final.json",
+    "bytes": 74474,
+    "sha256": "dbd5025010cc56bb6d08c5841d877603322f8708fb3e587f80e3f31ca5dc8599"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/two_box_comparison.png",
+    "bytes": 214295,
+    "sha256": "d5bb370cf85bcab3edc8af14040675958d79e42ab6c5652610fba9e76329efa5"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/metric_multiplane_input.json",
+    "bytes": 7521,
+    "sha256": "b387bb5d5ee27f5010fddbdcf5f088494caf79455efb345fe26c34bbdff8bc44"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/registered_fallback.json",
+    "bytes": 9655,
+    "sha256": "49813d768994e97a70f55e4b1d59143512dce46d93258b994d57c0dba9370149"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/worker.json",
+    "bytes": 20062,
+    "sha256": "b2853ebb4b05c040ae3094af57a82f469a83f0b4fdf3f5ac09e8a1be4cc5ffca"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/worker.png",
+    "bytes": 853790,
+    "sha256": "bca9306f812902389e1f9456b880e3e561fb756947c2bfc613319f4eb14e019e"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/command.json",
+    "bytes": 1456,
+    "sha256": "4f5d48efa7a59ce7370a97e05b165af19b36c7afb4f7a21712583128696e4e2a"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/worker.log",
+    "bytes": 169,
+    "sha256": "057a8dd452641f048d568b68e9ec6f9c94d2a61b803979ac903c7486f4e990b6"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_0_upper/legacy/validated_geometry.json",
+    "bytes": 24802,
+    "sha256": "9be28928221f9af8173200f4f43ffb203f01b80d1fb5e30e6fbcd694ec4eeb1d"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/legacy/metric_multiplane_input.json",
+    "bytes": 7165,
+    "sha256": "ed26c5d2fe2dcc1b9cc30ca2c083354dd337e59fc01f843511b9bfa5dc192131"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/legacy/registered_fallback.json",
+    "bytes": 9336,
+    "sha256": "24d34c3c7175364eba86804297741f28e3a2e6e63e458a2a3a271c4d273a0a4a"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/legacy/worker.json",
+    "bytes": 18296,
+    "sha256": "2b0d01cfe4105e47101226dca7e316ac98578ba581d86dffbd27c1b70c680779"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/legacy/worker.png",
+    "bytes": 1228857,
+    "sha256": "5908e5c24200c2dd3a230db78117b487ad721d48b927b9eeedde5adaab6c69fa"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/legacy/command.json",
+    "bytes": 1456,
+    "sha256": "5aa553200753ad16f3e60cba8ac4e6c241fc6a9440d523c8eca317852518fd9e"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/legacy/worker.log",
+    "bytes": 169,
+    "sha256": "ac4dcfe083953b271891d68a7c374bf9a2372ca66d1db992476adf28d886885b"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_ADJACENT_TWO/module_1_lower/legacy/validated_geometry.json",
+    "bytes": 22686,
+    "sha256": "05cd3980817e8aa7dca20611f47b9286a37bbe9b5d8d8de9a074cd00a75c7cf5"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/oracle_1.json",
+    "bytes": 52992,
+    "sha256": "1335142111e409d2d4bc4fe50d6b5d12b26708657abbe73735244b93bb70a635"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/oracle_2.json",
+    "bytes": 40584,
+    "sha256": "912649656d47118e76dcf712f4d82291aeeaeb91faa7dd30c11ae5d02e8fb30b"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/metric_final.json",
+    "bytes": 127742,
+    "sha256": "3b9dc6c9f3650051c9d32ddf99e57750b46c3c760152a9c96809ed20672e7269"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/two_box_comparison.png",
+    "bytes": 301562,
+    "sha256": "cd21eeda241c5fd1572b7053ee9dcb923014754c51ad43441cd0f5a00281a822"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/oracle_1.json",
+    "bytes": 46773,
+    "sha256": "d18d3ca706befa27989144d79dbe36471957f8e5a638b2029eb81478d58909fe"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/oracle_2.json",
+    "bytes": 21855,
+    "sha256": "ea3589947a4531888e0271d7b6a88f0e86bd43590e9f6f4f599b74a961955c0b"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/metric_final.json",
+    "bytes": 84599,
+    "sha256": "7b9231910b11cf1a995c79c0605dc83d055d9c85497655a292ff6d99427c6230"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/two_box_comparison.png",
+    "bytes": 258249,
+    "sha256": "17eea8e1373562eacec6eeae7b0c86415f5bfeb023ad5435b0c24754ba9fe271"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/legacy/metric_multiplane_input.json",
+    "bytes": 7803,
+    "sha256": "cbb6870b4c6f2f267d107113e25f074586e807e5efbe7e59858f3f5e112bcd72"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/legacy/registered_fallback.json",
+    "bytes": 9936,
+    "sha256": "72e83ecbbbc10608ffe26c3fc34667f5194131f54ace612d2fc6bda661fe2b1d"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/legacy/worker.json",
+    "bytes": 20736,
+    "sha256": "f492071667d20b3e85988ffdae46b3f0df3065f0946985b2525d9e2325d05bec"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/legacy/worker.png",
+    "bytes": 749405,
+    "sha256": "93e4290fdf39d1607df1ab595f4ad16086eef51c43a8fc41a621ac045bbc0464"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/legacy/command.json",
+    "bytes": 1449,
+    "sha256": "a7d034d8f8c582abd3d7545c564d5a6ac25e999b7afc0ed693cf3f3df256c14f"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/legacy/worker.log",
+    "bytes": 168,
+    "sha256": "64d373a31bf969e453cca5bde75b0947702897acc1dca446f8c450ccf111ff90"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_0_upper/legacy/validated_geometry.json",
+    "bytes": 25423,
+    "sha256": "c126f9fb041e7a7b18c6bbc782c37bc00e5d77eb9fb3f40300c5cfc8554fb666"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/legacy/metric_multiplane_input.json",
+    "bytes": 4772,
+    "sha256": "aee956710fe65046da647104bc6dd37222c385b194d1f5d0770e68947ea3efaa"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/legacy/registered_fallback.json",
+    "bytes": 6245,
+    "sha256": "85d3a09d3b3d0bfe4ad7e287c2a091799b85ba2699bfcd5cf2b2de9988685563"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/legacy/worker.json",
+    "bytes": 13413,
+    "sha256": "8a0d1f23e2ffee7c473346759779d5bf8993df584ff86051862cd51c27531738"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/legacy/worker.png",
+    "bytes": 1201275,
+    "sha256": "4069d2520f3043a3e86bb0c642e42404724dd2fe633ee3033ddfd91cfb8bc9fa"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/legacy/command.json",
+    "bytes": 1449,
+    "sha256": "eda4f2a25d78ac8c6b284d863743378094483837b5fb1c11254fb7aeb6bd7f42"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/legacy/worker.log",
+    "bytes": 168,
+    "sha256": "5912eba19c6438e03b76c2ed9dfc3757276ffdb85a75365c114014d5819b393b"
+  },
+  {
+    "artifact": "small-matrix-final/GEOMETRY_PARTIAL_TWO/module_1_lower/legacy/validated_geometry.json",
+    "bytes": 16562,
+    "sha256": "25eff6ec09b69fcaa20ea022f3eb5fd17311bc7511097604c7581f2e515f42f7"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/fusion.json",
+    "bytes": 213495,
+    "sha256": "41add5a7602c8453e197d686c80b72bdb261c2f73fa22a9e7f9a3303317284d7"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/fused_algorithm_observation.json",
+    "bytes": 198886,
+    "sha256": "17287e78d78254ebe086a527afa6da0315be79eb3344c907fc1a6d75df22733b"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_0_upper/validated_geometry.json",
+    "bytes": 696851,
+    "sha256": "bec4df0edf2eddf957233617f732b4b30c7f771eb07b84310f691996e064e966"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_0_upper/final_metric_faces_overlay.png",
+    "bytes": 1671344,
+    "sha256": "81d439c25634ec62ee1cca3a32a86cc5d72881d26082f17732a5a67e663843ac"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_0_upper/observation.json",
+    "bytes": 336171,
+    "sha256": "aadd5bd2380c0a4869871c898800e4012b2fddfbe99c0020111f7092a0d3eb32"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_0_upper/source_identity_zoom_1.png",
+    "bytes": 246966,
+    "sha256": "c15bed27f357db0d377bae3bf65d4bebf80aff5268d4b3fb68910e9c37e25cd9"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_0_upper/source_identity_zoom_6.png",
+    "bytes": 207489,
+    "sha256": "2f6cf615891aff187c9900ca0d1a5928447cdb9cb92c6380166389f7cba0cdcc"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_0_upper/depth_support_and_gt_world.png",
+    "bytes": 484694,
+    "sha256": "56c3521e4d43b47069db8101b4ff9ec38f09360e0d103e441026919bc1c3792d"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_1_lower/validated_geometry.json",
+    "bytes": 1107760,
+    "sha256": "44aae6dff1ad05986b1686cd7756b91a9a6ad0fc25744be8bc2b4259976162d9"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_1_lower/final_metric_faces_overlay.png",
+    "bytes": 2771318,
+    "sha256": "0069905c0c1c4e8d2a59c92f01b90937e31fcf7d465fa48604c90dabed242d7d"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_1_lower/observation.json",
+    "bytes": 561211,
+    "sha256": "b426b619a8f513b58e1214b651bc73a94738e7923c714c9f728a9e9658401966"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_1_lower/source_identity_zoom_27.png",
+    "bytes": 182365,
+    "sha256": "5100320a27b0198fd2f3bc7ddcd7ded5b77ef034fdf3564c4922d0494aec83c3"
+  },
+  {
+    "artifact": "frozen-stack-final/FULL_STACK_NOMINAL/module_1_lower/depth_support_and_gt_world.png",
+    "bytes": 564998,
+    "sha256": "8ae006ac7221cd8f389ebdf5ba909267c12259b52181c8aa5740a55c73d011c9"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/logger_all.log",
+    "bytes": 58874,
+    "sha256": "efcdca5e43333a891a21208dc8af5cf5743128e95840bebab2a0bfbda96790db"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/events.log",
+    "bytes": 167618,
+    "sha256": "40a9fea4bd31d40f7e2771fabfb0b8fff166f6942ba475e643364f3377e0c096"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_interfaces/command.log",
+    "bytes": 2234,
+    "sha256": "ec47c4afc577f90ae99dfaf6c341e9817a67db2580f337858afb7152c3961f6a"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_interfaces/stdout.log",
+    "bytes": 97903,
+    "sha256": "78e7ce202710215e562adf27b38874515bb563561dc41cb93d0bee6019e754f1"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_interfaces/stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_interfaces/stdout_stderr.log",
+    "bytes": 97903,
+    "sha256": "78e7ce202710215e562adf27b38874515bb563561dc41cb93d0bee6019e754f1"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_interfaces/streams.log",
+    "bytes": 104853,
+    "sha256": "ad16291113b8e694e941b0c0b2eb29cb817029a8065a132e74f7e65a51cc20e3"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_ros_bridge/command.log",
+    "bytes": 2854,
+    "sha256": "91b325ea04c27af23d2b424a6059452bf52f2a8506453cd0d038112c66a59ef7"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_ros_bridge/stdout.log",
+    "bytes": 3186,
+    "sha256": "d0d2092784747b989bc34ed380d92c3c73f7240cd8eb4c4ca53ab0ecaa545c5d"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_ros_bridge/stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_ros_bridge/stdout_stderr.log",
+    "bytes": 3186,
+    "sha256": "d0d2092784747b989bc34ed380d92c3c73f7240cd8eb4c4ca53ab0ecaa545c5d"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_ros_bridge/streams.log",
+    "bytes": 6301,
+    "sha256": "ebe87e511ddc0869e439961de24d06c2b582fdf37dd8c62a20535b415ab76258"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_bringup/command.log",
+    "bytes": 8138,
+    "sha256": "e0e3d402c61ad298b0b3807e4432d9dd1ca1db73efabc14b1fb9e94165fc5528"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_bringup/stdout.log",
+    "bytes": 4274,
+    "sha256": "1332cb1a11b5c8e2f43613a6b649a6e1de417ac4a62bcede37003d881ff3756d"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_bringup/stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_bringup/stdout_stderr.log",
+    "bytes": 4274,
+    "sha256": "1332cb1a11b5c8e2f43613a6b649a6e1de417ac4a62bcede37003d881ff3756d"
+  },
+  {
+    "artifact": "humble/build-log/build_2026-09-15_13-08-16/unloading_bringup/streams.log",
+    "bytes": 12808,
+    "sha256": "e5ab415de4e25a755cccbea413554b789e014b5b4e98159b2441252584f1e296"
+  },
+  {
+    "artifact": "humble/build/unloading_ros_bridge/package.xml",
+    "bytes": 993,
+    "sha256": "1c18aaff3900ece71600d80d0d1e9e2be36cf0429b0972b93e55fd7ae9205abc"
+  },
+  {
+    "artifact": "humble/build/unloading_ros_bridge/pytest.xml",
+    "bytes": 1073,
+    "sha256": "396dfc54d4a095dbfe61246c3941b861ab68c8dd95bac84fd4ec27dcf303926b"
+  },
+  {
+    "artifact": "humble/build/unloading_interfaces/CMakeFiles/CMakeOutput.log",
+    "bytes": 48299,
+    "sha256": "cbbb39eaf28a8b04b3c7b3e5c3bbc3840116990f553aa8014f442ba93d9bfbca"
+  },
+  {
+    "artifact": "humble/build/unloading_interfaces/Testing/Temporary/LastTest.log",
+    "bytes": 121,
+    "sha256": "2bc3b21a1e9d06fa314d0d681b712add8f0ec654271a30fd23063139272683a2"
+  },
+  {
+    "artifact": "humble/build/unloading_bringup/CMakeFiles/CMakeOutput.log",
+    "bytes": 48263,
+    "sha256": "3f21b3ab97e722b83e0c85d72f37db718f49bda9598524b266bb584a57e64657"
+  },
+  {
+    "artifact": "humble/build/unloading_bringup/Testing/Temporary/LastTest.log",
+    "bytes": 121,
+    "sha256": "2bc3b21a1e9d06fa314d0d681b712add8f0ec654271a30fd23063139272683a2"
+  },
+  {
+    "artifact": "humble/test-log/test_2026-09-15_13-08-27/logger_all.log",
+    "bytes": 21682,
+    "sha256": "8a5e0d33e7165a48c1bb8325b832629103e94090a4e7db546671825f238e1169"
+  },
+  {
+    "artifact": "humble/test-log/test_2026-09-15_13-08-27/events.log",
+    "bytes": 9050,
+    "sha256": "f0bdc37cd66a048158c3a47bc5e15497616691b9269b54af2ff460ff8a42b427"
+  },
+  {
+    "artifact": "humble/test-log/test_2026-09-15_13-08-27/unloading_ros_bridge/command.log",
+    "bytes": 2318,
+    "sha256": "f403fed7da68633366e7aaa2a38835683775bfc138681847b188be4761fc3f66"
+  },
+  {
+    "artifact": "humble/test-log/test_2026-09-15_13-08-27/unloading_ros_bridge/stdout.log",
+    "bytes": 1135,
+    "sha256": "89831afe81fb66fea8529668fedacc8457f7a33db070124e444e2c9a76e14de7"
+  },
+  {
+    "artifact": "humble/test-log/test_2026-09-15_13-08-27/unloading_ros_bridge/stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "artifact": "humble/test-log/test_2026-09-15_13-08-27/unloading_ros_bridge/stdout_stderr.log",
+    "bytes": 1135,
+    "sha256": "89831afe81fb66fea8529668fedacc8457f7a33db070124e444e2c9a76e14de7"
+  },
+  {
+    "artifact": "humble/test-log/test_2026-09-15_13-08-27/unloading_ros_bridge/streams.log",
+    "bytes": 3588,
+    "sha256": "d7607f758ccc6286ffd79a526a453bc8b21a1d214a45c9bc8f579613d29e62e8"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v2/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_1.json",
+    "bytes": 33564,
+    "sha256": "3abbea31cc2302597f18020081a77005e0ab99859b6da4e0a294cca4cb90f5bf"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v2/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_2.json",
+    "bytes": 59804,
+    "sha256": "9c1e6114f1e73944cde6541e64c00bd0ad85d77e6e02060e132260d881ed8371"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v2/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_1.json",
+    "bytes": 15807,
+    "sha256": "60a8201cdc71e751cbd30e19164f8b6b6c6b04afc1c498f33b65d4841be8b4c5"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v2/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_gate_failure.json",
+    "bytes": 1876,
+    "sha256": "2263180ccbaba3320278116371cb9d6677a6816254d8a5b00af5aa9f6d6ab51f"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v3/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_1.json",
+    "bytes": 33566,
+    "sha256": "82cc51d95cedb528b87ccfa9659dc918b5230c4fb881251bed2d13878de2b63d"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v3/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_2.json",
+    "bytes": 59300,
+    "sha256": "e9c8fc56341ff6ff68a6170d2152c3305238e36759fddf82d3035d0e48fe7192"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v3/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_1.json",
+    "bytes": 15807,
+    "sha256": "60a8201cdc71e751cbd30e19164f8b6b6c6b04afc1c498f33b65d4841be8b4c5"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v3/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_gate_failure.json",
+    "bytes": 1876,
+    "sha256": "2263180ccbaba3320278116371cb9d6677a6816254d8a5b00af5aa9f6d6ab51f"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v4/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_1.json",
+    "bytes": 34103,
+    "sha256": "e1a9abfdde8b45567683a2aac59f6c93a88e0143be2506de5690fcc6b8c378bb"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v4/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_2.json",
+    "bytes": 59806,
+    "sha256": "20319b6f987562d451f245904ef97fb04b176d4fe7e70eb3634246dbb212b3c6"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v4/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_1.json",
+    "bytes": 16979,
+    "sha256": "52a738bc69e1bafbbba56c2fc8a7999aefd02db832f50ec9b6cf5b5f739b4872"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v4/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_2.json",
+    "bytes": 38404,
+    "sha256": "30a15daca17b91e9b5d48e78ff33ce3da7dc50caf4d1eed8b7c1f7ecf86135da"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v4/GEOMETRY_PARTIAL_TWO/module_0_upper/oracle_1.json",
+    "bytes": 39641,
+    "sha256": "00df439c41263ce2a7df68e24fbdb58a585855d378819a3a4a085351f7ffc18c"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v4/GEOMETRY_PARTIAL_TWO/module_0_upper/oracle_2.json",
+    "bytes": 23022,
+    "sha256": "1aad729487a19386e3d1ba40352732ab0b6e012dc70bedab820b394cc90f49e4"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v4/GEOMETRY_PARTIAL_TWO/module_0_upper/oracle_gate_failure.json",
+    "bytes": 1953,
+    "sha256": "3ae7ccdb37a8631982023943c3f2b608e456d1ff31bbd7fa5db1c6ec28bc6f2f"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v5/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_1.json",
+    "bytes": 34493,
+    "sha256": "f62f0fd1dfcbe99609926a0db4fffa5e07c452ce4f294996523b6ab575295af6"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v5/GEOMETRY_ADJACENT_TWO/module_0_upper/oracle_2.json",
+    "bytes": 60402,
+    "sha256": "81913349a82c9ca85e62ea8f971fb08fd95a14f181437f7fda11076c76e5c68a"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v5/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_1.json",
+    "bytes": 17177,
+    "sha256": "0b94fcb2b9ae250e57c0c1de2e2bb2bb72de419159491e708d8ab80919c35254"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v5/GEOMETRY_ADJACENT_TWO/module_1_lower/oracle_2.json",
+    "bytes": 38797,
+    "sha256": "3466b03d29a2b5fea05d72095d27ef357527434a91b0e0c8d979ab0a1f18f75a"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v5/GEOMETRY_PARTIAL_TWO/module_0_upper/oracle_1.json",
+    "bytes": 52931,
+    "sha256": "c2f61935a8604c687ab2c098de730b4291e0b8e9fad1d8769a955c4decb84eb1"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v5/GEOMETRY_PARTIAL_TWO/module_0_upper/oracle_2.json",
+    "bytes": 27505,
+    "sha256": "a467f7cb7beb65a4012267bfa94f87b61bb10ff0607e30466ea34b06b30f98ca"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v5/GEOMETRY_PARTIAL_TWO/module_1_lower/oracle_1.json",
+    "bytes": 46651,
+    "sha256": "d88bcb7d95b40da09c72e9a11fff3aff03d873bb3838fabd57e4de18d14a8d17"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v5/GEOMETRY_PARTIAL_TWO/module_1_lower/oracle_2.json",
+    "bytes": 11088,
+    "sha256": "c787c33797d00e687d9977a8c9ebc7a81d15ac902db18f8b2798a7458732bed7"
+  },
+  {
+    "artifact": "failure_history/small-matrix-v5/GEOMETRY_PARTIAL_TWO/module_1_lower/oracle_gate_failure.json",
+    "bytes": 4060,
+    "sha256": "c829e44caf04a55dbbeae7642bc04d0d358b4b2a63a742e085122f1a0359eebb"
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "status": "RGBD_PRIMARY_GEOMETRY_COMPLETE_WITHOUT_MOGE",
+  "moge_model_configured": false,
+  "moge_imported": false,
+  "timing_scope": "startup_image_read_SAM_2D_pointcloud_baseline_V4_final_checks_evaluation_and_output; no fusion or ROS in this single-module probe",
+  "wall_seconds": 16.698466949164867,
+  "response": {
+    "schema_version": "1.1.0",
+    "request_id": "rgbd-without-moge",
+    "worker_epoch": "no-moge-validation",
+    "input_sha256": "f09c5a40c59a8dc1564a10f9704c4d7a3de6e19f993f4923df852250a13a8896",
+    "status": "COMPLETE",
+    "mode": "RGBD_PRIMARY_2D_PREREQUISITES",
+    "metrics_reference": {
+      "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/no-moge-final/sim-j1-mast-v2-000250-rgbd-without-moge/metrics.json",
+      "sha256": "b04bd32125d1376542625f8fc74e8b03a63d7f0d507146d8e4f0d5e5779fecc8"
+    },
+    "stage_timings_seconds": {
+      "sam": 1.201653890311718,
+      "geometry_2d": 0.3794404976069927,
+      "request_total": 1.6512201949954033
+    }
+  },
+  "geometry_including_pointcloud_io_seconds": 11.472072627395391,
+  "observed_face_count": 3,
+  "candidate_eligible_count": 0,
+  "geometry_acceptance": "SEPARATE_FROM_RUN_COMPLETION"
+}

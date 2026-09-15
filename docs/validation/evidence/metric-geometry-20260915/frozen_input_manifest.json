@@ -1,0 +1,492 @@
+[
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/camera_info.json",
+    "bytes": 885,
+    "sha256": "b81053039f511c06ff2ca17265556918d12f6bf1341414fdc3c83968e1f25852"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/capture_metadata.json",
+    "bytes": 1036,
+    "sha256": "4b0f133d60d68da4d1c8757a48a4170e1c551fd3c03ce586ec164af2d571dd04"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/gt_annotations.json",
+    "bytes": 41222,
+    "sha256": "d41c0b4f98737e6dc95b3aeac06355135c3512c215edead444380074b2143bd8"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/gt_instance_masks.npz",
+    "bytes": 6948,
+    "sha256": "3049fe1f64413f6b284aeadec81131648c85d7a3982661e9570e6c76e6add11b"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "8758c2ba1de0282e903e11ab26a60509d102cc8212c06b8cee4e47cf07b8aba3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/mode_b1_worker_response.json",
+    "bytes": 8058,
+    "sha256": "eb26b9ec4ae045f5a112af522088008601acbf58c03f1746f5ef5549beff55d9"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/oracle_proposals.json",
+    "bytes": 757,
+    "sha256": "4ecb98dbefabfffd4846a890acf7b0019d76657fc669fb30c5882678d72dd573"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/registered_metric_pointmap.npz",
+    "bytes": 2060241,
+    "sha256": "d9eef1804ccc3a1446bfbc8019c6f99bacfaa089e16373c18193899dd440a1ff"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/sensor_rgb.png",
+    "bytes": 1760603,
+    "sha256": "f09c5a40c59a8dc1564a10f9704c4d7a3de6e19f993f4923df852250a13a8896"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_0_upper/camera_info.json",
+    "bytes": 918,
+    "sha256": "f0c6bd6ebbb09e9fa4d686a25679c70c30f5e479aa9a8e32ae35585c62406817"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_0_upper/capture_metadata.json",
+    "bytes": 1037,
+    "sha256": "584b5a68d2748e34b9d39a1c3f6e730cdb62efd1322e9f1220002d70525bdb5e"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_0_upper/gt_annotations.json",
+    "bytes": 39774,
+    "sha256": "e51d282d16736f177e1fef59b61643933f4c70954570e2c91673bab8b5a9d41d"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_0_upper/gt_instance_masks.npz",
+    "bytes": 6948,
+    "sha256": "3049fe1f64413f6b284aeadec81131648c85d7a3982661e9570e6c76e6add11b"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_0_upper/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "8758c2ba1de0282e903e11ab26a60509d102cc8212c06b8cee4e47cf07b8aba3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_0_upper/oracle_proposals.json",
+    "bytes": 790,
+    "sha256": "330e95c853b69460a9d10e0091ffbcc80f43443a201bc56c4d761d920f152e89"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_0_upper/sensor_rgb.png",
+    "bytes": 1760603,
+    "sha256": "f09c5a40c59a8dc1564a10f9704c4d7a3de6e19f993f4923df852250a13a8896"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower/camera_info.json",
+    "bytes": 978,
+    "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower/capture_metadata.json",
+    "bytes": 1097,
+    "sha256": "06c2192448459626ec74f5002aacc7ea936f4229a444b3f3ed41924e204ae6a9"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower/gt_annotations.json",
+    "bytes": 40104,
+    "sha256": "a150741505b8675d79d41d7a80c0178aeef03d6c1c8f1f30d1934a640ea68f9f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower/gt_instance_masks.npz",
+    "bytes": 6465,
+    "sha256": "97faeeec422331bf266e8324335a066bfaf60bb1310ac88f15ef2edace74b561"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "1b6e7aef9a43a51f5de6f1a7227138468a8b4307c8f84e071a385a8460083b88"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower/mode_b1_worker_response.json",
+    "bytes": 8293,
+    "sha256": "927d95dd7ede9036ad077fc6de1110ee41c21d4de50983be081ee95c6032a13a"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower/oracle_proposals.json",
+    "bytes": 788,
+    "sha256": "f746d07ed0fbb302355e8296717a7e25a6e336f975567b5c580f0e63fd632981"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower/registered_metric_pointmap.npz",
+    "bytes": 4792630,
+    "sha256": "51dcca73b2fb08415084219c9e2af7acaf8cc6e75eff7ca10bf28ca1a909d755"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/RGBD_CALIBRATION_BOX/modules/module_1_lower/sensor_rgb.png",
+    "bytes": 3084128,
+    "sha256": "2d7a804f1864b37cea46e9f4c8bcef33c7b9f16da4ca200edad0a6f2ab721eb2"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/camera_info.json",
+    "bytes": 885,
+    "sha256": "b81053039f511c06ff2ca17265556918d12f6bf1341414fdc3c83968e1f25852"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/capture_metadata.json",
+    "bytes": 1040,
+    "sha256": "451b2664c2e033fbcd2cb6d7bfd421e306338cc4bd776840005f65393be18a35"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/gt_annotations.json",
+    "bytes": 44663,
+    "sha256": "eb8794ae5de65c51c18a4dd444f3b20ff956df621581a888ebd07ca4a576e53a"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/gt_instance_masks.npz",
+    "bytes": 102056,
+    "sha256": "24e65a7dcbc973ece3920b6b03775e530ce0eb04d63fcd9629c4c3f37ff75355"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "48095a48b6ad49d88c77581feafb2832137f82cb64c8c8f5e1ec8a99c5c28ba8"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/mode_b1_worker_response.json",
+    "bytes": 46982,
+    "sha256": "8f6079b4041a0719bc0f36ac40b6b1950c15691c45b0f4257cbba556201eb7dd"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/oracle_proposals.json",
+    "bytes": 5991,
+    "sha256": "62c00dcb286c49b8216705ffdf610182b1890634a63d4c482dfe306c052135aa"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/registered_metric_pointmap.npz",
+    "bytes": 8351898,
+    "sha256": "3528364cba2fadaf3b5084a5a3c361ea9a5aae16e71096210738997b6917dceb"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/sensor_rgb.png",
+    "bytes": 1604001,
+    "sha256": "73bea216c8b6826c03cfdbcdf97e20de9ae76088022b0ea174dce4a46c4d7d15"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_0_upper/camera_info.json",
+    "bytes": 918,
+    "sha256": "f0c6bd6ebbb09e9fa4d686a25679c70c30f5e479aa9a8e32ae35585c62406817"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_0_upper/capture_metadata.json",
+    "bytes": 1041,
+    "sha256": "9442faa8b0f9e3e95ba5070f62524222777aa9e94e0defd4571499d298a0a210"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_0_upper/gt_annotations.json",
+    "bytes": 39311,
+    "sha256": "5166279cf5ed35783b8866f8f605ee5c87e46b537fe6355d9fc8c460818ea6cb"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_0_upper/gt_instance_masks.npz",
+    "bytes": 102056,
+    "sha256": "24e65a7dcbc973ece3920b6b03775e530ce0eb04d63fcd9629c4c3f37ff75355"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_0_upper/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "48095a48b6ad49d88c77581feafb2832137f82cb64c8c8f5e1ec8a99c5c28ba8"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_0_upper/oracle_proposals.json",
+    "bytes": 6024,
+    "sha256": "000f830fd31c1a18f4086f57f3c6c981c6a083ac669e142d5fd059a13af3a8f2"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.png",
+    "bytes": 1604001,
+    "sha256": "73bea216c8b6826c03cfdbcdf97e20de9ae76088022b0ea174dce4a46c4d7d15"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/camera_info.json",
+    "bytes": 978,
+    "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/capture_metadata.json",
+    "bytes": 1101,
+    "sha256": "d3e60c1ee0ae6ed38fd3871d7f8ac733e255642694b4738a1956915d104e0cec"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/gt_annotations.json",
+    "bytes": 39089,
+    "sha256": "c275bcf18eed235349ea23e92001f329650bcb6e319c22ce92a0d8aa2b7a9e90"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/gt_instance_masks.npz",
+    "bytes": 209854,
+    "sha256": "cac87c91015657710f262a386be7e282db14d75e96d780975b20357fecd1913f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "2cfab9652c0e77498845026e7adab88bfc63539205f8deb24817319114b93d56"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/mode_b1_worker_response.json",
+    "bytes": 107431,
+    "sha256": "51a1b7df6006a1da091bf750bca5c8395138a80b37cb665cfaab72903b8be549"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/oracle_proposals.json",
+    "bytes": 11979,
+    "sha256": "57cbf68e091251aad8a37bc06cc730389b5af3d71cd1be683ef1e5fe12e09e4b"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/registered_metric_pointmap.npz",
+    "bytes": 18880593,
+    "sha256": "469b5783d9564c0233b29ffbe538e59567077b5fa011b66e9212d79d1b5042df"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.png",
+    "bytes": 2586733,
+    "sha256": "6b1f01eb2e4645cafc9f503a6755bcac349042265ee93c1a37de9e4c2d4efcba"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/sensor_rgb.png",
+    "bytes": 1649090,
+    "sha256": "50b9ea603e0f9022bb6a4fb1d5fb6b44af830dd748b542584cad034fb6ed9393"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "62820deb67ef0b8ea35c2b23e7e63c35f869dc8abddff370d181626ffc993e61"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/camera_info.json",
+    "bytes": 885,
+    "sha256": "b81053039f511c06ff2ca17265556918d12f6bf1341414fdc3c83968e1f25852"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/gt_instance_masks.npz",
+    "bytes": 12820,
+    "sha256": "ff79cfda36632c8f1052fc8fd2b922920d72f29abb04bb924e1605119467b9c8"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/gt_annotations.json",
+    "bytes": 41613,
+    "sha256": "7b2a0b0c2ca8cbdd2073152c23d7026e1d6adc7db6f4a8069ff0656dea11058f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/capture_metadata.json",
+    "bytes": 1072,
+    "sha256": "ae51ddf1f24423221e5c33fc53eba02120b03577adfa274c9582fb638de3da8a"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/sensor_rgb.png",
+    "bytes": 1649090,
+    "sha256": "50b9ea603e0f9022bb6a4fb1d5fb6b44af830dd748b542584cad034fb6ed9393"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "62820deb67ef0b8ea35c2b23e7e63c35f869dc8abddff370d181626ffc993e61"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/camera_info.json",
+    "bytes": 918,
+    "sha256": "f0c6bd6ebbb09e9fa4d686a25679c70c30f5e479aa9a8e32ae35585c62406817"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/gt_instance_masks.npz",
+    "bytes": 12820,
+    "sha256": "ff79cfda36632c8f1052fc8fd2b922920d72f29abb04bb924e1605119467b9c8"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/gt_annotations.json",
+    "bytes": 39848,
+    "sha256": "0db78fcdcf21d42a31ccc911d4ae6835097f81339ca5ad99599ada72dd058fdb"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/capture_metadata.json",
+    "bytes": 1073,
+    "sha256": "7b50f32c78f66653c883b7cd264ffe37baf6344e2603a9696855dc0f1ee0763f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/oracle_proposals.json",
+    "bytes": 1146,
+    "sha256": "1bb78369c2d00527fdb743200b8c2eb72d7a621f0664d26698a01f6aa8e57c8f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/mode_b1_worker_response.json",
+    "bytes": 672,
+    "sha256": "a1d0dcba43eafddf0e7d9b75289ff0d2150bf58a47770cf050acafc5cc36ce9e"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper/registered_metric_pointmap.npz",
+    "bytes": 3795320,
+    "sha256": "3c0cc5a8c51bdfd59fc0d41c7f2429bdbec76075fa63409dd68b2b538a1165b8"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/sensor_rgb.png",
+    "bytes": 2384548,
+    "sha256": "146bbbe47e8178448d1e1b3c7c5390e02c82c474527e9a9a7f89cfd72319362f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "02569ace7b60a5ea24a4a3fb415f14a06e6331cc23747d4ad40c2923641de33c"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/camera_info.json",
+    "bytes": 978,
+    "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/gt_instance_masks.npz",
+    "bytes": 12027,
+    "sha256": "1ff703bc77c5da64b316a71da21d0c76ef47016da0f433422f4359c7ea31d71f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/gt_annotations.json",
+    "bytes": 40202,
+    "sha256": "cc59a6567556d6e24eec994905f172a07b094a149ef4c3595cc2f243b41173a2"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/capture_metadata.json",
+    "bytes": 1133,
+    "sha256": "fe9b7ad62aa4d27ba29bcd275489dff258a5b8af361d576db2c386bda63cdb55"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/oracle_proposals.json",
+    "bytes": 1142,
+    "sha256": "262d52e1a39d70edd4ad64a267689f8382811ce5447709d5f6f1ad6b042fd3a4"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/mode_b1_worker_response.json",
+    "bytes": 671,
+    "sha256": "2b9958669c22e910437df25982e7556eed9b5b00c162127058c4822a3a3dd71a"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/registered_metric_pointmap.npz",
+    "bytes": 5730941,
+    "sha256": "33534adc2db99520f7101c025bdf166e1a292d9b6b318439c37a0efb44afa51c"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/sensor_rgb.png",
+    "bytes": 1486103,
+    "sha256": "ca295e5aa5c78efbca5bae77835b87a3c4863412637cbc62c651dcbac5e1a629"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "20cadd6f965f95228222d59f577f5b824b17ec49d931d29782a7cfebc0d0d40b"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/camera_info.json",
+    "bytes": 885,
+    "sha256": "b81053039f511c06ff2ca17265556918d12f6bf1341414fdc3c83968e1f25852"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/gt_instance_masks.npz",
+    "bytes": 12878,
+    "sha256": "63e2efa1028f7f9408b886472f4c5bf79cea49f33505e217626fd4a34ec557ab"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/gt_annotations.json",
+    "bytes": 41612,
+    "sha256": "4f639cc434b6a66b1e363811a9298e53a619acbe40cfc02c0707559d4a1f22b3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/capture_metadata.json",
+    "bytes": 1072,
+    "sha256": "ef20c41d2a489fe689d270292ee20928e536aed2b714a497e1a0216ba0f20962"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper/sensor_rgb.png",
+    "bytes": 1486103,
+    "sha256": "ca295e5aa5c78efbca5bae77835b87a3c4863412637cbc62c651dcbac5e1a629"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "20cadd6f965f95228222d59f577f5b824b17ec49d931d29782a7cfebc0d0d40b"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper/camera_info.json",
+    "bytes": 918,
+    "sha256": "f0c6bd6ebbb09e9fa4d686a25679c70c30f5e479aa9a8e32ae35585c62406817"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper/gt_instance_masks.npz",
+    "bytes": 12878,
+    "sha256": "63e2efa1028f7f9408b886472f4c5bf79cea49f33505e217626fd4a34ec557ab"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper/gt_annotations.json",
+    "bytes": 39849,
+    "sha256": "4ed22d1622d85650ec70e33a49191cbee6995d5d25cbc4bfe95abeea74467449"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper/capture_metadata.json",
+    "bytes": 1073,
+    "sha256": "b851d5f3364387e129d6f4f2df04c7c8c5e684c540aa32966649faa2abecd98f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper/oracle_proposals.json",
+    "bytes": 1146,
+    "sha256": "ae9ffe1ca3c6da993f5e0989d406bedb320948ac284b4c9d1cc8073c3e692214"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper/mode_b1_worker_response.json",
+    "bytes": 670,
+    "sha256": "a5e4e9a28f8b3f3eb49689a6f261573dd7ce1cde7e6b6d6cf73a7585eebc4b09"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper/registered_metric_pointmap.npz",
+    "bytes": 3556681,
+    "sha256": "4eb9b9641eb5d4514c11b5ab2f22e32789b97d410121372f84d3501f3c66b7e2"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower/sensor_rgb.png",
+    "bytes": 2305305,
+    "sha256": "9784cd32ab8ba73b3bd6c03aebe9e2af076d55c344f546c032b3573e4d8e0250"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "cba67b7dc814ee0df2f459ea5bb67a1850b09e41ec50d78abb5478ed5c179e24"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower/camera_info.json",
+    "bytes": 978,
+    "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower/gt_instance_masks.npz",
+    "bytes": 12260,
+    "sha256": "9623fd5a9176060492a7853e471d18e1a1642b44b79d44f60f9b68b6cf444d7f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower/gt_annotations.json",
+    "bytes": 40202,
+    "sha256": "fa049005b0c0f3835b711cb99484a8ac6478988672091a81b91372b61a7cd29d"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower/capture_metadata.json",
+    "bytes": 1133,
+    "sha256": "90ecc3531ec9dbc9e28bf4deef1071a65b41e65ecb7c68f194b1a8b30f444947"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower/oracle_proposals.json",
+    "bytes": 1142,
+    "sha256": "2c02f2b9a274ad0ede600a37843d4817a0624cc80f9c1eb9a1e76a5bc3cec648"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower/mode_b1_worker_response.json",
+    "bytes": 671,
+    "sha256": "d7120b042c82c24501c305d288fd5ed9af22a37f6764e02087f30ab4b7e0d492"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower/registered_metric_pointmap.npz",
+    "bytes": 5967916,
+    "sha256": "43970f5f7a373ff46f05deee947b44e15d2a747f01722e77e722bbb05961f112"
+  }
+]

@@ -1,0 +1,14 @@
+/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/src/unloading_perception/metric_support.py:53: RuntimeWarning: invalid value encountered in subtract
+  (np.abs(depth[a]-depth[b]) > discontinuity_m))
+/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/src/unloading_perception/metric_support.py:53: RuntimeWarning: invalid value encountered in subtract
+  (np.abs(depth[a]-depth[b]) > discontinuity_m))
+Traceback (most recent call last):
+  File "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/tools/run_metric_small_matrix.py", line 136, in <module>
+    if __name__=='__main__': main()
+  File "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/tools/run_metric_small_matrix.py", line 126, in main
+    paired['old']=evaluate(old_by[r['mask_id']],truth[entities[0]],camera)
+  File "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/tools/diagnose_metric_calibration.py", line 45, in evaluate
+    center,axes,pdims,_=coherent_cuboid(record['corners_3d'])
+  File "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/src/unloading_perception/final_geometry.py", line 22, in coherent_cuboid
+    raise ValueError('NONORTHOGONAL_CUBOID')
+ValueError: NONORTHOGONAL_CUBOID

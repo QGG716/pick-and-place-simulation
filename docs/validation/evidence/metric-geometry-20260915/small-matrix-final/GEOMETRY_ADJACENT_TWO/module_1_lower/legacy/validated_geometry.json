@@ -1,0 +1,916 @@
+{
+  "source": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/sensor_rgb.png",
+  "pointmap": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower/registered_metric_pointmap.npz",
+  "interpretation": "Visible planes are recovered from monocular points. All corners share one orthogonal cuboid pose/shape model; occluded corners are completed by reprojection. Unobserved dimensions remain labelled hypotheses.",
+  "box_instances": 2,
+  "accepted_cuboids": 2,
+  "instances": [
+    {
+      "mask_id": 1,
+      "label": "box",
+      "accepted": true,
+      "method": "moge_metric_pointmap+pyransac3d_planes+shared_orthogonal_cuboid",
+      "completion_mode": "orthogonality_selected_multi_plane_cuboid",
+      "visible_plane_count": 2,
+      "depth_plane_candidate_count": 2,
+      "plane_inlier_counts": [
+        8002,
+        1130
+      ],
+      "plane_equations": [
+        [
+          0.934954,
+          -0.078735,
+          0.345923,
+          -1.519488
+        ],
+        [
+          0.004787,
+          0.93702,
+          0.349242,
+          -0.259355
+        ]
+      ],
+      "orthogonal_plane_pair_diagnostics": {
+        "selected": {
+          "indices": [
+            0,
+            1
+          ],
+          "angle_degrees": 87.047,
+          "support_ratios": [
+            0.87626,
+            0.12374
+          ],
+          "orthogonal_pair_score": 0.32754
+        },
+        "reliable": true,
+        "candidates": [
+          {
+            "indices": [
+              0,
+              1
+            ],
+            "angle_degrees": 87.047,
+            "support_ratios": [
+              0.87626,
+              0.12374
+            ],
+            "orthogonal_pair_score": 0.32754
+          }
+        ]
+      },
+      "selected_plane_indices": [
+        0,
+        1
+      ],
+      "axis_nearest_plane_angle_degrees": [
+        0.0,
+        2.953,
+        90.0
+      ],
+      "depth_supported_axes": [
+        0,
+        1
+      ],
+      "depth_supported_face_count": 2,
+      "monocular_depth_warning": null,
+      "plane_inlier_ratio": 1.0,
+      "quality_status": "high",
+      "plane_residual_mean": 0.003229,
+      "orthogonal_axes_3d": [
+        [
+          0.9349523605827571,
+          -0.07870898072970439,
+          0.3459320450510783
+        ],
+        [
+          -0.043409186437709975,
+          0.9423304494121408,
+          0.3318568466124045
+        ],
+        [
+          -0.35209680480208366,
+          -0.32530866037744505,
+          0.8776115971952487
+        ]
+      ],
+      "shape_dimensions": [
+        0.3045395808429505,
+        0.3132977398577908,
+        0.4752102197975125
+      ],
+      "generated_shape_dimensions": [],
+      "front_face_recovered": true,
+      "back_face_status": "completion_suppressed_failed_registered_face_certificate",
+      "corners_3d": [
+        [
+          0.43819,
+          -0.8568,
+          2.97309
+        ],
+        [
+          0.72292,
+          -0.88077,
+          3.07844
+        ],
+        [
+          0.70931,
+          -0.58554,
+          3.18241
+        ],
+        [
+          0.42459,
+          -0.56157,
+          3.07706
+        ],
+        [
+          0.27087,
+          -1.01139,
+          3.39014
+        ],
+        [
+          0.55559,
+          -1.03536,
+          3.49549
+        ],
+        [
+          0.54199,
+          -0.74014,
+          3.59946
+        ],
+        [
+          0.25727,
+          -0.71616,
+          3.49412
+        ]
+      ],
+      "mask_reprojection_iou_before_shape_refinement": 0.50147,
+      "shape_certificate_scales": [
+        1.04,
+        1.04,
+        0.92
+      ],
+      "corners_2d": [
+        [
+          1405.78,
+          531.81
+        ],
+        [
+          1471.21,
+          534.97
+        ],
+        [
+          1462.27,
+          690.77
+        ],
+        [
+          1398.75,
+          693.05
+        ],
+        [
+          1355.28,
+          516.33
+        ],
+        [
+          1414.43,
+          519.58
+        ],
+        [
+          1408.17,
+          657.77
+        ],
+        [
+          1350.59,
+          658.78
+        ]
+      ],
+      "mask_reprojection_iou": 0.51255,
+      "certificate_status": "uncertain",
+      "unanchored_camera_facing_faces": [
+        {
+          "axis_index": 0,
+          "side": "low",
+          "corner_indices": [
+            0,
+            3,
+            7,
+            4
+          ],
+          "corners_2d": [
+            [
+              1405.78,
+              531.81
+            ],
+            [
+              1398.75,
+              693.05
+            ],
+            [
+              1350.59,
+              658.78
+            ],
+            [
+              1355.28,
+              516.33
+            ]
+          ],
+          "projected_area_px2": 7635.82,
+          "camera_facing_score": 0.449975,
+          "evidence": "monocular_depth_plane"
+        },
+        {
+          "axis_index": 1,
+          "side": "low",
+          "corner_indices": [
+            0,
+            1,
+            5,
+            4
+          ],
+          "corners_2d": [
+            [
+              1405.78,
+              531.81
+            ],
+            [
+              1471.21,
+              534.97
+            ],
+            [
+              1414.43,
+              519.58
+            ],
+            [
+              1355.28,
+              516.33
+            ]
+          ],
+          "projected_area_px2": 789.32,
+          "camera_facing_score": 0.047046,
+          "evidence": "monocular_depth_plane"
+        },
+        {
+          "axis_index": 2,
+          "side": "low",
+          "corner_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "corners_2d": [
+            [
+              1405.78,
+              531.81
+            ],
+            [
+              1471.21,
+              534.97
+            ],
+            [
+              1462.27,
+              690.77
+            ],
+            [
+              1398.75,
+              693.05
+            ]
+          ],
+          "projected_area_px2": 10224.87,
+          "camera_facing_score": 0.850873,
+          "evidence": "cuboid_constraint_completion"
+        }
+      ],
+      "camera_facing_faces": [],
+      "anchoring_status": "registered_face_rejected_depth_only_safe_fallback",
+      "anchoring_error": "registered face failed mask certificate: precision=0.524, iou=0.524",
+      "projected_camera_facing_face_count": 0,
+      "sam_mask_bbox_fill_ratio": 0.50607,
+      "orthogonal_axes_3d_before_adapter_coherence": [
+        [
+          0.934954,
+          -0.078735,
+          0.345923
+        ],
+        [
+          -0.043431,
+          0.942327,
+          0.331864
+        ],
+        [
+          -0.352101,
+          -0.325301,
+          0.877612
+        ]
+      ],
+      "shape_dimensions_before_adapter_coherence": [
+        0.30453,
+        0.31329,
+        0.47522
+      ],
+      "geometry_coherence": "DERIVED_FROM_CORNERS_3D_0_1_3_4",
+      "geometry_coherence_corner_source": "corners_3d",
+      "center_3d": [
+        0.4900912500000001,
+        -0.79846625,
+        3.28627625
+      ],
+      "complete_cuboid_consistency": {
+        "status": "PASS",
+        "corner_error_m": 1.0825317547267434e-05
+      },
+      "final_face_validation": [
+        {
+          "ordinal": 0,
+          "status": "REJECTED",
+          "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+          "point_support_count": 7518,
+          "point_support_ratio": 0.9960254372019078,
+          "plane_residual_m": 0.015979422684853195,
+          "plane_residual_p95_m": 0.022145004001231483,
+          "mask_precision": 0.9883462092444677,
+          "mask_coverage": 0.7306165908430936,
+          "mask_iou": 0.7243761996161229,
+          "plane_normal": [
+            0.9349560372417044,
+            -0.07874932992149433,
+            0.3459129246822159
+          ],
+          "plane_offset_m": -1.5055919338614399,
+          "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+        }
+      ],
+      "geometry_version": "FINAL_METRIC_VALIDATED_V1",
+      "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+      "v4_path_audit": {
+        "raw_depth_plane_count": 2,
+        "visible_candidates": 1,
+        "face_checks_passed": 1,
+        "joint_entered": false,
+        "joint_succeeded": false,
+        "joint_accepted": false,
+        "fallback_reason": "FEWER_THAN_TWO_RELIABLE_DEPTH_FACES",
+        "final_published_face_count": 0
+      }
+    },
+    {
+      "mask_id": 2,
+      "label": "box",
+      "accepted": true,
+      "method": "moge_metric_pointmap+pyransac3d_planes+shared_orthogonal_cuboid",
+      "completion_mode": "orthogonality_selected_multi_plane_cuboid",
+      "visible_plane_count": 2,
+      "depth_plane_candidate_count": 2,
+      "plane_inlier_counts": [
+        6168,
+        4941
+      ],
+      "plane_equations": [
+        [
+          0.320755,
+          0.311115,
+          -0.894608,
+          2.141518
+        ],
+        [
+          0.939501,
+          -0.094126,
+          0.329361,
+          -1.480976
+        ]
+      ],
+      "orthogonal_plane_pair_diagnostics": {
+        "selected": {
+          "indices": [
+            0,
+            1
+          ],
+          "angle_degrees": 88.706,
+          "support_ratios": [
+            0.514,
+            0.41175
+          ],
+          "orthogonal_pair_score": 0.459574
+        },
+        "reliable": true,
+        "candidates": [
+          {
+            "indices": [
+              0,
+              1
+            ],
+            "angle_degrees": 88.706,
+            "support_ratios": [
+              0.514,
+              0.41175
+            ],
+            "orthogonal_pair_score": 0.459574
+          }
+        ]
+      },
+      "selected_plane_indices": [
+        0,
+        1
+      ],
+      "axis_nearest_plane_angle_degrees": [
+        0.0,
+        1.294,
+        90.0
+      ],
+      "depth_supported_axes": [
+        0,
+        1
+      ],
+      "depth_supported_face_count": 2,
+      "monocular_depth_warning": null,
+      "plane_inlier_ratio": 0.92575,
+      "quality_status": "high",
+      "plane_residual_mean": 0.0025,
+      "orthogonal_axes_3d": [
+        [
+          0.32075114,
+          0.31112507,
+          -0.894606
+        ],
+        [
+          0.94699032,
+          -0.08711809,
+          0.30922446
+        ],
+        [
+          0.01825252,
+          -0.94636279,
+          -0.32259002
+        ]
+      ],
+      "shape_dimensions": [
+        0.56617103,
+        0.39084877,
+        0.31064197
+      ],
+      "generated_shape_dimensions": [],
+      "front_face_recovered": true,
+      "back_face_status": "bounded_metric_completion_rendered_as_dashed_hypothesis",
+      "corners_3d": [
+        [
+          0.36422,
+          -0.64589,
+          2.29977
+        ],
+        [
+          0.37055,
+          -0.42194,
+          2.37993
+        ],
+        [
+          1.02211,
+          -0.39292,
+          2.62363
+        ],
+        [
+          1.02896,
+          -0.67365,
+          2.52846
+        ],
+        [
+          0.32143,
+          -0.68739,
+          2.41911
+        ],
+        [
+          0.32776,
+          -0.46344,
+          2.49927
+        ],
+        [
+          0.97932,
+          -0.43443,
+          2.74297
+        ],
+        [
+          0.98617,
+          -0.71516,
+          2.6478
+        ]
+      ],
+      "mask_reprojection_iou_before_shape_refinement": 0.91663,
+      "shape_certificate_scales": [
+        1.05,
+        1.008,
+        1.05
+      ],
+      "corners_2d": [
+        [
+          1414.0,
+          543.0
+        ],
+        [
+          1412.0,
+          701.0
+        ],
+        [
+          1587.0,
+          743.0
+        ],
+        [
+          1600.0,
+          565.0
+        ],
+        [
+          1394.92,
+          537.96
+        ],
+        [
+          1393.63,
+          688.58
+        ],
+        [
+          1562.65,
+          729.86
+        ],
+        [
+          1574.18,
+          559.41
+        ]
+      ],
+      "mask_reprojection_iou": 0.95898,
+      "certificate_status": "registered_face_anchored",
+      "unanchored_camera_facing_faces": [
+        {
+          "axis_index": 0,
+          "side": "high",
+          "corner_indices": [
+            1,
+            2,
+            6,
+            5
+          ],
+          "corners_2d": [
+            [
+              1491.88,
+              757.38
+            ],
+            [
+              1589.07,
+              747.37
+            ],
+            [
+              1602.5,
+              559.36
+            ],
+            [
+              1501.91,
+              560.26
+            ]
+          ],
+          "projected_area_px2": 18978.98,
+          "camera_facing_score": 0.791224,
+          "evidence": "monocular_depth_plane"
+        },
+        {
+          "axis_index": 1,
+          "side": "low",
+          "corner_indices": [
+            0,
+            1,
+            5,
+            4
+          ],
+          "corners_2d": [
+            [
+              1413.19,
+              703.78
+            ],
+            [
+              1491.88,
+              757.38
+            ],
+            [
+              1501.91,
+              560.26
+            ],
+            [
+              1418.74,
+              539.34
+            ]
+          ],
+          "projected_area_px2": 14920.5,
+          "camera_facing_score": 0.504409,
+          "evidence": "monocular_depth_plane"
+        },
+        {
+          "axis_index": 2,
+          "side": "high",
+          "corner_indices": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "corners_2d": [
+            [
+              1418.74,
+              539.34
+            ],
+            [
+              1501.91,
+              560.26
+            ],
+            [
+              1602.5,
+              559.36
+            ],
+            [
+              1505.75,
+              539.44
+            ]
+          ],
+          "projected_area_px2": 1951.57,
+          "camera_facing_score": 0.051361,
+          "evidence": "cuboid_constraint_completion"
+        }
+      ],
+      "unanchored_corners_3d": [
+        [
+          0.47045,
+          -0.52482,
+          2.99099
+        ],
+        [
+          0.65205,
+          -0.34867,
+          2.48449
+        ],
+        [
+          1.02219,
+          -0.38272,
+          2.60536
+        ],
+        [
+          0.84058,
+          -0.55887,
+          3.11185
+        ],
+        [
+          0.47612,
+          -0.8188,
+          2.89078
+        ],
+        [
+          0.65773,
+          -0.64265,
+          2.38429
+        ],
+        [
+          1.02786,
+          -0.6767,
+          2.50515
+        ],
+        [
+          0.84626,
+          -0.85285,
+          3.01165
+        ]
+      ],
+      "unanchored_corners_2d": [
+        [
+          1413.19,
+          703.78
+        ],
+        [
+          1491.88,
+          757.38
+        ],
+        [
+          1589.07,
+          747.37
+        ],
+        [
+          1497.62,
+          697.49
+        ],
+        [
+          1418.74,
+          539.34
+        ],
+        [
+          1501.91,
+          560.26
+        ],
+        [
+          1602.5,
+          559.36
+        ],
+        [
+          1505.75,
+          539.44
+        ]
+      ],
+      "unanchored_mask_reprojection_iou": 0.95898,
+      "camera_facing_faces": [],
+      "anchoring_status": "registered_2d_face_lifted_to_metric_plane",
+      "registered_face_source": "mask_polygon_seed_fallback",
+      "registered_face_mask_iou": 0.84589,
+      "registered_face_mask_precision": 1.0,
+      "registered_face_mask_coverage": 0.84589,
+      "anchored_front_spans_3d": [
+        0.26722,
+        0.69989
+      ],
+      "inferred_unobserved_depth": 0.1334,
+      "mean_completion_displacement_px": 24.0,
+      "maximum_completion_displacement_px": 27.675,
+      "completion_displacement_budget_px": 24.0,
+      "projected_camera_facing_face_count": 0,
+      "sam_mask_bbox_fill_ratio": 0.85628,
+      "orthogonal_axes_3d_before_adapter_coherence": [
+        [
+          0.320755,
+          0.311115,
+          -0.894608
+        ],
+        [
+          0.946986,
+          -0.087122,
+          0.309236
+        ],
+        [
+          0.018268,
+          -0.94637,
+          -0.322567
+        ]
+      ],
+      "shape_dimensions_before_adapter_coherence": [
+        0.56617,
+        0.39085,
+        0.31063
+      ],
+      "geometry_coherence": "DERIVED_FROM_UNANCHORED_CORNERS_3D_0_1_3_4",
+      "geometry_coherence_corner_source": "unanchored_corners_3d",
+      "complete_cuboid_consistency": {
+        "status": "REJECTED",
+        "reason": "NONORTHOGONAL_CUBOID"
+      },
+      "final_face_validation": [
+        {
+          "ordinal": 0,
+          "status": "REJECTED",
+          "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+          "point_support_count": 30566,
+          "point_support_ratio": 1.0,
+          "plane_residual_m": 0.12736747621336783,
+          "plane_residual_p95_m": 0.4988599247103158,
+          "mask_precision": 1.0,
+          "mask_coverage": 0.8363706014338095,
+          "mask_iou": 0.8363706014338095,
+          "plane_normal": [
+            0.32076084626136225,
+            0.3111427903156516,
+            -0.8945963578845406
+          ],
+          "plane_offset_m": 2.1414995752966557,
+          "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+        }
+      ],
+      "geometry_version": "FINAL_METRIC_VALIDATED_V1",
+      "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+      "v4_path_audit": {
+        "raw_depth_plane_count": 2,
+        "visible_candidates": 2,
+        "face_checks_passed": 2,
+        "joint_entered": true,
+        "joint_succeeded": true,
+        "joint_accepted": false,
+        "rejected_joint_final_checks": [
+          {
+            "ordinal": 0,
+            "status": "REJECTED",
+            "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+            "point_support_count": 19390,
+            "point_support_ratio": 0.9995360585597196,
+            "plane_residual_m": 0.062088798718862546,
+            "plane_residual_p95_m": 0.09281813501890178,
+            "mask_precision": 0.9842711451621087,
+            "mask_coverage": 0.5308104854156406,
+            "mask_iou": 0.526345778163664,
+            "plane_normal": [
+              0.35626489637722064,
+              0.3206264902664607,
+              -0.8776525379378445
+            ],
+            "plane_offset_m": 2.0185652864713264,
+            "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+          },
+          {
+            "ordinal": 1,
+            "status": "REJECTED",
+            "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+            "point_support_count": 15964,
+            "point_support_ratio": 0.9984988741556167,
+            "plane_residual_m": 0.06042618834450866,
+            "plane_residual_p95_m": 0.10305039421370683,
+            "mask_precision": 0.9797769334477264,
+            "mask_coverage": 0.43747605757128005,
+            "mask_iou": 0.43356112376613515,
+            "plane_normal": [
+              -0.9340199544062183,
+              0.0958489026239429,
+              -0.34412165383304755
+            ],
+            "plane_offset_m": 1.4627624475860614,
+            "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+          }
+        ],
+        "fallback_reason": "JOINT_RESULT_FAILED_INDEPENDENT_METRIC_GATE",
+        "final_published_face_count": 0
+      }
+    }
+  ],
+  "v4_adapter_input": {
+    "schema_version": "registered_rgbd_upstream_v4_adapter_v1",
+    "upstream_sha": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+    "selector_compatibility_label": "monocular_depth_plane",
+    "physical_source_evidence": "registered_metric_depth_plane"
+  },
+  "multiplane_refinement": {
+    "principle": "Retain only directly depth-supported visible faces, jointly align their union to the SAM instance silhouette, then refit one orthogonal metric cuboid with fixed-intrinsics PnP.",
+    "refined_instances": 1,
+    "unobserved_faces": "not rendered"
+  },
+  "pointmap_source": "REGISTERED_METRIC_DEPTH",
+  "v4_adapter": {
+    "schema_version": "registered_rgbd_upstream_v4_adapter_v1",
+    "upstream_sha": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+    "upstream_script": "pipeline/geometry/refine_multiplane_cuboids.py",
+    "algorithm_reused": true,
+    "intrinsics_policy": "FIXED_CAPTURE_K",
+    "metric_depth_policy": "DO_NOT_SCALE_OR_MOVE_OBSERVED_PLANES_TO_IMPROVE_2D_IOU",
+    "hidden_faces": "NOT_OBSERVED",
+    "refined_instance_count": 1,
+    "published_observed_face_count": 3,
+    "suppressed_completion_face_count": 0
+  },
+  "v4_path_audit": {
+    "1": {
+      "raw_depth_plane_count": 2,
+      "visible_candidates": 1,
+      "face_checks_passed": 1,
+      "joint_entered": false,
+      "joint_succeeded": false,
+      "joint_accepted": false,
+      "fallback_reason": "FEWER_THAN_TWO_RELIABLE_DEPTH_FACES",
+      "final_published_face_count": 0
+    },
+    "2": {
+      "raw_depth_plane_count": 2,
+      "visible_candidates": 2,
+      "face_checks_passed": 2,
+      "joint_entered": true,
+      "joint_succeeded": true,
+      "joint_accepted": false,
+      "rejected_joint_final_checks": [
+        {
+          "ordinal": 0,
+          "status": "REJECTED",
+          "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+          "point_support_count": 19390,
+          "point_support_ratio": 0.9995360585597196,
+          "plane_residual_m": 0.062088798718862546,
+          "plane_residual_p95_m": 0.09281813501890178,
+          "mask_precision": 0.9842711451621087,
+          "mask_coverage": 0.5308104854156406,
+          "mask_iou": 0.526345778163664,
+          "plane_normal": [
+            0.35626489637722064,
+            0.3206264902664607,
+            -0.8776525379378445
+          ],
+          "plane_offset_m": 2.0185652864713264,
+          "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+        },
+        {
+          "ordinal": 1,
+          "status": "REJECTED",
+          "residual_source": "RECOMPUTED_FINAL_PLANE_AND_BOUNDARY",
+          "point_support_count": 15964,
+          "point_support_ratio": 0.9984988741556167,
+          "plane_residual_m": 0.06042618834450866,
+          "plane_residual_p95_m": 0.10305039421370683,
+          "mask_precision": 0.9797769334477264,
+          "mask_coverage": 0.43747605757128005,
+          "mask_iou": 0.43356112376613515,
+          "plane_normal": [
+            -0.9340199544062183,
+            0.0958489026239429,
+            -0.34412165383304755
+          ],
+          "plane_offset_m": 1.4627624475860614,
+          "reason": "FINAL_METRIC_PLANE_RESIDUAL"
+        }
+      ],
+      "fallback_reason": "JOINT_RESULT_FAILED_INDEPENDENT_METRIC_GATE",
+      "final_published_face_count": 0
+    }
+  }
+}

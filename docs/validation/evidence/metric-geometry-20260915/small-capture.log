@@ -1,0 +1,2008 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1789446661.864674    4208 descriptor_database.cc:633] File already exists in database: grpc/health/v1/health.proto
+W0000 00:00:1789446661.864720    4208 message.cc:301] Protobuf GeneratedMessageFactory: File is already registered: grpc/health/v1/health.proto
+2026-09-15T04:31:01Z [Info] [carb] Logging to file: /root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/kit/logs/Kit/Isaac-Sim Python/6.0/kit_20260915_123101.log
+[0.063s] [ext: omni.assets.plugins-0.0.0] startup
+[0.064s] [ext: omni.blobkey-1.1.2] startup
+[0.064s] [ext: omni.kit.async_engine-0.0.3] startup
+[0.178s] [ext: omni.client.lib-1.1.1] startup
+[0.192s] [ext: omni.client-1.3.0] startup
+[0.198s] [ext: omni.protobuf.lib-1.0.0] startup
+[0.199s] [ext: omni.grpc.lib-1.0.0] startup
+[0.204s] [ext: omni.metrics.core-0.0.3] startup
+[0.205s] [ext: omni.datastore-0.0.0] startup
+[0.205s] [ext: omni.gpu_foundation.shadercache.vulkan-1.0.0] startup
+[0.208s] [ext: omni.hsscclient-1.1.4] startup
+[0.208s] [ext: omni.stats-1.0.1] startup
+[0.209s] [ext: omni.ujitso.default-1.0.0] startup
+[0.212s] [ext: omni.gpu_foundation-0.0.0] startup
+[0.529s] [ext: carb.windowing.plugins-1.0.1] startup
+[0.529s] [ext: omni.kit.renderer.init-1.0.1] startup
+2026-09-15T04:31:02Z [591ms] [Warning] [omni.platforminfo.plugin] failed to open the default display.  Can't verify X Server version.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 580.95.05     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA RTX PRO 6000 Blackwell .. | Yes: 0 |     | 97887   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2bb5      | 4c765401.. |
+|     |                                  |        |     |            | 49        |            |
+|=============================================================================================|
+| OS: 22.04.5 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.5, Kernel: 5.15.0-78-generic
+| Processor: Intel(R) Xeon(R) Platinum 8470Q
+| Bare Metal Cores: 104 | Bare Metal Logical Cores: 208
+| Core Usage Quota: 22
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 112640 | Free Memory: 100218
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-09-15T04:31:03Z [1,326ms] [Warning] [omni.rtx] CPU performance profile is set to powersave. This profile sets the CPU to the lowest frequency reducing performance.
+[1.642s] [ext: omni.kit.pipapi-0.0.0] startup
+[1.643s] [ext: omni.kit.telemetry-0.5.2] startup
+[1.674s] [ext: omni.kit.loop-isaac-1.6.0] startup
+[1.675s] [ext: omni.kit.test-2.0.7] startup
+[1.736s] [ext: omni.materialx.libs-1.0.9] startup
+[1.744s] [ext: omni.gpucompute.plugins-0.0.0] startup
+[1.745s] [ext: omni.usd.config-1.0.7] startup
+[1.748s] [ext: omni.usd.libs-1.0.3] startup
+[1.848s] [ext: omni.iray.libs-0.0.1] startup
+[1.855s] [ext: omni.mdl-57.0.3] startup
+[1.913s] [ext: omni.mdl.neuraylib-0.2.20] startup
+[1.915s] [ext: omni.kit.usd.mdl-1.1.9] startup
+[2.032s] [ext: omni.appwindow-1.2.2] startup
+[2.035s] [ext: omni.kit.renderer.core-1.2.2] startup
+2026-09-15T04:31:03Z [2,237ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-09-15T04:31:03Z [2,237ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+[2.286s] [ext: omni.kit.renderer.capture-2.0.1] startup
+[2.288s] [ext: omni.kit.renderer.imgui-2.0.6] startup
+2026-09-15T04:31:03Z [2,267ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-09-15T04:31:03Z [2,267ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+2026-09-15T04:31:03Z [2,269ms] [Warning] [carb.windowing-glfw.plugin] GLFW initialization failed.
+2026-09-15T04:31:03Z [2,269ms] [Warning] [carb] Failed to startup plugin carb.windowing-glfw.plugin (interfaces: [carb::windowing::IGLContext v1.0],[carb::windowing::IWindowing v1.5]) (impl: carb.windowing-glfw.plugin)
+[2.377s] [ext: omni.ui-3.2.0] startup
+[2.387s] [ext: omni.kit.mainwindow-1.0.3] startup
+[2.388s] [ext: carb.audio-0.1.0] startup
+[2.416s] [ext: omni.uiaudio-1.0.0] startup
+[2.417s] [ext: omni.kit.uiapp-0.0.0] startup
+[2.417s] [ext: omni.usd.schema.metrics.assembler-110.1.0] startup
+[2.419s] [ext: omni.usd.schema.audio-0.0.1] startup
+[2.423s] [ext: omni.usd_resolver-1.0.0] startup
+[2.426s] [ext: omni.usd.core-1.8.3] startup
+[2.430s] [ext: omni.metropolis.schema-0.0.3] startup
+[2.431s] [ext: isaacsim.anim.robot.schema-0.1.1] startup
+[2.432s] [ext: omni.usd.schema.anim-0.0.1] startup
+[2.451s] [ext: omni.usd.schema.geospatial-0.0.1] startup
+[2.453s] [ext: omni.usd.schema.omnigraph-1.0.1] startup
+[2.459s] [ext: omni.usd.schema.semantics-0.0.0] startup
+[2.462s] [ext: omni.activity.core-1.0.3] startup
+[2.463s] [ext: omni.cubric-0.1.0] startup
+[2.463s] [ext: omni.graph.exec-0.9.6] startup
+[2.463s] [ext: omni.hydra.scene_delegate-0.3.5] startup
+[2.468s] [ext: usdrt.scenegraph-7.6.3] startup
+[2.496s] [ext: omni.hydra.usdrt_delegate-7.5.2] startup
+[2.504s] [ext: omni.inspect-1.0.2] startup
+[2.505s] [ext: omni.kit.actions.core-1.0.0] startup
+[2.507s] [ext: omni.kit.audiodeviceenum-1.0.2] startup
+[2.509s] [ext: omni.kit.commands-1.5.0] startup
+[2.512s] [ext: omni.kit.exec.core-0.13.5] startup
+[2.513s] [ext: omni.kit.usd_undo-0.1.8] startup
+[2.514s] [ext: omni.kit.window.popup_dialog-2.0.25] startup
+[2.517s] [ext: omni.kit.widget.nucleus_connector-2.3.1] startup
+[2.520s] [ext: omni.timeline-1.1.0] startup
+[2.522s] [ext: omni.usd-1.16.0] startup
+[2.563s] [ext: omni.graph.core-3.1.2] startup
+[2.567s] [ext: omni.kit.notification_manager-1.0.11] startup
+[2.568s] [ext: isaacsim.core.deprecation_manager-0.4.2] startup
+[2.569s] [ext: isaacsim.replicator.agent.schema-0.1.1] startup
+[2.570s] [ext: isaacsim.robot.schema-6.3.7] startup
+[2.574s] [ext: isaacsim.robot_motion.schema-0.2.1] startup
+[2.575s] [ext: omni.anim.behavior.schema-110.1.0] startup
+[2.578s] [ext: omni.anim.graph.schema-110.1.1] startup
+[2.584s] [ext: omni.anim.navigation.schema-110.1.0] startup
+[2.588s] [ext: omni.behavior.tree.schema-110.1.0] startup
+[2.588s] [ext: omni.kit.asset_converter-6.0.1] startup
+[2.603s] [ext: omni.usd.schema.flow-110.0.0] startup
+[2.603s] [ext: omni.usd.schema.mujoco-1.1.1] startup
+[2.604s] [ext: omni.usd.schema.newton-1.2.1] startup
+[2.604s] [ext: omni.usd.schema.omni_lens_distortion-1.0.0] startup
+[2.605s] [ext: omni.usd.schema.omni_projectors-1.0.0] startup
+[2.605s] [ext: omni.usd.schema.omni_sensors-0.0.0] startup
+[2.613s] [ext: omni.usd.schema.omniscripting-1.0.1] startup
+[2.618s] [ext: omni.usd.schema.physical_lighting-0.1.0] startup
+[2.621s] [ext: omni.usd.schema.physx-110.1.13] startup
+[2.653s] [ext: omni.usd.schema.render_settings.rtx-1.0.2] startup
+[2.656s] [ext: omni.usd.schema.usd_particle_field-1.0.0] startup
+[2.657s] [ext: isaacsim.core.version-2.1.1] startup
+[2.658s] [ext: omni.kit.menu.core-1.2.0] startup
+[2.658s] [ext: omni.kit.menu.utils-2.2.4] startup
+[2.666s] [ext: isaacsim.app.about-2.3.1] startup
+[2.670s] [ext: isaacsim.asset.transformer-1.2.5] startup
+[2.674s] [ext: omni.scene.optimizer.core-110.1.0] startup
+[2.735s] [ext: isaacsim.asset.importer.utils-1.8.1] startup
+[2.737s] [ext: omni.convexdecomposition-110.1.13] startup
+[2.740s] [ext: omni.physics-110.1.13] startup
+[2.743s] [ext: omni.physx.gpu-110.1.13] startup
+[2.743s] [ext: omni.physx.foundation-110.1.13] startup
+[2.745s] [ext: omni.usdphysics-110.1.13] startup
+[2.747s] [ext: omni.physx.cooking-110.1.13] startup
+[2.750s] [ext: omni.physx-110.1.13] startup
+[2.760s] [ext: omni.physics.physx-110.1.13] startup
+[2.763s] [ext: isaacsim.asset.exporter.urdf-2.0.5] startup
+[2.771s] [ext: omni.kit.clipboard-1.1.1] startup
+[2.771s] [ext: omni.kit.usd.layers-2.6.1] startup
+[2.779s] [ext: omni.kit.widget.context_menu-1.4.0] startup
+[2.781s] [ext: omni.kit.context_menu-1.9.0] startup
+[2.782s] [ext: omni.kit.helper.file_utils-0.1.10] startup
+[2.783s] [ext: omni.kit.widget.nucleus_info-2.0.2] startup
+[2.784s] [ext: omni.kit.search_core-1.0.8] startup
+[2.785s] [ext: omni.kit.widget.path_field-2.0.13] startup
+[2.785s] [ext: omni.kit.widget.browser_bar-2.0.10] startup
+[2.786s] [ext: omni.kit.widget.filebrowser-2.13.4] startup
+[2.790s] [ext: omni.kit.widget.options_menu-1.1.6] startup
+[2.793s] [ext: omni.kit.widget.options_button-1.0.3] startup
+[2.794s] [ext: omni.kit.widget.search_delegate-1.0.9] startup
+[2.795s] [ext: omni.ui.scene-2.0.3] startup
+[2.800s] [ext: omni.kit.window.filepicker-2.15.5] startup
+[2.813s] [ext: omni.kit.window.file_importer-1.1.21] startup
+[2.815s] [ext: omni.kit.material.library-3.1.2] startup
+[2.820s] [ext: isaacsim.asset.transformer.rules-1.7.10] startup
+[2.831s] [ext: omni.usdex.libs-2.2.2] startup
+[2.840s] [ext: isaacsim.asset.importer.mjcf-3.10.1] startup
+[2.842s] [ext: isaacsim.asset.importer.urdf-3.11.2] startup
+[2.846s] [ext: omni.kit.primitive.mesh-1.1.0] startup
+[2.848s] [ext: omni.kit.stage_template.core-1.1.22] startup
+[2.849s] [ext: omni.kit.stage_templates-2.0.2] startup
+[2.850s] [ext: omni.usd.metrics.assembler-110.1.2] startup
+[2.854s] [ext: omni.warp.core-1.13.0] startup
+[3.043s] [ext: isaacsim.core.experimental.utils-0.17.2] startup
+[3.044s] [ext: omni.physics.stageupdate-110.1.13] startup
+[3.046s] [ext: omni.physics.tensors-110.1.13] startup
+[3.050s] [ext: omni.physx.tensors-110.1.13] startup
+[3.055s] [ext: isaacsim.core.simulation_manager-1.15.6] startup
+[3.070s] [ext: isaacsim.storage.native-1.9.3] startup
+[3.071s] [ext: omni.usd.metrics.assembler.physics-110.1.13] startup
+[3.073s] [ext: isaacsim.core.utils-4.1.7] startup
+[3.076s] [ext: isaacsim.core.prims-0.11.7] startup
+[4.584s] [ext: isaacsim.core.api-5.2.13] startup
+[4.594s] [ext: isaacsim.core.cloner-1.7.3] startup
+[4.595s] [ext: isaacsim.test.docstring-1.3.2] startup
+[4.600s] [ext: isaacsim.core.experimental.prims-1.8.9] startup
+[4.627s] [ext: isaacsim.core.experimental.primdata-0.3.2] startup
+[4.630s] [ext: omni.graph.tools-1.81.0] startup
+[4.655s] [ext: omni.graph-1.142.5] startup
+[4.696s] [ext: isaacsim.core.experimental.actuators-0.1.2] startup
+[4.718s] [ext: isaacsim.core.experimental.materials-0.7.1] startup
+[4.722s] [ext: isaacsim.core.experimental.objects-0.8.1] startup
+[4.790s] [ext: omni.hydra.engine.stats-1.0.5] startup
+[4.794s] [ext: omni.hydra.rtx.shadercache.vulkan-1.0.0] startup
+[4.795s] [ext: omni.index.libs-387500.4413.0] startup
+[4.795s] [ext: omni.index-1.0.1] startup
+[4.796s] [ext: omni.ujitso.client-0.0.0] startup
+[4.796s] [ext: omni.usd.schema.playback-1.0.0] startup
+[4.801s] [ext: omni.volume-0.5.2] startup
+[4.806s] [ext: omni.hydra.rtx-1.0.4] startup
+2026-09-15T04:31:06Z [4,801ms] [Warning] [omni.log] Source: omni.hydra was already registered.
+[4.846s] [ext: omni.kit.hydra_texture-1.6.0] startup
+[4.851s] [ext: omni.kit.raycast.query-1.2.0] startup
+[4.857s] [ext: omni.kit.viewport.legacy_gizmos-1.0.24] startup
+[4.860s] [ext: omni.kit.viewport.registry-104.0.6] startup
+[4.861s] [ext: omni.kit.viewport.scene_camera_model-1.0.7] startup
+[4.866s] [ext: omni.kit.widget.viewport-109.2.0] startup
+[4.871s] [ext: omni.kit.window.drop_support-1.0.8] startup
+[4.872s] [ext: omni.kit.viewport.window-109.0.2] startup
+[4.891s] [ext: omni.kit.viewport.utility-2.0.1] startup
+[4.892s] [ext: isaacsim.core.rendering_manager-0.4.3] startup
+[4.913s] [ext: omni.graph.action_core-1.1.9] startup
+[4.916s] [ext: omni.graph.action_nodes_core-2.11.0] startup
+[4.919s] [ext: omni.graph.action_nodes-2.11.0] startup
+[4.961s] [ext: omni.graph.action-2.10.2] startup
+[4.963s] [ext: omni.graph.image.core-0.6.1] startup
+[4.965s] [ext: omni.graph.image.nodes-1.3.1] startup
+[4.966s] [ext: omni.graph.nodes_core-2.11.0] startup
+[4.974s] [ext: omni.graph.nodes-2.12.0] startup
+[4.982s] [ext: omni.kit.hotkeys.core-1.3.12] startup
+[4.984s] [ext: omni.kit.property.adapter.core-1.1.1] startup
+[4.987s] [ext: omni.kit.property.adapter.usd-1.0.5] startup
+[4.989s] [ext: omni.kit.widget.filter-1.1.5] startup
+[4.990s] [ext: omni.kit.widget.highlight_label-1.0.3] startup
+[4.991s] [ext: omni.kit.widget.searchfield-1.1.8] startup
+[4.993s] [ext: omni.kit.window.file_exporter-1.0.36] startup
+[4.995s] [ext: omni.kit.widget.stage-4.4.0] startup
+[5.006s] [ext: omni.kit.window.content_browser_registry-0.0.6] startup
+[5.007s] [ext: omni.kit.window.file-2.0.10] startup
+[5.011s] [ext: omni.kit.window.content_browser-3.1.8] startup
+[5.023s] [ext: omni.kit.window.property-1.15.1] startup
+[5.036s] [ext: omni.kit.property.usd-4.9.4] startup
+[5.049s] [ext: omni.graph.scriptnode-2.10.2] startup
+[5.062s] [ext: omni.kit.widget.searchable_combobox-1.0.7] startup
+[5.064s] [ext: omni.kit.widget.settings-2.0.0] startup
+[5.066s] [ext: omni.kit.window.preferences-1.8.3] startup
+[5.072s] [ext: omni.kit.viewport.menubar.core-107.2.2] startup
+[5.085s] [ext: omni.syntheticdata-0.6.15] startup
+[5.123s] [ext: omni.replicator.nv-1.1.1] startup
+[5.131s] [ext: omni.videoencoding-0.2.1] startup
+[5.134s] [ext: omni.replicator.core-1.13.27] startup
+2026-09-15T04:31:06Z [5,121ms] [Warning] [pxr.Semantics] pxr.Semantics is deprecated - please use Semantics instead
+2026-09-15T04:31:06Z [5,214ms] [Warning] [omni.replicator.core.scripts.extension] No material configuration file, adding configuration to material settings directly.
+[5.403s] [ext: isaacsim.core.nodes-5.10.5] startup
+[5.447s] [ext: isaacsim.core.throttling-2.3.5] startup
+[5.449s] [ext: omni.kit.manipulator.viewport-107.0.1] startup
+[5.450s] [ext: omni.graph.visualization.nodes-2.1.4] startup
+[5.472s] [ext: omni.kit.window.extensions-1.5.10] startup
+[5.479s] [ext: isaacsim.gui.components-1.8.5] startup
+[5.485s] [ext: isaacsim.robot.surface_gripper-3.6.2] startup
+[5.501s] [ext: isaacsim.robot.manipulators-3.4.4] startup
+[5.516s] [ext: isaacsim.robot_motion.lula-4.1.3] startup
+[5.525s] [ext: isaacsim.robot_motion.motion_generation-8.2.9] startup
+[5.533s] [ext: isaacsim.cortex.framework-1.0.18] startup
+[5.535s] [ext: isaacsim.cortex.behaviors-2.0.17] startup
+[5.538s] [ext: isaacsim.examples.base-1.3.2] startup
+[5.540s] [ext: omni.kit.widget.zoombar-1.0.7] startup
+[5.541s] [ext: omni.kit.browser.core-2.3.18] startup
+[5.546s] [ext: omni.kit.browser.folder.core-2.0.2] startup
+[5.551s] [ext: omni.kit.widget.stage_icons-1.0.8] startup
+[5.553s] [ext: omni.kit.window.stage-2.6.1] startup
+[5.557s] [ext: omni.kit.menu.stage-1.2.7] startup
+[5.559s] [ext: omni.kit.usd.collect-3.0.6] startup
+[5.562s] [ext: omni.kit.widget.prompt-1.0.7] startup
+[5.563s] [ext: omni.kit.tool.collect-2.2.19] startup
+[5.566s] [ext: isaacsim.examples.browser-0.3.2] startup
+[5.569s] [ext: omni.kit.search.files-1.0.4] startup
+[5.570s] [ext: omni.kit.widget.calendar-1.0.9] startup
+[5.572s] [ext: omni.kit.widget.extended_searchfield-1.0.31] startup
+[5.582s] [ext: omni.simready.content.browser-0.3.7] startup
+[5.685s] [ext: isaacsim.gui.content_browser-0.4.3] startup
+[5.688s] [ext: omni.kit.selection-0.1.6] startup
+[5.690s] [ext: isaacsim.gui.menu-2.10.5] startup
+[5.700s] [ext: isaacsim.gui.property-1.6.4] startup
+[5.708s] [ext: omni.kit.viewport.actions-110.0.0] startup
+[5.712s] [ext: omni.kit.viewport.menubar.display-107.1.3] startup
+[5.715s] [ext: isaacsim.gui.sensors.icon-2.2.1] startup
+[5.718s] [ext: omni.behavior.scripting.core-110.1.0] startup
+[5.722s] [ext: isaacsim.replicator.behavior-1.5.4] startup
+[5.723s] [ext: isaacsim.replicator.experimental.domain_randomization-1.2.5] startup
+[5.744s] [ext: isaacsim.replicator.domain_randomization-1.2.2] startup
+[5.831s] [ext: isaacsim.replicator.writers-1.5.4] startup
+[5.861s] [ext: isaacsim.robot.experimental.wheeled_robots-0.2.11] startup
+[5.887s] [ext: isaacsim.robot.policy.examples-5.2.12] startup
+[5.912s] [ext: isaacsim.robot.wheeled_robots-5.2.4] startup
+[5.917s] [ext: isaacsim.robot.wheeled_robots.nodes-0.1.5] startup
+[5.944s] [ext: isaacsim.robot_motion.experimental.motion_generation-6.1.3] startup
+[5.957s] [ext: isaacsim.robot_motion.cumotion-1.3.1] startup
+[5.972s] [ext: omni.kit.numpy.common-0.1.3] startup
+[5.974s] [ext: isaacsim.sensors.camera-1.7.9] startup
+[6.006s] [ext: isaacsim.sensors.experimental.physics-3.0.2] startup
+[6.016s] [ext: omni.sensors.net-1.0.1] startup
+[6.023s] [ext: omni.sensors.nv.common-3.0.0] startup
+[6.039s] [ext: omni.sensors.nv.materials-2.0.0] startup
+[6.043s] [ext: omni.sensors.nv.acoustic-3.0.0] startup
+[6.047s] [ext: omni.sensors.nv.ids-2.0.1] startup
+[6.049s] [ext: omni.sensors.nv.lidar-3.0.0] startup
+[6.054s] [ext: omni.sensors.nv.radar-3.0.0] startup
+[6.058s] [ext: isaacsim.sensors.experimental.rtx-1.4.6] startup
+[6.300s] [ext: isaacsim.sensors.physics.nodes-1.5.3] startup
+[6.310s] [ext: isaacsim.util.debug_draw-3.2.3] startup
+[6.317s] [ext: isaacsim.sensors.physx-2.5.5] startup
+[6.328s] [ext: isaacsim.sensors.rtx-15.17.1] startup
+[6.343s] [ext: isaacsim.simulation_app-2.18.4] startup
+[6.344s] [ext: omni.anim.curve.core-1.6.0] startup
+[6.356s] [ext: omni.graph.ui_nodes-2.11.1] startup
+[6.397s] [ext: omni.hydra.scene_api-0.1.3] startup
+[6.404s] [ext: omni.kit.manipulator.camera-110.0.0] startup
+[6.409s] [ext: omni.kit.manipulator.selector-1.1.4] startup
+[6.410s] [ext: omni.kit.manipulator.transform-107.0.0] startup
+[6.416s] [ext: omni.kit.widget.toolbar-2.1.0] startup
+[6.423s] [ext: omni.kit.manipulator.tool.snap-1.5.14] startup
+[6.427s] [ext: omni.kit.viewport.manipulator.transform-107.0.4] startup
+[6.430s] [ext: omni.kit.manipulator.prim.core-108.0.2] startup
+[6.436s] [ext: omni.kit.manipulator.prim.usd-107.0.3] startup
+[6.438s] [ext: omni.kit.manipulator.prim-108.0.0] startup
+[6.438s] [ext: omni.kit.manipulator.selection-109.0.1] startup
+[6.440s] [ext: omni.kit.menu.create-2.0.2] startup
+[6.442s] [ext: omni.kit.property.audio-1.0.16] startup
+[6.446s] [ext: omni.kit.property.camera-1.0.14] startup
+[6.448s] [ext: omni.kit.property.geometry-2.1.2] startup
+[6.452s] [ext: omni.kit.property.light-1.0.14] startup
+2026-09-15T04:31:08Z [6,461ms] [Warning] [omni.usd] Encountered USD Warnings but USD Diagnostics are currently muted. To view USD Warnings, please set the '/persistent/app/usd/muteUsdDiagnostics' setting to false in Preferences page.
+[6.543s] [ext: omni.kit.property.material-1.14.6] startup
+[6.550s] [ext: omni.kit.property.render-1.2.2] startup
+[6.551s] [ext: omni.kit.property.transform-1.6.9] startup
+[6.556s] [ext: omni.kit.property.bundle-1.5.1] startup
+[6.557s] [ext: omni.kit.usdz_export-1.1.0] startup
+[6.560s] [ext: omni.kit.tool.asset_importer-6.0.1] startup
+[6.566s] [ext: omni.kit.ui.actions-1.0.5] startup
+[6.569s] [ext: omni.kit.viewport.menubar.camera-107.0.10] startup
+[6.574s] [ext: omni.kit.viewport.menubar.lighting-107.3.2] startup
+[6.577s] [ext: omni.kit.viewport.menubar.render-110.0.0] startup
+[6.580s] [ext: omni.kit.viewport.menubar.settings-110.0.1] startup
+[6.584s] [ext: omni.kit.window.console-1.1.9] startup
+[6.589s] [ext: omni.kit.window.status_bar-0.1.11] startup
+[6.593s] [ext: omni.kit.window.toolbar-3.0.3] startup
+[6.596s] [ext: omni.ocio-0.1.1] startup
+[6.597s] [ext: omni.physx.commands-110.1.13] startup
+[6.601s] [ext: omni.replicator.replicator_yaml-2.0.12] startup
+[6.615s] [ext: omni.rtx.window.settings-0.8.0] startup
+[6.621s] [ext: omni.rtx.settings.core-0.7.1] startup
+[6.625s] [ext: omni.usd.metrics.assembler.ui-110.1.1] startup
+[6.633s] [ext: semantics.schema.editor-2.0.2] startup
+[6.636s] [ext: semantics.schema.property-2.0.2] startup
+[6.638s] [ext: omni.kit.menu.common-2.0.2] startup
+[6.640s] [ext: isaacsim.exp.base-6.0.1] startup
+[6.640s] [ext: isaacsim.exp.base.python-6.0.1] startup
+[6.642s] Simulation App Starting
+[9.831s] Simulation App Startup Complete
+[9.834s] app ready
+Starting kit application with the following args:  ['/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/exts/isaacsim.simulation_app/isaacsim/simulation_app/simulation_app.py', '/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/apps/isaacsim.exp.base.python.kit', '--/app/tokens/exe-path=/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/kit', '--/persistent/app/viewport/displayOptions=3094', '--/rtx/materialDb/syncLoads=True', '--/rtx/hydra/materialSyncLoads=True', '--/omni/kit/plugin/syncUsdLoads=True', '--/app/renderer/resolution/width=2592', '--/app/renderer/resolution/height=1944', '--/app/window/width=1440', '--/app/window/height=900', '--/renderer/multiGpu/enabled=True', '--/app/fastShutdown=True', '--/app/installSignalHandlers=0', '--ext-folder', '/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/exts', '--ext-folder', '/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/apps', '--/physics/cudaDevice=0', '--/plugins/carb.tasking.plugin/threadCount=32', '--/plugins/omni.tbb.globalcontrol/maxThreadCount=32', '--portable', '--no-window', '--/app/window/hideUi=1', '--allow-root']
+Passing the following args to the base kit application:  ['--bundle-directory', '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-scene-bundle', '--project-root', '/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2', '--feasibility-root', '/root/autodl-tmp/m710-official-dynamics-20260910/repo-feasibility-core-648e177', '--usd-directory', '/root/autodl-tmp/v05-acceptance/dual-rgbd-v4-221b296/usd', '--output', '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture', '--geometry-algorithm-only']
+Warp 1.13.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.0
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA RTX PRO 6000 Blackwell Server Edition" (95 GiB, sm_120, mempool enabled)
+   Kernel cache:
+     /root/.cache/warp/1.13.0
+{
+  "status": "CAPTURE_COMPLETE",
+  "scope": "GEOMETRY_ALGORITHM_ONLY",
+  "perception_code_sha": "343eb22b8261d67f724a9c78d119d5ee6200288a",
+  "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+  "robot_and_scene_geometry_visible": false,
+  "scenes": [
+    {
+      "scene": "GEOMETRY_ADJACENT_TWO",
+      "status": "PASS",
+      "manifest_fingerprint": "e6e290ae7e9b1d7a4c685f9d3924f41df25c209b174bac4b2237ff7916d69bad",
+      "dynamic_scene_fingerprint": "9c73809bc770fb540abca590207eedfb8618c7cafe255694d7084fed21743c57",
+      "world_fingerprint": "89fca1a8fd4aa243a76ef1a65c0994167a315b0c0c30e50e67bbdcaf2731e9c1",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5496651218691256,
+      "rgb_sha256": "50b9ea603e0f9022bb6a4fb1d5fb6b44af830dd748b542584cad034fb6ed9393",
+      "gt_sha256": "7b2a0b0c2ca8cbdd2073152c23d7026e1d6adc7db6f4a8069ff0656dea11058f",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_0_upper",
+          "finite_depth_fraction": 0.5496651218691256
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/modules/module_1_lower",
+          "finite_depth_fraction": 0.9475507100035564
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_ADJACENT_TWO/comparison.png"
+      }
+    },
+    {
+      "scene": "GEOMETRY_PARTIAL_TWO",
+      "status": "PASS",
+      "manifest_fingerprint": "b823d4a8f8af72e045dda6792882cab1eb554f3fbfabc4eef2a8876f112ffdae",
+      "dynamic_scene_fingerprint": "b9239024e5e43bde94b72aee0c4d5b6411feaa35be242567d3ff64a4c5347a4f",
+      "world_fingerprint": "66f9215b9d0a95dde33744752f51a9d69250112127de8ca8c11a138b8ba0ec08",
+      "gt_object_count": 40,
+      "finite_depth_fraction": 0.5463332094955037,
+      "rgb_sha256": "ca295e5aa5c78efbca5bae77835b87a3c4863412637cbc62c651dcbac5e1a629",
+      "gt_sha256": "4f639cc434b6a66b1e363811a9298e53a619acbe40cfc02c0707559d4a1f22b3",
+      "modules": {
+        "module_0_upper": {
+          "directory": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_0_upper",
+          "finite_depth_fraction": 0.5463332094955037
+        },
+        "module_1_lower": {
+          "directory": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/modules/module_1_lower",
+          "finite_depth_fraction": 0.9475513053777371
+        }
+      },
+      "artifacts": {
+        "isaac_overview.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/isaac_overview.png",
+        "sensor_rgb.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/sensor_rgb.png",
+        "sensor_rgb.npy": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/sensor_rgb.npy",
+        "metric_depth_m.npy": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/metric_depth_m.npy",
+        "metric_depth_visualization.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/metric_depth_visualization.png",
+        "pointcloud_world_m.npz": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/pointcloud_world_m.npz",
+        "camera_info.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/camera_info.json",
+        "gt_annotations.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/gt_annotations.json",
+        "gt_instance_masks.npz": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/gt_instance_masks.npz",
+        "instance_segmentation_info.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/instance_segmentation_info.json",
+        "capture_binding.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/capture_binding.json",
+        "capture_metadata.json": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/capture_metadata.json",
+        "gt_overlay.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/gt_overlay.png",
+        "prediction_overlay.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/prediction_overlay.png",
+        "comparison.png": "/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/small-capture/GEOMETRY_PARTIAL_TWO/comparison.png"
+      }
+    }
+  ],
+  "omitted_mechanical_entities": [
+    "chassis",
+    "conveyor_transverse",
+    "conveyor_longitudinal"
+  ],
+  "rendered_visibility": [
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "GEOMETRY_ADJACENT_TWO",
+      "object_count": 40,
+      "union_visible_count": 2,
+      "out_of_fov_count": 0,
+      "occluded_count": 38,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 17104
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 10803
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 47503
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 36461
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        }
+      },
+      "robot_and_scene_geometry_visible": false,
+      "validation_scope": "GEOMETRY_ALGORITHM_ONLY",
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    },
+    {
+      "schema_version": "dual_module_rendered_visibility_v1",
+      "scene": "GEOMETRY_PARTIAL_TWO",
+      "object_count": 40,
+      "union_visible_count": 2,
+      "out_of_fov_count": 0,
+      "occluded_count": 38,
+      "objects": {
+        "carton_l00_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l00_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l01_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l02_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l03_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l04_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l05_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l06_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c00": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c01": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 49269
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 51536
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c02": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 18056
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": true,
+              "rendered_visible": true,
+              "mask_pixel_count": 3723
+            }
+          ],
+          "union_visible": true,
+          "out_of_fov": false,
+          "occluded": false
+        },
+        "carton_l07_c03": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        },
+        "carton_l07_c04": {
+          "modules": [
+            {
+              "module_id": "module_0_upper",
+              "projection_intersects_image": true,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            },
+            {
+              "module_id": "module_1_lower",
+              "projection_intersects_image": false,
+              "rendered_visible": false,
+              "mask_pixel_count": 0
+            }
+          ],
+          "union_visible": false,
+          "out_of_fov": false,
+          "occluded": true
+        }
+      },
+      "robot_and_scene_geometry_visible": false,
+      "validation_scope": "GEOMETRY_ALGORITHM_ONLY",
+      "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage"
+    }
+  ],
+  "lighting_acceptance": "NOT_RUN",
+  "inference": "NOT_RUN"
+}
+2026-09-15T04:34:52Z [231,088ms] [Warning] [carb] Client omni.hydratexture.plugin has acquired [carb::settings::ISettings v1.1] 100 times. Consider accessing this interface with carb::getCachedInterface() (Performance warning)
+2026-09-15T04:34:52Z [231,156ms] [Warning] [carb] Client omni.hydratexture.plugin has acquired [carb::dictionary::IDictionary v1.2] 100 times. Consider accessing this interface with carb::getCachedInterface() (Performance warning)
+2026-09-15T04:34:53Z [232,078ms] [Warning] [omni.syntheticdata.plugin] OgnSdPostRenderVarToHost : rendervar copy from texture directly to host buffer is counter-performant. Please use copy from texture to device buffer first.
+2026-09-15T04:34:54Z [232,775ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:34:54Z [232,776ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:34:54Z [232,778ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:34:54Z [232,780ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:34:54Z [232,781ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:34:54Z [232,783ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:34:54Z [232,784ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:34:54Z [232,786ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:35:03Z [242,243ms] [Warning] [carb] Client omni.kit.viewport.legacy_gizmos has acquired [carb::settings::ISettings v1.1] 100 times. Consider accessing this interface with carb::getCachedInterface() (Performance warning)
+2026-09-15T04:35:03Z [242,243ms] [Warning] [carb] Client omni.kit.viewport.legacy_gizmos has acquired [carb::dictionary::IDictionary v1.2] 100 times. Consider accessing this interface with carb::getCachedInterface() (Performance warning)
+2026-09-15T04:35:04Z [243,269ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:35:04Z [243,269ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:35:04Z [243,269ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:35:04Z [243,269ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:35:04Z [243,269ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:35:04Z [243,269ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:35:04Z [243,269ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+2026-09-15T04:35:04Z [243,269ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+[243.393s] Simulation App Shutting Down

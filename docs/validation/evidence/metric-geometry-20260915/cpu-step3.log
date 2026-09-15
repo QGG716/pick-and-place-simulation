@@ -1,0 +1,40 @@
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 55%]
+........................................................................ [ 73%]
+........................................................................ [ 92%]
+..............................                                           [100%]
+=============================== warnings summary ===============================
+../../../usr/lib/python3/dist-packages/_pytest/config/__init__.py:1233
+  /usr/lib/python3/dist-packages/_pytest/config/__init__.py:1233: PytestConfigWarning: Unknown config option: pythonpath
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:64
+  /root/v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85
+  /root/v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89
+  /root/v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+../../v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_mathtext.py:45
+  /root/v05-gpu-venv/lib/python3.10/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+390 passed, 1 deselected, 15 warnings in 6.23s

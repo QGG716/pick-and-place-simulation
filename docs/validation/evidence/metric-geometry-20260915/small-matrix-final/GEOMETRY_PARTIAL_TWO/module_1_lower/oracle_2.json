@@ -1,0 +1,1256 @@
+{
+  "mask_id": 2,
+  "accepted": false,
+  "method": "DEPTH_CONSTRAINED_METRIC_FACES_V1",
+  "geometry_version": "DEPTH_METRIC_PATCHES_V1",
+  "camera_facing_faces": [
+    {
+      "corner_indices": [],
+      "corners_3d_m": [
+        [
+          0.9099836051425397,
+          -0.6567613143360171,
+          2.48954861457331
+        ],
+        [
+          1.0383947478799405,
+          -0.6687492840890362,
+          2.534990745281554
+        ],
+        [
+          1.0400320221253572,
+          -0.6598190732704632,
+          2.5389877561178404
+        ],
+        [
+          0.9113926488787081,
+          -0.6479728714500608,
+          2.493403500377216
+        ]
+      ],
+      "corners_2d": [
+        [
+          1569.0,
+          569.0
+        ],
+        [
+          1602.0,
+          569.0
+        ],
+        [
+          1602.0,
+          575.0
+        ],
+        [
+          1569.0,
+          575.0
+        ]
+      ],
+      "plane_normal": [
+        0.3421167715601238,
+        0.3309087545852916,
+        -0.8794631946568823
+      ],
+      "plane_offset_m": 2.095473793248981,
+      "evidence": "registered_metric_depth_plane",
+      "final_support": {
+        "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+        "candidate_plane_used_for_selection": false,
+        "selected_pixels": 809,
+        "excluded_invalid": 0,
+        "excluded_boundary": 563,
+        "excluded_discontinuity": 0,
+        "retained_pixels": 246,
+        "raw": {
+          "count": 809,
+          "mean_m": 0.057503269937573175,
+          "p95_m": 0.2881218901042281
+        },
+        "interior": {
+          "count": 246,
+          "mean_m": 0.00026516471908555236,
+          "p95_m": 0.0003328379424033523
+        },
+        "excluded": {
+          "count": 563,
+          "mean_m": 0.08251317026394611,
+          "p95_m": 0.3265594436433488
+        },
+        "status": "PASS",
+        "point_support_count": 246,
+        "point_support_ratio": 0.30407911001236093,
+        "plane_residual_m": 0.00026516471908555236,
+        "plane_residual_p95_m": 0.0003328379424033523,
+        "maximum_mean_m": 0.003,
+        "spatial_holdout": {
+          "count": 81,
+          "mean_m": 0.0004603381732847149,
+          "p95_m": 0.00039968739186857505
+        },
+        "label": 0,
+        "observation_region_precision": 1.0,
+        "patch_observation_coverage": 0.2941903584672435,
+        "patch_pixel_support_count": 238
+      },
+      "support_label": 0,
+      "boundary_kind": "OBSERVED_PATCH_CLASSIFIED",
+      "patch_boundary_method": "MAXIMUM_OBSERVATION_RECTANGLE_ON_MEASURED_PLANE",
+      "boundary_evidence": [
+        {
+          "kind": "PHYSICAL_EDGE_SUPPORTED",
+          "support_fraction": 1.0
+        },
+        {
+          "kind": "PHYSICAL_EDGE_SUPPORTED",
+          "support_fraction": 1.0
+        },
+        {
+          "kind": "OCCLUSION_BOUNDARY",
+          "support_fraction": 0.7333333333333333
+        },
+        {
+          "kind": "UNCLASSIFIED_BOUNDARY",
+          "support_fraction": 0.8
+        }
+      ],
+      "physical_corners_certified": false,
+      "axis_index": 0,
+      "side": "observed",
+      "initial_plane": {
+        "normal": [
+          0.3416439787979293,
+          0.32387650848860927,
+          -0.8822603918347173
+        ],
+        "offset_m": 2.0983876322943322,
+        "initial_plane_index": 0,
+        "component": 1
+      }
+    },
+    {
+      "corner_indices": [],
+      "corners_3d_m": [
+        [
+          0.4611647862541204,
+          -0.8016756977776526,
+          2.936720707030061
+        ],
+        [
+          0.5384029901414352,
+          -0.7455828161246341,
+          2.731239703272486
+        ],
+        [
+          0.5388726682599416,
+          -0.7354831699249543,
+          2.733622311743301
+        ],
+        [
+          0.4615973800978172,
+          -0.7908681237569599,
+          2.939475486528377
+        ]
+      ],
+      "corners_2d": [
+        [
+          1412.9999999999998,
+          555.0
+        ],
+        [
+          1443.0,
+          555.0
+        ],
+        [
+          1443.0,
+          561.0
+        ],
+        [
+          1413.0000000000002,
+          561.0
+        ]
+      ],
+      "plane_normal": [
+        -0.9396567466926842,
+        0.11933805000230102,
+        -0.32063004883598945
+      ],
+      "plane_offset_m": 1.470607920960503,
+      "evidence": "registered_metric_depth_plane",
+      "final_support": {
+        "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+        "candidate_plane_used_for_selection": false,
+        "selected_pixels": 930,
+        "excluded_invalid": 0,
+        "excluded_boundary": 728,
+        "excluded_discontinuity": 0,
+        "retained_pixels": 202,
+        "raw": {
+          "count": 930,
+          "mean_m": 0.10223207393523658,
+          "p95_m": 0.3782393209164312
+        },
+        "interior": {
+          "count": 202,
+          "mean_m": 0.00010885256382673479,
+          "p95_m": 0.0001293632922474086
+        },
+        "excluded": {
+          "count": 728,
+          "mean_m": 0.13056846228279811,
+          "p95_m": 0.3827353036854655
+        },
+        "status": "PASS",
+        "point_support_count": 202,
+        "point_support_ratio": 0.2172043010752688,
+        "plane_residual_m": 0.00010885256382673479,
+        "plane_residual_p95_m": 0.0001293632922474086,
+        "maximum_mean_m": 0.003,
+        "spatial_holdout": {
+          "count": 72,
+          "mean_m": 0.00010909507187693691,
+          "p95_m": 0.00013086209663646376
+        },
+        "label": 1,
+        "observation_region_precision": 1.0,
+        "patch_observation_coverage": 0.23333333333333334,
+        "patch_pixel_support_count": 217
+      },
+      "support_label": 1,
+      "boundary_kind": "OBSERVED_PATCH_CLASSIFIED",
+      "patch_boundary_method": "MAXIMUM_OBSERVATION_RECTANGLE_ON_MEASURED_PLANE",
+      "boundary_evidence": [
+        {
+          "kind": "UNCLASSIFIED_BOUNDARY",
+          "support_fraction": 0.6666666666666666
+        },
+        {
+          "kind": "UNCLASSIFIED_BOUNDARY",
+          "support_fraction": 1.0
+        },
+        {
+          "kind": "OCCLUSION_BOUNDARY",
+          "support_fraction": 1.0
+        },
+        {
+          "kind": "PHYSICAL_EDGE_SUPPORTED",
+          "support_fraction": 1.0
+        }
+      ],
+      "physical_corners_certified": false,
+      "axis_index": 1,
+      "side": "observed",
+      "initial_plane": {
+        "normal": [
+          -0.939610641597797,
+          0.11504884337054778,
+          -0.3223284130126838
+        ],
+        "offset_m": 1.4721022626653737,
+        "initial_plane_index": 1,
+        "component": 1
+      }
+    }
+  ],
+  "final_face_validation": [
+    {
+      "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+      "candidate_plane_used_for_selection": false,
+      "selected_pixels": 809,
+      "excluded_invalid": 0,
+      "excluded_boundary": 563,
+      "excluded_discontinuity": 0,
+      "retained_pixels": 246,
+      "raw": {
+        "count": 809,
+        "mean_m": 0.057503269937573175,
+        "p95_m": 0.2881218901042281
+      },
+      "interior": {
+        "count": 246,
+        "mean_m": 0.00026516471908555236,
+        "p95_m": 0.0003328379424033523
+      },
+      "excluded": {
+        "count": 563,
+        "mean_m": 0.08251317026394611,
+        "p95_m": 0.3265594436433488
+      },
+      "status": "PASS",
+      "point_support_count": 246,
+      "point_support_ratio": 0.30407911001236093,
+      "plane_residual_m": 0.00026516471908555236,
+      "plane_residual_p95_m": 0.0003328379424033523,
+      "maximum_mean_m": 0.003,
+      "spatial_holdout": {
+        "count": 81,
+        "mean_m": 0.0004603381732847149,
+        "p95_m": 0.00039968739186857505
+      },
+      "label": 0,
+      "observation_region_precision": 1.0,
+      "patch_observation_coverage": 0.2941903584672435,
+      "patch_pixel_support_count": 238
+    },
+    {
+      "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
+      "candidate_plane_used_for_selection": false,
+      "selected_pixels": 930,
+      "excluded_invalid": 0,
+      "excluded_boundary": 728,
+      "excluded_discontinuity": 0,
+      "retained_pixels": 202,
+      "raw": {
+        "count": 930,
+        "mean_m": 0.10223207393523658,
+        "p95_m": 0.3782393209164312
+      },
+      "interior": {
+        "count": 202,
+        "mean_m": 0.00010885256382673479,
+        "p95_m": 0.0001293632922474086
+      },
+      "excluded": {
+        "count": 728,
+        "mean_m": 0.13056846228279811,
+        "p95_m": 0.3827353036854655
+      },
+      "status": "PASS",
+      "point_support_count": 202,
+      "point_support_ratio": 0.2172043010752688,
+      "plane_residual_m": 0.00010885256382673479,
+      "plane_residual_p95_m": 0.0001293632922474086,
+      "maximum_mean_m": 0.003,
+      "spatial_holdout": {
+        "count": 72,
+        "mean_m": 0.00010909507187693691,
+        "p95_m": 0.00013086209663646376
+      },
+      "label": 1,
+      "observation_region_precision": 1.0,
+      "patch_observation_coverage": 0.23333333333333334,
+      "patch_pixel_support_count": 217
+    }
+  ],
+  "config": {
+    "seed": 17,
+    "plane_noise_scale_m": 0.001,
+    "extraction_threshold_m": 0.003,
+    "maximum_mean_m": 0.003,
+    "maximum_p95_m": 0.006,
+    "erosion_px": 2,
+    "minimum_points": 50,
+    "maximum_fit_points": 12000,
+    "boundary_noise_scale_px": 2.0,
+    "boundary_auxiliary_weight": 0.05,
+    "normal_pair_tolerance_degrees": 10.0,
+    "positive_infinity_is_no_hit": true
+  },
+  "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+  "source_ambiguous": false,
+  "support_capture_binding": {
+    "depth_float32": "3bd1788d318f59622868a6772fd2532353b1d9614d812982e662f488f0fc3b70",
+    "instance_mask": "06f032f8f31c8f6e1ebbb3b4b9b1ac43348d6c56e886e000e3cc7d0c0484a8d5",
+    "K_float64": "aea3a3965d0f56f4dc8b5bcaa059456983468e351ba8dc833abcbb4745521905"
+  },
+  "frozen_support_regions": {
+    "0": [
+      [
+        546,
+        1529,
+        1535
+      ],
+      [
+        547,
+        1529,
+        1535
+      ],
+      [
+        548,
+        1527,
+        1543
+      ],
+      [
+        549,
+        1535,
+        1543
+      ],
+      [
+        550,
+        1535,
+        1551
+      ],
+      [
+        551,
+        1543,
+        1551
+      ],
+      [
+        552,
+        1543,
+        1560
+      ],
+      [
+        553,
+        1551,
+        1560
+      ],
+      [
+        554,
+        1551,
+        1568
+      ],
+      [
+        555,
+        1560,
+        1568
+      ],
+      [
+        556,
+        1560,
+        1576
+      ],
+      [
+        557,
+        1518,
+        1519
+      ],
+      [
+        557,
+        1568,
+        1576
+      ],
+      [
+        558,
+        1516,
+        1519
+      ],
+      [
+        558,
+        1568,
+        1585
+      ],
+      [
+        559,
+        1516,
+        1526
+      ],
+      [
+        559,
+        1576,
+        1585
+      ],
+      [
+        560,
+        1519,
+        1526
+      ],
+      [
+        560,
+        1576,
+        1593
+      ],
+      [
+        561,
+        1519,
+        1531
+      ],
+      [
+        561,
+        1532,
+        1533
+      ],
+      [
+        561,
+        1585,
+        1593
+      ],
+      [
+        562,
+        1526,
+        1531
+      ],
+      [
+        562,
+        1532,
+        1533
+      ],
+      [
+        562,
+        1585,
+        1601
+      ],
+      [
+        563,
+        1526,
+        1530
+      ],
+      [
+        563,
+        1531,
+        1534
+      ],
+      [
+        563,
+        1535,
+        1539
+      ],
+      [
+        563,
+        1593,
+        1601
+      ],
+      [
+        564,
+        1531,
+        1532
+      ],
+      [
+        564,
+        1533,
+        1534
+      ],
+      [
+        564,
+        1535,
+        1539
+      ],
+      [
+        564,
+        1593,
+        1603
+      ],
+      [
+        565,
+        1531,
+        1532
+      ],
+      [
+        565,
+        1533,
+        1548
+      ],
+      [
+        565,
+        1600,
+        1603
+      ],
+      [
+        566,
+        1530,
+        1531
+      ],
+      [
+        566,
+        1534,
+        1535
+      ],
+      [
+        566,
+        1539,
+        1548
+      ],
+      [
+        566,
+        1600,
+        1603
+      ],
+      [
+        567,
+        1530,
+        1531
+      ],
+      [
+        567,
+        1534,
+        1535
+      ],
+      [
+        567,
+        1539,
+        1555
+      ],
+      [
+        567,
+        1582,
+        1603
+      ],
+      [
+        568,
+        1529,
+        1530
+      ],
+      [
+        568,
+        1548,
+        1555
+      ],
+      [
+        568,
+        1582,
+        1603
+      ],
+      [
+        569,
+        1529,
+        1530
+      ],
+      [
+        569,
+        1548,
+        1603
+      ],
+      [
+        570,
+        1555,
+        1603
+      ],
+      [
+        571,
+        1555,
+        1603
+      ],
+      [
+        572,
+        1562,
+        1603
+      ],
+      [
+        573,
+        1562,
+        1603
+      ],
+      [
+        574,
+        1569,
+        1603
+      ],
+      [
+        575,
+        1569,
+        1603
+      ],
+      [
+        576,
+        1577,
+        1603
+      ],
+      [
+        577,
+        1577,
+        1603
+      ],
+      [
+        578,
+        1584,
+        1602
+      ],
+      [
+        579,
+        1584,
+        1602
+      ],
+      [
+        580,
+        1591,
+        1602
+      ],
+      [
+        581,
+        1591,
+        1602
+      ],
+      [
+        582,
+        1591,
+        1602
+      ],
+      [
+        583,
+        1598,
+        1602
+      ],
+      [
+        584,
+        1598,
+        1602
+      ]
+    ],
+    "1": [
+      [
+        538,
+        1493,
+        1502
+      ],
+      [
+        539,
+        1493,
+        1502
+      ],
+      [
+        540,
+        1460,
+        1510
+      ],
+      [
+        541,
+        1460,
+        1493
+      ],
+      [
+        541,
+        1502,
+        1510
+      ],
+      [
+        542,
+        1427,
+        1493
+      ],
+      [
+        542,
+        1502,
+        1518
+      ],
+      [
+        543,
+        1427,
+        1460
+      ],
+      [
+        543,
+        1510,
+        1518
+      ],
+      [
+        544,
+        1413,
+        1460
+      ],
+      [
+        544,
+        1510,
+        1527
+      ],
+      [
+        545,
+        1413,
+        1427
+      ],
+      [
+        545,
+        1518,
+        1527
+      ],
+      [
+        546,
+        1413,
+        1427
+      ],
+      [
+        546,
+        1518,
+        1529
+      ],
+      [
+        547,
+        1413,
+        1418
+      ],
+      [
+        547,
+        1527,
+        1529
+      ],
+      [
+        548,
+        1413,
+        1418
+      ],
+      [
+        549,
+        1413,
+        1424
+      ],
+      [
+        550,
+        1413,
+        1424
+      ],
+      [
+        551,
+        1413,
+        1431
+      ],
+      [
+        552,
+        1413,
+        1431
+      ],
+      [
+        553,
+        1413,
+        1437
+      ],
+      [
+        554,
+        1413,
+        1437
+      ],
+      [
+        555,
+        1413,
+        1444
+      ],
+      [
+        555,
+        1479,
+        1480
+      ],
+      [
+        555,
+        1481,
+        1485
+      ],
+      [
+        555,
+        1486,
+        1488
+      ],
+      [
+        555,
+        1489,
+        1490
+      ],
+      [
+        555,
+        1491,
+        1498
+      ],
+      [
+        555,
+        1499,
+        1501
+      ],
+      [
+        555,
+        1502,
+        1512
+      ],
+      [
+        556,
+        1413,
+        1444
+      ],
+      [
+        556,
+        1479,
+        1480
+      ],
+      [
+        556,
+        1481,
+        1485
+      ],
+      [
+        556,
+        1486,
+        1488
+      ],
+      [
+        556,
+        1489,
+        1490
+      ],
+      [
+        556,
+        1491,
+        1498
+      ],
+      [
+        556,
+        1499,
+        1501
+      ],
+      [
+        556,
+        1502,
+        1512
+      ],
+      [
+        557,
+        1413,
+        1473
+      ],
+      [
+        557,
+        1474,
+        1477
+      ],
+      [
+        557,
+        1478,
+        1479
+      ],
+      [
+        557,
+        1480,
+        1488
+      ],
+      [
+        557,
+        1489,
+        1491
+      ],
+      [
+        557,
+        1492,
+        1501
+      ],
+      [
+        557,
+        1502,
+        1513
+      ],
+      [
+        557,
+        1514,
+        1518
+      ],
+      [
+        558,
+        1413,
+        1473
+      ],
+      [
+        558,
+        1474,
+        1477
+      ],
+      [
+        558,
+        1478,
+        1479
+      ],
+      [
+        558,
+        1480,
+        1481
+      ],
+      [
+        558,
+        1485,
+        1486
+      ],
+      [
+        558,
+        1488,
+        1489
+      ],
+      [
+        558,
+        1490,
+        1491
+      ],
+      [
+        558,
+        1498,
+        1499
+      ],
+      [
+        558,
+        1501,
+        1502
+      ],
+      [
+        558,
+        1512,
+        1516
+      ],
+      [
+        559,
+        1413,
+        1479
+      ],
+      [
+        559,
+        1480,
+        1481
+      ],
+      [
+        559,
+        1485,
+        1486
+      ],
+      [
+        559,
+        1488,
+        1489
+      ],
+      [
+        559,
+        1490,
+        1491
+      ],
+      [
+        559,
+        1498,
+        1499
+      ],
+      [
+        559,
+        1501,
+        1502
+      ],
+      [
+        559,
+        1512,
+        1516
+      ],
+      [
+        560,
+        1413,
+        1450
+      ],
+      [
+        560,
+        1473,
+        1474
+      ],
+      [
+        560,
+        1477,
+        1478
+      ],
+      [
+        560,
+        1479,
+        1480
+      ],
+      [
+        560,
+        1488,
+        1489
+      ],
+      [
+        560,
+        1491,
+        1492
+      ],
+      [
+        560,
+        1501,
+        1502
+      ],
+      [
+        560,
+        1513,
+        1514
+      ],
+      [
+        561,
+        1413,
+        1450
+      ],
+      [
+        561,
+        1473,
+        1474
+      ],
+      [
+        561,
+        1477,
+        1478
+      ],
+      [
+        561,
+        1479,
+        1480
+      ],
+      [
+        561,
+        1488,
+        1489
+      ],
+      [
+        561,
+        1491,
+        1492
+      ],
+      [
+        561,
+        1501,
+        1502
+      ],
+      [
+        561,
+        1513,
+        1514
+      ],
+      [
+        562,
+        1413,
+        1421
+      ],
+      [
+        563,
+        1413,
+        1421
+      ]
+    ]
+  },
+  "metric_solver": {
+    "success": true,
+    "cost": 0.04230681966887862,
+    "rotation_determinant": 0.9999999999999998,
+    "objective": "ROBUST_METRIC_POINT_TO_SHARED_SO3_PLANES",
+    "calibration_optimised": false,
+    "scale_optimised": false,
+    "boundary_fit": {
+      "objective": "SILHOUETTE_SIGNED_PIXEL_DISTANCE_ON_FREE_BOUNDS",
+      "initial_free_bounds_m": [
+        -2.6841808168147843,
+        -1.8662252341016647,
+        0.25389839950698084,
+        0.29369652579158173
+      ],
+      "final_free_bounds_m": [
+        -2.6638548503210404,
+        -1.8674217993340771,
+        0.23745124607920087,
+        0.2733702127873408
+      ],
+      "normalised_cost": 54.24493956565857,
+      "observed_plane_motion_m": 0.0,
+      "rotation_motion_rad": 0.0
+    }
+  },
+  "projected_camera_facing_face_count": 2,
+  "depth_supported_face_count": 2,
+  "completion_diagnostics": {
+    "bounds_low": [
+      -2.6638548503210404,
+      -1.8674217993340771,
+      0.23745124607920087
+    ],
+    "bounds_high": [
+      -2.095473793248981,
+      -1.470607920960503,
+      0.2733702127873408
+    ],
+    "candidate_faces": [
+      {
+        "axis": 0,
+        "side": "high",
+        "corner_indices": [
+          1,
+          2,
+          6,
+          5
+        ],
+        "corners_2d": [
+          [
+            1602.9464796444045,
+            552.1840228397068
+          ],
+          [
+            1502.910220875111,
+            560.0663609163677
+          ],
+          [
+            1501.810294669419,
+            583.5041962878257
+          ],
+          [
+            1601.403639845801,
+            574.4860695610205
+          ]
+        ],
+        "boundary_evidence": [
+          {
+            "kind": "PHYSICAL_EDGE_SUPPORTED",
+            "support_fraction": 1.0
+          },
+          {
+            "kind": "UNCLASSIFIED_BOUNDARY",
+            "support_fraction": 0.0
+          },
+          {
+            "kind": "OCCLUSION_BOUNDARY",
+            "support_fraction": 1.0
+          },
+          {
+            "kind": "PHYSICAL_EDGE_SUPPORTED",
+            "support_fraction": 1.0
+          }
+        ]
+      },
+      {
+        "axis": 1,
+        "side": "high",
+        "corner_indices": [
+          3,
+          2,
+          6,
+          7
+        ],
+        "corners_2d": [
+          [
+            1416.92234368685,
+            532.0106480231271
+          ],
+          [
+            1502.910220875111,
+            560.0663609163677
+          ],
+          [
+            1501.810294669419,
+            583.5041962878257
+          ],
+          [
+            1416.3846302462064,
+            551.5448251603113
+          ]
+        ],
+        "boundary_evidence": [
+          {
+            "kind": "PHYSICAL_EDGE_SUPPORTED",
+            "support_fraction": 1.0
+          },
+          {
+            "kind": "UNCLASSIFIED_BOUNDARY",
+            "support_fraction": 0.0
+          },
+          {
+            "kind": "OCCLUSION_BOUNDARY",
+            "support_fraction": 1.0
+          },
+          {
+            "kind": "PHYSICAL_EDGE_SUPPORTED",
+            "support_fraction": 1.0
+          }
+        ]
+      }
+    ],
+    "all_visible_edges_physical": false,
+    "silhouette_bound_parameters": [
+      [
+        0,
+        "low"
+      ],
+      [
+        1,
+        "low"
+      ],
+      [
+        2,
+        "low"
+      ],
+      [
+        2,
+        "high"
+      ]
+    ],
+    "observed_plane_bounds": 2,
+    "hidden_bound_constraints": "OBSERVED_SILHOUETTE_ENDPOINTS"
+  }
+}

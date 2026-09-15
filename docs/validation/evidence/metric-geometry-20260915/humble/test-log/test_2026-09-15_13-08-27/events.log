@@ -1,0 +1,73 @@
+[0.000000] (-) TimerEvent: {}
+[0.000241] (unloading_interfaces) JobQueued: {'identifier': 'unloading_interfaces', 'dependencies': OrderedDict([('unloading_interfaces', '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces')])}
+[0.000357] (unloading_ros_bridge) JobQueued: {'identifier': 'unloading_ros_bridge', 'dependencies': OrderedDict([('unloading_interfaces', '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces'), ('unloading_ros_bridge', '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_ros_bridge')])}
+[0.000416] (unloading_bringup) JobQueued: {'identifier': 'unloading_bringup', 'dependencies': OrderedDict([('unloading_interfaces', '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces'), ('unloading_ros_bridge', '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_ros_bridge'), ('unloading_bringup', '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_bringup')])}
+[0.000471] (unloading_interfaces) JobStarted: {'identifier': 'unloading_interfaces'}
+[0.035051] (unloading_interfaces) JobEnded: {'identifier': 'unloading_interfaces', 'rc': 0}
+[0.037272] (unloading_ros_bridge) JobStarted: {'identifier': 'unloading_ros_bridge'}
+[0.099228] (-) TimerEvent: {}
+[0.199410] (-) TimerEvent: {}
+[0.206972] (unloading_ros_bridge) Command: {'cmd': ['/usr/bin/python3', '-m', 'pytest'], 'cwd': '/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/ros2_ws/src/unloading_ros_bridge', 'env': {'USER': 'root', 'SSH_CLIENT': '127.0.0.1 50986 22', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib', 'MOTD_SHOWN': 'pam', 'HOME': '/root', 'OLDPWD': '/root', 'AutoDLDataCenter': 'westDC3', 'SSH_TTY': '/dev/pts/2', 'ROS_PYTHON_VERSION': '3', 'LC_CTYPE': 'C.UTF-8', 'COLCON_PREFIX_PATH': '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install', 'ROS_DISTRO': 'humble', 'LOGNAME': 'root', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'dumb', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/usr/bin:/bin:/opt/ros/humble/bin:/root/miniconda3/bin:/usr/local/bin:/root/miniconda3/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'ARTIFACT_ROOT': '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance', 'AutoDLRegion': 'west-B', 'REQUESTS_CA_BUNDLE': '/etc/ssl/certs/ca-certificates.crt', 'AutoDLServiceURL': 'https://u314586-gcxh-6f0e9741.westb.seetacloud.com:8443', 'AutoDLContainerMonitorSetting': '', 'LS_COLORS': '', 'AMENT_PREFIX_PATH': '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_ros_bridge:/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_bringup:/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces:/opt/ros/humble', 'SHELL': '/bin/bash', 'AutoDLContainerUUID': 'qlct8ugcxh-6f0e9741', 'AutoDLService6006URL': 'https://u314586-gcxh-6f0e9741.westb.seetacloud.com:8443', 'PWD': '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/build/unloading_ros_bridge', 'AutodlAutoPanelToken': 'jupyter-autodl-container-qlct8ugcxh-6f0e9741-501e8ff6fa10c42dabaae9019bf4e0900a73b7f766f684a549d3e895a32b04ba6', 'AutoDLService6008URL': 'https://uu314586-gcxh-6f0e9741.westb.seetacloud.com:8443', 'SSH_CONNECTION': '127.0.0.1 50986 127.0.0.1 22', 'MKL_NUM_THREADS': '22', 'PYTHONPATH': '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/build/unloading_ros_bridge:/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_ros_bridge/lib/python3.10/site-packages:/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces/local/lib/python3.10/dist-packages:/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/src:/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/packages/unloading_contracts/src:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'OMP_NUM_THREADS': '22', 'TZ': 'Asia/Shanghai', 'COLCON': '1', 'AgentHost': '172.20.0.61', 'CMAKE_PREFIX_PATH': '/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_interfaces:/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/install/unloading_bringup', 'RUN_ID': 'metric-c50ff4c', 'PYTHONDONTWRITEBYTECODE': '1', 'PYTEST_ADDOPTS': '--tb=short --junit-xml=/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/build/unloading_ros_bridge/pytest.xml --junit-prefix=unloading_ros_bridge -o cache_dir=/root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/build/unloading_ros_bridge/.pytest_cache'}, 'shell': False}
+[0.299679] (-) TimerEvent: {}
+[0.399923] (-) TimerEvent: {}
+[0.500180] (-) TimerEvent: {}
+[0.571535] (unloading_ros_bridge) StdoutLine: {'line': b'============================= test session starts ==============================\n'}
+[0.571945] (unloading_ros_bridge) StdoutLine: {'line': b'platform linux -- Python 3.10.12, pytest-6.2.5, py-1.10.0, pluggy-0.13.0\n'}
+[0.572114] (unloading_ros_bridge) StdoutLine: {'line': b'cachedir: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/build/unloading_ros_bridge/.pytest_cache\n'}
+[0.572258] (unloading_ros_bridge) StdoutLine: {'line': b'rootdir: /root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/ros2_ws/src/unloading_ros_bridge, configfile: pytest.ini, testpaths: test\n'}
+[0.572403] (unloading_ros_bridge) StdoutLine: {'line': b'plugins: ament-copyright-0.12.15, ament-flake8-0.12.15, ament-lint-0.12.15, ament-pep257-0.12.15, ament-xmllint-0.12.15, launch-testing-1.0.14, launch-testing-ros-0.19.14, colcon-core-0.21.1, cov-3.0.0\n'}
+[0.572542] (unloading_ros_bridge) StdoutLine: {'line': b'collected 6 items\n'}
+[0.572674] (unloading_ros_bridge) StdoutLine: {'line': b'\n'}
+[0.600256] (-) TimerEvent: {}
+[0.700480] (-) TimerEvent: {}
+[0.800809] (-) TimerEvent: {}
+[0.901127] (-) TimerEvent: {}
+[1.001434] (-) TimerEvent: {}
+[1.101764] (-) TimerEvent: {}
+[1.202091] (-) TimerEvent: {}
+[1.302412] (-) TimerEvent: {}
+[1.402748] (-) TimerEvent: {}
+[1.503061] (-) TimerEvent: {}
+[1.603314] (-) TimerEvent: {}
+[1.703507] (-) TimerEvent: {}
+[1.803741] (-) TimerEvent: {}
+[1.904035] (-) TimerEvent: {}
+[2.004333] (-) TimerEvent: {}
+[2.104640] (-) TimerEvent: {}
+[2.204954] (-) TimerEvent: {}
+[2.305249] (-) TimerEvent: {}
+[2.405510] (-) TimerEvent: {}
+[2.505771] (-) TimerEvent: {}
+[2.606019] (-) TimerEvent: {}
+[2.706242] (-) TimerEvent: {}
+[2.806523] (-) TimerEvent: {}
+[2.906853] (-) TimerEvent: {}
+[3.007201] (-) TimerEvent: {}
+[3.107509] (-) TimerEvent: {}
+[3.207831] (-) TimerEvent: {}
+[3.308135] (-) TimerEvent: {}
+[3.408479] (-) TimerEvent: {}
+[3.508941] (-) TimerEvent: {}
+[3.609246] (-) TimerEvent: {}
+[3.709622] (-) TimerEvent: {}
+[3.809934] (-) TimerEvent: {}
+[3.910189] (-) TimerEvent: {}
+[4.010450] (-) TimerEvent: {}
+[4.110752] (-) TimerEvent: {}
+[4.156093] (unloading_ros_bridge) StdoutLine: {'line': b'test/test_bridge_integration_launch.py .                                 [ 16%]\n'}
+[4.162030] (unloading_ros_bridge) StdoutLine: {'line': b'test/test_humble_imports.py ....                                         [ 83%]\n'}
+[4.210816] (-) TimerEvent: {}
+[4.310971] (-) TimerEvent: {}
+[4.411147] (-) TimerEvent: {}
+[4.511394] (-) TimerEvent: {}
+[4.539389] (unloading_ros_bridge) StdoutLine: {'line': b'test/test_mock_action_launch.py .                                        [100%]\n'}
+[4.539779] (unloading_ros_bridge) StdoutLine: {'line': b'\n'}
+[4.539943] (unloading_ros_bridge) StdoutLine: {'line': b'- generated xml file: /root/autodl-tmp/v05-acceptance/metric-343eb22-20260915/acceptance/humble/metric-c50ff4c/build/unloading_ros_bridge/pytest.xml -\n'}
+[4.540089] (unloading_ros_bridge) StdoutLine: {'line': b'============================== 6 passed in 4.12s ===============================\n'}
+[4.611537] (-) TimerEvent: {}
+[4.711899] (-) TimerEvent: {}
+[4.720246] (unloading_ros_bridge) CommandEnded: {'returncode': 0}
+[4.721879] (unloading_ros_bridge) JobEnded: {'identifier': 'unloading_ros_bridge', 'rc': 0}
+[4.723099] (unloading_bringup) JobStarted: {'identifier': 'unloading_bringup'}
+[4.745973] (unloading_bringup) JobEnded: {'identifier': 'unloading_bringup', 'rc': 0}
+[4.746708] (-) EventReactorShutdown: {}

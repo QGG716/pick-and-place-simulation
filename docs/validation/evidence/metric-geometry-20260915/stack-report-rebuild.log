@@ -1,0 +1,3 @@
+{"module": "module_0_upper", "instances": 13, "new_faces": 19}
+{"module": "module_1_lower", "instances": 31, "new_faces": 30}
+{"scope": "UNCHANGED_FULL_STACK_FROZEN_INPUT_REGRESSION", "mechanical_occlusion": "DEFERRED_MECHANICAL_OCCLUSION", "sam_instance_denominator": 44, "old_faces": 38, "new_faces": 49, "new_complete_accepted": 0, "mechanical_layout_modified": false, "fusion_thresholds_modified": false, "fusion_container_count": 36}
