@@ -399,11 +399,11 @@ def _run_secondary_module(
     completed = subprocess.run(base_command, cwd=vision_root, text=True, capture_output=True, timeout=timeout)
     if completed.returncode != 0:
         raise RuntimeError(f"registered RGB-D baseline failed for {scene}/{module_dir.name}: {completed.stderr[-1000:]}")
-    from metric_v4_runner import run_metric_v4
+    from metric_depth_runner import run_metric_depth as run_metric_v4
     metadata = CaptureMetadata.from_dict(json.loads((module_dir / "capture_metadata.json").read_text()))
     camera = _camera_for_frame(manifest, metadata.rgb_frame_id)
     geometry_json = module_dir / "rgbd_cuboids.json"
-    geometry_image = module_dir / "v4_validation/worker.png"
+    geometry_image = module_dir / "v4_validation/final_metric_faces_overlay.png"
     geometry = run_metric_v4(
         raw=json.loads(raw_json.read_text()), source=module_dir / "sensor_rgb.png",
         masks=masks_path, pointmap=pointmap_path,
@@ -412,7 +412,7 @@ def _run_secondary_module(
         vision_root=vision_root, python=upstream_python, timeout=timeout,
     )
     elapsed = perf_counter() - started
-    geometry["method"] = "registered_metric_depth+pinned_planes+upstream_v4_joint_observed_faces"
+    geometry["method"] = "registered_metric_depth+pinned_plane_extraction+depth_constrained_metric_faces"
     write_json(geometry_json, geometry)
     proposals = json.loads((module_dir / "oracle_proposals.json").read_text(encoding="utf-8"))
     proposals["_scene_dir"] = str(module_dir)
@@ -489,9 +489,9 @@ def main() -> int:
         if completed.returncode != 0:
             raise RuntimeError(f"registered RGB-D baseline recovery failed for {scene}: {completed.stderr[-1000:]}")
         baseline = json.loads(baseline_raw_json.read_text(encoding="utf-8"))
-        from metric_v4_runner import run_metric_v4
+        from metric_depth_runner import run_metric_depth as run_metric_v4
         geometry_json = scene_dir / "rgbd_cuboids.json"
-        geometry_image = scene_dir / "v4_validation/worker.png"
+        geometry_image = scene_dir / "v4_validation/final_metric_faces_overlay.png"
         geometry = run_metric_v4(
             raw=baseline, source=scene_dir / "sensor_rgb.png", masks=masks_path,
             pointmap=pointmap_path, depth=np.load(scene_dir / "metric_depth_m.npy", allow_pickle=False),
@@ -499,7 +499,7 @@ def main() -> int:
             vision_root=vision_root, python=args.upstream_python, timeout=args.timeout,
         )
         elapsed = perf_counter() - started
-        geometry["method"] = "registered_metric_depth+pinned_planes+upstream_v4_joint_observed_faces"
+        geometry["method"] = "registered_metric_depth+pinned_plane_extraction+depth_constrained_metric_faces"
         write_json(geometry_json, geometry)
         proposals = json.loads((scene_dir / "oracle_proposals.json").read_text(encoding="utf-8"))
         proposals["_scene_dir"] = str(scene_dir)

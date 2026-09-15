@@ -602,7 +602,7 @@ def hypotheses_from_geometry_record(
         return ()
     source = MetricPointMapSource(pointmap_source)
     surfaces = int(record.get("depth_supported_face_count", record.get("visible_plane_count", 0)))
-    final_metric = record.get("geometry_version") == "FINAL_METRIC_VALIDATED_V1"
+    final_metric = record.get("geometry_version") in {"FINAL_METRIC_VALIDATED_V1", "DEPTH_METRIC_PATCHES_V1"}
     if final_metric:
         surfaces = len(record.get("camera_facing_faces", ()))
     size_prior = record.get("dimension_prior") or record.get("known_dimensions_m")

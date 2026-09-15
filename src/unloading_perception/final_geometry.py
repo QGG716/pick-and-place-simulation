@@ -57,6 +57,10 @@ def polygon_pixels(polygon,shape):
 
 
 def validate_final_record(record,depth,mask,K,*,maximum_residual_m=.003,minimum_points=50):
+    if record.get('geometry_version') == 'DEPTH_METRIC_PATCHES_V1':
+        from .metric_faces import validate_metric_record
+        return validate_metric_record(record, depth, mask, K, maximum_mean_m=maximum_residual_m,
+                                      minimum_points=minimum_points)
     result=deepcopy(record); points=np.asarray(record.get('corners_3d',[]),float)
     try:
         center,axes,dims,error=coherent_cuboid(points)

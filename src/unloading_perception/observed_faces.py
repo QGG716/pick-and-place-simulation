@@ -24,7 +24,7 @@ DIRECT_FACE_EVIDENCE = frozenset({
 @dataclass(frozen=True)
 class ObservedFace:
     face_id: str
-    corner_indices: tuple[int, int, int, int]
+    corner_indices: tuple[int, ...]
     boundary_2d_px: tuple[tuple[float, float], ...]
     corners_3d_m: tuple[tuple[float, float, float], ...]
     plane_normal: tuple[float, float, float]
@@ -39,8 +39,8 @@ class ObservedFace:
     def __post_init__(self) -> None:
         if not self.face_id or not self.frame_id or self.evidence not in DIRECT_FACE_EVIDENCE:
             raise ValueError("observed face identity/evidence is invalid")
-        if len(set(self.corner_indices)) != 4 or len(self.boundary_2d_px) != 4 or len(self.corners_3d_m) != 4:
-            raise ValueError("an observed face requires four distinct shared cuboid corners")
+        if (self.corner_indices and len(set(self.corner_indices)) != 4) or len(self.boundary_2d_px) != 4 or len(self.corners_3d_m) != 4:
+            raise ValueError("an observed patch requires four boundary points and optional shared corner indices")
         normal = np.asarray(self.plane_normal, dtype=float)
         if normal.shape != (3,) or not np.isfinite(normal).all() or abs(float(np.linalg.norm(normal)) - 1.0) > 1e-5:
             raise ValueError("observed face normal must be a finite unit vector")
@@ -107,9 +107,14 @@ def observed_faces_from_geometry_record(
             continue
         indices = tuple(int(value) for value in source_face.get("corner_indices", ()))
         boundary = tuple(tuple(float(value) for value in point) for point in source_face.get("corners_2d", ()))
-        if corners.shape != (8, 3) or len(indices) != 4 or any(index < 0 or index >= 8 for index in indices):
-            continue
-        points = corners[np.asarray(indices)]
+        if 'corners_3d_m' in source_face and not indices:
+            points = np.asarray(source_face['corners_3d_m'], dtype=float)
+            if points.shape != (4, 3) or not np.isfinite(points).all():
+                continue
+        else:
+            if corners.shape != (8, 3) or len(indices) != 4 or any(index < 0 or index >= 8 for index in indices):
+                continue
+            points = corners[np.asarray(indices)]
         normal, offset = _face_plane(points)
         support_count = int(support["point_support_count"])
         faces.append(ObservedFace(
@@ -119,7 +124,7 @@ def observed_faces_from_geometry_record(
             {
                 key: source_face[key] for key in (
                     "mask_precision", "mask_coverage", "mask_iou", "metrics_before_joint_refinement",
-                    "final_support", "boundary_kind", "physical_corners_certified"
+                    "final_support", "boundary_kind", "physical_corners_certified", "boundary_evidence"
                 ) if key in source_face
             },
         ))
@@ -130,7 +135,8 @@ def observed_faces_from_geometry_record(
             if len(common) == 2:
                 shared.append((first.face_id, second.face_id, common))
     complete_status = (
-        "MULTIFACE_OBSERVED_VOLUME_UNRESOLVED" if len(faces) >= 2
+        "SUFFICIENT_MULTIFACE_EVIDENCE" if record.get('accepted') and record.get('complete_observability') == 'OBSERVABLE_METRIC_MULTIFACE'
+        else "MULTIFACE_OBSERVED_VOLUME_UNRESOLVED" if len(faces) >= 2
         else "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR" if len(faces) == 1
         else "NO_CERTIFIED_OBSERVED_FACE"
     )
