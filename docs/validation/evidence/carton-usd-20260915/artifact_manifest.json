@@ -1,0 +1,122 @@
+[
+  {
+    "path": "basic_checks.json",
+    "bytes": 19315,
+    "sha256": "fb6e231f7944d77c7b8639519736912c8658b0b4bd73929baade5bb5fcb97456"
+  },
+  {
+    "path": "capture_configuration.json",
+    "bytes": 115526,
+    "sha256": "70bd24cc74ac0fd20fe1e2ba2298dfe2b4866a299004dbf3ffc422062c1d7b4a"
+  },
+  {
+    "path": "checks.log",
+    "bytes": 44,
+    "sha256": "3e083aa0f923f9de445393e0f7c6b7d0dc6a276f4de10ef9591ac1348e63d62a"
+  },
+  {
+    "path": "crops.json",
+    "bytes": 580,
+    "sha256": "955098ef27ed406150299af745f1ad22a6d8dde43d8ce02bdf347c2e512c0b86"
+  },
+  {
+    "path": "large_artifacts.json",
+    "bytes": 2311,
+    "sha256": "6d36374f2c039d8fecafb30bc0b7f9aebd1eb780e9fc49ebd5783f6f0cb93544"
+  },
+  {
+    "path": "lower.png",
+    "bytes": 3757913,
+    "sha256": "bc72b5dfb318ff6242c526316f58207a7607517fe5e93e67f825d3f61b26b020"
+  },
+  {
+    "path": "lower_contact.png",
+    "bytes": 236457,
+    "sha256": "a9cf8c1dda52733200851ccba321be7fe7fa1a242dd393c71038dae03ca0af5e"
+  },
+  {
+    "path": "manifest.json",
+    "bytes": 42222,
+    "sha256": "4af622d759e7c5e7b73538ede5114d56adea3d3af809e038a285b9c07381c4a5"
+  },
+  {
+    "path": "module_0_upper/camera_info.json",
+    "bytes": 918,
+    "sha256": "f0c6bd6ebbb09e9fa4d686a25679c70c30f5e479aa9a8e32ae35585c62406817"
+  },
+  {
+    "path": "module_0_upper/capture_binding.json",
+    "bytes": 766,
+    "sha256": "e6ed4b0fa023f9f097a612605e53fda18476729b26f2a2fbf34ed4bc35f26869"
+  },
+  {
+    "path": "module_0_upper/capture_metadata.json",
+    "bytes": 1071,
+    "sha256": "752f2b3b071df97f2c748fc4f022fadeb546139b24bac8d0ba2dd5f29c112146"
+  },
+  {
+    "path": "module_0_upper/gt_annotations.json",
+    "bytes": 44982,
+    "sha256": "cd91b4d68df72aeb5729d834ec128fa34c6784371b69d18d831527220cf0748e"
+  },
+  {
+    "path": "module_0_upper/instance_segmentation_info.json",
+    "bytes": 6665,
+    "sha256": "8b724fc98346e60379b64c0f4dd72f4c637def1b1a4f4b2b005be140c71d5893"
+  },
+  {
+    "path": "module_1_lower/camera_info.json",
+    "bytes": 978,
+    "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+  },
+  {
+    "path": "module_1_lower/capture_binding.json",
+    "bytes": 766,
+    "sha256": "d347e0f298c947e98aecbe87045e4790f845a8b3473a1f2d73084b299af3a79c"
+  },
+  {
+    "path": "module_1_lower/capture_metadata.json",
+    "bytes": 1131,
+    "sha256": "0ddf6b9688adb4b595c25c4ec5d917c44fb0669c653a5c959f6da3c469967c5c"
+  },
+  {
+    "path": "module_1_lower/gt_annotations.json",
+    "bytes": 45032,
+    "sha256": "64563b25b15f6a4c4d62b1a8c3283321ec0485ff25859ec2569c24a4587f24bb"
+  },
+  {
+    "path": "module_1_lower/instance_segmentation_info.json",
+    "bytes": 6665,
+    "sha256": "8b724fc98346e60379b64c0f4dd72f4c637def1b1a4f4b2b005be140c71d5893"
+  },
+  {
+    "path": "overview.png",
+    "bytes": 2282630,
+    "sha256": "d99e4cbaf03ba4ff2e976e720c9096a1ae03f71c68f1647db6f97066b6913181"
+  },
+  {
+    "path": "pytest.log",
+    "bytes": 514,
+    "sha256": "fc31ea446d9d6557cd5b7ceab2f8aec5ecc2ca04b769b96d09330cb899b691be"
+  },
+  {
+    "path": "run_receipt.json",
+    "bytes": 772,
+    "sha256": "e3c30ae8ce609fcb603625a772b49b558867e60a5a8bd580c783c9a44a56134d"
+  },
+  {
+    "path": "scan_contact.png",
+    "bytes": 222479,
+    "sha256": "706fbe337ece971906532265f145461cfb61c009fdf7794cf014c38f7489c8b6"
+  },
+  {
+    "path": "upper.png",
+    "bytes": 2371577,
+    "sha256": "db8225f0189b7fc71aa92ba7200ce10f282f04e3c15b3fc0ba9065f47278d988"
+  },
+  {
+    "path": "upper_contact.png",
+    "bytes": 260536,
+    "sha256": "75e3b4aab8ee059e2be97f69c16b6b034c90e9eef4492eba224f2f587d4b2d98"
+  }
+]

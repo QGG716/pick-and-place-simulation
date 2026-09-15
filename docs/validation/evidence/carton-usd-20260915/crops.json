@@ -1,0 +1,35 @@
+[
+  {
+    "name": "upper_contact",
+    "source": "upper.png",
+    "xywh": [
+      1030,
+      1400,
+      540,
+      450
+    ],
+    "processing": "EXACT_PIXEL_CROP_NO_RESIZE_NO_ENHANCEMENT"
+  },
+  {
+    "name": "lower_contact",
+    "source": "lower.png",
+    "xywh": [
+      1190,
+      750,
+      570,
+      450
+    ],
+    "processing": "EXACT_PIXEL_CROP_NO_RESIZE_NO_ENHANCEMENT"
+  },
+  {
+    "name": "scan_contact",
+    "source": "lower.png",
+    "xywh": [
+      1430,
+      1030,
+      570,
+      450
+    ],
+    "processing": "EXACT_PIXEL_CROP_NO_RESIZE_NO_ENHANCEMENT"
+  }
+]

@@ -1,0 +1,940 @@
+{
+  "status": "BASIC_CONSISTENCY_PASS_IMAGE_REVIEW_PENDING",
+  "planning_admissible": false,
+  "nominal_layout_camera_robot_unchanged": true,
+  "cartons": {
+    "carton_l00_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.49999999999999994
+        ]
+      ]
+    },
+    "carton_l00_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.49999999999999994
+        ]
+      ]
+    },
+    "carton_l00_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5,
+          -0.5
+        ],
+        [
+          0.5,
+          0.5,
+          0.49999999999999994
+        ]
+      ]
+    },
+    "carton_l00_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.49999999999999994
+        ]
+      ]
+    },
+    "carton_l00_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.49999999999999994
+        ]
+      ]
+    },
+    "carton_l01_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l01_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l01_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.5,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l01_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l01_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l02_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l02_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l02_c02": {
+      "asset_id": "scan05",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5000000000000002,
+          -0.5000000000000001,
+          -0.5000000000000007
+        ],
+        [
+          0.4999999999999997,
+          0.5,
+          0.4999999999999995
+        ]
+      ]
+    },
+    "carton_l02_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l02_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l03_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000028
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.4999999999999972
+        ]
+      ]
+    },
+    "carton_l03_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000028
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.4999999999999972
+        ]
+      ]
+    },
+    "carton_l03_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5,
+          -0.5000000000000028
+        ],
+        [
+          0.5,
+          0.5,
+          0.4999999999999972
+        ]
+      ]
+    },
+    "carton_l03_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000028
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.4999999999999972
+        ]
+      ]
+    },
+    "carton_l03_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000028
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.4999999999999972
+        ]
+      ]
+    },
+    "carton_l04_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l04_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l04_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.5,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l04_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l04_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000001
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.4999999999999999
+        ]
+      ]
+    },
+    "carton_l05_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000006
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.49999999999999944
+        ]
+      ]
+    },
+    "carton_l05_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000006
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.49999999999999944
+        ]
+      ]
+    },
+    "carton_l05_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5,
+          -0.5000000000000006
+        ],
+        [
+          0.5,
+          0.5,
+          0.49999999999999944
+        ]
+      ]
+    },
+    "carton_l05_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.5000000000000006
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.49999999999999944
+        ]
+      ]
+    },
+    "carton_l05_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.5000000000000006
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.49999999999999944
+        ]
+      ]
+    },
+    "carton_l06_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.49999999999999967
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.5000000000000003
+        ]
+      ]
+    },
+    "carton_l06_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.49999999999999967
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.5000000000000003
+        ]
+      ]
+    },
+    "carton_l06_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5,
+          -0.49999999999999967
+        ],
+        [
+          0.5,
+          0.5,
+          0.5000000000000003
+        ]
+      ]
+    },
+    "carton_l06_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.49999999999999967
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.5000000000000003
+        ]
+      ]
+    },
+    "carton_l06_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.49999999999999967
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.5000000000000003
+        ]
+      ]
+    },
+    "carton_l07_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5000000000000002,
+          -0.500000000000005
+        ],
+        [
+          0.5,
+          0.4999999999999999,
+          0.499999999999995
+        ]
+      ]
+    },
+    "carton_l07_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.500000000000005
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.499999999999995
+        ]
+      ]
+    },
+    "carton_l07_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.5,
+          -0.500000000000005
+        ],
+        [
+          0.5,
+          0.5,
+          0.499999999999995
+        ]
+      ]
+    },
+    "carton_l07_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5,
+          -0.49999999999999994,
+          -0.500000000000005
+        ],
+        [
+          0.5,
+          0.5000000000000001,
+          0.499999999999995
+        ]
+      ]
+    },
+    "carton_l07_c04": {
+      "asset_id": "scan05",
+      "root_unchanged": true,
+      "unit_mesh_bounds": [
+        [
+          -0.5000000000000002,
+          -0.5000000000000011,
+          -0.5000000000000084
+        ],
+        [
+          0.4999999999999997,
+          0.5000000000000002,
+          0.49999999999999717
+        ]
+      ]
+    }
+  },
+  "modules": {
+    "module_0_upper": {
+      "visible_objects": {
+        "carton_l07_c02": {
+          "render_instance_ids": [
+            65
+          ],
+          "pixels": 95585
+        },
+        "carton_l05_c03": {
+          "render_instance_ids": [
+            29
+          ],
+          "pixels": 7059
+        },
+        "carton_l06_c02": {
+          "render_instance_ids": [
+            74
+          ],
+          "pixels": 80281
+        },
+        "carton_l07_c04": {
+          "render_instance_ids": [
+            44,
+            73,
+            58
+          ],
+          "pixels": 82348
+        },
+        "carton_l05_c02": {
+          "render_instance_ids": [
+            39
+          ],
+          "pixels": 6547
+        },
+        "carton_l06_c00": {
+          "render_instance_ids": [
+            26
+          ],
+          "pixels": 81285
+        },
+        "carton_l07_c03": {
+          "render_instance_ids": [
+            62
+          ],
+          "pixels": 96847
+        },
+        "carton_l05_c01": {
+          "render_instance_ids": [
+            55
+          ],
+          "pixels": 6388
+        },
+        "carton_l05_c00": {
+          "render_instance_ids": [
+            35
+          ],
+          "pixels": 6316
+        },
+        "carton_l06_c04": {
+          "render_instance_ids": [
+            59
+          ],
+          "pixels": 79008
+        },
+        "carton_l07_c00": {
+          "render_instance_ids": [
+            20
+          ],
+          "pixels": 96781
+        },
+        "carton_l06_c01": {
+          "render_instance_ids": [
+            49
+          ],
+          "pixels": 80325
+        },
+        "carton_l07_c01": {
+          "render_instance_ids": [
+            72
+          ],
+          "pixels": 95752
+        },
+        "carton_l05_c04": {
+          "render_instance_ids": [
+            42
+          ],
+          "pixels": 5822
+        },
+        "carton_l06_c03": {
+          "render_instance_ids": [
+            61
+          ],
+          "pixels": 81176
+        }
+      },
+      "rgb_depth_instance_binding": "PASS"
+    },
+    "module_1_lower": {
+      "visible_objects": {
+        "carton_l02_c00": {
+          "render_instance_ids": [
+            70
+          ],
+          "pixels": 51522
+        },
+        "carton_l01_c02": {
+          "render_instance_ids": [
+            13
+          ],
+          "pixels": 30002
+        },
+        "carton_l01_c03": {
+          "render_instance_ids": [
+            16
+          ],
+          "pixels": 28328
+        },
+        "carton_l03_c00": {
+          "render_instance_ids": [
+            51
+          ],
+          "pixels": 63427
+        },
+        "carton_l05_c03": {
+          "render_instance_ids": [
+            29
+          ],
+          "pixels": 98137
+        },
+        "carton_l06_c02": {
+          "render_instance_ids": [
+            74
+          ],
+          "pixels": 49663
+        },
+        "carton_l05_c02": {
+          "render_instance_ids": [
+            39
+          ],
+          "pixels": 98780
+        },
+        "carton_l06_c00": {
+          "render_instance_ids": [
+            26
+          ],
+          "pixels": 49949
+        },
+        "carton_l02_c04": {
+          "render_instance_ids": [
+            40
+          ],
+          "pixels": 48641
+        },
+        "carton_l04_c01": {
+          "render_instance_ids": [
+            36
+          ],
+          "pixels": 78017
+        },
+        "carton_l04_c03": {
+          "render_instance_ids": [
+            17
+          ],
+          "pixels": 77830
+        },
+        "carton_l05_c01": {
+          "render_instance_ids": [
+            55
+          ],
+          "pixels": 98937
+        },
+        "carton_l03_c04": {
+          "render_instance_ids": [
+            63
+          ],
+          "pixels": 59870
+        },
+        "carton_l05_c00": {
+          "render_instance_ids": [
+            35
+          ],
+          "pixels": 99747
+        },
+        "carton_l01_c00": {
+          "render_instance_ids": [
+            34
+          ],
+          "pixels": 28150
+        },
+        "carton_l01_c04": {
+          "render_instance_ids": [
+            45
+          ],
+          "pixels": 26488
+        },
+        "carton_l03_c01": {
+          "render_instance_ids": [
+            23
+          ],
+          "pixels": 62955
+        },
+        "carton_l00_c03": {
+          "render_instance_ids": [
+            48
+          ],
+          "pixels": 197
+        },
+        "carton_l03_c02": {
+          "render_instance_ids": [
+            69
+          ],
+          "pixels": 62898
+        },
+        "carton_l03_c03": {
+          "render_instance_ids": [
+            30
+          ],
+          "pixels": 62820
+        },
+        "carton_l04_c04": {
+          "render_instance_ids": [
+            33
+          ],
+          "pixels": 74139
+        },
+        "carton_l06_c04": {
+          "render_instance_ids": [
+            59
+          ],
+          "pixels": 46997
+        },
+        "carton_l02_c02": {
+          "render_instance_ids": [
+            67,
+            57,
+            56
+          ],
+          "pixels": 45733
+        },
+        "carton_l04_c02": {
+          "render_instance_ids": [
+            22
+          ],
+          "pixels": 77932
+        },
+        "carton_l06_c01": {
+          "render_instance_ids": [
+            49
+          ],
+          "pixels": 49611
+        },
+        "carton_l02_c01": {
+          "render_instance_ids": [
+            25
+          ],
+          "pixels": 54203
+        },
+        "carton_l02_c03": {
+          "render_instance_ids": [
+            66
+          ],
+          "pixels": 51050
+        },
+        "carton_l04_c00": {
+          "render_instance_ids": [
+            50
+          ],
+          "pixels": 78626
+        },
+        "carton_l05_c04": {
+          "render_instance_ids": [
+            42
+          ],
+          "pixels": 94128
+        },
+        "carton_l06_c03": {
+          "render_instance_ids": [
+            61
+          ],
+          "pixels": 50060
+        },
+        "carton_l01_c01": {
+          "render_instance_ids": [
+            28
+          ],
+          "pixels": 28481
+        }
+      },
+      "rgb_depth_instance_binding": "PASS"
+    }
+  },
+  "exact_mesh_corners_and_faces": "NOT_EVALUATED"
+}

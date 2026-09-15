@@ -1,0 +1,3442 @@
+{
+  "status": "CAPTURED_PENDING_USER_IMAGE_REVIEW",
+  "planning_admissible": false,
+  "source_sha": "08748ffeeaa559ad4de206dd13de2b7da18f93b1",
+  "source_worktree": "",
+  "cartons": {
+    "carton_l00_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_003_carton_l00_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_003_carton_l00_c00/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_003_carton_l00_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_003_carton_l00_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_003_carton_l00_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l00_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_004_carton_l00_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_004_carton_l00_c01/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_004_carton_l00_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_004_carton_l00_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_004_carton_l00_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l00_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_005_carton_l00_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_005_carton_l00_c02/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_005_carton_l00_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_005_carton_l00_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_005_carton_l00_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l00_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_006_carton_l00_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_006_carton_l00_c03/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_006_carton_l00_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_006_carton_l00_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_006_carton_l00_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l00_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_007_carton_l00_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_007_carton_l00_c04/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_007_carton_l00_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_007_carton_l00_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_007_carton_l00_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l01_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_008_carton_l01_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_008_carton_l01_c00/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_008_carton_l01_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_008_carton_l01_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_008_carton_l01_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l01_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_009_carton_l01_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_009_carton_l01_c01/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_009_carton_l01_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_009_carton_l01_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_009_carton_l01_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l01_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_010_carton_l01_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_010_carton_l01_c02/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_010_carton_l01_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_010_carton_l01_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_010_carton_l01_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l01_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_011_carton_l01_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_011_carton_l01_c03/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_011_carton_l01_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_011_carton_l01_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_011_carton_l01_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l01_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_012_carton_l01_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_012_carton_l01_c04/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_012_carton_l01_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_012_carton_l01_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_012_carton_l01_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l02_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_013_carton_l02_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_013_carton_l02_c00/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_013_carton_l02_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_013_carton_l02_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_013_carton_l02_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l02_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_014_carton_l02_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_014_carton_l02_c01/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_014_carton_l02_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_014_carton_l02_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_014_carton_l02_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l02_c02": {
+      "asset_id": "scan05",
+      "source_sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5",
+      "source_path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/CardboardBox_05_30X17X22",
+      "composed_source_bounds": [
+        [
+          -0.1323923157262387,
+          -0.1367952785366988,
+          -0.15670573965191376
+        ],
+        [
+          0.1607607172292569,
+          0.06620222119367833,
+          -0.0006350848975552881
+        ]
+      ],
+      "unit_scale": [
+        3.4111876309729774,
+        4.9261690480336355,
+        6.407354422738294
+      ],
+      "unit_translation": [
+        -0.04838497015878545,
+        0.17387666704462545,
+        0.5040692140271652
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Visual_Cardboard/BOX_5_003",
+          "points": 8070,
+          "uv_count": 34935,
+          "material": "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/_materials/BOX_5_014",
+          "material_subsets": []
+        },
+        {
+          "path": "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Visual_Tape/BOX_5_012",
+          "points": 19055,
+          "uv_count": 97155,
+          "material": "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/_materials/BOX_5_001",
+          "material_subsets": []
+        },
+        {
+          "path": "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Visual_Label/BOX_5_006",
+          "points": 823,
+          "uv_count": 3975,
+          "material": "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/_materials/BOX_5_014",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset",
+          "PhysicsRigidBodyAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset",
+          "PhysicsMassAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/PROXY_Tape/BOX_5_009",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/PROXY_Tape/BOX_5_009",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/PROXY_Tape/BOX_5_009",
+          "PhysxConvexDecompositionCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/PROXY_Cardboard/BOX_5_004",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/PROXY_Cardboard/BOX_5_004",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/PROXY_Cardboard/BOX_5_004",
+          "PhysxConvexDecompositionCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Looks/PhysMat_Tape",
+          "PhysicsMaterialAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Looks/PhysMat_Tape",
+          "PhysxMaterialAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Looks/PhysMat_Box",
+          "PhysicsMaterialAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Looks/PhysMat_Box",
+          "PhysxMaterialAPI"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "./SubUSDs/textures/BOX_5_u0_v0_diffuse.jpg",
+          "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+        },
+        {
+          "asset": "./SubUSDs/textures/BOX_5_u0_v0_diffuse.002.jpg",
+          "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+        },
+        {
+          "asset": "./SubUSDs/textures/BOX_5_u0_v0_diffuse.001.jpg",
+          "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+        }
+      ],
+      "rotation_xyz_deg": [
+        87.33865923040798,
+        -2.658987267711984,
+        5.047898718582808
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l02_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_016_carton_l02_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_016_carton_l02_c03/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_016_carton_l02_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_016_carton_l02_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_016_carton_l02_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l02_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_017_carton_l02_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_017_carton_l02_c04/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_017_carton_l02_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_017_carton_l02_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_017_carton_l02_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l03_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485457710152e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169298
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748848
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_018_carton_l03_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_018_carton_l03_c00/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_018_carton_l03_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_018_carton_l03_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_018_carton_l03_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l03_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485457710152e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169298
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748848
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_019_carton_l03_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_019_carton_l03_c01/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_019_carton_l03_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_019_carton_l03_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_019_carton_l03_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l03_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485457710152e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169298
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748848
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_020_carton_l03_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_020_carton_l03_c02/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_020_carton_l03_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_020_carton_l03_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_020_carton_l03_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l03_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485457710152e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169298
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748848
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_021_carton_l03_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_021_carton_l03_c03/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_021_carton_l03_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_021_carton_l03_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_021_carton_l03_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l03_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485457710152e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169298
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748848
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_022_carton_l03_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_022_carton_l03_c04/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_022_carton_l03_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_022_carton_l03_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_022_carton_l03_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l04_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_023_carton_l04_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_023_carton_l04_c00/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_023_carton_l04_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_023_carton_l04_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_023_carton_l04_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l04_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_024_carton_l04_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_024_carton_l04_c01/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_024_carton_l04_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_024_carton_l04_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_024_carton_l04_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l04_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_025_carton_l04_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_025_carton_l04_c02/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_025_carton_l04_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_025_carton_l04_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_025_carton_l04_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l04_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_026_carton_l04_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_026_carton_l04_c03/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_026_carton_l04_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_026_carton_l04_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_026_carton_l04_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l04_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_027_carton_l04_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_027_carton_l04_c04/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_027_carton_l04_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_027_carton_l04_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_027_carton_l04_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l05_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_028_carton_l05_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_028_carton_l05_c00/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_028_carton_l05_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_028_carton_l05_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_028_carton_l05_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l05_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_029_carton_l05_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_029_carton_l05_c01/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_029_carton_l05_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_029_carton_l05_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_029_carton_l05_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l05_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_030_carton_l05_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_030_carton_l05_c02/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_030_carton_l05_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_030_carton_l05_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_030_carton_l05_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l05_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_031_carton_l05_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_031_carton_l05_c03/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_031_carton_l05_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_031_carton_l05_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_031_carton_l05_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l05_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_032_carton_l05_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_032_carton_l05_c04/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_032_carton_l05_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_032_carton_l05_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_032_carton_l05_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l06_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l06_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_034_carton_l06_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_034_carton_l06_c01/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_034_carton_l06_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_034_carton_l06_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_034_carton_l06_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l06_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l06_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_036_carton_l06_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_036_carton_l06_c03/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_036_carton_l06_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_036_carton_l06_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_036_carton_l06_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l06_c04": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485901799362e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169253
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748818
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_037_carton_l06_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_037_carton_l06_c04/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_037_carton_l06_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_037_carton_l06_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_037_carton_l06_c04/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l07_c00": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485013620942e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169342
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748878
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_038_carton_l07_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_038_carton_l07_c00/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_038_carton_l07_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_038_carton_l07_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_038_carton_l07_c00/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l07_c01": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485013620942e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169342
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748878
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_039_carton_l07_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_039_carton_l07_c01/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_039_carton_l07_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_039_carton_l07_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_039_carton_l07_c01/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l07_c02": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485013620942e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169342
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748878
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_040_carton_l07_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_040_carton_l07_c02/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_040_carton_l07_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_040_carton_l07_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_040_carton_l07_c02/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l07_c03": {
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "source_path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/Root",
+      "composed_source_bounds": [
+        [
+          -0.1899999957531691,
+          -0.1249999590590605,
+          -1.9073485013620942e-08
+        ],
+        [
+          0.1899999957531691,
+          0.1250000353530041,
+          0.14874997760169342
+        ]
+      ],
+      "unit_scale": [
+        2.631579006188795,
+        4.000000089406968,
+        6.722689225894064
+      ],
+      "unit_translation": [
+        -0.0,
+        -1.5258789062499998e-07,
+        -0.4999998717748878
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_041_carton_l07_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "points": 36,
+          "uv_count": 36,
+          "material": "/PerceptionValidation/Primitives/p_041_carton_l07_c03/Visual/Orientation/Asset/Looks/MI_CardBoxD",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_041_carton_l07_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_041_carton_l07_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_041_carton_l07_c03/Visual/Orientation/Asset/SM_CardBoxD_04",
+          "SemanticsAPI:Semantics"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "../Materials/MI_LampCeilingA.mdl",
+          "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_D.png",
+          "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_N.png",
+          "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+        },
+        {
+          "asset": "../Materials/Textures/T_CardBoxD_ORM.png",
+          "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+        }
+      ],
+      "rotation_xyz_deg": [
+        0,
+        0,
+        0
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    },
+    "carton_l07_c04": {
+      "asset_id": "scan05",
+      "source_sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5",
+      "source_path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+      "source_meters_per_unit": 1.0,
+      "source_up_axis": "Z",
+      "default_prim": "/CardboardBox_05_30X17X22",
+      "composed_source_bounds": [
+        [
+          -0.1323923157262387,
+          -0.13679527853669854,
+          -0.15670573965191242
+        ],
+        [
+          0.1607607172292569,
+          0.06620222119367833,
+          -0.000635084897554844
+        ]
+      ],
+      "unit_scale": [
+        3.4111876309729774,
+        4.926169048033642,
+        6.40735442273833
+      ],
+      "unit_translation": [
+        -0.04838497015878545,
+        0.17387666704462507,
+        0.5040692140271623
+      ],
+      "nominal_size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "meshes": [
+        {
+          "path": "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/Visual_Cardboard/BOX_5_003",
+          "points": 8070,
+          "uv_count": 34935,
+          "material": "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/_materials/BOX_5_014",
+          "material_subsets": []
+        },
+        {
+          "path": "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/Visual_Tape/BOX_5_012",
+          "points": 19055,
+          "uv_count": 97155,
+          "material": "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/_materials/BOX_5_001",
+          "material_subsets": []
+        },
+        {
+          "path": "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/Visual_Label/BOX_5_006",
+          "points": 823,
+          "uv_count": 3975,
+          "material": "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/_materials/BOX_5_014",
+          "material_subsets": []
+        }
+      ],
+      "removed_source_apis": [
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset",
+          "PhysicsRigidBodyAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset",
+          "PhysicsMassAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/PROXY_Tape/BOX_5_009",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/PROXY_Tape/BOX_5_009",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/PROXY_Tape/BOX_5_009",
+          "PhysxConvexDecompositionCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/PROXY_Cardboard/BOX_5_004",
+          "PhysicsCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/PROXY_Cardboard/BOX_5_004",
+          "PhysicsMeshCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/PROXY_Cardboard/BOX_5_004",
+          "PhysxConvexDecompositionCollisionAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/Looks/PhysMat_Tape",
+          "PhysicsMaterialAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/Looks/PhysMat_Tape",
+          "PhysxMaterialAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/Looks/PhysMat_Box",
+          "PhysicsMaterialAPI"
+        ],
+        [
+          "/PerceptionValidation/Primitives/p_042_carton_l07_c04/Visual/Orientation/Asset/Looks/PhysMat_Box",
+          "PhysxMaterialAPI"
+        ]
+      ],
+      "material_files": [
+        {
+          "asset": "./SubUSDs/textures/BOX_5_u0_v0_diffuse.jpg",
+          "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+        },
+        {
+          "asset": "./SubUSDs/textures/BOX_5_u0_v0_diffuse.002.jpg",
+          "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+        },
+        {
+          "asset": "./SubUSDs/textures/BOX_5_u0_v0_diffuse.001.jpg",
+          "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+        }
+      ],
+      "rotation_xyz_deg": [
+        87.33865923040798,
+        -2.658987267711984,
+        5.047898718582808
+      ],
+      "collision": "UNCHANGED_INVISIBLE_NOMINAL_CONSERVATIVE_BOX",
+      "surface_truth": "RENDERED_DEPTH_AND_INSTANCE_MASK; NOMINAL_CORNERS_NOT_EXACT_SURFACE_TRUTH"
+    }
+  },
+  "target_highlight": false,
+  "mechanical_entities_omitted": [],
+  "stable_render_frames": 32,
+  "sam_run": false,
+  "robot_q_rad": [
+    [
+      -1.5707963705062866,
+      0.785456657409668,
+      0.649621844291687,
+      0.06722349673509598,
+      -1.2117502689361572,
+      -1.9415185451507568
+    ]
+  ],
+  "render_settings": {
+    "/rtx/post/tonemap/op": 6,
+    "/rtx/post/tonemap/filmIso": 100.0,
+    "/rtx/post/tonemap/cameraShutter": 50.0,
+    "/rtx/post/tonemap/fNumber": 5.0,
+    "/rtx/post/histogram/enabled": false,
+    "/rtx/rendermode": "RealTimePathTracing"
+  }
+}

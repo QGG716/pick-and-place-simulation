@@ -1,0 +1,16 @@
+{
+  "starting_sha": "2f2d6286b58566b38bad50c6669963db1f2de5d5",
+  "tested_sha": "08748ffeeaa559ad4de206dd13de2b7da18f93b1",
+  "capture_directory": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff",
+  "asset_cache": "/root/autodl-tmp/v05-assets/cartons/mirror",
+  "pytest": "393 passed, 1 deselected in 5.98s",
+  "pytest_environment": "/root/autodl-tmp/v05-acceptance/cpu/venv/bin/python",
+  "isaac_environment": "/root/autodl-tmp/envs/isaacsim-clean/bin/python",
+  "source_worktree": "",
+  "asset_config_sha256": "2666d089c0330f8f8e0b949920d5757120c918c8fe5a079130b840d47b988613",
+  "planning_admissible": false,
+  "user_image_approval": "PENDING",
+  "sam_run": false,
+  "full_ros_acceptance_run": false,
+  "historical_outputs_overwritten": false
+}

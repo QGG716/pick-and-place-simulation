@@ -1,0 +1,47 @@
+[
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/capture_stage.usda",
+    "bytes": 53006943,
+    "sha256": "c8ddb31c68890763f92d97a6e6c613fe293a0be57a652e82c1707a4dc3a9f1df"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.npy",
+    "bytes": 15116672,
+    "sha256": "c1d4940a04ad39094d11bed2ba8d06b2da549fdc2085b79a4816ded1ca4fca00"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_0_upper/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "2cfd61f9c1f34772702759b52cb9a5c495b5a15e828dd3c1921398cb1c9bd4d1"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_0_upper/first_hit_instance_ids.npy",
+    "bytes": 20155520,
+    "sha256": "737991e9251cdfa70d9588b6a6a083691c1576604469227c1c939977c545ec7a"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_0_upper/gt_instance_masks.npz",
+    "bytes": 102844,
+    "sha256": "12d5aee38f85944abaf02d2f5d1e310e40da17bf84271f5a93c754838c4f2698"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.npy",
+    "bytes": 15116672,
+    "sha256": "22449d9766ad8eda2618d005ac6ba796ebaa00c060c0b63abba2fcbce62c1e07"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "8a7261d194b298f33da352c0e5ab06f8d0c66896cded7ca34fb6e0306cf3f43c"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_1_lower/first_hit_instance_ids.npy",
+    "bytes": 20155520,
+    "sha256": "e0ff14a8e50bac60832fb39aaf319e4ed03ffb5afbcbd5738f1feff28be43a53"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_1_lower/gt_instance_masks.npz",
+    "bytes": 210917,
+    "sha256": "d8aed41c1d96e3792e129797f6713529b67edda168bf2af171e0906896839fa0"
+  }
+]
