@@ -1,0 +1,21 @@
+[
+  {
+    "module": "module_0_upper",
+    "A0_vs_A_gt_changed_pixels_by_object": {},
+    "over_10um_depth_pixels_all": 0,
+    "over_10um_depth_pixels_carton_union": 0,
+    "same_object_pixels_depth_max_m": 8.463859558105469e-06,
+    "A0_reference_only": true
+  },
+  {
+    "module": "module_1_lower",
+    "A0_vs_A_gt_changed_pixels_by_object": {
+      "carton_l03_c03": 2,
+      "carton_l03_c04": 2
+    },
+    "over_10um_depth_pixels_all": 2483,
+    "over_10um_depth_pixels_carton_union": 2,
+    "same_object_pixels_depth_max_m": 9.417533874511719e-06,
+    "A0_reference_only": true
+  }
+]

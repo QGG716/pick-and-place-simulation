@@ -1,0 +1,56 @@
+{
+  "baseline": "d3e92cd1de9c5eefc3f8f36326e54491c4c3fee0",
+  "tested_source_commit": "294b007a3264543c7e89d07ba16c2d8f1a5c7759",
+  "runtime_sources_verified": [
+    {
+      "path": "assets/materials/industrial/SOURCES.md",
+      "same_runtime_source": false,
+      "actual_sha256": "c683535aca998764588ab3f37def95e605906c4ab72c46874d5fb98269e2306d",
+      "incoming_sha256": "6978b3c7a1127866210997d2972595e23029382c8e804ca64f1cd008d1faf15c"
+    },
+    {
+      "path": "configs/isaac/perception_validation.yaml",
+      "same_runtime_source": true,
+      "actual_sha256": "16be55ec5d0578b8acba01bb987a59be1d51fe9fde2937687902fa34f1c3bd01",
+      "incoming_sha256": "16be55ec5d0578b8acba01bb987a59be1d51fe9fde2937687902fa34f1c3bd01"
+    },
+    {
+      "path": "scripts/carton_appearance.py",
+      "same_runtime_source": true,
+      "actual_sha256": "f15263a45e19fdcea3bee46a1ad9304f6f47140832ffd9308f65bcc74fa480a8",
+      "incoming_sha256": "f15263a45e19fdcea3bee46a1ad9304f6f47140832ffd9308f65bcc74fa480a8"
+    },
+    {
+      "path": "scripts/isaacsim_perception_capture.py",
+      "same_runtime_source": true,
+      "actual_sha256": "2b5c8be9b19e53c01bd3af87fa4aa129d726a57819f39a16466cb96671b52446",
+      "incoming_sha256": "2b5c8be9b19e53c01bd3af87fa4aa129d726a57819f39a16466cb96671b52446"
+    },
+    {
+      "path": "tests/test_carton_appearance.py",
+      "same_runtime_source": true,
+      "actual_sha256": "b9473f8f2a05dad83d9ede950ce95ffd3d088f7f15515deaa159b765120e1e39",
+      "incoming_sha256": "b9473f8f2a05dad83d9ede950ce95ffd3d088f7f15515deaa159b765120e1e39"
+    },
+    {
+      "path": "tools/diagnose_carton_seams.py",
+      "same_runtime_source": true,
+      "actual_sha256": "5575995f60d45dccde8262ce0e65caeaa3f0a79740ab6f0342f6a4ba6e6969bb",
+      "incoming_sha256": "5575995f60d45dccde8262ce0e65caeaa3f0a79740ab6f0342f6a4ba6e6969bb"
+    },
+    {
+      "path": "tools/evaluate_carton_appearance_ab.py",
+      "same_runtime_source": true,
+      "actual_sha256": "e8d7821ed744d47f38ed86ca359006417d1dae6db834d511f9c3502fc86f3a84",
+      "incoming_sha256": "e8d7821ed744d47f38ed86ca359006417d1dae6db834d511f9c3502fc86f3a84"
+    },
+    {
+      "path": "tools/run_carton_appearance_ab.py",
+      "same_runtime_source": true,
+      "actual_sha256": "1e9cc5ac828cd1e6b8383d0df1f63f3644432be5bf4eee0bf6b11e648a8166ac",
+      "incoming_sha256": "1e9cc5ac828cd1e6b8383d0df1f63f3644432be5bf4eee0bf6b11e648a8166ac"
+    }
+  ],
+  "documentation_only_indentation_difference": true,
+  "worktree_status": ""
+}

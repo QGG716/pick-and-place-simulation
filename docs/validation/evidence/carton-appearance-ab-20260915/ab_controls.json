@@ -1,0 +1,45 @@
+{
+  "scope": "APPEARANCE_ONLY_A_B_FULL_MECHANICAL_SCENE",
+  "modules": [
+    {
+      "module": "module_0_upper",
+      "same_scene_geometry_K_T": true,
+      "same_render_state": true,
+      "validity_disagreement_pixels": 0,
+      "depth_mean_absolute_difference_m": 0.0,
+      "depth_max_absolute_difference_m": 0.0,
+      "gt_masks_equal_by_physical_object": true,
+      "rgb_sha256": {
+        "A": "8b947d309fdef0e6dcf12eda1b8b9c38cb72188fdf7ee414e177392ca3103863",
+        "B": "c0ca14d8d7f612082a12c8403bbb75b8d5da3a10f3ddd0e6b5112fddf9cbef28"
+      },
+      "camera_info_equal": true,
+      "A0_cube_vs_A_mesh": {
+        "validity_disagreement_pixels": 0,
+        "common_depth_max_difference_m": 8.463859558105469e-06,
+        "note": "Historical reference; different capture, target highlight and warmup. Analytic mesh surfaces are exactly the original Cube boundary."
+      }
+    },
+    {
+      "module": "module_1_lower",
+      "same_scene_geometry_K_T": true,
+      "same_render_state": true,
+      "validity_disagreement_pixels": 0,
+      "depth_mean_absolute_difference_m": 0.0,
+      "depth_max_absolute_difference_m": 0.0,
+      "gt_masks_equal_by_physical_object": true,
+      "rgb_sha256": {
+        "A": "c816606ed53837159189660811defbd7195f10ca937c971028b2a1318629c2a6",
+        "B": "b1f523abe8d6d0f5624509e57139084ac9479d04404c0371e4099d252a0573ae"
+      },
+      "camera_info_equal": true,
+      "A0_cube_vs_A_mesh": {
+        "validity_disagreement_pixels": 0,
+        "common_depth_max_difference_m": 0.6891987919807434,
+        "note": "Historical reference; different capture, target highlight and warmup. Analytic mesh surfaces are exactly the original Cube boundary."
+      }
+    }
+  ],
+  "strict_equal": true,
+  "proceed_numerical_tolerance_m": 1e-06
+}

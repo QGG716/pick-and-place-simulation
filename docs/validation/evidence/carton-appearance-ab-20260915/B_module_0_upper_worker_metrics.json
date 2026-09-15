@@ -1,0 +1,62 @@
+{
+  "config": {
+    "mode": "RGBD_PRIMARY_2D_PREREQUISITES",
+    "comparison": false,
+    "sam_model": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+    "sam_revision": "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+    "proposal_sha256": "2d83d01509360bdc531ae42c02f69d089966441c4fda9082591457cf3b244986",
+    "input_sha256": "c0ca14d8d7f612082a12c8403bbb75b8d5da3a10f3ddd0e6b5112fddf9cbef28",
+    "capture_frame": {
+      "source": "isaac-sim-6.0.1",
+      "stream": "perception_validation",
+      "epoch": "appearance-capture-v1-B",
+      "sequence": 100,
+      "capture_time": 1.6666666666666667,
+      "receive_time": 1.6666666666666667,
+      "clock_domain": "ros_sim_time",
+      "frame_id": "module_0_upper_rgb_optical",
+      "width": 2592,
+      "height": 1944,
+      "encoding": "rgb8",
+      "rgb_uri": "file:///root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.png",
+      "rgb_sha256": "c0ca14d8d7f612082a12c8403bbb75b8d5da3a10f3ddd0e6b5112fddf9cbef28"
+    },
+    "result_cache_reused": false,
+    "upstream_sha": "1d208f2ed380a207e6e46b4a62d2ac640edfe477"
+  },
+  "artifacts": {
+    "sam_crossvalidated.jpg": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/sam_crossvalidated.jpg",
+      "sha256": "a4c5501b1cbac4a7e278bdba07e2be709286a1217c3d6d5e13c44bf775d0f65c"
+    },
+    "cargo_masks.npz": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/cargo_masks.npz",
+      "sha256": "a0777d022fdfb5f8bd438a8d6082066d91d061ab0dec4619e73657ed72d9e1fc"
+    },
+    "cargo_instances.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/cargo_instances.json",
+      "sha256": "5a2846ba0f4c234093490ce9ed578e294084af929ea1d7442d5d844983ae57b8"
+    },
+    "box_geometry_2d.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/box_geometry_2d.json",
+      "sha256": "b4f04d7fac4fe2a212babd14611b286d2569160d8fc412cc8a6ce23854c2d305"
+    }
+  },
+  "timings_seconds": {
+    "sam": 7.638934563845396,
+    "geometry_2d": 1.2885186336934566,
+    "request_total": 9.015877697616816
+  },
+  "logs": {
+    "sam": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/sam.log",
+      "sha256": "b6c582f6b9352c05fd15f9e118be6d0bea703304903e0121050aed7bef0a5b4e",
+      "returncode": 0
+    },
+    "geometry_2d": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/geometry_2d.log",
+      "sha256": "034438d45e15f566318cb3565ca9b3fdf7a478e3f3d2a1979584cf0833f1fef1",
+      "returncode": 0
+    }
+  }
+}

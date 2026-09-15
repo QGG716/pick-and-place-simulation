@@ -1,0 +1,11 @@
+{
+  "historical_mask": 10,
+  "module": "module_1_lower",
+  "crop_xyxy": [
+    1328,
+    1053,
+    1593,
+    1552
+  ],
+  "purpose": "DISPLAY_LOCATION_ONLY_NOT_A_SAM_PAIRING_RULE"
+}

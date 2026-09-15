@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/tools/evaluate_carton_appearance_ab.py", line 176, in <module>
+    if __name__=='__main__':main()
+  File "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/tools/evaluate_carton_appearance_ab.py", line 146, in main
+    report,sam,faces=assess(args.capture,group,module,args.output);reports[group,module]=report;rows.append(report['summary']);tiles[group]=(sam,faces)
+  File "/root/autodl-tmp/pick-and-place-simulation-v0.5-perception-ros2/tools/evaluate_carton_appearance_ab.py", line 81, in assess
+    geometry=json.loads((source/'rgbd_cuboids.json').read_text());face_rows=[];counts=Counter();rejections=Counter()
+  File "/usr/lib/python3.10/pathlib.py", line 1134, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/usr/lib/python3.10/pathlib.py", line 1119, in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+FileNotFoundError: [Errno 2] No such file or directory: '/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/rgbd_cuboids.json'

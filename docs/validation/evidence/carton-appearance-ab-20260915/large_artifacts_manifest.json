@@ -1,0 +1,276 @@
+[
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.png",
+    "bytes": 1763570,
+    "sha256": "8b947d309fdef0e6dcf12eda1b8b9c38cb72188fdf7ee414e177392ca3103863"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "11c721062d003aeec323e7c6158ad922106261e6f6706c168bcc9074149f2aa4"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/gt_instance_masks.npz",
+    "bytes": 102056,
+    "sha256": "24e65a7dcbc973ece3920b6b03775e530ce0eb04d63fcd9629c4c3f37ff75355"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/gt_annotations.json",
+    "bytes": 39320,
+    "sha256": "de29522cd1009ba056f82c21042d519e8d9b72953845e32d1c735df784b5d11b"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/camera_info.json",
+    "bytes": 918,
+    "sha256": "f0c6bd6ebbb09e9fa4d686a25679c70c30f5e479aa9a8e32ae35585c62406817"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/capture_metadata.json",
+    "bytes": 1059,
+    "sha256": "aaddf21b7dd2f0503752e78ea394990a9f4c105b4fdaf23a1b0007c672d4b531"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/oracle_proposals.json",
+    "bytes": 6000,
+    "sha256": "e6d1145c870a840d4c30b3d16ee3cef20e85236708b18ff821acc581921f8886"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/mode_b1_worker_response.json",
+    "bytes": 648,
+    "sha256": "4ff6d2bf1c6d5d6320f6f0df8cf649469ffb018df0f49e1194c33812e358b5ba"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/rgbd_cuboids.json",
+    "bytes": 710516,
+    "sha256": "a87f6afe42f3f90d26b9281fcc5d5a3ac68e31e5dc2fd6792a356ba3eb7711e3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_0_upper/mode_b_rgbd_observation.json",
+    "bytes": 334926,
+    "sha256": "e72b4d0a5e252335d2d1027dd33f871a1a30fa023385b3074698d3a20fc0c9cf"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.png",
+    "bytes": 2654789,
+    "sha256": "c816606ed53837159189660811defbd7195f10ca937c971028b2a1318629c2a6"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "71f99fc5468b8d0f5de71360f61d48fd3773593ad2f35d9ffd59c74504fe87f7"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/gt_instance_masks.npz",
+    "bytes": 209854,
+    "sha256": "57648db7351c0b3f3e192e877cde2b1730a26cf3458423fc8f851f50baeee8bc"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/gt_annotations.json",
+    "bytes": 39098,
+    "sha256": "0f0396e6d4f0843e464e7944a972be7dfbe86f3691cf4e4528fc32cc70d56215"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/camera_info.json",
+    "bytes": 978,
+    "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/capture_metadata.json",
+    "bytes": 1119,
+    "sha256": "c530b97e6b968e3f276d1e63bf739b640d74504e2fe9d0147864d9707fdae1b3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/oracle_proposals.json",
+    "bytes": 11988,
+    "sha256": "e542a488e1c0c3671597d007fe1ed49500370e5c701d70c231ffd94682503537"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/mode_b1_worker_response.json",
+    "bytes": 649,
+    "sha256": "73487a61e131f0860240ac8720d576bea8bce8abd47190abfb28079f9b965b71"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/rgbd_cuboids.json",
+    "bytes": 1125224,
+    "sha256": "91be653da5ae7897792866360e55364428aa5593d9f275f739316d721be83025"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/mode_b_rgbd_observation.json",
+    "bytes": 583838,
+    "sha256": "f06a3ad36ace50ffdf40336362cf49179aba13e4badb2c4b575b86d72853b9a6"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.png",
+    "bytes": 1982694,
+    "sha256": "c0ca14d8d7f612082a12c8403bbb75b8d5da3a10f3ddd0e6b5112fddf9cbef28"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "11c721062d003aeec323e7c6158ad922106261e6f6706c168bcc9074149f2aa4"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/gt_instance_masks.npz",
+    "bytes": 102056,
+    "sha256": "24e65a7dcbc973ece3920b6b03775e530ce0eb04d63fcd9629c4c3f37ff75355"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/gt_annotations.json",
+    "bytes": 39320,
+    "sha256": "f7c7b69697cc6e8c24b9fd4af9e4c26fb984c149dcfba338c48507936f066cc6"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/camera_info.json",
+    "bytes": 918,
+    "sha256": "f0c6bd6ebbb09e9fa4d686a25679c70c30f5e479aa9a8e32ae35585c62406817"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/capture_metadata.json",
+    "bytes": 1059,
+    "sha256": "4ff1259857dfdbd1234887bf8e8d92a1708915a16575b7efa46351111a82a15f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/oracle_proposals.json",
+    "bytes": 6000,
+    "sha256": "2d83d01509360bdc531ae42c02f69d089966441c4fda9082591457cf3b244986"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/mode_b1_worker_response.json",
+    "bytes": 649,
+    "sha256": "e6ce80a6ecc0856e68bd8702c0a58332adb3695bf3e6382b49aee198d32b8d7f"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/rgbd_cuboids.json",
+    "bytes": 720307,
+    "sha256": "c02161db537ddc7fe30c60d2fbf959f547a69348baf69487f4b45c9dfadf6c1c"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_0_upper/mode_b_rgbd_observation.json",
+    "bytes": 323302,
+    "sha256": "dc1e487a5d16b2a1dae5a7d8e8977ffbbb6cdda517f2a552e9a6dea8a602f463"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.png",
+    "bytes": 3319931,
+    "sha256": "b1f523abe8d6d0f5624509e57139084ac9479d04404c0371e4099d252a0573ae"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy",
+    "bytes": 20155520,
+    "sha256": "71f99fc5468b8d0f5de71360f61d48fd3773593ad2f35d9ffd59c74504fe87f7"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/gt_instance_masks.npz",
+    "bytes": 209854,
+    "sha256": "57648db7351c0b3f3e192e877cde2b1730a26cf3458423fc8f851f50baeee8bc"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/gt_annotations.json",
+    "bytes": 39098,
+    "sha256": "9bfd27f8620e72acc4e828eb7063e45d5b87680e91bbb00f2cf88952ed6f6178"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/camera_info.json",
+    "bytes": 978,
+    "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/capture_metadata.json",
+    "bytes": 1119,
+    "sha256": "c74b2d7cd96cd772a43880b8bcb17f40263e027dd12d07276fe0c4d42a79b42d"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/oracle_proposals.json",
+    "bytes": 11988,
+    "sha256": "5419dca5bf1a706fdfe7ddb9664dd25241c94de375279bda7a4515c90eedfc30"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/mode_b1_worker_response.json",
+    "bytes": 649,
+    "sha256": "a9ddd1d300d1fb31e5cfc2ed19da89132e67ded9e0021b6db9b4db7c417ae67b"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/rgbd_cuboids.json",
+    "bytes": 1168646,
+    "sha256": "16ab3c24aabb13215ba881f652b940e752f1cdf14fea11113e92e320d52f2b4c"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/FULL_STACK_NOMINAL/modules/module_1_lower/mode_b_rgbd_observation.json",
+    "bytes": 578028,
+    "sha256": "9b21e607972c05dbb9d97146e652fcbac25047bb3d9c9947181f76f4dbfde128"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/capture_stage.usda",
+    "bytes": 187905,
+    "sha256": "b3db8961b9153ef41b37a2de9c0aa45601039a191f438ed7f309a9e9c8f8a3d7"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_0_upper/sam_crossvalidated.jpg",
+    "sha256": "c96d75bcbcee9bb454fec0abba754a304b07fdb888c8df7406f3b19f7dd2392d"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_0_upper/cargo_masks.npz",
+    "sha256": "6033b1cd9bff8986ac79c3db0a7ea76014e97efa4de51e168dbd7fbd2bad4023"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_0_upper/cargo_instances.json",
+    "sha256": "4efa6a18d1df640b6d9fd7f5a6e7ddee30c729a91fb6ec310cbc07bf0544d2ff"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_0_upper/box_geometry_2d.json",
+    "sha256": "756fc12d2b92e5f9ef36d9e3f3b6d9ce75cce33a3ccb8a69efb85de830bf18c1"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/sam_crossvalidated.jpg",
+    "sha256": "eb25ac86c5eaa508f2edea862b437a2040e79a374201261116e60e7f3a2feec2"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/cargo_masks.npz",
+    "sha256": "cc4c06ed48ea0ab135736922aae1c01b7fd93de93e6c6072de71f8f9a7782c69"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/cargo_instances.json",
+    "sha256": "9c9a62b874f796d41addb16e25bfb0a5ea3b818651a50fe77ede9563f194c9c5"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/box_geometry_2d.json",
+    "sha256": "0f485ef527e463efd994442267e5641de512e8febbfdd5c9d4cf1eaf62a959d9"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B/capture_stage.usda",
+    "bytes": 188345,
+    "sha256": "16aa8ff6950a9ab3e992599c5f3275b0a2654747bf80908cb90656880ee8fbc0"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/sam_crossvalidated.jpg",
+    "sha256": "a4c5501b1cbac4a7e278bdba07e2be709286a1217c3d6d5e13c44bf775d0f65c"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/cargo_masks.npz",
+    "sha256": "a0777d022fdfb5f8bd438a8d6082066d91d061ab0dec4619e73657ed72d9e1fc"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/cargo_instances.json",
+    "sha256": "5a2846ba0f4c234093490ce9ed578e294084af929ea1d7442d5d844983ae57b8"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_0_upper/box_geometry_2d.json",
+    "sha256": "b4f04d7fac4fe2a212babd14611b286d2569160d8fc412cc8a6ce23854c2d305"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_1_lower/sam_crossvalidated.jpg",
+    "sha256": "461b4842922443b42959615b5ff8f3560aa84d97476b3b5426aeb1c88aa884ae"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_1_lower/cargo_masks.npz",
+    "sha256": "e762d42aa2533e7025ed2f62e517bc6e8205c5d8907c123f23624b5cafc709e3"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_1_lower/cargo_instances.json",
+    "sha256": "69a4c55745b167510ae43a71c627e78baeb85d58c043ebb6660a9d5edea56df0"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-B-000100-appearance-B-module_1_lower/box_geometry_2d.json",
+    "sha256": "30f6de985fb4a130689a6e194be5bbb94722e1403fe11a704a9922b74537b2d4"
+  }
+]

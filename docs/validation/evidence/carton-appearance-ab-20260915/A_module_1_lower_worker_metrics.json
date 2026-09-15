@@ -1,0 +1,62 @@
+{
+  "config": {
+    "mode": "RGBD_PRIMARY_2D_PREREQUISITES",
+    "comparison": false,
+    "sam_model": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+    "sam_revision": "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+    "proposal_sha256": "e542a488e1c0c3671597d007fe1ed49500370e5c701d70c231ffd94682503537",
+    "input_sha256": "c816606ed53837159189660811defbd7195f10ca937c971028b2a1318629c2a6",
+    "capture_frame": {
+      "source": "isaac-sim-6.0.1",
+      "stream": "perception_validation",
+      "epoch": "appearance-capture-v1-A",
+      "sequence": 100,
+      "capture_time": 1.6666666666666667,
+      "receive_time": 1.6666666666666667,
+      "clock_domain": "ros_sim_time",
+      "frame_id": "module_1_lower_rgb_optical",
+      "width": 2592,
+      "height": 1944,
+      "encoding": "rgb8",
+      "rgb_uri": "file:///root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.png",
+      "rgb_sha256": "c816606ed53837159189660811defbd7195f10ca937c971028b2a1318629c2a6"
+    },
+    "result_cache_reused": false,
+    "upstream_sha": "1d208f2ed380a207e6e46b4a62d2ac640edfe477"
+  },
+  "artifacts": {
+    "sam_crossvalidated.jpg": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/sam_crossvalidated.jpg",
+      "sha256": "eb25ac86c5eaa508f2edea862b437a2040e79a374201261116e60e7f3a2feec2"
+    },
+    "cargo_masks.npz": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/cargo_masks.npz",
+      "sha256": "cc4c06ed48ea0ab135736922aae1c01b7fd93de93e6c6072de71f8f9a7782c69"
+    },
+    "cargo_instances.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/cargo_instances.json",
+      "sha256": "9c9a62b874f796d41addb16e25bfb0a5ea3b818651a50fe77ede9563f194c9c5"
+    },
+    "box_geometry_2d.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/box_geometry_2d.json",
+      "sha256": "0f485ef527e463efd994442267e5641de512e8febbfdd5c9d4cf1eaf62a959d9"
+    }
+  },
+  "timings_seconds": {
+    "sam": 17.647201869636774,
+    "geometry_2d": 2.60753720253706,
+    "request_total": 20.340251483023167
+  },
+  "logs": {
+    "sam": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/sam.log",
+      "sha256": "912587c24c6465b37c52e958e112a8da3efce3eeffd86869efb08729207cc974",
+      "returncode": 0
+    },
+    "geometry_2d": {
+      "path": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/sam-runs/appearance-capture-v1-A-000100-appearance-A-module_1_lower/geometry_2d.log",
+      "sha256": "030cd860bcdbea0b66ac3afef3597413f620237308034fa9746b098ad4212318",
+      "returncode": 0
+    }
+  }
+}
