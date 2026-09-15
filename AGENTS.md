@@ -9,6 +9,22 @@ The active user-approved simulation policy exempts only the official J5_link/J6_
 
 This round uses `ideal_independent_cups`: all 72 cups have stable independent IDs and commands, every commanded cup must have a geometrically valid full seal ring on the selected target, and at least one valid cup is required.  No minimum load-bearing cup count, vacuum-force, shear, peel, leakage, or break-envelope check may reject a grasp in this explicit mode.  This holding-capacity assumption never permits remote attachment, wrong-carton attachment, rigid-tool penetration, collision bypass, payload mass reduction, infinite joint effort, or pose teleportation.
 
+The September 15 user update selects `post_landing_transport.mode=ideal_outfeed`.
+Only after real constraint removal and the same body's first qualified actual
+receiver-top contact, that carton becomes collision-disabled kinematic ideal
+transport. It moves continuously in simulation time via -Y transverse / -X
+longitudinal routing until its entire envelope crosses trailer opening X=-3.2 m.
+It then records OUTFED_ASSUMED and may become inactive, retaining its identity.
+Post-landing tipping, collisions, tail holds and capacity are not evaluated in
+this explicit assumption. All pre-landing physics and other object pairs retain
+their prior rules. Count actual reception and assumed outfeed separately; do not
+claim downstream physical qualification. The current run stops after the initial
+highest row and its ideal outfeed, leaving the lower 35 cartons physical.
+
+The user-selected default recording profile is 640x360 at 5 fps, normal time.
+Keep the existing live world and its recording profile until that run finishes.
+Lower rendering cadence must not lower physics or receiver-monitor cadence.
+
 ## Architecture constraints
 - Keep `geometry.py`, `robot.py`, `scene.py`, `ik.py`, `planner.py`, and `grasp.py` independently testable.
 - Do not introduce Isaac Sim, ROS 2, or GPU dependencies into the core package.

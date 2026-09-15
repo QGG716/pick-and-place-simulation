@@ -184,6 +184,31 @@ def test_same_world_continuation_rejects_stale_poses_and_retains_occupied_carton
         validate_same_world_continuation(metadata, changed_urdf, actual)
 
 
+def test_continuation_allows_360p_recording_without_changing_time_or_scene():
+    import copy
+    from unloading_sim.m710_replay_physics import validate_continuation_rendering
+    before = {"rendering": {"required_output": {
+        "width_px": 1920, "height_px": 1080, "fps": 15,
+        "render_every_physics_steps": 16,
+        "camera_mode": "fixed_overview_with_contact_and_place_keyframes",
+    }, "material_palette": {"trailer_rgb": [0.56, 0.60, 0.64]}}}
+    after = copy.deepcopy(before)
+    after["rendering"]["required_output"].update(
+        width_px=640, height_px=360, fps=5, render_every_physics_steps=48)
+    assert validate_continuation_rendering(before, after)
+    assert not validate_continuation_rendering(after, after)
+    for field, value in (("fps", 15), ("width_px", 641), ("height_px", False),
+                         ("render_every_physics_steps", 0), ("camera_mode", "moving")):
+        invalid = copy.deepcopy(after)
+        invalid["rendering"]["required_output"][field] = value
+        with pytest.raises(ValueError):
+            validate_continuation_rendering(before, invalid)
+    invalid = copy.deepcopy(after)
+    invalid["rendering"]["material_palette"]["trailer_rgb"] = [0, 0, 0]
+    with pytest.raises(ValueError, match="materials"):
+        validate_continuation_rendering(before, invalid)
+
+
 def test_initial_and_continuation_consume_real_exported_command_schema():
     from pathlib import Path
     bundle = {"timestamps_seconds": [0, 0.02, 0.04], "positions_rad": [[0], [0.1], [0.2]]}

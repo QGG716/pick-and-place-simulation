@@ -1,0 +1,304 @@
+{
+  "status": "PASS",
+  "scope": "actual-state identity, attachment gates, output-plane feedback, media continuity",
+  "world_session_id": "1789448839.7527404",
+  "initial_carton_count": 40,
+  "active_carton_count": 37,
+  "top_row_ids": [
+    "carton_l07_c02",
+    "carton_l07_c03",
+    "carton_l07_c01",
+    "carton_l07_c04",
+    "carton_l07_c00"
+  ],
+  "actual_received_ids": [
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03"
+  ],
+  "ideal_outfed_ids": [
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03"
+  ],
+  "pending_ids": [
+    "carton_l07_c04"
+  ],
+  "segments": [
+    {
+      "segment": 1,
+      "target": "carton_l07_c02",
+      "physical_cycle_completed": true,
+      "actual_release": true,
+      "actual_received": true,
+      "planning_wall_s": 16.156178005039692,
+      "physical_time_s": 90.43333333333334,
+      "isaac_wall_s": 1046.0281690321863,
+      "stop_reason": null,
+      "qualification_passed": false,
+      "qualification_failures": [
+        "joint_efforts_within_limit"
+      ],
+      "frames": 1356,
+      "fps": 15.0,
+      "video": "segment_001.mp4",
+      "output_size_px": [
+        1920,
+        1080
+      ],
+      "simulation_execution_ready": true,
+      "joint_positions_within_official_limits": true,
+      "actual_contact_gates_attachment": true,
+      "result_sha256": "df73984b85c58c8786a8e96180f90ce63ab1dca63f5bd7f98523fc2f17da2317"
+    },
+    {
+      "segment": 2,
+      "target": "carton_l07_c01",
+      "physical_cycle_completed": true,
+      "actual_release": true,
+      "actual_received": true,
+      "planning_wall_s": 49.445138059556484,
+      "physical_time_s": 97.1,
+      "isaac_wall_s": 945.4925402775407,
+      "stop_reason": null,
+      "qualification_passed": false,
+      "qualification_failures": [
+        "joint_efforts_within_limit"
+      ],
+      "frames": 1456,
+      "fps": 15.0,
+      "video": "segment_002.mp4",
+      "output_size_px": [
+        1920,
+        1080
+      ],
+      "simulation_execution_ready": true,
+      "joint_positions_within_official_limits": true,
+      "actual_contact_gates_attachment": true,
+      "result_sha256": "01ebe90cdd99af4ebacd9a20de67b28f9d22ff52998ef6ff808d3895a3dc5c80"
+    },
+    {
+      "segment": 3,
+      "target": "carton_l07_c03",
+      "physical_cycle_completed": true,
+      "actual_release": true,
+      "actual_received": true,
+      "planning_wall_s": 395.04065622761846,
+      "physical_time_s": 169.70416666666665,
+      "isaac_wall_s": 1421.3317493125796,
+      "stop_reason": null,
+      "qualification_passed": false,
+      "qualification_failures": [
+        "joint_efforts_within_limit"
+      ],
+      "frames": 2545,
+      "fps": 15.0,
+      "video": "segment_003.mp4",
+      "output_size_px": [
+        1920,
+        1080
+      ],
+      "simulation_execution_ready": true,
+      "joint_positions_within_official_limits": true,
+      "actual_contact_gates_attachment": true,
+      "result_sha256": "2f311798f98b69a8070221451a2b3eb11f0303acc8c86cc11c292e327e7c5b62"
+    },
+    {
+      "segment": 4,
+      "target": "carton_l07_c00",
+      "physical_cycle_completed": true,
+      "actual_release": true,
+      "actual_received": true,
+      "planning_wall_s": 40.56713768839836,
+      "physical_time_s": 95.525,
+      "isaac_wall_s": 934.9912022054195,
+      "stop_reason": null,
+      "qualification_passed": false,
+      "qualification_failures": [
+        "joint_efforts_within_limit"
+      ],
+      "frames": 1432,
+      "fps": 15.0,
+      "video": "segment_004.mp4",
+      "output_size_px": [
+        1920,
+        1080
+      ],
+      "simulation_execution_ready": true,
+      "joint_positions_within_official_limits": true,
+      "actual_contact_gates_attachment": true,
+      "result_sha256": "8da553238955e09665c6d340680db018f368ea3b3a20da3c93d191d153922662"
+    }
+  ],
+  "normal_time_video_seconds": 452.6,
+  "all_recorded_frames_preserved": true,
+  "offline_planning_pauses_excluded": true,
+  "actual_landing_events": [
+    {
+      "carton_id": "carton_l07_c02",
+      "time_s": 89.21666666666667,
+      "source": "ACTUAL_RELEASE_AND_RECEIVER_TOP_CONTACT"
+    },
+    {
+      "carton_id": "carton_l07_c01",
+      "time_s": 186.3375,
+      "source": "ACTUAL_RELEASE_AND_RECEIVER_TOP_CONTACT"
+    },
+    {
+      "carton_id": "carton_l07_c03",
+      "time_s": 356.025,
+      "source": "ACTUAL_RELEASE_AND_RECEIVER_TOP_CONTACT"
+    },
+    {
+      "carton_id": "carton_l07_c00",
+      "time_s": 451.5458333333333,
+      "source": "ACTUAL_RELEASE_AND_RECEIVER_TOP_CONTACT"
+    }
+  ],
+  "actual_full_envelope_exit_events": [
+    {
+      "event": "OUTFED_ASSUMED",
+      "carton_id": "carton_l07_c02",
+      "time_s": 99.19583333332426,
+      "output_plane": {
+        "name": "trailer_opening_x",
+        "direction": "-X",
+        "x_m": -3.2
+      },
+      "full_envelope_max_x_m": -3.2009999999999996,
+      "source": "IDEAL_DOWNSTREAM_FULL_ENVELOPE_CROSSING",
+      "actual_full_envelope_max_x_m": -3.2010001006931326
+    },
+    {
+      "event": "OUTFED_ASSUMED",
+      "carton_id": "carton_l07_c01",
+      "time_s": 196.3166666666576,
+      "output_plane": {
+        "name": "trailer_opening_x",
+        "direction": "-X",
+        "x_m": -3.2
+      },
+      "full_envelope_max_x_m": -3.200908270464933,
+      "source": "IDEAL_DOWNSTREAM_FULL_ENVELOPE_CROSSING",
+      "actual_full_envelope_max_x_m": -3.2009083086117296
+    },
+    {
+      "event": "OUTFED_ASSUMED",
+      "carton_id": "carton_l07_c03",
+      "time_s": 366.00416666665757,
+      "output_plane": {
+        "name": "trailer_opening_x",
+        "direction": "-X",
+        "x_m": -3.2
+      },
+      "full_envelope_max_x_m": -3.201,
+      "source": "IDEAL_DOWNSTREAM_FULL_ENVELOPE_CROSSING",
+      "actual_full_envelope_max_x_m": -3.20100005669848
+    }
+  ],
+  "post_landing_physics_qualified": false,
+  "media_and_state_sha256": {
+    "continuous_first_row.mp4": "2022457bffe31083aaa4c5f9b6c78b41c25dd36c61fcc88c4804087db2771043",
+    "summary.json": "f133cc9ca018c50af5e8f42bb24c099fa0ca5d23fcc6a4f08d0e9db6c9915b0a",
+    "actual_remaining_state.json": "a7063b72dccf396e6a5ccaa24ffd2e1f12f599f7b7773153e081e95a7988f72e",
+    "execution_source_sha256.json": "ba3f95d5d3f7c6671ca61307b77058696493103499701b64dec81b869380d47c"
+  },
+  "full_row_execution_source": "execution_source.tar (pre-360p changes)",
+  "fast_render_validation": {
+    "status": "PASS",
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "frames": 10,
+    "video_seconds": 2.0,
+    "physics_steps": 480,
+    "physics_hz": 240,
+    "same_body_and_time_preserved_on_resize": true,
+    "render_advances_physics": false,
+    "visual_transform_writes_per_body_per_second": 5,
+    "visual_phase_m_after_one_second": 0.2999999999999991,
+    "probe_loop_wall_seconds": 0.7808943279087543,
+    "full_robot_speedup_measured": false,
+    "tested_production_functions_ast_sha256": "7aa75ea6dc059ce8644e70c090ca0b80cea8c5846962a3d3bc5892d772377d43",
+    "receiver_monitor_checks_per_second": 15,
+    "final_source_matches_tested_functions": true
+  },
+  "unexecuted_target_planning": {
+    "target": "carton_l07_c04",
+    "status": "FAIL_CLOSED",
+    "reason": "PLANNING_WALL_CLOCK_DEADLINE",
+    "limit_seconds": 900,
+    "physical_execution_started": false,
+    "statistics": {
+      "task_count": 1,
+      "task_success_count": 0,
+      "candidate_pose_attempts": 1,
+      "coverage_rejected": 0,
+      "ik_calls": 1,
+      "ik_seed_pool_available": 14,
+      "ik_seeds_attempted": 14,
+      "ik_iterations_consumed": 266,
+      "ik_converged_pose_results": 3,
+      "ik_valid_solutions": 3,
+      "ik_deduplicated_candidates": 3,
+      "path_connection_attempts": 26,
+      "trajectory_pose_attempts": 1,
+      "trajectory_pose_attempt_budget_scope": "per_task_shared_across_faces_rolls_and_task_set_variants",
+      "trajectory_pose_attempt_limit_per_task": 12,
+      "trajectory_ik_calls": 12,
+      "trajectory_ik_seeds_attempted": 117,
+      "trajectory_ik_iterations_consumed": 4435,
+      "trajectory_state_validations": 39470,
+      "trajectory_edge_validation_calls": 0,
+      "trajectory_edge_state_samples": 0,
+      "trajectory_rrt_iterations_consumed": 15471,
+      "trajectory_cartesian_samples": 0,
+      "complete_trajectory_success_count": 0,
+      "placement_candidates_generated": 0,
+      "state_cache_hits": 7461,
+      "state_cache_misses": 39470,
+      "task_failure_counts": {
+        "PLANNING_WALL_CLOCK_DEADLINE": 1
+      },
+      "candidate_failure_counts": {
+        "PLANNING_WALL_CLOCK_DEADLINE": 1
+      }
+    },
+    "planning_performance": {
+      "schema": "first_carton_planning_wall_timing_v1",
+      "planning_total_wall_seconds": 900.008150793612,
+      "model_load_and_initialization_seconds": 0.378914974629879,
+      "candidate_generation_seconds": 0.01660821959376335,
+      "grasp_candidate_generation_seconds": 0.01660821959376335,
+      "placement_candidate_generation_seconds": 0.0,
+      "grasp_ik_seconds_inclusive_of_endpoint_validation": 0.2824294865131378,
+      "trajectory_search_seconds_inclusive": 899.3169425278902,
+      "trajectory_ik_seconds": 1.5045552998781204,
+      "path_connection_seconds_inclusive_of_collision": 897.7773265615106,
+      "collision_validation_seconds_nested": 891.1757036745548,
+      "final_recheck_seconds": 0.0,
+      "time_parameterization_seconds": null,
+      "trajectory_physical_execution_seconds": null,
+      "isaac_replay_wall_seconds": null,
+      "nesting": {
+        "trajectory_search_seconds_inclusive": [
+          "trajectory_ik_seconds",
+          "path_connection_seconds_inclusive_of_collision",
+          "collision_validation_seconds_nested",
+          "final_recheck_seconds"
+        ],
+        "path_connection_seconds_inclusive_of_collision": [
+          "collision_validation_seconds_nested"
+        ]
+      },
+      "unmeasured_value": null
+    },
+    "motion_sha256": "94a4e2a2fa4676b3a62a57c67587d57194e439bb2466182f7c70865e1d391ed3"
+  },
+  "source_roots": {
+    "current": "/root/autodl-tmp/m710-ideal-outfeed-20260915-retry02",
+    "first_attempt": "/root/autodl-tmp/m710-ideal-outfeed-20260915",
+    "second_attempt": "/root/autodl-tmp/m710-ideal-outfeed-20260915-retry01"
+  }
+}

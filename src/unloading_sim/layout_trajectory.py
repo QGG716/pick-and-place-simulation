@@ -503,6 +503,7 @@ class ExactM710LayoutStateValidator:
         base_support_obstacle_name: str = "chassis",
         tool_mount_link_name: str = "J6_link",
         collision_policy: Mapping[str, Any] | None = None,
+        nominal_cup_compression_m: float = 0.0,
     ) -> None:
         self.mesh_robot = mesh_robot
         self.tool_transform_robot = tool_transform_robot
@@ -514,6 +515,9 @@ class ExactM710LayoutStateValidator:
         self.base_support_obstacle_name = str(base_support_obstacle_name)
         self.tool_mount_link_name = str(tool_mount_link_name)
         self.collision_policy = SimulationCollisionPolicy.from_mapping(collision_policy)
+        self.nominal_cup_compression_m = float(nominal_cup_compression_m)
+        if not 0.0 <= self.nominal_cup_compression_m <= 0.015:
+            raise ValueError("nominal cup compression outside CAD travel")
         scalars = np.asarray(
             [
                 self.collision_margin_m,
@@ -530,12 +534,16 @@ class ExactM710LayoutStateValidator:
         if not self.base_support_obstacle_name or not self.tool_mount_link_name:
             raise ValueError("fixed-contact pair names must be non-empty")
         zero = np.zeros(int(mesh_robot.dof), dtype=float)
-        tool_boxes = list(tool_transform_robot.tool_collision_obbs(zero))
+        tool_boxes = list(tool_transform_robot.tool_all_physical_obbs(zero))
         self.required_tool_names = frozenset(box.name for box in tool_boxes)
         if not tool_boxes or len(self.required_tool_names) != len(tool_boxes):
             raise ValueError(
                 "execution validator requires a nonempty uniquely named audited tool compound"
             )
+        self._geometry_cache = {}
+        self._static_cache = {}
+        self.commanded_cup_mask = None
+        self.stack_carton_names = set()
 
     @staticmethod
     def _collision_failure(result, reason: str) -> Mapping[str, Any] | None:
@@ -547,6 +555,17 @@ class ExactM710LayoutStateValidator:
             "pair": [result.first_link, result.first_obstacle],
         }
 
+    def _compliant_boxes(self, q):
+        # Source bounds are uncompressed. Match Isaac's 72 nominally
+        # compressed bellows; the independent rigid inserts remain unchanged.
+        result = []
+        for box in self.tool_transform_robot.tool_compliant_collision_obbs(q):
+            half = box.half_extents.copy()
+            half[2] -= self.nominal_cup_compression_m / 2
+            result.append(OBB(box.center - box.rotation[:, 2] * self.nominal_cup_compression_m / 2,
+                              half, box.rotation, box.name, box.category))
+        return result
+
     def _plane_failure(
         self, q: np.ndarray, payload: OBB | None, stage: str
     ) -> Mapping[str, Any] | None:
@@ -557,7 +576,7 @@ class ExactM710LayoutStateValidator:
             (np.asarray(robot_bounds[box.name]["lower_m"]), np.asarray(robot_bounds[box.name]["upper_m"]))
             if box.name in robot_bounds else (box.corners().min(axis=0), box.corners().max(axis=0))))
             for box in robot_boxes]
-        bodies = [*self.tool_transform_robot.tool_collision_obbs(q)]
+        bodies = [*self.tool_transform_robot.tool_collision_obbs(q), *self._compliant_boxes(q)]
         if payload is not None:
             bodies.append(payload)
         for body in bodies:
@@ -594,7 +613,6 @@ class ExactM710LayoutStateValidator:
         target_contact: OBB | None,
         stage: str,
     ) -> Mapping[str, Any] | None:
-        del target_contact  # A named contact never deletes rigid geometry.
         q = np.asarray(q, dtype=float)
         names = [box.name for box in obstacles]
         if len(names) != len(set(names)):
@@ -602,51 +620,85 @@ class ExactM710LayoutStateValidator:
         environment = list(obstacles)
         if payload is not None and payload.name not in set(names):
             environment.append(payload)
-        result = self.mesh_robot.collision_result(
-            q,
-            environment,
-            margin=self.collision_margin_m,
-            ignored_geometry_obstacle_pairs={
-                ("base_link", self.base_support_obstacle_name)
-            },
-            check_self=True,
-        )
-        failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
-        if failure is not None:
-            return failure
-
-        tool_boxes = list(self.tool_transform_robot.tool_collision_obbs(q))
+        q_key = q.tobytes()
+        if q_key not in self._geometry_cache:
+            if len(self._geometry_cache) >= 4096:
+                self._geometry_cache.clear()
+            self._geometry_cache[q_key] = (
+                list(self.tool_transform_robot.tool_collision_obbs(q)), self._compliant_boxes(q))
+        rigid_boxes, compliant_boxes = self._geometry_cache[q_key]
+        tool_boxes = [*rigid_boxes, *compliant_boxes]
+        compliant_names = {box.name for box in compliant_boxes}
+        compliant_indices = {box.name: index for index, box in enumerate(compliant_boxes)}
         if frozenset(box.name for box in tool_boxes) != self.required_tool_names:
             return {
                 "reason": "RIGID_TOOL_COMPOUND_INCOMPLETE",
                 "actual_solid_count": len(tool_boxes),
                 "required_solid_count": len(self.required_tool_names),
             }
+        fixed = [box for box in environment if box.category not in {"carton", "payload"}]
+        dynamic = [box for box in environment if box.category in {"carton", "payload"}]
+        static_key = (q_key, tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in fixed))
+        if static_key not in self._static_cache:
+            if len(self._static_cache) >= 4096:
+                self._static_cache.clear()
+            result = self.mesh_robot.collision_result(q, fixed, margin=self.collision_margin_m,
+                ignored_geometry_obstacle_pairs={("base_link", self.base_support_obstacle_name)}, check_self=True)
+            failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
+            if failure is None:
+                result = self.mesh_robot.collision_result(q, tool_boxes, margin=self.collision_margin_m,
+                    ignored_geometry_obstacle_pairs=self.collision_policy.wrist_tool_pairs([box.name for box in tool_boxes]),
+                    check_self=False)
+                failure = self._collision_failure(result, "ROBOT_RIGID_TOOL_COLLISION")
+            if failure is None:
+                for i, j in possible_inflated_obb_pairs(tool_boxes, fixed, self.collision_margin_m):
+                    if tool_boxes[i].intersects_obb(fixed[j], margin=self.collision_margin_m):
+                        failure = {"reason": "RIGID_TOOL_COLLISION", "pair": [tool_boxes[i].name, fixed[j].name]}
+                        break
+            if failure is None:
+                failure = self._plane_failure(q, None, stage)
+            self._static_cache[static_key] = failure
+        failure = self._static_cache[static_key]
+        if failure is not None:
+            return failure
+        result = self.mesh_robot.collision_result(q, dynamic, margin=self.collision_margin_m, check_self=False)
+        failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
+        if failure is not None:
+            return failure
         # Conservative broad phase around the *locally inflated* OBBs.  It
         # only skips disjoint world AABBs; the unchanged SAT remains final.
         for tool_index, obstacle_index in possible_inflated_obb_pairs(
-            tool_boxes, environment, self.collision_margin_m
+            tool_boxes, dynamic, self.collision_margin_m
         ):
-            tool, obstacle = tool_boxes[tool_index], environment[obstacle_index]
+            tool, obstacle = tool_boxes[tool_index], dynamic[obstacle_index]
+            if tool.name in compliant_names:
+                current_target = (payload is not None and obstacle.name == payload.name) or (
+                    target_contact is not None and obstacle.name == target_contact.name
+                    and stage in {"contact", "contact_endpoint", "next_contact", "withdrawal"})
+                cup_index = compliant_indices[tool.name]
+                inactive = (self.commanded_cup_mask is not None
+                            and not self.commanded_cup_mask[cup_index])
+                stack_contact = (inactive and obstacle.name in self.stack_carton_names
+                    and self.collision_policy.inactive_compliant_cup_stack_contact_mode == "physical_contact_within_compression"
+                    and (stage in {"contact", "contact_endpoint", "next_contact"}
+                         or payload is not None and self.collision_policy.allows_stack_planning_contact(stage)))
+                if (current_target or stack_contact) and tool.signed_distance_obb(obstacle) >= (
+                    -self.collision_policy.maximum_compliant_cup_additional_compression_m):
+                    continue
             if tool.intersects_obb(obstacle, margin=self.collision_margin_m):
                 return {
                     "reason": "RIGID_TOOL_COLLISION",
                     "pair": [tool.name, obstacle.name],
                 }
 
-        # Pair identities come from the common user-approved simulation policy.
-        result = self.mesh_robot.collision_result(
-            q,
-            tool_boxes,
-            margin=self.collision_margin_m,
-            ignored_geometry_obstacle_pairs=self.collision_policy.wrist_tool_pairs(
-                [box.name for box in tool_boxes]),
-            check_self=False,
-        )
-        failure = self._collision_failure(result, "ROBOT_RIGID_TOOL_COLLISION")
-        if failure is not None:
-            return failure
-        return self._plane_failure(q, payload, stage)
+        if payload is not None:
+            lower, upper = payload.corners().min(axis=0), payload.corners().max(axis=0)
+            floor_margin = -0.0002 if self.collision_policy.allows_stack_planning_contact(stage) else self.collision_margin_m
+            if lower[2] < self.floor_z_m + floor_margin:
+                return {"reason": "FLOOR_CLEARANCE", "body": payload.name}
+            if lower[1] < self.right_wall_y_m + self.collision_margin_m or upper[1] > self.left_wall_y_m - self.collision_margin_m:
+                return {"reason": "TRAILER_SIDE_CLEARANCE", "body": payload.name}
+        return None
 
 
 class LayoutTrajectoryConnector:
@@ -677,8 +729,11 @@ class LayoutTrajectoryConnector:
         collision_policy: Mapping[str, Any] | None = None,
         surface_directions_world: Mapping[str, Sequence[float]] | None = None,
         tool_collision_obbs_provider: Callable[[np.ndarray], Sequence[OBB]] | None = None,
+        post_landing_transport: Mapping[str, Any] | None = None,
     ) -> None:
         self.robot = robot
+        from .post_landing_transport import transport_policy
+        self.post_landing_transport = transport_policy(post_landing_transport)
         self.collision_policy = SimulationCollisionPolicy.from_mapping(collision_policy)
         self.robot_state_validator = robot_state_validator
         self.flange_from_virtual_task_tcp = self._se3(
@@ -1392,7 +1447,13 @@ class LayoutTrajectoryConnector:
             max_normal_misalignment_rad=np.deg2rad(5.0),
             suction_edge_margin_m=float(suction.get("suction_edge_margin_m", 0.0)),
         )
-        return selection.to_dict()
+        result = selection.to_dict()
+        if isinstance(self.robot_state_validator, ExactM710LayoutStateValidator):
+            self.robot_state_validator.commanded_cup_mask = result["commanded_active_mask"]
+            self.robot_state_validator.stack_carton_names = set(self.stack_carton_names or ())
+            # Contact pair permissions depend on the commanded mask.
+            self._state_cache.clear()
+        return result
 
     def _initial_proximity(
         self,
@@ -1718,6 +1779,10 @@ class LayoutTrajectoryConnector:
             return None, failure, trace
 
         actual_physical = self.physical_from_virtual(actual)
+        try:
+            self._contact_selection(grasp_q, target, face, suction)
+        except ValueError as exc:
+            return None, {"reason": "FINAL_CONTACT_GEOMETRY_FAILED", "detail": str(exc)}, trace
         outward = -actual_physical[:3, 2]
         pregrasp, contact, failure, evidence = self._approach(
             home_q, grasp_q, requested_virtual_contact, all_obstacles, target, seed=seed + 10)
@@ -1981,6 +2046,16 @@ class LayoutTrajectoryConnector:
                       self.next_contact_provider(placed.name))
         if not candidates:
             return {"status": "NO_NEXT_CONTACT_CANDIDATE", "attempts": []}
+        if self.post_landing_transport["mode"] == "ideal_outfeed":
+            # Sorting hint only. Do not spend another full connection search
+            # at each release height/departure endpoint. The actual-state next
+            # task reuses this residence configuration as its first IK seed.
+            tcp = self.robot.fk(start)[:3, 3]
+            selected = min(candidates, key=lambda item: float(np.linalg.norm(
+                np.asarray(item["requested_virtual_contact"])[:3, 3] - tcp)))
+            return {"status": "GEOMETRIC_NEXT_CONTACT_HINT", "target": selected["target"].name,
+                    "start_q_rad": start.tolist(), "requires_actual_state_replan": True,
+                    "released_carton_swept_occupancy_retained": False, "attempts": []}
         before = perf_counter()
         outer_deadline = self._deadline_monotonic
         self._deadline_monotonic = min(outer_deadline or float("inf"), before + 8.)
@@ -2050,6 +2125,11 @@ class LayoutTrajectoryConnector:
             placed.rotation, placed.name, placed.category)
         sweep = departure_sweep(flight_envelope, direction, distance_m=max(clearance, span + clearance),
                                 resolution_m=self.budget.cartesian_step_m)
+        if self.post_landing_transport["mode"] == "ideal_outfeed":
+            # Keep the entire release-to-first-landing flight envelope. Beyond
+            # first reception the same carton is explicitly outside collision
+            # planning; no full-belt sweep or tail residence is needed.
+            sweep = [flight_envelope]
         candidates = [-np.asarray(working_normal), np.array([0., 0., 1.]), -direction]
         candidates += [candidates[0] + candidates[1], candidates[0] - direction]
         future_contacts = ([] if self.next_contact_provider is None else self.next_contact_provider(placed.name))
@@ -2275,9 +2355,13 @@ class LayoutTrajectoryConnector:
         if not edge_reserve["supported"]:
             return None, {"reason": "RECEIVER_EDGE_RESERVE_UNAVAILABLE", "stage": "place",
                           "edge_reserve": edge_reserve}, trace
-        transport_support = receiver_transport_support(landing_box,
-            next(box for box in selected_supports if box.name == place_surface), selected_supports, direction,
-            contact_tolerance_m=self.contact_tolerance_m, edge_tolerance_m=self.placement_policy.edge_tolerance_m)
+        if self.post_landing_transport["mode"] == "ideal_outfeed":
+            transport_support = {"accepted": True, "source": "EXPLICIT_POST_LANDING_IDEAL_OUTFEED",
+                "physical_transport_checked": False, "first_landing_footprint_checked": True}
+        else:
+            transport_support = receiver_transport_support(landing_box,
+                next(box for box in selected_supports if box.name == place_surface), selected_supports, direction,
+                contact_tolerance_m=self.contact_tolerance_m, edge_tolerance_m=self.placement_policy.edge_tolerance_m)
         if not transport_support["accepted"]:
             return None, {"reason": transport_support["reason"], "stage": "place",
                           "transport_support": transport_support}, trace
@@ -2487,6 +2571,7 @@ def build_m710_layout_trajectory_connector(
     budget: LayoutTrajectoryBudget | None = None,
     collision_policy: Mapping[str, Any] | None = None,
     surface_directions_world: Mapping[str, Sequence[float]] | None = None,
+    post_landing_transport: Mapping[str, Any] | None = None,
 ) -> LayoutTrajectoryConnectorBuildResult:
     """Build the exact optional connector and prove its FK-frame agreement.
 
@@ -2728,6 +2813,7 @@ def build_m710_layout_trajectory_connector(
                 lightweight_robot, np.asarray(q, dtype=float), shapes
             ),
             collision_policy=collision_policy,
+            nominal_cup_compression_m=0.2275 - float(flange_from_physical[0, 3]),
         )
     except (AttributeError, FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
         return unavailable("EXACT_STATE_VALIDATOR_CONSTRUCTION_FAILED", str(exc))
@@ -2800,6 +2886,7 @@ def build_m710_layout_trajectory_connector(
         collision_policy=collision_policy,
         surface_directions_world=surface_directions_world,
         tool_collision_obbs_provider=lightweight_robot.tool_all_physical_obbs,
+        post_landing_transport=post_landing_transport,
     )
     evidence.update(
         status="AVAILABLE",

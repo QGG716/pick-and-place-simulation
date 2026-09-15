@@ -18,6 +18,13 @@ receiver:
   fixed: true
 
 search_strategy:
+  post_landing_transport:
+    mode: ideal_outfeed
+    tail_protection_enabled: false
+    evaluate_tipping: false
+    evaluate_post_landing_environment_collisions: false
+    downstream_capacity: assumed_sufficient
+    output_plane: {name: trailer_opening_x, direction: '-X', x_m: -3.200}
   motion_semantics: m710_adaptive_contact_release_v2
   placement_semantics: working_normal_into_carton_transverse_plus_x_v2
   approach_mode: auto

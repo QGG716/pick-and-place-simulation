@@ -396,6 +396,13 @@ class BoundedTargetCupReleaseClearance:
             return reason
         return None
 
+    def end_for_actual_ideal_takeover(self, time_s, *, attachment_removed, actual_top_landing):
+        if not attachment_removed or not actual_top_landing:
+            raise ValueError("release proximity exemption requires actual released-and-landed takeover")
+        self.pending = False
+        self.events.append({"event": "target_cup_clearance_ended_by_ideal_takeover",
+                            "time_s": float(time_s), "physical_clearance_certified": False})
+
 
 def _same_tool_collision_boxes(previous, current):
     """Ignore only roundoff from world/flange round trips, never shape changes."""
@@ -423,6 +430,37 @@ def _same_tool_collision_boxes(previous, current):
     return True
 
 
+def validate_continuation_rendering(previous_metadata, metadata):
+    """Allow recording resolution/cadence changes while the physical world is paused."""
+    before = previous_metadata.get("rendering")
+    after = metadata.get("rendering")
+    if before == after:
+        return False
+    if not isinstance(before, dict) or not isinstance(after, dict):
+        raise ValueError("continuation requires the bound rendering contracts")
+    if ({k: v for k, v in before.items() if k != "required_output"}
+            != {k: v for k, v in after.items() if k != "required_output"}):
+        raise ValueError("continuation changed fixed rendering materials or conveyor visuals")
+    old_output = before.get("required_output", {})
+    output = after.get("required_output", {})
+    keys = {"width_px", "height_px", "fps", "camera_mode", "render_every_physics_steps"}
+    if not isinstance(output, dict) or set(output) != keys:
+        raise ValueError("continuation rendering output is incomplete")
+    if output["camera_mode"] != old_output.get("camera_mode"):
+        raise ValueError("continuation changed the fixed camera mode")
+    for key in keys - {"camera_mode"}:
+        value = output[key]
+        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+            raise ValueError(f"invalid continuation rendering {key}")
+    if output["width_px"] % 2 or output["height_px"] % 2:
+        raise ValueError("continuation recording dimensions must be even")
+    # Preserve the established physics cadence and normal-time video playback.
+    if (output["fps"] * output["render_every_physics_steps"]
+            != old_output.get("fps", 0) * old_output.get("render_every_physics_steps", 0)):
+        raise ValueError("continuation rendering changed the physics-to-video time scale")
+    return True
+
+
 def validate_same_world_continuation(previous_metadata, next_bundle, actual_state, *,
                                      position_tolerance_m=0.001,
                                      joint_tolerance_rad=0.001):
@@ -445,9 +483,10 @@ def validate_same_world_continuation(previous_metadata, next_bundle, actual_stat
                   "joint_gravity_feedforward_enabled", "joint_velocity_feedforward_enabled",
                   "attached_payload_gravity_feedforward_enabled", "tool_length_m",
                   "isaac_grasp_body_path_suffix", "flange_offset_from_grasp_body_m",
-                  "conveyor", "actual_state_gates", "rendering", "camera"):
+                  "conveyor", "actual_state_gates", "camera", "post_landing_transport"):
         if metadata.get(field) != previous_metadata.get(field):
             raise ValueError(f"continuation changed fixed physical input: {field}")
+    rendering_changed = validate_continuation_rendering(previous_metadata, metadata)
     for field in ("physical_cup_compression_m", "cup_radius_m", "task_tcp_from_flange_m",
                   "compressed_contact_plane_from_flange_m", "mass_properties_path",
                   "physical_cup_count", "mask_bit_order_cup_ids", "cup_centers_tool_yz_m",
@@ -465,6 +504,10 @@ def validate_same_world_continuation(previous_metadata, next_bundle, actual_stat
     if (not metadata.get("simulation_execution_ready") or metadata.get("execution_blockers")):
         raise ValueError("continuation bundle is not simulation ready")
     current = {item["name"]: item for item in actual_state["cartons"]}
+    from .post_landing_transport import ideal_transport_ids
+    ideal_transport_ids(metadata.get("post_landing_transport"), actual_state.get("receiver_transport_state", {}))
+    if metadata.get("receiver_transport_state", {}) != actual_state.get("receiver_transport_state", {}):
+        raise ValueError("continuation changed observed post-landing transport states")
     dynamic = {item["name"]: item for item in metadata["scene_primitives"] if item.get("dynamic")}
     if set(current) != set(dynamic):
         raise ValueError("continuation must retain every live carton identity")
@@ -495,6 +538,7 @@ def validate_same_world_continuation(previous_metadata, next_bundle, actual_stat
     if first.shape != actual_q.shape or np.max(np.abs(first - actual_q)) > joint_tolerance_rad:
         raise ValueError("continuation path does not start at actual joint configuration")
     return {"accepted": True, "retained_carton_count": len(current),
+            "recording_output_changed": rendering_changed,
             "world_session_id": actual_state.get("world_session_id"),
             "scene_restored_or_teleported": False}
 
@@ -812,6 +856,7 @@ def audit_payload_support_contact(
     max_angular_speed_rad_s: float = 0.08,
     support_surface_velocity_world_m_s: Sequence[float] | None = None,
     footprint_boundary_tolerance_m: float = 1e-6,
+    evaluate_stability: bool = True,
 ) -> PayloadSupportAudit:
     """Require real, non-penetrating receiver support before vacuum release.
 
@@ -955,6 +1000,11 @@ def audit_payload_support_contact(
                   else "PAYLOAD_NOT_IN_SUPPORT_CONTACT")
     elif overlap_ratio + epsilon < minimum_footprint_overlap_ratio:
         reason = "PAYLOAD_SUPPORT_FOOTPRINT_INSUFFICIENT"
+    elif not evaluate_stability:
+        # First top landing is a geometric/contact event. The caller still
+        # requires a real contact report; no speed, friction or later tipping
+        # qualification is implied by this explicitly selected mode.
+        reason = None
     elif angular_speed > max_angular_speed_rad_s + epsilon:
         reason = "PAYLOAD_ANGULAR_SPEED_TOO_HIGH_FOR_RELEASE"
     elif support_velocity is None and linear_speed > max_linear_speed_m_s + epsilon:

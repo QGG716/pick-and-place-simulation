@@ -154,9 +154,9 @@ def test_conveyor_transport_and_ready_but_not_yet_executed_contract(preflight, g
     assert conveyor["overlap_precedence_surface"] == "conveyor_longitudinal"
     assert conveyor["exclusive_surface_drive_at_transfer"] is True
     assert simulation["rendering"]["required_output"] == {
-        "width_px": 1920,
-        "height_px": 1080,
-        "fps": 30,
+        "width_px": 640,
+        "height_px": 360,
+        "fps": 5,
         "camera_mode": "fixed_overview_with_contact_and_place_keyframes",
     }
     assert simulation["rendering"]["material_palette"] == {

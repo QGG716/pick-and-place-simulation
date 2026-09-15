@@ -25,9 +25,10 @@ replay:
   release_clearance_wait_s: 1.00
   post_release_settle_s: 3.00
   normal_time_scale: 1.0
-  output_width_px: 1920
-  output_height_px: 1080
-  output_fps: 30
+  # User-selected recording default; physics and controller timing stay fixed.
+  output_width_px: 640
+  output_height_px: 360
+  output_fps: 5
   camera_mode: fixed_overview_with_contact_and_place_keyframes
   command_mode: initialize_once_then_force_limited_position_drive_targets
   camera:

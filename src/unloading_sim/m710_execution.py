@@ -63,6 +63,7 @@ DEFAULT_CONFIG_PATH = (
     / "m710id70_dynamic_execution_v1.yaml"
 )
 EXECUTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/post_landing_transport.py",
     "src/unloading_sim/release_motion.py",
     "src/unloading_sim/layout_trajectory.py",
     "src/unloading_sim/serial_unloading.py",
@@ -1247,6 +1248,8 @@ def build_m710_execution_preflight(
         "row_selection": copy.deepcopy(motion.get("task_population", {}).get("row_selection", {})),
         "completed_carton_ids": list(scene.snapshot.get("actual_state_context", {}).get("completed_carton_ids", [])),
         "handed_off_ids": list(scene.snapshot.get("actual_state_context", {}).get("handed_off_ids", [])),
+        "post_landing_transport": dict(scene.policy.data["search_strategy"].get("post_landing_transport", {"mode": "strict_physics"})),
+        "receiver_transport_state": dict(scene.snapshot.get("actual_state_context", {}).get("receiver_transport_state", {})),
         "scene_primitives": primitives,
         "layout_fingerprint": scene.snapshot["layout_fingerprint"],
         "scene_fingerprint": scene.snapshot["scene_fingerprint"],

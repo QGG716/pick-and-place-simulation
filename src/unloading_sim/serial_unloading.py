@@ -111,6 +111,15 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
     definitions = {record["name"]: record for record in registry}
     completed = _identity_set(state.get("completed_carton_ids", []), "completed_carton_ids")
     handed_off = _identity_set(state.get("handed_off_ids", []), "handed_off_ids")
+    from .post_landing_transport import ideal_transport_ids, OUTFED
+    transport_state = copy.deepcopy(state.get("receiver_transport_state", {}))
+    ideal_ids = ideal_transport_ids(scene.policy.data["search_strategy"].get("post_landing_transport"),
+                                    transport_state)
+    if not ideal_ids <= completed:
+        raise ValueError("ideal transport must preserve actual reception completion events")
+    ideal_handoffs = {name for name in ideal_ids if transport_state[name]["state"] == OUTFED}
+    if ideal_handoffs != handed_off.intersection(ideal_ids):
+        raise ValueError("ideal outfeed events and cumulative handoffs disagree")
     if not handed_off <= completed <= initial_names:
         raise ValueError("handoff must be a subset of completed original carton identities")
     if not set(previous.get("completed_carton_ids", [])) <= completed:
@@ -193,11 +202,10 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
     snapshot["cartons"] = [_record(box) for box in actual_cartons]
     snapshot["attachments"] = []
     snapshot["receiver"] = {**snapshot.get("receiver", {}),
-        "state": "OCCUPIED" if completed - handed_off else "EMPTY",
-        "occupied_carton_ids": sorted(completed - handed_off)}
+        "state": "OCCUPIED" if completed - handed_off - ideal_ids else "EMPTY",
+        "occupied_carton_ids": sorted(completed - handed_off - ideal_ids)}
     state_fingerprint = canonical_digest(state)
-    transport_state = copy.deepcopy(state.get("receiver_transport_state", {}))
-    if not set(transport_state) <= completed - handed_off:
+    if not set(transport_state) <= completed or (set(transport_state) & handed_off) - ideal_handoffs:
         raise ValueError("receiver transport state must refer to retained completed cartons")
     fixed_names = {box.name for box in scene.fixed_components if box.category == "conveyor"}
     for record in transport_state.values():
@@ -220,6 +228,8 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
         "motion_state_fingerprint": state_fingerprint,
         "completion_source": "EXPLICIT_EXECUTION_EVENTS_NOT_POSITION_CLASSIFICATION",
         "receiver_transport_state": transport_state,
+        "ideal_transport_carton_ids": sorted(ideal_ids),
+        "post_landing_transport": dict(scene.policy.data["search_strategy"].get("post_landing_transport", {"mode": "strict_physics"})),
     }
     # Historical initial audit is retained with its original scope; it cannot
     # be mistaken for validation of the newly observed planner start.
@@ -235,7 +245,7 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
         "layout_fingerprint": snapshot["layout_fingerprint"],
         "scene_fingerprint": snapshot["scene_fingerprint"], "initial_carton_count": len(initial_names),
         "active_carton_count": len(actual_cartons), "remaining_stack_count": len(remaining_names),
-        "receiver_occupancy_count": len(completed - handed_off)}
+        "receiver_occupancy_count": len(completed - handed_off - ideal_ids)}
     return replace(scene, policy=policy, snapshot=snapshot, snapshot_verification=verification,
         snapshot_consistency=consistency, cartons=actual_cartons, support_graph=graph,
         removable_cartons=tuple(item.name for item in selection.candidates),

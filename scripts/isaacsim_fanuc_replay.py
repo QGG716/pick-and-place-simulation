@@ -740,9 +740,11 @@ try:
         UsdShade.MaterialBindingAPI.Apply(mesh.GetPrim()).Bind(material)
 
     def _load_hud_fonts(frame_height: int):
-        body_size = max(26, int(round(28.0 * frame_height / 1080.0)))
-        small_size = max(18, int(round(20.0 * frame_height / 1080.0)))
+        body_size = max(9, int(round(28.0 * frame_height / 1080.0)))
+        small_size = max(7, int(round(20.0 * frame_height / 1080.0)))
+        cjk_font = os.environ.get("M710_HUD_CJK_FONT", "")
         candidates = (
+            cjk_font,
             "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
             "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf",
             "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
@@ -753,7 +755,7 @@ try:
                 return (
                     ImageFont.truetype(candidate, body_size),
                     ImageFont.truetype(candidate, small_size),
-                    "NotoSansCJK" in candidate or "wqy" in candidate,
+                    candidate == cjk_font or "NotoSansCJK" in candidate or "wqy" in candidate,
                     candidate,
                 )
         return ImageFont.load_default(), ImageFont.load_default(), False, "PIL_DEFAULT"
@@ -2098,6 +2100,16 @@ try:
         flush=True,
     )
 
+    from unloading_sim.post_landing_transport import (
+        transport_policy, begin_ideal_transport, advance_ideal_transport,
+        ideal_transport_ids, LANDED, OUTFED,
+    )
+    post_landing_policy = transport_policy(metadata.get("post_landing_transport"))
+    ideal_outfeed_mode = post_landing_policy["mode"] == "ideal_outfeed"
+    ideal_actor_paths = set()
+    ideal_transport_records = {}
+    session_transport_events = []
+    pending_ideal_outfeed_events = {}
     grasp_joint = None
     grasp_joint_path = "/Validation/GraspJoint"
 
@@ -2239,6 +2251,10 @@ try:
         for header in headers:
             actor0 = contact_path_cache.resolve(header.actor0)
             actor1 = contact_path_cache.resolve(header.actor1)
+            if actor0 in ideal_actor_paths or actor1 in ideal_actor_paths:
+                # Only an actually released-and-landed ID can enter this set.
+                # Its physical collisions are disabled at the same takeover.
+                continue
             robot_involved = actor0.startswith(root_prim_path) or actor1.startswith(root_prim_path)
             payload_paths = {path for path in (target_carton_path, released_payload_path) if path}
             payload_involved = actor0 in payload_paths or actor1 in payload_paths
@@ -2968,7 +2984,54 @@ try:
     session_output_root = args.output
     session_segment_index = 0
     session_time_offset_s = 0.0
-    retained_receiver_records = {}
+    retained_receiver_records = ideal_transport_records
+    dynamic_index_by_name = {item["name"]: index for index, item in enumerate(dynamic_scene_records)}
+    def _advance_ideal_bodies(dt_s):
+        import warp as wp
+        for name, record in ideal_transport_records.items():
+            if record.get("state") != LANDED:
+                continue
+            if record.get("backend_transition_hold_steps_remaining", 0):
+                # Fabric applies the live USD dynamic-to-kinematic change over
+                # two steps. Bind the measured takeover pose during that brief
+                # transition; otherwise its second step can discard a new target.
+                record["backend_transition_hold_steps_remaining"] -= 1
+                record["time_s"] += dt_s
+                event = None
+            else:
+                event = advance_ideal_transport(record, dt_s=dt_s, speed_m_s=conveyor_speed_m_s)
+            pose = np.asarray(record["pose_world"])
+            quat = _quaternion_wxyz_from_matrix(pose[:3, :3])
+            index = dynamic_index_by_name[name]
+            body = dynamic_scene_bodies[index]
+            transform = np.array([[*pose[:3, 3], *quat[1:], quat[0]]], dtype=np.float32)
+            view = body._physics_rigid_body_view
+            device = view.get_transforms().device
+            view.set_kinematic_targets(wp.array(transform, dtype=wp.float32, device=device),
+                                       wp.array([0], dtype=wp.uint32, device=device))
+            if event is not None:
+                pending_ideal_outfeed_events[name] = event
+    def _verify_ideal_body_feedback():
+        for name, record in ideal_transport_records.items():
+            if record.get("state") != LANDED and name not in pending_ideal_outfeed_events:
+                continue
+            index = dynamic_index_by_name[name]
+            positions_now, orientations_now = dynamic_scene_bodies[index].get_world_poses()
+            actual_position = np.asarray(positions_now.numpy())[0]
+            actual_rotation = _rotation_matrix_from_quaternion_wxyz(np.asarray(orientations_now.numpy())[0])
+            planned = np.asarray(record["pose_world"])
+            if np.linalg.norm(actual_position - planned[:3, 3]) > 0.001:
+                raise RuntimeError(f"IDEAL_TRANSPORT_STATE_FEEDBACK_MISMATCH: {name}; "
+                    f"actual={actual_position.tolist()}; target={planned[:3, 3].tolist()}")
+            if name in pending_ideal_outfeed_events:
+                actual_max_x = float(actual_position[0] + np.abs(actual_rotation[0]) @ record["half_extents_m"])
+                if actual_max_x >= record["output_plane"]["x_m"]:
+                    raise RuntimeError(f"IDEAL_OUTFEED_FULL_ENVELOPE_NOT_CROSSED: {name}")
+                event = pending_ideal_outfeed_events.pop(name)
+                event["actual_full_envelope_max_x_m"] = actual_max_x
+                UsdGeom.Imageable(stage.GetPrimAtPath(dynamic_scene_prim_paths[index])).MakeInvisible()
+                session_transport_events.append(event)
+                print("FANUC_REPLAY_EVENT=" + json.dumps(event), flush=True)
     held_conveyor_surfaces = set()
     receiver_instability_started = {}
     conveyor_visual_phase_m = {name: 0.0 for name in conveyor_visual_markers}
@@ -3039,6 +3102,9 @@ try:
             # A short diagnostic's wall-independent physical duration cap is
             # not extended by unused wait budgets. Full runs retain them all.
             physical_runtime_limit = min(physical_runtime_limit, float(args.max_sim_seconds))
+        final_ideal_segment = bool(ideal_outfeed_mode and session_segment_index + 1 >= args.maximum_segments)
+        if final_ideal_segment:
+            physical_runtime_limit += 60.0
         physics_steps = int(math.ceil(physical_runtime_limit / physics_dt)) + 1
         measured_rows: list[np.ndarray] = []
         commanded_rows: list[np.ndarray] = []
@@ -3283,11 +3349,19 @@ try:
             return (conveyor_directions_world[active_conveyor_surface] * conveyor_speed_m_s
                     if active_conveyor_surface in active_conveyor_surfaces else np.zeros(3))
 
-        def _update_conveyor_visual_markers(time_step_s: float) -> None:
+        def _update_conveyor_visual_markers(time_step_s: float, *, apply_transforms: bool) -> None:
             for surface_name, records in conveyor_visual_markers.items():
-                moving = surface_name in active_conveyor_surfaces
+                moving = (surface_name in active_conveyor_surfaces or any(
+                    record.get("state") == LANDED and (
+                        record["receiver"] == surface_name and record["route_index"] == 0
+                        or surface_name == "conveyor_longitudinal" and record["route_index"] > 0)
+                    for record in ideal_transport_records.values()))
                 if moving:
                     conveyor_visual_phase_m[surface_name] += conveyor_speed_m_s * time_step_s
+                # Integrate the phase at the physics rate; author visual-only USD
+                # transforms only for captured frames. Belt physics is independent.
+                if not apply_transforms:
+                    continue
                 phase_m = conveyor_visual_phase_m[surface_name]
                 for record in records:
                     half = float(record["travel_half_extent_m"])
@@ -3333,7 +3407,7 @@ try:
                 and trajectory_time
                 >= float(metadata.get("release_retreat_time_seconds", float("inf")))
             )
-            if conveyor_enabled and not conveyor_started and conveyor_start_due:
+            if conveyor_enabled and not ideal_outfeed_mode and not conveyor_started and conveyor_start_due:
                 interlock = _actual_conveyor_start_interlock()
                 conveyor_start_interlock_history.append({
                     "time_s": float(simulation_time), **interlock,
@@ -3825,17 +3899,14 @@ try:
                     json.dumps(zero_point_contact_resolver.snapshot(), indent=2), encoding="utf-8")
                 break
             render = (step + 1) % args.render_every == 0 or step == physics_steps - 1
+            receiver_monitor_stride = min(args.render_every, max(1, int(physics_hz / 15)))
+            monitor_receivers = (step + 1) % receiver_monitor_stride == 0 or step == physics_steps - 1
+            _advance_ideal_bodies(physics_dt)
             world.step(render=False, update_fabric=True)
+            _verify_ideal_body_feedback()
             simulation_time = (step + 1) * physics_dt
             if conveyor_enabled:
-                _update_conveyor_visual_markers(physics_dt)
-            release_clearance_failure = target_cup_release_gate.observe(
-                simulation_time, active_contact_headers, target_path=target_carton_path,
-                compliant_paths=compliant_cup_collider_paths)
-            for event in target_cup_release_gate.events[target_cup_release_logged_events:]:
-                event_log.append(event)
-                print("FANUC_REPLAY_EVENT=" + json.dumps(event), flush=True)
-            target_cup_release_logged_events = len(target_cup_release_gate.events)
+                _update_conveyor_visual_markers(physics_dt, apply_transforms=render)
             if stack_monitor is not None and grasp_enabled and not release_commanded:
                 actual_stack_states = _capture_carton_states()
                 actual_boxes = {_state_obb(item).name: _state_obb(item) for item in actual_stack_states}
@@ -3849,7 +3920,7 @@ try:
                 if not stack_observation["accepted"]:
                     runtime_stop_reason = stack_observation["reason"]
                     break
-            if render and retained_receiver_records:
+            if monitor_receivers and retained_receiver_records and not ideal_outfeed_mode:
                 from unloading_sim.release_motion import receiver_outlet_clearance, retained_receiver_envelope
                 from unloading_sim.conveyor_placement import support_union_audit
                 receiver_boxes = {name: OBB(item["center_m"], np.asarray(item["size_m"]) / 2,
@@ -3881,7 +3952,7 @@ try:
                         receiver_instability_started.setdefault(prior_name, simulation_time)
                         if simulation_time - receiver_instability_started[prior_name] >= 0.5:
                             runtime_stop_reason = "RETAINED_CARTON_RECEIVER_SUPPORT_LOST"
-                    if step % int(physics_hz) < args.render_every or not support["supported"]:
+                    if step % int(physics_hz) < receiver_monitor_stride or not support["supported"]:
                         retained_receiver_history.append({"target": prior_name, "time_s": simulation_time,
                             "position_m": prior.center.tolist(), "outlet_clearance_m": clearance,
                             "held": transport.get("held", False), "support": support})
@@ -3919,6 +3990,8 @@ try:
                                             "attached": bool(grasp_enabled and not release_commanded)})
                 rendered_rgba = np.asarray(rgb_annotator.get_data())
                 if rendered_rgba.ndim == 3 and rendered_rgba.shape[-1] >= 3:
+                    if rendered_rgba.shape[:2] != (args.height, args.width):
+                        raise RuntimeError("actual RGB dimensions differ from the bound recording output")
                     rendered_rgb = rendered_rgba[..., :3].astype(np.uint8).copy()
                     if args.record_replay:
                         replay_frames.append(Image.fromarray(rendered_rgb))
@@ -3987,6 +4060,13 @@ try:
                                 f"Height {shown_height * 1000:.1f} mm · wait {post_release_wait_s:.2f} s · {'wait for separation' if release_commanded and np.linalg.norm(command_velocity) < 1e-6 else 'turn to next carton' if release_commanded else 'current carton'}",
                             ]
                             assumption = "Physics: stack contact kept; only J5/J6-owned-tool internal pairs exempt"
+                        if ideal_outfeed_mode:
+                            assumption = ("落带前物理执行；落带后理想输送；后道倾覆/碰撞不评估"
+                                if hud_chinese_enabled else
+                                "Physical until landing; ideal outfeed afterwards; downstream tipping/collision not evaluated")
+                            received = len(ideal_transport_records)
+                            outfed = sum(item.get("state") == OUTFED for item in ideal_transport_records.values())
+                            lines.append(f"Actual received {received} | ideal outfed {outfed}")
                         status_color = ((72, 232, 150, 255) if conveyor_running
                                         else (255, 205, 92, 255) if state_key == "waiting_clearance"
                                         else (210, 220, 232, 255))
@@ -4172,6 +4252,7 @@ try:
                 and release_executed
                 and release_event_time is not None
                 and conveyor_initial_direction_world is not None
+                and (not ideal_outfeed_mode or actual_reception_state is None)
             ):
                 payload_positions, _ = target_body.get_world_poses()
                 payload_linear_velocities, _ = target_body.get_velocities()
@@ -4235,9 +4316,10 @@ try:
                     minimum_footprint_overlap_ratio=1.0,
                     max_linear_speed_m_s=float(actual_state_gates.get("support_max_linear_speed_m_s", 0.03)),
                     max_angular_speed_rad_s=float(actual_state_gates.get("support_max_angular_speed_rad_s", 0.08)),
-                    support_surface_velocity_world_m_s=_actual_receiver_velocity())
+                    support_surface_velocity_world_m_s=_actual_receiver_velocity(),
+                    evaluate_stability=not ideal_outfeed_mode)
                 if (target_landing_center is None and actual_reception_audit.accepted
-                        and _actual_support_contact_observed()):
+                        and _actual_support_contact_observed() and release_open_confirmed):
                     target_landing_center = payload_center.copy()
                     target_landing_time_s = simulation_time
                     actual_reception_state = {"time_s": simulation_time, "position_m": payload_center.tolist(),
@@ -4245,7 +4327,49 @@ try:
                         "linear_velocity_m_s": np.asarray(landing_linear.numpy())[0].tolist(),
                         "angular_velocity_rad_s": np.asarray(landing_angular.numpy())[0].tolist(),
                         "support": actual_reception_audit.to_dict()}
-                    event_log.append({"event": "actual_receiver_reception", **actual_reception_state})
+                    event_log.append({"event": "actual_receiver_reception", "carton_id": metadata["target"], **actual_reception_state})
+                    if ideal_outfeed_mode:
+                        actual_box = OBB(payload_center, np.asarray(target_primitive["size_m"]) / 2,
+                                         landing_rotation, str(metadata["target"]), "carton")
+                        receivers = {name: OBB(item["center_m"], np.asarray(item["size_m"]) / 2,
+                            item["rotation_matrix"], name, "conveyor") for name, item in conveyor_primitives.items()}
+                        record = begin_ideal_transport(actual_box, receiver_name=place_surface,
+                            receivers=receivers, directions=conveyor_directions_world,
+                            time_s=session_time_offset_s + simulation_time, policy=post_landing_policy,
+                            attachment_removed=release_open_confirmed and grasp_joint is None
+                                and not stage.GetPrimAtPath(grasp_joint_path).IsValid(),
+                            top_contact_observed=_actual_support_contact_observed(),
+                            support_geometry_accepted=actual_reception_audit.accepted)
+                        ideal_transport_records[actual_box.name] = record
+                        ideal_transport_ids(post_landing_policy, ideal_transport_records)
+                        carton_prim = stage.GetPrimAtPath(target_carton_path)
+                        disabled_colliders = []
+                        for prim in Usd.PrimRange(carton_prim):
+                            if prim.HasAPI(UsdPhysics.CollisionAPI):
+                                UsdPhysics.CollisionAPI(prim).CreateCollisionEnabledAttr().Set(False)
+                                disabled_colliders.append(str(prim.GetPath()))
+                        if not disabled_colliders:
+                            raise RuntimeError("ideal takeover found no actual carton collider")
+                        UsdPhysics.RigidBodyAPI(carton_prim).CreateKinematicEnabledAttr().Set(True)
+                        record["backend_transition_hold_steps_remaining"] = 2
+                        record["backend_transition_binding_seconds"] = 2 * physics_dt
+                        record["disabled_collider_paths"] = disabled_colliders
+                        ideal_actor_paths.add(target_carton_path)
+                        # Discard only this now-exempt body's stale proximity
+                        # latches. No other unresolved pair gets permission.
+                        for key in zero_point_contact_resolver.pending_keys:
+                            if target_carton_path in key[:2]:
+                                zero_point_contact_resolver.observe(key, [], lost=True, scope_token=_contact_scope_token())
+                        target_cup_release_gate.end_for_actual_ideal_takeover(simulation_time,
+                            attachment_removed=True, actual_top_landing=True)
+                        event = {"event": LANDED, "carton_id": actual_box.name,
+                            "time_s": session_time_offset_s + simulation_time,
+                            "takeover_pose_world": record["takeover_pose_world"],
+                            "source": record["completion_source"], "model": record["model"],
+                            "disabled_collider_paths": disabled_colliders}
+                        session_transport_events.append(event)
+                        event_log.append(event)
+                        print("FANUC_REPLAY_EVENT=" + json.dumps(event), flush=True)
                 if (
                     target_landing_center is not None
                     and conveyor_started
@@ -4270,6 +4394,13 @@ try:
                                 active_conveyor_surface,
                             )
                         )
+            release_clearance_failure = target_cup_release_gate.observe(
+                simulation_time, active_contact_headers, target_path=target_carton_path,
+                compliant_paths=compliant_cup_collider_paths)
+            for event in target_cup_release_gate.events[target_cup_release_logged_events:]:
+                event_log.append(event)
+                print("FANUC_REPLAY_EVENT=" + json.dumps(event), flush=True)
+            target_cup_release_logged_events = len(target_cup_release_gate.events)
             measured = np.asarray(articulation.get_dof_positions().numpy(), dtype=float)[0]
             measured_velocity = np.asarray(
                 articulation.get_dof_velocities().numpy(), dtype=float
@@ -4354,10 +4485,14 @@ try:
                     and trajectory_time >= requested_duration - 1e-12
                     and release_open_confirmed and not target_cup_release_gate.pending
                     and actual_reception_state is not None
-                    and actual_reception_audit is not None and actual_reception_audit.accepted):
+                    and actual_reception_audit is not None and actual_reception_audit.accepted
+                    and (not final_ideal_segment or all(record.get("state") == OUTFED
+                         for record in ideal_transport_records.values()))):
                 break
             if (
                 trajectory_time >= requested_duration - 1e-12
+                and (not final_ideal_segment or actual_reception_state is not None
+                     and all(record.get("state") == OUTFED for record in ideal_transport_records.values()))
                 and (
                     release_event_time is None
                     or release_executed_time_s is not None
@@ -4658,14 +4793,17 @@ try:
             production_release_adapter=production_release_adapter,
             ideal_holding_capacity_assumption=ideal_independent_mode,
             joint_positions_within_limits=joint_positions_within_limits,
-            conveyor_transport_expected=bool(conveyor_enabled and place_surface),
+            conveyor_transport_expected=bool(conveyor_enabled and place_surface and not ideal_outfeed_mode),
             conveyor_transport_engaged=conveyor_transport_engaged,
             conveyor_transport_speed_within_tolerance=conveyor_transport_speed_within_tolerance,
         )
         qualification_checks = qualification["qualification_checks"]
         qualification_failures = qualification["qualification_failures"]
         qualification_passed = qualification["qualification_passed"]
-        completed_carton_ids = list(metadata.get("completed_carton_ids", []))
+        completed_carton_ids = sorted(set(metadata.get("completed_carton_ids", []))
+                                      | set(ideal_transport_records))
+        handed_off_ids = sorted(set(metadata.get("handed_off_ids", [])) | {
+            name for name, record in ideal_transport_records.items() if record.get("state") == OUTFED})
         physical_cycle_completed = bool(full_schedule_replayed and release_open_confirmed
                                         and not target_cup_release_gate.pending
                                         and payload_motion_verified and not unexpected_contacts
@@ -4690,9 +4828,12 @@ try:
             "cartons": [{"name": item["name"], "position_m": item["center_m"],
                          "orientation_wxyz": item["quaternion_wxyz"],
                          "linear_velocity_m_s": item["linear_velocity_m_s"],
-                         "angular_velocity_rad_s": item["angular_velocity_rad_s"]} for item in final_carton_states],
+                         "angular_velocity_rad_s": item["angular_velocity_rad_s"]} for item in final_carton_states
+                         if item["name"] not in handed_off_ids],
             "completed_carton_ids": completed_carton_ids,
-            "handed_off_ids": list(metadata.get("handed_off_ids", [])),
+            "handed_off_ids": handed_off_ids,
+            "post_landing_transport": post_landing_policy,
+            "inactive_carton_ids": handed_off_ids,
             "receiver_transport_state": retained_receiver_records,
         }, indent=2), encoding="utf-8")
 
@@ -5348,6 +5489,13 @@ try:
         (args.output / "evidence_manifest.json").write_text(
             json.dumps(result["evidence_manifest"], indent=2), encoding="utf-8"
         )
+        result["post_landing_transport"] = {
+            "policy": post_landing_policy, "states": ideal_transport_records,
+            "events": session_transport_events, "actual_received_ids": completed_carton_ids,
+            "ideal_outfed_ids": handed_off_ids, "post_landing_physics_qualified": False,
+            "video_excludes_offline_planning_pauses": True}
+        (args.output / "ideal_transport_events.json").write_text(
+            json.dumps(result["post_landing_transport"], indent=2), encoding="utf-8")
         result_path = args.output / "result.json"
         result_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
         run_status_path.write_text(
@@ -5412,6 +5560,21 @@ try:
         next_integrity = contract_module.verify_m710_replay_bundle(
             next_bundle, project_root=args.project_root.resolve(),
             current_asset_audit=audit_m710_replay_assets(args.project_root.resolve(), next_bundle["metadata"]))
+        if continuation_identity["recording_output_changed"]:
+            output = next_bundle["metadata"]["rendering"]["required_output"]
+            next_size = (output["width_px"], output["height_px"])
+            if next_size != (args.width, args.height):
+                # Resize in place, keeping the existing Replicator graphs
+                # attached to the live physical scene.
+                product_prim = stage.GetPrimAtPath(render_product.path)
+                product_prim.GetAttribute("resolution").Set(Gf.Vec2i(*next_size))
+            args.width, args.height = next_size
+            args.render_every = output["render_every_physics_steps"]
+            args.output_fps = float(output["fps"])
+            hud_fonts = _load_hud_fonts(args.height)
+            # Rendering is explicitly sampled with delta_time=0; do not
+            # reconfigure the live World or its timeline clock for an FPS change.
+            print("FANUC_REPLAY_RECORDING_CHANGED=" + json.dumps(output), flush=True)
         metadata = next_bundle["metadata"]
         bundle = next_bundle
         args.bundle = next_bundle_path

@@ -42,6 +42,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--config", default="configs/validation/m710id70_layout_v1_single_carton.yaml")
     parser.add_argument("--execution-config", type=Path)
+    parser.add_argument("--reuse-motion", type=Path, help="historical candidate, reused only after current exact recheck")
     args = parser.parse_args(argv)
     ready_bytes = args.ready_file.read_bytes()
     ready = json.loads(ready_bytes)
@@ -63,7 +64,21 @@ def main(argv: list[str] | None = None) -> int:
                "--output", str(args.output.resolve()), "--execution-bundle", str(bundle)]
     if args.execution_config is not None:
         command += ["--execution-config", str(args.execution_config)]
-    process = subprocess.run(command, cwd=ROOT, check=False)
+    process = None
+    if args.reuse_motion is not None:
+        reuse_output = args.output / "historical_recheck"
+        reuse_command = [sys.executable, str(ROOT / "tools/reuse_m710_motion.py"),
+                         "--motion", str(args.reuse_motion), "--actual-state", str(actual_path),
+                         "--config", args.config, "--output", str(reuse_output.resolve())]
+        if args.execution_config is not None:
+            reuse_command += ["--execution-config", str(args.execution_config)]
+        reused = subprocess.run(reuse_command, cwd=ROOT, check=False)
+        if reused.returncode == 0:
+            process = subprocess.run([sys.executable, str(ROOT / "scripts/export_isaac_fanuc_replay.py"),
+                "--preflight", str((reuse_output / "preflight.json").resolve()),
+                "--output", str(bundle)], cwd=ROOT, check=False)
+    if process is None:
+        process = subprocess.run(command, cwd=ROOT, check=False)
     if args.ready_file.read_bytes() != ready_bytes or actual_path.read_bytes() != actual_bytes:
         raise RuntimeError("retained world state changed or its wait budget ended during planning")
     request = {"world_session_id": ready["world_session_id"],

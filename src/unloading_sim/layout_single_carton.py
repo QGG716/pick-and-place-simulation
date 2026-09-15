@@ -91,6 +91,7 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/robot_load/task.py",
     "src/unloading_sim/scene.py",
     "src/unloading_sim/serial_unloading.py",
+    "src/unloading_sim/post_landing_transport.py",
     "src/unloading_sim/support.py",
     "src/unloading_sim/timing.py",
     "src/unloading_sim/validation_motion.py",
@@ -358,7 +359,14 @@ class FrozenLayoutMotionInput:
         if self.remaining_stack_names is None:
             return ()
         remaining = set(self.remaining_stack_names)
-        return tuple(box for box in self.cartons if box.name not in remaining)
+        return tuple(box for box in self.cartons if box.name not in remaining
+                     and box.name not in self.ideal_transport_ids)
+
+    @property
+    def ideal_transport_ids(self):
+        from .post_landing_transport import ideal_transport_ids
+        return ideal_transport_ids(self.policy.data["search_strategy"].get("post_landing_transport"),
+            self.snapshot.get("actual_state_context", {}).get("receiver_transport_state", {}))
 
     @property
     def all_obstacles(self) -> tuple[OBB, ...]:
@@ -372,6 +380,8 @@ class FrozenLayoutMotionInput:
         fixed = {box.name: box for box in self.fixed_components}
         obstacles = []
         for box in self.cartons:
+            if box.name in self.ideal_transport_ids:
+                continue
             state = transport.get(box.name)
             if state is None:
                 obstacles.append(box)
@@ -448,6 +458,8 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
         raise ValueError("layout v1 forbids lift, conveyor extension/Z optimization, and base scans")
 
     strategy = _mapping(data["search_strategy"], "search_strategy")
+    from .post_landing_transport import transport_policy
+    transport_policy(strategy.get("post_landing_transport"))
     directions = _mapping(
         strategy.get("surface_directions_world"),
         "search_strategy.surface_directions_world",
@@ -1274,6 +1286,7 @@ def _build_automatic_trajectory_connector(
         ),
         collision_policy=policy.layout_validation.data.get("collision_policy"),
         surface_directions_world=strategy.get("surface_directions_world", {}),
+        post_landing_transport=strategy.get("post_landing_transport"),
     )
 
 
@@ -1582,6 +1595,15 @@ def run_layout_single_carton_audit(
             )
             rng_seed = base_seed + task_index * 10000 + pose_index * 101
             progressive_outcomes = []
+            def exact_contact_failure(q):
+                try:
+                    # Bind each IK candidate's own 72 commands before allowing
+                    # inactive bellows/stack compression at its contact pose.
+                    trajectory_connector._contact_selection(q, target, face, policy.data["suction"])
+                except ValueError as exc:
+                    return {"reason": "CONTACT_CUP_GEOMETRY_INVALID", "detail": str(exc)}
+                return trajectory_connector.validate_unloaded_state(q, scene.all_obstacles,
+                    target_contact=target, stage="contact_endpoint")
             def consume_candidate(candidate):
                 started = perf_counter()
                 outcome = trajectory_connector.plan(
@@ -1605,14 +1627,7 @@ def run_layout_single_carton_audit(
                     robot,
                     shapes,
                     (
-                        lambda q, current_target=target: (
-                            trajectory_connector.validate_unloaded_state(
-                                q,
-                                scene.all_obstacles,
-                                target_contact=current_target,
-                                stage="grasp_contact_endpoint",
-                            )
-                        )
+                        exact_contact_failure
                         if trajectory_connector is not None
                         else None
                     ),

@@ -343,6 +343,12 @@ class _RecordingMeshRobot:
 
 
 class _CompoundToolRobot:
+    def tool_all_physical_obbs(self, q):
+        return self.tool_collision_obbs(q)
+
+    def tool_compliant_collision_obbs(self, q):
+        return []
+
     def tool_collision_obbs(self, q):
         return [
             OBB([0.01 * index, 0, 1], [0.001, 0.001, 0.001], np.eye(3), f"tool_rigid_{index}", "robot")
@@ -366,7 +372,7 @@ def test_exact_validator_retains_target_and_limits_exceptions_to_mount_pairs():
     assert validator(
         np.zeros(6), [target], payload=None, target_contact=target, stage="contact"
     ) is None
-    assert mesh.calls[0][0] == ("target",)
+    assert mesh.calls[0][0] == ()  # Immutable environment/self check.
     assert mesh.calls[0][1]["ignored_geometry_obstacle_pairs"] == {
         ("base_link", "chassis")
     }
@@ -376,6 +382,14 @@ def test_exact_validator_retains_target_and_limits_exceptions_to_mount_pairs():
         for link in ("J5_link", "J6_link")
         for index in range(58)
     }
+    assert mesh.calls[2][0] == ("target",)
+    assert not mesh.calls[2][1].get("ignored_geometry_obstacle_pairs")
+    # Reusing the same joints must still check a carton's new measured pose.
+    moved = OBB([0, 0, 1], target.half_extents, np.eye(3), "target", "carton")
+    failure = validator(np.zeros(6), [moved], payload=None,
+                        target_contact=moved, stage="contact")
+    assert failure["reason"] == "RIGID_TOOL_COLLISION"
+    assert mesh.calls[-1][0] == ("target",)
 
 
 def test_exact_validator_never_uses_contact_as_a_rigid_tool_collision_waiver():
