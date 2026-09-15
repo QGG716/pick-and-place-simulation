@@ -23,7 +23,7 @@ def run_metric_depth(*, raw, source, masks, pointmap, depth, K, metadata, output
     config=MetricFitConfig(positive_infinity_is_no_hit=provenance['source']=='ISAAC_IDEAL_REGISTERED_DEPTH')
     sam=json.loads((Path(masks).parent/'cargo_instances.json').read_text())
     entries=sam.get('instances',[])
-    entries={int(v['id']):v for v in entries}
+    entries={int(v['instance_id']):v for v in entries}
     records=[]
     with np.load(masks,allow_pickle=False) as archive:
         for identity,mask in zip(archive['mask_ids'],archive['masks']):

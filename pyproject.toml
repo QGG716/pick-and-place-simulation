@@ -19,6 +19,7 @@ dependencies = [
 dev = ["pytest>=8.0"]
 viz = ["pybullet>=3.2"]
 pinocchio = ["pin>=3.0; platform_system != 'Windows'"]
+perception-metric = ["scipy>=1.10", "opencv-python-headless>=4.8"]
 
 [project.scripts]
 unloading-layer1-demo = "unloading_sim.demo:main"

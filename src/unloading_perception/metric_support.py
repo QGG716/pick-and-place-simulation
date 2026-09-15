@@ -49,8 +49,9 @@ def observation_support(depth, instance_mask, face_mask, *, erosion_px=2,
         a, b = [slice(None)]*2, [slice(None)]*2
         a[axis], b[axis] = slice(1, None), slice(None, -1)
         a, b = tuple(a), tuple(b)
-        bad = (~valid[a] | ~valid[b] |
-               (np.abs(depth[a]-depth[b]) > discontinuity_m))
+        difference = np.zeros(depth[a].shape, dtype=float)
+        np.subtract(depth[a], depth[b], out=difference, where=valid[a] & valid[b])
+        bad = (~valid[a] | ~valid[b] | (np.abs(difference) > discontinuity_m))
         jumps[a] |= bad
         jumps[b] |= bad
     retained = selected & valid & interior & ~jumps

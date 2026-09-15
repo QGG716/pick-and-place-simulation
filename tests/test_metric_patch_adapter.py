@@ -47,3 +47,12 @@ def test_support_is_bound_to_exact_instance_depth_and_calibration():
     altered=K.copy(); altered[0,0]+=1
     with pytest.raises(ValueError,match='BINDING'):
         validate_final_record(record,depth,mask,altered)
+
+
+def test_maximum_rectangle_does_not_bridge_an_occlusion_hole():
+    from unloading_perception.metric_faces import maximum_observation_rectangle
+    mask=np.ones((10,12),bool); mask[:7,4:]=False
+    rectangle=maximum_observation_rectangle(mask)
+    left,top=rectangle[0].astype(int); right,bottom=rectangle[2].astype(int)
+    assert mask[top:bottom+1,left:right+1].all()
+    assert (right-left+1)*(bottom-top+1)==40

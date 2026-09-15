@@ -35,6 +35,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--fps", type=int, default=20)
     result.add_argument("--seconds", type=float, default=12.0)
     result.add_argument("--visibility-only", action="store_true", help="Capture only the unchanged full stack, retaining first-hit instance IDs; no models or lighting acceptance")
+    result.add_argument("--geometry-algorithm-only", action="store_true", help="Use an explicitly separate diagnostic bundle; hide only its recorded mechanical occluders")
     return result
 
 
@@ -121,6 +122,8 @@ try:
         manifests = [(name, manifest) for name, manifest in manifests if name == "FULL_STACK_NOMINAL"]
         if len(manifests) != 1:
             raise ValueError("visibility diagnostic needs exactly one full-stack manifest")
+    if args.geometry_algorithm_only and (args.visibility_only or any(m.provenance.get('validation_scope') != 'GEOMETRY_ALGORITHM_ONLY' for _,m in manifests)):
+        raise ValueError('algorithm-only capture requires a separate labelled bundle')
     expected_resolution = tuple(int(value) for value in manifests[0][1].cameras[0]["resolution"])
     if (args.width, args.height) != expected_resolution:
         raise ValueError(f"sensor render must use declared full resolution {expected_resolution}")
@@ -334,6 +337,8 @@ try:
                 legacy.CreateSemanticTypeAttr().Set(taxonomy)
                 legacy.CreateSemanticDataAttr().Set(value)
         prim_paths[item["name"]] = path
+        if args.geometry_algorithm_only and item['name'] in first_manifest.provenance['omitted_mechanical_entities']:
+            UsdGeom.Imageable(cube.GetPrim()).MakeInvisible()
 
     # Finite trailer surfaces are visualization-only because layout v1 leaves
     # real trailer length and height unconfirmed.
@@ -416,9 +421,9 @@ try:
         cameras.append(scene_cameras)
 
     rig_spec = load_vision_rig_spec(project_root / "configs/isaac/perception_sensing_pose.yaml")
-    sweep_manifest = first_manifest if args.visibility_only else next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
+    sweep_manifest = first_manifest if (args.visibility_only or args.geometry_algorithm_only) else next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
     sweep_sensors = []
-    for angle_deg in (() if args.visibility_only else (-90.0, -45.0, 0.0, 45.0, 90.0)):
+    for angle_deg in (() if (args.visibility_only or args.geometry_algorithm_only) else (-90.0, -45.0, 0.0, 45.0, 90.0)):
         angle_rad = math.radians(angle_deg)
         rig_pose = evaluate_vision_rig_pose(sweep_manifest.robot["T_W_robot"], angle_rad, rig_spec)
         position = np.asarray(rig_pose.camera_center_world_m, dtype=float)
@@ -1034,7 +1039,8 @@ try:
             "union_visible_count": sum(value["union_visible"] for value in visibility_by_id.values()),
             "out_of_fov_count": sum(value["out_of_fov"] for value in visibility_by_id.values()),
             "occluded_count": sum(value["occluded"] for value in visibility_by_id.values()),
-            "objects": visibility_by_id, "robot_and_scene_geometry_visible": True,
+            "objects": visibility_by_id, "robot_and_scene_geometry_visible": not args.geometry_algorithm_only,
+            "validation_scope": "GEOMETRY_ALGORITHM_ONLY" if args.geometry_algorithm_only else "FULL_MECHANICAL_SCENE",
             "claim_boundary": "semantic rendered visibility, distinct from analytic frustum coverage",
         }
         (scene_dir / "rendered_visibility.json").write_text(json.dumps(rendered_visibility, indent=2), encoding="utf-8")
@@ -1093,12 +1099,13 @@ try:
             )},
         })
 
-    if args.visibility_only:
+    if args.visibility_only or args.geometry_algorithm_only:
         diagnostic = {
-            "status": "CAPTURE_COMPLETE", "scope": "FIRST_HIT_VISIBILITY_DIAGNOSTIC_ONLY",
+            "status": "CAPTURE_COMPLETE", "scope": "GEOMETRY_ALGORITHM_ONLY" if args.geometry_algorithm_only else "FIRST_HIT_VISIBILITY_DIAGNOSTIC_ONLY",
             "perception_code_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=project_root, text=True).strip(),
             "feasibility_reference_commit": actual_feasibility_commit,
-            "robot_and_scene_geometry_visible": True, "scenes": scene_records,
+            "robot_and_scene_geometry_visible": not args.geometry_algorithm_only, "scenes": scene_records,
+            "omitted_mechanical_entities": list(first_manifest.provenance.get('omitted_mechanical_entities', [])) if args.geometry_algorithm_only else [],
             "rendered_visibility": rendered_visibility_records,
             "lighting_acceptance": "NOT_RUN", "inference": "NOT_RUN",
         }

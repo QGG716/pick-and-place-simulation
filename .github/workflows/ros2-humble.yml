@@ -47,6 +47,17 @@ jobs:
           RUN_ID=github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} \
           ARTIFACT_ROOT="$RUNNER_TEMP/acceptance" \
           bash tools/run_humble_acceptance.sh
+      - name: Optional metric geometry CPU regression
+        shell: bash
+        run: |
+          unset PYTHONPATH PYTHONHOME
+          VENV="$RUNNER_TEMP/metric-venv"
+          /usr/bin/python3.10 -m venv "$VENV"
+          "$VENV/bin/python" -m pip install ./packages/unloading_contracts
+          "$VENV/bin/python" -m pip install -e '.[dev,perception-metric]'
+          PYTHONPATH=src:packages/unloading_contracts/src:tools:. \
+            "$VENV/bin/python" -m pytest -q tests_metric \
+            --junitxml "$RUNNER_TEMP/acceptance/metric-pytest.xml"
       - name: Upload install and test diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -57,5 +68,6 @@ jobs:
             ${{ runner.temp }}/acceptance/**/*.log
             ${{ runner.temp }}/acceptance/**/pytest.xml
             ${{ runner.temp }}/acceptance/core-pytest.xml
+            ${{ runner.temp }}/acceptance/metric-pytest.xml
             ${{ runner.temp }}/acceptance/**/summary.json
             ${{ runner.temp }}/acceptance/**/sha256.txt

@@ -40,9 +40,13 @@ def evaluate(record, truth, camera):
                      'normal_error_degrees':float(np.degrees(np.arccos(np.clip(abs(nl[axis]),-1,1)))),
                      'boundary_outside_m':float(np.linalg.norm(overflow,axis=1).max()),
                      'gt_axis':axis,'gt_sign':sign,'depth':face.get('final_support')})
-    result={'faces':rows,'complete_accepted':bool(record.get('accepted'))}
-    if record.get('accepted') and len(record.get('corners_3d',[]))==8:
-        center,axes,pdims,_=coherent_cuboid(record['corners_3d'])
+    result={'faces':rows,'complete_accepted':bool(record.get('accepted') and record.get('complete_observability')=='OBSERVABLE_METRIC_MULTIFACE')}
+    if len(record.get('corners_3d',[]))==8:
+        try:
+            center,axes,pdims,_=coherent_cuboid(record['corners_3d'])
+        except ValueError as exc:
+            result['complete_accepted']=False; result['candidate_consistency_rejection']=str(exc)
+            return result
         pa=axes@T[:3,:3].T@G[:3,:3]; mapping=np.argmax(np.abs(pa),axis=1)
         result['center_error_m']=float(np.linalg.norm(center@T[:3,:3].T+T[:3,3]-G[:3,3]))
         result['dimension_error_m']=np.abs(pdims-dims[mapping]).tolist()
@@ -58,8 +62,8 @@ def stage_audit(raw, worker, fallback, depth, mask, K, labels, seeds):
     for name,record in [('C_INITIAL_PLANES',raw),('D_UNANCHORED', {**raw,'corners_3d':raw.get('unanchored_corners_3d',[]),'camera_facing_faces':raw.get('unanchored_camera_facing_faces',[])}),
                         ('F_PNP_SCALE',worker),('G_FALLBACK',fallback)]:
         item={'stage':name,'planes':[],'corners_3d':record.get('corners_3d'),
-              'scale_changes':record.get('multiplane_refinement_scales',record.get('shape_certificate_scales')),
-              'reprojection_rmse':record.get('multiplane_pnp_rmse_px'),
+              'scale_changes':record.get('multiplane_refinement',{}).get('cuboid_dimension_scales',record.get('shape_certificate_scales')),
+              'reprojection_rmse':record.get('multiplane_refinement',{}).get('pnp_reprojection_rmse_px'),
               'cross_entity':'EVALUATED_SEPARATELY_WITH_GT_ONLY'}
         if name=='C_INITIAL_PLANES':
             planes=[(np.asarray(eq[:3]),eq[3]) for eq in raw.get('plane_equations',[])]

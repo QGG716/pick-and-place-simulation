@@ -70,6 +70,26 @@ def _binding(depth, mask, K):
                                 ('instance_mask',np.asarray(mask,bool)),('K_float64',np.asarray(K,np.float64).reshape(3,3))]}
 
 
+def maximum_observation_rectangle(mask):
+    """Largest all-observed pixel rectangle, including concave/holey regions."""
+    y,x=np.nonzero(mask)
+    if not len(x): return None
+    x0,x1=int(x.min()),int(x.max())+1; y0,y1=int(y.min()),int(y.max())+1
+    heights=np.zeros(x1-x0,dtype=int); best=(0,None)
+    for row in range(y0,y1):
+        heights=np.where(mask[row,x0:x1],heights+1,0)
+        stack=[]
+        for column,height in enumerate(np.r_[heights,0]):
+            start=column
+            while stack and stack[-1][1]>height:
+                left,previous=stack.pop(); area=int(previous*(column-left)); start=left
+                if area>best[0]: best=(area,(left+x0,row-int(previous)+1,column-1+x0,row))
+            if not stack or stack[-1][1]<height: stack.append((start,int(height)))
+    if best[1] is None: return None
+    left,top,right,bottom=best[1]
+    return np.array([[left,top],[right,top],[right,bottom],[left,bottom]],float)
+
+
 def extract_observation_labels(depth, mask, K, extractor, config=MetricFitConfig()):
     """Initial robust plane segmentation, frozen before constrained fitting.
 
@@ -86,6 +106,21 @@ def extract_observation_labels(depth, mask, K, extractor, config=MetricFitConfig
     sample = xyz[rng.choice(len(xyz), min(len(xyz), config.maximum_fit_points), replace=False)]
     random.seed(config.seed); np.random.seed(config.seed)
     extracted = extractor(sample, config.extraction_threshold_m)
+    # The upstream extractor stops below 7% of the original cloud. A narrow
+    # visible face can still contain hundreds of independent metric samples.
+    # Reuse its extractor on the residual population, before freezing labels.
+    if extracted:
+        residual = np.min(np.stack([np.abs(sample @ np.asarray(v['equation'][:3])+v['equation'][3]) for v in extracted]),axis=0)
+        remaining = sample[residual > config.extraction_threshold_m]
+        if len(remaining) >= max(config.minimum_points*2,100) and len(remaining) < .5*len(sample):
+            extra = extractor(remaining, config.extraction_threshold_m)
+            for v in extra:
+                duplicate=False
+                for old in extracted:
+                    cosine=float(np.asarray(v['normal'])@np.asarray(old['normal']))
+                    if abs(cosine)>.94 and abs(v['equation'][3]-np.sign(cosine)*old['equation'][3])<.02:
+                        duplicate=True
+                if not duplicate: extracted.append(v)
     planes = []
     for item in extracted:
         points = np.asarray(item['points'])
@@ -104,6 +139,29 @@ def extract_observation_labels(depth, mask, K, extractor, config=MetricFitConfig
     all_xyz, pixels = _points(depth, raw, K)
     errors = np.stack([np.abs(all_xyz @ n+d) for n, d in planes], axis=1)
     assignment = np.argmin(errors, axis=1)
+    # Candidate-independent organised-depth normals disambiguate a thin face
+    # even when RANSAC could not recover its plane. In particular, its pixels
+    # must not be lifted onto a different face of the same instance.
+    neighbours=[]; values=[]; neighbour_membership=[]
+    for delta in ((-3,0),(3,0),(0,-3),(0,3)):
+        xy=pixels+delta
+        xy[:,0]=np.clip(xy[:,0],0,depth.shape[1]-1); xy[:,1]=np.clip(xy[:,1],0,depth.shape[0]-1)
+        z=depth[xy[:,1],xy[:,0]]; values.append(z)
+        neighbour_membership.append(mask[xy[:,1],xy[:,0]])
+        neighbours.append(backproject_pixels(xy,np.where(np.isfinite(z)&(z>0),z,0),K))
+    local=np.cross(neighbours[1]-neighbours[0],neighbours[3]-neighbours[2])
+    lengths=np.linalg.norm(local,axis=1)
+    zvalues=np.asarray(values)
+    # A grazing plane has a large legitimate depth gradient. A fixed jump bound
+    # here would disable normals exactly where thin side faces need them most.
+    reliable=(np.isfinite(zvalues).all(axis=0)&(zvalues.min(axis=0)>0)&
+              np.asarray(neighbour_membership).all(axis=0)&(lengths>1e-9))
+    local/=np.maximum(lengths[:,None],1e-12)
+    compatible=np.abs(local@np.asarray([n for n,_ in planes]).T)>np.cos(np.radians(15))
+    unknown=reliable & ~compatible.any(axis=1)
+    assignment[unknown]=-1
+    audit['unclassified_local_normal_pixels']=int(unknown.sum())
+    audit['local_normal_selection']='OBSERVED_DEPTH_CENTRAL_DIFFERENCES_NOT_FINAL_PLANE_RESIDUAL'
     seeds = []
     for i, (normal, offset) in enumerate(planes):
         region = np.zeros(depth.shape, np.uint8)
@@ -279,19 +337,33 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
         p = origin + np.array([[low[0],low[1]], [high[0],low[1]],
                                [high[0],high[1]], [low[0],high[1]]]) @ tangents
         polygon = project(p, K)
+        center_pixel = np.rint(project(p.mean(axis=0)[None],K)[0]).astype(int)
+        distance=cv2.distanceTransform(region.astype(np.uint8),cv2.DIST_L2,5)
+        if not (0<=center_pixel[0]<depth.shape[1] and 0<=center_pixel[1]<depth.shape[0]
+                and distance[center_pixel[1],center_pixel[0]] >= .5*distance.max()):
+            cy,cx=np.unravel_index(np.argmax(distance),distance.shape)
+            ray=backproject_pixels(np.array([[cx,cy]]),[1.],K)[0]
+            center=ray*(-g['offset']/(ray@g['normal']))
+            p += center-p.mean(axis=0); polygon=project(p,K)
         # A partial patch must not bridge a nonrectangular occlusion. Shrink
         # around its supported centre until every interior lattice probe belongs
         # to this measured component. This changes patch extent, not the plane.
-        for _ in range(25):
+        for _ in range(60):
             grid = np.array([a*(1-u)*(1-v)+b*u*(1-v)+c*u*v+d*(1-u)*v
-                             for u in np.linspace(.03,.97,15) for v in np.linspace(.03,.97,15)
+                             for u in np.linspace(0.,1.,17) for v in np.linspace(0.,1.,17)
                              for a,b,c,d in [polygon]])
             ij = np.rint(grid).astype(int); inside = ((ij[:,0]>=0)&(ij[:,0]<depth.shape[1])&(ij[:,1]>=0)&(ij[:,1]<depth.shape[0]))
             supported = np.zeros(len(ij), bool); supported[inside] = region[ij[inside,1],ij[inside,0]]
-            if supported.mean() >= .99:
+            if supported.all():
                 break
             p = p.mean(axis=0)+.96*(p-p.mean(axis=0)); polygon = project(p,K)
-        if supported.mean() < .99:
+        patch_method='INSCRIBED_METRIC_AXIS_QUAD'
+        pixel_rectangle=maximum_observation_rectangle(region)
+        if pixel_rectangle is not None and abs(cv2.contourArea(pixel_rectangle.astype(np.float32))) > (abs(cv2.contourArea(polygon.astype(np.float32))) if supported.all() else 0):
+            rays=backproject_pixels(pixel_rectangle,np.ones(4),K)
+            p=rays*(-g['offset']/(rays@g['normal']))[:,None]; polygon=project(p,K)
+            patch_method='MAXIMUM_OBSERVATION_RECTANGLE_ON_MEASURED_PLANE'
+        elif not supported.all():
             continue
         boundaries = _boundary_kinds(polygon, g['normal'], g['offset'], depth, K,
                                      positive_infinity_is_no_hit=config.positive_infinity_is_no_hit)
@@ -299,6 +371,7 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
                 'plane_normal': g['normal'].tolist(), 'plane_offset_m': float(g['offset']),
                 'evidence': 'registered_metric_depth_plane', 'final_support': audit,
                 'support_label': g['label'], 'boundary_kind': 'OBSERVED_PATCH_CLASSIFIED',
+                'patch_boundary_method':patch_method,
                 'boundary_evidence': boundaries, 'physical_corners_certified': False,
                 'axis_index': g.get('axis'), 'side': 'observed',
                 'initial_plane': g['initial']}
@@ -306,7 +379,7 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
     output['projected_camera_facing_face_count'] = len(output['camera_facing_faces'])
     output['depth_supported_face_count'] = len(output['camera_facing_faces'])
     if axes is not None and len(output['camera_facing_faces']) >= 2 and not source_ambiguous:
-        _complete(output, groups, axes, all_boundary_points, depth, K, config)
+        _complete(output, groups, axes, all_boundary_points, depth, K, config, mask)
     return validate_metric_record(output, depth, mask, K, maximum_mean_m=config.maximum_mean_m,
                                   minimum_points=config.minimum_points)
 
@@ -340,6 +413,10 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
             polygon = project(p,K); pixels = polygon_pixels(polygon,np.asarray(depth).shape)
             precision = np.count_nonzero(pixels & region & mask)/max(1,np.count_nonzero(pixels))
             audit['observation_region_precision'] = precision
+            audit['patch_observation_coverage'] = np.count_nonzero(pixels & region)/max(1,np.count_nonzero(region))
+            audit['patch_pixel_support_count'] = int(np.count_nonzero(pixels & region & mask))
+            if audit['patch_pixel_support_count'] < minimum_points:
+                raise ValueError('INSUFFICIENT_PATCH_PIXEL_SUPPORT')
             if precision < .97:
                 raise ValueError('FINAL_PATCH_CROSSES_OBSERVED_BOUNDARY')
             face['final_support']=audit; accepted.append(face)
@@ -350,9 +427,19 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
     output['projected_camera_facing_face_count']=len(accepted)
     if output.get('accepted'):
         try:
-            coherent_cuboid(output['corners_3d'])
+            center,axes,dimensions,_=coherent_cuboid(output['corners_3d'])
             if len(accepted) != len(record['camera_facing_faces']):
                 raise ValueError('COMPLETE_CUBOID_LOST_OBSERVED_SUPPORT')
+            patches={f['support_label']:f for f in accepted}
+            for candidate in output['completion_diagnostics']['candidate_faces']:
+                patch=patches[candidate['support_label']]
+                p=np.asarray(patch['corners_3d_m'])
+                n=np.cross(p[1]-p[0],p[3]-p[0]); n/=np.linalg.norm(n)
+                d=-n@p.mean(axis=0)
+                full=np.asarray(output['corners_3d'])[candidate['corner_indices']]
+                if np.max(np.abs(full@n+d))>maximum_mean_m:
+                    raise ValueError('COMPLETE_CUBOID_MOVED_FROM_OBSERVED_PLANES')
+            output.update(center_3d=center.tolist(),orthogonal_axes_3d=axes.tolist(),shape_dimensions=dimensions.tolist())
             output['complete_cuboid_consistency']={'status':'PASS'}
         except ValueError as exc:
             output['accepted']=False
@@ -361,7 +448,7 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
     return output
 
 
-def _complete(output, groups, axes, all_points, depth, K, config):
+def _complete(output, groups, axes, all_points, depth, K, config, mask):
     """Shared bounds from measured planes and visible silhouette endpoints."""
     coordinates = np.concatenate(all_points) @ axes.T
     low, high = np.quantile(coordinates, [.001, .999], axis=0)
@@ -376,12 +463,42 @@ def _complete(output, groups, axes, all_points, depth, K, config):
         observed[(axis, side)] = g
     if len({i for i, _ in observed}) < 2 or np.min(high-low) <= .01:
         return
-    # Image-supported extremal bounds are a separate closed-form quantile fit.
-    # They cannot rotate/translate the depth planes. No artificial size prior or
-    # scale parameter is introduced for dimensions that have visible endpoints.
+    # Auxiliary silhouette optimisation has authority over unmeasured bounds
+    # only. SO(3) and all depth-observed plane bounds remain exactly frozen.
     free = [(i,s) for i in range(3) for s in ('low','high') if (i,s) not in observed]
-    corners = (low+(SIGNS+1)/2*(high-low)) @ axes
     pairs = [([0,3,7,4],[1,2,6,5]), ([0,1,5,4],[3,2,6,7]), ([0,1,2,3],[4,5,6,7])]
+    import cv2
+    from scipy.optimize import least_squares
+    face_boundaries=[]
+    for (axis,side),g in observed.items():
+        region=g['region'] & mask
+        signed=cv2.distanceTransform((~region).astype(np.uint8),cv2.DIST_L2,5)-cv2.distanceTransform(region.astype(np.uint8),cv2.DIST_L2,5)
+        face_boundaries.append((pairs[axis][side=='high'],signed))
+    initial = np.array([(low if s=='low' else high)[i] for i,s in free])
+    def boundary_residual(values):
+        lo,hi=low.copy(),high.copy()
+        for (i,s),v in zip(free,values): (lo if s=='low' else hi)[i]=v
+        p=(lo+(SIGNS+1)/2*(hi-lo))@axes
+        q=project(p,K)
+        residual=[]
+        for ids,signed in face_boundaries:
+            samples=np.vstack([q[a]+np.linspace(.1,.9,16)[:,None]*(q[b]-q[a]) for a,b in zip(ids,ids[1:]+ids[:1])])
+            distance=cv2.remap(signed,samples[:,0,None].astype(np.float32),samples[:,1,None].astype(np.float32),
+                               cv2.INTER_LINEAR,borderMode=cv2.BORDER_CONSTANT,borderValue=100).ravel()
+            residual.extend(distance/config.boundary_noise_scale_px*np.sqrt(config.boundary_auxiliary_weight))
+        return np.asarray(residual)
+    pixel_m=float(np.median(np.concatenate(all_points)[:,2]))/min(K[0,0],K[1,1])
+    if len(free) and face_boundaries:
+        fit=least_squares(boundary_residual,initial,bounds=(initial-6*pixel_m,initial+6*pixel_m),
+                          loss='soft_l1',diff_step=1e-3,max_nfev=60)
+        for (i,s),v in zip(free,fit.x): (low if s=='low' else high)[i]=v
+        output['metric_solver']['boundary_fit']={'objective':'SILHOUETTE_SIGNED_PIXEL_DISTANCE_ON_FREE_BOUNDS',
+            'initial_free_bounds_m':initial.tolist(),'final_free_bounds_m':fit.x.tolist(),
+            'normalised_cost':float(fit.cost),'observed_plane_motion_m':0.,'rotation_motion_rad':0.}
+    if np.min(high-low)<=.01:
+        output['completion_diagnostics']={'rejection':'NONPOSITIVE_OR_UNRESOLVED_BOUND_INTERVAL'}
+        return
+    corners = (low+(SIGNS+1)/2*(high-low)) @ axes
     candidate_faces = []
     for (axis, side), g in observed.items():
         ids = pairs[axis][side=='high']; p = corners[ids]; polygon = project(p,K)
@@ -389,7 +506,7 @@ def _complete(output, groups, axes, all_points, depth, K, config):
                                      positive_infinity_is_no_hit=config.positive_infinity_is_no_hit)
         # Shared intersection lines are physical edges only when both patches
         # actually reach them; outside depth change already supplies evidence.
-        candidate_faces.append({'axis':axis,'side':side,'corner_indices':ids,
+        candidate_faces.append({'axis':axis,'side':side,'corner_indices':ids,'support_label':g['label'],
                                 'corners_2d':polygon.tolist(),'boundary_evidence':boundaries})
     physical = all(b['kind']=='PHYSICAL_EDGE_SUPPORTED' for f in candidate_faces for b in f['boundary_evidence'])
     output['completion_diagnostics'] = {'bounds_low':low.tolist(),'bounds_high':high.tolist(),
