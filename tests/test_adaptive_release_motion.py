@@ -118,11 +118,15 @@ def test_drop_export_and_runtime_keep_release_and_landing_centers_distinct():
             "load_bearing_support_names": ["belt"], "release_mode": SHORT_DROP_RELEASE,
             "release_prediction": prediction, "actual_box_pose_world": box.world_from_local.tolist(),
             "release_center_world_m": box.center.tolist(), "support": prediction["actual_support"]}}
-    evidence = _validated_place_evidence(segment)
+    primitive = lambda b, dynamic: {"name": b.name, "size_m": (b.half_extents*2).tolist(),
+        "center_m": b.center.tolist(), "rotation_matrix": b.rotation.tolist(),
+        "dynamic": dynamic, "category": b.category}
+    primitives = [primitive(box, True), primitive(belt, False)]
+    with pytest.raises(ValueError, match="current scene is required"):
+        _validated_place_evidence(segment)
+    evidence = _validated_place_evidence(segment, scene_primitives=primitives)
     assert evidence["release_center_m"][2] == pytest.approx(.775)
     assert evidence["place_center_m"][2] == pytest.approx(.75)
-    primitive = lambda b, dynamic: {"name": b.name, "size_m": (b.half_extents*2).tolist(),
-        "center_m": b.center.tolist(), "rotation_matrix": b.rotation.tolist(), "dynamic": dynamic}
     metadata = {"target": "box", "release_prediction": prediction, "selected_place_support_names": ["belt"],
         "scene_primitives": [primitive(box, True), primitive(belt, False)]}
     state = dict(position=box.center, rotation=box.rotation, linear_velocity=[0, 0, 0],

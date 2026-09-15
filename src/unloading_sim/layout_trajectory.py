@@ -34,6 +34,8 @@ from .release_motion import (MOTION_SEMANTICS, ReleasePolicy, predict_release,
                              receiver_transport_support, receiver_footprint_reserve)
 from .geometry import OBB, rotation_matrix_from_rotation_vector, rotation_vector_from_matrix
 from .ik import iter_ik_solutions, pose_error, solve_ik_multistart
+from .release_motion import release_flight_envelope
+from .motion_quality import path_quality
 from .planner import RRTConnectPlanner
 from .pinocchio_backend import PinocchioHppFclBackend
 from .validation_physics import (
@@ -288,6 +290,9 @@ def validate_layout_trajectory_stage_contract(
 class LayoutTrajectoryBudget:
     """Deterministic search limits; none of these values relax geometry."""
 
+    candidate_wall_time_s: float = 30.0
+    stage_wall_time_s: float = 12.0
+    postprocess_wall_time_s: float = 3.0
     grasp_branches: int = 4
     task_pose_connection_attempts: int = 12
     stage_ik_candidates: int = 3
@@ -336,6 +341,7 @@ class LayoutTrajectoryBudget:
                 or self.local_transit_cartesian_sample_budget < 0):
             raise ValueError("local transit sample budget must be a nonnegative integer")
         positive_names = (
+            "candidate_wall_time_s", "stage_wall_time_s", "postprocess_wall_time_s",
             "rrt_step_rad",
             "edge_resolution_rad",
             "cartesian_step_m",
@@ -542,8 +548,18 @@ class ExactM710LayoutStateValidator:
             )
         self._geometry_cache = {}
         self._static_cache = {}
+        self._geometry_signature = None
+        self.performance_counters = {}
         self.commanded_cup_mask = None
         self.stack_carton_names = set()
+
+    def _profile_call(self, name, function, *args, **kwargs):
+        started = perf_counter()
+        try:
+            return function(*args, **kwargs)
+        finally:
+            self.performance_counters[name + "_seconds"] = self.performance_counters.get(name + "_seconds", 0.) + perf_counter()-started
+            self.performance_counters[name + "_calls"] = self.performance_counters.get(name + "_calls", 0) + 1
 
     @staticmethod
     def _collision_failure(result, reason: str) -> Mapping[str, Any] | None:
@@ -576,7 +592,9 @@ class ExactM710LayoutStateValidator:
             (np.asarray(robot_bounds[box.name]["lower_m"]), np.asarray(robot_bounds[box.name]["upper_m"]))
             if box.name in robot_bounds else (box.corners().min(axis=0), box.corners().max(axis=0))))
             for box in robot_boxes]
-        bodies = [*self.tool_transform_robot.tool_collision_obbs(q), *self._compliant_boxes(q)]
+        cached = self._geometry_cache.get(np.asarray(q, float).tobytes())
+        bodies = ([*cached[0], *cached[1]] if cached is not None else
+                  [*self.tool_transform_robot.tool_collision_obbs(q), *self._compliant_boxes(q)])
         if payload is not None:
             bodies.append(payload)
         for body in bodies:
@@ -620,6 +638,14 @@ class ExactM710LayoutStateValidator:
         environment = list(obstacles)
         if payload is not None and payload.name not in set(names):
             environment.append(payload)
+        signature = (getattr(self.mesh_robot, "geometry_revision", 0),
+            np.asarray(getattr(self.tool_transform_robot, "tool_collision_local_boxes", [])).tobytes(),
+            np.asarray(getattr(self.tool_transform_robot, "tool_compliant_collision_local_boxes", [])).tobytes(),
+            np.asarray(getattr(self.tool_transform_robot, "base_transform", [])).tobytes(),
+            self.nominal_cup_compression_m)
+        if signature != self._geometry_signature:
+            self._geometry_cache.clear(); self._static_cache.clear()
+            self._geometry_signature = signature
         q_key = q.tobytes()
         if q_key not in self._geometry_cache:
             if len(self._geometry_cache) >= 4096:
@@ -638,36 +664,40 @@ class ExactM710LayoutStateValidator:
             }
         fixed = [box for box in environment if box.category not in {"carton", "payload"}]
         dynamic = [box for box in environment if box.category in {"carton", "payload"}]
-        static_key = (q_key, tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in fixed))
+        static_key = (q_key, repr(self.collision_policy), self.collision_margin_m,
+                      self.floor_z_m, self.right_wall_y_m, self.left_wall_y_m,
+                      getattr(self.mesh_robot, "geometry_revision", 0), tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in fixed))
         if static_key not in self._static_cache:
             if len(self._static_cache) >= 4096:
                 self._static_cache.clear()
-            result = self.mesh_robot.collision_result(q, fixed, margin=self.collision_margin_m,
+            result = self._profile_call("robot_fixed_including_self", self.mesh_robot.collision_result, q, fixed, margin=self.collision_margin_m,
                 ignored_geometry_obstacle_pairs={("base_link", self.base_support_obstacle_name)}, check_self=True)
             failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
             if failure is None:
-                result = self.mesh_robot.collision_result(q, tool_boxes, margin=self.collision_margin_m,
+                result = self._profile_call("robot_tool", self.mesh_robot.collision_result, q, tool_boxes, margin=self.collision_margin_m,
                     ignored_geometry_obstacle_pairs=self.collision_policy.wrist_tool_pairs([box.name for box in tool_boxes]),
                     check_self=False)
                 failure = self._collision_failure(result, "ROBOT_RIGID_TOOL_COLLISION")
             if failure is None:
-                for i, j in possible_inflated_obb_pairs(tool_boxes, fixed, self.collision_margin_m):
-                    if tool_boxes[i].intersects_obb(fixed[j], margin=self.collision_margin_m):
+                for i, j in self._profile_call("tool_fixed_broadphase", possible_inflated_obb_pairs, tool_boxes, fixed, self.collision_margin_m):
+                    if self._profile_call("tool_fixed_narrowphase", tool_boxes[i].intersects_obb, fixed[j], margin=self.collision_margin_m):
                         failure = {"reason": "RIGID_TOOL_COLLISION", "pair": [tool_boxes[i].name, fixed[j].name]}
                         break
             if failure is None:
-                failure = self._plane_failure(q, None, stage)
+                failure = self._profile_call("plane_bounds", self._plane_failure, q, None, stage)
             self._static_cache[static_key] = failure
+        else:
+            self.performance_counters["static_cache_hits"] = self.performance_counters.get("static_cache_hits", 0) + 1
         failure = self._static_cache[static_key]
         if failure is not None:
             return failure
-        result = self.mesh_robot.collision_result(q, dynamic, margin=self.collision_margin_m, check_self=False)
+        result = self._profile_call("robot_dynamic", self.mesh_robot.collision_result, q, dynamic, margin=self.collision_margin_m, check_self=False)
         failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
         if failure is not None:
             return failure
         # Conservative broad phase around the *locally inflated* OBBs.  It
         # only skips disjoint world AABBs; the unchanged SAT remains final.
-        for tool_index, obstacle_index in possible_inflated_obb_pairs(
+        for tool_index, obstacle_index in self._profile_call("tool_dynamic_broadphase", possible_inflated_obb_pairs,
             tool_boxes, dynamic, self.collision_margin_m
         ):
             tool, obstacle = tool_boxes[tool_index], dynamic[obstacle_index]
@@ -685,7 +715,7 @@ class ExactM710LayoutStateValidator:
                 if (current_target or stack_contact) and tool.signed_distance_obb(obstacle) >= (
                     -self.collision_policy.maximum_compliant_cup_additional_compression_m):
                     continue
-            if tool.intersects_obb(obstacle, margin=self.collision_margin_m):
+            if self._profile_call("tool_dynamic_narrowphase", tool.intersects_obb, obstacle, margin=self.collision_margin_m):
                 return {
                     "reason": "RIGID_TOOL_COLLISION",
                     "pair": [tool.name, obstacle.name],
@@ -803,6 +833,7 @@ class LayoutTrajectoryConnector:
             "trajectory_ik_wall_seconds": 0.0,
             "path_connection_wall_seconds_inclusive": 0.0,
             "collision_validation_wall_seconds_nested": 0.0,
+            "kinematics_and_joint_checks_wall_seconds": 0.0,
             "final_recheck_wall_seconds": 0.0,
         }
         self._state_cache: dict[tuple[Any, ...], Mapping[str, Any] | None] = {}
@@ -814,9 +845,14 @@ class LayoutTrajectoryConnector:
     def start_planning_request(self, start_monotonic: float | None = None) -> None:
         """Reset bounded reuse and bind every nested search to one deadline."""
         start = perf_counter() if start_monotonic is None else float(start_monotonic)
-        self._deadline_monotonic = (None if self.budget.planning_wall_time_s is None
+        self._request_deadline_monotonic = (None if self.budget.planning_wall_time_s is None
                                     else start + self.budget.planning_wall_time_s)
+        self._final_export_reserve_s = (0. if self.budget.planning_wall_time_s is None else
+                                       min(15., .05*self.budget.planning_wall_time_s))
+        self._deadline_monotonic = (None if self._request_deadline_monotonic is None else
+                                    self._request_deadline_monotonic-self._final_export_reserve_s)
         self._state_cache.clear()
+        self._lookahead_remaining_s = 12.0
 
     def _remaining_wall_time(self) -> float | None:
         if self._deadline_monotonic is None:
@@ -857,6 +893,10 @@ class LayoutTrajectoryConnector:
     def budget_evidence(self) -> dict[str, Any]:
         return {
             "task_pose_connection_attempts": self.budget.task_pose_connection_attempts,
+            "candidate_schedule": "BREADTH_THEN_BOUNDED_DEEPENING_20_50_100_SECONDS",
+            "stage_wall_time_s": self.budget.stage_wall_time_s,
+            "postprocess_wall_time_s": self.budget.postprocess_wall_time_s,
+            "final_export_reserve_s": getattr(self, "_final_export_reserve_s", 0.),
             "task_pose_scope": "shared_by_one_task_across_faces_rolls_and_task_set_variants",
             "grasp_branches_per_pose": self.budget.grasp_branches,
             "stage_ik_candidates": self.budget.stage_ik_candidates,
@@ -925,12 +965,22 @@ class LayoutTrajectoryConnector:
         cache_key = None
         if cacheable and q_array.shape == (6,) and np.all(np.isfinite(q_array)):
             attachment_key = () if attachment is None else tuple(
-                np.round(attachment.rigid.tcp_from_box.flatten(), 10)
+                attachment.rigid.tcp_from_box.flatten()
             )
             cache_key = (
-                stage, tuple(np.round(q_array, 10)), attachment_key,
-                tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in obstacles), tuple(support_names),
-                None if target_contact is None else (target_contact.name, target_contact.world_from_local.tobytes()),
+                stage, q_array.tobytes(), attachment_key,
+                repr(self.collision_policy), self.collision_margin_m, self.contact_tolerance_m,
+                self.joint_margin_rad, self.maximum_jacobian_condition, self.official_radial_reach_m,
+                self.radial_guard_tolerance_m,
+                getattr(self.robot_state_validator, "nominal_cup_compression_m", None),
+                tuple(getattr(self.robot_state_validator, "commanded_cup_mask", None) or ()),
+                tuple(sorted(getattr(self.robot_state_validator, "stack_carton_names", []))),
+                self.validator_identity, np.asarray(self.robot.base_transform).tobytes(),
+                getattr(getattr(self.robot_state_validator, "mesh_robot", None), "geometry_revision", 0),
+                np.asarray(getattr(getattr(self.robot_state_validator, "tool_transform_robot", None), "tool_collision_local_boxes", [])).tobytes(),
+                np.asarray(getattr(getattr(self.robot_state_validator, "tool_transform_robot", None), "tool_compliant_collision_local_boxes", [])).tobytes(),
+                tuple((box.name, box.category, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in obstacles), tuple(support_names),
+                None if target_contact is None else (target_contact.name, target_contact.world_from_local.tobytes(), target_contact.half_extents.tobytes()),
             )
             if cache_key in self._state_cache:
                 self._statistics["state_cache_hits"] += 1
@@ -992,6 +1042,7 @@ class LayoutTrajectoryConnector:
                     "limit_m": limit,
                 })
 
+        self._statistics["kinematics_and_joint_checks_wall_seconds"] += perf_counter()-validation_started
         payload = None if attachment is None else attachment.box_at(q_array)
         backend_failure = self.robot_state_validator(
             q_array,
@@ -1122,7 +1173,7 @@ class LayoutTrajectoryConnector:
         connection_started = perf_counter()
         result = planner.plan(
             np.asarray(start, dtype=float), np.asarray(goal, dtype=float),
-            time_limit_seconds=self._remaining_wall_time(),
+            time_limit_seconds=min(self._remaining_wall_time() or float("inf"), self.budget.stage_wall_time_s),
         )
         self._statistics["path_connection_wall_seconds_inclusive"] += (
             perf_counter() - connection_started
@@ -1142,11 +1193,19 @@ class LayoutTrajectoryConnector:
         }
         if not result.success:
             return [], {
-                "reason": "PATH_SEARCH_EXHAUSTED",
+                "reason": "STAGE_CONNECTION_DEADLINE" if "time limit" in result.message else "PATH_SEARCH_EXHAUSTED",
                 "stage": stage,
                 "detail": result.message,
                 "iterations": int(result.iterations),
             }, evidence
+        if attachment is None and target_contact is None and stage == "pregrasp":
+            before_quality = path_quality(result.path, fk=self.robot.fk)
+            result.path, simplify = planner.bounded_shortcut(result.path,
+                deadline=min(self._deadline_monotonic or float("inf"),
+                             perf_counter() + self.budget.postprocess_wall_time_s))
+            evidence["simplification"] = {**simplify, "before": before_quality,
+                "after": path_quality(result.path, fk=self.robot.fk),
+                "domain": "UNLOADED_FREE_CONNECTION_ONLY"}
         failure = self._path_failure(
             result.path,
             obstacles,
@@ -1203,6 +1262,11 @@ class LayoutTrajectoryConnector:
         )
         return stream
 
+    def _path_quality(self, path):
+        return path_quality(path, fk=self.robot.fk, joint_limits=self.robot.joint_limits,
+            velocity_limits=getattr(getattr(self.robot, "model", None), "velocityLimit", None),
+            jacobian=self.robot.geometric_jacobian)
+
     def _connect_pose(
         self,
         pose: np.ndarray,
@@ -1234,6 +1298,7 @@ class LayoutTrajectoryConnector:
         selected: np.ndarray | None = None
         selected_path: list[np.ndarray] = []
         failure: Mapping[str, Any] | None = None
+        feasible = []
         for index in range(self.budget.stage_connection_attempts):
             if remaining <= 0:
                 break
@@ -1280,11 +1345,19 @@ class LayoutTrajectoryConnector:
                 }
             )
             if candidate_failure is None:
+                quality = self._path_quality(path)
+                attempts[-1]["path_quality"] = quality
+                feasible.append((quality["soft_score"], candidate.q.copy(), path))
                 selected = candidate.q.copy()
                 selected_path = path
                 failure = None
-                break
-            failure = candidate_failure
+                if attachment is not None or len(feasible) >= 2 or self._deadline_reached():
+                    break
+            elif not feasible:
+                failure = candidate_failure
+        if feasible:
+            _, selected, selected_path = min(feasible, key=lambda item: item[0])
+            failure = None
         stream_evidence = stream.evidence()
         self._statistics["ik_calls"] += 1
         self._statistics["ik_seeds_attempted"] += int(stream_evidence.get("seeds_attempted", 0))
@@ -1293,6 +1366,9 @@ class LayoutTrajectoryConnector:
             termination = "SUCCESS"
         elif remaining <= 0 and not attempts:
             termination = "SHARED_CONNECTION_BUDGET_EXHAUSTED"
+            failure = {"reason": termination, "stage": stage}
+        elif self._deadline_reached():
+            termination = "STAGE_IK_DEADLINE"
             failure = {"reason": termination, "stage": stage}
         elif not attempts:
             termination = "NO_VALID_IK"
@@ -1743,7 +1819,9 @@ class LayoutTrajectoryConnector:
                     approach = [*prefix, *terminal_path[1:]]
                     evidence = {"selected_mode": mode, "attempts": attempts,
                         "joint_path_length_rad": float(np.sum(np.linalg.norm(np.diff(approach, axis=0), axis=1))),
-                        "independent_pregrasp_station": mode != "direct"}
+                        "independent_pregrasp_station": mode != "direct",
+                        "free_connection_end_index": len(prefix) - 1,
+                        "terminal_contact_start_index": len(prefix) - 1}
                     if mode == "direct":
                         return [start.copy()], approach, None, evidence
                     return prefix, terminal_path, None, evidence
@@ -1920,10 +1998,11 @@ class LayoutTrajectoryConnector:
                         departure = segment["post_release_safe_residence"]
                         lookahead = departure.get("next_contact", {})
                         cost = float(np.sum(np.linalg.norm(np.diff(segment["path"], axis=0), axis=1)))
-                        cost += float(lookahead.get("joint_path_length_rad", 0.))
-                        rank = (lookahead.get("status") == "BOUNDED_NEXT_CONTACT_SEARCH_FAILED", cost,
+                        next_cost = lookahead.get("joint_path_length_rad")
+                        record["current_motion_cost_rad"] = cost
+                        record["two_task_cost_rad"] = None if next_cost is None else cost + next_cost
+                        rank = (next_cost is None, cost if next_cost is None else cost + next_cost,
                                 segment["place"]["release_prediction"]["flight_time_s"])
-                        record["complete_motion_cost_rad"] = cost
                         release_choices.append((rank, segment, branch_trace))
                     release_attempts.append(record)
                     # Compare supported release with one feasible bounded drop;
@@ -1934,7 +2013,7 @@ class LayoutTrajectoryConnector:
                     _, segment, branch_trace = min(release_choices, key=lambda item: item[0])
                     failure = None
                     segment["place"]["release_selection"] = {
-                        "objective": "checked_current_and_next_contact_joint_path_length_then_flight_time",
+                        "objective": "prefer_checked_next_connection_then_current_cost_unknown_next_cost_explicit",
                         "attempts": release_attempts}
                 branch_trace["release_attempts"] = release_attempts
                 placement_attempts.append({"candidate": placement.as_dict(), "failure": failure,
@@ -2045,20 +2124,17 @@ class LayoutTrajectoryConnector:
         candidates = ([] if self.next_contact_provider is None else
                       self.next_contact_provider(placed.name))
         if not candidates:
-            return {"status": "NO_NEXT_CONTACT_CANDIDATE", "attempts": []}
-        if self.post_landing_transport["mode"] == "ideal_outfeed":
-            # Sorting hint only. Do not spend another full connection search
-            # at each release height/departure endpoint. The actual-state next
-            # task reuses this residence configuration as its first IK seed.
-            tcp = self.robot.fk(start)[:3, 3]
-            selected = min(candidates, key=lambda item: float(np.linalg.norm(
-                np.asarray(item["requested_virtual_contact"])[:3, 3] - tcp)))
-            return {"status": "GEOMETRIC_NEXT_CONTACT_HINT", "target": selected["target"].name,
-                    "start_q_rad": start.tolist(), "requires_actual_state_replan": True,
-                    "released_carton_swept_occupancy_retained": False, "attempts": []}
+            return {"status": "NOT_EVALUATED", "reason": "NO_NEXT_CONTACT_CANDIDATE", "joint_path_length_rad": None, "attempts": []}
+        remaining = getattr(self, "_lookahead_remaining_s", 12.0)
+        if remaining <= 0:
+            return {"status": "NOT_EVALUATED", "joint_path_length_rad": None,
+                    "reason": "REQUEST_LOOKAHEAD_BUDGET_EXHAUSTED", "attempts": [],
+                    "requires_actual_state_replan": True}
+        # The provider already encodes the next real row/center order.
+        candidates = [c for c in candidates if c["target"].name == candidates[0]["target"].name][:2]
         before = perf_counter()
         outer_deadline = self._deadline_monotonic
-        self._deadline_monotonic = min(outer_deadline or float("inf"), before + 8.)
+        self._deadline_monotonic = min(outer_deadline or float("inf"), before + min(4., remaining))
         # A single conservative union encloses zero progress and all bounded
         # belt progress. It cannot assume the box already took the belt speed.
         delta = sweep[-1].center - sweep[0].center
@@ -2067,6 +2143,8 @@ class LayoutTrajectoryConnector:
             sweep[0].rotation, placed.name, placed.category)
         world = [*obstacles, future]
         attempts = []
+        saved_mask = getattr(self.robot_state_validator, "commanded_cup_mask", None)
+        saved_stack = getattr(self.robot_state_validator, "stack_carton_names", set()).copy()
         try:
             for index, candidate in enumerate(candidates):
                 if self._deadline_reached():
@@ -2079,8 +2157,16 @@ class LayoutTrajectoryConnector:
                 self._statistics["ik_calls"] += 1
                 self._statistics["ik_seeds_attempted"] += int(stream.evidence().get("seeds_attempted", 0))
                 self._statistics["ik_iterations_consumed"] += int(stream.evidence().get("iterations_consumed", 0))
-                failure = {"reason": "NO_NEXT_CONTACT_IK"}
+                failure = {"reason": "LOOKAHEAD_DEADLINE" if self._deadline_reached() else "NO_NEXT_CONTACT_IK"}
                 if solved is not None:
+                    try:
+                        self._contact_selection(solved.q, target, candidate["face"], candidate["suction"])
+                        failure = self._state_failure(solved.q, world, target_contact=target, stage="next_contact")
+                    except ValueError as exc:
+                        failure = {"reason": "NEXT_CONTACT_COVERAGE_FAILED", "detail": str(exc)}
+                    if failure is not None:
+                        attempts.append({"target": target.name, "face": candidate["face"], "failure": failure})
+                        continue
                     prefix, terminal, failure, approach = self._approach(start, solved.q,
                         requested, world, target, seed=seed + index * 100 + 1)
                     if failure is None:
@@ -2101,10 +2187,15 @@ class LayoutTrajectoryConnector:
                                 "attempts": attempts, "requires_actual_state_replan": True,
                                 "released_carton_swept_occupancy_retained": True}
                 attempts.append({"target": target.name, "face": candidate["face"], "failure": failure})
-            return {"status": "BOUNDED_NEXT_CONTACT_SEARCH_FAILED", "attempts": attempts,
+            return {"status": "BOUNDED_NEXT_CONTACT_SEARCH_FAILED", "cost_status": "UNKNOWN",
+                "requires_actual_state_replan": True, "joint_path_length_rad": None, "attempts": attempts,
                 "planning_wall_seconds": perf_counter() - before,
                 "safe_current_residence_remains_valid": True}
         finally:
+            self._lookahead_remaining_s = max(0., remaining - (perf_counter() - before))
+            self.robot_state_validator.commanded_cup_mask = saved_mask
+            self.robot_state_validator.stack_carton_names = saved_stack
+            self._state_cache.clear()
             self._deadline_monotonic = outer_deadline
 
     def _departure(self, start, placed, obstacles, direction, *, seed, working_normal,
@@ -2118,11 +2209,7 @@ class LayoutTrajectoryConnector:
         clearance = 2 * self.collision_margin_m + self.contact_tolerance_m
         # Sweep far enough to pass the entire tool, including a stalled carton.
         span = max(float(np.max(b.corners() @ direction)) for b in tool) - float(np.min(placed.corners() @ direction))
-        landing_pose = np.asarray(release_prediction["predicted_landing_pose_world"])
-        drift = landing_pose[:3, 3] - placed.center
-        flight_envelope = OBB(placed.center + drift / 2,
-            placed.half_extents + np.abs(placed.rotation.T @ drift) / 2,
-            placed.rotation, placed.name, placed.category)
+        flight_envelope = release_flight_envelope(placed, release_prediction)
         sweep = departure_sweep(flight_envelope, direction, distance_m=max(clearance, span + clearance),
                                 resolution_m=self.budget.cartesian_step_m)
         if self.post_landing_transport["mode"] == "ideal_outfeed":
@@ -2133,21 +2220,21 @@ class LayoutTrajectoryConnector:
         candidates = [-np.asarray(working_normal), np.array([0., 0., 1.]), -direction]
         candidates += [candidates[0] + candidates[1], candidates[0] - direction]
         future_contacts = ([] if self.next_contact_provider is None else self.next_contact_provider(placed.name))
-        remaining = [entry["target"] for entry in future_contacts]
-        if remaining:
-            top = max(float(np.max(b.corners()[:, 2])) for b in remaining)
-            row = [b for b in remaining if abs(float(np.max(b.corners()[:, 2])) - top) < 0.02]
-            center_y = float(np.mean([b.center[1] for b in row]))
-            next_box = min(row, key=lambda b: (abs(b.center[1] - center_y), b.name))
-            candidates.insert(0, next_box.center - placed.center)
+        if future_contacts:
+            candidates.insert(0, future_contacts[0]["target"].center - placed.center)
+        # Compare translation-only and a few gradual reorientation departures.
+        # Every interpolated pose is still checked against the flight envelope.
+        variants = [(vector, turn) for i, vector in enumerate(candidates)
+                    for turn in ((0., 1.) if future_contacts and i < 2 else (0.,))]
         attempts, safe_choices, tested_directions = [], [], []
-        for index, vector in enumerate(candidates):
+        for index, (vector, turn) in enumerate(variants):
             if np.linalg.norm(vector) < 1e-10:
                 continue
             vector = vector / np.linalg.norm(vector)
-            if any(np.allclose(vector, tested, atol=1e-10, rtol=0) for tested in tested_directions):
+            if any(turn == old_turn and np.allclose(vector, tested, atol=1e-10, rtol=0)
+                   for tested, old_turn in tested_directions):
                 continue
-            tested_directions.append(vector)
+            tested_directions.append((vector, turn))
             # Project complete solids, rather than imposing a normal retreat
             # or a vertical lift. Each direction derives its own distance.
             minimum_tool = min(float(np.min(b.corners() @ vector)) for b in tool)
@@ -2157,6 +2244,13 @@ class LayoutTrajectoryConnector:
                 continue
             destination = self.robot.fk(start).copy()
             destination[:3, 3] += distance * vector
+            orientation_change = np.zeros(3)
+            if turn:
+                desired = np.asarray(future_contacts[0]["requested_virtual_contact"])
+                orientation_change = rotation_vector_from_matrix(desired[:3, :3] @ destination[:3, :3].T)
+                angle = np.linalg.norm(orientation_change)
+                orientation_change *= min(1., np.deg2rad(30.) / max(angle, 1e-12))
+                destination[:3, :3] = rotation_matrix_from_rotation_vector(orientation_change) @ destination[:3, :3]
             path, failure, search = self._cartesian(start, destination, [*obstacles, placed],
                 seed=seed + index, target_contact=placed, stage="withdrawal")
             if failure is None:
@@ -2171,25 +2265,30 @@ class LayoutTrajectoryConnector:
                     if failure is not None:
                         break
             attempts.append({"direction_world": vector.tolist(), "distance_m": distance,
+                             "orientation_change_rotvec_rad": orientation_change.tolist(),
                              "failure": failure, "search": search})
             if failure is None:
                 lookahead = self._next_contact_cost(path[-1], placed, obstacles, sweep, seed=seed + index * 1000)
                 departure_cost = float(np.sum(np.linalg.norm(np.diff(path, axis=0), axis=1)))
                 evidence = {"model": "bounded_departure_swept_occupancy_v2",
                     "selected_direction_world": vector.tolist(), "distance_m": distance,
+                    "selected_orientation_change_rotvec_rad": orientation_change.tolist(),
                     "attempts": attempts, "conveyor_surface": release_prediction["landing_support"]["receiver_names"],
                     "stationary_carton_included": True, "sweep_samples": len(sweep),
                     "next_approach_start_q_rad": path[-1].tolist(),
                     "next_contact": lookahead, "departure_joint_path_length_rad": departure_cost,
                     "fixed_normal_retreat_or_vertical_lift": False}
-                cost = departure_cost + float(lookahead.get("joint_path_length_rad", 0.))
-                rank = (lookahead["status"] == "BOUNDED_NEXT_CONTACT_SEARCH_FAILED", cost)
+                next_cost = lookahead.get("joint_path_length_rad")
+                quality = self._path_quality(path)
+                evidence["departure_quality"] = quality
+                evidence["two_task_cost_rad"] = None if next_cost is None else departure_cost + next_cost
+                rank = (next_cost is None, quality["soft_score"] if next_cost is None else quality["soft_score"] + next_cost)
                 safe_choices.append((rank, path, evidence))
-                if not future_contacts or len(safe_choices) >= 2:
+                if not future_contacts or len(safe_choices) >= 3:
                     break
         if safe_choices:
             _, selected_path, selected_evidence = min(safe_choices, key=lambda item: item[0])
-            selected_evidence["compared_safe_departures"] = [{"cost_rad": rank[1],
+            selected_evidence["compared_safe_departures"] = [{"selection_score": rank[1], "two_task_cost_rad": evidence["two_task_cost_rad"],
                 "next_contact_status": evidence["next_contact"]["status"],
                 "direction_world": evidence["selected_direction_world"]}
                 for rank, _, evidence in safe_choices]
@@ -2456,7 +2555,29 @@ class LayoutTrajectoryConnector:
         self._statistics["final_recheck_wall_seconds"] += perf_counter() - recheck_started
         return segment, None, trace
 
-    def plan(
+    def plan(self, **kwargs):
+        """One bounded candidate slice nested inside the shared request deadline."""
+        outer = self._deadline_monotonic
+        allowance = getattr(self, "candidate_slice_s", self.budget.candidate_wall_time_s)
+        started = perf_counter()
+        self._deadline_monotonic = min(outer or float("inf"), started + allowance)
+        try:
+            result = self._plan_candidate(**kwargs)
+            if not result.success and self._deadline_reached() and (outer is None or perf_counter() < outer):
+                result.statistics["termination"] = "CANDIDATE_WALL_CLOCK_DEADLINE"
+                result.failure["reason"] = "CANDIDATE_WALL_CLOCK_DEADLINE"
+            result.statistics["candidate_wall_seconds"] = perf_counter() - started
+            result.statistics["candidate_wall_budget_s"] = allowance
+            result.statistics["request_final_export_reserve_s"] = getattr(self, "_final_export_reserve_s", 0.)
+            result.statistics["validation_profile_request_cumulative"] = {
+                "validator": dict(getattr(self.robot_state_validator, "performance_counters", {})),
+                "mesh_backend": dict(getattr(getattr(self.robot_state_validator, "mesh_robot", None), "performance_counters", {})),
+                "nested_timers_overlap": True}
+            return result
+        finally:
+            self._deadline_monotonic = outer
+
+    def _plan_candidate(
         self,
         *,
         target: OBB,
@@ -2483,20 +2604,30 @@ class LayoutTrajectoryConnector:
         last_failure: Mapping[str, Any] | None = None
         for index, candidate in enumerate(grasp_candidates[: self.budget.grasp_branches]):
             q = np.asarray(candidate["q_rad"], dtype=float)
-            segment, failure, trace = self._plan_branch(
-                target=target,
-                face=face,
-                requested_virtual_contact=self._se3(
-                    requested_virtual_contact, "requested_virtual_contact"
-                ),
-                grasp_q=q,
-                home_q=home,
-                all_obstacles=all_obstacles,
-                receiver=receiver,
-                support_names=support_names,
-                suction=suction,
-                seed=int(seed) + index * 10000,
-            )
+            candidate_deadline = self._deadline_monotonic
+            slots = min(len(grasp_candidates), self.budget.grasp_branches)-index
+            remaining_s = self._remaining_wall_time()
+            branch_seconds = (self.budget.candidate_wall_time_s/slots if remaining_s is None else remaining_s/slots)
+            self._deadline_monotonic = min(candidate_deadline or float("inf"), perf_counter()+branch_seconds)
+            try:
+                segment, failure, trace = self._plan_branch(
+                    target=target,
+                    face=face,
+                    requested_virtual_contact=self._se3(
+                        requested_virtual_contact, "requested_virtual_contact"
+                    ),
+                    grasp_q=q,
+                    home_q=home,
+                    all_obstacles=all_obstacles,
+                    receiver=receiver,
+                    support_names=support_names,
+                    suction=suction,
+                    seed=int(seed) + index * 10000,
+                )
+                if segment is None and self._deadline_reached():
+                    failure = {"reason": "IK_BRANCH_SLICE_EXHAUSTED", "stage": (failure or {}).get("stage", "branch")}
+            finally:
+                self._deadline_monotonic = candidate_deadline
             attempts.append(
                 {
                     "branch": index,

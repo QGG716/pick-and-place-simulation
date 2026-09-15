@@ -85,6 +85,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--continuation-dir", type=Path,
                         help="retain this World and accept numbered offline next-bundle requests")
     parser.add_argument("--maximum-segments", type=int, default=1)
+    parser.add_argument("--comparison-stop-after-grasp-segment", type=int,
+                        help="end a comparison fragment after this segment has a real stable attachment")
     parser.add_argument("--diagnostic-only", action="store_true")
     parser.add_argument("--diagnostic-settling-steps", type=int,
                         help="short initialization diagnostic only; never a qualified replay override")
@@ -2615,7 +2617,7 @@ try:
     payload_gravity_feedforward_enabled = bool(metadata.get("attached_payload_gravity_feedforward_enabled", False))
     from unloading_sim.m710_replay_physics import (
         finite_gravity_compensated_drive_target, payload_gravity_compensation,
-        sample_joint_reference, BoundedFreeTransitGate, BoundedTargetCupReleaseClearance,
+        sample_joint_reference, RestStartGate, BoundedFreeTransitGate, BoundedTargetCupReleaseClearance,
         resolve_actual_task_stage,
     )
     last_drive_feedforward = {"robot_gravity_nm": np.zeros(len(initial)),
@@ -3383,13 +3385,27 @@ try:
                         rotation, UsdGeom.XformCommonAPI.RotationOrderXYZ
                     )
 
+        rest_start_gate = RestStartGate() if metadata.get("joint_reference") else None
+        rest_start_audit = []
+        comparison_fragment_completed = False
+
         for step in range(physics_steps):
             simulation_time = step * physics_dt
             hold_trajectory = False
+            if rest_start_gate is not None and not rest_start_gate.passed:
+                actual_start_q = np.asarray(articulation.get_dof_positions().numpy(), dtype=float)[0]
+                actual_start_qd = np.asarray(articulation.get_dof_velocities().numpy(), dtype=float)[0]
+                start_gate = rest_start_gate.evaluate(simulation_time, actual_start_q, actual_start_qd,
+                                                     positions[0, command_order])
+                hold_trajectory = start_gate["hold"]
+                rest_start_audit.append({"time_s": simulation_time, **start_gate})
+                if start_gate["reason"]:
+                    runtime_stop_reason = start_gate["reason"]
+                    break
             if stack_monitor is not None and grasp_enabled and not release_commanded and free_transit_gate is not None:
                 previous_event_count = len(free_transit_gate.events)
                 gate_result = free_transit_gate.evaluate(trajectory_time, simulation_time, stack_monitor.free_space_reached)
-                hold_trajectory = gate_result["hold"]
+                hold_trajectory = hold_trajectory or gate_result["hold"]
                 for event in free_transit_gate.events[previous_event_count:]:
                     event_log.append(event)
                     print("FANUC_REPLAY_EVENT=" + json.dumps(event), flush=True)
@@ -3784,9 +3800,12 @@ try:
                 if not support_release_accepted:
                     hold_trajectory = True
                     if simulation_time - float(support_wait_started_s) > maximum_support_wait_s:
-                        raise RuntimeError(
-                            "bounded support wait expired before the target reached its declared receiver"
-                        )
+                        runtime_stop_reason = "ACTUAL_RELEASE_SUPPORT_WAIT_TIMEOUT"
+                        event_log.append({"event": "runtime_gate_failed",
+                            "simulation_time_s": simulation_time, "trajectory_time_s": trajectory_time,
+                            "reason": runtime_stop_reason,
+                            "actual_release_prediction": actual_release_prediction})
+                        break
                 elif ideal_independent_mode:
                     enabled_attr = grasp_joint.GetPrim().GetAttribute("physics:jointEnabled")
                     if enabled_attr.IsValid():
@@ -3866,7 +3885,8 @@ try:
                     flush=True,
                 )
             sampled_position, sampled_velocity = sample_joint_reference(
-                timestamps, positions, trajectory_time, held=hold_trajectory or not velocity_feedforward_enabled)
+                timestamps, positions, trajectory_time, held=hold_trajectory or not velocity_feedforward_enabled,
+                reference=metadata.get("joint_reference"))
             command_source_order = sampled_position.astype(np.float32)
             command = command_source_order[command_order]
             command_velocity = sampled_velocity[command_order]
@@ -3910,7 +3930,8 @@ try:
             if stack_monitor is not None and grasp_enabled and not release_commanded:
                 actual_stack_states = _capture_carton_states()
                 actual_boxes = {_state_obb(item).name: _state_obb(item) for item in actual_stack_states}
-                next_command = _sample(timestamps, positions, min(requested_duration, trajectory_time + physics_dt))
+                next_command = sample_joint_reference(timestamps, positions,
+                    min(requested_duration, trajectory_time + physics_dt), reference=metadata.get("joint_reference"))[0]
                 stack_observation = stack_monitor.observe(
                     simulation_time, actual_boxes[str(metadata["target"])], list(actual_boxes.values()),
                     commanded_motion=bool(not hold_trajectory and np.linalg.norm(next_command - command_source_order) > 1e-8),
@@ -4506,6 +4527,15 @@ try:
                 )
             ):
                 break
+            if (args.comparison_stop_after_grasp_segment == session_segment_index + 1
+                    and grasp_command_succeeded and grasp_closed_time is not None
+                    and grasp_joint is not None and simulation_time-grasp_closed_time >= .4
+                    and render and runtime_stop_reason is None):
+                comparison_fragment_completed = True
+                event_log.append({"event": "COMPARISON_FRAGMENT_ENDED_AFTER_ACTUAL_GRASP",
+                                  "time_s": simulation_time, "target": str(metadata["target"]),
+                                  "full_pick_place_cycle_claimed": False})
+                break
         replay_wall_s = time.perf_counter() - replay_started_at
         if last_video_frame is not None:
             cv2.imwrite(str(args.output / "final.png"), last_video_frame)
@@ -5000,6 +5030,8 @@ try:
             "physics_hz": physics_hz,
             "physics_contract": physics_contract,
             "initial_state_settling": settling_audit,
+            "actual_rest_start_gate": rest_start_audit,
+            "comparison_fragment_completed": comparison_fragment_completed,
             "render_every_physics_steps": args.render_every,
             "effective_render_rate_hz": physics_hz / args.render_every,
             "replay_recorded": bool(replay_frames or replay_video_frame_count),

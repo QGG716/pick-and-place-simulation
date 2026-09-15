@@ -157,6 +157,20 @@ def replay_command_arrays(bundle, expected_joint_names):
             or not np.all(np.isfinite(timestamps)) or not np.all(np.isfinite(positions))
             or abs(timestamps[0]) > 1e-12 or np.any(np.diff(timestamps) <= 0)):
         raise ValueError("replay bundle command dimensions or times are invalid")
+    reference = bundle.get('metadata', {}).get('joint_reference')
+    if reference is not None:
+        from .timing import sample_quintic_knots
+        knots = np.asarray(reference.get('timestamps_seconds'), float)
+        values = np.asarray(reference.get('positions_rad'), float)
+        if (reference.get('interpolation') != 'C2_piecewise_quintic_rest_to_rest'
+                or knots.ndim != 1 or len(knots) < 2 or values.shape != (len(knots), len(expected_joint_names))
+                or not np.all(np.isfinite(knots)) or not np.all(np.isfinite(values))
+                or np.any(np.diff(knots) <= 0) or abs(knots[0]) > 1e-12
+                or abs(knots[-1]-timestamps[-1]) > 1e-10):
+            raise ValueError('analytic reference knots are invalid')
+        sampled, _ = sample_quintic_knots(knots, values, timestamps)
+        if not np.allclose(sampled, positions, atol=1e-10, rtol=0):
+            raise ValueError('commands disagree with the bound analytic reference')
     return timestamps, positions
 
 
@@ -189,7 +203,7 @@ def finite_gravity_compensated_drive_target(reference_q, gravity_nm, stiffness_n
     return q + compensated / stiffness
 
 
-def sample_joint_reference(timestamps, positions, time_s, *, held=False):
+def sample_joint_reference(timestamps, positions, time_s, *, held=False, reference=None):
     """Same piecewise-linear position path and its segment derivative.
 
     Interior knots use the right segment. Outside the path and at its two
@@ -197,6 +211,12 @@ def sample_joint_reference(timestamps, positions, time_s, *, held=False):
     changing position. No trajectory resampling or velocity-limit clipping is
     performed: a bound violation must be rejected by the caller.
     """
+    if reference is not None:
+        from .timing import sample_quintic_knots
+        if reference["interpolation"] != "C2_piecewise_quintic_rest_to_rest":
+            raise ValueError("unsupported bound joint reference")
+        q, velocity = sample_quintic_knots(reference["timestamps_seconds"], reference["positions_rad"], time_s)
+        return q, np.zeros_like(velocity) if held else velocity
     times, values = np.asarray(timestamps), np.asarray(positions)
     if not np.isfinite(time_s):
         raise ValueError("reference time must be finite")
@@ -207,6 +227,47 @@ def sample_joint_reference(timestamps, positions, time_s, *, held=False):
         index = min(int(np.searchsorted(times, t, side="right")) - 1, len(times) - 2)
         velocity = (values[index + 1] - values[index]) / (times[index + 1] - times[index])
     return position, velocity
+
+
+@dataclass
+class RestStartGate:
+    """Wait with a real position drive until measured q/qd permit a rest start."""
+    maximum_wait_s: float = 2.0
+    position_tolerance_rad: float = .002
+    velocity_tolerance_rad_s: float = .03
+    position_derived_speed_tolerance_rad_s: float = .001
+    required_stable_s: float = .1
+    stable_since_s: float | None = None
+    passed: bool = False
+    previous_q: np.ndarray | None = None
+    previous_time_s: float | None = None
+
+    def evaluate(self, time_s, actual_q, actual_qd, reference_q):
+        actual_q = np.asarray(actual_q, float)
+        error = float(np.max(np.abs(actual_q-np.asarray(reference_q))))
+        speed = float(np.max(np.abs(actual_qd)))
+        position_speed = None
+        if self.previous_time_s is not None and time_s > self.previous_time_s:
+            position_speed = float(np.max(np.abs(actual_q-self.previous_q))/(time_s-self.previous_time_s))
+        self.previous_q, self.previous_time_s = actual_q.copy(), time_s
+        if not np.isfinite(error+speed):
+            return dict(hold=True, reason='ACTUAL_START_STATE_UNAVAILABLE', error_rad=error, speed_rad_s=speed)
+        if self.passed:
+            return dict(hold=False, reason=None, error_rad=error, speed_rad_s=speed)
+        # PhysX can report a small solver velocity at a position-stationary
+        # equilibrium. Retain that raw channel, independently require quiet
+        # measured positions, and never replace either with commanded zero.
+        stable = (error <= self.position_tolerance_rad and speed <= self.velocity_tolerance_rad_s
+                  and position_speed is not None
+                  and position_speed <= self.position_derived_speed_tolerance_rad_s)
+        self.stable_since_s = (time_s if self.stable_since_s is None else self.stable_since_s) if stable else None
+        if stable and time_s-self.stable_since_s >= self.required_stable_s:
+            self.passed = True
+        return dict(hold=not self.passed,
+            reason='ACTUAL_START_SETTLING_TIMEOUT' if not self.passed and time_s >= self.maximum_wait_s else None,
+            error_rad=error, speed_rad_s=speed, position_derived_speed_rad_s=position_speed,
+            actual_q_rad=actual_q.tolist(), actual_qd_rad_s=np.asarray(actual_qd).tolist(),
+            reported_velocity_tolerance_rad_s=self.velocity_tolerance_rad_s)
 
 
 def resolve_actual_task_stage(

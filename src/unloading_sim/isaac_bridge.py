@@ -35,6 +35,7 @@ from .timing import (
     motion_limits_from_config,
     scale_timed_trajectory_window,
     time_parameterize_joint_path,
+    collinear_indices, source_waypoint_times, sample_quintic_knots,
 )
 
 
@@ -294,7 +295,12 @@ def _validated_place_evidence(segment: Mapping[str, Any], *,
                        np.asarray(b["pose_world"])[:3, :3], b["name"], b["category"])
                   for b in landing_support["support_obbs"]]
         payload = OBB(pose[:3, 3], landing_support["payload_half_extents_m"], pose[:3, :3], segment["target"], "carton")
-        recomputed = predict_release(payload, bodies, mode=release_mode,
+        if scene_primitives is None:
+            raise ValueError("current scene is required to recheck short-drop flight")
+        flight_obstacles = [OBB(item["center_m"], np.asarray(item["size_m"])/2,
+            item["rotation_matrix"], item["name"], item["category"])
+            for item in scene_primitives if item["name"] != segment["target"]]
+        recomputed = predict_release(payload, bodies, mode=release_mode, obstacles=flight_obstacles,
             linear_velocity=prediction["linear_velocity_m_s"], angular_velocity=prediction["angular_velocity_rad_s"],
             policy=ReleasePolicy(**prediction["policy"]), contact_tolerance_m=landing_support["tolerance_m"],
             edge_tolerance_m=landing_support["edge_tolerance_m"])
@@ -1180,6 +1186,7 @@ def _sample_trajectory(
     timestamps: np.ndarray,
     positions: np.ndarray,
     period_seconds: float,
+    *, quintic: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
     if not np.isfinite(period_seconds) or period_seconds <= 0.0:
         raise ValueError("controller period must be finite and positive")
@@ -1192,9 +1199,9 @@ def _sample_trajectory(
     # Keep every collision-checked corner and event endpoint. Sampling only on
     # the controller grid would otherwise cut across an unchecked joint edge.
     command_times = np.unique(np.r_[command_times, timestamps])
-    commands = np.column_stack(
+    commands = (sample_quintic_knots(timestamps, positions, command_times)[0] if quintic else np.column_stack(
         [np.interp(command_times, timestamps, positions[:, joint]) for joint in range(positions.shape[1])]
-    )
+    ))
     return command_times, commands
 
 
@@ -1376,14 +1383,22 @@ def build_fanuc_isaac_replay_bundle(
     # phase boundary. Time the loaded prefix conservatively and the empty-tool
     # escape independently; otherwise the loaded motion scale needlessly keeps
     # the gripper beside a carton that is already moving on a live conveyor.
-    prefix = time_parameterize_joint_path(path[: release_index + 1], limits)
+    protected = {int(segment.get("grasp_index", 0)), release_index}
+    for first, last in segment.get("stage_ranges", {}).values():
+        protected.update((int(first), int(last)))
+    approach_boundary = segment.get("approach", {}).get("free_connection_end_index")
+    if approach_boundary is not None:
+        protected.add(int(approach_boundary))
+    prefix_indices = collinear_indices(path[:release_index + 1], protected)
+    prefix = time_parameterize_joint_path(path[prefix_indices], limits)
     prefix = scale_timed_trajectory_window(
         prefix,
-        int(segment.get("grasp_index", 0)),
-        release_index,
+        prefix_indices.index(int(segment.get("grasp_index", 0))),
+        len(prefix_indices) - 1,
         loaded_motion_time_scale,
     )
     prefix_audit = prefix.audit(limits)
+    prefix_source_times = source_waypoint_times(path[:release_index + 1], prefix_indices, prefix)
     empty_limits = replace(
         limits,
         limit_scale=post_release_motion_limit_scale,
@@ -1392,16 +1407,17 @@ def build_fanuc_isaac_replay_bundle(
     empty = None
     empty_audit = None
     if release_index < len(path) - 1:
-        empty = time_parameterize_joint_path(path[release_index:], empty_limits)
+        empty_indices = collinear_indices(path[release_index:], [i-release_index for i in protected if i >= release_index])
+        empty = time_parameterize_joint_path(path[release_index:][empty_indices], empty_limits)
         empty_audit = empty.audit(empty_limits)
         source_motion_times = np.concatenate(
             (
-                prefix.time_from_start,
-                prefix.duration_seconds + empty.time_from_start[1:],
+                prefix_source_times,
+                prefix.duration_seconds + source_waypoint_times(path[release_index:], empty_indices, empty)[1:],
             )
         )
     else:
-        source_motion_times = prefix.time_from_start
+        source_motion_times = prefix_source_times
     audit = {
         **prefix_audit,
         "duration_seconds": float(source_motion_times[-1]),
@@ -1410,7 +1426,9 @@ def build_fanuc_isaac_replay_bundle(
             and (empty_audit is None or empty_audit["within_limits"])
         ),
         "phase_model": "stopped_release_then_empty_tool",
-        "controller_reference": "piecewise_linear_verified_edges_no_waypoint_dwell",
+        "controller_reference": "analytic_C2_quintic_same_as_limits_audit",
+        "ordinary_collinear_samples_removed": len(path) - len(prefix_indices) - (len(empty_indices)-1 if empty is not None else 0),
+        "remaining_noncollinear_corners": "STOPPED_NO_UNCHECKED_CURVE_SMOOTHING",
         "pre_release": prefix_audit,
         "post_release": empty_audit,
     }
@@ -1426,9 +1444,9 @@ def build_fanuc_isaac_replay_bundle(
         controller_period_seconds = float(
             cfg.get("planning", {}).get("trajectory_waypoint_period_seconds", 0.02)
         )
-    command_times, commands = _sample_trajectory(
-        replay_motion_times, path, float(controller_period_seconds)
-    )
+    reference_indices = prefix_indices + ([release_index+i for i in empty_indices[1:]] if empty is not None else [])
+    command_times = replay_motion_times[reference_indices].copy()
+    commands = path[reference_indices].copy()
 
     def event_time(index_key: str) -> float | None:
         value = segment.get(index_key)
@@ -1478,6 +1496,12 @@ def build_fanuc_isaac_replay_bundle(
             command_times, commands, release_arrival_time, release_seconds
         )
         release_time += release_seconds
+    analytic_reference = {"interpolation": "C2_piecewise_quintic_rest_to_rest",
+        "timestamps_seconds": command_times.tolist(), "positions_rad": commands.tolist(),
+        "boundary_state": "REST_START_REQUIRES_ACTUAL_SETTLING",
+        "source_retained_indices": reference_indices}
+    command_times, commands = _sample_trajectory(command_times, commands,
+        float(controller_period_seconds), quintic=True)
     source_release_retreat_time = event_time("release_retreat_index")
     release_retreat_time = source_release_retreat_time
     if release_retreat_time is not None:
@@ -2109,6 +2133,7 @@ def build_fanuc_isaac_replay_bundle(
         "source_motion_duration_seconds": float(source_motion_times[-1]),
         "isaac_replay_time_scale": replay_time_scale,
         "timing_audit": {**audit, "isaac_replay_time_scale": replay_time_scale},
+        "joint_reference": analytic_reference,
         "limits_source": limits.source,
         "joint_velocity_limits_rad_s": limits.velocity.tolist(),
         "joint_effort_limits_nm": effort_limits.tolist(),

@@ -15,6 +15,47 @@ from typing import Any, Callable, Sequence
 
 import numpy as np
 
+from .motion_quality import collinear_indices
+
+
+def source_waypoint_times(path, retained_indices, trajectory):
+    """Map every original collinear sample to its time on the same quintic edge."""
+    q = np.asarray(path, dtype=float)
+    times = np.zeros(len(q))
+    for edge, (first, last) in enumerate(zip(retained_indices[:-1], retained_indices[1:])):
+        delta = q[last] - q[first]
+        for index in range(first, last + 1):
+            fraction = float((q[index]-q[first]) @ delta / (delta @ delta)) if delta @ delta > 0 else 0.
+            lo, hi = 0., 1.
+            for _ in range(48):
+                u = (lo + hi) / 2
+                if 10*u**3 - 15*u**4 + 6*u**5 < fraction:
+                    lo = u
+                else:
+                    hi = u
+            u = 0. if index == first else 1. if index == last else (lo+hi)/2
+            times[index] = trajectory.time_from_start[edge] + u * (
+                trajectory.time_from_start[edge+1]-trajectory.time_from_start[edge])
+    return times
+
+
+def sample_quintic_knots(timestamps, positions, query):
+    """Vectorized position and exact velocity on verified straight joint edges."""
+    times, q = np.asarray(timestamps, float), np.asarray(positions, float)
+    query = np.asarray(query, float)
+    if not np.all(np.isfinite(query)):
+        raise ValueError("reference query times must be finite")
+    t = np.clip(query, times[0], times[-1])
+    if len(times) == 1:
+        return np.broadcast_to(q[0], t.shape + q.shape[1:]).copy(), np.zeros(t.shape + q.shape[1:])
+    i = np.clip(np.searchsorted(times, t, side='right')-1, 0, len(times)-2)
+    duration = times[i+1]-times[i]
+    u = (t-times[i])/duration
+    s = 10*u**3-15*u**4+6*u**5
+    v = (30*u**2-60*u**3+30*u**4)/duration
+    delta = q[i+1]-q[i]
+    return q[i]+s[..., None]*delta, v[..., None]*delta
+
 
 @dataclass(frozen=True)
 class JointMotionLimits:

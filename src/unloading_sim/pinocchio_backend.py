@@ -7,6 +7,7 @@ Python module name and keeps both packages outside the lightweight core.
 from __future__ import annotations
 
 from pathlib import Path
+from time import perf_counter
 from typing import Iterable, Sequence
 
 import numpy as np
@@ -262,8 +263,42 @@ class PinocchioHppFclBackend:
         q = np.asarray(q, dtype=float)
         if q.shape != (self.dof,):
             raise ValueError(f"q must be shape ({self.dof},)")
+        key = (q.tobytes(), self.base_transform.tobytes(), getattr(self, "geometry_revision", 0))
+        if getattr(self, "_kinematics_key", None) == key:
+            return
         self.pin.forwardKinematics(self.model, self.data, q)
         self.pin.updateFramePlacements(self.model, self.data)
+        self._kinematics_key = key
+
+    def invalidate_geometry_cache(self):
+        """Call after changing the immutable model/geometry, never after a carton move."""
+        self.geometry_revision = getattr(self, "geometry_revision", 0) + 1
+        self._kinematics_key = self._geometry_key = None
+        self._obstacle_cache = {}
+        self._geometry_local_aabbs = tuple(_local_geometry_aabb(item.geometry)
+            for item in self.geometry_model.geometryObjects)
+        self._geometry_local_vertices = tuple(_local_geometry_vertices(item.geometry)
+            for item in self.geometry_model.geometryObjects)
+        self.geometry_data = self.pin.GeometryData(self.geometry_model)
+
+    def _update_geometry(self, q):
+        key = (np.asarray(q, float).tobytes(), self.base_transform.tobytes(),
+               getattr(self, "geometry_revision", 0))
+        if getattr(self, "_geometry_key", None) == key:
+            return
+        self.pin.updateGeometryPlacements(self.model, self.data, self.geometry_model, self.geometry_data, q)
+        self._geometry_key = key
+        self._kinematics_key = None  # Geometry updates also touch Pinocchio's shared data.
+
+    def _profile_call(self, name, function, *args, **kwargs):
+        before = perf_counter()
+        try:
+            return function(*args, **kwargs)
+        finally:
+            if not hasattr(self, "performance_counters"):
+                self.performance_counters = {}
+            self.performance_counters[name + "_seconds"] = self.performance_counters.get(name + "_seconds", 0.) + perf_counter()-before
+            self.performance_counters[name + "_calls"] = self.performance_counters.get(name + "_calls", 0) + 1
 
     def fk(self, q: np.ndarray) -> np.ndarray:
         self._update(q)
@@ -272,6 +307,7 @@ class PinocchioHppFclBackend:
 
     def geometric_jacobian(self, q: np.ndarray) -> np.ndarray:
         q = np.asarray(q, dtype=float)
+        self._update(q)
         jacobian = np.asarray(
             self.pin.computeFrameJacobian(
                 self.model,
@@ -353,10 +389,23 @@ class PinocchioHppFclBackend:
         active_obstacles = [obstacle for obstacle in obstacles if obstacle.name not in ignored]
         if not active_obstacles:
             return CollisionResult(False)
-        obstacle_aabbs = [
-            _world_aabb((-obstacle.half_extents, obstacle.half_extents), obstacle.rotation, obstacle.center)
-            for obstacle in active_obstacles
-        ]
+        if not hasattr(self, "_obstacle_cache"):
+            self._obstacle_cache = {}
+        entries = []
+        for obstacle in active_obstacles:
+            size_key = obstacle.half_extents.tobytes()
+            pose_key = obstacle.world_from_local.tobytes()
+            previous = self._obstacle_cache.get(obstacle.name)
+            if previous is None or previous[0] != size_key or previous[1] != pose_key:
+                shape = (previous[3] if previous is not None and previous[0] == size_key else None)
+                previous = [size_key, pose_key,
+                    _world_aabb((-obstacle.half_extents, obstacle.half_extents), obstacle.rotation, obstacle.center),
+                    shape, None]
+                if len(self._obstacle_cache) >= 512:
+                    self._obstacle_cache.clear()
+                self._obstacle_cache[obstacle.name] = previous
+            entries.append(previous)
+        obstacle_aabbs = [entry[2] for entry in entries]
         obstacle_lower = np.asarray([bounds[0] for bounds in obstacle_aabbs])
         obstacle_upper = np.asarray([bounds[1] for bounds in obstacle_aabbs])
         # Construct exact Coal boxes lazily and reuse them across robot links.
@@ -391,10 +440,12 @@ class PinocchioHppFclBackend:
                 ) in ignored_pairs:
                     continue
                 if obstacle_index not in obstacle_exact:
-                    obstacle_exact[obstacle_index] = (
-                        self.coal.Box(*(2.0 * obstacle.half_extents).tolist()),
-                        _transform(self.coal, obstacle.rotation, obstacle.center),
-                    )
+                    entry = entries[obstacle_index]
+                    if entry[3] is None:
+                        entry[3] = self.coal.Box(*(2.0 * obstacle.half_extents).tolist())
+                    if entry[4] is None:
+                        entry[4] = _transform(self.coal, obstacle.rotation, obstacle.center)
+                    obstacle_exact[obstacle_index] = (entry[3], entry[4])
                 box, box_tf = obstacle_exact[obstacle_index]
                 if self._distance(geometry_object.geometry, robot_tf, box, box_tf) <= minimum_distance:
                     return CollisionResult(True, "robot_obstacle", link_name, obstacle.name)
@@ -426,7 +477,7 @@ class PinocchioHppFclBackend:
         q = np.asarray(q, dtype=float)
         if q.shape != (self.dof,) or not np.all(np.isfinite(q)):
             raise ValueError(f"q must contain {self.dof} finite joint values")
-        self.pin.updateGeometryPlacements(self.model, self.data, self.geometry_model, self.geometry_data, q)
+        self._profile_call("geometry_update", self._update_geometry, q)
         result: dict[str, dict] = {}
         for index, geometry_object in enumerate(self.geometry_model.geometryObjects):
             parent_frame = int(getattr(geometry_object, "parentFrame", -1))
@@ -467,6 +518,13 @@ class PinocchioHppFclBackend:
             second_pose = self.base_transform @ self._matrix(
                 self.geometry_data.oMg[int(pair.second)]
             )
+            first_bounds = self._geometry_local_aabbs[int(pair.first)]
+            second_bounds = self._geometry_local_aabbs[int(pair.second)]
+            if first_bounds is not None and second_bounds is not None:
+                first_lo, first_hi = _world_aabb(first_bounds, first_pose[:3, :3], first_pose[:3, 3])
+                second_lo, second_hi = _world_aabb(second_bounds, second_pose[:3, :3], second_pose[:3, 3])
+                if np.any((second_lo-first_hi > minimum_distance+1e-12) | (first_lo-second_hi > minimum_distance+1e-12)):
+                    continue
             first_tf = _transform(self.coal, first_pose[:3, :3], first_pose[:3, 3])
             second_tf = _transform(self.coal, second_pose[:3, :3], second_pose[:3, 3])
             if self._distance(first.geometry, first_tf, second.geometry, second_tf) <= minimum_distance:
@@ -487,18 +545,16 @@ class PinocchioHppFclBackend:
         q = np.asarray(q, dtype=float)
         if not self.within_limits(q):
             return CollisionResult(True, "joint_limit")
-        self.pin.updateGeometryPlacements(
-            self.model, self.data, self.geometry_model, self.geometry_data, q
-        )
+        self._profile_call("geometry_update", self._update_geometry, q)
         # Repository margins are per body.  Requiring a surface distance of
         # twice that value preserves the same pairwise engineering clearance
         # without convexifying or scaling either official mesh.
         minimum_distance = 2.0 * float(margin)
         if check_self:
-            failure = self._self_clearance_failure(minimum_distance)
+            failure = self._profile_call("self_collision", self._self_clearance_failure, minimum_distance)
             if failure.in_collision:
                 return failure
-        return self._environment_collision(
+        return self._profile_call("robot_environment", self._environment_collision,
             obstacles,
             ignored_obstacle_names or set(),
             minimum_distance,

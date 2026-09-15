@@ -57,6 +57,17 @@ def test_rotated_obstacle_bounds_do_not_skip_near_margin():
     assert backend.exact_call_count == 1
 
 
+def test_persistent_obstacle_cache_updates_pose_and_size_at_same_robot_q():
+    backend = _backend()
+    far = OBB([3,0,0], [.1,.1,.1], np.eye(3), 'same_identity', 'carton')
+    assert not _check(backend, [far]).in_collision
+    near = OBB([.55,0,0], far.half_extents, far.rotation, far.name, far.category)
+    assert _check(backend, [near]).in_collision
+    assert not _check(backend, [far]).in_collision
+    enlarged = OBB(far.center, [3,.1,.1], far.rotation, far.name, far.category)
+    assert _check(backend, [enlarged]).in_collision
+
+
 def test_seeded_rotated_box_states_match_all_exact_results():
     backend = _backend((0.4, 0.9, 0.3), rotation_matrix_from_rpy(0.2, 0.4, 0.7))
     cached = backend._geometry_local_aabbs

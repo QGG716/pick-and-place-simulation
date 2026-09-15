@@ -18,6 +18,79 @@ from unloading_sim.serial_unloading import apply_actual_motion_state
 from unloading_sim.unloading_sequence import RowUnloadingState
 from unloading_sim.workcell_layout import canonical_digest, sha256_file
 from unloading_sim.m710_execution import build_m710_execution_preflight
+from unloading_sim.release_motion import ReleasePolicy, verify_release_prediction, release_flight_envelope, departure_sweep
+from unloading_sim.planner import RRTConnectPlanner
+from unloading_sim.motion_quality import path_quality
+
+
+def simplify_unloaded_segment(segment, connector, obstacles):
+    """Only the proven free prefix; remap all event/stage indices afterward."""
+    path = np.asarray(segment['path'], float)
+    first, last = segment['stage_ranges'].get('pregrasp', (0, 0))
+    if last == first:
+        approach = segment['approach']
+        last = approach.get('free_connection_end_index')
+        if last is None:
+            trial = next(a for a in approach['attempts'] if a['failure'] is None)
+            # Old direct bundles retained every terminal Cartesian sample.
+            last = segment['grasp_index'] - len(trial['search']['terminal']['samples'])
+        first = 0
+    if not first < last < segment['grasp_index']:
+        raise ValueError('cannot establish a strictly unloaded free/contact boundary')
+    state = lambda q: connector._state_failure(q, obstacles, stage='pregrasp') is None
+    planner = RRTConnectPlanner(connector.robot.joint_limits[:,0], connector.robot.joint_limits[:,1],
+        state, edge_resolution=connector.budget.edge_resolution_rad/2)
+    before = path_quality(path[first:last+1], fk=connector.robot.fk)
+    reduced, evidence = planner.bounded_shortcut(path[first:last+1],
+        deadline=min(connector._deadline_monotonic or float('inf'), time.monotonic()+15.),
+        attempts=48, state_budget=2400)
+    removed = last-first+1-len(reduced)
+    def remap(index):
+        if index <= first:
+            return index
+        if index >= last:
+            return index-removed
+        raise ValueError('a process boundary is inside the proposed free shortcut')
+    segment['stage_ranges'] = {name: [remap(a), remap(b)] for name,(a,b) in segment['stage_ranges'].items()}
+    for key in ('grasp_index','release_index','release_retreat_index'):
+        segment[key] = remap(segment[key])
+    for event in segment['events']:
+        event['index'] = remap(event['index'])
+    segment['path'] = np.vstack([path[:first], reduced, path[last+1:]]).tolist()
+    segment['approach']['free_connection_end_index'] = last-removed
+    segment['approach']['terminal_contact_start_index'] = last-removed
+    evidence.update(before=before, after=path_quality(reduced, fk=connector.robot.fk),
+                    scope='UNLOADED_FREE_PREFIX_ONLY')
+    segment['unloaded_simplification'] = evidence
+    return evidence
+
+
+def recheck_current_release(segment, connector, payload_obstacles, placed):
+    recorded_supports = segment['place']['release_prediction']['landing_support']['support_obbs']
+    support_names = {b['name'] for b in recorded_supports}
+    current_supports = [b for b in payload_obstacles if b.name in support_names]
+    if len(current_supports) != len(support_names):
+        raise ValueError('current release support is missing')
+    for body in current_supports:
+        recorded = next(b for b in recorded_supports if b['name'] == body.name)
+        if not np.allclose(body.world_from_local, recorded['pose_world'], atol=1e-12, rtol=0) or not np.allclose(
+                body.half_extents, recorded['half_extents_m'], atol=1e-12, rtol=0):
+            raise ValueError('cached receiving geometry changed; placement must be replanned')
+    current_release = verify_release_prediction(segment['place'], segment["target"],
+        obstacles=payload_obstacles, supports=current_supports,
+        policy=ReleasePolicy(maximum_drop_m=connector.budget.maximum_drop_m), require_current_environment=True)
+    flight = release_flight_envelope(placed, current_release)
+    sweep = [flight]
+    if connector.post_landing_transport['mode'] != 'ideal_outfeed':
+        receiver_name = current_release['landing_support']['receiver_names'][0]
+        direction = connector.surface_directions_world.get(receiver_name)
+        if direction is None:
+            raise ValueError('current conveyor direction missing for departure sweep')
+        tools = connector.tool_collision_obbs_provider(np.asarray(segment['path'])[segment['release_index']])
+        distance = max(float(np.max(b.corners() @ direction)) for b in tools)-float(np.min(placed.corners() @ direction))
+        sweep = departure_sweep(flight, direction, distance_m=max(.01, distance+2*connector.collision_margin_m),
+                                resolution_m=connector.budget.cartesian_step_m)
+    return current_release, sweep
 
 
 def main():
@@ -25,6 +98,7 @@ def main():
     parser.add_argument("--motion", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--actual-state", type=Path)
+    parser.add_argument("--simplify-unloaded", action="store_true")
     parser.add_argument("--config", default="configs/validation/m710id70_layout_v1_single_carton.yaml")
     parser.add_argument("--execution-config", default="configs/simulation/m710id70_first_row_recording_v1.yaml")
     args = parser.parse_args()
@@ -62,7 +136,11 @@ def main():
         if np.max(np.abs(q - path[0])) > 0.001:
             raise ValueError("cached start differs from current measured joints")
         path[0] = q
+        segment["path"] = path.tolist()
         connector.start_planning_request()
+        if args.simplify_unloaded:
+            evidence['simplification'] = simplify_unloaded_segment(segment, connector, scene.all_obstacles)
+            path = np.asarray(segment['path'])
         connector.stack_carton_names = set(scene.remaining_stack_names or [box.name for box in scene.cartons])
         grasp_q = path[segment["grasp_index"]]
         selection = connector._contact_selection(grasp_q, target, segment["face"], policy.data["suction"])
@@ -79,6 +157,7 @@ def main():
             raise ValueError(str(failure))
         checked = []
         placed = attachment.box_at(path[segment["release_index"]])
+        current_release, sweep = recheck_current_release(segment, connector, payload_obstacles, placed)
         for stage, (first, last) in segment["stage_ranges"].items():
             points = path[first:last + 1]
             if stage in {"home", "pregrasp", "contact"}:
@@ -91,16 +170,24 @@ def main():
                 failure = connector._path_failure(points, payload_obstacles, stage=stage,
                     attachment=attachment, support_names=segment["place"]["support_names"] if stage == "place" else ())
             elif stage == "withdrawal":
-                failure = connector._path_failure(points, [*payload_obstacles, placed], stage=stage,
-                                                  target_contact=placed)
+                failure = None
+                for swept in sweep:
+                    failure = connector._path_failure(points, [*payload_obstacles, swept], stage=stage,
+                                                      target_contact=swept)
+                    if failure:
+                        break
+                    failure = connector._state_failure(points[-1], [*payload_obstacles, swept], stage='residence')
+                    if failure:
+                        break
             else:
                 raise ValueError(f"unsupported cached stage {stage}")
             checked.append({"stage": stage, "failure": failure})
             if failure:
                 raise ValueError(str(checked[-1]))
-        # The historical ballistic landing and full departure sweep were
-        # checked with the identical target and path. New runtime still gates
-        # takeover on real contact; no exemption is applied at RELEASE.
+        segment['place']['release_prediction'] = current_release
+        evidence['current_release_recheck'] = current_release
+        evidence['current_departure_sweep_samples'] = len(sweep)
+        evidence['current_transport_policy'] = connector.post_landing_transport
         segment["path"] = path.tolist()
         segment["validation"]["validator_identity"] = connector.validator_identity
         segment["validation"]["current_full_tool_recheck"] = checked

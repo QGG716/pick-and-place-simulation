@@ -212,6 +212,60 @@ class RRTConnectPlanner:
                 result = result[: i + 1] + result[j:]
         return result
 
+    def bounded_shortcut(self, path, *, deadline, attempts=32, state_budget=1200, protected=()):
+        """Simplify an already validated path; never publish a partially checked edge.
+
+        Protected indices partition contact/permission domains. The caller must
+        supply only an unloaded free segment, or explicitly protect its boundaries.
+        Longest skips (including the direct edge) are attempted first, without RNG.
+        """
+        result = [(i, np.asarray(q, dtype=float).copy()) for i, q in enumerate(path)]
+        protected = set(protected)
+        checked = tried = accepted = 0
+        rejected = set()
+        termination = "NO_MORE_SHORTCUTS"
+        while len(result) > 2:
+            choices = [(j-i, i, j) for i in range(len(result)-2) for j in range(i+2, len(result))
+                       if (result[i][0], result[j][0]) not in rejected
+                       and not any(result[i][0] < k < result[j][0] for k in protected)]
+            if not choices:
+                break
+            if tried == 0:
+                _, i, j = max(choices, key=lambda item: (item[0], -item[1]))
+            else:
+                # Alternate scales after the direct probe. Spending every
+                # attempt on nearly identical full-span edges starves local
+                # detour removal when a central obstacle blocks all of them.
+                scales = [max(2, (len(result)-1)//4), 2,
+                          max(2, (len(result)-1)//2), max(2, (len(result)-1)//8)]
+                desired = scales[(tried-1) % len(scales)]
+                _, i, j = min(choices, key=lambda item: (abs(item[0]-desired),
+                    abs(item[1]-((tried//len(scales)) % len(result))), item[1]))
+            if self._deadline_reached(deadline) or tried >= attempts or checked >= state_budget:
+                termination = "POSTPROCESS_BUDGET_EXHAUSTED"
+                break
+            tried += 1
+            a, b = result[i][1], result[j][1]
+            n = max(1, int(np.ceil(np.max(np.abs(b-a)) / self.edge_resolution)))
+            valid = True
+            for k in range(n+1):
+                if checked >= state_budget or self._deadline_reached(deadline):
+                    valid = False
+                    termination = "POSTPROCESS_BUDGET_EXHAUSTED"
+                    break
+                checked += 1
+                if not self._state_valid(a + k/n*(b-a)):
+                    valid = False
+                    break
+            if valid:
+                result = result[:i+1] + result[j:]
+                accepted += 1
+            else:
+                rejected.add((result[i][0], result[j][0]))
+        return [q for _, q in result], dict(attempts=tried, state_checks=checked, accepted=accepted,
+            attempts_budget=attempts, state_budget=state_budget, termination=termination,
+            retained_source_indices=[i for i, _ in result])
+
     def densify(self, path: Sequence[np.ndarray], resolution: float = 0.035) -> list[np.ndarray]:
         if not path:
             return []

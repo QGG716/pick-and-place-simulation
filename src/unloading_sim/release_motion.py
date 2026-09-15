@@ -228,22 +228,51 @@ def receiver_transport_support(box: OBB, receiver: OBB, supports, direction, *,
             "samples": samples + 1, "requires_actual_support_monitoring": True}
 
 
-def verify_release_prediction(place, target_name):
-    """Recompute recorded drop geometry before accepting a stage contract."""
+def verify_release_prediction(place, target_name, *, obstacles=None, supports=None, policy=None,
+                              require_current_environment=False):
+    """Recompute release; omitted environment proves recorded geometry only."""
+    if require_current_environment and (obstacles is None or supports is None or policy is None):
+        raise ValueError("current obstacles, supports and release policy are required")
     prediction = place["release_prediction"]
     if prediction.get("actual_landing_state") is not None:
         raise ValueError("a CPU prediction cannot claim actual landing")
     support = prediction["landing_support"]
     pose = np.asarray(place["actual_box_pose_world"], float)
     box = OBB(pose[:3, 3], support["payload_half_extents_m"], pose[:3, :3], target_name, "carton")
-    supports = [OBB(np.asarray(b["pose_world"])[:3, 3], b["half_extents_m"],
+    recorded_supports = [OBB(np.asarray(b["pose_world"])[:3, 3], b["half_extents_m"],
                     np.asarray(b["pose_world"])[:3, :3], b["name"], "conveyor")
                 for b in support["support_obbs"]]
-    actual = predict_release(box, supports, mode=SHORT_DROP_RELEASE,
+    actual = predict_release(box, recorded_supports if supports is None else supports,
+        mode=prediction.get("mode", SHORT_DROP_RELEASE), obstacles=() if obstacles is None else obstacles,
         linear_velocity=prediction["linear_velocity_m_s"], angular_velocity=prediction["angular_velocity_rad_s"],
-        policy=ReleasePolicy(**prediction["policy"]), contact_tolerance_m=support["tolerance_m"],
+        policy=ReleasePolicy(**prediction["policy"]) if policy is None else policy, contact_tolerance_m=support["tolerance_m"],
         edge_tolerance_m=support["edge_tolerance_m"])
     if (not actual["accepted"] or not np.allclose(pose, prediction["release_pose_world"], atol=1e-12, rtol=0)
             or not np.allclose(actual["predicted_landing_pose_world"], prediction["predicted_landing_pose_world"], atol=1e-10, rtol=0)):
         raise ValueError("recorded release prediction disagrees with actual release geometry")
+    actual["verification_scope"] = ("CURRENT_ENVIRONMENT" if require_current_environment
+                                    else "RECORDED_GEOMETRY_ONLY" if obstacles is None else "SUPPLIED_ENVIRONMENT")
     return actual
+
+
+def release_flight_envelope(box, prediction):
+    """Conservative world AABB of bounded rotating flight, including between samples."""
+    duration = float(prediction["flight_time_s"])
+    if duration == 0:
+        return box
+    policy = ReleasePolicy(**prediction["policy"])
+    velocity = np.asarray(prediction["linear_velocity_m_s"])
+    omega = np.asarray(prediction["angular_velocity_rad_s"])
+    count = max(1, int(np.ceil(duration/policy.prediction_step_s)))
+    times = list(np.linspace(0, duration, count+1))
+    apex = velocity[2]/policy.gravity_m_s2
+    if 0 < apex < duration:
+        times.append(apex)
+    samples = [flight_box(box, velocity, omega, t, policy.gravity_m_s2).corners() for t in times]
+    # Translation extrema are included exactly (endpoints plus vertical apex).
+    # Bound unsampled rotation by its angular speed and the unchanged radius.
+    # predict_release separately checks uncertainty-expanded environment flight.
+    padding = duration/count*np.linalg.norm(omega)*np.linalg.norm(box.half_extents) + 1e-12
+    vertices = np.concatenate(samples)
+    lower, upper = vertices.min(axis=0)-padding, vertices.max(axis=0)+padding
+    return OBB((lower+upper)/2, (upper-lower)/2, np.eye(3), box.name, box.category)
