@@ -36,6 +36,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--seconds", type=float, default=12.0)
     result.add_argument("--visibility-only", action="store_true", help="Capture only the unchanged full stack, retaining first-hit instance IDs; no models or lighting acceptance")
     result.add_argument("--geometry-algorithm-only", action="store_true", help="Use an explicitly separate diagnostic bundle; hide only its recorded mechanical occluders")
+    result.add_argument("--appearance-ab", action="store_true", help="Only full-stack A/B material captures; identical mesh, no target highlight, no video")
     return result
 
 
@@ -74,7 +75,9 @@ def rgb_data(value):
 args = parser().parse_args()
 if min(args.width, args.height, args.video_width, args.video_height, args.fps) <= 0 or args.seconds <= 0.0:
     raise ValueError("render dimensions, FPS and duration must be positive")
-args.output.mkdir(parents=True, exist_ok=True)
+args.output.mkdir(parents=True, exist_ok=not args.appearance_ab)
+if args.appearance_ab and (args.visibility_only or args.geometry_algorithm_only):
+    raise ValueError('appearance A/B must retain the full mechanical scene')
 args.usd_directory.mkdir(parents=True, exist_ok=True)
 status_path = args.output / "run_status.json"
 status_path.write_text(json.dumps({"status": "started", "time_unix_s": time.time()}, indent=2), encoding="utf-8")
@@ -118,7 +121,7 @@ try:
         if manifest.manifest_fingerprint != record["manifest_fingerprint"]:
             raise ValueError("bundle index/manifest identity mismatch")
         manifests.append((record["scene"], manifest))
-    if args.visibility_only:
+    if args.visibility_only or args.appearance_ab:
         manifests = [(name, manifest) for name, manifest in manifests if name == "FULL_STACK_NOMINAL"]
         if len(manifests) != 1:
             raise ValueError("visibility diagnostic needs exactly one full-stack manifest")
@@ -238,6 +241,13 @@ try:
         "module": material("PerceptionModule", (0.04, 0.05, 0.07)),
         "lens": material("SensorLens", (0.04, 0.34, 0.52), emissive=True),
     }
+    # Target highlighting belongs to separately drawn debug overlays only.
+    # Historical A0 images remain untouched; every new sensor carton is passive.
+    materials['target'] = materials['carton']
+    carton_visuals = {}
+    appearance_assets = {}
+    if args.appearance_ab:
+        from carton_appearance import define_visual, create_atlas, textured_material
 
     # A modular visual proxy with the same hierarchy as the handoff contract.
     # Its root is evaluated from J1 for every scene; no static world camera pose
@@ -314,8 +324,9 @@ try:
     prim_paths = {}
     for index, item in enumerate(contract["primitives"]):
         path = f"/PerceptionValidation/Primitives/{safe_name(index, item['name'])}"
-        cube = UsdGeom.Cube.Define(stage, path)
-        cube.CreateSizeAttr(1.0)
+        is_carton = 'carton' in item['role']
+        cube = UsdGeom.Xform.Define(stage,path) if args.appearance_ab and is_carton else UsdGeom.Cube.Define(stage, path)
+        if not (args.appearance_ab and is_carton): cube.CreateSizeAttr(1.0)
         pose = np.asarray(item["pose_world"], dtype=float)
         size = np.asarray(item["size_xyz_m"], dtype=float)
         xform = UsdGeom.XformCommonAPI(cube.GetPrim())
@@ -325,7 +336,21 @@ try:
         role = item["role"]
         key = "target" if role == "selected_carton" else "tool" if role == "tool_equal_scale_collision_proxy" else "carton" if "carton" in role else "chassis" if item["name"] == "chassis" else "conveyor"
         UsdShade.MaterialBindingAPI.Apply(cube.GetPrim()).Bind(materials[key])
-        UsdPhysics.CollisionAPI.Apply(cube.GetPrim())
+        if args.appearance_ab and is_carton:
+            collision = UsdGeom.Cube.Define(stage,path+'/Collision')
+            collision.CreateSizeAttr(1.)
+            UsdGeom.Imageable(collision.GetPrim()).MakeInvisible()
+            UsdPhysics.CollisionAPI.Apply(collision.GetPrim())
+            visual = define_visual(stage,path+'/Visual')
+            dimensions_key = '_'.join(str(float(v)) for v in size)
+            if dimensions_key not in appearance_assets:
+                asset = create_atlas(project_root/'assets/materials/industrial/carton_seamless/carton_512x512.png',
+                                     args.output/'appearance_assets'/(dimensions_key+'.png'),size)
+                mat = textured_material(stage,'/PerceptionValidation/Materials/Paper_'+dimensions_key.replace('.','_'),asset['atlas'])
+                appearance_assets[dimensions_key] = (asset,mat)
+            carton_visuals[item['name']] = (visual,appearance_assets[dimensions_key][1])
+        else:
+            UsdPhysics.CollisionAPI.Apply(cube.GetPrim())
         if "carton" in role or role == "selected_carton":
             add_labels(cube.GetPrim(), labels="carton", taxonomy="class")
             add_labels(cube.GetPrim(), labels=item["name"], taxonomy="simulation_object_id")
@@ -421,9 +446,9 @@ try:
         cameras.append(scene_cameras)
 
     rig_spec = load_vision_rig_spec(project_root / "configs/isaac/perception_sensing_pose.yaml")
-    sweep_manifest = first_manifest if (args.visibility_only or args.geometry_algorithm_only) else next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
+    sweep_manifest = first_manifest if (args.visibility_only or args.geometry_algorithm_only or args.appearance_ab) else next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
     sweep_sensors = []
-    for angle_deg in (() if (args.visibility_only or args.geometry_algorithm_only) else (-90.0, -45.0, 0.0, 45.0, 90.0)):
+    for angle_deg in (() if (args.visibility_only or args.geometry_algorithm_only or args.appearance_ab) else (-90.0, -45.0, 0.0, 45.0, 90.0)):
         angle_rad = math.radians(angle_deg)
         rig_pose = evaluate_vision_rig_pose(sweep_manifest.robot["T_W_robot"], angle_rad, rig_spec)
         position = np.asarray(rig_pose.camera_center_world_m, dtype=float)
@@ -698,6 +723,54 @@ try:
         )
         return {"module_id": camera["module_id"], "rgb": rgb, "depth": depth, "masks": masks_by_object,
                 "annotations": annotations, "directory": module_dir, "finite_depth_fraction": float(finite.mean())}
+
+    if args.appearance_ab:
+        from unloading_perception.isaac_validation import canonical_digest
+        import carb
+        settings_api=carb.settings.get_settings()
+        records=[]
+        for group in ('A','B'):
+            payload=first_manifest.to_dict()
+            payload['run_id']='appearance-'+args.output.name+'-'+group
+            payload['timing']={**payload['timing'],'simulation_epoch':payload['run_id']}
+            payload['provenance']={**payload['provenance'],'appearance_group':group,'source_manifest_fingerprint':first_manifest.manifest_fingerprint}
+            payload.pop('manifest_fingerprint');payload['manifest_fingerprint']=canonical_digest(payload)
+            manifest=IsaacSceneManifest.from_dict(payload)
+            group_dir=args.output/group;group_dir.mkdir()
+            (group_dir/'manifest.json').write_text(json.dumps(payload,indent=2))
+            apply_manifest(manifest,'FULL_STACK_NOMINAL')
+            bindings=[]
+            for object_id,(visual,textured) in carton_visuals.items():
+                mat=materials['carton'] if group=='A' else textured
+                UsdShade.MaterialBindingAPI.Apply(visual.GetPrim()).Bind(mat)
+                bound=UsdShade.MaterialBindingAPI(visual.GetPrim()).ComputeBoundMaterial()[0]
+                if bound.GetPath()!=mat.GetPath(): raise RuntimeError('CARTON_MATERIAL_BINDING_FAILED')
+                bindings.append({'object':object_id,'visual_prim':str(visual.GetPath()),'material':str(bound.GetPath()),
+                                 'collision_prim':prim_paths[object_id]+'/Collision','points':[[float(v) for v in p] for p in visual.GetPointsAttr().Get()],
+                                 'uv_count':len(UsdGeom.PrimvarsAPI(visual).GetPrimvar('st').Get())})
+            for _ in range(16): render_at_joint_command(command)
+            started=time.time()
+            captures=[capture_module_artifacts(group_dir/'FULL_STACK_NOMINAL','FULL_STACK_NOMINAL',manifest,c,(rgb,d,inst),bundle_scene_records['FULL_STACK_NOMINAL']) for c,rgb,d,inst in cameras[0]]
+            camera_prims=[]; products=[]
+            for prim in stage.Traverse():
+                if prim.IsA(UsdGeom.Camera):
+                    camera_prims.append({'path':str(prim.GetPath()),'world_transform_usd_rows':[list(row) for row in UsdGeom.XformCache().GetLocalToWorldTransform(prim)]})
+                if prim.GetTypeName()=='RenderProduct':
+                    products.append({'path':str(prim.GetPath()),'camera_targets':[str(v) for v in prim.GetRelationship('camera').GetTargets()]})
+            record={'group':group,'capture_wall_time_unix':started,'carton_bindings':bindings,'camera_prims':camera_prims,'render_products':products,
+                    'render_settings':{key:settings_api.get(key) for key in ['/rtx/post/tonemap/op','/rtx/post/tonemap/filmIso','/rtx/post/tonemap/cameraShutter','/rtx/post/tonemap/fNumber','/rtx/post/histogram/enabled','/rtx/rendermode']},
+                    'stable_frames':16,'environment_distant_intensity':950.,'environment_sphere_intensity':6500.,
+                    'robot_q_rad':articulation.get_dof_positions().numpy().tolist(),'target_highlight':False,'mechanical_entities_omitted':[],
+                    'texture_assets':[v[0] for v in appearance_assets.values()] if group=='B' else [],
+                    'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=project_root,text=True).strip()}
+            (group_dir/'capture_configuration.json').write_text(json.dumps(record,indent=2))
+            stage.GetRootLayer().Export(str(group_dir/'capture_stage.usda'))
+            records.append(record)
+            print('APPEARANCE_CAPTURE_COMPLETE '+group,flush=True)
+        summary={'status':'APPEARANCE_AB_CAPTURE_COMPLETE','groups':['A','B'],'scope':'FULL_MECHANICAL_SCENE','target_highlight':False,
+                 'geometry':'IDENTICAL_EQUIVALENT_VISUAL_MESH_AND_ORIGINAL_COLLISION_CUBE','records':records}
+        (args.output/'summary.json').write_text(json.dumps(summary,indent=2));status_path.write_text(json.dumps(summary,indent=2))
+        raise SystemExit(0)
 
     scene_records = []
     video_frames = []

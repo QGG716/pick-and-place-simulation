@@ -47,3 +47,21 @@ For each asset, `_diff_1k.jpg` is diffuse color, `_nor_gl_1k.jpg` is the
 OpenGL normal map, and `_arm_1k.jpg` packs ambient occlusion, roughness, and
 metallic channels. The current USD Preview Surface implementation consumes
 diffuse and ARM; normal files are retained for a future tangent-basis upgrade.
+
+## Perception capture A/B (2026-09-15)
+
+The separate perception capture entry previously bound a solid `Carton`
+material, not these replay textures, and bound an emissive `Target` material
+to the selected carton. New sensor captures disable that selected-box material.
+`isaacsim_perception_capture.py --appearance-ab` renders the full mechanical
+scene twice with the same six-face visual mesh and unchanged Cube collider.
+A uses the old passive solid material; B uses the CC0 carton texture above.
+
+`scripts/carton_appearance.py` creates a shared diffuse atlas on the server:
+paper repeats every 0.25 m, with the same small handling arrows on every side
+and a 50 mm diffuse tape strip on top. Those are declared appearance assumptions,
+not measurements or per-box identifiers. The atlas is a material input, never
+a modification of captured RGB. Surface dimensions determine paper scale;
+there is no displacement, bump/normal map, alpha cutout or extra tape geometry.
+All boxes of the same size use the same atlas. Source and generated atlas hashes
+and actual USD material bindings are saved beside each experiment.

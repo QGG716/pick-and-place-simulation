@@ -42,6 +42,9 @@ perturbations:
   known_rotation_rpy_rad: [0.0, 0.0, 0.17453292519943295]
   occluder_size_xyz_m: [0.18, 0.70, 0.90]
 rendering:
+  sensor_target_highlight: false
+  appearance_ab_entry: scripts/isaacsim_perception_capture.py --appearance-ab
+  appearance_ab_scope: FULL_STACK_NOMINAL_SAME_GEOMETRY_A_PLAIN_B_SHARED_PAPER_ATLAS
   physics_hz: 60
   sensor_acquisition_hz: 30
   capture_trigger_hz: 2
