@@ -1,0 +1,22 @@
+{
+  "schema": "metric_geometry_acceptance_v1",
+  "scope": "GEOMETRY_ALGORITHM_ONLY",
+  "frozen_before_algorithm_execution": true,
+  "plane_mean_depth_residual_m": 0.003,
+  "plane_p95_depth_residual_m": 0.006,
+  "gt_plane_position_m": 0.005,
+  "gt_normal_degrees": 1.0,
+  "gt_patch_boundary_outside_m": 0.01,
+  "gt_certified_corner_m": 0.015,
+  "gt_complete_center_m": 0.015,
+  "gt_complete_dimension_m": 0.02,
+  "gt_complete_orientation_degrees": 1.0,
+  "minimum_points": 50,
+  "boundary_erosion_px": 2,
+  "discontinuity_m": 0.02,
+  "plane_noise_scale_m": 0.001,
+  "boundary_noise_scale_px": 2.0,
+  "boundary_auxiliary_weight": 0.05,
+  "seed": 17,
+  "rationale": "Keep the existing 3 mm mean-depth gate. At 2-4 m and fx about 748 px, horizontal sampling is about 2.7-5.3 mm/pixel; fy about 1526 px provides finer vertical sampling. Two-pixel sampling/edge ambiguity motivates 10 mm patch, 15 mm corner/center and 20 mm dimension tolerances, with no GT-derived per-instance tuning. Ideal depth permits 1 mm robust-loss scale; 6 mm P95 exposes tails. One-degree normal/orientation accuracy is the application assumption. Calibration, resolution, SI depth and all fusion thresholds remain fixed."
+}
