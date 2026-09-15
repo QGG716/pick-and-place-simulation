@@ -43,6 +43,9 @@ perturbations:
   occluder_size_xyz_m: [0.18, 0.70, 0.90]
 rendering:
   sensor_target_highlight: false
+  carton_asset_config: configs/isaac/carton_assets.json
+  carton_asset_entry: scripts/isaacsim_perception_capture.py --carton-assets configs/isaac/carton_assets.json --asset-cache CACHE
+  carton_asset_review_policy: RAW_IMAGES_FIRST_NO_SAM_UNTIL_USER_CONFIRMATION
   appearance_ab_entry: scripts/isaacsim_perception_capture.py --appearance-ab
   appearance_ab_scope: FULL_STACK_NOMINAL_SAME_GEOMETRY_A_PLAIN_B_SHARED_PAPER_ATLAS
   physics_hz: 60

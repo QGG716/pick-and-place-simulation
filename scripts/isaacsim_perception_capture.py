@@ -37,6 +37,8 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--visibility-only", action="store_true", help="Capture only the unchanged full stack, retaining first-hit instance IDs; no models or lighting acceptance")
     result.add_argument("--geometry-algorithm-only", action="store_true", help="Use an explicitly separate diagnostic bundle; hide only its recorded mechanical occluders")
     result.add_argument("--appearance-ab", action="store_true", help="Only full-stack A/B material captures; identical mesh, no target highlight, no video")
+    result.add_argument("--carton-assets", type=Path, help="Pinned complete USD carton configuration; full-stack image review only")
+    result.add_argument("--asset-cache", type=Path, help="External cache containing pinned carton dependencies")
     return result
 
 
@@ -75,7 +77,9 @@ def rgb_data(value):
 args = parser().parse_args()
 if min(args.width, args.height, args.video_width, args.video_height, args.fps) <= 0 or args.seconds <= 0.0:
     raise ValueError("render dimensions, FPS and duration must be positive")
-args.output.mkdir(parents=True, exist_ok=not args.appearance_ab)
+args.output.mkdir(parents=True, exist_ok=not (args.appearance_ab or args.carton_assets))
+if args.carton_assets and (not args.asset_cache or args.appearance_ab or args.visibility_only or args.geometry_algorithm_only):
+    raise ValueError('USD carton review requires its asset cache and the full mechanical scene')
 if args.appearance_ab and (args.visibility_only or args.geometry_algorithm_only):
     raise ValueError('appearance A/B must retain the full mechanical scene')
 args.usd_directory.mkdir(parents=True, exist_ok=True)
@@ -121,7 +125,7 @@ try:
         if manifest.manifest_fingerprint != record["manifest_fingerprint"]:
             raise ValueError("bundle index/manifest identity mismatch")
         manifests.append((record["scene"], manifest))
-    if args.visibility_only or args.appearance_ab:
+    if args.visibility_only or args.appearance_ab or args.carton_assets:
         manifests = [(name, manifest) for name, manifest in manifests if name == "FULL_STACK_NOMINAL"]
         if len(manifests) != 1:
             raise ValueError("visibility diagnostic needs exactly one full-stack manifest")
@@ -246,6 +250,14 @@ try:
     materials['target'] = materials['carton']
     carton_visuals = {}
     appearance_assets = {}
+    usd_carton_records = {}
+    if args.carton_assets:
+        from carton_appearance import attach_usd_carton
+        asset_config = json.loads(args.carton_assets.read_text(encoding='utf-8'))
+        for dependency in asset_config['dependencies']:
+            asset_file = (args.asset_cache/dependency['path']).resolve()
+            if not asset_file.is_relative_to(args.asset_cache.resolve()) or not asset_file.is_file() or sha256(asset_file) != dependency['sha256']:
+                raise ValueError('CARTON_DEPENDENCY_MISSING_OR_CHANGED: '+dependency['path'])
     if args.appearance_ab:
         from carton_appearance import define_visual, create_atlas, textured_material
 
@@ -325,8 +337,9 @@ try:
     for index, item in enumerate(contract["primitives"]):
         path = f"/PerceptionValidation/Primitives/{safe_name(index, item['name'])}"
         is_carton = 'carton' in item['role']
-        cube = UsdGeom.Xform.Define(stage,path) if args.appearance_ab and is_carton else UsdGeom.Cube.Define(stage, path)
-        if not (args.appearance_ab and is_carton): cube.CreateSizeAttr(1.0)
+        adapted_carton = (args.appearance_ab or args.carton_assets) and is_carton
+        cube = UsdGeom.Xform.Define(stage,path) if adapted_carton else UsdGeom.Cube.Define(stage, path)
+        if not adapted_carton: cube.CreateSizeAttr(1.0)
         pose = np.asarray(item["pose_world"], dtype=float)
         size = np.asarray(item["size_xyz_m"], dtype=float)
         xform = UsdGeom.XformCommonAPI(cube.GetPrim())
@@ -335,12 +348,18 @@ try:
         xform.SetScale(Gf.Vec3f(*size.tolist()))
         role = item["role"]
         key = "target" if role == "selected_carton" else "tool" if role == "tool_equal_scale_collision_proxy" else "carton" if "carton" in role else "chassis" if item["name"] == "chassis" else "conveyor"
-        UsdShade.MaterialBindingAPI.Apply(cube.GetPrim()).Bind(materials[key])
-        if args.appearance_ab and is_carton:
+        if not (args.carton_assets and is_carton):
+            UsdShade.MaterialBindingAPI.Apply(cube.GetPrim()).Bind(materials[key])
+        if adapted_carton:
             collision = UsdGeom.Cube.Define(stage,path+'/Collision')
             collision.CreateSizeAttr(1.)
             UsdGeom.Imageable(collision.GetPrim()).MakeInvisible()
             UsdPhysics.CollisionAPI.Apply(collision.GetPrim())
+        if args.carton_assets and is_carton:
+            asset_id = asset_config['object_overrides'].get(item['name'],asset_config['default_asset'])
+            entry = next(v for v in asset_config['assets'] if v['id']==asset_id)
+            usd_carton_records[item['name']] = attach_usd_carton(stage,path+'/Visual',size,entry,args.asset_cache)
+        elif args.appearance_ab and is_carton:
             visual = define_visual(stage,path+'/Visual')
             dimensions_key = '_'.join(str(float(v)) for v in size)
             if dimensions_key not in appearance_assets:
@@ -386,7 +405,7 @@ try:
     occluder_xform = UsdGeom.XformCommonAPI(occluder.GetPrim())
     UsdShade.MaterialBindingAPI.Apply(occluder.GetPrim()).Bind(materials["occluder"])
 
-    overview_camera = rep.create.camera(position=(-4.8, -3.8, 3.4), look_at=(-0.7, 0.0, 1.2), focal_length=24.0, clipping_range=(0.05, 20.0))
+    overview_camera = rep.create.camera(position=(-5.8, 0.0, 3.5) if args.carton_assets else (-4.8, -3.8, 3.4), look_at=(-0.7, 0.0, 1.2), focal_length=24.0, clipping_range=(0.05, 20.0))
     overview_product = rep.create.render_product(overview_camera, (args.width, args.height))
     overview_annotator = rep.AnnotatorRegistry.get_annotator("rgb")
     overview_annotator.attach(overview_product)
@@ -446,9 +465,9 @@ try:
         cameras.append(scene_cameras)
 
     rig_spec = load_vision_rig_spec(project_root / "configs/isaac/perception_sensing_pose.yaml")
-    sweep_manifest = first_manifest if (args.visibility_only or args.geometry_algorithm_only or args.appearance_ab) else next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
+    sweep_manifest = first_manifest if (args.visibility_only or args.geometry_algorithm_only or args.appearance_ab or args.carton_assets) else next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
     sweep_sensors = []
-    for angle_deg in (() if (args.visibility_only or args.geometry_algorithm_only or args.appearance_ab) else (-90.0, -45.0, 0.0, 45.0, 90.0)):
+    for angle_deg in (() if (args.visibility_only or args.geometry_algorithm_only or args.appearance_ab or args.carton_assets) else (-90.0, -45.0, 0.0, 45.0, 90.0)):
         angle_rad = math.radians(angle_deg)
         rig_pose = evaluate_vision_rig_pose(sweep_manifest.robot["T_W_robot"], angle_rad, rig_spec)
         position = np.asarray(rig_pose.camera_center_world_m, dtype=float)
@@ -611,6 +630,7 @@ try:
 
     def capture_module_artifacts(scene_dir, scene_name, manifest, camera, annotators, scene_record):
         """Persist one module without borrowing K, masks, or extrinsics from another."""
+        from carton_appearance import merge_instance_mask
         rgb_annotator, depth_annotator, instance_annotator = annotators
         rgba = np.asarray(rgb_data(rgb_annotator.get_data()))
         depth = np.asarray(rgb_data(depth_annotator.get_data()), dtype=np.float32)
@@ -653,18 +673,18 @@ try:
         }
         (module_dir / "camera_info.json").write_text(json.dumps(camera_info, indent=2), encoding="utf-8")
         segmentation_info = instance_result.get("info", {})
-        if args.visibility_only:
+        if args.visibility_only or args.carton_assets:
             np.save(module_dir / "first_hit_instance_ids.npy", instance_ids)
         masks_by_object = {}
         identity = {}
         for numeric_id, labels in segmentation_info.get("idToSemantics", {}).items():
             label = semantic_value(labels, "simulation_object_id")
             if label in prim_paths and np.any(mask := instance_ids == int(numeric_id)):
-                masks_by_object[str(label)], identity[str(label)] = mask, int(numeric_id)
+                merge_instance_mask(masks_by_object,identity,str(label),numeric_id,mask)
         for numeric_id, label in segmentation_info.get("idToLabels", {}).items():
             object_id = object_id_from_instance_label(label)
             if object_id is not None and np.any(mask := instance_ids == int(numeric_id)):
-                masks_by_object[object_id], identity[object_id] = mask, int(numeric_id)
+                merge_instance_mask(masks_by_object,identity,object_id,numeric_id,mask)
         if not masks_by_object:
             raise RuntimeError(f"no identified carton masks for {scene_name}/{camera['module_id']}")
         masks_path = module_dir / "gt_instance_masks.npz"
@@ -683,7 +703,11 @@ try:
                 annotation["bbox_xyxy"] = [float(columns.min()), float(rows.min()), float(columns.max() + 1), float(rows.max() + 1)]
             annotation["mask_key"] = object_id if mask is not None else None
             annotation["mask_pixel_count"] = 0 if mask is None else int(mask.sum())
-            annotation["isaac_instance_id"] = identity.get(object_id)
+            numeric_ids = sorted(identity.get(object_id,()))
+            annotation["isaac_instance_id"] = numeric_ids[0] if len(numeric_ids)==1 else None
+            annotation["isaac_instance_ids"] = numeric_ids
+            if args.carton_assets:
+                annotation['geometry_truth_status'] = 'NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED'
         annotations_path = module_dir / "gt_annotations.json"
         annotations_path.write_text(json.dumps({
             "schema_version": "isaac_ground_truth_annotations_v1", "module_id": camera["module_id"],
@@ -717,12 +741,48 @@ try:
             "simulation_epoch": manifest.timing["simulation_epoch"], "frame_sequence": manifest.timing["simulation_frame"],
             "simulation_time": capture_time, "rgb_sha256": sha256(rgb_path),
             "camera_calibration_identity": calibration_identity, "gt_snapshot_sha256": sha256(annotations_path),
+            "metric_depth_sha256": sha256(module_dir / "metric_depth_m.npy"),
+            "instance_masks_sha256": masks_hash,
+            "capture_metadata_sha256": sha256(module_dir / "capture_metadata.json"),
         }, indent=2), encoding="utf-8")
         (module_dir / "instance_segmentation_info.json").write_text(
             json.dumps(segmentation_info, indent=2, default=str), encoding="utf-8"
         )
         return {"module_id": camera["module_id"], "rgb": rgb, "depth": depth, "masks": masks_by_object,
                 "annotations": annotations, "directory": module_dir, "finite_depth_fraction": float(finite.mean())}
+
+    if args.carton_assets:
+        from unloading_perception.isaac_validation import canonical_digest
+        import carb
+        payload=first_manifest.to_dict()
+        payload['run_id']='carton-assets-'+args.output.name
+        payload['timing']={**payload['timing'],'simulation_epoch':payload['run_id']}
+        payload['provenance']={**payload['provenance'],
+            'source_manifest_fingerprint':first_manifest.manifest_fingerprint,
+            'carton_asset_config_sha256':sha256(args.carton_assets),
+            'visual_scene_fingerprint':canonical_digest(usd_carton_records),
+            'nominal_geometry_unchanged':True,'planning_admissible':False,
+            'surface_truth':'NEW_RENDERED_DEPTH_AND_INSTANCE_MASKS; NOMINAL_CUBOID_IS_NOT_EXACT_MESH'}
+        payload.pop('manifest_fingerprint');payload['manifest_fingerprint']=canonical_digest(payload)
+        manifest=IsaacSceneManifest.from_dict(payload)
+        (args.output/'manifest.json').write_text(json.dumps(payload,indent=2))
+        apply_manifest(manifest,'FULL_STACK_NOMINAL')
+        for _ in range(32): render_at_joint_command(command)
+        captures=[capture_module_artifacts(args.output/'FULL_STACK_NOMINAL','FULL_STACK_NOMINAL',manifest,c,(rgb,d,inst),bundle_scene_records['FULL_STACK_NOMINAL']) for c,rgb,d,inst in cameras[0]]
+        cv2.imwrite(str(args.output/'overview.png'),cv2.cvtColor(np.asarray(rgb_data(overview_annotator.get_data()))[:,:,:3],cv2.COLOR_RGB2BGR))
+        record={'status':'CAPTURED_PENDING_USER_IMAGE_REVIEW','planning_admissible':False,
+            'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=project_root,text=True).strip(),
+            'source_worktree':subprocess.check_output(['git','status','--short'],cwd=project_root,text=True),
+            'cartons':usd_carton_records,'target_highlight':False,'mechanical_entities_omitted':[],
+            'stable_render_frames':32,'sam_run':False,
+            'robot_q_rad':articulation.get_dof_positions().numpy().tolist(),
+            'render_settings':{key:carb.settings.get_settings().get(key) for key in ['/rtx/post/tonemap/op','/rtx/post/tonemap/filmIso','/rtx/post/tonemap/cameraShutter','/rtx/post/tonemap/fNumber','/rtx/post/histogram/enabled','/rtx/rendermode']}}
+        (args.output/'capture_configuration.json').write_text(json.dumps(record,indent=2))
+        # Flatten only the saved audit snapshot, resolving original robot payload paths.
+        stage.Export(str(args.output/'capture_stage.usda'))
+        status_path.write_text(json.dumps({'status':record['status'],'planning_admissible':False},indent=2))
+        print('USD_CARTON_CAPTURE_COMPLETE_PENDING_USER_IMAGE_REVIEW',flush=True)
+        raise SystemExit(0)
 
     if args.appearance_ab:
         from unloading_perception.isaac_validation import canonical_digest

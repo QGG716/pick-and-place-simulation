@@ -1,5 +1,35 @@
 import math
+import pytest
 from scripts.carton_appearance import FACES,atlas_uv,face_dimensions
+from scripts.carton_appearance import normalization
+from scripts.carton_appearance import merge_instance_mask
+
+
+def test_cardboard_tape_and_label_remain_one_independent_instance():
+    import numpy as np
+    masks,identities={},{}
+    raster=np.array([[11,12,13],[21,21,0]])
+    for numeric_id in (11,12,13,11):
+        merge_instance_mask(masks,identities,'box_a',numeric_id,raster==numeric_id)
+    merge_instance_mask(masks,identities,'box_b',21,raster==21)
+    assert np.array_equal(masks['box_a'],np.array([[1,1,1],[0,0,0]],dtype=bool))
+    assert np.array_equal(masks['box_b'],raster==21)
+    assert identities=={'box_a':{11,12,13},'box_b':{21}}
+
+
+def test_asset_normalization_preserves_full_envelope_and_offcenter_origin():
+    low,high=(-.19,-.125,0),(.19,.125,.14875)
+    scale,offset=normalization(low,high,(.6,.4,.3))
+    for i in range(3):
+        assert math.isclose(low[i]*scale[i]+offset[i],-.5)
+        assert math.isclose(high[i]*scale[i]+offset[i],.5)
+
+
+def test_asset_normalization_rejects_flat_box_and_invalid_bounds():
+    with pytest.raises(ValueError,match='ASPECT_RATIO'):
+        normalization((0,0,0),(.6,.4,.05),(.6,.4,.3))
+    with pytest.raises(ValueError,match='ENVELOPE'):
+        normalization((0,0,0),(1,1,0),(.6,.4,.3))
 
 
 def test_visual_box_preserves_six_outward_planar_cube_surfaces():
