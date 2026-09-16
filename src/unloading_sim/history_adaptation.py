@@ -69,11 +69,16 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
         return rejected(failure)
     c._remember_path(prefix, c._context_identity(all_obstacles, stage="pregrasp"),
                      "pregrasp", "B_STRICT_LOCAL_CONNECTION")
+    prefix, improvement = c._improve_free_path(prefix, all_obstacles)
+    if improvement.get("adopted"):
+        c._remember_path(prefix, c._context_identity(all_obstacles, stage="pregrasp"),
+                         "pregrasp", "B_STRICT_LOCAL_CONNECTION", improvement["after"])
     contact, failure, terminal = c._cartesian(prefix[-1], requested_virtual_contact,
         all_obstacles, seed=seed, target_contact=target, stage="contact")
     trace["stages"]["approach"] = {"selected_mode": "history_free_prefix_current_terminal",
         "free_connection_end_index": len(prefix)-1, "terminal_contact_start_index": len(prefix)-1,
-        "terminal": terminal, "actual_start_connected": True}
+        "terminal": terminal, "actual_start_connected": True,
+        "simplification": improvement}
     if failure:
         return rejected(failure)
     # Use the precisely solved endpoint, then recheck the complete rebuilt arc.
@@ -209,7 +214,20 @@ def checked_departure(c, hint, start, placed, obstacles, direction, prediction):
             failure = c._state_failure(path[-1], [*obstacles, body], stage="residence")
         if failure:
             return [], failure, {"current_flight_and_residence_checked": False}
-    return path, None, {"model": "history_current_flight_and_residence_recheck_v1",
+    evidence = {"model": "history_current_flight_and_residence_recheck_v1",
         "sweep_samples": len(sweep), "stationary_carton_included": True,
         "next_approach_start_q_rad": path[-1].tolist(), "current_flight_and_residence_checked": True,
         "next_contact": {"status": "NOT_EVALUATED_HISTORY_HINT", "joint_path_length_rad": None}}
+    # The old departure is already safe. Optional lookahead shares the same
+    # production provider, 4 s call / 12 s request caps and parent's history slice.
+    try:
+        improved, failure, audit = c._departure(start, placed, obstacles, direction,
+            seed=int(hint["attempt_provenance"]["candidate_id"][:8], 16),
+            working_normal=c.physical_from_virtual(c.robot.fk(start))[:3, 2],
+            release_prediction=prediction, verified_baseline=(path, evidence))
+        if failure is None:
+            return improved, None, audit
+        evidence["optional_failure"] = failure
+    except (ValueError, RuntimeError) as exc:
+        evidence["optional_failure"] = {"reason": type(exc).__name__, "detail": str(exc)}
+    return path, None, evidence

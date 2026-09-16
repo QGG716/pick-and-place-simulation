@@ -37,7 +37,7 @@ from .release_motion import (MOTION_SEMANTICS, ReleasePolicy, predict_release,
 from .geometry import OBB, rotation_matrix_from_rotation_vector, rotation_vector_from_matrix
 from .ik import iter_ik_solutions, pose_error, solve_ik_multistart
 from .release_motion import release_flight_envelope
-from .motion_quality import path_quality, QualityDeadline
+from .motion_quality import path_quality, QualityDeadline, quality_improves
 from .planner import RRTConnectPlanner
 from .pinocchio_backend import PinocchioHppFclBackend
 from .validation_physics import (
@@ -1397,43 +1397,12 @@ class LayoutTrajectoryConnector:
             validation_completed_monotonic=baseline["completed_monotonic"],
             validation_context=identity, fallback_to_verified=False)
         if attachment is None and target_contact is None and stage == "pregrasp":
-            started = perf_counter()
-            deadline = self._optional_deadline()
-            simplify = dict(started_monotonic=started, deadline_monotonic=deadline,
-                domain="UNLOADED_FREE_CONNECTION_ONLY", before=None, after=None,
-                skipped=False, reason=None)
-            if deadline is not None and started >= deadline:
-                simplify.update(skipped=True, reason="NECESSARY_CONTINUATION_RESERVE")
-            else:
-                with self._budget_scope(deadline):
-                    before = self._optional_quality(baseline["path"], deadline)
-                    simplify["before"] = before
-                    if before is not None:
-                        candidate_path, shortcut = planner.bounded_shortcut(
-                            [np.array(q) for q in baseline["path"]], deadline=deadline)
-                        simplify.update(shortcut)
-                        # Never publish even a completed shortcut without the
-                        # original caller's full edge grid and a complete score.
-                        if (not candidate_path or not np.array_equal(candidate_path[0], baseline["path"][0])
-                                or not np.array_equal(candidate_path[-1], baseline["path"][-1])):
-                            candidate_failure = {"reason": "SHORTCUT_ENDPOINT_CHANGED", "stage": stage}
-                        else:
-                            candidate_failure = self._path_failure(candidate_path, obstacles, stage=stage)
-                        after = (None if candidate_failure is not None else
-                                 self._optional_quality(candidate_path, deadline))
-                        simplify.update(after=after, recheck_failure=candidate_failure)
-                        if after is not None and after["soft_score"] < before["soft_score"]:
-                            baseline = self._remember_path(candidate_path, identity, stage,
-                                "B_STRICT_LOCAL_CONNECTION", after)
-                            simplify["reason"] = "FULLY_RECHECKED_IMPROVEMENT"
-                        else:
-                            evidence["fallback_to_verified"] = True
-                            simplify["reason"] = "IMPROVEMENT_INCOMPLETE_REJECTED_OR_NOT_BETTER"
-                    else:
-                        evidence["fallback_to_verified"] = True
-                        simplify["reason"] = "QUALITY_DEADLINE"
-            simplify["finished_monotonic"] = perf_counter()
+            path, simplify = self._improve_free_path(result.path, obstacles, planner=planner)
             evidence["simplification"] = simplify
+            evidence["fallback_to_verified"] = not simplify.get("adopted", False)
+            if simplify.get("adopted"):
+                baseline = self._remember_path(path, identity, stage,
+                    "B_STRICT_LOCAL_CONNECTION", simplify["after"])
         if context() != baseline["context"]:
             evidence["success"] = False
             return [], {"reason": "VALIDATION_CONTEXT_CHANGED", "stage": stage}, evidence
@@ -1514,8 +1483,58 @@ class LayoutTrajectoryConnector:
     def _path_quality(self, path, *, deadline=None):
         return path_quality(path, fk=self.robot.fk, joint_limits=self.robot.joint_limits,
             velocity_limits=getattr(getattr(self.robot, "model", None), "velocityLimit", None),
+            joint_names=getattr(self.robot, "active_joint_names", None),
             jacobian=self.robot.geometric_jacobian,
             deadline=self._limit(self._deadline_monotonic, deadline))
+
+    def _improve_free_path(self, path, obstacles, *, planner=None):
+        """Optional common optimizer; caller has strictly validated this free domain.
+
+        Only pregrasp paths without attachment/contact permissions enter here.
+        A separate working copy, both edge grids, complete scores and unchanged
+        endpoints/context are required before replacing the retained baseline.
+        """
+        baseline = [np.asarray(q).copy() for q in path]
+        started = perf_counter()
+        deadline = self._optional_deadline()
+        identity = self._context_identity(obstacles, stage="pregrasp")
+        evidence = dict(started_monotonic=started, deadline_monotonic=deadline,
+            domain="UNLOADED_FREE_CONNECTION_ONLY", before=None, after=None,
+            adopted=False, skipped=False, reason="NECESSARY_CONTINUATION_RESERVE")
+        if deadline is not None and started >= deadline:
+            evidence["skipped"] = True
+        else:
+            if planner is None:
+                planner = RRTConnectPlanner(np.asarray(self.robot.joint_limits)[:, 0],
+                    np.asarray(self.robot.joint_limits)[:, 1],
+                    lambda q: self._state_failure(q, obstacles, stage="pregrasp") is None,
+                    edge_resolution=.5*self.budget.edge_resolution_rad,
+                    rng=np.random.default_rng(0))  # Shortcut is deterministic; no search.
+            with self._budget_scope(deadline):
+                before = self._optional_quality(baseline, deadline)
+                evidence["before"] = before
+                if before is not None:
+                    candidate, shortcut = planner.bounded_shortcut(
+                        [q.copy() for q in baseline], deadline=deadline,
+                        attempts=8, state_budget=300)
+                    evidence.update(shortcut)
+                    if (not candidate or not np.array_equal(candidate[0], baseline[0])
+                            or not np.array_equal(candidate[-1], baseline[-1])):
+                        failure = {"reason": "SHORTCUT_ENDPOINT_CHANGED", "stage": "pregrasp"}
+                    else:
+                        failure = self._path_failure(candidate, obstacles, stage="pregrasp")
+                    after = None if failure else self._optional_quality(candidate, deadline)
+                    evidence.update(after=after, recheck_failure=failure)
+                    if (quality_improves(before, after) and identity ==
+                            self._context_identity(obstacles, stage="pregrasp")):
+                        baseline = [q.copy() for q in candidate]
+                        evidence.update(adopted=True, reason="FULLY_RECHECKED_IMPROVEMENT")
+                    else:
+                        evidence["reason"] = "IMPROVEMENT_INCOMPLETE_REJECTED_OR_NOT_BETTER"
+                else:
+                    evidence["reason"] = "QUALITY_DEADLINE"
+        evidence["finished_monotonic"] = perf_counter()
+        return baseline, evidence
 
     def _connect_pose(
         self,
@@ -2550,12 +2569,13 @@ class LayoutTrajectoryConnector:
             self._deadline_monotonic = outer_deadline
 
     def _departure(self, start, placed, obstacles, direction, *, seed, working_normal,
-                   release_prediction):
+                   release_prediction, verified_baseline=None):
         outer = self._deadline_monotonic
         identity = self._context_identity(obstacles, target_contact=placed, stage="withdrawal")
         try:
             result = self._departure_search(start, placed, obstacles, direction, seed=seed,
-                working_normal=working_normal, release_prediction=release_prediction)
+                working_normal=working_normal, release_prediction=release_prediction,
+                verified_baseline=verified_baseline)
             if identity != self._context_identity(obstacles, target_contact=placed, stage="withdrawal"):
                 return [], {"reason": "VALIDATION_CONTEXT_CHANGED", "stage": "withdrawal"}, {}
             return result
@@ -2563,7 +2583,7 @@ class LayoutTrajectoryConnector:
             self._deadline_monotonic = outer
 
     def _departure_search(self, start, placed, obstacles, direction, *, seed, working_normal,
-                   release_prediction):
+                   release_prediction, verified_baseline=None):
         if direction is None:
             return [], {"reason": "POST_RELEASE_CONVEYOR_DIRECTION_UNAVAILABLE"}, {}
         direction = np.asarray(direction, float)
@@ -2591,6 +2611,26 @@ class LayoutTrajectoryConnector:
         variants = [(vector, turn) for i, vector in enumerate(candidates)
                     for turn in ((0., 1.) if future_contacts and i < 2 else (0.,))]
         attempts, safe_choices, tested_directions = [], [], []
+        def score_departure(path, evidence, candidate_seed):
+            lookahead = self._next_contact_cost(path[-1], placed, obstacles, sweep, seed=candidate_seed)
+            quality = self._optional_quality(path, self._deadline_monotonic)
+            departure_cost = float(np.linalg.norm(np.diff(path, axis=0), axis=1).sum())
+            next_cost = lookahead.get("joint_path_length_rad")
+            evidence.update(next_contact=lookahead, departure_quality=quality,
+                departure_joint_path_length_rad=departure_cost,
+                two_task_cost_rad=None if next_cost is None else departure_cost + next_cost)
+            score = None if quality is None or next_cost is None else quality["soft_score"] + next_cost
+            return ((next_cost is None, score), [q.copy() for q in path], deepcopy(evidence))
+        if verified_baseline is not None:
+            path, evidence = verified_baseline
+            self._deadline_monotonic = self._limit(self._deadline_monotonic,
+                self._optional_deadline(comparison=True))
+            baseline_evidence = deepcopy(evidence)
+            baseline_evidence.update(selected_direction_world=None, baseline_source="HISTORY_CURRENT_RECHECK")
+            safe_choices.append(score_departure(path, baseline_evidence, seed))
+            # Baseline counts toward the three-candidate bound. No Cartesian
+            # alternative is useful if the baseline next-target cost is unknown.
+            variants = variants[:2] if safe_choices[0][0][1] is not None else []
         for index, (vector, turn) in enumerate(variants):
             if self._deadline_reached():
                 break
@@ -2638,36 +2678,37 @@ class LayoutTrajectoryConnector:
                     # Safety is established before optional lookahead/quality.
                     self._deadline_monotonic = self._limit(self._deadline_monotonic,
                         self._optional_deadline(comparison=True))
-                lookahead = self._next_contact_cost(path[-1], placed, obstacles, sweep, seed=seed + index * 1000)
-                departure_cost = (None if self._deadline_reached() else
-                    float(np.sum(np.linalg.norm(np.diff(path, axis=0), axis=1))))
-                if self._deadline_reached():
-                    departure_cost = None
                 evidence = {"model": "bounded_departure_swept_occupancy_v2",
                     "selected_direction_world": vector.tolist(), "distance_m": distance,
                     "selected_orientation_change_rotvec_rad": orientation_change.tolist(),
                     "attempts": attempts, "conveyor_surface": release_prediction["landing_support"]["receiver_names"],
                     "stationary_carton_included": True, "sweep_samples": len(sweep),
                     "next_approach_start_q_rad": path[-1].tolist(),
-                    "next_contact": lookahead, "departure_joint_path_length_rad": departure_cost,
                     "fixed_normal_retreat_or_vertical_lift": False}
-                next_cost = lookahead.get("joint_path_length_rad")
-                quality = self._optional_quality(path, self._deadline_monotonic)
-                evidence["departure_quality"] = quality
-                evidence["two_task_cost_rad"] = None if next_cost is None or departure_cost is None else departure_cost + next_cost
-                score = None if quality is None else quality["soft_score"]
-                rank = (next_cost is None, None if score is None else score + (next_cost or 0.))
-                safe_choices.append((rank, [q.copy() for q in path], deepcopy(evidence)))
+                safe_choices.append(score_departure(path, evidence, seed + (index+1)*1000))
                 if not future_contacts or len(safe_choices) >= 3:
                     break
         if safe_choices:
             best = safe_choices[0]
             for choice in safe_choices[1:]:
-                if best[0][1] is not None and choice[0][1] is not None and choice[0] < best[0]:
+                comparable = (best[2]["next_contact"].get("target"), best[2]["next_contact"].get("row_id")) == (
+                    choice[2]["next_contact"].get("target"), choice[2]["next_contact"].get("row_id"))
+                if (comparable and best[0][1] is not None and choice[0][1] is not None
+                        and choice[0] < best[0] and choice[2]["two_task_cost_rad"] < best[2]["two_task_cost_rad"]):
                     best = choice
             _, selected_path, selected_evidence = best
+            selected_evidence["comparison_scope"] = "SAME_NEXT_TARGET_ROW_FIRST_TWO_CONTACT_CANDIDATES"
+            if verified_baseline is not None:
+                selected_evidence["candidate_limit_including_baseline"] = 3
+                selected_evidence["alternatives_status"] = (
+                    "NOT_EVALUATED_BASELINE_NEXT_COST_UNKNOWN" if not variants else
+                    "BOUNDED_COMPARISON_OR_PARENT_DEADLINE")
             selected_evidence["compared_safe_departures"] = [{"selection_score": rank[1], "two_task_cost_rad": evidence["two_task_cost_rad"],
                 "next_contact_status": evidence["next_contact"]["status"],
+                "next_contact_target": evidence["next_contact"].get("target"),
+                "next_contact_row": evidence["next_contact"].get("row_id"),
+                "next_contact_face": evidence["next_contact"].get("face"),
+                "departure_quality": evidence.get("departure_quality"),
                 "direction_world": evidence["selected_direction_world"]}
                 for rank, _, evidence in safe_choices]
             return selected_path, None, selected_evidence
@@ -2961,7 +3002,7 @@ class LayoutTrajectoryConnector:
         started = perf_counter()
         self._candidate_final_deadline = self._limit(
             getattr(self, "_request_deadline_monotonic", outer), started + allowance)
-        if kwargs.get("history_hint") is not None:
+        if kwargs.pop("optional_quality", False) or kwargs.get("history_hint") is not None:
             # History's share cannot borrow the ordinary-search/final reserve.
             self._candidate_final_deadline = self._limit(self._candidate_final_deadline, outer)
         self._deadline_monotonic = self._limit(outer, self._candidate_final_deadline)

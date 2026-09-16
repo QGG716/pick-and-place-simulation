@@ -71,6 +71,7 @@ EXECUTION_GATE_REASON = "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED"
 PATH_BACKEND_UNAVAILABLE_REASON = "EXECUTION_PATH_BACKEND_UNAVAILABLE"
 TOOL_FRAME_SCHEMA = "m710id70_planner_tool_frames_v1"
 MOTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/wrist_transfer.py",
     "src/unloading_sim/history_candidates.py",
     "src/unloading_sim/history_adaptation.py",
     "src/unloading_sim/contact_scheduler.py",
@@ -1790,6 +1791,16 @@ def run_layout_single_carton_audit(
             if selected_trajectory_segment is not None or task_search_termination is not None:
                 scheduler.termination = task_search_termination
                 break
+        quality_improvement = None
+        if selected_trajectory_segment is not None and trajectory_connector is not None:
+            from .wrist_transfer import improve_complete_task
+            selected_trajectory_segment, quality_attempts, quality_improvement = improve_complete_task(
+                trajectory_connector, scene, target, selected_trajectory_segment, scheduled_contact_poses,
+                deadline=history_deadline if history_segment is not None else trajectory_connector._deadline_monotonic,
+                attempt_limit=max(0, min(pose_cap-len(attempts), connection_limit-trajectory_pose_attempts)))
+            attempts.extend(quality_attempts)
+            trajectory_pose_attempts += len(quality_attempts)
+            trajectory_search_seconds += quality_improvement.get("elapsed_s", 0.)
         strict_candidate_records = sum(len(item["strict_grasp_candidates"]) for item in attempts)
         distinct_q = []
         for item in attempts:
@@ -1846,6 +1857,7 @@ def run_layout_single_carton_audit(
                 "strict_grasp_candidate_record_count": strict_candidate_records,
                 "candidate_schedule": scheduler.summary(),
                 "history_attempt_count": len(history_attempts),
+                "quality_improvement": quality_improvement,
                 "trajectory_pose_attempts": trajectory_pose_attempts,
                 "trajectory_pose_attempt_limit": (
                     None
@@ -1873,6 +1885,9 @@ def run_layout_single_carton_audit(
                        "retry_count", "actual_complete_connection_attempt_count", "remaining_unsearched_count")},
         "candidate_count_scope": "GENERATED_POOLS_ONLY_NOT_UNENUMERATED_TASKS",
         "history_attempt_count": sum(task.get("history_attempt_count", 0) for task in tasks),
+        "quality_connection_attempt_count": sum((task.get("quality_improvement") or {}).get("attempts_count", 0) for task in tasks),
+        "quality_generation_statistics": {key: sum((task.get("quality_improvement") or {}).get("generation_statistics", {}).get(key, 0) for task in tasks)
+            for key in ("ik_calls", "ik_seeds_attempted", "ik_iterations_consumed", "trajectory_ik_wall_seconds")},
         "history_complete_connection_attempt_count": sum(task.get("history_attempt_count", 0) for task in tasks),
         "combined_actual_attempt_count": len(attempts),
         "combined_complete_connection_attempt_count": sum(task.get("trajectory_pose_attempts", 0) for task in tasks),
