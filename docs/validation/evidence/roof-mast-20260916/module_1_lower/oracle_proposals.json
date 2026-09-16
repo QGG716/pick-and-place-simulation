@@ -1,0 +1,511 @@
+{
+  "schema_version": "isaac_oracle_proposals_v1",
+  "coordinate_space": "source_image",
+  "source_size": [
+    2592,
+    1944
+  ],
+  "source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+  "raw_image_automatic": false,
+  "simulation_epoch": "carton-assets-capture-acc6b8c",
+  "frame_sequence": 100,
+  "rgb_sha256": "9de24497928d6d35fcf90fa367312810ce00bab29b97b0957057f411215d21c9",
+  "instances": [
+    {
+      "id": 1,
+      "instance_id": 1,
+      "simulation_object_id": "carton_l00_c03",
+      "oracle_proposal_source_id": "carton_l00_c03",
+      "label": "box",
+      "bbox": [
+        1345.0,
+        1525.0,
+        1350.0,
+        1602.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 2,
+      "instance_id": 2,
+      "simulation_object_id": "carton_l01_c00",
+      "oracle_proposal_source_id": "carton_l01_c00",
+      "label": "box",
+      "bbox": [
+        1905.0,
+        1439.0,
+        2127.0,
+        1622.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 3,
+      "instance_id": 3,
+      "simulation_object_id": "carton_l01_c01",
+      "oracle_proposal_source_id": "carton_l01_c01",
+      "label": "box",
+      "bbox": [
+        1721.0,
+        1406.0,
+        1932.0,
+        1620.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 4,
+      "instance_id": 4,
+      "simulation_object_id": "carton_l01_c02",
+      "oracle_proposal_source_id": "carton_l01_c02",
+      "label": "box",
+      "bbox": [
+        1533.0,
+        1404.0,
+        1737.0,
+        1602.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 5,
+      "instance_id": 5,
+      "simulation_object_id": "carton_l01_c03",
+      "oracle_proposal_source_id": "carton_l01_c03",
+      "label": "box",
+      "bbox": [
+        1346.0,
+        1323.0,
+        1542.0,
+        1602.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 6,
+      "instance_id": 6,
+      "simulation_object_id": "carton_l01_c04",
+      "oracle_proposal_source_id": "carton_l01_c04",
+      "label": "box",
+      "bbox": [
+        1161.0,
+        1449.0,
+        1347.0,
+        1602.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 7,
+      "instance_id": 7,
+      "simulation_object_id": "carton_l02_c00",
+      "oracle_proposal_source_id": "carton_l02_c00",
+      "label": "box",
+      "bbox": [
+        1937.0,
+        1190.0,
+        2184.0,
+        1457.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 8,
+      "instance_id": 8,
+      "simulation_object_id": "carton_l02_c01",
+      "oracle_proposal_source_id": "carton_l02_c01",
+      "label": "box",
+      "bbox": [
+        1730.0,
+        1184.0,
+        1975.0,
+        1457.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 9,
+      "instance_id": 9,
+      "simulation_object_id": "carton_l02_c02",
+      "oracle_proposal_source_id": "carton_l02_c02",
+      "label": "box",
+      "bbox": [
+        1546.0,
+        1168.0,
+        1752.0,
+        1457.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 10,
+      "instance_id": 10,
+      "simulation_object_id": "carton_l02_c03",
+      "oracle_proposal_source_id": "carton_l02_c03",
+      "label": "box",
+      "bbox": [
+        1349.0,
+        1090.0,
+        1559.0,
+        1457.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 11,
+      "instance_id": 11,
+      "simulation_object_id": "carton_l02_c04",
+      "oracle_proposal_source_id": "carton_l02_c04",
+      "label": "box",
+      "bbox": [
+        1152.0,
+        1196.0,
+        1350.0,
+        1457.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 12,
+      "instance_id": 12,
+      "simulation_object_id": "carton_l03_c00",
+      "oracle_proposal_source_id": "carton_l03_c00",
+      "label": "box",
+      "bbox": [
+        1980.0,
+        905.0,
+        2249.0,
+        1204.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 13,
+      "instance_id": 13,
+      "simulation_object_id": "carton_l03_c01",
+      "oracle_proposal_source_id": "carton_l03_c01",
+      "label": "box",
+      "bbox": [
+        1771.0,
+        899.0,
+        2024.0,
+        1204.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 14,
+      "instance_id": 14,
+      "simulation_object_id": "carton_l03_c02",
+      "oracle_proposal_source_id": "carton_l03_c02",
+      "label": "box",
+      "bbox": [
+        1562.0,
+        888.0,
+        1801.0,
+        1204.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 15,
+      "instance_id": 15,
+      "simulation_object_id": "carton_l03_c03",
+      "oracle_proposal_source_id": "carton_l03_c03",
+      "label": "box",
+      "bbox": [
+        1352.0,
+        835.0,
+        1578.0,
+        1204.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 16,
+      "instance_id": 16,
+      "simulation_object_id": "carton_l03_c04",
+      "oracle_proposal_source_id": "carton_l03_c04",
+      "label": "box",
+      "bbox": [
+        1142.0,
+        907.0,
+        1354.0,
+        1204.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 17,
+      "instance_id": 17,
+      "simulation_object_id": "carton_l04_c00",
+      "oracle_proposal_source_id": "carton_l04_c00",
+      "label": "box",
+      "bbox": [
+        2028.0,
+        574.0,
+        2324.0,
+        913.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 18,
+      "instance_id": 18,
+      "simulation_object_id": "carton_l04_c01",
+      "oracle_proposal_source_id": "carton_l04_c01",
+      "label": "box",
+      "bbox": [
+        1805.0,
+        572.0,
+        2082.0,
+        913.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 19,
+      "instance_id": 19,
+      "simulation_object_id": "carton_l04_c02",
+      "oracle_proposal_source_id": "carton_l04_c02",
+      "label": "box",
+      "bbox": [
+        1581.0,
+        568.0,
+        1841.0,
+        913.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 20,
+      "instance_id": 20,
+      "simulation_object_id": "carton_l04_c03",
+      "oracle_proposal_source_id": "carton_l04_c03",
+      "label": "box",
+      "bbox": [
+        1353.0,
+        546.0,
+        1600.0,
+        913.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 21,
+      "instance_id": 21,
+      "simulation_object_id": "carton_l04_c04",
+      "oracle_proposal_source_id": "carton_l04_c04",
+      "label": "box",
+      "bbox": [
+        1130.0,
+        578.0,
+        1359.0,
+        913.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 22,
+      "instance_id": 22,
+      "simulation_object_id": "carton_l05_c00",
+      "oracle_proposal_source_id": "carton_l05_c00",
+      "label": "box",
+      "bbox": [
+        2081.0,
+        185.0,
+        2413.0,
+        578.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 23,
+      "instance_id": 23,
+      "simulation_object_id": "carton_l05_c01",
+      "oracle_proposal_source_id": "carton_l05_c01",
+      "label": "box",
+      "bbox": [
+        1840.0,
+        185.0,
+        2149.0,
+        578.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 24,
+      "instance_id": 24,
+      "simulation_object_id": "carton_l05_c02",
+      "oracle_proposal_source_id": "carton_l05_c02",
+      "label": "box",
+      "bbox": [
+        1600.0,
+        185.0,
+        1887.0,
+        578.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 25,
+      "instance_id": 25,
+      "simulation_object_id": "carton_l05_c03",
+      "oracle_proposal_source_id": "carton_l05_c03",
+      "label": "box",
+      "bbox": [
+        1360.0,
+        185.0,
+        1626.0,
+        578.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 26,
+      "instance_id": 26,
+      "simulation_object_id": "carton_l05_c04",
+      "oracle_proposal_source_id": "carton_l05_c04",
+      "label": "box",
+      "bbox": [
+        1116.0,
+        185.0,
+        1364.0,
+        578.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 27,
+      "instance_id": 27,
+      "simulation_object_id": "carton_l06_c00",
+      "oracle_proposal_source_id": "carton_l06_c00",
+      "label": "box",
+      "bbox": [
+        2145.0,
+        0.0,
+        2459.0,
+        191.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 28,
+      "instance_id": 28,
+      "simulation_object_id": "carton_l06_c01",
+      "oracle_proposal_source_id": "carton_l06_c01",
+      "label": "box",
+      "bbox": [
+        1883.0,
+        0.0,
+        2184.0,
+        195.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 29,
+      "instance_id": 29,
+      "simulation_object_id": "carton_l06_c02",
+      "oracle_proposal_source_id": "carton_l06_c02",
+      "label": "box",
+      "bbox": [
+        1620.0,
+        0.0,
+        1912.0,
+        199.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 30,
+      "instance_id": 30,
+      "simulation_object_id": "carton_l06_c03",
+      "oracle_proposal_source_id": "carton_l06_c03",
+      "label": "box",
+      "bbox": [
+        1359.0,
+        0.0,
+        1640.0,
+        238.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    },
+    {
+      "id": 31,
+      "instance_id": 31,
+      "simulation_object_id": "carton_l06_c04",
+      "oracle_proposal_source_id": "carton_l06_c04",
+      "label": "box",
+      "bbox": [
+        1108.0,
+        0.0,
+        1367.0,
+        187.0
+      ],
+      "visible": true,
+      "occluded": false,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"
+    }
+  ]
+}

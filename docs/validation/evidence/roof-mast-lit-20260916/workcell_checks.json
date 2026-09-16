@@ -1,0 +1,258 @@
+{
+  "status": "STATIC_GEOMETRY_PASS",
+  "rig_world_bounds": [
+    [
+      -1.5402915076350703,
+      0.5150000002980232,
+      1.3043411960452795
+    ],
+    [
+      -1.2349999964237213,
+      0.9849999997019767,
+      2.5999999997764824
+    ]
+  ],
+  "mast_roof_clearance_m": 0.1000000008940698,
+  "roof_penetration_negative_fixture": "DETECTED_BY_ENABLED_USD_SOLID_AABB_OVERLAP",
+  "solids": {
+    "Floor": {
+      "path": "/PerceptionValidation/Primitives/p_044_Floor",
+      "bounds": [
+        [
+          -3.8000000953674316,
+          -1.2100000381469727,
+          -0.059999999329447745
+        ],
+        [
+          4.000000095367431,
+          1.2100000381469727,
+          -6.705522526129215e-10
+        ]
+      ],
+      "collision_enabled": true
+    },
+    "LeftWall": {
+      "path": "/PerceptionValidation/Primitives/p_045_LeftWall",
+      "bounds": [
+        [
+          -3.8000000953674316,
+          1.1500000006705522,
+          -2.3841857821338408e-08
+        ],
+        [
+          4.000000095367431,
+          1.2099999993294477,
+          2.700000023841858
+        ]
+      ],
+      "collision_enabled": true
+    },
+    "RightWall": {
+      "path": "/PerceptionValidation/Primitives/p_046_RightWall",
+      "bounds": [
+        [
+          -3.8000000953674316,
+          -1.2099999993294477,
+          -2.3841857821338408e-08
+        ],
+        [
+          4.000000095367431,
+          -1.1500000006705522,
+          2.700000023841858
+        ]
+      ],
+      "collision_enabled": true
+    },
+    "Roof": {
+      "path": "/PerceptionValidation/Primitives/p_047_Roof",
+      "bounds": [
+        [
+          -3.8000000953674316,
+          -1.2100000381469727,
+          2.7000000006705522
+        ],
+        [
+          4.000000095367431,
+          1.2100000381469727,
+          2.7599999993294477
+        ]
+      ],
+      "collision_enabled": true
+    }
+  },
+  "optical": [
+    {
+      "module": "module_0_upper",
+      "USD_cameras": [
+        "/Replicator/Camera_Xform_06/Camera"
+      ],
+      "forward_rig_hits": []
+    },
+    {
+      "module": "module_1_lower",
+      "USD_cameras": [
+        "/Replicator/Camera_Xform_07/Camera"
+      ],
+      "forward_rig_hits": []
+    }
+  ],
+  "conveyors": {
+    "conveyor_transverse": {
+      "belt_bounds": [
+        [
+          -0.8999999940395356,
+          -0.4,
+          0.5609637446486113
+        ],
+        [
+          -0.20000000596046452,
+          1.1,
+          0.5999999986588955
+        ]
+      ],
+      "source": {
+        "belt_prim": "/World/Belt/SM_ConveyorBelt_A06_Belt_02",
+        "id": "nvidia_a06",
+        "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+        "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+        "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd"
+      },
+      "collision_proxy_retained": true
+    },
+    "conveyor_longitudinal": {
+      "belt_bounds": [
+        [
+          -2.999999976158142,
+          -1.0999999940395355,
+          0.5609637446486113
+        ],
+        [
+          -0.200000023841858,
+          -0.4000000059604646,
+          0.5999999986588955
+        ]
+      ],
+      "source": {
+        "belt_prim": "/World/Belt/SM_ConveyorBelt_A06_Belt_02",
+        "id": "nvidia_a06",
+        "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+        "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+        "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd"
+      },
+      "collision_proxy_retained": true
+    }
+  },
+  "mounted_fill_lights": [
+    {
+      "path": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightLeft",
+      "module": "module_0_upper",
+      "offset_module_m": [
+        0.075,
+        0.18,
+        0.0
+      ],
+      "radius_m": 0.045,
+      "intensity": 150000.0,
+      "normalize": false,
+      "exposure": 0.0,
+      "color_temperature_k": 5000.0,
+      "physical_housing": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightLeftHousing",
+      "physical_bracket": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightLeftBracket",
+      "forward_world": [
+        1.0,
+        0.0,
+        -2.220446049250313e-16
+      ],
+      "world_center_m": [
+        -1.25,
+        0.9299999999999999,
+        2.4
+      ],
+      "mount_and_roof_clearance": "PASS"
+    },
+    {
+      "path": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightRight",
+      "module": "module_0_upper",
+      "offset_module_m": [
+        0.075,
+        -0.18,
+        0.0
+      ],
+      "radius_m": 0.045,
+      "intensity": 150000.0,
+      "normalize": false,
+      "exposure": 0.0,
+      "color_temperature_k": 5000.0,
+      "physical_housing": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightRightHousing",
+      "physical_bracket": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightRightBracket",
+      "forward_world": [
+        1.0,
+        0.0,
+        -2.220446049250313e-16
+      ],
+      "world_center_m": [
+        -1.25,
+        0.5700000000000001,
+        2.4
+      ],
+      "mount_and_roof_clearance": "PASS"
+    },
+    {
+      "path": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightLeft",
+      "module": "module_1_lower",
+      "offset_module_m": [
+        0.075,
+        0.18,
+        0.0
+      ],
+      "radius_m": 0.045,
+      "intensity": 150000.0,
+      "normalize": false,
+      "exposure": 0.0,
+      "color_temperature_k": 5000.0,
+      "physical_housing": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightLeftHousing",
+      "physical_bracket": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightLeftBracket",
+      "forward_world": [
+        0.9396926207859083,
+        0.0,
+        -0.342020143325669
+      ],
+      "world_center_m": [
+        -1.2545230534410567,
+        0.9299999999999999,
+        1.6036896856683835
+      ],
+      "mount_and_roof_clearance": "PASS"
+    },
+    {
+      "path": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightRight",
+      "module": "module_1_lower",
+      "offset_module_m": [
+        0.075,
+        -0.18,
+        0.0
+      ],
+      "radius_m": 0.045,
+      "intensity": 150000.0,
+      "normalize": false,
+      "exposure": 0.0,
+      "color_temperature_k": 5000.0,
+      "physical_housing": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightRightHousing",
+      "physical_bracket": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightRightBracket",
+      "forward_world": [
+        0.9396926207859083,
+        0.0,
+        -0.342020143325669
+      ],
+      "world_center_m": [
+        -1.2545230534410567,
+        0.5700000000000001,
+        1.6036896856683835
+      ],
+      "mount_and_roof_clearance": "PASS"
+    }
+  ],
+  "robot_wall_roof_AABB_candidates": [],
+  "planning_admissible": false,
+  "scope": "NOMINAL_STATIC_USD_ONLY_NO_TRAJECTORY_OR_PHYSICS_ACCEPTANCE"
+}

@@ -1,0 +1,97 @@
+{
+  "model_manifest": {
+    "manifest_version": 1,
+    "moge": {
+      "files": {
+        "model.pt": "79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc"
+      },
+      "model_path": "/root/autodl-tmp/huggingface/models--Ruicheng--moge-2-vits-normal/blobs/79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc",
+      "repository": "Ruicheng/moge-2-vits-normal",
+      "revision": "26b477f41595707c5db6770294c0d1721e8ed4ed"
+    },
+    "sam": {
+      "files": {
+        "config.json": "5ebd0d8643b486f3a716bf17c2a15531eb818b2b96ff0c6c5dcc88fa015161af",
+        "model.safetensors": "892c410e496344e527255ccdcb2cb7244a609acb5389c7c4fdba1288f861c579",
+        "preprocessor_config.json": "225545a743c654e3c495ec6f545a0eaba57c8ba3fbbd8483b3cb1c0fc58db517"
+      },
+      "repository": "facebook/sam-vit-base",
+      "revision": "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+      "snapshot_path": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f"
+    }
+  },
+  "runs": [
+    {
+      "module": "module_0_upper",
+      "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+      "sam_attempts": 1,
+      "metric_attempts": 1,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+      "raw_image_automatic": false,
+      "planning_admissible": false,
+      "rgb_sha256": "c4fbcfd5ce8505a7404d63d2ddeeefbf50db54d063ddd172a45dc585e4577c03",
+      "proposal_count": 16,
+      "mask_evaluation": {
+        "visible_gt_objects": 16,
+        "sam_count": 16,
+        "merged_prediction_count": 0,
+        "split_or_duplicate_gt_count": 0,
+        "gt_below_best_iou_0_5": 1,
+        "gt_without_significant_prediction": 0,
+        "rendered_mask_boundary": {
+          "prediction_pixels": 17078,
+          "gt_visible_physical_edge_pixels": 16667,
+          "precision_2px": 0.5128820705000585,
+          "recall_2px": 0.7434451310973781,
+          "gt_to_prediction_mean_px": 1.824294090270996
+        },
+        "boundary_reference": "ACTUAL_RENDERED_OBJECT_MASK_CONTOURS_INCLUDES_OCCLUSION_AND_CLIP_EDGES",
+        "exact_mesh_planes_corners": "NOT_EVALUATED",
+        "policy": {
+          "significant_pixels": 50,
+          "minimum_fraction_each_region": 0.1,
+          "best_iou_threshold": 0.5
+        }
+      },
+      "observed_faces": 23,
+      "instances_without_accepted_face": 0,
+      "complete_cuboids_accepted": 0
+    },
+    {
+      "module": "module_1_lower",
+      "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+      "sam_attempts": 1,
+      "metric_attempts": 1,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+      "raw_image_automatic": false,
+      "planning_admissible": false,
+      "rgb_sha256": "ea0002c0243592ec8d7fdd0e3e42b34e7fc5ce18b83996504fbaaf72bdcc0b7d",
+      "proposal_count": 31,
+      "mask_evaluation": {
+        "visible_gt_objects": 31,
+        "sam_count": 31,
+        "merged_prediction_count": 0,
+        "split_or_duplicate_gt_count": 0,
+        "gt_below_best_iou_0_5": 1,
+        "gt_without_significant_prediction": 0,
+        "rendered_mask_boundary": {
+          "prediction_pixels": 30015,
+          "gt_visible_physical_edge_pixels": 31409,
+          "precision_2px": 0.6009661835748792,
+          "recall_2px": 0.8226304562386577,
+          "gt_to_prediction_mean_px": 1.4859248399734497
+        },
+        "boundary_reference": "ACTUAL_RENDERED_OBJECT_MASK_CONTOURS_INCLUDES_OCCLUSION_AND_CLIP_EDGES",
+        "exact_mesh_planes_corners": "NOT_EVALUATED",
+        "policy": {
+          "significant_pixels": 50,
+          "minimum_fraction_each_region": 0.1,
+          "best_iou_threshold": 0.5
+        }
+      },
+      "observed_faces": 48,
+      "instances_without_accepted_face": 1,
+      "complete_cuboids_accepted": 0
+    }
+  ]
+}

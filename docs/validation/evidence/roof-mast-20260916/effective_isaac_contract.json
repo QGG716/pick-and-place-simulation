@@ -1,0 +1,3100 @@
+{
+  "asset_verification": {
+    "checked_assets": [
+      "assets/robots/fanuc_m710id_70/m710id_70.urdf",
+      "configs/robots/fanuc_m710id_70.yaml",
+      "configs/tools/unloading_gripper_20kg.yaml",
+      "configs/tools/unloading_gripper_10kg.yaml",
+      "assets/grippers/shanghai_wantai_three_zone/visual_mesh.glb",
+      "assets/grippers/shanghai_wantai_three_zone/collision_mesh.stl",
+      "assets/grippers/shanghai_wantai_three_zone/mass_properties.json"
+    ],
+    "scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+    "status": "PASS"
+  },
+  "claims": {
+    "carton_count": 40,
+    "complete_workcell_clearance": "NOT_EVALUATED",
+    "geometry_source": "configs/isaac/workcell_v2.yaml",
+    "other_branch_execution_certification": false,
+    "payload_dynamics": "NOT_EVALUATED",
+    "physical_grasp": "NOT_EVALUATED",
+    "receiver_transport": "STATIC_ONLY"
+  },
+  "contract_fingerprint": "931d9472411976edfa75a1bd50077284a9249ecf6fba88e9999fea7a22ea8f02",
+  "derivation": {
+    "asset_configs": {
+      "cartons": {
+        "archives": [
+          {
+            "id": "scan-v0.1",
+            "path": "scans-v0.1.zip",
+            "sha256": "b7931855ff2fa37c746182780bb7f126b64c156f1fe2bb431cfec1b632962001",
+            "url": "https://github.com/1057822006-svg/usd-cardboard-box-assets/releases/download/v0.1/usd-cardboard-box-assets-v0.1-ready.zip"
+          }
+        ],
+        "assets": [
+          {
+            "bytes": 5056,
+            "id": "nvidia_cardbox_d04",
+            "max_anisotropy": 1.35,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+            "sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd"
+          },
+          {
+            "axis_alignment": "Polar orthogonalization of area-weighted cardboard triangle normals within 18.2 degrees of source axes; then local X 90 degrees. No entity pose change.",
+            "id": "scan05",
+            "max_anisotropy": 1.35,
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+            "rotation_xyz_deg": [
+              87.33865923040798,
+              -2.658987267711984,
+              5.047898718582808
+            ],
+            "sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5"
+          }
+        ],
+        "default_asset": "nvidia_cardbox_d04",
+        "dependencies": [
+          {
+            "bytes": 2605,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/MI_LampCeilingA.mdl",
+            "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/MI_LampCeilingA.mdl"
+          },
+          {
+            "bytes": 8281,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Base.mdl",
+            "sha256": "5ca22bdae198012f2fa285de0c1b6c7041c8c539c76671a19e471f021b99370d",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Base.mdl"
+          },
+          {
+            "bytes": 46073,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Function.mdl",
+            "sha256": "9217e09bfd17109af755e4a1910c8c6fa7fca3f859b9081ff28e75167795bd85",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Function.mdl"
+          },
+          {
+            "bytes": 46432193,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/Alum_Anodized_roughness.png",
+            "sha256": "78fbda4ad9fc3ceabd3286580b99829cb7bdad420cd9db37b24c91f641504d79",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/Alum_Anodized_roughness.png"
+          },
+          {
+            "bytes": 5662826,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_D.png",
+            "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_D.png"
+          },
+          {
+            "bytes": 4823660,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_N.png",
+            "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_N.png"
+          },
+          {
+            "bytes": 2243369,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_ORM.png",
+            "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_ORM.png"
+          },
+          {
+            "bytes": 6909181,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_D.png",
+            "sha256": "e1c2dce6aa3438248ad3c960cba22c4160d9a86c152a978f6f228b8a99770834",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_D.png"
+          },
+          {
+            "bytes": 3999816,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_N.png",
+            "sha256": "4ab1797de4aad446a31ee70f7e5ebe29afabafe4bda17d203c2a01e286f71fc7",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_N.png"
+          },
+          {
+            "bytes": 5056,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+            "sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd"
+          },
+          {
+            "archive": "scan-v0.1",
+            "bytes": 8484518,
+            "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+            "sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5"
+          },
+          {
+            "archive": "scan-v0.1",
+            "bytes": 4906893,
+            "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.001.jpg",
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.001.jpg",
+            "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+          },
+          {
+            "archive": "scan-v0.1",
+            "bytes": 4906893,
+            "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.002.jpg",
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.002.jpg",
+            "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+          },
+          {
+            "archive": "scan-v0.1",
+            "bytes": 4906893,
+            "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.jpg",
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.jpg",
+            "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+          }
+        ],
+        "object_overrides": {
+          "carton_l02_c02": "scan05",
+          "carton_l07_c04": "scan05"
+        },
+        "schema_version": "carton_usd_assets_v1",
+        "sources": {
+          "official": "NVIDIA Isaac Assets 5.0 / Simple_Warehouse; NVIDIA proprietary content, not Apache-2.0",
+          "scan": "1057822006-svg v0.1; README permits use/modification with attribution; recommended CC BY 4.0; raw package not redistributed"
+        }
+      },
+      "conveyors": {
+        "a06": {
+          "belt_prim": "/World/Belt/SM_ConveyorBelt_A06_Belt_02",
+          "id": "nvidia_a06",
+          "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+          "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+          "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd"
+        },
+        "a43": {
+          "id": "nvidia_a43",
+          "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A43.usd",
+          "sha256": "41f461ec8321db23514d1adb99f7fb467964b66311471dc1d4c68b40197f9fa1",
+          "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A43.usd"
+        },
+        "a43_material_status": "NOT_REQUIRED_FOR_REJECTED_GEOMETRY_CANDIDATE",
+        "a43_source_geometry": "docs/validation/evidence/roof-mast-20260916/conveyor_source_geometry.json",
+        "a43_status": "REJECTED_L_JUNCTION_DIRECTION_AND_ENVELOPE_CONFLICT",
+        "dependencies": [
+          {
+            "bytes": 13097792,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+            "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd"
+          },
+          {
+            "bytes": 570,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/MetalPainted_White_Glossy_A.mdl",
+            "sha256": "76a006c503f34b66276191505c652456bf7b0d6d459ea20ddf7d9ebbf8c52ca8",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/MetalPainted_White_Glossy_A.mdl"
+          },
+          {
+            "bytes": 4081154,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_Albedo.png",
+            "sha256": "94f7888987b151e0c9a04c20d1f22b8265277dee753c983f6671610a15c80319",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_Albedo.png"
+          },
+          {
+            "bytes": 11422848,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_Normal.png",
+            "sha256": "dc88314a7a288da7db07702da0a4d370590da41fefcc3e40469dea3ace7a3f48",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_Normal.png"
+          },
+          {
+            "bytes": 8317816,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_ORM.png",
+            "sha256": "19c526303235f63c3264474e68c737aa326477d65027f279bf303c4692082d58",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_ORM.png"
+          },
+          {
+            "bytes": 523,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Steel/Steel_A.mdl",
+            "sha256": "aa1d11b11921633178138badd4f24f5de00c0763737362e656870235e570dd0c",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Steel/Steel_A.mdl"
+          },
+          {
+            "bytes": 5557085,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_Albedo.png",
+            "sha256": "e61898b1e1a7b64dba44ee6e3b8b0d66f873508c09e141394d5535d208d96b12",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_Albedo.png"
+          },
+          {
+            "bytes": 2279404,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_Normal.png",
+            "sha256": "c6a0ba336a804cd04da8406859bd40323c3eee783ef879ee8cf1699de5d82f60",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_Normal.png"
+          },
+          {
+            "bytes": 3254657,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_ORM.png",
+            "sha256": "20fe51937828869ed01a3fdd330de761802d080dbe052250f2a26720d1f73335",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_ORM.png"
+          },
+          {
+            "bytes": 1661,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Misc/Plastic_Orange_A.mdl",
+            "sha256": "255f1989a5c168687a1dd5b023d6d616f5a22f48453324c36ca9bbdaf3abc6b6",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Misc/Plastic_Orange_A.mdl"
+          },
+          {
+            "bytes": 1681,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Misc/Plastic_Rough_Black_A.mdl",
+            "sha256": "f97eff4189c807a60827c93ecb80dafd0e63f6bf84f20ad333d168c19981af2f",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Misc/Plastic_Rough_Black_A.mdl"
+          },
+          {
+            "bytes": 14265214,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_Albedo.png",
+            "sha256": "a6b6498c469c29954efabed9ef37689307f7cc8cb03ff8bc313d18a6fa38b0fe",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_Albedo.png"
+          },
+          {
+            "bytes": 83570550,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_Normal.png",
+            "sha256": "eee02cfbe93383976c55accff9eef31260d512fdf8dc34ae231c538479484320",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_Normal.png"
+          },
+          {
+            "bytes": 13473427,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_ORM.png",
+            "sha256": "1e85848234c3bb694b1161ecf8c2a86fdfd89129eba23a87bafdc2cceeee2ead",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_ORM.png"
+          },
+          {
+            "bytes": 12098698,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_Albedo.png",
+            "sha256": "f95b8ae369f4b0bf27f5e0ed027d9a7aa9455327f2b3d37cb53cc785b72fe89a",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_Albedo.png"
+          },
+          {
+            "bytes": 80153798,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_Normal.png",
+            "sha256": "f3152dfcd02528db6bbd7389106d21827ff42c903a6f3f8b2532c15cfb3718c0",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_Normal.png"
+          },
+          {
+            "bytes": 15783432,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_ORM.png",
+            "sha256": "6277f473ed654861fe5ab49366bb431f3c2f4486dea3389d4111b4b4354b08f5",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_ORM.png"
+          },
+          {
+            "bytes": 1171,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/physics_material.usd",
+            "sha256": "bc82953c4fc0806aed6a7cb7e10d0d02c0142e2a6ea03489f0e033e1d0485d8a",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material%20Library/physics_material.usd"
+          },
+          {
+            "bytes": 4622,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/M_ConveyorBelt_A01_Belt.usd",
+            "sha256": "31f28a59c0bedc8dba1eb401d1bc826d96f29f947c69f86d1e8c06f506c4c1db",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/M_ConveyorBelt_A01_Belt.usd"
+          },
+          {
+            "bytes": 4745,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/M_ConveyorBelt_A01_Decal.usd",
+            "sha256": "73366ecfd7c1174c345330be982a01530cea1fe351358450d4e61da346341627",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/M_ConveyorBelt_A01_Decal.usd"
+          },
+          {
+            "bytes": 4730,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/MetalPainted_Blue_Glossy_A.usd",
+            "sha256": "18f7a5174e83b51ee48664965509beb039a08a50c02ada582447726b5812fc9b",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/MetalPainted_Blue_Glossy_A.usd"
+          },
+          {
+            "bytes": 3743,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Plastic_Orange_A.usd",
+            "sha256": "4cb11b65ca06aab4c4c984664595491ecfb69a2ca515843a5f7f1df05ca5b821",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Plastic_Orange_A.usd"
+          },
+          {
+            "bytes": 3294,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Plastic_Rough_Black_A.usd",
+            "sha256": "d4b0913a6ec7ca738d23042aa2193e3ba599e637429172c563438f2b3db9d297",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Plastic_Rough_Black_A.usd"
+          },
+          {
+            "bytes": 4627,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Steel_A.usd",
+            "sha256": "04d1d50d4a313dc396460258df066016cc6bb6b02171a86236400ca1bd5657f3",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Steel_A.usd"
+          },
+          {
+            "bytes": 2173230,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_Albedo.png",
+            "sha256": "9eb119f4698d7b35085d767646406f37ec129174181477dbc317fc9a7f2994d1",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_Albedo.png"
+          },
+          {
+            "bytes": 88228,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_Normal.png",
+            "sha256": "a96065ce7161751c6e914e48ca433272a7773e4765cd177612c4144c94b5684c",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_Normal.png"
+          },
+          {
+            "bytes": 3497336,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_ORM.png",
+            "sha256": "ff33947e746cd652f8913137b22d1230e2960f359517af13a1bcd7b19e685bb7",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_ORM.png"
+          },
+          {
+            "bytes": 3305102,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_Albedo.png",
+            "sha256": "cd01537d9daf0c3e85bfcf6305a9fed9e5adf04b6d30da28161cc5ac357436e9",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_Albedo.png"
+          },
+          {
+            "bytes": 71041,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_Alpha.png",
+            "sha256": "a9c26465035ba562e9bfb50409a96aa3be363896e47b2afc183f6cc1c2629990",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_Alpha.png"
+          },
+          {
+            "bytes": 5555367,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_ORM.png",
+            "sha256": "81e88e651f25fc84b3707b8c4076e22ee91382e22886153463b16437e60becb7",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_ORM.png"
+          }
+        ],
+        "schema_version": "official_conveyor_assets_v1"
+      }
+    },
+    "effective_config": {
+      "assembly_translation_world_m": [
+        -1.95,
+        0.35,
+        0.0
+      ],
+      "assets": {
+        "cartons": "configs/isaac/carton_assets.json",
+        "conveyors": "configs/isaac/conveyor_assets.json"
+      },
+      "conveyors": {
+        "dynamic_transport_status": "NOT_IMPLEMENTED_OR_TESTED",
+        "junction_owner": "conveyor_longitudinal",
+        "longitudinal_direction_world": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "transverse_direction_world": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "velocity_m_s": 0.0
+      },
+      "qualification": "PERCEPTION_SCENE_ONLY_NOT_EXECUTION_QUALIFIED",
+      "robot_base_xyz_A_m": [
+        0.625,
+        0.0,
+        0.6
+      ],
+      "scene_id": "m710id70_perception_roof_mast_v2",
+      "schema_version": "perception_workcell_v2",
+      "trailer": {
+        "door_world_x_m": null,
+        "inside_height_m": 2.7,
+        "inside_length_m": 9.6,
+        "inside_width_m": 2.3,
+        "local_x_range_m": [
+          -3.8,
+          4.0
+        ],
+        "longitudinal_status": "LOCAL_SECTION_ONLY_DOOR_DATUM_UNDEFINED",
+        "official_asset_status": "NOT_ADAPTED_NO_SUITABLE_VERIFIED_INTERIOR_IN_BOUNDED_SOURCE_SEARCH",
+        "visual_source": "ENGINEERING_PARAMETRIC_INTERIOR",
+        "wall_thickness_m": 0.06
+      },
+      "world_origin": "initial_carton_front_face_floor_projection"
+    },
+    "parent_contract_fingerprint": "33ca659b731678a3f8fa0784b413c152054c07f54af046b54a9465d456758863",
+    "parent_layout_id": "m710id70_unloading_layout_v1",
+    "parent_scene_fingerprint": "9ef799617486ee8986777d96d0cdde5cf46c807782ac8cd8f6ad72a90a2a8698",
+    "rig_config": {
+      "capture": {
+        "capture_trigger_hz": 2.0,
+        "continuous_sensor_stream": true,
+        "illumination_modes": [
+          "LIGHT_OFF",
+          "LIGHT_ON_NOMINAL",
+          "LIGHT_LOW",
+          "LIGHT_HIGH"
+        ],
+        "maximum_inter_module_skew_s": 0.0,
+        "multi_module_triggering": "SIMULTANEOUS_CAPTURE_TIME_GROUP",
+        "pointcloud2_mode": "ON_DEMAND",
+        "sensor_acquisition_hz": 30.0,
+        "trigger_group": [
+          "module_0_upper",
+          "module_1_lower"
+        ],
+        "triggered_perception_capture": true,
+        "vision_processing_hz": 2.0
+      },
+      "coverage": {
+        "active_profile": "dual_module_full_face_candidate",
+        "profiles": {
+          "dual_module_90deg_baseline": {
+            "hfov_deg": 90.0,
+            "status": "RETAINED_BASELINE",
+            "vfov_deg": 65.0
+          },
+          "dual_module_full_face_candidate": {
+            "hfov_deg": 120.0,
+            "status": "DESIGN_CHANGE_PENDING_RENDERED_ACCEPTANCE",
+            "vfov_deg": 65.0
+          }
+        }
+      },
+      "effective_scene_config": "configs/isaac/workcell_v2.yaml",
+      "geometry_qualification": "VISION_RIG_GEOMETRY_NOT_EXECUTION_QUALIFIED",
+      "kinematics": {
+        "j1_joint_origin_z_from_base_m": 0.565,
+        "mast_j1_yaw_offset_rad": 1.5707963267948966,
+        "mast_offset_j1_xy_m": [
+          -0.4,
+          0.0
+        ],
+        "parent_frame": "J1_link",
+        "vision_flange_height_evidence": {
+          "manufacturing_cad_confirmed": false,
+          "mesh": "assets/robots/fanuc_m710id_70/official/fanuc_m710_description/meshes/m710id_70/collision/j1.stl",
+          "source": "fanuc_official_j1_collision_mesh_bbox_max_z",
+          "source_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805"
+        },
+        "vision_flange_height_j1_m": 0.16434119641780853,
+        "vision_flange_height_status": "PROVISIONAL_ENGINEERING_DATUM"
+      },
+      "mast": {
+        "height_definition": "WORLD_Z_AT_NOMINAL_INSTALLATION",
+        "maximum_world_z_m": 2.6,
+        "orientation": "vertical_world_plus_z",
+        "visual_geometry_status": "VISUAL_PROXY"
+      },
+      "mast_yaw_actuation": {
+        "future_extension": true,
+        "supported": false
+      },
+      "module_0_main": {
+        "compatibility_alias_for": "module_0_upper"
+      },
+      "modules": [
+        {
+          "aliases": [
+            "module_0_main"
+          ],
+          "calibration_identity": "m710id70_module0_upper_ideal_registered_rgbd_120x65_v2",
+          "depth_camera": {
+            "T_rgb_depth": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "depth_semantics": "optical_z_m",
+            "frame_id": "module_0_upper_depth_optical",
+            "frame_rate_hz": 30.0,
+            "hfov_rad": 2.0943951023931953,
+            "intrinsics_mode": "EXACT_USER_SPEC_RESAMPLED",
+            "registration_mode": "SIMULATION_IDEAL_REGISTERED_DEPTH",
+            "resolution_px": [
+              2592,
+              1944
+            ],
+            "vfov_rad": 1.1344640137963142
+          },
+          "fill_lights": [
+            {
+              "beam_spread_rad": 1.5707963267948966,
+              "color_temperature_k": 5000.0,
+              "geometry_status": "SIMULATION_LIGHT_PROXY",
+              "intensity": 2500.0,
+              "light_id": "module_0_upper_fill_left",
+              "light_type": "disk_proxy",
+              "relative_xyz_m": [
+                0.07,
+                0.12,
+                0.0
+              ],
+              "trigger_mode": "CAPTURE_SYNCHRONIZED"
+            },
+            {
+              "beam_spread_rad": 1.5707963267948966,
+              "color_temperature_k": 5000.0,
+              "geometry_status": "SIMULATION_LIGHT_PROXY",
+              "intensity": 2500.0,
+              "light_id": "module_0_upper_fill_right",
+              "light_type": "disk_proxy",
+              "relative_xyz_m": [
+                0.07,
+                -0.12,
+                0.0
+              ],
+              "trigger_mode": "CAPTURE_SYNCHRONIZED"
+            }
+          ],
+          "module_id": "module_0_upper",
+          "optical_center_world_z_m": 2.4,
+          "optical_depression_deg": 0.0,
+          "rgb_camera": {
+            "frame_id": "module_0_upper_rgb_optical",
+            "frame_rate_hz": 30.0,
+            "hfov_rad": 2.0943951023931953,
+            "intrinsics_mode": "EXACT_USER_SPEC_RESAMPLED",
+            "optical_axes": {
+              "x": "right",
+              "y": "down",
+              "z": "forward"
+            },
+            "resolution_px": [
+              2592,
+              1944
+            ],
+            "vfov_rad": 1.1344640137963142
+          }
+        },
+        {
+          "aliases": [],
+          "calibration_identity": "m710id70_module1_lower_ideal_registered_rgbd_120x65_v1",
+          "depth_camera": {
+            "T_rgb_depth": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "depth_semantics": "optical_z_m",
+            "frame_id": "module_1_lower_depth_optical",
+            "frame_rate_hz": 30.0,
+            "hfov_rad": 2.0943951023931953,
+            "intrinsics_mode": "EXACT_USER_SPEC_RESAMPLED",
+            "registration_mode": "SIMULATION_IDEAL_REGISTERED_DEPTH",
+            "resolution_px": [
+              2592,
+              1944
+            ],
+            "vfov_rad": 1.1344640137963142
+          },
+          "fill_lights": [
+            {
+              "beam_spread_rad": 1.5707963267948966,
+              "color_temperature_k": 5000.0,
+              "geometry_status": "SIMULATION_LIGHT_PROXY",
+              "intensity": 2500.0,
+              "light_id": "module_1_lower_fill_left",
+              "light_type": "disk_proxy",
+              "relative_xyz_m": [
+                0.07,
+                0.12,
+                0.0
+              ],
+              "trigger_mode": "CAPTURE_SYNCHRONIZED"
+            },
+            {
+              "beam_spread_rad": 1.5707963267948966,
+              "color_temperature_k": 5000.0,
+              "geometry_status": "SIMULATION_LIGHT_PROXY",
+              "intensity": 2500.0,
+              "light_id": "module_1_lower_fill_right",
+              "light_type": "disk_proxy",
+              "relative_xyz_m": [
+                0.07,
+                -0.12,
+                0.0
+              ],
+              "trigger_mode": "CAPTURE_SYNCHRONIZED"
+            }
+          ],
+          "height_from_flange_m": 0.3,
+          "module_id": "module_1_lower",
+          "optical_depression_deg": 20.0,
+          "rgb_camera": {
+            "frame_id": "module_1_lower_rgb_optical",
+            "frame_rate_hz": 30.0,
+            "hfov_rad": 2.0943951023931953,
+            "intrinsics_mode": "EXACT_USER_SPEC_RESAMPLED",
+            "optical_axes": {
+              "x": "right",
+              "y": "down",
+              "z": "forward"
+            },
+            "resolution_px": [
+              2592,
+              1944
+            ],
+            "vfov_rad": 1.1344640137963142
+          }
+        }
+      ],
+      "nominal_sensing_pose": {
+        "arm_heading_world_rad": -1.5707963267948966,
+        "camera_heading_world_rad": 0.0,
+        "camera_j1_yaw_offset_rad": 1.5707963267948966,
+        "mast_side": "LEFT_WORLD_PLUS_Y",
+        "q1_rad": -1.5707963267948966
+      },
+      "rig_id": "m710id70_j1_perception_mast_v4",
+      "schema_version": "j1_perception_sensing_pose_v4"
+    }
+  },
+  "environment": {
+    "conveyors": {
+      "dynamic_transport_status": "NOT_IMPLEMENTED_OR_TESTED",
+      "junction_owner": "conveyor_longitudinal",
+      "longitudinal_direction_world": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "transverse_direction_world": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "velocity_m_s": 0.0
+    },
+    "qualification": "PERCEPTION_SCENE_ONLY_NOT_EXECUTION_QUALIFIED",
+    "solids": [
+      {
+        "center_m": [
+          0.10000000000000009,
+          0,
+          -0.03
+        ],
+        "collision_enabled": true,
+        "name": "Floor",
+        "pose_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.10000000000000009
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            -0.03
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "role": "static_environment",
+        "size_xyz_m": [
+          7.8,
+          2.42,
+          0.06
+        ],
+        "visible": true
+      },
+      {
+        "center_m": [
+          0.10000000000000009,
+          1.18,
+          1.35
+        ],
+        "collision_enabled": true,
+        "name": "LeftWall",
+        "pose_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.10000000000000009
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            1.18
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.35
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "role": "static_environment",
+        "size_xyz_m": [
+          7.8,
+          0.06,
+          2.7
+        ],
+        "visible": true
+      },
+      {
+        "center_m": [
+          0.10000000000000009,
+          -1.18,
+          1.35
+        ],
+        "collision_enabled": true,
+        "name": "RightWall",
+        "pose_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.10000000000000009
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -1.18
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.35
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "role": "static_environment",
+        "size_xyz_m": [
+          7.8,
+          0.06,
+          2.7
+        ],
+        "visible": true
+      },
+      {
+        "center_m": [
+          0.10000000000000009,
+          0,
+          2.73
+        ],
+        "collision_enabled": true,
+        "name": "Roof",
+        "pose_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.10000000000000009
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            2.73
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "role": "static_environment",
+        "size_xyz_m": [
+          7.8,
+          2.42,
+          0.06
+        ],
+        "visible": true
+      }
+    ],
+    "trailer": {
+      "door_world_x_m": null,
+      "inside_height_m": 2.7,
+      "inside_length_m": 9.6,
+      "inside_width_m": 2.3,
+      "local_x_range_m": [
+        -3.8,
+        4.0
+      ],
+      "longitudinal_status": "LOCAL_SECTION_ONLY_DOOR_DATUM_UNDEFINED",
+      "official_asset_status": "NOT_ADAPTED_NO_SUITABLE_VERIFIED_INTERIOR_IN_BOUNDED_SOURCE_SEARCH",
+      "visual_source": "ENGINEERING_PARAMETRIC_INTERIOR",
+      "wall_thickness_m": 0.06
+    },
+    "visual_assets": {
+      "cartons": {
+        "archives": [
+          {
+            "id": "scan-v0.1",
+            "path": "scans-v0.1.zip",
+            "sha256": "b7931855ff2fa37c746182780bb7f126b64c156f1fe2bb431cfec1b632962001",
+            "url": "https://github.com/1057822006-svg/usd-cardboard-box-assets/releases/download/v0.1/usd-cardboard-box-assets-v0.1-ready.zip"
+          }
+        ],
+        "assets": [
+          {
+            "bytes": 5056,
+            "id": "nvidia_cardbox_d04",
+            "max_anisotropy": 1.35,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+            "sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd"
+          },
+          {
+            "axis_alignment": "Polar orthogonalization of area-weighted cardboard triangle normals within 18.2 degrees of source axes; then local X 90 degrees. No entity pose change.",
+            "id": "scan05",
+            "max_anisotropy": 1.35,
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+            "rotation_xyz_deg": [
+              87.33865923040798,
+              -2.658987267711984,
+              5.047898718582808
+            ],
+            "sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5"
+          }
+        ],
+        "default_asset": "nvidia_cardbox_d04",
+        "dependencies": [
+          {
+            "bytes": 2605,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/MI_LampCeilingA.mdl",
+            "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/MI_LampCeilingA.mdl"
+          },
+          {
+            "bytes": 8281,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Base.mdl",
+            "sha256": "5ca22bdae198012f2fa285de0c1b6c7041c8c539c76671a19e471f021b99370d",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Base.mdl"
+          },
+          {
+            "bytes": 46073,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Function.mdl",
+            "sha256": "9217e09bfd17109af755e4a1910c8c6fa7fca3f859b9081ff28e75167795bd85",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Function.mdl"
+          },
+          {
+            "bytes": 46432193,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/Alum_Anodized_roughness.png",
+            "sha256": "78fbda4ad9fc3ceabd3286580b99829cb7bdad420cd9db37b24c91f641504d79",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/Alum_Anodized_roughness.png"
+          },
+          {
+            "bytes": 5662826,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_D.png",
+            "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_D.png"
+          },
+          {
+            "bytes": 4823660,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_N.png",
+            "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_N.png"
+          },
+          {
+            "bytes": 2243369,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_ORM.png",
+            "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_ORM.png"
+          },
+          {
+            "bytes": 6909181,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_D.png",
+            "sha256": "e1c2dce6aa3438248ad3c960cba22c4160d9a86c152a978f6f228b8a99770834",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_D.png"
+          },
+          {
+            "bytes": 3999816,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_N.png",
+            "sha256": "4ab1797de4aad446a31ee70f7e5ebe29afabafe4bda17d203c2a01e286f71fc7",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_N.png"
+          },
+          {
+            "bytes": 5056,
+            "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+            "sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd"
+          },
+          {
+            "archive": "scan-v0.1",
+            "bytes": 8484518,
+            "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+            "sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5"
+          },
+          {
+            "archive": "scan-v0.1",
+            "bytes": 4906893,
+            "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.001.jpg",
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.001.jpg",
+            "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+          },
+          {
+            "archive": "scan-v0.1",
+            "bytes": 4906893,
+            "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.002.jpg",
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.002.jpg",
+            "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+          },
+          {
+            "archive": "scan-v0.1",
+            "bytes": 4906893,
+            "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.jpg",
+            "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.jpg",
+            "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486"
+          }
+        ],
+        "object_overrides": {
+          "carton_l02_c02": "scan05",
+          "carton_l07_c04": "scan05"
+        },
+        "schema_version": "carton_usd_assets_v1",
+        "sources": {
+          "official": "NVIDIA Isaac Assets 5.0 / Simple_Warehouse; NVIDIA proprietary content, not Apache-2.0",
+          "scan": "1057822006-svg v0.1; README permits use/modification with attribution; recommended CC BY 4.0; raw package not redistributed"
+        }
+      },
+      "conveyors": {
+        "a06": {
+          "belt_prim": "/World/Belt/SM_ConveyorBelt_A06_Belt_02",
+          "id": "nvidia_a06",
+          "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+          "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+          "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd"
+        },
+        "a43": {
+          "id": "nvidia_a43",
+          "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A43.usd",
+          "sha256": "41f461ec8321db23514d1adb99f7fb467964b66311471dc1d4c68b40197f9fa1",
+          "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A43.usd"
+        },
+        "a43_material_status": "NOT_REQUIRED_FOR_REJECTED_GEOMETRY_CANDIDATE",
+        "a43_source_geometry": "docs/validation/evidence/roof-mast-20260916/conveyor_source_geometry.json",
+        "a43_status": "REJECTED_L_JUNCTION_DIRECTION_AND_ENVELOPE_CONFLICT",
+        "dependencies": [
+          {
+            "bytes": 13097792,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+            "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd"
+          },
+          {
+            "bytes": 570,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/MetalPainted_White_Glossy_A.mdl",
+            "sha256": "76a006c503f34b66276191505c652456bf7b0d6d459ea20ddf7d9ebbf8c52ca8",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/MetalPainted_White_Glossy_A.mdl"
+          },
+          {
+            "bytes": 4081154,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_Albedo.png",
+            "sha256": "94f7888987b151e0c9a04c20d1f22b8265277dee753c983f6671610a15c80319",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_Albedo.png"
+          },
+          {
+            "bytes": 11422848,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_Normal.png",
+            "sha256": "dc88314a7a288da7db07702da0a4d370590da41fefcc3e40469dea3ace7a3f48",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_Normal.png"
+          },
+          {
+            "bytes": 8317816,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_ORM.png",
+            "sha256": "19c526303235f63c3264474e68c737aa326477d65027f279bf303c4692082d58",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Painted/T_MetalPainted_White_Glossy_A_ORM.png"
+          },
+          {
+            "bytes": 523,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Steel/Steel_A.mdl",
+            "sha256": "aa1d11b11921633178138badd4f24f5de00c0763737362e656870235e570dd0c",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Steel/Steel_A.mdl"
+          },
+          {
+            "bytes": 5557085,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_Albedo.png",
+            "sha256": "e61898b1e1a7b64dba44ee6e3b8b0d66f873508c09e141394d5535d208d96b12",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_Albedo.png"
+          },
+          {
+            "bytes": 2279404,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_Normal.png",
+            "sha256": "c6a0ba336a804cd04da8406859bd40323c3eee783ef879ee8cf1699de5d82f60",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_Normal.png"
+          },
+          {
+            "bytes": 3254657,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_ORM.png",
+            "sha256": "20fe51937828869ed01a3fdd330de761802d080dbe052250f2a26720d1f73335",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Metal/Textures/T_Steel_A1_ORM.png"
+          },
+          {
+            "bytes": 1661,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Misc/Plastic_Orange_A.mdl",
+            "sha256": "255f1989a5c168687a1dd5b023d6d616f5a22f48453324c36ca9bbdaf3abc6b6",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Misc/Plastic_Orange_A.mdl"
+          },
+          {
+            "bytes": 1681,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Misc/Plastic_Rough_Black_A.mdl",
+            "sha256": "f97eff4189c807a60827c93ecb80dafd0e63f6bf84f20ad333d168c19981af2f",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Misc/Plastic_Rough_Black_A.mdl"
+          },
+          {
+            "bytes": 14265214,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_Albedo.png",
+            "sha256": "a6b6498c469c29954efabed9ef37689307f7cc8cb03ff8bc313d18a6fa38b0fe",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_Albedo.png"
+          },
+          {
+            "bytes": 83570550,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_Normal.png",
+            "sha256": "eee02cfbe93383976c55accff9eef31260d512fdf8dc34ae231c538479484320",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_Normal.png"
+          },
+          {
+            "bytes": 13473427,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_ORM.png",
+            "sha256": "1e85848234c3bb694b1161ecf8c2a86fdfd89129eba23a87bafdc2cceeee2ead",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Orange_A_ORM.png"
+          },
+          {
+            "bytes": 12098698,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_Albedo.png",
+            "sha256": "f95b8ae369f4b0bf27f5e0ed027d9a7aa9455327f2b3d37cb53cc785b72fe89a",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_Albedo.png"
+          },
+          {
+            "bytes": 80153798,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_Normal.png",
+            "sha256": "f3152dfcd02528db6bbd7389106d21827ff42c903a6f3f8b2532c15cfb3718c0",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_Normal.png"
+          },
+          {
+            "bytes": 15783432,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_ORM.png",
+            "sha256": "6277f473ed654861fe5ab49366bb431f3c2f4486dea3389d4111b4b4354b08f5",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/Plastic/Textures/T_Plastic_Rough_Black_A_ORM.png"
+          },
+          {
+            "bytes": 1171,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Material Library/physics_material.usd",
+            "sha256": "bc82953c4fc0806aed6a7cb7e10d0d02c0142e2a6ea03489f0e033e1d0485d8a",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Material%20Library/physics_material.usd"
+          },
+          {
+            "bytes": 4622,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/M_ConveyorBelt_A01_Belt.usd",
+            "sha256": "31f28a59c0bedc8dba1eb401d1bc826d96f29f947c69f86d1e8c06f506c4c1db",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/M_ConveyorBelt_A01_Belt.usd"
+          },
+          {
+            "bytes": 4745,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/M_ConveyorBelt_A01_Decal.usd",
+            "sha256": "73366ecfd7c1174c345330be982a01530cea1fe351358450d4e61da346341627",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/M_ConveyorBelt_A01_Decal.usd"
+          },
+          {
+            "bytes": 4730,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/MetalPainted_Blue_Glossy_A.usd",
+            "sha256": "18f7a5174e83b51ee48664965509beb039a08a50c02ada582447726b5812fc9b",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/MetalPainted_Blue_Glossy_A.usd"
+          },
+          {
+            "bytes": 3743,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Plastic_Orange_A.usd",
+            "sha256": "4cb11b65ca06aab4c4c984664595491ecfb69a2ca515843a5f7f1df05ca5b821",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Plastic_Orange_A.usd"
+          },
+          {
+            "bytes": 3294,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Plastic_Rough_Black_A.usd",
+            "sha256": "d4b0913a6ec7ca738d23042aa2193e3ba599e637429172c563438f2b3db9d297",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Plastic_Rough_Black_A.usd"
+          },
+          {
+            "bytes": 4627,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Steel_A.usd",
+            "sha256": "04d1d50d4a313dc396460258df066016cc6bb6b02171a86236400ca1bd5657f3",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/Steel_A.usd"
+          },
+          {
+            "bytes": 2173230,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_Albedo.png",
+            "sha256": "9eb119f4698d7b35085d767646406f37ec129174181477dbc317fc9a7f2994d1",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_Albedo.png"
+          },
+          {
+            "bytes": 88228,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_Normal.png",
+            "sha256": "a96065ce7161751c6e914e48ca433272a7773e4765cd177612c4144c94b5684c",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_Normal.png"
+          },
+          {
+            "bytes": 3497336,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_ORM.png",
+            "sha256": "ff33947e746cd652f8913137b22d1230e2960f359517af13a1bcd7b19e685bb7",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorBelt_A01_Belt_ORM.png"
+          },
+          {
+            "bytes": 3305102,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_Albedo.png",
+            "sha256": "cd01537d9daf0c3e85bfcf6305a9fed9e5adf04b6d30da28161cc5ac357436e9",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_Albedo.png"
+          },
+          {
+            "bytes": 71041,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_Alpha.png",
+            "sha256": "a9c26465035ba562e9bfb50409a96aa3be363896e47b2afc183f6cc1c2629990",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_Alpha.png"
+          },
+          {
+            "bytes": 5555367,
+            "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_ORM.png",
+            "sha256": "81e88e651f25fc84b3707b8c4076e22ee91382e22886153463b16437e60becb7",
+            "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/Textures/T_ConveyorsBelt_A01_Decal_ORM.png"
+          }
+        ],
+        "schema_version": "official_conveyor_assets_v1"
+      }
+    }
+  },
+  "layout_fingerprint": "c90445416aa195581b47c820c8a648c5761a306bd00b65a7f7c5be774d1d1e6d",
+  "layout_id": "m710id70_perception_roof_mast_v2",
+  "primitives": [
+    {
+      "category": "chassis",
+      "dynamic": false,
+      "name": "chassis",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.95
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.3
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "fixed_assembly",
+      "size_xyz_m": [
+        2.1,
+        1.5,
+        0.6
+      ]
+    },
+    {
+      "category": "conveyor",
+      "dynamic": false,
+      "name": "conveyor_transverse",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.55
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.54
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "fixed_assembly",
+      "size_xyz_m": [
+        0.7,
+        1.5,
+        0.12
+      ]
+    },
+    {
+      "category": "conveyor",
+      "dynamic": false,
+      "name": "conveyor_longitudinal",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.6
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.7500000000000001
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.54
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "fixed_assembly",
+      "size_xyz_m": [
+        2.8,
+        0.7,
+        0.12
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l00_c00",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l00_c01",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l00_c02",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l00_c03",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l00_c04",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l01_c00",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l01_c01",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l01_c02",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l01_c03",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l01_c04",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l02_c00",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l02_c01",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l02_c02",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l02_c03",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l02_c04",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l03_c00",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l03_c01",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l03_c02",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l03_c03",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l03_c04",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l04_c00",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l04_c01",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l04_c02",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l04_c03",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l04_c04",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l05_c00",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l05_c01",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l05_c02",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l05_c03",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l05_c04",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l06_c00",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l06_c01",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l06_c02",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l06_c03",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l06_c04",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l07_c00",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l07_c01",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l07_c02",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "selected_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l07_c03",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "carton",
+      "dynamic": false,
+      "name": "carton_l07_c04",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "supporting_carton",
+      "size_xyz_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "category": "robot",
+      "dynamic": false,
+      "name": "tool_envelope",
+      "pose_world": [
+        [
+          -0.3709256073849039,
+          -0.9022758678187193,
+          -0.2198009375278401,
+          -3.318983856661724
+        ],
+        [
+          -0.9284904538478418,
+          0.3648763047537263,
+          0.06907068367038713,
+          0.4230523562722965
+        ],
+        [
+          0.017879342817032157,
+          0.2297031575343343,
+          -0.973096494968093,
+          1.5218700656693445
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "tool_equal_scale_collision_proxy",
+      "size_xyz_m": [
+        0.288,
+        0.576,
+        0.2275
+      ]
+    },
+    {
+      "center_m": [
+        0.10000000000000009,
+        0,
+        -0.03
+      ],
+      "collision_enabled": true,
+      "name": "Floor",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.10000000000000009
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -0.03
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "static_environment",
+      "size_xyz_m": [
+        7.8,
+        2.42,
+        0.06
+      ],
+      "visible": true
+    },
+    {
+      "center_m": [
+        0.10000000000000009,
+        1.18,
+        1.35
+      ],
+      "collision_enabled": true,
+      "name": "LeftWall",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.10000000000000009
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.18
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.35
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "static_environment",
+      "size_xyz_m": [
+        7.8,
+        0.06,
+        2.7
+      ],
+      "visible": true
+    },
+    {
+      "center_m": [
+        0.10000000000000009,
+        -1.18,
+        1.35
+      ],
+      "collision_enabled": true,
+      "name": "RightWall",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.10000000000000009
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -1.18
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.35
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "static_environment",
+      "size_xyz_m": [
+        7.8,
+        0.06,
+        2.7
+      ],
+      "visible": true
+    },
+    {
+      "center_m": [
+        0.10000000000000009,
+        0,
+        2.73
+      ],
+      "collision_enabled": true,
+      "name": "Roof",
+      "pose_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.10000000000000009
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.73
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "role": "static_environment",
+      "size_xyz_m": [
+        7.8,
+        2.42,
+        0.06
+      ],
+      "visible": true
+    }
+  ],
+  "robot": {
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "model": "fanuc_m710id_70",
+    "model_config": {
+      "declared_path": "../robots/fanuc_m710id_70.yaml",
+      "repository_path": "configs/robots/fanuc_m710id_70.yaml",
+      "sha256": "ad5c8771d5324073bb66fc5e9cf176eb0b2fb6e8c39540f7b73b7ddca387b12e"
+    },
+    "q_rad": [
+      -1.5707963267948966,
+      0.7854566731593875,
+      0.6496218708958161,
+      0.06722349609001022,
+      -1.2117503086182402,
+      -1.9415185231007088
+    ],
+    "urdf": {
+      "repository_path": "assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+      "sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+      "source_status": "LATEST_FEASIBILITY_OFFICIAL_URDF"
+    },
+    "world_from_mount": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.325
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.35
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.6
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "scene_fingerprint": "378309c86f48cc55aa7591210425b42c1b6d01df48f05f593b4c316f8868b93f",
+  "schema": "m710id70_isaac_layout_contract_v1",
+  "scope": "PERCEPTION_DERIVED_STATIC_SCENE",
+  "snapshot_schema": "m710id70_workcell_snapshot_v1",
+  "target": "carton_l07_c02",
+  "trailer": {
+    "door_world_x_m": null,
+    "inside_height_m": 2.7,
+    "inside_length_m": 9.6,
+    "inside_width_m": 2.3,
+    "local_x_range_m": [
+      -3.8,
+      4.0
+    ],
+    "longitudinal_status": "LOCAL_SECTION_ONLY_DOOR_DATUM_UNDEFINED",
+    "official_asset_status": "NOT_ADAPTED_NO_SUITABLE_VERIFIED_INTERIOR_IN_BOUNDED_SOURCE_SEARCH",
+    "visual_source": "ENGINEERING_PARAMETRIC_INTERIOR",
+    "wall_thickness_m": 0.06
+  },
+  "world": {
+    "axes": {
+      "x": "into_trailer",
+      "y": "left_when_facing_into_trailer",
+      "z": "up"
+    },
+    "floor_z_m": 0.0,
+    "origin": "initial_stack_front_face_width_center_floor_projection"
+  }
+}

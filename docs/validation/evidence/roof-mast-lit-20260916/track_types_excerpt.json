@@ -1,0 +1,70 @@
+{
+  "ConveyorBelt_A06": {
+    "style": "BELT",
+    "start_level": 1,
+    "angle": "NONE",
+    "curvature": "NONE",
+    "ramp": "FLAT",
+    "type": "STRAIGHT",
+    "anchors": [
+      "",
+      "/Anchorpoint"
+    ],
+    "conveyor_nodes": {
+      "Belt": {
+        "animate_scale": 0.5,
+        "animate_direction": [
+          1.0,
+          0.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "curved": false
+      }
+    }
+  },
+  "ConveyorBelt_A43": {
+    "style": "ROLLER",
+    "start_level": 0,
+    "angle": "NONE",
+    "curvature": "NONE",
+    "ramp": "FLAT",
+    "type": "Y_MERGE",
+    "anchors": [
+      "",
+      "/Anchorpoint",
+      "/Anchorpoint_01"
+    ],
+    "conveyor_nodes": {
+      "Rollers": {
+        "animate_scale": 0.01,
+        "animate_direction": [
+          0.0,
+          1.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "curved": false
+      },
+      "Rollers_01": {
+        "animate_scale": 0.01,
+        "animate_direction": [
+          0.0,
+          1.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "curved": false
+      }
+    }
+  }
+}

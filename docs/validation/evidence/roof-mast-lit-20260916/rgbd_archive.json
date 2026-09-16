@@ -1,0 +1,9 @@
+{
+  "server_path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/lit-rgbd-depth.tar.gz",
+  "local_copy": ".audit/roof-mast-lit-rgbd-depth.tar.gz",
+  "bytes": 10399468,
+  "sha256": "8bf9d259a6e128884cf406f107996f083271edb786d8e2b4c623bd99eb23a036",
+  "depth_units": "metres",
+  "depth_type": "float32 optical_z_m",
+  "postprocessed": false
+}

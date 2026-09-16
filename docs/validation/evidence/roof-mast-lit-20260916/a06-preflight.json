@@ -1,0 +1,120 @@
+{
+  "conveyor_transverse": {
+    "source": {
+      "id": "nvidia_a06",
+      "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+      "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+      "belt_prim": "/World/Belt/SM_ConveyorBelt_A06_Belt_02"
+    },
+    "source_belt_bounds_m": [
+      [
+        -1.2207031250266454e-06,
+        -0.4500317085937504,
+        1.741493606567383
+      ],
+      [
+        1.999434814453125,
+        0.449967070703125,
+        1.7805298614501954
+      ]
+    ],
+    "source_belt_thickness_m": 0.03903625488281248,
+    "segments": [
+      {
+        "mesh_path": "/conveyor_transverse/A06Segment0/Belt/SM_ConveyorBelt_A06_Belt_02",
+        "vertices": 440,
+        "material": "/conveyor_transverse/A06Segment0/Looks/M_ConveyorBelt_A01_Belt",
+        "unit_bounds": [
+          [
+            -0.5,
+            -0.49999999999999983,
+            0.17469787597656264
+          ],
+          [
+            0.5,
+            0.5,
+            0.5
+          ]
+        ],
+        "segment_length_m": 1.5
+      }
+    ],
+    "adaptation": "OFFICIAL_BELT_SUBASSEMBLY_ON_PROJECT_LOW_FRAME",
+    "excluded_source_content": [
+      "tall_integrated_frame",
+      "frame_decals"
+    ],
+    "collision_proxy": "/conveyor_transverse/Collision",
+    "velocity_m_s": 0.0,
+    "turning_function": "NOT_IMPLEMENTED_OR_TESTED"
+  },
+  "conveyor_longitudinal": {
+    "source": {
+      "id": "nvidia_a06",
+      "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+      "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+      "belt_prim": "/World/Belt/SM_ConveyorBelt_A06_Belt_02"
+    },
+    "source_belt_bounds_m": [
+      [
+        -1.2207031250266454e-06,
+        -0.4500317085937504,
+        1.741493606567383
+      ],
+      [
+        1.999434814453125,
+        0.449967070703125,
+        1.7805298614501954
+      ]
+    ],
+    "source_belt_thickness_m": 0.03903625488281248,
+    "segments": [
+      {
+        "mesh_path": "/conveyor_longitudinal/A06Segment0/Belt/SM_ConveyorBelt_A06_Belt_02",
+        "vertices": 440,
+        "material": "/conveyor_longitudinal/A06Segment0/Looks/M_ConveyorBelt_A01_Belt",
+        "unit_bounds": [
+          [
+            -0.5,
+            -0.5,
+            0.17469787597656264
+          ],
+          [
+            0.0,
+            0.5,
+            0.5
+          ]
+        ],
+        "segment_length_m": 1.4
+      },
+      {
+        "mesh_path": "/conveyor_longitudinal/A06Segment1/Belt/SM_ConveyorBelt_A06_Belt_02",
+        "vertices": 440,
+        "material": "/conveyor_longitudinal/A06Segment1/Looks/M_ConveyorBelt_A01_Belt",
+        "unit_bounds": [
+          [
+            0.0,
+            -0.5,
+            0.17469787597656264
+          ],
+          [
+            0.5,
+            0.5,
+            0.5
+          ]
+        ],
+        "segment_length_m": 1.4
+      }
+    ],
+    "adaptation": "OFFICIAL_BELT_SUBASSEMBLY_ON_PROJECT_LOW_FRAME",
+    "excluded_source_content": [
+      "tall_integrated_frame",
+      "frame_decals"
+    ],
+    "collision_proxy": "/conveyor_longitudinal/Collision",
+    "velocity_m_s": 0.0,
+    "turning_function": "NOT_IMPLEMENTED_OR_TESTED"
+  }
+}

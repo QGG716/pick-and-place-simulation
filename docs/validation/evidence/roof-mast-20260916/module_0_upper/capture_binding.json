@@ -1,0 +1,13 @@
+{
+  "schema_version": "isaac_capture_binding_v1",
+  "module_id": "module_0_upper",
+  "simulation_epoch": "carton-assets-capture-acc6b8c",
+  "frame_sequence": 100,
+  "simulation_time": 1.6666666666666667,
+  "rgb_sha256": "f767f647130297cbe996eb0d9cf2d4d7d228e8228f494a903c739748c52162f3",
+  "camera_calibration_identity": "372d53029e85bd0e617ee1a2e523319c0d818ee4f47bc60f0d06f637ec7fe3b0",
+  "gt_snapshot_sha256": "91c4b1ff29a635c6d62866bfb9f8f64f14ce002e9a666946d90d845e4c3c11f3",
+  "metric_depth_sha256": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+  "instance_masks_sha256": "afd6347c0fc11cc46e4aaa7ad96ef409b9466775b74930cd11e16c35564557f9",
+  "capture_metadata_sha256": "fc679fd325183212da8dc699514b65d779e99364f03dc1505398e56b38addf0c"
+}

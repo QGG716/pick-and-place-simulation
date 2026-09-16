@@ -1,0 +1,2154 @@
+{
+  "schema_version": "isaac_ground_truth_annotations_v1",
+  "module_id": "module_1_lower",
+  "simulation_epoch": "carton-assets-capture-f24f63a",
+  "simulation_frame": 100,
+  "simulation_time": 1.6666666666666667,
+  "manifest_fingerprint": "291ee4b5b3ad4a95555a57791912aaab973cb1fea0fc3f40636970419fb34848",
+  "instance_masks_sha256": "179b71f33dd42425bef7506cc9a1efced8b05e9a3ceca27685be7e4035095aa8",
+  "objects": [
+    {
+      "simulation_object_id": "carton_l00_c00",
+      "semantic_id": "carton:carton_l00_c00",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_003_carton_l00_c00",
+      "bbox_xyxy": [
+        1735.0539278756107,
+        1369.7110311278868,
+        2083.4729063709924,
+        1883.9668621867602
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": false,
+      "occluded": true,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": null,
+      "mask_pixel_count": 0,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l00_c01",
+      "semantic_id": "carton:carton_l00_c01",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_004_carton_l00_c01",
+      "bbox_xyxy": [
+        1602.23907197075,
+        1369.7110311278868,
+        1898.5854087867374,
+        1883.9668621867602
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": false,
+      "occluded": true,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": null,
+      "mask_pixel_count": 0,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l00_c02",
+      "semantic_id": "carton:carton_l00_c02",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_005_carton_l00_c02",
+      "bbox_xyxy": [
+        1469.4242160658894,
+        1369.7110311278868,
+        1713.6979112024821,
+        1883.9668621867602
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": false,
+      "occluded": true,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": null,
+      "mask_pixel_count": 0,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l00_c03",
+      "semantic_id": "carton:carton_l00_c03",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_006_carton_l00_c03",
+      "bbox_xyxy": [
+        1345.0,
+        1525.0,
+        1350.0,
+        1602.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l00_c03",
+      "mask_pixel_count": 197,
+      "isaac_instance_id": 27,
+      "isaac_instance_ids": [
+        27
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l00_c04",
+      "semantic_id": "carton:carton_l00_c04",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_007_carton_l00_c04",
+      "bbox_xyxy": [
+        1167.8395850013476,
+        1369.7110311278868,
+        1343.9229160339717,
+        1883.9668621867602
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": false,
+      "occluded": true,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": null,
+      "mask_pixel_count": 0,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l01_c00",
+      "semantic_id": "carton:carton_l01_c00",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_008_carton_l01_c00",
+      "bbox_xyxy": [
+        1905.0,
+        1439.0,
+        2127.0,
+        1622.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l01_c00",
+      "mask_pixel_count": 31180,
+      "isaac_instance_id": 19,
+      "isaac_instance_ids": [
+        19
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l01_c01",
+      "semantic_id": "carton:carton_l01_c01",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_009_carton_l01_c01",
+      "bbox_xyxy": [
+        1721.0,
+        1406.0,
+        1932.0,
+        1620.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l01_c01",
+      "mask_pixel_count": 28619,
+      "isaac_instance_id": 30,
+      "isaac_instance_ids": [
+        30
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l01_c02",
+      "semantic_id": "carton:carton_l01_c02",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_010_carton_l01_c02",
+      "bbox_xyxy": [
+        1533.0,
+        1404.0,
+        1737.0,
+        1602.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l01_c02",
+      "mask_pixel_count": 30002,
+      "isaac_instance_id": 46,
+      "isaac_instance_ids": [
+        46
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l01_c03",
+      "semantic_id": "carton:carton_l01_c03",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_011_carton_l01_c03",
+      "bbox_xyxy": [
+        1346.0,
+        1323.0,
+        1542.0,
+        1602.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l01_c03",
+      "mask_pixel_count": 28328,
+      "isaac_instance_id": 23,
+      "isaac_instance_ids": [
+        23
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l01_c04",
+      "semantic_id": "carton:carton_l01_c04",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_012_carton_l01_c04",
+      "bbox_xyxy": [
+        1161.0,
+        1449.0,
+        1347.0,
+        1602.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l01_c04",
+      "mask_pixel_count": 26488,
+      "isaac_instance_id": 38,
+      "isaac_instance_ids": [
+        38
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l02_c00",
+      "semantic_id": "carton:carton_l02_c00",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_013_carton_l02_c00",
+      "bbox_xyxy": [
+        1937.0,
+        1190.0,
+        2184.0,
+        1457.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l02_c00",
+      "mask_pixel_count": 51522,
+      "isaac_instance_id": 31,
+      "isaac_instance_ids": [
+        31
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l02_c01",
+      "semantic_id": "carton:carton_l02_c01",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_014_carton_l02_c01",
+      "bbox_xyxy": [
+        1730.0,
+        1184.0,
+        1975.0,
+        1457.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l02_c01",
+      "mask_pixel_count": 54203,
+      "isaac_instance_id": 74,
+      "isaac_instance_ids": [
+        74
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l02_c02",
+      "semantic_id": "carton:carton_l02_c02",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_015_carton_l02_c02",
+      "bbox_xyxy": [
+        1546.0,
+        1168.0,
+        1752.0,
+        1457.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l02_c02",
+      "mask_pixel_count": 45733,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [
+        77,
+        78
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l02_c03",
+      "semantic_id": "carton:carton_l02_c03",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_016_carton_l02_c03",
+      "bbox_xyxy": [
+        1349.0,
+        1090.0,
+        1559.0,
+        1457.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l02_c03",
+      "mask_pixel_count": 51050,
+      "isaac_instance_id": 71,
+      "isaac_instance_ids": [
+        71
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l02_c04",
+      "semantic_id": "carton:carton_l02_c04",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_017_carton_l02_c04",
+      "bbox_xyxy": [
+        1152.0,
+        1196.0,
+        1350.0,
+        1457.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l02_c04",
+      "mask_pixel_count": 48641,
+      "isaac_instance_id": 44,
+      "isaac_instance_ids": [
+        44
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l03_c00",
+      "semantic_id": "carton:carton_l03_c00",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_018_carton_l03_c00",
+      "bbox_xyxy": [
+        1980.0,
+        905.0,
+        2249.0,
+        1204.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l03_c00",
+      "mask_pixel_count": 63427,
+      "isaac_instance_id": 16,
+      "isaac_instance_ids": [
+        16
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l03_c01",
+      "semantic_id": "carton:carton_l03_c01",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_019_carton_l03_c01",
+      "bbox_xyxy": [
+        1771.0,
+        899.0,
+        2024.0,
+        1204.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l03_c01",
+      "mask_pixel_count": 62955,
+      "isaac_instance_id": 54,
+      "isaac_instance_ids": [
+        54
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l03_c02",
+      "semantic_id": "carton:carton_l03_c02",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_020_carton_l03_c02",
+      "bbox_xyxy": [
+        1562.0,
+        888.0,
+        1801.0,
+        1204.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l03_c02",
+      "mask_pixel_count": 62898,
+      "isaac_instance_id": 49,
+      "isaac_instance_ids": [
+        49
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l03_c03",
+      "semantic_id": "carton:carton_l03_c03",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_021_carton_l03_c03",
+      "bbox_xyxy": [
+        1352.0,
+        835.0,
+        1578.0,
+        1204.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l03_c03",
+      "mask_pixel_count": 62820,
+      "isaac_instance_id": 58,
+      "isaac_instance_ids": [
+        58
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l03_c04",
+      "semantic_id": "carton:carton_l03_c04",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_022_carton_l03_c04",
+      "bbox_xyxy": [
+        1142.0,
+        907.0,
+        1354.0,
+        1204.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l03_c04",
+      "mask_pixel_count": 59870,
+      "isaac_instance_id": 80,
+      "isaac_instance_ids": [
+        80
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l04_c00",
+      "semantic_id": "carton:carton_l04_c00",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_023_carton_l04_c00",
+      "bbox_xyxy": [
+        2028.0,
+        574.0,
+        2324.0,
+        913.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l04_c00",
+      "mask_pixel_count": 78626,
+      "isaac_instance_id": 92,
+      "isaac_instance_ids": [
+        92
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l04_c01",
+      "semantic_id": "carton:carton_l04_c01",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_024_carton_l04_c01",
+      "bbox_xyxy": [
+        1805.0,
+        572.0,
+        2082.0,
+        913.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l04_c01",
+      "mask_pixel_count": 78017,
+      "isaac_instance_id": 87,
+      "isaac_instance_ids": [
+        87
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l04_c02",
+      "semantic_id": "carton:carton_l04_c02",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_025_carton_l04_c02",
+      "bbox_xyxy": [
+        1581.0,
+        568.0,
+        1841.0,
+        913.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l04_c02",
+      "mask_pixel_count": 77932,
+      "isaac_instance_id": 93,
+      "isaac_instance_ids": [
+        93
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l04_c03",
+      "semantic_id": "carton:carton_l04_c03",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_026_carton_l04_c03",
+      "bbox_xyxy": [
+        1353.0,
+        546.0,
+        1600.0,
+        913.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l04_c03",
+      "mask_pixel_count": 77830,
+      "isaac_instance_id": 18,
+      "isaac_instance_ids": [
+        18
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l04_c04",
+      "semantic_id": "carton:carton_l04_c04",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_027_carton_l04_c04",
+      "bbox_xyxy": [
+        1130.0,
+        578.0,
+        1359.0,
+        913.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l04_c04",
+      "mask_pixel_count": 74139,
+      "isaac_instance_id": 91,
+      "isaac_instance_ids": [
+        91
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l05_c00",
+      "semantic_id": "carton:carton_l05_c00",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_028_carton_l05_c00",
+      "bbox_xyxy": [
+        2081.0,
+        185.0,
+        2413.0,
+        578.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l05_c00",
+      "mask_pixel_count": 99747,
+      "isaac_instance_id": 94,
+      "isaac_instance_ids": [
+        94
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l05_c01",
+      "semantic_id": "carton:carton_l05_c01",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_029_carton_l05_c01",
+      "bbox_xyxy": [
+        1840.0,
+        185.0,
+        2149.0,
+        578.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l05_c01",
+      "mask_pixel_count": 98937,
+      "isaac_instance_id": 36,
+      "isaac_instance_ids": [
+        36
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l05_c02",
+      "semantic_id": "carton:carton_l05_c02",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_030_carton_l05_c02",
+      "bbox_xyxy": [
+        1600.0,
+        185.0,
+        1887.0,
+        578.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l05_c02",
+      "mask_pixel_count": 98780,
+      "isaac_instance_id": 21,
+      "isaac_instance_ids": [
+        21
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l05_c03",
+      "semantic_id": "carton:carton_l05_c03",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_031_carton_l05_c03",
+      "bbox_xyxy": [
+        1360.0,
+        185.0,
+        1626.0,
+        578.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l05_c03",
+      "mask_pixel_count": 98137,
+      "isaac_instance_id": 73,
+      "isaac_instance_ids": [
+        73
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l05_c04",
+      "semantic_id": "carton:carton_l05_c04",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_032_carton_l05_c04",
+      "bbox_xyxy": [
+        1116.0,
+        185.0,
+        1364.0,
+        578.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l05_c04",
+      "mask_pixel_count": 94128,
+      "isaac_instance_id": 68,
+      "isaac_instance_ids": [
+        68
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l06_c00",
+      "semantic_id": "carton:carton_l06_c00",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_033_carton_l06_c00",
+      "bbox_xyxy": [
+        2145.0,
+        0.0,
+        2459.0,
+        191.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l06_c00",
+      "mask_pixel_count": 49951,
+      "isaac_instance_id": 29,
+      "isaac_instance_ids": [
+        29
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l06_c01",
+      "semantic_id": "carton:carton_l06_c01",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_034_carton_l06_c01",
+      "bbox_xyxy": [
+        1883.0,
+        0.0,
+        2184.0,
+        195.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l06_c01",
+      "mask_pixel_count": 49611,
+      "isaac_instance_id": 24,
+      "isaac_instance_ids": [
+        24
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l06_c02",
+      "semantic_id": "carton:carton_l06_c02",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_035_carton_l06_c02",
+      "bbox_xyxy": [
+        1620.0,
+        0.0,
+        1912.0,
+        199.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l06_c02",
+      "mask_pixel_count": 49663,
+      "isaac_instance_id": 67,
+      "isaac_instance_ids": [
+        67
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l06_c03",
+      "semantic_id": "carton:carton_l06_c03",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_036_carton_l06_c03",
+      "bbox_xyxy": [
+        1359.0,
+        0.0,
+        1640.0,
+        238.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l06_c03",
+      "mask_pixel_count": 50060,
+      "isaac_instance_id": 17,
+      "isaac_instance_ids": [
+        17
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l06_c04",
+      "semantic_id": "carton:carton_l06_c04",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_037_carton_l06_c04",
+      "bbox_xyxy": [
+        1108.0,
+        0.0,
+        1367.0,
+        187.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": true,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": true,
+      "mask_key": "carton_l06_c04",
+      "mask_pixel_count": 46997,
+      "isaac_instance_id": 81,
+      "isaac_instance_ids": [
+        81
+      ],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l07_c00",
+      "semantic_id": "carton:carton_l07_c00",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_038_carton_l07_c00",
+      "bbox_xyxy": [
+        1926.6309689898233,
+        0.0,
+        2591.0,
+        0.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": false,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": false,
+      "mask_key": null,
+      "mask_pixel_count": 0,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l07_c01",
+      "semantic_id": "carton:carton_l07_c01",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_039_carton_l07_c01",
+      "bbox_xyxy": [
+        1735.9295251223946,
+        0.0,
+        2339.9060458112685,
+        0.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": false,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": false,
+      "mask_key": null,
+      "mask_pixel_count": 0,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l07_c02",
+      "semantic_id": "carton:carton_l07_c02",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_040_carton_l07_c02",
+      "bbox_xyxy": [
+        1545.228081254966,
+        0.0,
+        2019.7231704530693,
+        0.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": false,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": false,
+      "mask_key": null,
+      "mask_pixel_count": 0,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l07_c03",
+      "semantic_id": "carton:carton_l07_c03",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_041_carton_l07_c03",
+      "bbox_xyxy": [
+        1354.5266373875374,
+        0.0,
+        1699.5402950948703,
+        0.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": false,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": false,
+      "mask_key": null,
+      "mask_pixel_count": 0,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    },
+    {
+      "simulation_object_id": "carton_l07_c04",
+      "semantic_id": "carton:carton_l07_c04",
+      "category": "box",
+      "prim_path": "/PerceptionValidation/Primitives/p_042_carton_l07_c04",
+      "bbox_xyxy": [
+        1074.4213479669577,
+        0.0,
+        1379.3574197366713,
+        0.0
+      ],
+      "T_W_object": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "full_dimensions_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "visible": false,
+      "occluded": false,
+      "source": "ISAAC_GROUND_TRUTH",
+      "projection_intersects_image": false,
+      "mask_key": null,
+      "mask_pixel_count": 0,
+      "isaac_instance_id": null,
+      "isaac_instance_ids": [],
+      "geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED"
+    }
+  ]
+}

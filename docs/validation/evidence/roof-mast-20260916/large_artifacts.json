@@ -1,0 +1,56 @@
+{
+  "server_capture": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c",
+  "files": [
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.npy",
+      "bytes": 15116672,
+      "sha256": "f72ef9a7e002c13f8744d1072b74e44b20d47a4f2026033dd784c6d275053913"
+    },
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_0_upper/metric_depth_m.npy",
+      "bytes": 20155520,
+      "sha256": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9"
+    },
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_0_upper/first_hit_instance_ids.npy",
+      "bytes": 20155520,
+      "sha256": "6c537a8852abd9c2b970238a69a4f2772ce82c51d3ddb4c563c7c8330c66a889"
+    },
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_0_upper/gt_instance_masks.npz",
+      "bytes": 113087,
+      "sha256": "afd6347c0fc11cc46e4aaa7ad96ef409b9466775b74930cd11e16c35564557f9"
+    },
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_0_upper/registered_metric_pointmap.npz",
+      "bytes": 15441380,
+      "sha256": "cbcdd8c5661dc90b35163a714a8be4a5d1bf5b20db85d731782c2d1166bd1964"
+    },
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.npy",
+      "bytes": 15116672,
+      "sha256": "7ad28b19cf851b46d6dd39f360023ddc4cbe79241881023a963f09c60e24704e"
+    },
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy",
+      "bytes": 20155520,
+      "sha256": "67aec15192dfb1138c6b6016c54f0d8d28069a68012b813f369098d063cb60f4"
+    },
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_1_lower/first_hit_instance_ids.npy",
+      "bytes": 20155520,
+      "sha256": "9b9e3c05c8b84e072acf9909fadbf4e482dcb7c3075dedd1f51e336ebf4c7ed6"
+    },
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_1_lower/gt_instance_masks.npz",
+      "bytes": 211061,
+      "sha256": "6a8ec93af195a38142d2b89d1103c50445b9c3209078396753b870e5eba8c581"
+    },
+    {
+      "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/capture_stage.usda",
+      "bytes": 163398787,
+      "sha256": "14179455b49afc3923d435cb4dc445134511349f32c17907cfc43710cac2c909"
+    }
+  ],
+  "raw_depth_format": "float32 NPY optical_z_m; same capture as RGB"
+}

@@ -1,0 +1,20 @@
+{
+  "starting_sha": "b040dc9aa2a7a1124af7a5634c7a5a2fc438c3dd",
+  "capture_code_sha": "f24f63a118c310981d8532e291c47f81b8166fbe",
+  "capture_worktree": "",
+  "capture": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-f24f63a",
+  "isaac_capture_count_this_scene": 1,
+  "isaac_capture_count_this_task": 2,
+  "additional_capture_reason": "User explicitly requested physical mast lighting after reviewing dark roofed images",
+  "pytest": "395 passed, 1 deselected in 5.71s",
+  "render_log_error_count": 0,
+  "renderer": "Isaac Sim 6.0.1 RaytracedLighting",
+  "asset_cache": "/root/autodl-tmp/v05-assets/workcell/mirror",
+  "planning_admissible": false,
+  "raw_image_automatic": false,
+  "image_quality": "VISIBLE_WITH_FOUR_PHYSICAL_MAST_FILL_LIGHTS_UNCHANGED_CAMERA_EXPOSURE",
+  "raw_images_brightened": false,
+  "a43_status": "INSPECTED_REJECTED_NOT_INSTANTIATED",
+  "official_trailer_status": "NOT_ADAPTED_ENGINEERING_PARAMETRIC_INTERIOR",
+  "verified_at_utc": "2026-09-16T06:28:17.764500+00:00"
+}

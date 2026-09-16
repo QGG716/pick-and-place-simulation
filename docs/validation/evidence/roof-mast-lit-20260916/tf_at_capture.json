@@ -1,0 +1,64 @@
+[
+  {
+    "parent": "world",
+    "child": "module_0_upper_rgb_optical",
+    "T_parent_child": [
+      [
+        0.0,
+        -0.0,
+        1.0,
+        -1.325
+      ],
+      [
+        -1.0,
+        -0.0,
+        0.0,
+        0.75
+      ],
+      [
+        0.0,
+        -1.0,
+        -0.0,
+        2.4
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "source": "SAME_CAPTURE_METADATA_USED_BY_ISAAC_SENSOR_ADAPTER"
+  },
+  {
+    "parent": "world",
+    "child": "module_1_lower_rgb_optical",
+    "T_parent_child": [
+      [
+        0.0,
+        -0.3420201433256687,
+        0.9396926207859084,
+        -1.325
+      ],
+      [
+        -1.0,
+        -0.0,
+        0.0,
+        0.75
+      ],
+      [
+        0.0,
+        -0.9396926207859084,
+        -0.3420201433256687,
+        1.6293411964178086
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "source": "SAME_CAPTURE_METADATA_USED_BY_ISAAC_SENSOR_ADAPTER"
+  }
+]

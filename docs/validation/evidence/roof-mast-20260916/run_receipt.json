@@ -1,0 +1,18 @@
+{
+  "starting_sha": "b040dc9aa2a7a1124af7a5634c7a5a2fc438c3dd",
+  "capture_code_sha": "acc6b8c433fa9c1cf0519cac0990af716f301d0f",
+  "capture_worktree": "",
+  "capture": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c",
+  "isaac_capture_count": 1,
+  "pytest": "395 passed, 1 deselected in 5.69s",
+  "render_log_error_count": 0,
+  "renderer": "Isaac Sim 6.0.1 RaytracedLighting",
+  "asset_cache": "/root/autodl-tmp/v05-assets/workcell/mirror",
+  "planning_admissible": false,
+  "raw_image_automatic": false,
+  "image_quality": "VERY_DARK_WITH_REAL_ROOF_UNCHANGED_LIGHTS_AND_EXPOSURE",
+  "raw_images_brightened": false,
+  "a43_status": "INSPECTED_REJECTED_NOT_INSTANTIATED",
+  "official_trailer_status": "NOT_ADAPTED_ENGINEERING_PARAMETRIC_INTERIOR",
+  "verified_at_utc": "2026-09-16T06:13:46.500181+00:00"
+}

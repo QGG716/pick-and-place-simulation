@@ -1,0 +1,12 @@
+[
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_0_upper/metric_pointmap_filter_audit.json",
+    "bytes": 214483876,
+    "sha256": "09b789296df532883b3af9360438c28aa4cff4bf8874529db52eba092d0f788d"
+  },
+  {
+    "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c/FULL_STACK_NOMINAL/modules/module_1_lower/metric_pointmap_filter_audit.json",
+    "bytes": 353327760,
+    "sha256": "c0521d7b9b4105721fff8dfdf002b4d64c9510b8c6a8b05fd6b58c8f13b75c56"
+  }
+]
