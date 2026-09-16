@@ -440,6 +440,9 @@ def build_scene_manifest(
     official_robot_asset = dict(validation_config["layout_bundle"]["official_robot_asset"])
     asset_records = [official_robot_asset, snapshot["robot"]["model_config"], *snapshot["tool"].get("assets", {}).values()]
     asset_manifest_fingerprint = canonical_digest(sorted((item["repository_path"], item["sha256"]) for item in asset_records))
+    if 'environment' in snapshot:
+        asset_manifest_fingerprint = canonical_digest({'robot_and_tool': asset_manifest_fingerprint,
+            'environment_assets': snapshot['environment']['visual_assets']})
     t_w_a = snapshot["assembly"]["pose_world"]
     t_a_robot = _translation_transform(validation_config["layout_bundle"]["robot_base_xyz_A_m"])
     t_w_robot = _matmul(t_w_a, t_a_robot)
@@ -459,6 +462,8 @@ def build_scene_manifest(
         "conveyor_state": {"identity": canonical_digest(snapshot["receiver"]), "running": False},
         "vision_rig": vision_rig,
     }
+    if 'environment' in snapshot:
+        mechanisms['environment'] = snapshot['environment']
     dynamic = canonical_digest({
         "objects": tuple(objects),
         "mechanisms": mechanisms,
@@ -500,6 +505,8 @@ def build_scene_manifest(
             "axis_convention": AXIS_CONVENTION,
             "units": {"length": LENGTH_UNIT, "angle": ANGLE_UNIT, "mass": MASS_UNIT},
             "T_W_A": t_w_a,
+            **({'environment': snapshot['environment'], 'derivation': snapshot['derivation'],
+                'execution_qualification': 'NOT_EXECUTION_QUALIFIED'} if 'environment' in snapshot else {}),
         },
         "robot": robot,
         "mechanisms": mechanisms,
@@ -787,6 +794,8 @@ def build_feasibility_handoff(
         "objects": objects,
         "asset_manifest_fingerprint": manifest.layout["asset_manifest_fingerprint"],
         "moving_vision_rig": dict(manifest.mechanisms["vision_rig"]),
+        "static_environment": dict(manifest.mechanisms.get("environment", {})),
+        "planning_admissible": False,
     })
     payload["handoff_fingerprint"] = canonical_digest(payload)
     return payload

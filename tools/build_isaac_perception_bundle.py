@@ -42,6 +42,12 @@ def main() -> int:
     contract_path = ROOT / config["layout_bundle"]["isaac_contract"]
     snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
     contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    if config.get('effective_scene_config'):
+        from unloading_perception.effective_scene import derive_effective_scene
+        snapshot, contract = derive_effective_scene(snapshot, contract, config, ROOT)
+    args.output.mkdir(parents=True, exist_ok=True)
+    write_json(args.output / 'effective_scene_snapshot.json', snapshot)
+    write_json(args.output / 'effective_isaac_contract.json', contract)
     target = str(config["target_selection"]["simulation_object_id"])
     calibration_yaw = 20.0 * pi / 180.0
     calibration_pose = [
@@ -120,6 +126,9 @@ def main() -> int:
         "primary_mode": "STAGED_RGBD",
         "comparison_mode": "STAGED_MONOCULAR_MOGE",
         "rig_id": config["rig_id"],
+        "isaac_contract": "effective_isaac_contract.json",
+        "effective_snapshot": "effective_scene_snapshot.json",
+        "vision_rig_config": config["vision_rig_config"],
         "scenes": records,
     }
     write_json(args.output / "index.json", index)

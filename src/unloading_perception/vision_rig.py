@@ -379,13 +379,32 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
     source = Path(path)
     data = yaml.safe_load(source.read_text(encoding="utf-8"))
     if not isinstance(data, Mapping) or data.get("schema_version") not in {
-        "j1_perception_sensing_pose_v2", "j1_perception_sensing_pose_v3"
+        "j1_perception_sensing_pose_v2", "j1_perception_sensing_pose_v3", "j1_perception_sensing_pose_v4"
     }:
         raise ValueError("unsupported J1 perception sensing-pose schema")
     module_values = data.get("modules")
     upper_value = module_values[0] if module_values else data["module_0_main"]
     camera = upper_value["rgb_camera"]
     depth = upper_value["depth_camera"]
+    # World-height targets are converted once, from the same effective base
+    # datum used by the scene builder. Historical v2/v3 inputs remain readable.
+    flange_world_z = None
+    if data["schema_version"] == "j1_perception_sensing_pose_v4":
+        project = source.resolve().parents[2]
+        scene = yaml.safe_load((project / data["effective_scene_config"]).read_text(encoding="utf-8"))
+        flange_world_z = (
+            float(scene["assembly_translation_world_m"][2])
+            + float(scene["robot_base_xyz_A_m"][2])
+            + float(data["kinematics"]["j1_joint_origin_z_from_base_m"])
+            + float(data["kinematics"]["vision_flange_height_j1_m"])
+        )
+
+    def module_height(value: Mapping[str, Any]) -> float:
+        if "optical_center_world_z_m" in value:
+            if flange_world_z is None:
+                raise ValueError("world optical height requires the effective installation datum")
+            return float(value["optical_center_world_z_m"]) - flange_world_z
+        return float(value["height_from_flange_m"])
 
     def camera_spec(value: Mapping[str, Any]) -> ExactFovCamera:
         return ExactFovCamera(
@@ -399,7 +418,7 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
         return VisionModuleSpec(
             module_id=str(value["module_id"]),
             aliases=tuple(str(alias) for alias in value.get("aliases", ())),
-            height_from_flange_m=float(value["height_from_flange_m"]),
+            height_from_flange_m=module_height(value),
             optical_depression_rad=float(value.get("optical_depression_deg", 0.0)) * pi / 180.0,
             rgb=camera_spec(value["rgb_camera"]),
             depth=camera_spec(value["depth_camera"]),
@@ -419,8 +438,9 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
         mast_offset_j1_xy_m=tuple(float(value) for value in data["kinematics"]["mast_offset_j1_xy_m"]),
         flange_height_j1_m=float(data["kinematics"]["vision_flange_height_j1_m"]),
         flange_height_status=str(data["kinematics"]["vision_flange_height_status"]),
-        mast_height_m=float(data["mast"]["height_from_flange_m"]),
-        module_height_m=float(upper_value["height_from_flange_m"]),
+        mast_height_m=(float(data["mast"]["maximum_world_z_m"]) - flange_world_z
+                       if flange_world_z is not None else float(data["mast"]["height_from_flange_m"])),
+        module_height_m=module_height(upper_value),
         mast_j1_yaw_offset_rad=float(data["kinematics"]["mast_j1_yaw_offset_rad"]),
         nominal_q1_rad=float(data["nominal_sensing_pose"]["q1_rad"]),
         nominal_camera_heading_world_rad=float(data["nominal_sensing_pose"]["camera_heading_world_rad"]),

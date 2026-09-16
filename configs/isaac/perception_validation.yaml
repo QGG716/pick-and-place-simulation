@@ -1,5 +1,6 @@
 schema_version: isaac_perception_validation_v2
-rig_id: m710id70_j1_perception_mast_v3
+rig_id: m710id70_j1_perception_mast_v4
+effective_scene_config: configs/isaac/workcell_v2.yaml
 vision_rig_config: configs/isaac/perception_sensing_pose.yaml
 modes: [ISAAC_GT, STAGED_RGBD, STAGED_MONOCULAR_MOGE]
 primary_mode: STAGED_RGBD
@@ -8,6 +9,8 @@ raw_image_automatic: false
 proposal_source: ISAAC_GT_ORACLE_PROPOSAL
 detector_metrics: NOT_EVALUATED
 layout_bundle:
+  # Immutable derivation parents. The bundle builder writes new effective
+  # snapshot/contract files and the capture reads those via the bundle index.
   snapshot: integration/isaac_scene_contract/m710id70_layout_v1/scene_snapshot.json
   isaac_contract: integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json
   archived_snapshot_reference_commit: f84578a3c9a91364b747560b994f2e6e9b5d65a2
@@ -45,7 +48,7 @@ rendering:
   sensor_target_highlight: false
   carton_asset_config: configs/isaac/carton_assets.json
   carton_asset_entry: scripts/isaacsim_perception_capture.py --carton-assets configs/isaac/carton_assets.json --asset-cache CACHE
-  carton_asset_review_policy: RAW_IMAGES_FIRST_NO_SAM_UNTIL_USER_CONFIRMATION
+  carton_asset_review_policy: RAW_IMAGES_FIRST_THEN_ONE_EXISTING_PIPELINE_RUN_PER_MODULE
   appearance_ab_entry: scripts/isaacsim_perception_capture.py --appearance-ab
   appearance_ab_scope: FULL_STACK_NOMINAL_SAME_GEOMETRY_A_PLAIN_B_SHARED_PAPER_ATLAS
   physics_hz: 60

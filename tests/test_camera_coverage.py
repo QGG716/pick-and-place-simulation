@@ -80,5 +80,10 @@ def test_dual_120x65_candidate_covers_every_front_face_sample():
     report = evaluate_front_face_coverage(manifest.cameras, manifest.objects, density=17)
     assert report["union_sample_coverage"] == pytest.approx(1.0)
     assert report["fully_covered_carton_count"] == 40
-    assert report["per_module_sample_coverage"]["module_0_upper"] < 0.3
+    # Lowering only the upper optical centre exposes more of the frozen wall.
+    from copy import deepcopy
+    historical_upper = deepcopy(manifest.cameras[0])
+    historical_upper['T_W_C'][2][3] = 2.6293411964178086
+    before = evaluate_front_face_coverage((historical_upper,), manifest.objects, density=17)
+    assert report['per_module_sample_coverage']['module_0_upper'] > before['union_sample_coverage']
     assert report["per_module_sample_coverage"]["module_1_lower"] > 0.8

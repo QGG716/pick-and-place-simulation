@@ -53,10 +53,10 @@ def test_j1_sweep_preserves_radius_phase_vertical_and_level_camera(spec):
 def test_user_defined_mast_and_module_heights_are_not_optimized(spec):
     pose = evaluate_vision_rig_pose(T_W_BASE, spec.nominal_q1_rad, spec)
     flange_z = pose.mast_center_world_m[2]
-    assert spec.mast_height_m == 1.5
-    assert spec.module_height_m == 1.3
-    assert pose.T_W_mast_top[2][3] - flange_z == pytest.approx(1.5)
-    assert pose.camera_center_world_m[2] - flange_z == pytest.approx(1.3)
+    assert spec.mast_height_m == pytest.approx(2.6 - flange_z)
+    assert spec.module_height_m == pytest.approx(2.4 - flange_z)
+    assert pose.T_W_mast_top[2][3] == pytest.approx(2.6)
+    assert pose.camera_center_world_m[2] == pytest.approx(2.4)
     assert pose.T_W_mast_top[2][3] - pose.camera_center_world_m[2] == pytest.approx(0.2)
 
 
@@ -73,8 +73,8 @@ def test_exact_user_fovs_require_explicit_resampling(spec):
 
 def test_integrated_rgbd_and_symmetric_fill_light_contract(spec):
     assert spec.depth_semantics == "optical_z_m"
-    assert spec.calibration_identity == "m710id70_module0_upper_ideal_registered_rgbd_120x65_v1"
-    assert spec.light_offsets_module_m == ((0.0, 0.12, 0.0), (0.0, -0.12, 0.0))
+    assert spec.calibration_identity == "m710id70_module0_upper_ideal_registered_rgbd_120x65_v2"
+    assert spec.light_offsets_module_m == ((0.07, 0.12, 0.0), (0.07, -0.12, 0.0))
     assert spec.independent_mast_yaw is False
     assert spec.geometry_qualification == "VISION_RIG_GEOMETRY_NOT_EXECUTION_QUALIFIED"
 
@@ -83,11 +83,13 @@ def test_dual_modules_preserve_upper_datum_and_define_physical_lower_depression(
     assert [module.module_id for module in spec.module_specs] == ["module_0_upper", "module_1_lower"]
     upper, lower = spec.module_specs
     assert upper.aliases == ("module_0_main",)
-    assert upper.height_from_flange_m == pytest.approx(1.3)
+    assert upper.height_from_flange_m == pytest.approx(1.0706588035821914)
     assert upper.optical_depression_rad == pytest.approx(0.0)
     assert lower.height_from_flange_m == pytest.approx(0.3)
     assert lower.optical_depression_rad == pytest.approx(20.0 * pi / 180.0)
     pose = evaluate_vision_rig_pose(T_W_BASE, spec.nominal_q1_rad, spec)
+    assert pose.camera_transform('module_1_lower')[2][3] == pytest.approx(1.6293411964178086)
+    assert upper.height_from_flange_m - lower.height_from_flange_m == pytest.approx(0.7706588035821914)
     lower_forward = tuple(pose.camera_transform("module_1_lower")[row][2] for row in range(3))
     assert lower_forward[0] > 0.0
     assert lower_forward[1] == pytest.approx(0.0, abs=1e-12)

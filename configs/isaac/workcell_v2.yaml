@@ -1,0 +1,25 @@
+schema_version: perception_workcell_v2
+scene_id: m710id70_perception_roof_mast_v2
+qualification: PERCEPTION_SCENE_ONLY_NOT_EXECUTION_QUALIFIED
+world_origin: initial_carton_front_face_floor_projection
+assembly_translation_world_m: [-1.95, 0.35, 0.0]
+robot_base_xyz_A_m: [0.625, 0.0, 0.600]
+trailer:
+  inside_length_m: 9.60
+  inside_width_m: 2.30
+  inside_height_m: 2.70
+  wall_thickness_m: 0.06
+  local_x_range_m: [-3.80, 4.00]
+  door_world_x_m: null
+  longitudinal_status: LOCAL_SECTION_ONLY_DOOR_DATUM_UNDEFINED
+  visual_source: ENGINEERING_PARAMETRIC_INTERIOR
+  official_asset_status: NOT_ADAPTED_NO_SUITABLE_VERIFIED_INTERIOR_IN_BOUNDED_SOURCE_SEARCH
+assets:
+  cartons: configs/isaac/carton_assets.json
+  conveyors: configs/isaac/conveyor_assets.json
+conveyors:
+  velocity_m_s: 0.0
+  transverse_direction_world: [0.0, -1.0, 0.0]
+  longitudinal_direction_world: [-1.0, 0.0, 0.0]
+  junction_owner: conveyor_longitudinal
+  dynamic_transport_status: NOT_IMPLEMENTED_OR_TESTED

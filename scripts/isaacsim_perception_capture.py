@@ -39,6 +39,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--appearance-ab", action="store_true", help="Only full-stack A/B material captures; identical mesh, no target highlight, no video")
     result.add_argument("--carton-assets", type=Path, help="Pinned complete USD carton configuration; full-stack image review only")
     result.add_argument("--asset-cache", type=Path, help="External cache containing pinned carton dependencies")
+    result.add_argument("--workcell-asset-cache", type=Path, help="Pinned official conveyor cache for derived workcell")
     return result
 
 
@@ -134,7 +135,8 @@ try:
     expected_resolution = tuple(int(value) for value in manifests[0][1].cameras[0]["resolution"])
     if (args.width, args.height) != expected_resolution:
         raise ValueError(f"sensor render must use declared full resolution {expected_resolution}")
-    contract_path = project_root / "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json"
+    contract_path = (args.bundle_directory / bundle_index['isaac_contract'] if bundle_index.get('isaac_contract')
+                     else project_root / "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json")
     contract = json.loads(contract_path.read_text(encoding="utf-8"))
     contract_payload = dict(contract)
     if contract_payload.pop("contract_fingerprint") != feasibility_digest(contract_payload):
@@ -206,6 +208,26 @@ try:
         raise RuntimeError("imported M-710 root prim is missing")
 
     first_manifest = manifests[0][1]
+    rig_spec = load_vision_rig_spec(project_root / bundle_index.get('vision_rig_config', 'configs/isaac/perception_sensing_pose.yaml'))
+    if first_manifest.mechanisms['vision_rig']['rig_id'] != rig_spec.rig_id:
+        raise ValueError('bundle rig is stale; rebuild before capture')
+    expected_rig_pose = evaluate_vision_rig_pose(first_manifest.robot['T_W_robot'], first_manifest.robot['q_rad'][0], rig_spec)
+    if not np.allclose(first_manifest.mechanisms['vision_rig']['T_W_mast_top'], expected_rig_pose.T_W_mast_top, atol=1e-10, rtol=0):
+        raise ValueError('bundle mast geometry is stale')
+    for camera, module_spec in zip(first_manifest.cameras, rig_spec.module_specs):
+        if (not np.allclose(camera['T_W_C'], expected_rig_pose.camera_transform(module_spec.module_id), atol=1e-10, rtol=0)
+                or tuple(camera['K']) != module_spec.rgb.K or camera['calibration_identity'] != module_spec.calibration_identity):
+            raise ValueError('bundle camera calibration is stale')
+    derived_environment = contract.get('environment')
+    conveyor_records = {}
+    if derived_environment:
+        if not args.workcell_asset_cache:
+            raise ValueError('derived workcell requires pinned conveyor cache')
+        conveyor_config = derived_environment['visual_assets']['conveyors']
+        for dep in conveyor_config['dependencies']:
+            file = (args.workcell_asset_cache / dep['path']).resolve()
+            if not file.is_relative_to(args.workcell_asset_cache.resolve()) or not file.is_file() or sha256(file) != dep['sha256']:
+                raise ValueError('CONVEYOR_DEPENDENCY_MISSING_OR_CHANGED: ' + dep['path'])
     mount = np.asarray(first_manifest.robot["T_W_robot"], dtype=float)
     root_xform = UsdGeom.XformCommonAPI(root_prim)
     root_xform.SetTranslate(Gf.Vec3d(*mount[:3, 3].tolist()))
@@ -265,7 +287,7 @@ try:
     # Its root is evaluated from J1 for every scene; no static world camera pose
     # or independent mast yaw joint exists.
     vision_root = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig")
-    vision_root.GetPrim().CreateAttribute("rigId", Sdf.ValueTypeNames.String).Set("m710id70_j1_perception_mast_v3")
+    vision_root.GetPrim().CreateAttribute("rigId", Sdf.ValueTypeNames.String).Set(rig_spec.rig_id)
     vision_root.GetPrim().CreateAttribute("kinematicParentFrame", Sdf.ValueTypeNames.String).Set("J1_link")
     flange_xform = UsdGeom.Xform.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange")
     flange_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Proxy")
@@ -276,22 +298,38 @@ try:
     mast_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/Body")
     mast_proxy.CreateSizeAttr(1.0)
     mast_body_xform = UsdGeom.XformCommonAPI(mast_proxy.GetPrim())
-    # Leave a physical opening around the optical axis at z=1.3 m.  A single
-    # 1.5 m bar through the camera centre causes the sensor to render the mast
-    # interior rather than the trailer.
-    mast_body_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, 0.60))
-    mast_body_xform.SetScale(Gf.Vec3f(0.07, 0.07, 1.20))
+    # Retain the original mast axis. Split only at the physical camera openings;
+    # rear bridge pieces connect the bar behind each housing and clear both rays.
+    cap_height = 0.02
+    openings = sorted(m.height_from_flange_m for m in rig_spec.module_specs)
+    bar_height = openings[0] - .1
+    mast_body_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, bar_height / 2))
+    mast_body_xform.SetScale(Gf.Vec3f(0.07, 0.07, bar_height))
     UsdShade.MaterialBindingAPI.Apply(mast_proxy.GetPrim()).Bind(materials["mast"])
     mast_top_proxy = UsdGeom.Cube.Define(stage, "/PerceptionValidation/VisionRig/VisionFlange/Mast/TopExtension")
     mast_top_proxy.CreateSizeAttr(1.0)
     mast_top_xform = UsdGeom.XformCommonAPI(mast_top_proxy.GetPrim())
-    mast_top_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, 1.45))
-    mast_top_xform.SetScale(Gf.Vec3f(0.07, 0.07, 0.10))
+    mast_top_xform.SetTranslate(Gf.Vec3d(0.0, 0.0, rig_spec.mast_height_m - cap_height / 2))
+    mast_top_xform.SetScale(Gf.Vec3f(0.09, 0.09, cap_height))
     UsdShade.MaterialBindingAPI.Apply(mast_top_proxy.GetPrim()).Bind(materials["mast"])
+    for i, height in enumerate(openings):
+        lo = height + .1
+        hi = openings[i+1] - .1 if i+1 < len(openings) else rig_spec.mast_height_m - cap_height
+        for name, center, size in [
+            (f'Stem{i}', (0.,0.,(lo+hi)/2), (.07,.07,hi-lo)),
+            (f'RearBridge{i}', (0.,-.18,height), (.07,.07,.24)),
+            (f'BridgeFoot{i}', (0.,-.09,height-.11), (.07,.25,.02)),
+            (f'BridgeTop{i}', (0.,-.09,height+.11), (.07,.25,.02)),
+        ]:
+            part = UsdGeom.Cube.Define(stage, '/PerceptionValidation/VisionRig/VisionFlange/Mast/'+name)
+            part.CreateSizeAttr(1.)
+            api = UsdGeom.XformCommonAPI(part.GetPrim())
+            api.SetTranslate(Gf.Vec3d(*center));api.SetScale(Gf.Vec3f(*size))
+            UsdShade.MaterialBindingAPI.Apply(part.GetPrim()).Bind(materials['mast'])
     fill_lights = []
-    for module_name, height, depression in (
-        ("PerceptionModule0Upper", 1.3, 0.0), ("PerceptionModule1Lower", 0.3, 20.0)
-    ):
+    for module_spec in rig_spec.module_specs:
+        module_name = 'PerceptionModule0Upper' if module_spec.module_id == 'module_0_upper' else 'PerceptionModule1Lower'
+        height, depression = module_spec.height_from_flange_m, math.degrees(module_spec.optical_depression_rad)
         module_path = f"/PerceptionValidation/VisionRig/VisionFlange/Mast/{module_name}"
         module_xform = UsdGeom.Xform.Define(stage, module_path)
         module_api = UsdGeom.XformCommonAPI(module_xform.GetPrim())
@@ -303,6 +341,12 @@ try:
         module_proxy_api.SetTranslate(Gf.Vec3d(-0.08, 0.0, 0.0))
         module_proxy_api.SetScale(Gf.Vec3f(0.12, 0.34, 0.11))
         UsdShade.MaterialBindingAPI.Apply(module_proxy.GetPrim()).Bind(materials["module"])
+        bracket = UsdGeom.Cube.Define(stage, f'{module_path}/Bracket')
+        bracket.CreateSizeAttr(1.0)
+        bracket_api = UsdGeom.XformCommonAPI(bracket.GetPrim())
+        bracket_api.SetTranslate(Gf.Vec3d(-0.155, 0.0, -0.035))
+        bracket_api.SetScale(Gf.Vec3f(0.11, 0.08, 0.035))
+        UsdShade.MaterialBindingAPI.Apply(bracket.GetPrim()).Bind(materials['mast'])
         for sensor_name, lateral in (("RGBCamera", 0.035), ("DepthCamera", -0.035)):
             sensor = UsdGeom.Cube.Define(stage, f"{module_path}/{sensor_name}")
             sensor.CreateSizeAttr(1.0)
@@ -310,16 +354,21 @@ try:
             sensor_api.SetTranslate(Gf.Vec3d(-0.01, lateral, 0.0))
             sensor_api.SetScale(Gf.Vec3f(0.01, 0.045, 0.045))
             UsdShade.MaterialBindingAPI.Apply(sensor.GetPrim()).Bind(materials["lens"])
-        for light_name, lateral in (("FillLightLeft", 0.12), ("FillLightRight", -0.12)):
+        for light_name, offset in zip(("FillLightLeft", "FillLightRight"), module_spec.light_offsets_module_m):
             light = UsdLux.DiskLight.Define(stage, f"{module_path}/{light_name}")
             light.CreateRadiusAttr(0.035)
             light.CreateColorAttr(Gf.Vec3f(1.0, 0.93, 0.82))
             light.CreateEnableColorTemperatureAttr(True)
             light.CreateColorTemperatureAttr(5000.0)
             light_api = UsdGeom.XformCommonAPI(light.GetPrim())
-            light_api.SetTranslate(Gf.Vec3d(0.07, lateral, 0.0))
+            light_api.SetTranslate(Gf.Vec3d(*offset))
             light_api.SetRotate(Gf.Vec3f(0.0, -90.0, 0.0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
             fill_lights.append(light)
+    # Static capture geometry still participates in collision; no whitelist.
+    from pxr import Usd
+    for rig_prim in Usd.PrimRange(vision_root.GetPrim()):
+        if rig_prim.IsA(UsdGeom.Cube):
+            UsdPhysics.CollisionAPI.Apply(rig_prim)
 
     environment_distant = UsdLux.DistantLight.Define(stage, "/PerceptionValidation/EnvironmentDistant")
     environment_distant.CreateAngleAttr(4.0)
@@ -338,8 +387,10 @@ try:
         path = f"/PerceptionValidation/Primitives/{safe_name(index, item['name'])}"
         is_carton = 'carton' in item['role']
         adapted_carton = (args.appearance_ab or args.carton_assets) and is_carton
-        cube = UsdGeom.Xform.Define(stage,path) if adapted_carton else UsdGeom.Cube.Define(stage, path)
-        if not adapted_carton: cube.CreateSizeAttr(1.0)
+        adapted_conveyor = bool(derived_environment) and item['name'].startswith('conveyor_')
+        adapted = adapted_carton or adapted_conveyor
+        cube = UsdGeom.Xform.Define(stage,path) if adapted else UsdGeom.Cube.Define(stage, path)
+        if not adapted: cube.CreateSizeAttr(1.0)
         pose = np.asarray(item["pose_world"], dtype=float)
         size = np.asarray(item["size_xyz_m"], dtype=float)
         xform = UsdGeom.XformCommonAPI(cube.GetPrim())
@@ -348,14 +399,19 @@ try:
         xform.SetScale(Gf.Vec3f(*size.tolist()))
         role = item["role"]
         key = "target" if role == "selected_carton" else "tool" if role == "tool_equal_scale_collision_proxy" else "carton" if "carton" in role else "chassis" if item["name"] == "chassis" else "conveyor"
-        if not (args.carton_assets and is_carton):
+        if item['role'] == 'static_environment':
+            key = 'floor' if item['name'] == 'Floor' else 'wall'
+        if not (args.carton_assets and is_carton) and not adapted_conveyor:
             UsdShade.MaterialBindingAPI.Apply(cube.GetPrim()).Bind(materials[key])
-        if adapted_carton:
+        if adapted:
             collision = UsdGeom.Cube.Define(stage,path+'/Collision')
             collision.CreateSizeAttr(1.)
             UsdGeom.Imageable(collision.GetPrim()).MakeInvisible()
             UsdPhysics.CollisionAPI.Apply(collision.GetPrim())
-        if args.carton_assets and is_carton:
+        if adapted_conveyor:
+            from workcell_visuals import attach_a06_belts
+            conveyor_records[item['name']] = attach_a06_belts(stage, path, item, conveyor_config, args.workcell_asset_cache, materials['conveyor'])
+        elif args.carton_assets and is_carton:
             asset_id = asset_config['object_overrides'].get(item['name'],asset_config['default_asset'])
             entry = next(v for v in asset_config['assets'] if v['id']==asset_id)
             usd_carton_records[item['name']] = attach_usd_carton(stage,path+'/Visual',size,entry,args.asset_cache)
@@ -386,7 +442,7 @@ try:
 
     # Finite trailer surfaces are visualization-only because layout v1 leaves
     # real trailer length and height unconfirmed.
-    visual_surfaces = [
+    visual_surfaces = [] if derived_environment else [
         ("Floor", (1.0, 0.0, -0.03), (6.0, 2.3, 0.06), "floor"),
         ("LeftWall", (1.0, 1.18, 1.35), (6.0, 0.06, 2.7), "wall"),
         ("RightWall", (1.0, -1.18, 1.35), (6.0, 0.06, 2.7), "wall"),
@@ -405,10 +461,20 @@ try:
     occluder_xform = UsdGeom.XformCommonAPI(occluder.GetPrim())
     UsdShade.MaterialBindingAPI.Apply(occluder.GetPrim()).Bind(materials["occluder"])
 
-    overview_camera = rep.create.camera(position=(-5.8, 0.0, 3.5) if args.carton_assets else (-4.8, -3.8, 3.4), look_at=(-0.7, 0.0, 1.2), focal_length=24.0, clipping_range=(0.05, 20.0))
+    overview_camera = rep.create.camera(position=(-3.65, 0.0, 2.25) if derived_environment else (-5.8, 0.0, 3.5), look_at=(-0.7, 0.0, 1.35), focal_length=14.0, clipping_range=(0.05, 20.0))
     overview_product = rep.create.render_product(overview_camera, (args.width, args.height))
     overview_annotator = rep.AnnotatorRegistry.get_annotator("rgb")
     overview_annotator.attach(overview_product)
+    detail_cameras = []
+    if derived_environment:
+        for name, position, target in [
+            ('mast_roof', (-2.5, 0.15, 2.48), (-1.325, 0.75, 2.45)),
+            ('conveyor_junction', (-1.75, -0.10, 1.40), (-0.60, -0.40, 0.60)),
+        ]:
+            camera = rep.create.camera(position=position, look_at=target, focal_length=18.0, clipping_range=(0.03,20.0))
+            product = rep.create.render_product(camera, (args.width,args.height))
+            annotator = rep.AnnotatorRegistry.get_annotator('rgb'); annotator.attach(product)
+            detail_cameras.append((name, annotator))
     nominal_manifest = manifests[0][1]
     nominal_j1 = np.asarray(nominal_manifest.mechanisms["vision_rig"]["T_W_J1"], dtype=float)[:3, 3]
     nominal_module = np.asarray(nominal_manifest.mechanisms["vision_rig"]["T_W_module_0_main"], dtype=float)[:3, 3]
@@ -464,7 +530,6 @@ try:
             scene_cameras.append((camera_config, rgb, depth, instance))
         cameras.append(scene_cameras)
 
-    rig_spec = load_vision_rig_spec(project_root / "configs/isaac/perception_sensing_pose.yaml")
     sweep_manifest = first_manifest if (args.visibility_only or args.geometry_algorithm_only or args.appearance_ab or args.carton_assets) else next(manifest for name, manifest in manifests if name == "J1_ROTATION_SWEEP")
     sweep_sensors = []
     for angle_deg in (() if (args.visibility_only or args.geometry_algorithm_only or args.appearance_ab or args.carton_assets) else (-90.0, -45.0, 0.0, 45.0, 90.0)):
@@ -761,7 +826,7 @@ try:
             'source_manifest_fingerprint':first_manifest.manifest_fingerprint,
             'carton_asset_config_sha256':sha256(args.carton_assets),
             'visual_scene_fingerprint':canonical_digest(usd_carton_records),
-            'nominal_geometry_unchanged':True,'planning_admissible':False,
+            'nominal_geometry_unchanged_relative_to_effective_bundle':True,'planning_admissible':False,
             'surface_truth':'NEW_RENDERED_DEPTH_AND_INSTANCE_MASKS; NOMINAL_CUBOID_IS_NOT_EXACT_MESH'}
         payload.pop('manifest_fingerprint');payload['manifest_fingerprint']=canonical_digest(payload)
         manifest=IsaacSceneManifest.from_dict(payload)
@@ -770,10 +835,13 @@ try:
         for _ in range(32): render_at_joint_command(command)
         captures=[capture_module_artifacts(args.output/'FULL_STACK_NOMINAL','FULL_STACK_NOMINAL',manifest,c,(rgb,d,inst),bundle_scene_records['FULL_STACK_NOMINAL']) for c,rgb,d,inst in cameras[0]]
         cv2.imwrite(str(args.output/'overview.png'),cv2.cvtColor(np.asarray(rgb_data(overview_annotator.get_data()))[:,:,:3],cv2.COLOR_RGB2BGR))
+        for name, annotator in detail_cameras:
+            cv2.imwrite(str(args.output/(name+'.png')),cv2.cvtColor(np.asarray(rgb_data(annotator.get_data()))[:,:,:3],cv2.COLOR_RGB2BGR))
         record={'status':'CAPTURED_PENDING_USER_IMAGE_REVIEW','planning_admissible':False,
             'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=project_root,text=True).strip(),
             'source_worktree':subprocess.check_output(['git','status','--short'],cwd=project_root,text=True),
             'cartons':usd_carton_records,'target_highlight':False,'mechanical_entities_omitted':[],
+            'conveyors':conveyor_records,'effective_contract_fingerprint':contract['contract_fingerprint'],
             'stable_render_frames':32,'sam_run':False,
             'robot_q_rad':articulation.get_dof_positions().numpy().tolist(),
             'render_settings':{key:carb.settings.get_settings().get(key) for key in ['/rtx/post/tonemap/op','/rtx/post/tonemap/filmIso','/rtx/post/tonemap/cameraShutter','/rtx/post/tonemap/fNumber','/rtx/post/histogram/enabled','/rtx/rendermode']}}

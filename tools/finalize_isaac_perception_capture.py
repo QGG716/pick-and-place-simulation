@@ -33,7 +33,9 @@ def main() -> int:
     args = parser.parse_args()
 
     index = json.loads((args.bundle_directory / "index.json").read_text(encoding="utf-8"))
-    contract = json.loads((args.project_root / "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json").read_text(encoding="utf-8"))
+    contract_path = (args.bundle_directory / index['isaac_contract'] if index.get('isaac_contract')
+                     else args.project_root / "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json")
+    contract = json.loads(contract_path.read_text(encoding="utf-8"))
     results = []
     # One assembler spans the ordered keyframes so a geometry change advances
     # SceneRevision instead of making every independently serialized snapshot
