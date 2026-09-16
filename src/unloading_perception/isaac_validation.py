@@ -270,6 +270,12 @@ def _dynamic_cameras(
             "T_W_camera_optical": [list(row) for row in pose.T_W_camera_opticals[module.module_id]],
             "calibration_identity": module.calibration_identity,
             "fill_lights": [list(offset) for offset in module.light_offsets_module_m],
+            "fill_light_parameters": {
+                "radius_m": module.fill_light_radius_m, "intensity": module.fill_light_intensity,
+                "color_temperature_k": module.fill_light_color_temperature_k,
+                "normalize": False, "exposure": 0.0,
+                "photometric_status": "SIMULATION_RADIANCE_NOT_HARDWARE_CALIBRATED",
+            },
         } for module in spec.module_specs],
         "T_W_module_0_main": [list(row) for row in pose.T_W_module],
         "mast_j1_radius_m": spec.mast_radius_m,

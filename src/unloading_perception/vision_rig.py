@@ -140,6 +140,9 @@ class VisionModuleSpec:
     depth_semantics: str
     calibration_identity: str
     light_offsets_module_m: tuple[tuple[float, float, float], tuple[float, float, float]]
+    fill_light_radius_m: float = 0.035
+    fill_light_intensity: float = 2500.0
+    fill_light_color_temperature_k: float = 5000.0
 
     def __post_init__(self) -> None:
         if not self.module_id:
@@ -154,6 +157,8 @@ class VisionModuleSpec:
             raise ValueError("module requires optical-z depth and a calibration identity")
         if len(self.light_offsets_module_m) != 2:
             raise ValueError("each module requires exactly two fill lights")
+        for name in ('fill_light_radius_m', 'fill_light_intensity', 'fill_light_color_temperature_k'):
+            _positive(getattr(self, name), name)
         left, right = self.light_offsets_module_m
         if any(len(offset) != 3 or not all(isfinite(value) for value in offset) for offset in (left, right)):
             raise ValueError("fill-light offsets must be finite XYZ triples")
@@ -379,7 +384,7 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
     source = Path(path)
     data = yaml.safe_load(source.read_text(encoding="utf-8"))
     if not isinstance(data, Mapping) or data.get("schema_version") not in {
-        "j1_perception_sensing_pose_v2", "j1_perception_sensing_pose_v3", "j1_perception_sensing_pose_v4"
+        "j1_perception_sensing_pose_v2", "j1_perception_sensing_pose_v3", "j1_perception_sensing_pose_v4", "j1_perception_sensing_pose_v5"
     }:
         raise ValueError("unsupported J1 perception sensing-pose schema")
     module_values = data.get("modules")
@@ -389,7 +394,7 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
     # World-height targets are converted once, from the same effective base
     # datum used by the scene builder. Historical v2/v3 inputs remain readable.
     flange_world_z = None
-    if data["schema_version"] == "j1_perception_sensing_pose_v4":
+    if data["schema_version"] in {"j1_perception_sensing_pose_v4", "j1_perception_sensing_pose_v5"}:
         project = source.resolve().parents[2]
         scene = yaml.safe_load((project / data["effective_scene_config"]).read_text(encoding="utf-8"))
         flange_world_z = (
@@ -415,6 +420,9 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
 
     def module_spec(value: Mapping[str, Any]) -> VisionModuleSpec:
         module_lights = value["fill_lights"]
+        for field, default in (('radius_m', .035), ('intensity', 2500.), ('color_temperature_k', 5000.)):
+            if len({float(light.get(field, default)) for light in module_lights}) != 1:
+                raise ValueError('paired fill lights require matching radiance, radius and color temperature')
         return VisionModuleSpec(
             module_id=str(value["module_id"]),
             aliases=tuple(str(alias) for alias in value.get("aliases", ())),
@@ -427,6 +435,9 @@ def load_vision_rig_spec(path: str | Path) -> VisionRigSpec:
             light_offsets_module_m=tuple(
                 tuple(float(number) for number in item["relative_xyz_m"]) for item in module_lights
             ),
+            fill_light_radius_m=float(module_lights[0].get('radius_m', .035)),
+            fill_light_intensity=float(module_lights[0]['intensity']),
+            fill_light_color_temperature_k=float(module_lights[0]['color_temperature_k']),
         )
 
     lights = upper_value["fill_lights"]

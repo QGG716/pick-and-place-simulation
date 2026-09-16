@@ -7,7 +7,7 @@ import numpy as np
 
 
 def verify(capture, historical):
-    from pxr import Gf, Usd, UsdGeom, UsdPhysics
+    from pxr import Gf, Usd, UsdGeom, UsdPhysics, UsdLux
     from verify_carton_capture import verify as verify_cartons
     manifest = json.loads((capture / 'manifest.json').read_text())
     old = json.loads(historical.read_text())
@@ -91,6 +91,21 @@ def verify(capture, historical):
         tf.append({'parent':'world','child':camera['frame_id'],'T_parent_child':camera['T_W_C'],
                    'source':'SAME_CAPTURE_METADATA_USED_BY_ISAAC_SENSOR_ADAPTER'})
     config = json.loads((capture/'capture_configuration.json').read_text())
+    lighting = []
+    for definition in config.get('mast_fill_lights', []):
+        light = UsdLux.DiskLight(stage.GetPrimAtPath(definition['path']))
+        assert light.GetIntensityAttr().Get() == definition['intensity']
+        assert abs(light.GetRadiusAttr().Get() - definition['radius_m']) < 1e-6
+        assert light.GetNormalizeAttr().Get() is False
+        matrix = xf.GetLocalToWorldTransform(light.GetPrim())
+        direction = np.asarray(matrix.TransformDir(Gf.Vec3d(0,0,-1)))
+        camera = next(c for c in manifest['cameras'] if c['module_id'] == definition['module'])
+        assert np.allclose(direction, np.asarray(camera['T_W_C'])[:3,2], atol=1e-6,rtol=0)
+        for field in ('physical_housing', 'physical_bracket'):
+            prim=stage.GetPrimAtPath(definition[field])
+            assert prim.HasAPI(UsdPhysics.CollisionAPI) and UsdGeom.Imageable(prim).ComputeVisibility()!='invisible'
+            assert bounds(prim)[1][2] < 2.6
+        lighting.append({**definition,'forward_world':direction.tolist(),'world_center_m':list(matrix.ExtractTranslation()),'mount_and_roof_clearance':'PASS'})
     conveyors = {}
     for name, record in config['conveyors'].items():
         mesh_bounds = [bounds(stage.GetPrimAtPath(s['mesh_path'])) for s in record['segments']]
@@ -114,6 +129,7 @@ def verify(capture, historical):
             'rig_world_bounds':[v.tolist() for v in rig_bounds], 'mast_roof_clearance_m':clearance,
             'roof_penetration_negative_fixture':'DETECTED_BY_ENABLED_USD_SOLID_AABB_OVERLAP',
             'solids':solids,'optical':optical,'conveyors':conveyors,
+            'mounted_fill_lights':lighting,
             'robot_wall_roof_AABB_candidates':candidates,'planning_admissible':False,
             'scope':'NOMINAL_STATIC_USD_ONLY_NO_TRAJECTORY_OR_PHYSICS_ACCEPTANCE'}
     (capture/'tf_at_capture.json').write_text(json.dumps(tf,indent=2))

@@ -74,7 +74,9 @@ def test_exact_user_fovs_require_explicit_resampling(spec):
 def test_integrated_rgbd_and_symmetric_fill_light_contract(spec):
     assert spec.depth_semantics == "optical_z_m"
     assert spec.calibration_identity == "m710id70_module0_upper_ideal_registered_rgbd_120x65_v2"
-    assert spec.light_offsets_module_m == ((0.07, 0.12, 0.0), (0.07, -0.12, 0.0))
+    assert spec.light_offsets_module_m == ((0.075, 0.18, 0.0), (0.075, -0.18, 0.0))
+    assert all(module.fill_light_radius_m == .045 for module in spec.module_specs)
+    assert all(module.fill_light_intensity == 150000. for module in spec.module_specs)
     assert spec.independent_mast_yaw is False
     assert spec.geometry_qualification == "VISION_RIG_GEOMETRY_NOT_EXECUTION_QUALIFIED"
 

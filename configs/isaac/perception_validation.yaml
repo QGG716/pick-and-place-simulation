@@ -1,5 +1,5 @@
 schema_version: isaac_perception_validation_v2
-rig_id: m710id70_j1_perception_mast_v4
+rig_id: m710id70_j1_perception_mast_v5
 effective_scene_config: configs/isaac/workcell_v2.yaml
 vision_rig_config: configs/isaac/perception_sensing_pose.yaml
 modes: [ISAAC_GT, STAGED_RGBD, STAGED_MONOCULAR_MOGE]

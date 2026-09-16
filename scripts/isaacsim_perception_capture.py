@@ -327,6 +327,7 @@ try:
             api.SetTranslate(Gf.Vec3d(*center));api.SetScale(Gf.Vec3f(*size))
             UsdShade.MaterialBindingAPI.Apply(part.GetPrim()).Bind(materials['mast'])
     fill_lights = []
+    fill_light_records = []
     for module_spec in rig_spec.module_specs:
         module_name = 'PerceptionModule0Upper' if module_spec.module_id == 'module_0_upper' else 'PerceptionModule1Lower'
         height, depression = module_spec.height_from_flange_m, math.degrees(module_spec.optical_depression_rad)
@@ -356,14 +357,30 @@ try:
             UsdShade.MaterialBindingAPI.Apply(sensor.GetPrim()).Bind(materials["lens"])
         for light_name, offset in zip(("FillLightLeft", "FillLightRight"), module_spec.light_offsets_module_m):
             light = UsdLux.DiskLight.Define(stage, f"{module_path}/{light_name}")
-            light.CreateRadiusAttr(0.035)
+            light.CreateRadiusAttr(module_spec.fill_light_radius_m)
+            light.CreateNormalizeAttr(False)
+            light.CreateExposureAttr(0.0)
             light.CreateColorAttr(Gf.Vec3f(1.0, 0.93, 0.82))
             light.CreateEnableColorTemperatureAttr(True)
-            light.CreateColorTemperatureAttr(5000.0)
+            light.CreateColorTemperatureAttr(module_spec.fill_light_color_temperature_k)
             light_api = UsdGeom.XformCommonAPI(light.GetPrim())
             light_api.SetTranslate(Gf.Vec3d(*offset))
             light_api.SetRotate(Gf.Vec3f(0.0, -90.0, 0.0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-            fill_lights.append(light)
+            for suffix, center, size in [
+                ('Housing', (offset[0]-.030,offset[1],offset[2]), (.04,.11,.11)),
+                ('Bracket', (-.060,offset[1],offset[2]), (.18,.04,.04)),
+            ]:
+                part=UsdGeom.Cube.Define(stage,f'{module_path}/{light_name}{suffix}')
+                part.CreateSizeAttr(1.)
+                api=UsdGeom.XformCommonAPI(part.GetPrim())
+                api.SetTranslate(Gf.Vec3d(*center));api.SetScale(Gf.Vec3f(*size))
+                UsdShade.MaterialBindingAPI.Apply(part.GetPrim()).Bind(materials['module' if suffix=='Housing' else 'mast'])
+            fill_lights.append((light,module_spec.fill_light_intensity))
+            fill_light_records.append({'path':str(light.GetPath()),'module':module_spec.module_id,
+                'offset_module_m':list(offset),'radius_m':module_spec.fill_light_radius_m,
+                'intensity':module_spec.fill_light_intensity,'normalize':False,'exposure':0.,
+                'color_temperature_k':module_spec.fill_light_color_temperature_k,
+                'physical_housing':f'{module_path}/{light_name}Housing','physical_bracket':f'{module_path}/{light_name}Bracket'})
     # Static capture geometry still participates in collision; no whitelist.
     from pxr import Usd
     for rig_prim in Usd.PrimRange(vision_root.GetPrim()):
@@ -640,9 +657,8 @@ try:
         dark = scene_name in {"DARK_LIGHT_OFF", "DARK_LIGHT_ON"}
         environment_distant.CreateIntensityAttr(35.0 if dark else 950.0)
         environment_sphere.CreateIntensityAttr(80.0 if dark else 6500.0)
-        fill_intensity = 0.0 if record["illumination_state"] == "LIGHT_OFF" else 2500.0
-        for light in fill_lights:
-            light.CreateIntensityAttr(fill_intensity)
+        for light, nominal_intensity in fill_lights:
+            light.CreateIntensityAttr(0.0 if record['illumination_state']=='LIGHT_OFF' else nominal_intensity)
         if scene_name == "PARTIAL_OCCLUSION":
             target = by_id[target_id]
             camera_position = np.asarray(manifest.cameras[0]["T_W_C"], dtype=float)[:3, 3]
@@ -842,6 +858,7 @@ try:
             'source_worktree':subprocess.check_output(['git','status','--short'],cwd=project_root,text=True),
             'cartons':usd_carton_records,'target_highlight':False,'mechanical_entities_omitted':[],
             'conveyors':conveyor_records,'effective_contract_fingerprint':contract['contract_fingerprint'],
+            'mast_fill_lights':fill_light_records,
             'stable_render_frames':32,'sam_run':False,
             'robot_q_rad':articulation.get_dof_positions().numpy().tolist(),
             'render_settings':{key:carb.settings.get_settings().get(key) for key in ['/rtx/post/tonemap/op','/rtx/post/tonemap/filmIso','/rtx/post/tonemap/cameraShutter','/rtx/post/tonemap/fNumber','/rtx/post/histogram/enabled','/rtx/rendermode']}}
