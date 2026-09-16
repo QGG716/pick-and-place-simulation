@@ -1,0 +1,240 @@
+{
+  "schema": "m710_feasible_result_budget_fix_v1",
+  "baseline": "90cfbaac8f82c11a2b680cf6d84e3a1e844f5f98",
+  "initial_local_and_remote_branch": "feat/v0.5-feasibility-core",
+  "initial_local_worktree": "clean",
+  "server_directory": "/root/autodl-tmp/m710-feasible-budget-fix-20260916",
+  "server_old_runtime_uncommitted_work_preserved": true,
+  "server_environment": {
+    "python": "3.12.3",
+    "pinocchio": "4.1.0",
+    "coal": "3.0.3"
+  },
+  "baseline_regressions": {
+    "command": "python -m pytest -q tests/test_feasible_result_budget.py -k 'shortcut_timeout_retains or second_connection_cannot or zero_budget_does or last_validation_call'",
+    "result": "4 failed, 22 deselected in 0.32s",
+    "log": "baseline_tests.log"
+  },
+  "same_input_before_after": {
+    "transit_optional_timeout": {
+      "before": {
+        "failure": {
+          "reason": "PLANNING_WALL_CLOCK_DEADLINE",
+          "stage": "pregrasp",
+          "edge": 0,
+          "fraction": 0.0,
+          "q_rad": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "path_nodes": 2,
+        "returned_monotonic": 102.0,
+        "search_success": true,
+        "validation_level": "NOT_RECHECKED",
+        "validation_completed_monotonic": null,
+        "simplification": {
+          "skipped": null,
+          "reason": null,
+          "termination": "POSTPROCESS_BUDGET_EXHAUSTED",
+          "started_monotonic": null,
+          "finished_monotonic": null,
+          "deadline_monotonic": null
+        }
+      },
+      "after": {
+        "failure": null,
+        "path_nodes": 2,
+        "returned_monotonic": 100.0,
+        "search_success": true,
+        "validation_level": "B_STRICT_LOCAL_CONNECTION",
+        "validation_completed_monotonic": 100.0,
+        "simplification": {
+          "skipped": true,
+          "reason": "NECESSARY_CONTINUATION_RESERVE",
+          "termination": null,
+          "started_monotonic": 100.0,
+          "finished_monotonic": 100.0,
+          "deadline_monotonic": 100.0
+        }
+      }
+    },
+    "complete_then_return": {
+      "before": {
+        "success": false,
+        "failure": {
+          "reason": "PLANNING_WALL_CLOCK_DEADLINE",
+          "stage": "request"
+        },
+        "attempts": [
+          {
+            "branch": 0,
+            "candidate_id": "candidate",
+            "success": true,
+            "failure": null,
+            "trace": {
+              "contract_completed_monotonic": 118.9
+            }
+          }
+        ]
+      },
+      "after": {
+        "success": true,
+        "failure": null,
+        "attempts": [
+          {
+            "branch": 0,
+            "candidate_id": "candidate",
+            "success": true,
+            "failure": null,
+            "trace": {
+              "contract_completed_monotonic": 118.9
+            }
+          }
+        ],
+        "completion": {
+          "validation_level": "D_COMPLETE_TASK",
+          "completed_monotonic": 118.9,
+          "deadline_monotonic": 120.0,
+          "final_validation_completed": true,
+          "execution_ready": false,
+          "context": "2f895862ce166dfa62124bd74cee12408648d330be419dff9ea52372cee38c42",
+          "content_sha256": "d0406fdaefb1995e964d2385ef2b4b743d843003b9976bdc0d2c95731cddaeaa",
+          "request_generation": 1
+        },
+        "retention": {
+          "events": [
+            {
+              "validation_level": "D_COMPLETE_TASK",
+              "completed_monotonic": 118.9,
+              "deadline_monotonic": 120.0,
+              "final_validation_completed": true,
+              "execution_ready": false,
+              "context": "2f895862ce166dfa62124bd74cee12408648d330be419dff9ea52372cee38c42",
+              "content_sha256": "d0406fdaefb1995e964d2385ef2b4b743d843003b9976bdc0d2c95731cddaeaa",
+              "request_generation": 1
+            }
+          ],
+          "planning_success": true,
+          "execution_ready": false,
+          "execution_readiness_status": "INDEPENDENT_PREFLIGHT_NOT_RUN",
+          "request_deadline_monotonic": 120.0,
+          "search_deadline_monotonic": 119.0,
+          "candidate_search_deadline_monotonic": 119.0,
+          "candidate_final_deadline_monotonic": 120.0,
+          "returned_monotonic": 119.1,
+          "final_reserve_scope": "COMPLETE_TASK_VALIDATION_AND_IN_PROCESS_BINDING_ONLY",
+          "return_after_search_deadline": true,
+          "return_after_request_hard_deadline": false
+        }
+      }
+    },
+    "final_reserve": {
+      "before": {
+        "hard": 120.0,
+        "search": 119.0,
+        "reserve": 1.0,
+        "failure": {
+          "reason": "PLANNING_WALL_CLOCK_DEADLINE",
+          "stage": "final_validation"
+        }
+      },
+      "after": {
+        "failure": null,
+        "completion": {
+          "validation_level": "D_COMPLETE_TASK",
+          "completed_monotonic": 119.2,
+          "deadline_monotonic": 120.0,
+          "final_validation_completed": true,
+          "execution_ready": false,
+          "context": "e8469fb4dad1e28426cf18dcdaccfdce71ce3b6b119b2b41d3d122f1b3d9cc64",
+          "content_sha256": "d0406fdaefb1995e964d2385ef2b4b743d843003b9976bdc0d2c95731cddaeaa",
+          "request_generation": 1
+        },
+        "search_deadline_restored": 119.0
+      }
+    },
+    "zero_budget": {
+      "before_rrt_time_limit_seconds": 12.0,
+      "after_rrt_calls": 0,
+      "test": "test_zero_budget_does_not_launch_rrt"
+    },
+    "last_validation_overrun": {
+      "before_failure": null,
+      "after_reason": "PLANNING_WALL_CLOCK_DEADLINE",
+      "test": "test_last_validation_call_overruns_deadline"
+    }
+  },
+  "timeline_clock": "controlled monotonic seconds; not physical simulation time",
+  "official_model_check": {
+    "official_commit": "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2",
+    "fixture_source": "tests/test_lookahead_contact.py START_Q/CONTACT_Q from retained first-carton contact",
+    "entry": "_next_contact_cost -> _approach -> _connect_pose -> _transit -> contact coverage and exact endpoint",
+    "status": "CHECKED_NEXT_CONTACT_CONNECTION",
+    "validation_level": "C_COMPLETE_APPROACH",
+    "completed_monotonic": 101.0,
+    "lookahead_deadline_monotonic": 104.0,
+    "commanded_cup_count": 40,
+    "joint_path_length_rad": 0.052298760333683504,
+    "target": "carton_l07_c02",
+    "endpoint_checks_passed": true,
+    "policy_fingerprint": "a4e1d53c75298fc0c460c4569f20e1cb30c05f43beeb1ac1e9f6c51574d5bb7a",
+    "compliant_cup_neighbor_contact_mode": "ignore",
+    "real_checks": "official FK/IK/Coal collision/full seal rings/free and contact edges",
+    "time_injection": [
+      {
+        "start": 100.0,
+        "finish": 101.0,
+        "path_nodes": 2
+      }
+    ],
+    "random_restarts": 0,
+    "execution_ready": false,
+    "isaac_executed": false
+  },
+  "final_tests": {
+    "command": "CPU -m pytest -q --basetemp=delivery-verification --junitxml=delivery-tests.xml tests/test_feasible_result_budget.py tests/test_lookahead_contact.py tests/test_contact_candidate_scheduler.py tests/test_contact_pose_action_prior.py tests/test_motion_quality.py tests/test_layout_trajectory.py tests/test_m710_replay_contract.py::test_random_hash_and_self_reported_ready_cannot_forge_preflight tests/test_m710_replay_contract.py::test_blocked_preflight_has_no_exportable_trajectory tests/test_m710_replay_contract.py::test_ready_preflight_contract_and_bundle_round_trip",
+    "interpreter": "/root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python",
+    "result": "........................................................................ [ 81%]\n................                                                         [100%]\n88 passed in 3.24s",
+    "junit_summary": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "88",
+      "time": "3.241",
+      "timestamp": "2026-09-16T12:24:03.704036+08:00",
+      "hostname": "autodl-container-qlct8ugcxh-6f0e9741"
+    }
+  },
+  "scope": {
+    "default_request_budget_changed": false,
+    "collision_policy_changed": false,
+    "final_reserve_scope": "complete trajectory validation and in-process binding; separate preflight/export remain required",
+    "planning_layers_tested": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "E_checked_only_by_existing_synthetic_preflight_contract_regressions": true,
+    "physical_execution": false,
+    "full_pytest": false,
+    "legacy_populations": false,
+    "fifth_carton_random_search": false,
+    "row_replay": false
+  },
+  "final_source_sha256": {
+    "src/unloading_sim/layout_trajectory.py": "d990481bc048fa1d38897ec208c26456df14b9d2c465e72abaf018d7b543e332",
+    "src/unloading_sim/layout_single_carton.py": "fce9d5530b8fa427cead244717c5b84971d58219dbe8208dc2f6f149891f261a",
+    "src/unloading_sim/planner.py": "73560c69bfa2a61f10bef6b2fd26d2726b977579021321674958a3eb73966c27",
+    "src/unloading_sim/motion_quality.py": "bf2562c53d4f353bfd2b6d0dca1350b2e063ff279895b693faa5e5dde3f94cce",
+    "tests/test_feasible_result_budget.py": "fdf53391a1148d75ef4006adcf987e2a5de820f24da7c0edcae825f62a292642",
+    "tests/test_layout_trajectory.py": "8a66e356fc6ec79c3b4d19cc7b6165c7b4e4f0542693cc9c144adfdf79eef2ff",
+    "tests/test_contact_candidate_scheduler.py": "290ae20e293f4a8c438aeb0faf804d40e3a32ab20f05996a79d84bc3b6a57aa3"
+  }
+}

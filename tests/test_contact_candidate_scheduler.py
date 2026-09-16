@@ -190,7 +190,15 @@ def test_real_audit_entry_dispatches_pose_and_actual_path_seed(actual_scene, mon
                                       seed=kw["seed"], iteration_budget=1, stage="pregrasp")
             assert failure is None
         if mode == "tail_success":
-            return {"test_wiring_only_not_physical_success": True}, None, {}
+            from test_layout_trajectory import _segment
+            segment = _segment()
+            segment["test_wiring_only_not_physical_success"] = True
+            segment["target"] = kw["target"].name
+            segment["contact"]["cup_selection"]["target_id"] = kw["target"].name
+            failure = c._finalize_task(segment,
+                [box for box in kw["all_obstacles"] if box.name != kw["target"].name] + [kw["target"]],
+                kw["target"])
+            return segment if failure is None else None, failure, {}
         return None, {"reason": "DISCONNECTED", "stage": "pregrasp"}, {}
     monkeypatch.setattr(production, "_scheduled_contact_poses", pool)
     monkeypatch.setattr(production, "_audit_pose", evaluate)

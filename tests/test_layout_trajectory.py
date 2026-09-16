@@ -178,7 +178,15 @@ class _ScriptedConnector(LayoutTrajectoryConnector):
             return None, {"reason": "FIRST_BRANCH_DISCONNECTED", "stage": "transit"}, {
                 "seed": kwargs["seed"]
             }
-        return _segment(), None, {"seed": kwargs["seed"]}
+        # Synthetic branch fixture still exercises the real final contract and
+        # completion binding; it does not represent checked robot geometry.
+        segment = _segment()
+        segment["target"] = kwargs["target"].name
+        segment["contact"]["cup_selection"]["target_id"] = kwargs["target"].name
+        failure = self._finalize_task(segment,
+            [box for box in kwargs["all_obstacles"] if box.name != kwargs["target"].name]
+            + [kwargs["target"]], kwargs["target"])
+        return segment if failure is None else None, failure, {"seed": kwargs["seed"]}
 
 
 def test_grasp_branch_search_is_lazy_bounded_and_backtracks_to_alternative():

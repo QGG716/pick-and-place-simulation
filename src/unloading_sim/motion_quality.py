@@ -2,6 +2,11 @@
 from __future__ import annotations
 
 import numpy as np
+from time import perf_counter
+
+
+class QualityDeadline(TimeoutError):
+    """Optional scoring stopped; this says nothing about path validity."""
 
 
 def reversal_counts(positions, threshold_rad=0.02):
@@ -26,7 +31,12 @@ def reversal_counts(positions, threshold_rad=0.02):
     return counts
 
 
-def path_quality(positions, *, fk=None, velocity_limits=None, joint_limits=None, jacobian=None):
+def path_quality(positions, *, fk=None, velocity_limits=None, joint_limits=None, jacobian=None,
+                 deadline=None):
+    def check():
+        if deadline is not None and perf_counter() >= deadline:
+            raise QualityDeadline("optional path quality deadline")
+    check()
     q = np.asarray(positions, dtype=float)
     delta = np.abs(np.diff(q, axis=0))
     travel = delta.sum(axis=0)
@@ -38,16 +48,29 @@ def path_quality(positions, *, fk=None, velocity_limits=None, joint_limits=None,
         # endpoint distance cannot hide that travel after shortcutting.
         samples = [q[0]]
         for first, last in zip(q[:-1], q[1:]):
+            check()
             count = max(1, int(np.ceil(np.max(np.abs(last-first))/.04)))
             samples.extend(first + i/count*(last-first) for i in range(1, count+1))
-        rotations = [np.asarray(fk(point))[:3, :3] for point in samples]
+        rotations = []
+        for point in samples:
+            check()
+            rotations.append(np.asarray(fk(point))[:3, :3])
+            check()
         orientation = float(sum(np.arccos(np.clip((np.trace(a.T @ b) - 1) / 2, -1, 1))
                                 for a, b in zip(rotations[:-1], rotations[1:])))
     duration = None if velocity_limits is None else float(
         np.max(delta / np.asarray(velocity_limits), axis=1).sum())
     margin = None if joint_limits is None else float(np.min(np.minimum(
         q - np.asarray(joint_limits)[:, 0], np.asarray(joint_limits)[:, 1] - q)))
-    condition = None if jacobian is None else float(max(np.linalg.cond(jacobian(point)) for point in q))
+    condition = None
+    if jacobian is not None:
+        conditions = []
+        for point in q:
+            check()
+            conditions.append(np.linalg.cond(jacobian(point)))
+            check()
+        condition = float(max(conditions))
+    check()
     # Soft weights convert each component to a dimensionless preference. All
     # collision, joint margin and singularity acceptance remains external.
     score = float(travel.sum() + .5 * travel[3:6].sum() + .1 * sum(reversals)

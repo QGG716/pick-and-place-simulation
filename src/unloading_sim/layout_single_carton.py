@@ -1653,7 +1653,8 @@ def run_layout_single_carton_audit(
                         else None
                     ),
                     deadline_monotonic=(None if trajectory_connector is None else
-                                        min(trajectory_connector._deadline_monotonic or float("inf"), perf_counter() + 3.)),
+                                        min(float("inf") if trajectory_connector._deadline_monotonic is None
+                                            else trajectory_connector._deadline_monotonic, perf_counter() + 3.)),
                     consume_candidate=None,
                 )
             attempt.update({key: schedule_record[key] for key in ("family_id", "candidate_id", "attempt_id")})
@@ -2019,6 +2020,14 @@ def run_layout_single_carton_audit(
             "unmeasured_value": None,
         },
         "selected_trajectory_segment": selected_trajectory_segment,
+        "planning_success": selected_trajectory_segment is not None,
+        "execution_ready": False,
+        "execution_readiness_status": "INDEPENDENT_PREFLIGHT_NOT_RUN",
+        "planning_deadline_boundary": {
+            "scope": "SEARCH_AND_COMPLETE_TRAJECTORY_VALIDATION",
+            "preflight_and_export": "SEPARATE_VERIFIED_INPUT_OPERATIONS_NO_SEARCH_WHEN_MOTION_RESULT_SUPPLIED",
+            "monotonic_deadline_is_process_local": True,
+        },
         "complete_trajectory_status": (
             "PASS" if selected_trajectory_segment is not None else "FAIL_CLOSED"
         ),

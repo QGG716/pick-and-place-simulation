@@ -143,6 +143,8 @@ class RRTConnectPlanner:
         deadline = None if time_limit_seconds is None else perf_counter() + max(0.0, float(time_limit_seconds))
         start = np.asarray(start, dtype=float)
         goal = np.asarray(goal, dtype=float)
+        if self._deadline_reached(deadline):
+            return self._result(False, [], 0, "time limit reached")
         if not self._state_valid(start):
             return self._result(False, [], 0, "start state is invalid")
         if not self._state_valid(goal):
@@ -256,6 +258,10 @@ class RRTConnectPlanner:
                 checked += 1
                 if not self._state_valid(a + k/n*(b-a)):
                     valid = False
+                    break
+                if self._deadline_reached(deadline):
+                    valid = False
+                    termination = "POSTPROCESS_BUDGET_EXHAUSTED"
                     break
             if valid:
                 result = result[:i+1] + result[j:]
