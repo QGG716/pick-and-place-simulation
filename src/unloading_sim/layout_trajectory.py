@@ -296,7 +296,7 @@ class LayoutTrajectoryBudget:
     stage_wall_time_s: float = 12.0
     postprocess_wall_time_s: float = 3.0
     grasp_branches: int = 4
-    task_pose_connection_attempts: int = 12
+    task_pose_connection_attempts: int = 12  # Compatibility name: batch size, not pool truncation.
     stage_ik_candidates: int = 3
     stage_connection_attempts: int = 3
     stage_connection_iterations: int = 600
@@ -375,6 +375,15 @@ class LayoutTrajectoryBudget:
                 and (not np.isfinite(self.planning_wall_time_s)
                      or self.planning_wall_time_s <= 0.0)):
             raise ValueError("planning_wall_time_s must be finite and positive when configured")
+
+
+    @property
+    def task_pose_batch_size(self):
+        return self.task_pose_connection_attempts
+
+    @property
+    def task_complete_connection_attempt_limit(self):
+        return 3 * self.task_pose_connection_attempts
 
 
 @dataclass(frozen=True)
@@ -902,7 +911,9 @@ class LayoutTrajectoryConnector:
     def budget_evidence(self) -> dict[str, Any]:
         return {
             "task_pose_connection_attempts": self.budget.task_pose_connection_attempts,
-            "candidate_schedule": "BREADTH_THEN_BOUNDED_DEEPENING_20_50_100_SECONDS",
+            "task_pose_batch_size": self.budget.task_pose_batch_size,
+            "task_complete_connection_attempt_limit": self.budget.task_complete_connection_attempt_limit,
+            "candidate_schedule": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
             "stage_wall_time_s": self.budget.stage_wall_time_s,
             "postprocess_wall_time_s": self.budget.postprocess_wall_time_s,
             "final_export_reserve_s": getattr(self, "_final_export_reserve_s", 0.),

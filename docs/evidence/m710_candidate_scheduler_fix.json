@@ -1,0 +1,1868 @@
+{
+  "baseline_commit": "a082c8a9a0b77cc2682a1c16b704f575ae8e8430",
+  "baseline_layout_single_carton_sha256": "534ff784b3ea1a76b32c84ca3a9b44ebbeb7993aa12fa6c3400bef7dbd14613c",
+  "source_sha256": {
+    "src/unloading_sim/contact_scheduler.py": "dffe233d6570ccb24b67ac6307aa73c54f42186167433e70fae1e31f2b5d4668",
+    "src/unloading_sim/layout_single_carton.py": "b4aaef7deef69a96d34f1ba1ac870537614de7b98893993f3f1ce9fe8cffdeb2",
+    "src/unloading_sim/layout_trajectory.py": "3bf08375928597f4bf2d1dab53972a09404b75e9a45ef950a8278a79cf5528c9",
+    "configs/validation/m710id70_layout_v1_single_carton.yaml": "06acdc09d590bf193d4fd834d660b97ab848c2793e98ea068854a7f3a2337abb",
+    "tests/test_contact_candidate_scheduler.py": "a70f7637526191b381ac8e422850b7f9f139c85c7caf7e103765a5beb5be0153"
+  },
+  "baseline": {
+    "method": "execute unchanged baseline production AST families through rounds with the same 48 distinct poses used by the new scheduler tests",
+    "generated_candidate_count": 48,
+    "total_attempt_count": 36,
+    "unique_candidates_evaluated": 12,
+    "retry_count": 24,
+    "remaining_unsearched_count": 36,
+    "visited": [
+      "front/0/variant_0",
+      "front/90/variant_0",
+      "front/180/variant_0",
+      "front/270/variant_0",
+      "left/0/variant_0",
+      "left/90/variant_0",
+      "left/180/variant_0",
+      "left/270/variant_0",
+      "top/0/variant_0",
+      "top/90/variant_0",
+      "top/180/variant_0",
+      "top/270/variant_0",
+      "front/0/variant_0",
+      "front/90/variant_0",
+      "front/180/variant_0",
+      "front/270/variant_0",
+      "left/0/variant_0",
+      "left/90/variant_0",
+      "left/180/variant_0",
+      "left/270/variant_0",
+      "top/0/variant_0",
+      "top/90/variant_0",
+      "top/180/variant_0",
+      "top/270/variant_0",
+      "front/0/variant_0",
+      "front/90/variant_0",
+      "front/180/variant_0",
+      "front/270/variant_0",
+      "left/0/variant_0",
+      "left/90/variant_0",
+      "left/180/variant_0",
+      "left/270/variant_0",
+      "top/0/variant_0",
+      "top/90/variant_0",
+      "top/180/variant_0",
+      "top/270/variant_0"
+    ],
+    "unvisited": [
+      "front/0/variant_1",
+      "front/0/variant_2",
+      "front/0/variant_3",
+      "front/90/variant_1",
+      "front/90/variant_2",
+      "front/90/variant_3",
+      "front/180/variant_1",
+      "front/180/variant_2",
+      "front/180/variant_3",
+      "front/270/variant_1",
+      "front/270/variant_2",
+      "front/270/variant_3",
+      "left/0/variant_1",
+      "left/0/variant_2",
+      "left/0/variant_3",
+      "left/90/variant_1",
+      "left/90/variant_2",
+      "left/90/variant_3",
+      "left/180/variant_1",
+      "left/180/variant_2",
+      "left/180/variant_3",
+      "left/270/variant_1",
+      "left/270/variant_2",
+      "left/270/variant_3",
+      "top/0/variant_1",
+      "top/0/variant_2",
+      "top/0/variant_3",
+      "top/90/variant_1",
+      "top/90/variant_2",
+      "top/90/variant_3",
+      "top/180/variant_1",
+      "top/180/variant_2",
+      "top/180/variant_3",
+      "top/270/variant_1",
+      "top/270/variant_2",
+      "top/270/variant_3"
+    ]
+  },
+  "new_scheduler": {
+    "36": {
+      "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+      "generated_candidate_count": 48,
+      "unique_generated_candidate_count": 48,
+      "duplicate_generated_candidate_count": 0,
+      "unique_candidates_evaluated": 36,
+      "total_attempt_count": 36,
+      "retry_count": 0,
+      "actual_complete_connection_attempt_count": 0,
+      "batch_size": 12,
+      "attempt_limit": 36,
+      "complete_connection_attempt_limit": 48,
+      "remaining_unsearched_count": 12,
+      "pending_retry_count": 0,
+      "per_family": {
+        "026fb9a403fda278992cfe5756c4aebe7cf149f69a5ff47d58964ed0e351c1c8": {
+          "face": "front",
+          "roll_deg": 0,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "92d2a2e32a7bfe65657576d62e78d3001663e1e66ba7f8c4411d6052ebe6a2ca": {
+          "face": "front",
+          "roll_deg": 90,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "2c0daa3396f022cf3ed125ffb2978e89b6e4f3acfd4c95c713cca668723a7c4f": {
+          "face": "front",
+          "roll_deg": 180,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "6ec0687fe518e587fd098ddb5a169e076eeb8ccc98812367cfe7a37abb440777": {
+          "face": "front",
+          "roll_deg": 270,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "c1ae2fbabc0a9c8e51333836799a8aa472163c5588117386e2d323f1162f216d": {
+          "face": "left",
+          "roll_deg": 0,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "8235b37f6abae796060ad7c9f321bfd83883b75183bf179f87c8fc1090e9d51a": {
+          "face": "left",
+          "roll_deg": 90,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "f1210da1d0b419a04e836b3337a1905c87932976cf26432cc53fb31796626bb4": {
+          "face": "left",
+          "roll_deg": 180,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "56d7f53dec16401498c840c4abdf318aebe3bcf3a14c8d255c88f58fcf4987d6": {
+          "face": "left",
+          "roll_deg": 270,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "25be62198e6921dc7665e88e8f29421a84ac22e5a102f6663bccb3e678246fe2": {
+          "face": "top",
+          "roll_deg": 0,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "a72ce862ff27ddbe6dd62938dbfc5ee9e814de9d676d453c2c1d9dba411e9cf1": {
+          "face": "top",
+          "roll_deg": 90,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "950c9dc6b2415855199aa4b0eb690bf8632ced3936bdcba744ec6ce13a5b6e0f": {
+          "face": "top",
+          "roll_deg": 180,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        },
+        "edd1a7a7dc2210ca9b96d55dc5585295261682c139d916525882a30afa7f2f06": {
+          "face": "top",
+          "roll_deg": 270,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 3,
+          "total_attempt_count": 3,
+          "remaining_unsearched_count": 1
+        }
+      },
+      "termination": "CANDIDATE_ATTEMPT_LIMIT_REACHED",
+      "unsearched_candidates_are_infeasible": false,
+      "visited": [
+        "front/0/variant_0",
+        "front/90/variant_0",
+        "front/180/variant_0",
+        "front/270/variant_0",
+        "left/0/variant_0",
+        "left/90/variant_0",
+        "left/180/variant_0",
+        "left/270/variant_0",
+        "top/0/variant_0",
+        "top/90/variant_0",
+        "top/180/variant_0",
+        "top/270/variant_0",
+        "front/0/variant_1",
+        "front/90/variant_1",
+        "front/180/variant_1",
+        "front/270/variant_1",
+        "left/0/variant_1",
+        "left/90/variant_1",
+        "left/180/variant_1",
+        "left/270/variant_1",
+        "top/0/variant_1",
+        "top/90/variant_1",
+        "top/180/variant_1",
+        "top/270/variant_1",
+        "front/0/variant_2",
+        "front/90/variant_2",
+        "front/180/variant_2",
+        "front/270/variant_2",
+        "left/0/variant_2",
+        "left/90/variant_2",
+        "left/180/variant_2",
+        "left/270/variant_2",
+        "top/0/variant_2",
+        "top/90/variant_2",
+        "top/180/variant_2",
+        "top/270/variant_2"
+      ]
+    },
+    "48": {
+      "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+      "generated_candidate_count": 48,
+      "unique_generated_candidate_count": 48,
+      "duplicate_generated_candidate_count": 0,
+      "unique_candidates_evaluated": 48,
+      "total_attempt_count": 48,
+      "retry_count": 0,
+      "actual_complete_connection_attempt_count": 0,
+      "batch_size": 12,
+      "attempt_limit": 48,
+      "complete_connection_attempt_limit": 48,
+      "remaining_unsearched_count": 0,
+      "pending_retry_count": 0,
+      "per_family": {
+        "026fb9a403fda278992cfe5756c4aebe7cf149f69a5ff47d58964ed0e351c1c8": {
+          "face": "front",
+          "roll_deg": 0,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "92d2a2e32a7bfe65657576d62e78d3001663e1e66ba7f8c4411d6052ebe6a2ca": {
+          "face": "front",
+          "roll_deg": 90,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "2c0daa3396f022cf3ed125ffb2978e89b6e4f3acfd4c95c713cca668723a7c4f": {
+          "face": "front",
+          "roll_deg": 180,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "6ec0687fe518e587fd098ddb5a169e076eeb8ccc98812367cfe7a37abb440777": {
+          "face": "front",
+          "roll_deg": 270,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "c1ae2fbabc0a9c8e51333836799a8aa472163c5588117386e2d323f1162f216d": {
+          "face": "left",
+          "roll_deg": 0,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "8235b37f6abae796060ad7c9f321bfd83883b75183bf179f87c8fc1090e9d51a": {
+          "face": "left",
+          "roll_deg": 90,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "f1210da1d0b419a04e836b3337a1905c87932976cf26432cc53fb31796626bb4": {
+          "face": "left",
+          "roll_deg": 180,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "56d7f53dec16401498c840c4abdf318aebe3bcf3a14c8d255c88f58fcf4987d6": {
+          "face": "left",
+          "roll_deg": 270,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "25be62198e6921dc7665e88e8f29421a84ac22e5a102f6663bccb3e678246fe2": {
+          "face": "top",
+          "roll_deg": 0,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "a72ce862ff27ddbe6dd62938dbfc5ee9e814de9d676d453c2c1d9dba411e9cf1": {
+          "face": "top",
+          "roll_deg": 90,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "950c9dc6b2415855199aa4b0eb690bf8632ced3936bdcba744ec6ce13a5b6e0f": {
+          "face": "top",
+          "roll_deg": 180,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        },
+        "edd1a7a7dc2210ca9b96d55dc5585295261682c139d916525882a30afa7f2f06": {
+          "face": "top",
+          "roll_deg": 270,
+          "generated_candidate_count": 4,
+          "unique_candidate_count": 4,
+          "unique_candidates_evaluated": 4,
+          "total_attempt_count": 4,
+          "remaining_unsearched_count": 0
+        }
+      },
+      "termination": "CANDIDATE_POOL_EXHAUSTED",
+      "unsearched_candidates_are_infeasible": false,
+      "visited": [
+        "front/0/variant_0",
+        "front/90/variant_0",
+        "front/180/variant_0",
+        "front/270/variant_0",
+        "left/0/variant_0",
+        "left/90/variant_0",
+        "left/180/variant_0",
+        "left/270/variant_0",
+        "top/0/variant_0",
+        "top/90/variant_0",
+        "top/180/variant_0",
+        "top/270/variant_0",
+        "front/0/variant_1",
+        "front/90/variant_1",
+        "front/180/variant_1",
+        "front/270/variant_1",
+        "left/0/variant_1",
+        "left/90/variant_1",
+        "left/180/variant_1",
+        "left/270/variant_1",
+        "top/0/variant_1",
+        "top/90/variant_1",
+        "top/180/variant_1",
+        "top/270/variant_1",
+        "front/0/variant_2",
+        "front/90/variant_2",
+        "front/180/variant_2",
+        "front/270/variant_2",
+        "left/0/variant_2",
+        "left/90/variant_2",
+        "left/180/variant_2",
+        "left/270/variant_2",
+        "top/0/variant_2",
+        "top/90/variant_2",
+        "top/180/variant_2",
+        "top/270/variant_2",
+        "front/0/variant_3",
+        "front/90/variant_3",
+        "front/180/variant_3",
+        "front/270/variant_3",
+        "left/0/variant_3",
+        "left/90/variant_3",
+        "left/180/variant_3",
+        "left/270/variant_3",
+        "top/0/variant_3",
+        "top/90/variant_3",
+        "top/180/variant_3",
+        "top/270/variant_3"
+      ]
+    }
+  },
+  "production_entry_wiring": {
+    "tail_success": {
+      "mode": "tail_success",
+      "physical_robot_planning_success_claimed": false,
+      "evaluations": [
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2858278667,
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_0",
+          "ik_seed": 2858278667,
+          "path_seed": 1705351583
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2011775758,
+          "candidate_id": "dbd440c045564ce4fd6bf42c6d3ca8c0b29c539cffae4125161d33b362f30f34",
+          "attempt_id": "dbd440c045564ce4fd6bf42c6d3ca8c0b29c539cffae4125161d33b362f30f34:attempt_0",
+          "ik_seed": 2011775758,
+          "path_seed": 4159545306
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 330635485,
+          "candidate_id": "b55de547877bb7eead07f60e59235c1c05c430a1d3a2bfc18ca0488fcaa31bee",
+          "attempt_id": "b55de547877bb7eead07f60e59235c1c05c430a1d3a2bfc18ca0488fcaa31bee:attempt_0",
+          "ik_seed": 330635485,
+          "path_seed": 2997181614
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 1187351242,
+          "candidate_id": "a66ae1199d3f087cf25c41a3a47f92e1af3e47fd70e9efb6cd6ec6b0c5a5fa5d",
+          "attempt_id": "a66ae1199d3f087cf25c41a3a47f92e1af3e47fd70e9efb6cd6ec6b0c5a5fa5d:attempt_0",
+          "ik_seed": 1187351242,
+          "path_seed": 3221275617
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 4194792051,
+          "candidate_id": "d03f1ad06e4a6f4eb21bf424a2cefc60fedbbf31c655ddef9294ac617dc1b4c4",
+          "attempt_id": "d03f1ad06e4a6f4eb21bf424a2cefc60fedbbf31c655ddef9294ac617dc1b4c4:attempt_0",
+          "ik_seed": 4194792051,
+          "path_seed": 2555034065
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 927976159,
+          "candidate_id": "a4edfbcd81ed642e638499e50b34019045fc4651c5b872859f898118f6067be7",
+          "attempt_id": "a4edfbcd81ed642e638499e50b34019045fc4651c5b872859f898118f6067be7:attempt_0",
+          "ik_seed": 927976159,
+          "path_seed": 2882864683
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 1191065454,
+          "candidate_id": "e019586011e1b46ee1c330839d10bf5fe199bb6b15c6c5546cb74f5813e719a0",
+          "attempt_id": "e019586011e1b46ee1c330839d10bf5fe199bb6b15c6c5546cb74f5813e719a0:attempt_0",
+          "ik_seed": 1191065454,
+          "path_seed": 4237747827
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 3057594450,
+          "candidate_id": "e7d24859083e201dcbe1103e9a1053a603ccb880c83512d7ccbdad5a9249f252",
+          "attempt_id": "e7d24859083e201dcbe1103e9a1053a603ccb880c83512d7ccbdad5a9249f252:attempt_0",
+          "ik_seed": 3057594450,
+          "path_seed": 1159800055
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 838706324,
+          "candidate_id": "7a79a55ec4423c3d699e025c9940e0a8b48ec43f9861ff464d33523af3a94b30",
+          "attempt_id": "7a79a55ec4423c3d699e025c9940e0a8b48ec43f9861ff464d33523af3a94b30:attempt_0",
+          "ik_seed": 838706324,
+          "path_seed": 3761689892
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2495844449,
+          "candidate_id": "9d557565fee0ee29fad4eec426987421112e7837ff74d9049a465c1b51bd99d3",
+          "attempt_id": "9d557565fee0ee29fad4eec426987421112e7837ff74d9049a465c1b51bd99d3:attempt_0",
+          "ik_seed": 2495844449,
+          "path_seed": 4038331483
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2090105178,
+          "candidate_id": "a598081fcff1715e5aed870f83424e89dc2dd83d39db8977febfeb79e3011be6",
+          "attempt_id": "a598081fcff1715e5aed870f83424e89dc2dd83d39db8977febfeb79e3011be6:attempt_0",
+          "ik_seed": 2090105178,
+          "path_seed": 4134316891
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 3663022019,
+          "candidate_id": "26d88796115a2a8060d1840ebbdfaa34632e5511d2e1e910846977ea2a821245",
+          "attempt_id": "26d88796115a2a8060d1840ebbdfaa34632e5511d2e1e910846977ea2a821245:attempt_0",
+          "ik_seed": 3663022019,
+          "path_seed": 1057628705
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 1,
+            "face_offset_local_xy_m": [
+              0.024,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2398722703,
+          "physical": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.024
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "virtual": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.024
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_id": "95c1b0365c4ebf3638346183728abee6c3fbef50381d3be7ea72bd703f3c6422",
+          "attempt_id": "95c1b0365c4ebf3638346183728abee6c3fbef50381d3be7ea72bd703f3c6422:attempt_0",
+          "ik_seed": 2398722703,
+          "path_seed": 2571597393
+        }
+      ],
+      "actual_plan_branch_calls": [
+        {
+          "target": "carton_l07_c02",
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.024
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "seed": 2571597393,
+          "candidate_id": "95c1b0365c4ebf3638346183728abee6c3fbef50381d3be7ea72bd703f3c6422",
+          "attempt_id": "95c1b0365c4ebf3638346183728abee6c3fbef50381d3be7ea72bd703f3c6422:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null
+        }
+      ],
+      "actual_rrt_rng_states": [],
+      "summary": {
+        "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+        "generated_candidate_count": 48,
+        "unique_generated_candidate_count": 48,
+        "duplicate_generated_candidate_count": 0,
+        "unique_candidates_evaluated": 13,
+        "total_attempt_count": 13,
+        "retry_count": 0,
+        "actual_complete_connection_attempt_count": 1,
+        "batch_size": 12,
+        "attempt_limit": 36,
+        "complete_connection_attempt_limit": 36,
+        "remaining_unsearched_count": 35,
+        "pending_retry_count": 0,
+        "termination": "COMPLETE_TRAJECTORY_FOUND",
+        "unsearched_candidates_are_infeasible": false
+      },
+      "evaluation_count": 13,
+      "actual_plan_branch_call_count": 1
+    },
+    "retry": {
+      "mode": "retry",
+      "physical_robot_planning_success_claimed": false,
+      "evaluations": [
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2858278667,
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_0",
+          "ik_seed": 2858278667,
+          "path_seed": 1705351583
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2858383396,
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_1",
+          "ik_seed": 2858383396,
+          "path_seed": 1705456312
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2858488125,
+          "physical": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "virtual": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_2",
+          "ik_seed": 2858488125,
+          "path_seed": 1705561041
+        }
+      ],
+      "actual_plan_branch_calls": [
+        {
+          "target": "carton_l07_c02",
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "seed": 1705351583,
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null
+        },
+        {
+          "target": "carton_l07_c02",
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "seed": 1705456312,
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_1",
+          "retry_index": 1,
+          "retry_reason": "INCOMPLETE_PATH_NEW_IK_AND_PATH_SEEDS"
+        },
+        {
+          "target": "carton_l07_c02",
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "seed": 1705561041,
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_2",
+          "retry_index": 2,
+          "retry_reason": "INCOMPLETE_PATH_NEW_IK_AND_PATH_SEEDS"
+        }
+      ],
+      "actual_rrt_rng_states": [
+        {
+          "bit_generator": "PCG64",
+          "state": {
+            "state": 64097811630494524899951536398575185371,
+            "inc": 314887321491635135411488171298484443907
+          },
+          "has_uint32": 0,
+          "uinteger": 0
+        },
+        {
+          "bit_generator": "PCG64",
+          "state": {
+            "state": 266477370552912212001691433992425154948,
+            "inc": 285641079986544497351357787518385892541
+          },
+          "has_uint32": 0,
+          "uinteger": 0
+        },
+        {
+          "bit_generator": "PCG64",
+          "state": {
+            "state": 19075010806485616857803002496031612007,
+            "inc": 199751026507114580028606546776594437729
+          },
+          "has_uint32": 0,
+          "uinteger": 0
+        }
+      ],
+      "summary": {
+        "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+        "generated_candidate_count": 1,
+        "unique_generated_candidate_count": 1,
+        "duplicate_generated_candidate_count": 0,
+        "unique_candidates_evaluated": 1,
+        "total_attempt_count": 3,
+        "retry_count": 2,
+        "actual_complete_connection_attempt_count": 3,
+        "batch_size": 12,
+        "attempt_limit": 36,
+        "complete_connection_attempt_limit": 36,
+        "remaining_unsearched_count": 0,
+        "pending_retry_count": 0,
+        "termination": "CANDIDATE_POOL_EXHAUSTED",
+        "unsearched_candidates_are_infeasible": false
+      },
+      "evaluation_count": 3,
+      "actual_plan_branch_call_count": 3
+    },
+    "deadline": {
+      "mode": "deadline",
+      "physical_robot_planning_success_claimed": false,
+      "evaluations": [
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2858278667,
+          "physical": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "virtual": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_0",
+          "ik_seed": 2858278667,
+          "path_seed": 1705351583
+        }
+      ],
+      "actual_plan_branch_calls": [],
+      "actual_rrt_rng_states": [],
+      "summary": {
+        "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+        "generated_candidate_count": 48,
+        "unique_generated_candidate_count": 48,
+        "duplicate_generated_candidate_count": 0,
+        "unique_candidates_evaluated": 1,
+        "total_attempt_count": 1,
+        "retry_count": 0,
+        "actual_complete_connection_attempt_count": 0,
+        "batch_size": 12,
+        "attempt_limit": 36,
+        "complete_connection_attempt_limit": 36,
+        "remaining_unsearched_count": 47,
+        "pending_retry_count": 0,
+        "termination": "PLANNING_WALL_CLOCK_DEADLINE",
+        "unsearched_candidates_are_infeasible": false
+      },
+      "evaluation_count": 1,
+      "actual_plan_branch_call_count": 0
+    },
+    "attempt_limit": {
+      "mode": "attempt_limit",
+      "physical_robot_planning_success_claimed": false,
+      "evaluations": [
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 0,
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 2858278667,
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_0",
+          "ik_seed": 2858278667,
+          "path_seed": 1705351583
+        },
+        {
+          "target": "carton_l07_c02",
+          "variant": {
+            "variant": 2,
+            "face_offset_local_xy_m": [
+              0.048,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ]
+          },
+          "seed": 665329875,
+          "physical": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.048
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "virtual": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.048
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_id": "8a4ed21a978738997929d0d036349318c4c1889f2174f035012099180a9e73c0",
+          "attempt_id": "8a4ed21a978738997929d0d036349318c4c1889f2174f035012099180a9e73c0:attempt_0",
+          "ik_seed": 665329875,
+          "path_seed": 2779254864
+        }
+      ],
+      "actual_plan_branch_calls": [
+        {
+          "target": "carton_l07_c02",
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "seed": 1705351583,
+          "candidate_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd",
+          "attempt_id": "cf3d0327f46cb1946f1dce02c5e877546d9875d4a24e7d846de036fded9176fd:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null
+        },
+        {
+          "target": "carton_l07_c02",
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.048
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0325
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "seed": 2779254864,
+          "candidate_id": "8a4ed21a978738997929d0d036349318c4c1889f2174f035012099180a9e73c0",
+          "attempt_id": "8a4ed21a978738997929d0d036349318c4c1889f2174f035012099180a9e73c0:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null
+        }
+      ],
+      "actual_rrt_rng_states": [],
+      "summary": {
+        "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+        "generated_candidate_count": 48,
+        "unique_generated_candidate_count": 48,
+        "duplicate_generated_candidate_count": 0,
+        "unique_candidates_evaluated": 36,
+        "total_attempt_count": 36,
+        "retry_count": 0,
+        "actual_complete_connection_attempt_count": 36,
+        "batch_size": 12,
+        "attempt_limit": 36,
+        "complete_connection_attempt_limit": 36,
+        "remaining_unsearched_count": 12,
+        "pending_retry_count": 36,
+        "termination": "CANDIDATE_ATTEMPT_LIMIT_REACHED",
+        "unsearched_candidates_are_infeasible": false
+      },
+      "evaluation_count": 36,
+      "actual_plan_branch_call_count": 36,
+      "records_compacted_to_first_and_last": true
+    }
+  },
+  "actual_check": {
+    "state_path": "/root/autodl-tmp/m710-ideal-outfeed-20260915-retry02/isaac/segment_004/actual_remaining_state.json",
+    "state_sha256": "a7063b72dccf396e6a5ccaa24ffd2e1f12f599f7b7773153e081e95a7988f72e",
+    "scene_fingerprint": "ddd6b88b6c9ba79e2302f01eda20f288081d6892bc2b78c15cc7000c8af754cd",
+    "policy_fingerprint": "7bb8f54087828e50825d71cbe6d751ff079b013834f3509523e1889a430f7eaa",
+    "collision_policy": {
+      "schema": "m710_simulation_collision_policy_v3",
+      "wrist_tool_exempt_links": [
+        "J5_link",
+        "J6_link"
+      ],
+      "stack_contact_mode": "planner_relaxed_physics_checked",
+      "stack_contact_stages": [
+        "support-release",
+        "extraction"
+      ],
+      "maximum_planned_stack_penetration_m": 0.01,
+      "free_space_clearance_m": 0.0202,
+      "free_space_clearance_loss_tolerance_m": 0.0002,
+      "maximum_actual_penetration_m": 0.01,
+      "maximum_neighbor_displacement_m": 0.06,
+      "maximum_neighbor_tilt_rad": 0.2,
+      "progress_timeout_s": 3.0,
+      "minimum_progress_m": 0.002,
+      "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+      "compliant_cup_neighbor_contact_mode": "ignore",
+      "maximum_compliant_cup_additional_compression_m": 0.005,
+      "fingerprint": "a4e1d53c75298fc0c460c4569f20e1cb30c05f43beeb1ac1e9f6c51574d5bb7a",
+      "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+      "box_box_physics_enabled": true
+    },
+    "target": "carton_l07_c04",
+    "q_rad": [
+      -0.8773534893989563,
+      0.4496802091598511,
+      -0.02197902463376522,
+      1.4869361848468543e-06,
+      -1.0991413593292236,
+      4.018947601318359
+    ],
+    "old_generated": 48,
+    "new_generated": 108,
+    "request_budget_s": 60.0,
+    "runtime_physical_execution": false,
+    "wall_seconds": 57.02474744617939,
+    "actual_visits": [
+      {
+        "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+        "candidate_id": "ae98129d8f93703cee763a937d76070fdacb839080dd87b2f37a78494b860908",
+        "attempt_id": "ae98129d8f93703cee763a937d76070fdacb839080dd87b2f37a78494b860908:attempt_0",
+        "scheduler": {
+          "candidate_id": "ae98129d8f93703cee763a937d76070fdacb839080dd87b2f37a78494b860908",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "ae98129d8f93703cee763a937d76070fdacb839080dd87b2f37a78494b860908:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "offset_local_x_+0.024",
+            "face_offset_local_xy_m": [
+              0.024,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.030005656316467455,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+          "ik_seed": 1651160800,
+          "path_seed": 1339013202,
+          "candidate_wall_budget_s": 20.0,
+          "actual_complete_connection_attempted": true,
+          "elapsed_s": 20.26229741051793,
+          "failure_stage": "request",
+          "failure_reason": "CANDIDATE_WALL_CLOCK_DEADLINE",
+          "search_status": "CANDIDATE_WALL_CLOCK_DEADLINE"
+        },
+        "exact_endpoint_checks": {
+          "calls": 8,
+          "PASS": 8
+        },
+        "failure_reason": "CANDIDATE_WALL_CLOCK_DEADLINE",
+        "failure_stage": "request"
+      },
+      {
+        "family_id": "29ee73f147a57b1fdc3e16fe2385326bfb0d476054a4103eb64042b28b4166fa",
+        "candidate_id": "9f6621583805e7ffd336790c51b123cd07c27e29d68eb3194f0f9ac958fc8225",
+        "attempt_id": "9f6621583805e7ffd336790c51b123cd07c27e29d68eb3194f0f9ac958fc8225:attempt_0",
+        "scheduler": {
+          "candidate_id": "9f6621583805e7ffd336790c51b123cd07c27e29d68eb3194f0f9ac958fc8225",
+          "family_id": "29ee73f147a57b1fdc3e16fe2385326bfb0d476054a4103eb64042b28b4166fa",
+          "attempt_id": "9f6621583805e7ffd336790c51b123cd07c27e29d68eb3194f0f9ac958fc8225:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "offset_local_x_+0.024",
+            "face_offset_local_xy_m": [
+              0.024,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.15,
+            "rigid_tool_bottom_above_box_bottom_m": 0.029999511023123482,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "left",
+          "roll_deg": 90,
+          "pose_ordinal": 1,
+          "batch_index": 0,
+          "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+          "ik_seed": 331323883,
+          "path_seed": 3631998681,
+          "candidate_wall_budget_s": 20.0,
+          "actual_complete_connection_attempted": false,
+          "elapsed_s": 0.2782924957573414,
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF"
+        },
+        "exact_endpoint_checks": {},
+        "failure_reason": "NO_IK",
+        "failure_stage": "grasp_ik"
+      },
+      {
+        "family_id": "1a22dff307c3f6ed6ac819ec796b7e1bbb91593e5845d8df7948ab9bdeef3ebd",
+        "candidate_id": "2c9f9dbff997ac80ef92ec08b1b3945b8a4f7e73ca2d173fe901f9ccd742c238",
+        "attempt_id": "2c9f9dbff997ac80ef92ec08b1b3945b8a4f7e73ca2d173fe901f9ccd742c238:attempt_0",
+        "scheduler": {
+          "candidate_id": "2c9f9dbff997ac80ef92ec08b1b3945b8a4f7e73ca2d173fe901f9ccd742c238",
+          "family_id": "1a22dff307c3f6ed6ac819ec796b7e1bbb91593e5845d8df7948ab9bdeef3ebd",
+          "attempt_id": "2c9f9dbff997ac80ef92ec08b1b3945b8a4f7e73ca2d173fe901f9ccd742c238:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.09999999999999998,
+            "rigid_tool_bottom_above_box_bottom_m": 0.32165104761473096,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "top",
+          "roll_deg": 0,
+          "pose_ordinal": 2,
+          "batch_index": 0,
+          "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+          "ik_seed": 651912652,
+          "path_seed": 1641943476,
+          "candidate_wall_budget_s": 20.0,
+          "actual_complete_connection_attempted": false,
+          "elapsed_s": 0.2850959897041321,
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF"
+        },
+        "exact_endpoint_checks": {},
+        "failure_reason": "NO_IK",
+        "failure_stage": "grasp_ik"
+      },
+      {
+        "family_id": "772ac8db3bfcf58d410fc37ee08629489cc65e94c5bb21e1f18f359772d63cde",
+        "candidate_id": "2b15aaa3c0112b93df289b06716e97e72bfa04d7cde10ff0374e30673b05a25e",
+        "attempt_id": "2b15aaa3c0112b93df289b06716e97e72bfa04d7cde10ff0374e30673b05a25e:attempt_0",
+        "scheduler": {
+          "candidate_id": "2b15aaa3c0112b93df289b06716e97e72bfa04d7cde10ff0374e30673b05a25e",
+          "family_id": "772ac8db3bfcf58d410fc37ee08629489cc65e94c5bb21e1f18f359772d63cde",
+          "attempt_id": "2b15aaa3c0112b93df289b06716e97e72bfa04d7cde10ff0374e30673b05a25e:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "offset_local_x_-0.024",
+            "face_offset_local_xy_m": [
+              -0.024,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.030005656316467455,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 270,
+          "pose_ordinal": 3,
+          "batch_index": 0,
+          "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+          "ik_seed": 3184404467,
+          "path_seed": 3510150335,
+          "candidate_wall_budget_s": 20.0,
+          "actual_complete_connection_attempted": true,
+          "elapsed_s": 20.2701287381351,
+          "failure_stage": "request",
+          "failure_reason": "CANDIDATE_WALL_CLOCK_DEADLINE",
+          "search_status": "CANDIDATE_WALL_CLOCK_DEADLINE"
+        },
+        "exact_endpoint_checks": {
+          "calls": 8,
+          "PASS": 8
+        },
+        "failure_reason": "CANDIDATE_WALL_CLOCK_DEADLINE",
+        "failure_stage": "request"
+      },
+      {
+        "family_id": "bf2cc758095df0f3053940421a20800a7c3e46a8613c8f0603fde76a8c21d50b",
+        "candidate_id": "9d9ae988699632f234de8634b64e7e47c99dddd05cad8157a657d25d7e9915f3",
+        "attempt_id": "9d9ae988699632f234de8634b64e7e47c99dddd05cad8157a657d25d7e9915f3:attempt_0",
+        "scheduler": {
+          "candidate_id": "9d9ae988699632f234de8634b64e7e47c99dddd05cad8157a657d25d7e9915f3",
+          "family_id": "bf2cc758095df0f3053940421a20800a7c3e46a8613c8f0603fde76a8c21d50b",
+          "attempt_id": "9d9ae988699632f234de8634b64e7e47c99dddd05cad8157a657d25d7e9915f3:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "offset_local_x_-0.024",
+            "face_offset_local_xy_m": [
+              -0.024,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.15,
+            "rigid_tool_bottom_above_box_bottom_m": 0.029999511023123482,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "left",
+          "roll_deg": 270,
+          "pose_ordinal": 4,
+          "batch_index": 0,
+          "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+          "ik_seed": 3291810288,
+          "path_seed": 635643244,
+          "candidate_wall_budget_s": 20.0,
+          "actual_complete_connection_attempted": false,
+          "elapsed_s": 0.28002501279115677,
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF"
+        },
+        "exact_endpoint_checks": {},
+        "failure_reason": "NO_IK",
+        "failure_stage": "grasp_ik"
+      },
+      {
+        "family_id": "e78418de6c74ebd07250c0602a295f73efff2559d9704f4efefb7cf29e960eb4",
+        "candidate_id": "d4acce2b221c6af47d26f3d2b89528c43ed02a74acb9f3ceb0b60b79668e0442",
+        "attempt_id": "d4acce2b221c6af47d26f3d2b89528c43ed02a74acb9f3ceb0b60b79668e0442:attempt_0",
+        "scheduler": {
+          "candidate_id": "d4acce2b221c6af47d26f3d2b89528c43ed02a74acb9f3ceb0b60b79668e0442",
+          "family_id": "e78418de6c74ebd07250c0602a295f73efff2559d9704f4efefb7cf29e960eb4",
+          "attempt_id": "d4acce2b221c6af47d26f3d2b89528c43ed02a74acb9f3ceb0b60b79668e0442:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.09999999999999998,
+            "rigid_tool_bottom_above_box_bottom_m": 0.3216508997332612,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "top",
+          "roll_deg": 90,
+          "pose_ordinal": 5,
+          "batch_index": 0,
+          "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+          "ik_seed": 4193841509,
+          "path_seed": 4001889163,
+          "candidate_wall_budget_s": 20.0,
+          "actual_complete_connection_attempted": false,
+          "elapsed_s": 0.28291815519332886,
+          "failure_stage": "grasp_ik",
+          "failure_reason": "NO_IK",
+          "search_status": "BUDGET_EXHAUSTED_NOT_INFEASIBILITY_PROOF"
+        },
+        "exact_endpoint_checks": {},
+        "failure_reason": "NO_IK",
+        "failure_stage": "grasp_ik"
+      },
+      {
+        "family_id": "ff15e6745608bef891e4ec7dff77f3195b76451da4b771c8ccf3f093d86a81b8",
+        "candidate_id": "fa29b8bb557e558a68a7040ca5044c6c3e852a5de02044888a0c85e9bbd272a7",
+        "attempt_id": "fa29b8bb557e558a68a7040ca5044c6c3e852a5de02044888a0c85e9bbd272a7:attempt_0",
+        "scheduler": {
+          "candidate_id": "fa29b8bb557e558a68a7040ca5044c6c3e852a5de02044888a0c85e9bbd272a7",
+          "family_id": "ff15e6745608bef891e4ec7dff77f3195b76451da4b771c8ccf3f093d86a81b8",
+          "attempt_id": "fa29b8bb557e558a68a7040ca5044c6c3e852a5de02044888a0c85e9bbd272a7:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": -0.1379930481935101,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 0,
+          "pose_ordinal": 6,
+          "batch_index": 0,
+          "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+          "ik_seed": 1026392310,
+          "path_seed": 3205605091,
+          "candidate_wall_budget_s": 20.0,
+          "actual_complete_connection_attempted": true,
+          "elapsed_s": 15.18196127563715,
+          "failure_stage": "request",
+          "failure_reason": "PLANNING_WALL_CLOCK_DEADLINE",
+          "search_status": "PLANNING_WALL_CLOCK_DEADLINE"
+        },
+        "exact_endpoint_checks": {
+          "calls": 8,
+          "PASS": 8
+        },
+        "failure_reason": "PLANNING_WALL_CLOCK_DEADLINE",
+        "failure_stage": "request"
+      }
+    ],
+    "outside_old_prefix_evaluated": [],
+    "task_summaries": [
+      {
+        "task_id": "carton_l07_c04",
+        "failure_reason": "PLANNING_WALL_CLOCK_DEADLINE",
+        "candidate_schedule": {
+          "mode": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+          "generated_candidate_count": 108,
+          "unique_generated_candidate_count": 108,
+          "duplicate_generated_candidate_count": 0,
+          "unique_candidates_evaluated": 7,
+          "total_attempt_count": 7,
+          "retry_count": 0,
+          "actual_complete_connection_attempt_count": 3,
+          "batch_size": 12,
+          "attempt_limit": 36,
+          "complete_connection_attempt_limit": 36,
+          "remaining_unsearched_count": 101,
+          "pending_retry_count": 6,
+          "per_family": {
+            "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39": {
+              "face": "front",
+              "roll_deg": 90,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 1,
+              "total_attempt_count": 1,
+              "remaining_unsearched_count": 8
+            },
+            "29ee73f147a57b1fdc3e16fe2385326bfb0d476054a4103eb64042b28b4166fa": {
+              "face": "left",
+              "roll_deg": 90,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 1,
+              "total_attempt_count": 1,
+              "remaining_unsearched_count": 8
+            },
+            "1a22dff307c3f6ed6ac819ec796b7e1bbb91593e5845d8df7948ab9bdeef3ebd": {
+              "face": "top",
+              "roll_deg": 0,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 1,
+              "total_attempt_count": 1,
+              "remaining_unsearched_count": 8
+            },
+            "772ac8db3bfcf58d410fc37ee08629489cc65e94c5bb21e1f18f359772d63cde": {
+              "face": "front",
+              "roll_deg": 270,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 1,
+              "total_attempt_count": 1,
+              "remaining_unsearched_count": 8
+            },
+            "bf2cc758095df0f3053940421a20800a7c3e46a8613c8f0603fde76a8c21d50b": {
+              "face": "left",
+              "roll_deg": 270,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 1,
+              "total_attempt_count": 1,
+              "remaining_unsearched_count": 8
+            },
+            "e78418de6c74ebd07250c0602a295f73efff2559d9704f4efefb7cf29e960eb4": {
+              "face": "top",
+              "roll_deg": 90,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 1,
+              "total_attempt_count": 1,
+              "remaining_unsearched_count": 8
+            },
+            "ff15e6745608bef891e4ec7dff77f3195b76451da4b771c8ccf3f093d86a81b8": {
+              "face": "front",
+              "roll_deg": 0,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 1,
+              "total_attempt_count": 1,
+              "remaining_unsearched_count": 8
+            },
+            "e0e657cf8ba3238930352d989a3522c145f03ece04cc5edb3c50dad40de84f7c": {
+              "face": "left",
+              "roll_deg": 0,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 0,
+              "total_attempt_count": 0,
+              "remaining_unsearched_count": 9
+            },
+            "949f1fd0f39224125f189c84f6c3c02ed6b63809265c6dad5293880e7907bce3": {
+              "face": "top",
+              "roll_deg": 180,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 0,
+              "total_attempt_count": 0,
+              "remaining_unsearched_count": 9
+            },
+            "fce38846f59cef4b2b94b5fb38fa69a3284a3291c9ec2372c7b58f7f83bb805a": {
+              "face": "top",
+              "roll_deg": 270,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 0,
+              "total_attempt_count": 0,
+              "remaining_unsearched_count": 9
+            },
+            "8a6b12182d85ddb7f94a6b8a144b837a0fc968bb5249a4ee1d9e694c36ce7e3e": {
+              "face": "front",
+              "roll_deg": 180,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 0,
+              "total_attempt_count": 0,
+              "remaining_unsearched_count": 9
+            },
+            "f6c4a8f9d2e109116465a49a36071c81d1c4e11bc1df12f5dc914a317f7f713c": {
+              "face": "left",
+              "roll_deg": 180,
+              "generated_candidate_count": 9,
+              "unique_candidate_count": 9,
+              "unique_candidates_evaluated": 0,
+              "total_attempt_count": 0,
+              "remaining_unsearched_count": 9
+            }
+          },
+          "termination": "PLANNING_WALL_CLOCK_DEADLINE",
+          "unsearched_candidates_are_infeasible": false
+        }
+      }
+    ],
+    "complete_trajectory_status": "FAIL_CLOSED",
+    "statistics": {
+      "generated_candidate_count": 108,
+      "unique_candidates_evaluated": 7,
+      "total_attempt_count": 7,
+      "retry_count": 0,
+      "actual_complete_connection_attempt_count": 3,
+      "remaining_unsearched_count": 101,
+      "ik_seeds_attempted": 72,
+      "ik_iterations_consumed": 11127,
+      "ik_deduplicated_candidates": 12,
+      "ik_deduplicated_candidate_records": 12
+    }
+  },
+  "test_command": "$CPU -m pytest -q --basetemp=$FIX/test-evidence tests/test_contact_candidate_scheduler.py tests/test_contact_pose_action_prior.py tests/test_lookahead_contact.py",
+  "test_result": "..............................                                           [100%]\n30 passed in 2.57s",
+  "comparison_scope": "Same 12x4 fixture for old/new AST and queue; same actual scene/model/policy object for old/new real candidate enumeration. Only one new-code 60-second planning request was executed, not a before/after robot-performance comparison.",
+  "official_model_commit": "fb40c9803a826ba68c7c8e28ba904a25efa7fcd2",
+  "pinocchio": "4.1.0",
+  "coal": "3.0.3",
+  "server_directory": "/root/autodl-tmp/m710-candidate-scheduler-fix-20260916",
+  "unverified": [
+    "full fifth-carton recovery",
+    "real evaluation beyond old first-12 prefix within 60 s",
+    "Isaac physics",
+    "full row",
+    "104/129 populations",
+    "full pytest"
+  ],
+  "physical_execution_claimed": false
+}

@@ -26,6 +26,7 @@ import yaml
 from .fanuc_m710id70 import target_pose
 from .geometry import OBB
 from .collision_policy import SimulationCollisionPolicy
+from .contact_scheduler import ContactCandidateScheduler, SCHEDULE_MODE
 from .unloading_sequence import (
     RowUnloadingState, RowSequencePolicy, height_face_prior, fair_face_candidates,
     actual_tcp_approach_costs,
@@ -39,7 +40,7 @@ from .independent_cups import (
     select_ideal_independent_cups,
     select_ideal_independent_cups_from_actual_fk,
 )
-from .ik import IKCandidateStream, iter_ik_solutions
+from .ik import IKCandidateStream, iter_ik_solutions, joint_solutions_equivalent
 from .layout_trajectory import (
     LayoutTrajectoryBudget,
     LayoutTrajectoryConnector,
@@ -70,6 +71,7 @@ EXECUTION_GATE_REASON = "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED"
 PATH_BACKEND_UNAVAILABLE_REASON = "EXECUTION_PATH_BACKEND_UNAVAILABLE"
 TOOL_FRAME_SCHEMA = "m710id70_planner_tool_frames_v1"
 MOTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/contact_scheduler.py",
     "src/unloading_sim/motion_quality.py",
     "src/unloading_sim/release_motion.py",
     "src/unloading_sim/collision_policy.py",
@@ -459,6 +461,8 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
         raise ValueError("layout v1 forbids lift, conveyor extension/Z optimization, and base scans")
 
     strategy = _mapping(data["search_strategy"], "search_strategy")
+    _integer(strategy.get("grasp_poses_per_task", 48),
+             "search_strategy.grasp_poses_per_task", minimum=1)
     from .post_landing_transport import transport_policy
     transport_policy(strategy.get("post_landing_transport"))
     directions = _mapping(
@@ -956,7 +960,9 @@ def _scheduled_contact_poses(scene, target, faces):
             ranked.append(((clearance < required_margin, tilt_radius, offset_radius,
                             roll_preference, original_index), (roll, physical_pose, info)))
         by_face[face] = [candidate for _, candidate in sorted(ranked, key=lambda item: item[0])]
-    return fair_face_candidates(by_face, scores, int(strategy.get("grasp_poses_per_task", 48)))
+    # Keep the full configured offset/tilt pool. Evaluation budgets belong to
+    # the consumer; a generation prefix must not permanently remove variants.
+    return fair_face_candidates(by_face, scores, sum(map(len, by_face.values())))
 
 
 def _independent_cup_selection_at_pose(
@@ -1585,40 +1591,50 @@ def run_layout_single_carton_audit(
         generation_started = perf_counter()
         scheduled_contact_poses = tuple(_scheduled_contact_poses(scene, target, faces))
         candidate_generation_seconds += perf_counter() - generation_started
-        # Breadth first across face/roll families, then bounded rounds. IK is
-        # collected before any branch can trigger a full downstream search.
-        families = {}
-        for item in scheduled_contact_poses:
-            families.setdefault((item[0], item[1][0]), []).append(item)
-        breadth = [family[i] for i in range(max(map(len, families.values()), default=0))
-                   for family in families.values() if i < len(family)]
-        limit = trajectory_connector.budget.task_pose_connection_attempts if trajectory_connector else len(breadth)
-        rounds = [(round_index, seconds, item_index, item)
-                  for round_index, seconds in enumerate((20., 50., 100.))
-                  for item_index, item in enumerate(breadth[:limit])]
-        for round_index, slice_seconds, item_index, (face, (roll, requested_physical_contact, task_set)) in rounds:
+        pose_cap = int(strategy.get("grasp_poses_per_task", 48))
+        connection_limit = (trajectory_connector.budget.task_complete_connection_attempt_limit
+                            if trajectory_connector else pose_cap)
+        scheduler = ContactCandidateScheduler(scheduled_contact_poses, target=target,
+            context={"scene_fingerprint": scene.snapshot["scene_fingerprint"],
+                     "policy_fingerprint": policy.policy_fingerprint}, request_seed=base_seed,
+            batch_size=(trajectory_connector.budget.task_pose_batch_size if trajectory_connector
+                        else max(1, len(faces))),
+            attempt_limit=min(pose_cap, connection_limit), complete_connection_limit=connection_limit)
+        while True:
+            scheduled = scheduler.next_attempt(deadline_reached=(
+                trajectory_connector is not None and trajectory_connector._deadline_reached()))
+            if scheduled is None:
+                task_search_termination = scheduler.termination
+                break
+            candidate, schedule_record = scheduled
+            face, roll = candidate["face"], candidate["roll"]
+            requested_physical_contact, task_set = candidate["pose"], candidate["variant"]
+            slice_seconds = schedule_record["candidate_wall_budget_s"]
+            attempt_started = perf_counter()
+            complete_connection_attempted = False
             if trajectory_connector is not None:
                 trajectory_connector.candidate_slice_s = slice_seconds
-
-            if (trajectory_connector is not None and trajectory_connector._deadline_reached()):
-                task_search_termination = "PLANNING_WALL_CLOCK_DEADLINE"
-                break
             requested_virtual_task_tcp = virtual_tcp_from_physical_contact(
                 requested_physical_contact,
                 policy.tool_frames.flange_from_virtual_task_tcp,
                 policy.tool_frames.flange_from_physical_contact,
             )
-            rng_seed = base_seed + task_index * 10000 + item_index * 101
+            rng_seed = schedule_record["ik_seed"]
             progressive_outcomes = []
+            endpoint_checks = Counter()
             def exact_contact_failure(q):
+                endpoint_checks["calls"] += 1
                 try:
                     # Bind each IK candidate's own 72 commands before allowing
                     # inactive bellows/stack compression at its contact pose.
                     trajectory_connector._contact_selection(q, target, face, policy.data["suction"])
                 except ValueError as exc:
+                    endpoint_checks["CONTACT_CUP_GEOMETRY_INVALID"] += 1
                     return {"reason": "CONTACT_CUP_GEOMETRY_INVALID", "detail": str(exc)}
-                return trajectory_connector.validate_unloaded_state(q, scene.all_obstacles,
+                failure = trajectory_connector.validate_unloaded_state(q, scene.all_obstacles,
                     target_contact=target, stage="contact_endpoint")
+                endpoint_checks["PASS" if failure is None else str(failure["reason"])] += 1
+                return failure
             attempt = _audit_pose(
                     scene,
                     target,
@@ -1640,14 +1656,22 @@ def run_layout_single_carton_audit(
                                         min(trajectory_connector._deadline_monotonic or float("inf"), perf_counter() + 3.)),
                     consume_candidate=None,
                 )
-            attempt["scheduler"] = {"round": round_index, "candidate_wall_budget_s": slice_seconds,
-                "family": [face, roll], "pose_ordinal": item_index, "mode": "BREADTH_THEN_BOUNDED_DEEPENING"}
+            attempt.update({key: schedule_record[key] for key in ("family_id", "candidate_id", "attempt_id")})
+            attempt["exact_endpoint_checks"] = dict(endpoint_checks)
+            attempt["scheduler"] = schedule_record
+            for grasp_candidate in attempt["strict_grasp_candidates"]:
+                grasp_candidate["contact_candidate_id"] = schedule_record["candidate_id"]
             attempts.append(attempt)
             if progress_callback is not None:
                 progress_callback({"target": target_name, "face": face, "roll": roll,
                     "pose": pose_index, "valid_grasps": len(attempt["strict_grasp_candidates"]),
-                    "failure": attempt.get("failure_reason"), "ik": attempt.get("ik_stream")})
-            if attempt["strict_grasp_candidates"] and execution["qualified"]:
+                    "failure": attempt.get("failure_reason"), "ik": attempt.get("ik_stream"),
+                    "scheduler": dict(schedule_record)})
+            if trajectory_connector is not None and trajectory_connector._deadline_reached():
+                task_search_termination = "PLANNING_WALL_CLOCK_DEADLINE"
+                attempt.update(failure_stage="request", failure_reason=task_search_termination,
+                    search_status=task_search_termination, path_search="NOT_RUN_REQUEST_DEADLINE")
+            if attempt["strict_grasp_candidates"] and execution["qualified"] and task_search_termination is None:
                 if trajectory_connector is None:
                     attempt.update(
                         complete_trajectory=False,
@@ -1657,20 +1681,8 @@ def run_layout_single_carton_audit(
                         path_search="NOT_RUN_NO_EXECUTION_QUALIFIED_CONNECTOR",
                     )
                 else:
-                    if trajectory_pose_attempts >= (
-                        3 * trajectory_connector.budget.task_pose_connection_attempts
-                    ):
-                        task_search_termination = "TASK_POSE_CONNECTION_BUDGET_EXHAUSTED"
-                        attempt.update(
-                            complete_trajectory=False,
-                            failure_stage="task_search_budget",
-                            failure_reason="TASK_POSE_CONNECTION_BUDGET_EXHAUSTED",
-                            search_status="TASK_POSE_CONNECTION_BUDGET_EXHAUSTED",
-                            path_search="NOT_RUN_SHARED_TASK_BUDGET_EXHAUSTED",
-                        )
-                        pose_index += 1
-                        break
                     trajectory_pose_attempts += 1
+                    complete_connection_attempted = True
                     support_names = sorted(
                         scene.support_graph.supported_by[target.name]
                     )
@@ -1684,7 +1696,7 @@ def run_layout_single_carton_audit(
                             grasp_candidates=attempt["strict_grasp_candidates"],
                             home_q=policy.layout_validation.initial_q, all_obstacles=scene.all_obstacles,
                             receiver=scene.receiver, support_names=support_names,
-                            suction=policy.data["suction"], seed=rng_seed + 50000)
+                            suction=policy.data["suction"], seed=schedule_record["path_seed"])
                         trajectory_search_seconds += perf_counter() - trajectory_started
                     attempt["trajectory_search"] = {
                         "attempts": [record for trial, _ in progressive_outcomes for record in trial.attempts]
@@ -1698,7 +1710,7 @@ def run_layout_single_carton_audit(
                     if progress_callback is not None:
                         progress_callback({"target": target_name, "face": face, "roll": roll,
                             "trajectory_success": outcome.success, "failure": outcome.failure,
-                            "statistics": outcome.statistics})
+                            "statistics": outcome.statistics, "scheduler": dict(schedule_record)})
                     attempt["path_connection_attempts"] = int(
                         attempt["trajectory_search"]["statistics"].get("connection_attempts", 0)
                     )
@@ -1738,12 +1750,28 @@ def run_layout_single_carton_audit(
                             ),
                             path_search="FAIL",
                         )
+            scheduler.finish(schedule_record, attempt,
+                complete_connection_attempted=complete_connection_attempted,
+                elapsed_s=perf_counter()-attempt_started)
+            if progress_callback is not None:
+                progress_callback({"event": "CONTACT_CANDIDATE_FINISHED", "target": target_name,
+                                   "scheduler": dict(schedule_record)})
             pose_index += 1
             if selected_trajectory_segment is not None:
                 break
             if selected_trajectory_segment is not None or task_search_termination is not None:
+                scheduler.termination = task_search_termination
                 break
-        strict_candidates = sum(len(item["strict_grasp_candidates"]) for item in attempts)
+        strict_candidate_records = sum(len(item["strict_grasp_candidates"]) for item in attempts)
+        distinct_q = []
+        for item in attempts:
+            for grasp in item["strict_grasp_candidates"]:
+                q = np.asarray(grasp["q_rad"], float)
+                if not any(joint_solutions_equivalent(robot, q, prior,
+                    revolute_tolerance_rad=float(policy.data["ik"]["candidate_dedup_tolerance_rad"]),
+                    prismatic_tolerance_m=float(policy.data["ik"]["candidate_dedup_tolerance_m"])) for prior in distinct_q):
+                    distinct_q.append(q)
+        strict_candidates = len(distinct_q)
         task_complete = any(item.get("complete_trajectory") is True for item in attempts)
         if task_complete:
             task_reason = "OK"
@@ -1772,7 +1800,8 @@ def run_layout_single_carton_audit(
         for face in faces:
             subset = [item for item in attempts if item["face"] == face]
             face_counts[face] = {
-                "candidate_poses": len(subset),
+                "candidate_poses": len({item["candidate_id"] for item in subset}),
+                "pose_attempts": len(subset),
                 "coverage_rejected": sum(item["failure_reason"] == "NO_GEOMETRIC_CUP_CONTACT" for item in subset),
                 "no_ik": sum(item["failure_reason"] == "NO_IK" for item in subset),
                 "strict_grasp_candidates": sum(len(item["strict_grasp_candidates"]) for item in subset),
@@ -1786,11 +1815,13 @@ def run_layout_single_carton_audit(
                 "attempts": attempts,
                 "face_summary": face_counts,
                 "strict_grasp_candidate_count": strict_candidates,
+                "strict_grasp_candidate_record_count": strict_candidate_records,
+                "candidate_schedule": scheduler.summary(),
                 "trajectory_pose_attempts": trajectory_pose_attempts,
                 "trajectory_pose_attempt_limit": (
                     None
                     if trajectory_connector is None
-                    else trajectory_connector.budget.task_pose_connection_attempts
+                    else connection_limit
                 ),
                 "complete_trajectory": task_complete,
                 "failure_reason": task_reason,
@@ -1808,6 +1839,11 @@ def run_layout_single_carton_audit(
     ]
     successful_tasks = sum(task["complete_trajectory"] for task in tasks)
     statistics = {
+        **{key: sum(task.get("candidate_schedule", {}).get(key, 0) for task in tasks)
+           for key in ("generated_candidate_count", "unique_candidates_evaluated", "total_attempt_count",
+                       "retry_count", "actual_complete_connection_attempt_count", "remaining_unsearched_count")},
+        "candidate_count_scope": "GENERATED_POOLS_ONLY_NOT_UNENUMERATED_TASKS",
+        "unenumerated_task_count": sum("candidate_schedule" not in task for task in tasks),
         "task_count": len(tasks),
         "task_success_count": successful_tasks,
         "candidate_pose_attempts": len(attempts),
@@ -1818,16 +1854,18 @@ def run_layout_single_carton_audit(
         "ik_iterations_consumed": sum(int(item["iterations_consumed"]) for item in streams),
         "ik_converged_pose_results": sum(int(item["converged_pose_results"]) for item in streams),
         "ik_valid_solutions": sum(int(item["valid_solutions"]) for item in streams),
-        "ik_deduplicated_candidates": sum(int(item["deduplicated_candidates"]) for item in streams),
+        "ik_deduplicated_candidates": sum(task["strict_grasp_candidate_count"] for task in tasks),
+        "ik_deduplicated_candidate_records": sum(int(item["deduplicated_candidates"]) for item in streams),
+        "ik_stream_count_scope": "SUM_OF_ATTEMPT_STREAM_RECORDS_NOT_GLOBAL_UNIQUE_SOLUTIONS",
         "path_connection_attempts": sum(int(item["path_connection_attempts"]) for item in attempts),
         "trajectory_pose_attempts": sum(
             int(task.get("trajectory_pose_attempts", 0)) for task in tasks
         ),
-        "trajectory_pose_attempt_budget_scope": "three_bounded_rounds_of_distinct_pose_families",
+        "trajectory_pose_attempt_budget_scope": SCHEDULE_MODE,
         "trajectory_pose_attempt_limit_per_task": (
             None
             if trajectory_connector is None
-            else 3 * trajectory_connector.budget.task_pose_connection_attempts
+            else trajectory_connector.budget.task_complete_connection_attempt_limit
         ),
         "trajectory_ik_calls": sum(int(item.get("ik_calls", 0)) for item in trajectory_statistics),
         "trajectory_ik_seeds_attempted": sum(

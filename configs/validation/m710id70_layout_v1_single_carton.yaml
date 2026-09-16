@@ -31,6 +31,8 @@ search_strategy:
   maximum_drop_m: 0.05
   # Receiver-only robustness after observed lip friction; not a robot margin or motion station.
   receiver_edge_reserve_m: 0.01
+  # Evaluation cap, not an enumeration prefix. The connector's separate
+  # 3 x 12 total-attempt/complete-connection cap remains 36 by default.
   grasp_poses_per_task: 48
   face_height_transition_m: 0.35
   placement_candidates: 12
