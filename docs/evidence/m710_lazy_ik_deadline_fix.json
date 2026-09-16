@@ -1,0 +1,246 @@
+{
+  "schema": "m710_lazy_ik_deadline_fix_v1",
+  "baseline_commit": "934da38ae62b60714eb9af1c014437f3f5633878",
+  "branch": "feat/v0.5-feasibility-core",
+  "initial_local_worktree": "clean",
+  "server_directory": "/root/autodl-tmp/m710-lazy-ik-deadline-fix-20260916",
+  "environment": {
+    "python": "3.12.3",
+    "pinocchio": "4.1.0",
+    "coal": "3.0.3"
+  },
+  "before": {
+    "first_connection_completed_monotonic": 100.2,
+    "stream_original_deadline": 106.0,
+    "optional_deadline": 103.0,
+    "solve_calls": [
+      {
+        "stage": "pregrasp",
+        "outer_deadline": 106.0,
+        "solver_deadline": 106.0,
+        "started": 100.0,
+        "stopped": 100.2,
+        "reason": "converged"
+      },
+      {
+        "stage": "pregrasp",
+        "outer_deadline": 103.0,
+        "solver_deadline": 106.0,
+        "started": 100.2,
+        "stopped": 106.0,
+        "reason": "shared wall-clock deadline reached"
+      },
+      {
+        "stage": "pregrasp",
+        "outer_deadline": 103.0,
+        "solver_deadline": 106.0,
+        "started": 106.0,
+        "stopped": 106.0,
+        "reason": "shared wall-clock deadline reached"
+      },
+      {
+        "stage": "pregrasp",
+        "outer_deadline": 103.0,
+        "solver_deadline": 106.0,
+        "started": 106.0,
+        "stopped": 106.0,
+        "reason": "shared wall-clock deadline reached"
+      }
+    ],
+    "stream": {
+      "policy": "lazy_distinct_valid_solutions",
+      "seed_pool_available": 4,
+      "explicit_seed_count": 2,
+      "random_restart_count": 2,
+      "seeds_attempted": 4,
+      "last_seed_index": 3,
+      "iterations_per_seed_available": 20,
+      "iteration_capacity_available": 80,
+      "iteration_capacity_for_attempted_seeds": 80,
+      "iterations_consumed": 16,
+      "converged_pose_results": 1,
+      "valid_solutions": 1,
+      "deduplicated_candidates": 1,
+      "duplicate_candidates": 0,
+      "candidate_limit": 3,
+      "dedup_tolerance_rad": 0.001,
+      "dedup_tolerance_m": 0.0001,
+      "seed_stream_exhausted": true,
+      "termination": "SEED_STREAM_EXHAUSTED"
+    },
+    "parent_deadline_restored": 106.0,
+    "first_connection_retained": true,
+    "connection_validation_level": "B_STRICT_LOCAL_CONNECTION",
+    "optional_comparison": {
+      "started_monotonic": 100.2,
+      "finished_monotonic": 106.0,
+      "skip_reason": "NECESSARY_CONTINUATION_RESERVE",
+      "fallback_to_verified": false
+    },
+    "terminal_checks_count": 0,
+    "terminal_check_times": [],
+    "approach_completed": false,
+    "approach_failure": {
+      "reason": "PLANNING_WALL_CLOCK_DEADLINE",
+      "stage": "contact"
+    },
+    "context_restored": true,
+    "selected_q": null
+  },
+  "after": {
+    "first_connection_completed_monotonic": 100.2,
+    "stream_original_deadline": 106.0,
+    "optional_deadline": 103.0,
+    "solve_calls": [
+      {
+        "stage": "pregrasp",
+        "outer_deadline": 106.0,
+        "solver_deadline": 106.0,
+        "started": 100.0,
+        "stopped": 100.2,
+        "reason": "converged"
+      },
+      {
+        "stage": "pregrasp",
+        "outer_deadline": 103.0,
+        "solver_deadline": 103.0,
+        "started": 100.2,
+        "stopped": 103.0,
+        "reason": "shared wall-clock deadline reached"
+      },
+      {
+        "stage": "contact",
+        "outer_deadline": 106.0,
+        "solver_deadline": 106.0,
+        "started": 103.0,
+        "stopped": 103.1,
+        "reason": "converged"
+      },
+      {
+        "stage": "contact",
+        "outer_deadline": 106.0,
+        "solver_deadline": 106.0,
+        "started": 103.1,
+        "stopped": 103.19999999999999,
+        "reason": "converged"
+      }
+    ],
+    "stream": {
+      "policy": "lazy_distinct_valid_solutions",
+      "seed_pool_available": 4,
+      "explicit_seed_count": 2,
+      "random_restart_count": 2,
+      "seeds_attempted": 2,
+      "last_seed_index": 1,
+      "iterations_per_seed_available": 20,
+      "iteration_capacity_available": 80,
+      "iteration_capacity_for_attempted_seeds": 40,
+      "iterations_consumed": 6,
+      "converged_pose_results": 1,
+      "valid_solutions": 1,
+      "deduplicated_candidates": 1,
+      "duplicate_candidates": 0,
+      "candidate_limit": 3,
+      "dedup_tolerance_rad": 0.001,
+      "dedup_tolerance_m": 0.0001,
+      "seed_stream_exhausted": false,
+      "termination": "PLANNING_WALL_CLOCK_DEADLINE",
+      "parent_deadline_monotonic": 106.0,
+      "effective_deadline_monotonic": 106.0,
+      "last_solve_deadline_monotonic": 103.0,
+      "last_deadline_stop": {
+        "deadline_monotonic": 103.0,
+        "stopped_monotonic": 103.0,
+        "seeds_attempted": 2
+      }
+    },
+    "parent_deadline_restored": 106.0,
+    "first_connection_retained": true,
+    "connection_validation_level": "B_STRICT_LOCAL_CONNECTION",
+    "optional_comparison": {
+      "started_monotonic": 100.2,
+      "finished_monotonic": 103.0,
+      "skip_reason": null,
+      "termination": "PLANNING_WALL_CLOCK_DEADLINE",
+      "fallback_to_verified": true
+    },
+    "terminal_checks_count": 23,
+    "terminal_check_times": [
+      103.1,
+      103.19999999999999
+    ],
+    "approach_completed": true,
+    "approach_failure": null,
+    "context_restored": true,
+    "selected_q": [
+      0.0,
+      0.0,
+      -0.0222,
+      0.0,
+      0.0,
+      0.4
+    ]
+  },
+  "test_runs": {
+    "baseline_existing": {
+      "command": "python -m pytest -q tests/test_feasible_result_budget.py::test_second_connection_cannot_spend_terminal_contact_budget tests/test_feasible_result_budget.py::test_official_local_connection_contact_and_retention",
+      "result": "2 passed in 0.77s"
+    },
+    "baseline_new": {
+      "command": "python -m pytest -q --basetemp=\"$FIX/baseline-verification\" tests/test_lazy_ik_deadline.py::test_started_second_ik_stops_in_optional_window_and_contact_completes tests/test_lazy_ik_deadline.py::test_real_solver_rejects_last_uninterruptible_call_overrun",
+      "result": "7 failed in 0.21s"
+    },
+    "after_focused": {
+      "command": "python -m pytest -q --basetemp=\"$FIX/after-verification\" tests/test_lazy_ik_deadline.py tests/test_feasible_result_budget.py::test_second_connection_cannot_spend_terminal_contact_budget tests/test_feasible_result_budget.py::test_lookahead_caps_cannot_borrow_final_reserve tests/test_feasible_result_budget.py::test_contact_failure_never_becomes_complete_approach tests/test_feasible_result_budget.py::test_budget_scope_restores_parent tests/test_feasible_result_budget.py::test_official_local_connection_contact_and_retention tests/test_motion_quality.py::test_connection_compares_two_feasible_paths_and_selects_lower_soft_cost tests/test_lookahead_contact.py tests/test_v3_search_accounting.py::test_lazy_ik_stream_continues_after_converged_invalid_solution tests/test_v3_search_accounting.py::test_near_duplicate_does_not_consume_lazy_candidate_limit tests/test_kinematics.py::test_ik_accepts_solution_reached_on_final_update",
+      "result": "44 passed in 1.94s"
+    },
+    "python_executable": "/root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python",
+    "environment_setup": "FIX=/root/autodl-tmp/m710-lazy-ik-deadline-fix-20260916; cd $FIX; export PYTHONPATH=$FIX/src"
+  },
+  "official_near_contact": {
+    "status": "CHECKED_NEXT_CONTACT_CONNECTION",
+    "validation_level": "C_COMPLETE_APPROACH",
+    "execution_ready": false,
+    "commanded_active_count": 40,
+    "endpoint_failures": [
+      null
+    ],
+    "actual_checks": "official FK/IK/Coal collision/full seal rings/free and contact edges",
+    "optional_injection": "clock advanced to shortcut deadline after original bounded shortcut",
+    "isaac_executed": false
+  },
+  "evidence_scope": {
+    "core_reproduction": "Real _approach/_connect_pose/_ik_stream/IKCandidateStream and production edge checks; synthetic translation robot, injected state validator and timed solve_ik boundary. No replacement stream. Absolute values are controlled test clock seconds, not physical simulation time or performance measurements.",
+    "real_numeric_tests": "Real solve_ik DLS/FK/Jacobian arithmetic on a one-axis linear robot; injected clock advances at FK, Jacobian, numpy.linalg.solve, normal/final endpoint. Live deadline tightens inside an actual iteration. Six late calls return at 101.25 for deadline 101 and must fail closed.",
+    "other_regressions": "Scope normal/StopIteration/failure/exception restoration; zero/fixed/None deadlines; multi-seed dedup/rejection/timeout with retained cursor; better candidate selection; contact failure; existing lookahead single/cumulative caps and mask/target context isolation.",
+    "not_verified": [
+      "Isaac execution",
+      "complete physical task",
+      "execution preflight",
+      "new scene stress test",
+      "full pytest or historical populations",
+      "video"
+    ]
+  },
+  "source_fingerprints": {
+    "normalization": "CRLF to LF, matching Git stored source",
+    "baseline": {
+      "baseline_source/ik.py": "8eb215b6e1d51bffd8450cdcf5099c704297f3367edd57324035c033d810beac",
+      "baseline_source/layout_trajectory.py": "d990481bc048fa1d38897ec208c26456df14b9d2c465e72abaf018d7b543e332"
+    },
+    "tested": {
+      "src/unloading_sim/ik.py": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5",
+      "src/unloading_sim/layout_trajectory.py": "373849fbc1422c4ab42c58707d9e0cf0f494a5d6d9177e1e7db97066065a08a6",
+      "tests/test_lazy_ik_deadline.py": "ab92fcfc0498862faf4cd4ec6ab49b62732e22a4a5f2221f3dcbdf493d70a880"
+    }
+  },
+  "runtime_implementation_source_sha256": {
+    "src/unloading_sim/ik.py": "05d6051de34f464424b7af2643442bbf73a41c0d2083f64e56578d87f6bcb496",
+    "src/unloading_sim/layout_trajectory.py": "373849fbc1422c4ab42c58707d9e0cf0f494a5d6d9177e1e7db97066065a08a6"
+  },
+  "server_log_sha256": {
+    "baseline_existing.log": "15c68ce6c0990c127ab70192a9c1d89d8373746169ec74ca5e1bf702f7694b71",
+    "baseline_tests.log": "2974c93c65a923475bc0b779931373ca5355bec62b279c316f79d07c656acc55",
+    "focused_tests.log": "8b88ccb06158d5eeae3399bbffb4a990b57e41593673184b6f5b5fbc5ccab432"
+  }
+}

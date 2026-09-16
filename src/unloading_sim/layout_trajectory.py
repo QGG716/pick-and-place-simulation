@@ -1506,6 +1506,8 @@ class LayoutTrajectoryConnector:
             extra_state_valid=endpoint_valid,
             collision_check_stride=int(self.ik["max_iterations"]) + 1,
             deadline_monotonic=self._deadline_monotonic,
+            deadline_provider=lambda: self._limit(self._deadline_monotonic,
+                getattr(self, "_request_deadline_monotonic", None)),
         )
         return stream
 
@@ -1654,13 +1656,16 @@ class LayoutTrajectoryConnector:
             "termination": termination,
             "validation_level": "B_STRICT_LOCAL_CONNECTION" if selected is not None else "A_UNVERIFIED_GEOMETRY",
             "improvement_deadline_monotonic": improvement_deadline,
-            "optional_comparison_skipped": bool(feasible and len(attempts) == 1),
+            "optional_comparison_skipped": bool(feasible and improvement_started is None),
             "optional_comparison": {
                 "started_monotonic": improvement_started,
                 "finished_monotonic": None if improvement_started is None else perf_counter(),
-                "skip_reason": ("NECESSARY_CONTINUATION_RESERVE" if feasible and len(attempts) == 1
+                "skip_reason": ("NECESSARY_CONTINUATION_RESERVE" if feasible and improvement_started is None
                     and improvement_deadline is not None and perf_counter() >= improvement_deadline else None),
-                "fallback_to_verified": bool(feasible and len(attempts) > len(feasible)),
+                "termination": (stream_evidence.get("termination") if improvement_started is not None else None),
+                "fallback_to_verified": bool(feasible and (len(attempts) > len(feasible)
+                    or (improvement_started is not None
+                        and stream_evidence.get("termination") == "PLANNING_WALL_CLOCK_DEADLINE"))),
             },
         }
 

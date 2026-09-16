@@ -24,6 +24,13 @@ class IKResult:
     search_evidence: dict = field(default_factory=dict)
 
 
+def _effective_deadline(deadline, provider=None):
+    """A live scope can tighten, but cannot extend the original numeric cap."""
+    current = None if provider is None else provider()
+    limits = [value for value in (deadline, current) if value is not None]
+    return min(limits) if limits else None
+
+
 class IKCandidateStream:
     """Lazily continue one deterministic seed stream and yield distinct solutions."""
 
@@ -40,6 +47,7 @@ class IKCandidateStream:
         candidate_limit: int | None = None,
         dedup_tolerance_rad: float = 1e-3,
         dedup_tolerance_m: float = 1e-4,
+        deadline_provider: Callable[[], float | None] | None = None,
         **kwargs,
     ) -> None:
         self.robot = robot
@@ -47,6 +55,10 @@ class IKCandidateStream:
         self.obstacles = obstacles
         self.ignored_obstacle_names = ignored_obstacle_names
         self.kwargs = kwargs
+        self._parent_deadline = kwargs.get("deadline_monotonic")
+        self._deadline_provider = deadline_provider
+        self.last_solve_deadline = None
+        self.last_deadline_stop = None
         self.explicit_seed_count = len(seeds)
         self.random_restart_count = int(random_restarts)
         generator = rng or np.random.default_rng(0)
@@ -70,6 +82,23 @@ class IKCandidateStream:
     def __iter__(self):
         return self
 
+    def effective_deadline(self):
+        return _effective_deadline(self._parent_deadline, self._deadline_provider)
+
+    def _check_deadline(self, *, result=None):
+        deadline = self.effective_deadline()
+        stopped = perf_counter()
+        solver_timed_out = result is not None and result.message.startswith("shared wall-clock deadline")
+        if solver_timed_out or (deadline is not None and stopped >= deadline):
+            self.termination = "PLANNING_WALL_CLOCK_DEADLINE"
+            self.last_deadline_stop = {
+                "deadline_monotonic": (result.search_evidence.get("deadline_monotonic", deadline)
+                                       if solver_timed_out else deadline),
+                "stopped_monotonic": stopped,
+                "seeds_attempted": self.seed_index,
+            }
+            raise StopIteration
+
     def __next__(self) -> IKResult:
         if self.candidate_limit is not None and len(self.solutions) >= self.candidate_limit:
             self.termination = "IK_CANDIDATE_LIMIT_REACHED"
@@ -77,15 +106,19 @@ class IKCandidateStream:
         position_tolerance = float(self.kwargs.get("position_tolerance", 0.008))
         orientation_tolerance = float(self.kwargs.get("orientation_tolerance", 0.06))
         while self.seed_index < len(self.seeds):
+            self._check_deadline()  # Do not consume an unstarted seed.
+            effective = self.effective_deadline()
             seed = self.seeds[self.seed_index]
             self.seed_index += 1
+            self.last_solve_deadline = effective
             result = solve_ik(
                 self.robot,
                 self.target,
                 seed,
                 obstacles=self.obstacles,
                 ignored_obstacle_names=self.ignored_obstacle_names,
-                **self.kwargs,
+                **{**self.kwargs, "deadline_monotonic": effective},
+                deadline_provider=self.effective_deadline,
             )
             self.iterations_consumed += result.iterations
             converged = (
@@ -99,13 +132,17 @@ class IKCandidateStream:
                     self.best_failure.position_error + 0.25 * self.best_failure.orientation_error
                 ):
                     self.best_failure = result
+                self._check_deadline(result=result)
                 continue
-            self.valid_solutions += 1
-            if any(joint_solutions_equivalent(
+            self._check_deadline(result=result)
+            duplicate = any(joint_solutions_equivalent(
                 self.robot, result.q, prior,
                 revolute_tolerance_rad=self.dedup_tolerance_rad,
                 prismatic_tolerance_m=self.dedup_tolerance_m,
-            ) for prior in self.solutions):
+            ) for prior in self.solutions)
+            self._check_deadline()
+            self.valid_solutions += 1
+            if duplicate:
                 self.duplicate_candidates += 1
                 continue
             self.solutions.append(result.q.copy())
@@ -140,6 +177,10 @@ class IKCandidateStream:
             "dedup_tolerance_m": self.dedup_tolerance_m,
             "seed_stream_exhausted": self.seed_index >= len(self.seeds),
             "termination": self.termination,
+            "parent_deadline_monotonic": self._parent_deadline,
+            "effective_deadline_monotonic": self.effective_deadline(),
+            "last_solve_deadline_monotonic": self.last_solve_deadline,
+            "last_deadline_stop": None if self.last_deadline_stop is None else dict(self.last_deadline_stop),
         }
 
 
@@ -203,19 +244,38 @@ def solve_ik(
     collision_margin: float = 0.015,
     extra_state_valid: Callable[[np.ndarray], bool] | None = None,
     deadline_monotonic: float | None = None,
+    deadline_provider: Callable[[], float | None] | None = None,
 ) -> IKResult:
-    q = robot.clamp(np.asarray(seed, dtype=float).copy())
+    q = np.asarray(seed, dtype=float).copy()
     obstacles = list(obstacles or [])
     last_pos = float("inf")
     last_ori = float("inf")
 
+    def expired(iterations: int) -> IKResult | None:
+        deadline = _effective_deadline(deadline_monotonic, deadline_provider)
+        stopped = perf_counter()
+        if deadline is not None and stopped >= deadline:
+            return IKResult(False, q, iterations, last_pos, last_ori,
+                            "shared wall-clock deadline reached", {
+                                "deadline_monotonic": deadline,
+                                "stopped_monotonic": stopped,
+                            })
+        return None
+
+    if (timeout := expired(0)) is not None:
+        return timeout
+    q = robot.clamp(q)
     weights = np.diag([position_weight] * 3 + [orientation_weight] * 3)
     for iteration in range(1, max_iterations + 1):
-        if deadline_monotonic is not None and perf_counter() >= deadline_monotonic:
-            return IKResult(False, q, iteration - 1, last_pos, last_ori, "shared wall-clock deadline reached")
+        if (timeout := expired(iteration - 1)) is not None:
+            return timeout
         current = robot.fk(q)
+        if (timeout := expired(iteration)) is not None:
+            return timeout
         err, pos_err, ori_err = pose_error(current, target)
         last_pos, last_ori = pos_err, ori_err
+        if (timeout := expired(iteration)) is not None:
+            return timeout
         if pos_err <= position_tolerance and ori_err <= orientation_tolerance:
             collision_free = not obstacles or robot.is_collision_free(
                 q,
@@ -223,7 +283,12 @@ def solve_ik(
                 margin=collision_margin,
                 ignored_obstacle_names=ignored_obstacle_names,
             )
-            if collision_free and (extra_state_valid is None or extra_state_valid(q)):
+            if (timeout := expired(iteration)) is not None:
+                return timeout
+            posture_valid = collision_free and (extra_state_valid is None or extra_state_valid(q))
+            if (timeout := expired(iteration)) is not None:
+                return timeout
+            if posture_valid:
                 return IKResult(True, q, iteration, pos_err, ori_err, "converged")
             # This optimizer has no obstacle gradient. Once the primary
             # residual is zero, repeating identical updates cannot leave a
@@ -231,14 +296,22 @@ def solve_ik(
             return IKResult(False, q, iteration, pos_err, ori_err, "converged pose violates collision or task constraint")
 
         j = robot.geometric_jacobian(q)
+        if (timeout := expired(iteration)) is not None:
+            return timeout
         jw = weights @ j
         ew = weights @ err
         # DLS: dq = J^T (J J^T + lambda^2 I)^-1 e
         lhs = jw @ jw.T + (damping * damping) * np.eye(6)
+        if (timeout := expired(iteration)) is not None:
+            return timeout
         try:
             dq = jw.T @ np.linalg.solve(lhs, ew)
         except np.linalg.LinAlgError:
+            if (timeout := expired(iteration)) is not None:
+                return timeout
             dq = jw.T @ np.linalg.pinv(lhs) @ ew
+        if (timeout := expired(iteration)) is not None:
+            return timeout
 
         norm = float(np.linalg.norm(dq))
         if norm > max_step:
@@ -249,13 +322,22 @@ def solve_ik(
         # nonredundant six-axis robot.
         center = np.mean(robot.joint_limits, axis=1)
         span = np.maximum(robot.joint_limits[:, 1] - robot.joint_limits[:, 0], 1e-6)
-        if len(q) > np.linalg.matrix_rank(jw):
+        if (timeout := expired(iteration)) is not None:
+            return timeout
+        rank = np.linalg.matrix_rank(jw)
+        if (timeout := expired(iteration)) is not None:
+            return timeout
+        if len(q) > rank:
             null = np.eye(len(q)) - np.linalg.pinv(jw, rcond=1e-10) @ jw
+            if (timeout := expired(iteration)) is not None:
+                return timeout
             dq += null @ (0.015 * (center - q) / span)
         norm = float(np.linalg.norm(dq))
         if norm > max_step:
             dq *= max_step / norm
         candidate = robot.clamp(q + dq)
+        if (timeout := expired(iteration)) is not None:
+            return timeout
 
         # During IK, reject gross collision excursions periodically.  This is
         # not a full constrained optimizer, but greatly improves restart quality.
@@ -266,7 +348,11 @@ def solve_ik(
                 margin=collision_margin,
                 ignored_obstacle_names=ignored_obstacle_names,
             )
+            if (timeout := expired(iteration)) is not None:
+                return timeout
             posture_valid = extra_state_valid is None or extra_state_valid(candidate)
+            if (timeout := expired(iteration)) is not None:
+                return timeout
             if not collision_free or not posture_valid:
                 candidate = robot.clamp(q + 0.25 * dq)
         q = candidate
@@ -275,7 +361,14 @@ def solve_ik(
     # enters tolerance on the final permitted update must still receive the
     # same collision and task-state validation; otherwise it is incorrectly
     # reported as a failure and its stored errors refer to the previous q.
-    _, last_pos, last_ori = pose_error(robot.fk(q), target)
+    if (timeout := expired(max_iterations)) is not None:
+        return timeout
+    current = robot.fk(q)
+    if (timeout := expired(max_iterations)) is not None:
+        return timeout
+    _, last_pos, last_ori = pose_error(current, target)
+    if (timeout := expired(max_iterations)) is not None:
+        return timeout
     if last_pos <= position_tolerance and last_ori <= orientation_tolerance:
         collision_free = not obstacles or robot.is_collision_free(
             q,
@@ -283,7 +376,12 @@ def solve_ik(
             margin=collision_margin,
             ignored_obstacle_names=ignored_obstacle_names,
         )
-        if collision_free and (extra_state_valid is None or extra_state_valid(q)):
+        if (timeout := expired(max_iterations)) is not None:
+            return timeout
+        posture_valid = collision_free and (extra_state_valid is None or extra_state_valid(q))
+        if (timeout := expired(max_iterations)) is not None:
+            return timeout
+        if posture_valid:
             return IKResult(
                 True,
                 q,
