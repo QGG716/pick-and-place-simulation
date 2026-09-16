@@ -11,7 +11,8 @@ from tools import run_m710_contact_unloading as runner
 
 def setup_planner(monkeypatch, tmp_path, *, ready=True):
     calls = {}
-    result = {"complete_trajectory_status": "PASS", "statistics": {"task_count": 1}}
+    result = {"complete_trajectory_status": "PASS", "statistics": {"task_count": 1},
+              "planning_performance": {"planning_total_wall_seconds": .1}}
     def plan(policy, **kwargs):
         calls["plan"] = (policy, kwargs)
         kwargs["progress_callback"]({"target": "opaque-box", "trajectory_success": True})
@@ -28,7 +29,13 @@ def setup_planner(monkeypatch, tmp_path, *, ready=True):
     monkeypatch.setattr(runner, "write_layout_single_carton_audit", write)
     monkeypatch.setattr("unloading_sim.m710_execution.build_m710_execution_preflight", preflight)
     monkeypatch.setattr("unloading_sim.m710_execution.write_m710_execution_preflight", write)
-    monkeypatch.setattr(runner.subprocess, "run", lambda command, **kwargs: calls.update(export=(command, kwargs)))
+    def export(command, **kwargs):
+        calls.update(export=(command, kwargs))
+        from pathlib import Path
+        Path(command[-1]).write_text("{}")
+    monkeypatch.setattr(runner.subprocess, "run", export)
+    monkeypatch.setattr("unloading_sim.m710_replay_contract.verify_m710_replay_bundle",
+                        lambda *a, **k: {"status": "TEST_WIRING_ONLY"})
     return calls, result
 
 
@@ -49,7 +56,8 @@ def test_actual_state_is_passed_through_to_planning_and_preflight(monkeypatch, t
     source = tmp_path / "actual.json"
     source.write_text(json.dumps(actual), encoding="utf-8")
     initial = SimpleNamespace(cartons=(), support_graph=None)
-    actual_scene = SimpleNamespace(policy=object(), snapshot={"scene_fingerprint": "actual-snapshot"})
+    actual_scene = SimpleNamespace(policy=SimpleNamespace(data={"search_strategy": {}}),
+                                   snapshot={"scene_fingerprint": "actual-snapshot"})
     monkeypatch.setattr(runner, "build_verified_motion_input", lambda policy: initial)
     def apply(scene, state, **kwargs):
         assert scene is initial

@@ -2693,7 +2693,7 @@ class LayoutTrajectoryConnector:
     def _finish_place_branch(self, *, target, face, requested_virtual_contact, home_q,
             contact_q, physical_contact, rigid, attachment, selection, pregrasp, contact,
             support_release, extraction, released_tracker, payload_obstacles, placement,
-            selected_supports, trace, seed, release_height=0., transit_hint=None):
+            selected_supports, trace, seed, release_height=0., transit_hint=None, history_hint=None):
         desired_box = placement.payload.world_from_local.copy()
         desired_box[2, 3] += release_height
         support_z = float(np.min(placement.payload.corners()[:, 2]))
@@ -2720,7 +2720,15 @@ class LayoutTrajectoryConnector:
         preplace_physical[2, 3] += max(0., receiver_clearance - release_height)
         preplace_virtual = self.virtual_from_physical(preplace_physical)
         transit = []
-        if transit_hint:
+        place_virtual = self.virtual_from_physical(desired_physical)
+        if history_hint is not None:
+            from .history_adaptation import loaded_suffix
+            transit, history_place, failure = loaded_suffix(self, history_hint, extraction,
+                preplace_virtual, place_virtual, payload_obstacles, attachment, support_contact_names)
+            if failure is not None:
+                return None, failure, trace
+            local_evidence = {"source": "HISTORY_NODES_NEW_ATTACHMENT_FULL_EDGE_RECHECK"}
+        if history_hint is None and transit_hint:
             suffix, reuse_failure, local_evidence = self._cartesian(
                 transit_hint[-1], preplace_virtual, payload_obstacles, seed=seed + 54,
                 attachment=attachment, stage="transit")
@@ -2748,16 +2756,18 @@ class LayoutTrajectoryConnector:
         if preplace_q is None or failure is not None:
             return None, failure, trace
 
-        place_virtual = self.virtual_from_physical(desired_physical)
-        place, failure, evidence = self._cartesian(
-            preplace_q,
-            place_virtual,
-            payload_obstacles,
-            seed=seed + 80,
-            attachment=attachment,
-            support_names=support_contact_names,
-            stage="place",
-        )
+        if history_hint is not None:
+            place, failure, evidence = history_place, None, {"source": "CURRENT_ATTACHMENT_RECEIVER_IK_AND_EDGE_RECHECK"}
+        else:
+            place, failure, evidence = self._cartesian(
+                preplace_q,
+                place_virtual,
+                payload_obstacles,
+                seed=seed + 80,
+                attachment=attachment,
+                support_names=support_contact_names,
+                stage="place",
+            )
         trace["stages"]["place"] = evidence
         if failure is not None:
             return None, failure, trace
@@ -2842,9 +2852,14 @@ class LayoutTrajectoryConnector:
         if not transport_support["accepted"]:
             return None, {"reason": transport_support["reason"], "stage": "place",
                           "transport_support": transport_support}, trace
-        withdrawal, failure, escape_audit = self._departure(
-            place[-1], placed, payload_obstacles, direction, seed=seed + 90,
-            working_normal=place_physical[:3, 2], release_prediction=release_prediction)
+        if history_hint is not None:
+            from .history_adaptation import checked_departure
+            withdrawal, failure, escape_audit = checked_departure(self, history_hint,
+                place[-1], placed, payload_obstacles, direction, release_prediction)
+        else:
+            withdrawal, failure, escape_audit = self._departure(
+                place[-1], placed, payload_obstacles, direction, seed=seed + 90,
+                working_normal=place_physical[:3, 2], release_prediction=release_prediction)
         trace["stages"]["withdrawal"] = escape_audit
         if failure is not None:
             return None, failure, trace
@@ -2928,6 +2943,11 @@ class LayoutTrajectoryConnector:
             "release_index": int(release_index),
             "release_retreat_index": int(release_retreat_index),
         }
+        if history_hint is not None:
+            segment["history"] = deepcopy(trace["history"])
+            segment["history"].update(new_release_q_rad=place[-1].tolist(),
+                new_release_box_pose_world=placed.world_from_local.tolist(),
+                validation_inherited=False, all_required_stages_rechecked=True)
         failure = self._finalize_task(segment, [*payload_obstacles, target], target)
         if failure is not None:
             return None, failure, trace
@@ -2941,6 +2961,9 @@ class LayoutTrajectoryConnector:
         started = perf_counter()
         self._candidate_final_deadline = self._limit(
             getattr(self, "_request_deadline_monotonic", outer), started + allowance)
+        if kwargs.get("history_hint") is not None:
+            # History's share cannot borrow the ordinary-search/final reserve.
+            self._candidate_final_deadline = self._limit(self._candidate_final_deadline, outer)
         self._deadline_monotonic = self._limit(outer, self._candidate_final_deadline)
         self._completed_tasks.clear()
         event_start = len(self._budget_events)
@@ -2989,6 +3012,7 @@ class LayoutTrajectoryConnector:
         support_names: Sequence[str],
         suction: Mapping[str, Any],
         seed: int,
+        history_hint=None,
     ) -> LayoutTrajectorySearchResult:
         """Lazily try strict grasp branches and stop at the first full cycle."""
 
@@ -3018,7 +3042,11 @@ class LayoutTrajectoryConnector:
             self._candidate_identity = hashlib.sha256(repr((candidate.get("candidate_id"), target.name,
                 np.asarray(requested_virtual_contact).tolist(), q.tolist(), home.tolist(), face, suction)).encode()).hexdigest()
             try:
-                segment, failure, trace = self._plan_branch(
+                branch = self._plan_branch
+                if history_hint is not None:
+                    from .history_adaptation import adapt_branch
+                    branch = lambda **values: adapt_branch(self, hint=history_hint, **values)
+                segment, failure, trace = branch(
                     target=target,
                     face=face,
                     requested_virtual_contact=self._se3(

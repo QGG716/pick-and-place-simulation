@@ -71,6 +71,8 @@ EXECUTION_GATE_REASON = "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED"
 PATH_BACKEND_UNAVAILABLE_REASON = "EXECUTION_PATH_BACKEND_UNAVAILABLE"
 TOOL_FRAME_SCHEMA = "m710id70_planner_tool_frames_v1"
 MOTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/history_candidates.py",
+    "src/unloading_sim/history_adaptation.py",
     "src/unloading_sim/contact_scheduler.py",
     "src/unloading_sim/motion_quality.py",
     "src/unloading_sim/release_motion.py",
@@ -461,6 +463,8 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
         raise ValueError("layout v1 forbids lift, conveyor extension/Z optimization, and base scans")
 
     strategy = _mapping(data["search_strategy"], "search_strategy")
+    from .history_candidates import history_policy
+    history_policy(strategy.get("history"))
     _integer(strategy.get("grasp_poses_per_task", 48),
              "search_strategy.grasp_poses_per_task", minimum=1)
     from .post_landing_transport import transport_policy
@@ -1567,6 +1571,18 @@ def run_layout_single_carton_audit(
     pose_index = 0
     candidate_generation_seconds = 0.0
     trajectory_search_seconds = 0.0
+    from .history_candidates import HistorySource, history_policy, evaluate_history
+    history_config = history_policy(strategy.get("history"))
+    if history_config.source is not None and not Path(history_config.source).is_absolute():
+        history_config = replace(history_config, source=str(root / history_config.source))
+    history_started = perf_counter()
+    history_deadline = None
+    if trajectory_connector is not None and history_config.source is not None:
+        remaining_seconds = trajectory_connector._remaining_wall_time()
+        history_deadline = trajectory_connector._limit(trajectory_connector._deadline_monotonic,
+            history_started + min(history_config.wall_time_s, history_config.wall_time_s
+                if remaining_seconds is None else max(0., remaining_seconds)*history_config.request_fraction))
+    history_source = HistorySource(history_config, deadline=history_deadline)
     for task_index, target_name in enumerate(scene.removable_cartons):
         target = cartons_by_name[target_name]
         attempts: list[dict[str, Any]] = []
@@ -1594,13 +1610,24 @@ def run_layout_single_carton_audit(
         pose_cap = int(strategy.get("grasp_poses_per_task", 48))
         connection_limit = (trajectory_connector.budget.task_complete_connection_attempt_limit
                             if trajectory_connector else pose_cap)
+        history_attempts, history_segment = evaluate_history(history_source, scene,
+            trajectory_connector, target, connector_build.evidence, deadline=history_deadline,
+            attempt_limit=max(0, min(pose_cap, connection_limit)//2))
+        attempts.extend(history_attempts)
+        trajectory_pose_attempts += len(history_attempts)
+        trajectory_search_seconds += sum(item["elapsed_s"] for item in history_attempts)
+        if history_segment is not None:
+            selected_trajectory_segment = copy.deepcopy(history_segment)
         scheduler = ContactCandidateScheduler(scheduled_contact_poses, target=target,
             context={"scene_fingerprint": scene.snapshot["scene_fingerprint"],
                      "policy_fingerprint": policy.policy_fingerprint}, request_seed=base_seed,
             batch_size=(trajectory_connector.budget.task_pose_batch_size if trajectory_connector
                         else max(1, len(faces))),
-            attempt_limit=min(pose_cap, connection_limit), complete_connection_limit=connection_limit)
-        while True:
+            attempt_limit=max(0, min(pose_cap, connection_limit)-len(history_attempts)),
+            complete_connection_limit=max(0, connection_limit-len(history_attempts)))
+        if selected_trajectory_segment is not None:
+            scheduler.termination = "HISTORY_COMPLETE_TRAJECTORY_FOUND"
+        while selected_trajectory_segment is None:
             scheduled = scheduler.next_attempt(deadline_reached=(
                 trajectory_connector is not None and trajectory_connector._deadline_reached()))
             if scheduled is None:
@@ -1818,6 +1845,7 @@ def run_layout_single_carton_audit(
                 "strict_grasp_candidate_count": strict_candidates,
                 "strict_grasp_candidate_record_count": strict_candidate_records,
                 "candidate_schedule": scheduler.summary(),
+                "history_attempt_count": len(history_attempts),
                 "trajectory_pose_attempts": trajectory_pose_attempts,
                 "trajectory_pose_attempt_limit": (
                     None
@@ -1844,6 +1872,12 @@ def run_layout_single_carton_audit(
            for key in ("generated_candidate_count", "unique_candidates_evaluated", "total_attempt_count",
                        "retry_count", "actual_complete_connection_attempt_count", "remaining_unsearched_count")},
         "candidate_count_scope": "GENERATED_POOLS_ONLY_NOT_UNENUMERATED_TASKS",
+        "history_attempt_count": sum(task.get("history_attempt_count", 0) for task in tasks),
+        "history_complete_connection_attempt_count": sum(task.get("history_attempt_count", 0) for task in tasks),
+        "combined_actual_attempt_count": len(attempts),
+        "combined_complete_connection_attempt_count": sum(task.get("trajectory_pose_attempts", 0) for task in tasks),
+        "candidate_schedule_statistics_scope": "ORDINARY_QUEUE_ONLY_HISTORY_ATTEMPTS_REPORTED_SEPARATELY",
+        "ordinary_queue_order_unchanged": True,
         "unenumerated_task_count": sum("candidate_schedule" not in task for task in tasks),
         "task_count": len(tasks),
         "task_success_count": successful_tasks,
@@ -1970,6 +2004,10 @@ def run_layout_single_carton_audit(
         },
         "execution_collision_qualification": execution,
         "trajectory_backend": dict(connector_build.evidence),
+        "history_source": history_source.evidence(),
+        "history_compatibility": {"joint_names": list(scene.snapshot["robot"]["joint_names"]),
+            "coordinate_convention": "+X into trailer, +Y left, +Z up; SI",
+            "hints_only": True},
         "tasks": tasks,
         "statistics": statistics,
         "planning_performance": {

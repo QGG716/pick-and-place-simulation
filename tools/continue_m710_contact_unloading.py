@@ -43,6 +43,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--config", default="configs/validation/m710id70_layout_v1_single_carton.yaml")
     parser.add_argument("--execution-config", type=Path)
     parser.add_argument("--reuse-motion", type=Path, help="historical candidate, reused only after current exact recheck")
+    parser.add_argument("--history-source", type=Path, help="controlled historical hint directory")
+    parser.add_argument("--planning-wall-time-s", type=float)
     args = parser.parse_args(argv)
     ready_bytes = args.ready_file.read_bytes()
     ready = json.loads(ready_bytes)
@@ -57,6 +59,10 @@ def main(argv: list[str] | None = None) -> int:
         raise FileExistsError("a continuation request was already submitted")
     actual_path = Path(ready["actual_state_path"]).resolve()
     actual_bytes = actual_path.read_bytes()
+    actual_state = json.loads(actual_bytes)
+    if (ready.get("actual_state_sha256") != hashlib.sha256(actual_bytes).hexdigest()
+            or actual_state.get("world_session_id") != ready.get("world_session_id")):
+        raise ValueError("ready record and actual state identity disagree")
     args.output.mkdir(parents=True, exist_ok=False)
     bundle = (args.output / "replay_bundle.json").resolve()
     command = [sys.executable, str(ROOT / "tools/run_m710_contact_unloading.py"),
@@ -64,21 +70,13 @@ def main(argv: list[str] | None = None) -> int:
                "--output", str(args.output.resolve()), "--execution-bundle", str(bundle)]
     if args.execution_config is not None:
         command += ["--execution-config", str(args.execution_config)]
-    process = None
+    if args.history_source is not None:
+        command += ["--history-source", str(args.history_source)]
+    if args.planning_wall_time_s is not None:
+        command += ["--planning-wall-time-s", str(args.planning_wall_time_s)]
     if args.reuse_motion is not None:
-        reuse_output = args.output / "historical_recheck"
-        reuse_command = [sys.executable, str(ROOT / "tools/reuse_m710_motion.py"),
-                         "--motion", str(args.reuse_motion), "--actual-state", str(actual_path),
-                         "--config", args.config, "--output", str(reuse_output.resolve())]
-        if args.execution_config is not None:
-            reuse_command += ["--execution-config", str(args.execution_config)]
-        reused = subprocess.run(reuse_command, cwd=ROOT, check=False)
-        if reused.returncode == 0:
-            process = subprocess.run([sys.executable, str(ROOT / "scripts/export_isaac_fanuc_replay.py"),
-                "--preflight", str((reuse_output / "preflight.json").resolve()),
-                "--output", str(bundle)], cwd=ROOT, check=False)
-    if process is None:
-        process = subprocess.run(command, cwd=ROOT, check=False)
+        command += ["--reuse-motion", str(args.reuse_motion)]
+    process = subprocess.run(command, cwd=ROOT, check=False)
     if args.ready_file.read_bytes() != ready_bytes or actual_path.read_bytes() != actual_bytes:
         raise RuntimeError("retained world state changed or its wait budget ended during planning")
     request = {"world_session_id": ready["world_session_id"],

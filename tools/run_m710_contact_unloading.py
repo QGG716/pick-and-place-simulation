@@ -27,8 +27,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", default="outputs/m710_contact_unloading_round01")
     parser.add_argument("--approach-mode", choices=("auto", "direct", "adaptive_pregrasp"))
     parser.add_argument("--planning-wall-time-s", type=float)
+    parser.add_argument("--history-source", type=Path, help="controlled nonrecursive directory of JSON motion hints")
+    parser.add_argument("--reuse-motion", type=Path, help="compatibility alias for one historical hint; same planner and budget")
     parser.add_argument("--actual-state", type=Path,
-                        help="actual_remaining_state.json from the still-running physical world")
+                        help="actual_remaining_state.json; archived snapshots support offline planning only")
     parser.add_argument("--execution-config", type=Path,
                         help="optional execution policy paired with the motion --config")
     parser.add_argument("--execution-bundle", type=Path, metavar="JSON",
@@ -39,8 +41,14 @@ def main(argv: list[str] | None = None) -> int:
     start = time.monotonic()
     scene = None
     planning_policy = load_layout_motion_policy(args.config)
-    if args.approach_mode is not None or args.planning_wall_time_s is not None:
+    if args.history_source is not None and args.reuse_motion is not None:
+        raise ValueError("choose one history source")
+    if (args.approach_mode is not None or args.planning_wall_time_s is not None
+            or args.history_source is not None or args.reuse_motion is not None):
         data = copy.deepcopy(planning_policy.data)
+        if args.history_source is not None or args.reuse_motion is not None:
+            data["search_strategy"]["history"] = {**data["search_strategy"].get("history", {}),
+                "source": str((args.history_source or args.reuse_motion).resolve())}
         if args.approach_mode is not None:
             data["search_strategy"]["approach_mode"] = args.approach_mode
         if args.planning_wall_time_s is not None:
@@ -53,7 +61,8 @@ def main(argv: list[str] | None = None) -> int:
     row_state = RowUnloadingState(RowSequencePolicy(
         row_height_fraction=float(strategy.get("row_height_fraction", 0.05))))
     if args.actual_state is not None:
-        actual_state = json.loads(args.actual_state.read_text(encoding="utf-8"))
+        actual_state_bytes = args.actual_state.read_bytes()
+        actual_state = json.loads(actual_state_bytes)
         if not isinstance(actual_state, dict):
             raise ValueError("--actual-state must contain one actual-state JSON object")
         initial_scene = build_verified_motion_input(planning_policy)
@@ -75,17 +84,35 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(summary), flush=True)
         result = run_layout_single_carton_audit(
             planning_policy, progress_callback=progress, motion_input=scene, row_state=row_state)
+    serialize_started = time.monotonic()
     write_layout_single_carton_audit(result, output / "motion.json")
+    delivery = {"planning_seconds": result["planning_performance"]["planning_total_wall_seconds"],
+        "serialization_seconds": time.monotonic()-serialize_started,
+        "preflight_seconds": None, "export_seconds": None, "isaac_executed": False,
+        "actual_state_sha256": None, "archived_or_live_state_not_modified": True}
+    if args.actual_state:
+        import hashlib
+        delivery["actual_state_sha256"] = hashlib.sha256(actual_state_bytes).hexdigest()
+        if args.actual_state.read_bytes() != actual_state_bytes:
+            delivery["status"] = "ACTUAL_STATE_CHANGED_DURING_PLANNING_NO_EXPORT"
+            (output / "delivery.json").write_text(json.dumps(delivery, indent=2), encoding="utf-8")
+            raise RuntimeError("actual state changed during planning; no bundle exported")
     print(json.dumps({"status": result["complete_trajectory_status"], "elapsed_s": time.monotonic() - start,
                       "statistics": result["statistics"]}), flush=True)
     if result["complete_trajectory_status"] == "PASS":
         from unloading_sim.m710_execution import build_m710_execution_preflight, write_m710_execution_preflight
+        preflight_started = time.monotonic()
         preflight = build_m710_execution_preflight(
             args.execution_config, motion_result=result, motion_input=scene)
         write_m710_execution_preflight(preflight, output / "preflight.json")
+        delivery["preflight_seconds"] = time.monotonic()-preflight_started
+        delivery["simulation_execution_ready"] = preflight.get("simulation_execution_ready", False)
+        (output / "delivery.json").write_text(json.dumps(delivery, indent=2), encoding="utf-8")
         print(json.dumps({"preflight": preflight["status"], "blockers": preflight["blockers"]}), flush=True)
         if not preflight.get("simulation_execution_ready", False):
             return 3
+        if args.execution_bundle is None:
+            args.execution_bundle = output / "replay_bundle.json"
         if args.execution_bundle is not None:
             # Reuse the existing verified exporter and its exact bound inputs;
             # do not construct a second representation of the replay contract.
@@ -98,12 +125,29 @@ def main(argv: list[str] | None = None) -> int:
                               for entry in python_path.split(os.pathsep)}
             if os.path.normcase(source_root) not in existing_roots:
                 child_env["PYTHONPATH"] = source_root + (os.pathsep + python_path if python_path else "")
+            export_started = time.monotonic()
             subprocess.run([
                 sys.executable, str(ROOT / "scripts/export_isaac_fanuc_replay.py"),
                 "--preflight", str((output / "preflight.json").resolve()),
                 "--output", str(args.execution_bundle.resolve()),
             ], check=True, cwd=ROOT, env=child_env)
+            delivery["export_seconds"] = time.monotonic()-export_started
+            from unloading_sim.m710_replay_contract import verify_m710_replay_bundle
+            readback_started = time.monotonic()
+            delivery["bundle_readback"] = verify_m710_replay_bundle(
+                json.loads(args.execution_bundle.read_text(encoding="utf-8")), project_root=ROOT)
+            delivery["bundle_readback_seconds"] = time.monotonic()-readback_started
+            delivery["bundle_path"] = str(args.execution_bundle.resolve())
+            register = planning_policy.data["search_strategy"].get("history", {}).get("register_directory")
+            if register:
+                from unloading_sim.history_candidates import register_planned_motion
+                register_path = Path(register)
+                if not register_path.is_absolute():
+                    register_path = planning_policy.project_root / register_path
+                delivery["history_registration"] = register_planned_motion(register_path, result, preflight)
+            (output / "delivery.json").write_text(json.dumps(delivery, indent=2), encoding="utf-8")
         return 0
+    (output / "delivery.json").write_text(json.dumps(delivery, indent=2), encoding="utf-8")
     return 2
 
 

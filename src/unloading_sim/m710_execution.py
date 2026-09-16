@@ -1107,6 +1107,12 @@ def build_m710_execution_preflight(
             for document in (original, effective):
                 for key in ("approach_mode", "planning_wall_time_s"):
                     document.get("search_strategy", {}).pop(key, None)
+                # A configured candidate source grants no collision permission.
+                from .history_candidates import history_policy
+                history = document.get("search_strategy", {}).get("history")
+                history_policy(history)
+                if history is not None:
+                    history.pop("source", None)
             if original != effective:
                 raise ValueError("actual motion input policy mismatch")
         policy = motion_input.policy
