@@ -1,0 +1,23 @@
+{
+  "base_commit": "db1b2997b2516b8a3631f9c941a1b983d143458d",
+  "server_workspace": "/root/autodl-tmp/m710-poc-step1-1-20260917",
+  "python": "/root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python",
+  "baseline_git_blobs": {
+    "src/unloading_sim/layout_single_carton.py": "0321a4d7a3a370a97f96ab9f88c72531c6a5b719",
+    "src/unloading_sim/serial_unloading.py": "354938ba9753ce09c7dff683830ad17a38186e5f"
+  },
+  "tested_git_blobs": {
+    "src/unloading_sim/layout_single_carton.py": "8640f0435c8441ded43a7d2e2471bf87ced7845a",
+    "src/unloading_sim/serial_unloading.py": "8b7a28f429a7723619ba31e9dfc955c00873bb8d",
+    "tests/test_poc_continuation_state.py": "ca5480998282a93f6010751e75bd179187005672"
+  },
+  "test_command": "PYTHONPATH=src $CPU -m pytest -q tests/test_poc_continuation_state.py tests/test_serial_unloading.py tests/test_proof_of_concept.py",
+  "test_result": "41 passed in 3.38s",
+  "before_regression_command": "$CPU -m pytest -q tests/test_poc_continuation_state.py -k 'in_transit_ideal_event_cannot_disappear or reception_source_cannot_be_rewritten'",
+  "before_regression_result": "4 failed, 8 deselected in 0.39s",
+  "before_regression_interpretation": "Four expected failures reproduced missing rejection in the unchanged baseline; these same cases pass after the fix.",
+  "isaac_executed": false,
+  "new_physical_completions": 0,
+  "archive_check": "archive_after.json",
+  "old_report_and_physical_artifacts_modified": false
+}

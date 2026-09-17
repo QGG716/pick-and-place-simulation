@@ -45,6 +45,63 @@ def _identity_set(value: Any, name: str) -> set[str]:
     return result
 
 
+def _reception_event_sets(state, transport_policy, initial_names):
+    """Validate typed identities against reception sources, not a processed flag.
+
+    Physical-only legacy states may omit the two POC fields. An ideal event
+    requires both fields explicitly; missing evidence is never filled back in.
+    """
+    from .post_landing_transport import ideal_transport_ids, RECEPTION_SOURCE
+    actual = _identity_set(state.get("completed_carton_ids", []), "completed_carton_ids")
+    records = state.get("receiver_transport_state", {})
+    if not isinstance(records, Mapping) or any(not isinstance(r, Mapping) for r in records.values()):
+        raise ValueError("receiver transport state must map carton identities to records")
+    transported = ideal_transport_ids(transport_policy, records)
+    assumed = {name for name in transported if records[name].get("completion_source") == RECEPTION_SOURCE}
+    declared_ideal = _identity_set(state.get("ideal_received_ids", []), "ideal_received_ids")
+    if declared_ideal != assumed:
+        raise ValueError("ideal reception counts disagree with event sources")
+    if actual & assumed:
+        raise ValueError("assumed reception must not populate actual completion IDs")
+    processed = actual | assumed
+    if not transported <= processed:
+        raise ValueError("ideal transport must preserve reception completion events")
+    if "processed_carton_ids" in state:
+        if _identity_set(state["processed_carton_ids"], "processed_carton_ids") != processed:
+            raise ValueError("processed identities disagree with reception sources")
+    elif assumed:
+        raise ValueError("ideal reception requires explicit processed_carton_ids")
+    if not processed <= initial_names:
+        raise ValueError("processed events must be a subset of original carton identities")
+    return actual, assumed, processed, transported
+
+
+def validated_processed_carton_ids(scene: FrozenLayoutMotionInput) -> set[str]:
+    """Read workflow progress only from a verified, source-consistent scene."""
+    snapshot = scene.snapshot
+    verify_scene_snapshot(snapshot)
+    context = snapshot.get("actual_state_context")
+    if context is None:
+        return set()
+    sources = {ACTUAL_MOTION_STATE_SCHEMA: ACTUAL_RIGID_BODY_STATE_SOURCE,
+               PLANNED_MOTION_STATE_SCHEMA: CPU_PLANNED_ROLLOUT_SOURCE}
+    if (context.get("schema") not in sources or context.get("source") != sources[context["schema"]]
+            or context.get("completion_source") != "EXPLICIT_EXECUTION_EVENTS_NOT_POSITION_CLASSIFICATION"):
+        raise ValueError("workflow progress requires a validated motion-state source")
+    registry = context.get("initial_carton_registry", snapshot["cartons"])
+    initial = _identity_set([r["name"] for r in registry], "initial carton registry")
+    _, _, processed, _ = _reception_event_sets(context,
+        scene.policy.data.get("search_strategy", {}).get("post_landing_transport"), initial)
+    handed = _identity_set(context.get("handed_off_ids", []), "handed_off_ids")
+    active = _identity_set([r["name"] for r in snapshot["cartons"]], "active carton identities")
+    if not handed <= processed or active != initial - handed:
+        raise ValueError("workflow progress disagrees with active and handed-off identities")
+    if (_identity_set(context.get("remaining_stack_names", []), "remaining_stack_names") != initial - processed
+            or set(scene.remaining_stack_names or ()) != initial - processed):
+        raise ValueError("workflow progress disagrees with remaining stack identities")
+    return processed
+
+
 def rotation_from_actual_quaternion(quaternion_wxyz: Any) -> np.ndarray:
     """Normalize floating-point quaternion drift, reject malformed rotations."""
     q = _vector(quaternion_wxyz, 4, "orientation_wxyz")
@@ -109,31 +166,25 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
     registry = copy.deepcopy(previous.get("initial_carton_registry", snapshot["cartons"]))
     initial_names = _identity_set([record["name"] for record in registry], "initial carton registry")
     definitions = {record["name"]: record for record in registry}
-    completed = _identity_set(state.get("completed_carton_ids", []), "completed_carton_ids")
     handed_off = _identity_set(state.get("handed_off_ids", []), "handed_off_ids")
-    from .post_landing_transport import ideal_transport_ids, OUTFED
+    from .post_landing_transport import OUTFED
     transport_state = copy.deepcopy(state.get("receiver_transport_state", {}))
-    ideal_ids = ideal_transport_ids(scene.policy.data.get("search_strategy", {}).get("post_landing_transport"),
-                                    transport_state)
-    from .post_landing_transport import RECEPTION_SOURCE
-    actual_completed = completed.copy()
-    assumed = {name for name in ideal_ids if transport_state[name].get("completion_source") == RECEPTION_SOURCE}
-    if set(state.get("ideal_received_ids", [])) != assumed:
-        raise ValueError("ideal reception counts disagree with event sources")
-    if assumed & completed:
-        raise ValueError("assumed reception must not populate actual completion IDs")
-    completed |= assumed
-    if not ideal_ids <= completed:
-        raise ValueError("ideal transport must preserve reception completion events")
-    if state.get("processed_carton_ids") is not None and set(state["processed_carton_ids"]) != completed:
-        raise ValueError("processed identities disagree with reception sources")
+    transport_policy = scene.policy.data.get("search_strategy", {}).get("post_landing_transport")
+    actual_completed, assumed, completed, ideal_ids = _reception_event_sets(state, transport_policy, initial_names)
+    previous_actual, previous_ideal, previous_processed, _ = _reception_event_sets(previous, transport_policy, initial_names)
+    if previous_actual & assumed or previous_ideal & actual_completed:
+        raise ValueError("reception event source must not change between actual and ideal")
+    if not previous_actual <= actual_completed:
+        raise ValueError("actual reception events must not regress")
+    if not previous_ideal <= assumed:
+        raise ValueError("ideal reception events must not regress")
+    if not previous_processed <= completed:
+        raise ValueError("processed carton events must not regress")
     ideal_handoffs = {name for name in ideal_ids if transport_state[name]["state"] == OUTFED}
     if ideal_handoffs != handed_off.intersection(ideal_ids):
         raise ValueError("ideal outfeed events and cumulative handoffs disagree")
     if not handed_off <= completed <= initial_names:
         raise ValueError("handoff must be a subset of completed original carton identities")
-    if not set(previous.get("completed_carton_ids", [])) <= completed:
-        raise ValueError("completed carton events must not regress")
     if not set(previous.get("handed_off_ids", [])) <= handed_off:
         raise ValueError("handoff events must not regress or resurrect a carton")
     expected_active = initial_names - handed_off

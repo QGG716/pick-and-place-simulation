@@ -1,0 +1,37 @@
+{
+  "scope": "OFFLINE_ARCHIVE_LOAD_AND_PRODUCTION_CONNECTOR_CONSTRUCTION_ONLY",
+  "archive_path": "/root/autodl-tmp/m710-poc-step1-20260917/outputs/poc_single_world/isaac/actual_remaining_state.json",
+  "archive_sha256": "e5586bce2d5e46a108063fedfb8e9f1316197efc223a6b6653b564ff4ef19194",
+  "archive_unchanged": true,
+  "world_restored": false,
+  "isaac_executed": false,
+  "new_physical_completions": 0,
+  "world_session_id_from_archive": "1789622627.8082964",
+  "completed_carton_ids": [],
+  "ideal_received_ids": [
+    "carton_l07_c02"
+  ],
+  "processed_carton_ids": [
+    "carton_l07_c02"
+  ],
+  "handed_off_ids": [
+    "carton_l07_c02"
+  ],
+  "initial_identity_count": 40,
+  "active_body_count": 39,
+  "remaining_stack_count": 39,
+  "removable_candidates": [
+    "carton_l07_c01",
+    "carton_l07_c03",
+    "carton_l07_c04",
+    "carton_l07_c00"
+  ],
+  "processed_in_remaining_or_candidates": false,
+  "repeated_archive_semantically_idempotent": true,
+  "connector_status": "AVAILABLE",
+  "stage_connection_iterations_before": 600,
+  "stage_connection_iterations_after": 1800,
+  "planning_wall_time_s": null,
+  "candidate_wall_time_s": null,
+  "stage_wall_time_s": null
+}

@@ -1290,6 +1290,9 @@ def _build_automatic_trajectory_connector(
         )
     validity = policy.data["state_validity"]
     strategy = policy.data.get("search_strategy", {})
+    from .serial_unloading import validated_processed_carton_ids
+    is_continuation = (isinstance(scene, FrozenLayoutMotionInput)
+                       and bool(validated_processed_carton_ids(scene)))
     return build_m710_layout_trajectory_connector(
         lightweight_robot=lightweight_robot,
         urdf_path=urdf_path,
@@ -1314,8 +1317,7 @@ def _build_automatic_trajectory_connector(
         radial_guard_tolerance_m=float(validity["radial_guard_tolerance_m"]),
         budget=LayoutTrajectoryBudget(
             stage_connection_iterations=int(strategy.get(
-                "continuation_stage_connection_iterations" if isinstance(scene, FrozenLayoutMotionInput)
-                and scene.snapshot.get("actual_state_context", {}).get("completed_carton_ids")
+                "continuation_stage_connection_iterations" if is_continuation
                 else "stage_connection_iterations", 600)),
             approach_mode=str(strategy.get("approach_mode", "auto")),
             maximum_drop_m=float(strategy.get("maximum_drop_m", 0.05)),

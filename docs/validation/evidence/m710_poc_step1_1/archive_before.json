@@ -1,0 +1,10 @@
+{
+  "base_commit": "db1b2997b2516b8a3631f9c941a1b983d143458d",
+  "status": "AVAILABLE",
+  "actual_received": 0,
+  "ideal_received": 1,
+  "processed": 1,
+  "stage_connection_iterations": 600,
+  "archive_path": "/root/autodl-tmp/m710-poc-step1-20260917/outputs/poc_single_world/isaac/actual_remaining_state.json",
+  "scope": "OFFLINE_ARCHIVE_ONLY_NO_WORLD_RESTORED"
+}
