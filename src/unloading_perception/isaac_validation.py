@@ -576,6 +576,82 @@ class IsaacCaptureBinding:
         }
 
 
+def validate_capture_robot_state(
+    value: Mapping[str, Any] | None, manifest: IsaacSceneManifest, binding: IsaacCaptureBinding,
+) -> dict[str, Any]:
+    """Validate capture-owned readback, never infer velocity from a replay/target.
+
+    ``robot_state`` is an optional additive member of capture binding v1. Old
+    bindings remain usable for images, but do not establish a robot sample.
+    The capture's logical simulation time is preserved, not replaced by wall
+    time or claimed to be the physics engine's integration clock.
+    """
+    if not isinstance(value, Mapping):
+        raise ValueError('missing capture robot_state; velocity is unknown')
+    if value.get('schema_version') != 'isaac_robot_state_v1':
+        raise ValueError('unsupported capture robot_state schema')
+    expected = tuple(manifest.robot['joint_names'])
+    names = tuple(value.get('joint_names', ()))
+    if (not names or any(not isinstance(n, str) or not n for n in names)
+            or len(set(names)) != len(names) or names != expected):
+        raise ValueError('capture robot joint names/order differ from manifest')
+    position = _finite_vector(value.get('position_rad', ()), len(names), 'captured position_rad')
+    velocity = _finite_vector(value.get('velocity_rad_s', ()), len(names), 'captured velocity_rad_s')
+    for key in ('robot_model_identity', 'robot_asset_hash'):
+        if value.get(key) != manifest.robot[key]:
+            raise ValueError(f'capture robot identity differs: {key}')
+    sample_time = value.get('sample_time')
+    if (not isinstance(sample_time, (int, float)) or not isfinite(sample_time) or sample_time <= 0
+            or sample_time != binding.simulation_time
+            or sample_time != manifest.timing['simulation_time']
+            or value.get('simulation_epoch') != binding.simulation_epoch
+            or value.get('simulation_epoch') != manifest.timing['simulation_epoch']
+            or value.get('frame_sequence') != binding.frame_sequence
+            or value.get('frame_sequence') != manifest.timing['simulation_frame']
+            or value.get('manifest_fingerprint') != manifest.manifest_fingerprint
+            or value.get('clock_domain') != 'ros_sim_time'):
+        raise ValueError('capture robot sample identity/time differs from capture binding')
+    if value.get('source') == 'KINEMATIC_HOLD_READBACK':
+        hold = value.get('kinematic_hold')
+        if not isinstance(hold, Mapping) or hold.get('render_without_physics_step') is not True:
+            raise ValueError('missing capture-owned kinematic hold evidence')
+        commanded_q = _finite_vector(hold.get('position_command_rad', ()), len(names), 'hold position')
+        commanded_v = _finite_vector(hold.get('velocity_command_rad_s', ()), len(names), 'hold velocity')
+        if any(v != 0 for v in velocity + commanded_v) or any(abs(a-b) > 1e-6 for a,b in zip(position, commanded_q)):
+            raise ValueError('kinematic hold command/readback mismatch')
+    elif value.get('source') != 'ARTICULATION_READBACK':
+        raise ValueError('robot state is not capture-owned articulation readback')
+    return {**value, 'joint_names': list(names), 'position_rad': list(position), 'velocity_rad_s': list(velocity)}
+
+
+def capture_robot_state_record(manifest, joint_names, positions, velocities, *, kinematic_hold):
+    """Bind explicit acquisition readback to a frame; values must already exist.
+
+    Called by the Isaac capture writer, not by playback. All supplied arrays
+    use articulation DOF order; reorder every array together into manifest order.
+    This records a held simulation state, never controller feedback.
+    """
+    names = tuple(joint_names)
+    expected = tuple(manifest.robot['joint_names'])
+    if len(names) != len(set(names)) or set(names) != set(expected):
+        raise ValueError('readback DOFs differ from manifest')
+    q = _finite_vector(positions, len(names), 'articulation position readback')
+    dq = _finite_vector(velocities, len(names), 'articulation velocity readback')
+    command_q = _finite_vector(kinematic_hold['position_command_rad'], len(names), 'hold command')
+    command_v = _finite_vector(kinematic_hold['velocity_command_rad_s'], len(names), 'hold command velocity')
+    indices = [names.index(n) for n in expected]
+    return {
+        'schema_version': 'isaac_robot_state_v1', 'source': 'KINEMATIC_HOLD_READBACK', 'synthetic_fixture': False,
+        'manifest_fingerprint': manifest.manifest_fingerprint,
+        'robot_model_identity': manifest.robot['robot_model_identity'], 'robot_asset_hash': manifest.robot['robot_asset_hash'],
+        'simulation_epoch': manifest.timing['simulation_epoch'], 'frame_sequence': manifest.timing['simulation_frame'],
+        'sample_time': manifest.timing['simulation_time'], 'clock_domain': 'ros_sim_time',
+        'joint_names': list(expected), 'position_rad': [q[i] for i in indices], 'velocity_rad_s': [dq[i] for i in indices],
+        'kinematic_hold': {**kinematic_hold, 'position_command_rad': [command_q[i] for i in indices],
+                           'velocity_command_rad_s': [command_v[i] for i in indices]},
+    }
+
+
 class HistoricalResultGate:
     """Bind slow vision results to capture history without mutating live state."""
 

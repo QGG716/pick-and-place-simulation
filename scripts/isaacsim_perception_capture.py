@@ -579,6 +579,7 @@ try:
     q = np.asarray(first_manifest.robot["q_rad"], dtype=np.float32)
     command = q[[source_index[name] for name in discovered_names]]
     zero_velocity = np.zeros_like(command)
+    held_joint_sample = {}
 
     def render_at_joint_command(joint_command):
         """Render an exact kinematic sensing state without a gravity step."""
@@ -586,6 +587,22 @@ try:
         articulation.set_dof_velocities(zero_velocity[None, :])
         articulation.set_dof_position_targets(joint_command[None, :])
         world.render()
+        # Read both arrays from this held articulation state. Do not infer dq
+        # from manifest targets, repeated images or replay time.
+        held_joint_sample.update(
+            positions=np.asarray(articulation.get_dof_positions().numpy()).reshape(-1).tolist(),
+            velocities=np.asarray(articulation.get_dof_velocities().numpy()).reshape(-1).tolist(),
+            hold={'render_without_physics_step': True,
+             'position_command_rad': np.asarray(joint_command).reshape(-1).tolist(),
+             'velocity_command_rad_s': zero_velocity.tolist()},
+        )
+
+    def captured_robot_state(manifest):
+        from unloading_perception.isaac_validation import capture_robot_state_record
+        if not held_joint_sample:
+            raise RuntimeError('robot capture requires a held articulation readback')
+        return capture_robot_state_record(manifest, discovered_names,
+            held_joint_sample['positions'], held_joint_sample['velocities'], kinematic_hold=held_joint_sample['hold'])
 
     world.reset()
     articulation.switch_dof_control_mode("position")
@@ -825,6 +842,7 @@ try:
             "metric_depth_sha256": sha256(module_dir / "metric_depth_m.npy"),
             "instance_masks_sha256": masks_hash,
             "capture_metadata_sha256": sha256(module_dir / "capture_metadata.json"),
+            "robot_state": captured_robot_state(manifest),
         }, indent=2), encoding="utf-8")
         (module_dir / "instance_segmentation_info.json").write_text(
             json.dumps(segmentation_info, indent=2, default=str), encoding="utf-8"
@@ -1177,6 +1195,7 @@ try:
         annotations_path.write_text(json.dumps(annotations_payload, indent=2), encoding="utf-8")
         binding = {
             "schema_version": "isaac_capture_binding_v1",
+            "robot_state": captured_robot_state(manifest),
             "simulation_epoch": manifest.timing["simulation_epoch"],
             "frame_sequence": manifest.timing["simulation_frame"],
             "simulation_time": manifest.timing["simulation_time"],

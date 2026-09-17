@@ -1,0 +1,17 @@
+{
+  "baseline": "9900cec920e8c76910b134a0c55774e51d42d004",
+  "environment": "Ubuntu 22.04.5 / ROS 2 Humble / Python 3.10",
+  "data": "EXPLICIT_SYNTHETIC_FIXTURE",
+  "isaac_started": false,
+  "gpu_compute": false,
+  "hardware_enabled": false,
+  "test_files_sha256": {
+    "src/unloading_perception/isaac_validation.py": "6afaf2f5c97e69fbbb70c287098b64be4a860a41dbde045a75aed7320447b361",
+    "scripts/isaacsim_perception_capture.py": "8545dc6049d4841e39328c2d2adedf7663298844ab67578f1eec67e8a2695fd1",
+    "tools/probe_algorithm_world_handoff.py": "0eaf7ff717167f145286188af3cf803824c5375938fa66e106181e652a5ae6d9",
+    "tests/test_isaac_joint_capture.py": "4f268f72f791df1a8ded8912e5c1d16ca3e7c0b140297355e71eb35b4a29a5e0",
+    "ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/isaac_sensor_adapter_node.py": "d5abbcb04a0b591e89b48a97d530fcf5c85961f358033682770f8ab6bf904622",
+    "ros2_ws/src/unloading_ros_bridge/test/isaac_joint_fixture.py": "e9d401e205e0837b15ad475ab330d7acf78d9d899a13318ccec3983816536d15",
+    "ros2_ws/src/unloading_ros_bridge/test/test_isaac_joint_state_transport.py": "69b1176a47ac495d58dbc65d1c246bcc7e5484ae630bafce66a4388471525316"
+  }
+}

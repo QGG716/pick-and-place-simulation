@@ -16,7 +16,7 @@ from unloading_interfaces.msg import MechanismState,PerceptionObservation,Planni
 from unloading_contracts import loads,to_wire,canonical_fingerprint
 from unloading_ros_bridge.mapping import observation_to_msg,observation_from_msg,snapshot_from_msg
 from unloading_ros_bridge.world_bridge_node import WorldBridgeNode
-from unloading_perception.isaac_validation import IsaacSceneManifest,build_feasibility_handoff
+from unloading_perception.isaac_validation import IsaacSceneManifest,IsaacCaptureBinding,build_feasibility_handoff,validate_capture_robot_state
 
 
 def stamp(value):
@@ -24,9 +24,13 @@ def stamp(value):
 
 
 def main():
-    p=argparse.ArgumentParser(); p.add_argument('--observation',type=Path,required=True); p.add_argument('--manifest',type=Path,required=True); p.add_argument('--output-directory',type=Path,required=True); args=p.parse_args()
+    p=argparse.ArgumentParser(); p.add_argument('--observation',type=Path,required=True); p.add_argument('--manifest',type=Path,required=True); p.add_argument('--capture-binding',type=Path,required=True); p.add_argument('--output-directory',type=Path,required=True); args=p.parse_args()
     observation=loads(args.observation.read_text()); manifest=IsaacSceneManifest.from_dict(json.loads(args.manifest.read_text()))
     if observation.provider!='registered-rgbd-fused-algorithm' or observation.synthetic: raise ValueError('ALGORITHM_OBSERVATION_REQUIRED')
+    binding_payload=json.loads(args.capture_binding.read_text())
+    robot_state=validate_capture_robot_state(binding_payload.get('robot_state'),manifest,IsaacCaptureBinding.from_dict(binding_payload))
+    if robot_state['sample_time']!=observation.capture_time or robot_state['simulation_epoch']!=observation.source_epoch:
+        raise ValueError('ROBOT_AND_OBSERVATION_CAPTURE_DIFFER')
     message=observation_to_msg(observation)
     assert canonical_fingerprint(observation_from_msg(message))==canonical_fingerprint(observation)
     rclpy.init(); bridge=WorldBridgeNode(); bridge.set_parameters([Parameter('use_sim_time',value=True),Parameter('expected_joint_names',value=list(manifest.robot['joint_names']))])
@@ -49,7 +53,7 @@ def main():
         # time, so old evidence stays stale; it is never refreshed to wall time.
         clocks.publish(Clock(clock=stamp(observation.processed_time)))
         wait(lambda: bridge.get_clock().now().nanoseconds>0)
-        state=JointState(name=list(manifest.robot['joint_names']),position=list(manifest.robot['q_rad']),velocity=[0.]*6); state.header.stamp=stamp(observation.capture_time); joints.publish(state)
+        state=JointState(name=robot_state['joint_names'],position=robot_state['position_rad'],velocity=robot_state['velocity_rad_s']); state.header.stamp=stamp(robot_state['sample_time']); joints.publish(state)
         tool=dict(manifest.mechanisms['tool_state']); tool.update(verified=tool.get('attached') is True,verification_source='ISAAC_MANIFEST_ATTACHED_STATE')
         base=dict(manifest.mechanisms['base_state']); base['position_m']=[row[3] for row in base['T_W_A'][:3]]
         mechanisms.publish(MechanismState(schema_version='1.1.0',source_epoch=observation.source_epoch,sequence=0,source_restart=True,observed_time=stamp(observation.capture_time),clock_domain='ros_sim_time',tool_state_identity=tool['identity'],payload_state_identity=manifest.mechanisms['payload_state']['identity'],base_state_identity=base['identity'],conveyor_state_identity=manifest.mechanisms['conveyor_state']['identity'],config_identity=manifest.manifest_fingerprint,robot_model_fingerprint=manifest.robot['robot_asset_hash'],world_model_fingerprint=manifest.world_fingerprint,tool_state_json=json.dumps(tool),payload_state_json=json.dumps(manifest.mechanisms['payload_state']),base_state_json=json.dumps(base),conveyor_state_json=json.dumps(manifest.mechanisms['conveyor_state'])))

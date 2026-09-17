@@ -28,6 +28,7 @@ from unloading_perception.isaac_validation import (
     IsaacSceneManifest,
     ground_truth_observation,
     sha256_file,
+    validate_capture_robot_state,
 )
 from unloading_perception.rgbd import CaptureMetadata
 
@@ -97,7 +98,16 @@ class IsaacSensorAdapterNode(Node):
             raise RuntimeError("every capture and scene manifest in the sequence must exist")
         self.capture = capture
         self.manifest = IsaacSceneManifest.from_dict(json.loads(manifest_path.read_text(encoding="utf-8")))
-        self.binding = IsaacCaptureBinding.from_dict(json.loads((capture / "capture_binding.json").read_text(encoding="utf-8")))
+        binding_payload = json.loads((capture / "capture_binding.json").read_text(encoding="utf-8"))
+        self.binding = IsaacCaptureBinding.from_dict(binding_payload)
+        # Reset on every sample, including invalid samples in a replay sequence.
+        self.robot_state = None
+        self.robot_state_rejection = None
+        try:
+            self.robot_state = validate_capture_robot_state(binding_payload.get('robot_state'), self.manifest, self.binding)
+        except (ValueError, TypeError, KeyError) as exc:
+            self.robot_state_rejection = str(exc)
+            self.get_logger().error(f'robot JointState suppressed: {exc}; image replay remains available')
         self.capture_metadata = CaptureMetadata.from_dict(json.loads((capture / "capture_metadata.json").read_text(encoding="utf-8")))
         self.annotations = json.loads((capture / "gt_annotations.json").read_text(encoding="utf-8"))
         if sha256_file(capture / "sensor_rgb.png") != self.binding.rgb_sha256:
@@ -178,9 +188,11 @@ class IsaacSensorAdapterNode(Node):
         message = TFMessage(transforms=[tf])
         self.tf_pub.publish(message)
 
-        joints = JointState(name=list(self.manifest.robot["joint_names"]), position=list(self.manifest.robot["q_rad"]))
-        self._header(joints, "world")
-        self.joints_pub.publish(joints)
+        if self.robot_state is not None:
+            joints = JointState(name=self.robot_state['joint_names'],
+                position=self.robot_state['position_rad'], velocity=self.robot_state['velocity_rad_s'])
+            self._header(joints, "world")  # bound capture time; replay never refreshes it
+            self.joints_pub.publish(joints)
 
         detections_2d = Detection2DArray()
         detections_3d = Detection3DArray()

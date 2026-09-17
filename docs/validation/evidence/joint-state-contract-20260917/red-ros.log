@@ -1,0 +1,53 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_adapter_joint_state_reaches_world_without_opening_planning_gate _____
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-96/test_adapter_joint_state_reach0')
+
+    def test_adapter_joint_state_reaches_world_without_opening_planning_gate(tmp_path):
+        manifest, path, binding = capture_fixture(tmp_path)
+        expected = binding['robot_state']
+        rclpy.init(args=['--ros-args', '-p', f'capture_directory:={tmp_path}',
+            '-p', f'scene_manifest:={path}', '-p', 'publish_period_seconds:=3600.0',
+            '-p', 'use_sim_time:=true', '-p', 'expected_joint_names:=[fixture_a, fixture_b]',
+            '-r', 'isaac_sensor_adapter:/unloading/perception:=/fixture/isaac_gt'])
+        adapter = bridge = node = None
+        executor = SingleThreadedExecutor()
+        try:
+            adapter = IsaacSensorAdapterNode()
+            bridge = WorldBridgeNode()
+            node = rclpy.create_node('synthetic_joint_contract_inputs')
+            for item in (adapter, bridge, node):
+                executor.add_node(item)
+            joints, worlds = [], []
+            node.create_subscription(JointState, '/joint_states', joints.append, 10)
+            node.create_subscription(PlanningWorldSnapshot, '/unloading/world_snapshot', worlds.append, 10)
+            perception = node.create_publisher(PerceptionObservation, '/unloading/perception', 10)
+            mechanisms = node.create_publisher(MechanismState, '/unloading/mechanism_state', 10)
+
+            def wait(predicate, timeout=8):
+                deadline = time.monotonic() + timeout
+                while time.monotonic() < deadline:
+                    executor.spin_once(timeout_sec=.02)
+                    if predicate():
+                        return
+                raise AssertionError('real adapter/world ROS transport timed out')
+
+            wait(lambda: adapter.joints_pub.get_subscription_count() >= 2
+                 and adapter.clock_pub.get_subscription_count() >= 2
+                 and perception.get_subscription_count() > 0 and mechanisms.get_subscription_count() > 0)
+            adapter.publish_capture()  # unmodified production publisher, reading fixture
+            wait(lambda: bool(joints))
+            message = joints[-1]
+            assert list(message.name) == expected['joint_names']
+>           assert list(message.velocity) == expected['velocity_rad_s']  # baseline fails here/path above
+E           assert [] == [0.25, -0.5]
+E             Right contains 2 more items, first extra item: 0.25
+E             Full diff:
+E             - [0.25, -0.5]
+E             + []
+
+ros2_ws/src/unloading_ros_bridge/test/test_isaac_joint_state_transport.py:60: AssertionError
+=========================== short test summary info ============================
+FAILED ros2_ws/src/unloading_ros_bridge/test/test_isaac_joint_state_transport.py::test_adapter_joint_state_reaches_world_without_opening_planning_gate
+1 failed in 0.24s
