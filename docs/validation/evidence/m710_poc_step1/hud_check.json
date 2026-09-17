@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "scope": "Actual production HUD AST block executed with retained runtime records; no physics rerun",
+  "lines": [
+    "Actual received 0 | ideal received 1 | ideal outfed 1"
+  ],
+  "assumption": "Actual grasp/transport/release; ideal reception/outfeed; downstream physics not qualified",
+  "test_result": "20 passed in 1.76s"
+}

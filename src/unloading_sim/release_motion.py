@@ -15,6 +15,7 @@ from .geometry import OBB, rotation_matrix_from_rotation_vector
 
 SUPPORTED_RELEASE = "SUPPORTED_RELEASE"
 SHORT_DROP_RELEASE = "SHORT_DROP_RELEASE"
+IDEAL_RECEPTION_RELEASE = "IDEAL_RECEPTION_RELEASE"
 MOTION_SEMANTICS = "m710_adaptive_contact_release_v2"
 
 
@@ -88,7 +89,7 @@ def predict_release(box: OBB, supports: Sequence[OBB], *, mode: str,
     for the distance traversed between samples.
     """
     policy = policy or ReleasePolicy()
-    if mode not in {SUPPORTED_RELEASE, SHORT_DROP_RELEASE}:
+    if mode not in {SUPPORTED_RELEASE, SHORT_DROP_RELEASE, IDEAL_RECEPTION_RELEASE}:
         raise ValueError("unknown release mode")
     velocity, omega = np.asarray(linear_velocity, float), np.asarray(angular_velocity, float)
     flight_box(box, velocity, omega, 0., policy.gravity_m_s2)  # validate inputs
@@ -108,6 +109,27 @@ def predict_release(box: OBB, supports: Sequence[OBB], *, mode: str,
         return result
     height = float(np.min(box.corners()[:, 2]) - heights[0])
     result["height_m"] = height
+    if mode == IDEAL_RECEPTION_RELEASE:
+        result["actual_support"] = None  # Ideal-region geometry is not physical support evidence.
+        region = ideal_reception_region(box, supports, maximum_drop_m=policy.maximum_drop_m,
+                                        edge_tolerance_m=edge_tolerance_m)
+        result.update(accepted=region["accepted"], reason=region["reason"],
+                      reception_region=region, landing_support=region["support"],
+                      flight_time_s=0., predicted_landing_pose_world=region["reception_pose_world"],
+                      prediction_source="BOUNDED_IDEAL_RECEPTION_REGION_NOT_PHYSICAL_LANDING")
+        support_names = {s.name for s in supports}
+        # Check the continuous vertical handoff envelope against all other bodies.
+        end = np.asarray(region["reception_pose_world"])
+        delta = end[:3, 3] - box.center
+        envelope = OBB(box.center + delta / 2,
+                       box.half_extents + np.abs(box.rotation.T @ delta) / 2,
+                       box.rotation, box.name, box.category)
+        for obstacle in obstacles:
+            if obstacle.name not in support_names | {box.name} and envelope.intersects_obb(obstacle):
+                result.update(accepted=False, reason="IDEAL_RECEPTION_ENVELOPE_COLLISION",
+                              pair=[box.name, obstacle.name])
+                break
+        return result
     if mode == SUPPORTED_RELEASE:
         result.update(accepted=result["actual_support"]["supported"],
                       reason=result["actual_support"]["reason"], flight_time_s=0.,
@@ -167,6 +189,34 @@ def predict_release(box: OBB, supports: Sequence[OBB], *, mode: str,
     else:
         result.update(accepted=True, reason="QUALIFIED_PREDICTED_LANDING")
     return result
+
+
+def ideal_reception_region(box, supports, *, maximum_drop_m=.05, edge_tolerance_m=.002):
+    """Full footprint and bounded height, independently of simultaneous contact.
+
+    No orientation correction or horizontal displacement is permitted. The
+    same approved five-degree support-face limit and complete polygon coverage
+    apply. The 1 mm penetration bound is the existing runtime support bound.
+    """
+    if not supports or not np.isfinite(maximum_drop_m) or maximum_drop_m < 0:
+        raise ValueError("ideal reception requires finite bounds and named supports")
+    heights = [float(np.max(s.corners()[:, 2])) for s in supports]
+    if max(heights) - min(heights) > 1e-8:
+        raise ValueError("ideal reception cannot join different receiver heights")
+    gap = float(np.min(box.corners()[:, 2]) - heights[0])
+    correction = max(0., gap)
+    pose = box.world_from_local.copy()
+    pose[2, 3] -= correction
+    # This is explicitly a region audit, never an actual support observation.
+    region = support_union_audit(box, supports, contact_tolerance_m=maximum_drop_m,
+                                 edge_tolerance_m=edge_tolerance_m)
+    accepted = region["supported"] and -.001 <= gap <= maximum_drop_m
+    return {"accepted": bool(accepted), "reason": "IDEAL_RECEPTION_REGION_ACCEPTED" if accepted else
+            "IDEAL_RECEPTION_REGION_REJECTED", "support": region,
+            "actual_release_pose_world": box.world_from_local.tolist(),
+            "reception_pose_world": pose.tolist(), "vertical_correction_m": -correction,
+            "maximum_drop_m": maximum_drop_m, "gap_m": gap,
+            "actual_top_contact_observed": False, "physical_landing_qualified": False}
 
 
 def departure_sweep(box: OBB, direction, *, distance_m: float, resolution_m: float):

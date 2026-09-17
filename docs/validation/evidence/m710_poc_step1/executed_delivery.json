@@ -1,0 +1,30 @@
+{
+  "simulation_profile": {
+    "name": "proof_of_concept",
+    "ideal_suction": true,
+    "ideal_reception": true,
+    "ideal_outfeed": true,
+    "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+    "machine_qualification_claimed": false
+  },
+  "planning_seconds": 11.037718869745731,
+  "serialization_seconds": 0.006997741758823395,
+  "preflight_seconds": 0.26816830411553383,
+  "export_seconds": 0.27230381965637207,
+  "isaac_executed": false,
+  "actual_state_sha256": null,
+  "archived_or_live_state_not_modified": true,
+  "simulation_execution_ready": true,
+  "bundle_readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "9862a932951ff00353a661f832b37648cacd0b86b1e732e8c7da5a7f5ebbce11",
+    "source_preflight_fingerprint": "e8a8be602c479f63ae79197260bc173daf348d91e8077f1ec726f3be006f7e5e",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "bundle_readback_seconds": 0.09344106912612915,
+  "bundle_path": "/root/autodl-tmp/m710-poc-step1-20260917/outputs/poc_final/replay_bundle.json",
+  "first_complete_feasible_result_seconds": 11.037718869745731,
+  "first_exportable_result_seconds": 11.947632666677237,
+  "subsequent_optimization_seconds": 0.0,
+  "immutable_baseline_directory": "/root/autodl-tmp/m710-poc-step1-20260917/outputs/poc_final/first_feasible"
+}

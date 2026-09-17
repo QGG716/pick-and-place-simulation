@@ -370,7 +370,7 @@ def audit_runtime_short_drop(metadata, *, position, rotation, linear_velocity,
             obstacles.append(OBB(primitive["center_m"], np.asarray(primitive["size_m"]) / 2,
                                  primitive["rotation_matrix"], name, primitive.get("category", "fixed")))
     box = OBB(position, np.asarray(target["size_m"]) / 2, rotation, target["name"], "carton")
-    return predict_release(box, supports, mode=SHORT_DROP_RELEASE,
+    return predict_release(box, supports, mode=metadata.get("release_mode", SHORT_DROP_RELEASE),
         linear_velocity=linear_velocity, angular_velocity=angular_velocity, obstacles=obstacles,
         policy=policy, contact_tolerance_m=planned["landing_support"]["tolerance_m"],
         edge_tolerance_m=planned["landing_support"]["edge_tolerance_m"])
@@ -456,6 +456,15 @@ class BoundedTargetCupReleaseClearance:
                                 "elapsed_s": elapsed, "active_target_compliant_pairs": len(keys), "reason": reason})
             return reason
         return None
+
+    def end_for_assumed_reception(self, time_s, *, record):
+        from .post_landing_transport import RECEPTION_SOURCE
+        if (record.get("completion_source") != RECEPTION_SOURCE or not record.get("attachment_removed")
+                or not record.get("reception_region", {}).get("accepted")):
+            raise ValueError("unqualified ideal reception")
+        self.pending = False
+        self.events.append({"event": "target_cup_clearance_ended_by_assumed_reception",
+                            "time_s": float(time_s), "physical_clearance_certified": False})
 
     def end_for_actual_ideal_takeover(self, time_s, *, attachment_removed, actual_top_landing):
         if not attachment_removed or not actual_top_landing:

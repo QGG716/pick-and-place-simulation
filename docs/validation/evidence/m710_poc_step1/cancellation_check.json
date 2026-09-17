@@ -1,0 +1,40 @@
+{
+  "exit_code": -2,
+  "progress": [
+    {
+      "elapsed_s": 0.64623212069273,
+      "event": "HISTORY_CANDIDATE_STARTED",
+      "target": "carton_l07_c02",
+      "candidate_id": "acecaf2898f5417308319623889c2095481b77fb1ec7ec65f2dad84a991c4423",
+      "offset": {
+        "normal_outward_m": 0.0,
+        "frame": "CURRENT_PHYSICAL_CONTACT",
+        "offset_local_m": [
+          0.0,
+          0.0,
+          -0.0
+        ]
+      },
+      "seed": 2901192488,
+      "round": 0,
+      "stage": "history_adaptation"
+    },
+    {
+      "elapsed_s": 0.6729091927409172,
+      "event": "CANCELLED",
+      "reason": "signal 15",
+      "exception_type": "KeyboardInterrupt",
+      "simulation_profile": {
+        "name": "proof_of_concept",
+        "ideal_suction": true,
+        "ideal_reception": true,
+        "ideal_outfeed": true,
+        "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+        "machine_qualification_claimed": false
+      },
+      "best_complete_result": null,
+      "resume_supported": false,
+      "progress_evidence": "planning_progress.jsonl"
+    }
+  ]
+}

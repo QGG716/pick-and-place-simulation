@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--ready-file", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--config", default="configs/validation/m710id70_layout_v1_single_carton.yaml")
+    parser.add_argument("--config", default="configs/validation/m710id70_proof_of_concept.yaml")
     parser.add_argument("--execution-config", type=Path)
     parser.add_argument("--reuse-motion", type=Path, help="historical candidate, reused only after current exact recheck")
     parser.add_argument("--history-source", type=Path, help="controlled historical hint directory")

@@ -11,13 +11,15 @@ SLICE_SECONDS = (20., 50., 100.)
 
 class ContactCandidateScheduler:
     def __init__(self, poses, *, target, context, request_seed, batch_size,
-                 attempt_limit, complete_connection_limit, max_retries=2):
+                 attempt_limit, complete_connection_limit, max_retries=2, fair_retries=False):
         for name, value, minimum in (("batch_size", batch_size, 1),
                 ("attempt_limit", attempt_limit, 0),
                 ("complete_connection_limit", complete_connection_limit, 0),
                 ("max_retries", max_retries, 0)):
             if isinstance(value, bool) or int(value) != value or value < minimum:
                 raise ValueError(f"{name} must be an integer >= {minimum}")
+        self.mode = "FAIR_FULL_POOL_AND_SEEDED_RETRIES" if fair_retries else SCHEDULE_MODE
+        self.fair_retries = fair_retries
         self.batch_size = batch_size
         self.attempt_limit = attempt_limit
         self.complete_connection_limit = complete_connection_limit
@@ -27,6 +29,9 @@ class ContactCandidateScheduler:
         self.candidates = {}
         self.families = {}
         for face, (roll, pose, variant) in poses:
+            import numpy as np
+            if np.asarray(pose).shape != (4, 4) or not np.all(np.isfinite(pose)):
+                raise ValueError("contact candidate pose must be a finite SE(3) matrix")
             self.generated_count += 1
             family_id = canonical_digest({"target": target.name, "face": face, "roll": int(roll)})
             identity = {"family_id": family_id, "target_pose": target.world_from_local.tolist(),
@@ -69,7 +74,7 @@ class ContactCandidateScheduler:
             self.termination = "COMPLETE_CONNECTION_ATTEMPT_LIMIT_REACHED"
         if self.termination is not None:
             return None
-        if self.unvisited:
+        if self.unvisited and not (self.fair_retries and self.retries and len(self.records) % 2):
             candidate_id, retry_index, reason = self.unvisited.popleft(), 0, None
         else:
             candidate_id, retry_index, reason = self.retries.popleft()
@@ -80,7 +85,7 @@ class ContactCandidateScheduler:
             attempt_id=f"{candidate_id}:attempt_{retry_index}", retry_index=retry_index,
             retry_reason=reason, variant=deepcopy(candidate["variant"]),
             face=candidate["face"], roll_deg=candidate["roll"],
-            pose_ordinal=ordinal, batch_index=batch, mode=SCHEDULE_MODE,
+            pose_ordinal=ordinal, batch_index=batch, mode=self.mode,
             ik_seed=self._seed(candidate_id, retry_index, "grasp_ik"),
             path_seed=self._seed(candidate_id, retry_index, "path_connection"),
             candidate_wall_budget_s=SLICE_SECONDS[min(batch, len(SLICE_SECONDS)-1)],
@@ -123,7 +128,7 @@ class ContactCandidateScheduler:
                 "unique_candidate_count": len(ids), "unique_candidates_evaluated": len(ids & self.visited),
                 "total_attempt_count": sum(r["family_id"] == family_id for r in self.records),
                 "remaining_unsearched_count": len(ids - self.visited)}
-        return dict(mode=SCHEDULE_MODE, generated_candidate_count=self.generated_count,
+        return dict(mode=self.mode, generated_candidate_count=self.generated_count,
             unique_generated_candidate_count=len(self.candidates),
             duplicate_generated_candidate_count=self.generated_count-len(self.candidates),
             unique_candidates_evaluated=len(self.visited), total_attempt_count=len(self.records),

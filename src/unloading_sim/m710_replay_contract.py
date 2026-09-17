@@ -316,6 +316,16 @@ def verify_m710_preflight_contract(
 
     adapter = _mapping(item.get("replay_adapter_inputs"), "replay_adapter_inputs")
     plan_common = _mapping(adapter.get("plan_common"), "replay plan_common")
+    profile = item.get("simulation_profile")
+    if profile is not None:
+        if plan_common.get("simulation_profile") != profile:
+            raise M710ReplayContractError("preflight profile and plan profile disagree")
+        ideal = plan_common.get("post_landing_transport", {}).get("reception_mode") == "ideal"
+        if ideal != bool(profile.get("ideal_reception")):
+            raise M710ReplayContractError("preflight reception mode mismatch")
+        segment = adapter.get("trajectory_segment")
+        if segment and ((segment.get("place", {}).get("release_mode") == "IDEAL_RECEPTION_RELEASE") != ideal):
+            raise M710ReplayContractError("preflight release mode mismatch")
     configuration = _mapping(adapter.get("configuration"), "replay configuration")
     scene = _mapping(item.get("scene"), "preflight scene")
     primitives = scene.get("primitives")
@@ -630,6 +640,9 @@ def verify_m710_replay_bundle(
         raise M710ReplayContractError("M-710 bundle is not simulation-execution ready")
     if metadata.get("scene_primitives") != preflight["scene"]["primitives"]:
         raise M710ReplayContractError("bundle scene primitives disagree with preflight")
+    for field in ("simulation_profile", "post_landing_transport"):
+        if metadata.get(field) != preflight["replay_adapter_inputs"]["plan_common"].get(field):
+            raise M710ReplayContractError(f"bundle {field} differs from bound preflight")
     segment = preflight["replay_adapter_inputs"].get("trajectory_segment", {})
     if segment.get("motion_semantics") is not None:
         expected_fields = {

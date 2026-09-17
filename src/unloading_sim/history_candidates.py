@@ -8,6 +8,7 @@ import os
 
 import numpy as np
 
+from .planning_profile import optional_seconds, deadline_after
 from .geometry import rotation_vector_from_matrix
 from .workcell_layout import canonical_digest
 
@@ -39,8 +40,9 @@ class HistoryPolicy:
             value = getattr(self, name)
             if type(value) is not int or not 1 <= value <= maximum:
                 raise ValueError(f"history.{name} must be an integer in [1, {maximum}]")
-        for name in ("screening_wall_time_s", "wall_time_s", "candidate_wall_time_s",
-                     "normal_step_m", "maximum_normal_offset_m", "maximum_target_translation_m",
+        for name in ("screening_wall_time_s", "wall_time_s", "candidate_wall_time_s"):
+            optional_seconds(getattr(self, name), name)
+        for name in ("normal_step_m", "maximum_normal_offset_m", "maximum_target_translation_m",
                      "maximum_target_rotation_rad", "maximum_joint_adaptation_rad"):
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not np.isfinite(value) or value <= 0:
@@ -87,8 +89,8 @@ class HistorySource:
         self.targets_screened = {}
         self.deadline = deadline
         started = perf_counter()
-        stop = min(started + policy.screening_wall_time_s,
-                   float("inf") if deadline is None else deadline)
+        limits = [v for v in (deadline_after(started, policy.screening_wall_time_s), deadline) if v is not None]
+        stop = min(limits) if limits else None
         if policy.source is None:
             self.records.append({"status": "NOT_CONFIGURED"})
         else:
@@ -104,15 +106,17 @@ class HistorySource:
                             if index >= policy.maximum_files * 8:
                                 self.records.append({"status": "DIRECTORY_ENTRY_LIMIT"})
                                 break
-                            if perf_counter() >= stop:
+                            if stop is not None and perf_counter() >= stop:
                                 break
                             if entry.name.endswith(".json") and entry.is_file(follow_symlinks=False):
                                 names.append(Path(entry.path))
                     paths = sorted(names)[:policy.maximum_files]
+                    if len(names) > len(paths):
+                        self.records.append({"status": "INPUT_FILE_LIMIT", "omitted_files": len(names)-len(paths)})
                 else:
                     paths = [source]
                 for path in paths:
-                    if perf_counter() >= stop:
+                    if stop is not None and perf_counter() >= stop:
                         self.records.append({"status": "SCREENING_DEADLINE"})
                         break
                     record = {"path": str(path.resolve())}
@@ -134,7 +138,7 @@ class HistorySource:
                         if fingerprint != canonical_digest({k: v for k, v in document.items()
                                                             if k != "evidence_fingerprint"}):
                             raise ValueError("history content fingerprint mismatch")
-                        if perf_counter() >= stop:
+                        if stop is not None and perf_counter() >= stop:
                             raise ValueError("SCREENING_DEADLINE")
                         if any(item[1]["sha256"] == record["sha256"] for item in self.documents):
                             record["status"] = "DUPLICATE_SOURCE"
@@ -237,7 +241,8 @@ def compatible_hint(old, scene, c, target, backend, policy):
         gate = segment["grasp_index"] - len(accepted[0]["search"]["terminal"]["samples"])
     if type(gate) is not int or not 0 <= gate < segment["grasp_index"]:
         raise ValueError("invalid history free/contact boundary")
-    return {"segment": segment, "local_contact": local_contact,
+    return {"source_profile": old.get("simulation_profile", {"name": "physical_reception"}),
+            "validation_inherited": False, "segment": segment, "local_contact": local_contact,
             "old_target_pose": old_box, "gate": gate, "policy": policy}
 
 
@@ -256,7 +261,7 @@ def contact_variants(hint, target):
 def evaluate_history(source, scene, c, target, backend, *, deadline, attempt_limit):
     """Same connector/request/target, with a bounded share before normal search."""
     attempts, selected = [], None
-    if c is None or deadline is None or perf_counter() >= deadline:
+    if c is None or (deadline is not None and perf_counter() >= deadline):
         return attempts, selected
     seen = set()
     with c._budget_scope(deadline):
@@ -290,7 +295,7 @@ def evaluate_history(source, scene, c, target, backend, *, deadline, attempt_lim
                 started = perf_counter()
                 if getattr(c, "progress_callback", None):
                     c.progress_callback({"event": "HISTORY_CANDIDATE_STARTED", "target": target.name,
-                        "candidate_id": identity, "offset": offset})
+                        "candidate_id": identity, "offset": offset, "seed": seed, "round": 0, "stage": "history_adaptation"})
                 previous_slice = getattr(c, "candidate_slice_s", None)
                 c.candidate_slice_s = source.policy.candidate_wall_time_s
                 try:

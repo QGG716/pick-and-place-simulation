@@ -18,7 +18,7 @@ import numpy as np
 
 from .geometry import OBB, rotation_matrix_from_rpy
 from .conveyor_placement import placement_working_normal, PLACEMENT_SEMANTICS
-from .release_motion import MOTION_SEMANTICS, SHORT_DROP_RELEASE, SUPPORTED_RELEASE, ReleasePolicy, predict_release
+from .release_motion import MOTION_SEMANTICS, SHORT_DROP_RELEASE, IDEAL_RECEPTION_RELEASE, SUPPORTED_RELEASE, ReleasePolicy, predict_release
 from .identity import normalize_robot_model_id
 from .independent_cups import (
     HOLDING_CAPACITY_ASSUMPTION,
@@ -280,7 +280,7 @@ def _validated_place_evidence(segment: Mapping[str, Any], *,
     if not isinstance(support, Mapping):
         raise ValueError("place evidence requires a support audit mapping")
     release_mode = raw.get("release_mode", SUPPORTED_RELEASE)
-    if release_mode == SHORT_DROP_RELEASE:
+    if release_mode in {SHORT_DROP_RELEASE, IDEAL_RECEPTION_RELEASE}:
         if segment.get("motion_semantics") != MOTION_SEMANTICS:
             raise ValueError("short drop requires current motion semantics")
         prediction = raw.get("release_prediction", {})
@@ -290,7 +290,14 @@ def _validated_place_evidence(segment: Mapping[str, Any], *,
         landing_pose = np.asarray(prediction.get("predicted_landing_pose_world"), float)
         landing_raw = {**raw, "actual_box_pose_world": landing_pose.tolist(),
                        "support_names": [b["name"] for b in landing_support.get("support_obbs", [])]}
-        _validated_union_support_evidence(landing_support, landing_raw, landing_pose, segment, scene_primitives)
+        if release_mode == SHORT_DROP_RELEASE:
+            _validated_union_support_evidence(landing_support, landing_raw, landing_pose, segment, scene_primitives)
+        else:
+            current = {p["name"]: p for p in scene_primitives or []}
+            for b in landing_support.get("support_obbs", []):
+                p = current.get(b["name"])
+                if p is None or not np.allclose(p["center_m"], np.asarray(b["pose_world"])[:3, 3]) or not np.allclose(np.asarray(p["size_m"])/2, b["half_extents_m"]) or not np.allclose(p["rotation_matrix"], np.asarray(b["pose_world"])[:3, :3]):
+                    raise ValueError("ideal reception support does not match current scene")
         bodies = [OBB(np.asarray(b["pose_world"])[:3, 3], b["half_extents_m"],
                        np.asarray(b["pose_world"])[:3, :3], b["name"], b["category"])
                   for b in landing_support["support_obbs"]]
@@ -364,7 +371,7 @@ def _validated_place_evidence(segment: Mapping[str, Any], *,
     return {
         "place_surface": surface,
         "place_center_m": (np.asarray(raw["release_prediction"]["predicted_landing_pose_world"])[:3, 3].tolist()
-                           if release_mode == SHORT_DROP_RELEASE else release_center.tolist()),
+                           if release_mode in {SHORT_DROP_RELEASE, IDEAL_RECEPTION_RELEASE} else release_center.tolist()),
         "release_center_m": release_center.tolist(),
         "planned_support_audit": copy.deepcopy(dict(support)),
         "actual_box_pose_world": pose.tolist(),
@@ -2193,7 +2200,9 @@ def build_fanuc_isaac_replay_bundle(
         "stack_carton_names": list(plan.get("stack_carton_names", [])),
         "row_selection": dict(plan.get("row_selection", {})),
         "completed_carton_ids": list(plan.get("completed_carton_ids", [])),
+        "processed_carton_ids": list(plan.get("processed_carton_ids", [])),
         "handed_off_ids": list(plan.get("handed_off_ids", [])),
+        "simulation_profile": dict(plan.get("simulation_profile", {})),
         "post_landing_transport": dict(plan.get("post_landing_transport", {"mode": "strict_physics"})),
         "receiver_transport_state": dict(plan.get("receiver_transport_state", {})),
         "trajectory_stage_ranges": dict(segment.get("stage_ranges", {})),
@@ -2222,7 +2231,7 @@ def build_fanuc_isaac_replay_bundle(
         "release_prediction": place_evidence.get("release_prediction"),
         "planned_actual_box_pose_world": place_evidence["actual_box_pose_world"],
         "free_fall_height_m": (float(place_evidence["release_prediction"]["height_m"])
-            if place_evidence.get("release_mode") == SHORT_DROP_RELEASE
+            if place_evidence.get("release_mode") in {SHORT_DROP_RELEASE, IDEAL_RECEPTION_RELEASE}
             else float(segment.get("free_fall_height_m", 0.0))),
         "collision_geometry": str(plan.get("collision_geometry", "urdf_collision_mesh")),
         "scene_primitives": _build_scene_primitives(plan, cfg, segment_index),

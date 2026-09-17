@@ -1,0 +1,7 @@
+{
+  "command": "$CPU -m pytest -q tests/test_proof_of_concept.py tests/test_serial_unloading.py tests/test_same_world_continuation_runner.py tests/test_contact_candidate_scheduler.py tests/test_feasible_result_budget.py tests/test_post_landing_transport.py tests/test_adaptive_release_motion.py tests/test_default_history_adaptation.py tests/test_wrist_transfer_quality.py",
+  "result": "132 passed, 22 skipped in 5.86s",
+  "skips": "22 historical fixtures require external M710_HISTORY_FIXTURE_ROOT; not passes",
+  "source_scope": "final Git-index canonical source tree",
+  "dispatch_tests_scope": "Injected 65-candidate, 195 seeded attempts and six extraction routes prove production wiring, not real robot planning success."
+}

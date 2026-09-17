@@ -90,7 +90,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--diagnostic-only", action="store_true")
     parser.add_argument("--diagnostic-settling-steps", type=int,
                         help="short initialization diagnostic only; never a qualified replay override")
-    parser.add_argument("--continuation-wait-seconds", type=float, default=600.0)
+    parser.add_argument("--continuation-wait-seconds", type=float, default=None)
     parser.add_argument(
         "--physics-hz",
         default=None,
@@ -169,7 +169,7 @@ def _validate_args(args: argparse.Namespace) -> None:
     reuse_args = (args.reuse_usd_entrypoint, args.reuse_usd_run_evidence, args.reuse_usd_source_contract)
     if any(value is not None for value in reuse_args) and not all(value is not None for value in reuse_args):
         raise ValueError("official USD reuse requires entrypoint, recorded run evidence and source contract")
-    if args.maximum_segments < 1 or not math.isfinite(args.continuation_wait_seconds) or args.continuation_wait_seconds <= 0:
+    if args.maximum_segments < 1 or (args.continuation_wait_seconds is not None and (not math.isfinite(args.continuation_wait_seconds) or args.continuation_wait_seconds < 0)):
         raise ValueError("continuation budgets must be finite and positive")
     if args.maximum_segments > 1 and args.continuation_dir is None:
         raise ValueError("multiple same-world segments require continuation-dir")
@@ -2104,10 +2104,15 @@ try:
 
     from unloading_sim.post_landing_transport import (
         transport_policy, begin_ideal_transport, advance_ideal_transport,
-        ideal_transport_ids, LANDED, OUTFED,
+        ideal_transport_ids, LANDED, OUTFED, RECEPTION_SOURCE, LANDING_SOURCE, IDEAL_RECEPTION_ACCEPTED,
     )
     post_landing_policy = transport_policy(metadata.get("post_landing_transport"))
     ideal_outfeed_mode = post_landing_policy["mode"] == "ideal_outfeed"
+    ideal_reception_mode = post_landing_policy.get("reception_mode") == "ideal"
+    if args.continuation_wait_seconds is None and not ideal_reception_mode:
+        args.continuation_wait_seconds = 600.
+    if ideal_reception_mode != bool(metadata.get("simulation_profile", {}).get("ideal_reception")):
+        raise ValueError("runtime profile and reception mode mismatch")
     ideal_actor_paths = set()
     ideal_transport_records = {}
     session_transport_events = []
@@ -3248,6 +3253,7 @@ try:
         actual_release_prediction = None
         actual_reception_audit = None
         actual_reception_state = None
+        assumed_reception_state = None
         target_landing_center = None
         target_landing_time_s = None
         conveyor_transport_samples: list[
@@ -3786,7 +3792,7 @@ try:
                     f"/Validation/Scene/{_safe_prim_name(place_surface)}",
                 )
                 support_contact_report_observed = _actual_support_contact_observed()
-                if metadata.get("release_mode") == "SHORT_DROP_RELEASE":
+                if metadata.get("release_mode") in {"SHORT_DROP_RELEASE", "IDEAL_RECEPTION_RELEASE"}:
                     actual_release_prediction = audit_runtime_short_drop(metadata,
                         position=target_center_at_release,
                         rotation=_rotation_matrix_from_quaternion_wxyz(target_orientation_at_release),
@@ -4085,9 +4091,16 @@ try:
                             assumption = ("落带前物理执行；落带后理想输送；后道倾覆/碰撞不评估"
                                 if hud_chinese_enabled else
                                 "Physical until landing; ideal outfeed afterwards; downstream tipping/collision not evaluated")
-                            received = len(ideal_transport_records)
-                            outfed = sum(item.get("state") == OUTFED for item in ideal_transport_records.values())
-                            lines.append(f"Actual received {received} | ideal outfed {outfed}")
+                            if ideal_reception_mode:
+                                assumption = ("真实抓取/搬运/释放；理想接收/送出；不声明后道物理资格"
+                                    if hud_chinese_enabled else
+                                    "Actual grasp/transport/release; ideal reception/outfeed; downstream physics not qualified")
+                            from unloading_sim.qualification import reception_counts
+                            actual_received = (set(metadata.get("completed_carton_ids", []))
+                                | {n for n, r in ideal_transport_records.items()
+                                   if r.get("completion_source") == LANDING_SOURCE})
+                            counts = reception_counts(actual_received, ideal_transport_records)
+                            lines.append(f"Actual received {counts['actual_reception']} | ideal received {counts['ideal_reception']} | ideal outfed {counts['ideal_outfeed']}")
                         status_color = ((72, 232, 150, 255) if conveyor_running
                                         else (255, 205, 92, 255) if state_key == "waiting_clearance"
                                         else (210, 220, 232, 255))
@@ -4273,7 +4286,7 @@ try:
                 and release_executed
                 and release_event_time is not None
                 and conveyor_initial_direction_world is not None
-                and (not ideal_outfeed_mode or actual_reception_state is None)
+                and (not ideal_outfeed_mode or (actual_reception_state is None and assumed_reception_state is None))
             ):
                 payload_positions, _ = target_body.get_world_poses()
                 payload_linear_velocities, _ = target_body.get_velocities()
@@ -4339,16 +4352,30 @@ try:
                     max_angular_speed_rad_s=float(actual_state_gates.get("support_max_angular_speed_rad_s", 0.08)),
                     support_surface_velocity_world_m_s=_actual_receiver_velocity(),
                     evaluate_stability=not ideal_outfeed_mode)
-                if (target_landing_center is None and actual_reception_audit.accepted
-                        and _actual_support_contact_observed() and release_open_confirmed):
+                ideal_region_valid = False
+                if ideal_reception_mode and release_open_confirmed:
+                    actual_release_prediction = audit_runtime_short_drop(metadata,
+                        position=payload_center, rotation=landing_rotation,
+                        linear_velocity=np.asarray(landing_linear.numpy())[0],
+                        angular_velocity=np.asarray(landing_angular.numpy())[0],
+                        current_cartons=_capture_carton_states())
+                    ideal_region_valid = bool(actual_release_prediction["accepted"])
+                if (target_landing_center is None and release_open_confirmed and
+                        (ideal_region_valid if ideal_reception_mode else
+                         actual_reception_audit.accepted and _actual_support_contact_observed())):
                     target_landing_center = payload_center.copy()
                     target_landing_time_s = simulation_time
-                    actual_reception_state = {"time_s": simulation_time, "position_m": payload_center.tolist(),
+                    reception_observation = {"time_s": simulation_time, "position_m": payload_center.tolist(),
                         "rotation_matrix": landing_rotation.tolist(),
                         "linear_velocity_m_s": np.asarray(landing_linear.numpy())[0].tolist(),
                         "angular_velocity_rad_s": np.asarray(landing_angular.numpy())[0].tolist(),
                         "support": actual_reception_audit.to_dict()}
-                    event_log.append({"event": "actual_receiver_reception", "carton_id": metadata["target"], **actual_reception_state})
+                    if ideal_reception_mode:
+                        assumed_reception_state = {**reception_observation, "source": RECEPTION_SOURCE,
+                            "region": actual_release_prediction["reception_region"]}
+                    else:
+                        actual_reception_state = reception_observation
+                        event_log.append({"event": "actual_receiver_reception", "carton_id": metadata["target"], **actual_reception_state})
                     if ideal_outfeed_mode:
                         actual_box = OBB(payload_center, np.asarray(target_primitive["size_m"]) / 2,
                                          landing_rotation, str(metadata["target"]), "carton")
@@ -4360,7 +4387,10 @@ try:
                             attachment_removed=release_open_confirmed and grasp_joint is None
                                 and not stage.GetPrimAtPath(grasp_joint_path).IsValid(),
                             top_contact_observed=_actual_support_contact_observed(),
-                            support_geometry_accepted=actual_reception_audit.accepted)
+                            support_geometry_accepted=actual_reception_audit.accepted,
+                            expected_target=str(metadata["target"]), actual_attachment_observed=bool(grasp_enabled),
+                            maximum_drop_m=float(metadata["release_prediction"]["policy"]["maximum_drop_m"]),
+                            reception_supports=[receivers[n] for n in metadata["selected_place_support_names"]])
                         ideal_transport_records[actual_box.name] = record
                         ideal_transport_ids(post_landing_policy, ideal_transport_records)
                         carton_prim = stage.GetPrimAtPath(target_carton_path)
@@ -4381,9 +4411,12 @@ try:
                         for key in zero_point_contact_resolver.pending_keys:
                             if target_carton_path in key[:2]:
                                 zero_point_contact_resolver.observe(key, [], lost=True, scope_token=_contact_scope_token())
-                        target_cup_release_gate.end_for_actual_ideal_takeover(simulation_time,
-                            attachment_removed=True, actual_top_landing=True)
-                        event = {"event": LANDED, "carton_id": actual_box.name,
+                        if ideal_reception_mode:
+                            target_cup_release_gate.end_for_assumed_reception(simulation_time, record=record)
+                        else:
+                            target_cup_release_gate.end_for_actual_ideal_takeover(simulation_time,
+                                attachment_removed=True, actual_top_landing=True)
+                        event = {"event": IDEAL_RECEPTION_ACCEPTED if ideal_reception_mode else LANDED, "carton_id": actual_box.name,
                             "time_s": session_time_offset_s + simulation_time,
                             "takeover_pose_world": record["takeover_pose_world"],
                             "source": record["completion_source"], "model": record["model"],
@@ -4505,14 +4538,14 @@ try:
             if (metadata.get("motion_semantics") == "m710_adaptive_contact_release_v2"
                     and trajectory_time >= requested_duration - 1e-12
                     and release_open_confirmed and not target_cup_release_gate.pending
-                    and actual_reception_state is not None
-                    and actual_reception_audit is not None and actual_reception_audit.accepted
+                    and (assumed_reception_state is not None if ideal_reception_mode else
+                         actual_reception_state is not None and actual_reception_audit is not None and actual_reception_audit.accepted)
                     and (not final_ideal_segment or all(record.get("state") == OUTFED
                          for record in ideal_transport_records.values()))):
                 break
             if (
                 trajectory_time >= requested_duration - 1e-12
-                and (not final_ideal_segment or actual_reception_state is not None
+                and (not final_ideal_segment or (actual_reception_state is not None or assumed_reception_state is not None)
                      and all(record.get("state") == OUTFED for record in ideal_transport_records.values()))
                 and (
                     release_event_time is None
@@ -4831,7 +4864,7 @@ try:
         qualification_failures = qualification["qualification_failures"]
         qualification_passed = qualification["qualification_passed"]
         completed_carton_ids = sorted(set(metadata.get("completed_carton_ids", []))
-                                      | set(ideal_transport_records))
+                                      | {n for n, r in ideal_transport_records.items() if r.get("completion_source") == LANDING_SOURCE})
         handed_off_ids = sorted(set(metadata.get("handed_off_ids", [])) | {
             name for name, record in ideal_transport_records.items() if record.get("state") == OUTFED})
         physical_cycle_completed = bool(full_schedule_replayed and release_open_confirmed
@@ -4843,11 +4876,20 @@ try:
                                         and joint_positions_within_limits is True
                                         and float(np.max(peak_error)) <= tracking_error_limit_rad
                                         and np.all(np.max(np.abs(measured_velocity_array), axis=0) <= velocity_limits + 1e-5))
+        ideal_received_ids = sorted(n for n, r in ideal_transport_records.items()
+                                    if r.get("completion_source") == RECEPTION_SOURCE)
+        workflow_cycle_completed = bool(full_schedule_replayed and release_open_confirmed
+            and not target_cup_release_gate.pending and payload_motion_verified and not unexpected_contacts
+            and runtime_stop_reason is None and (physical_cycle_completed or assumed_reception_state is not None)
+            and joint_positions_within_limits is True and float(np.max(peak_error)) <= tracking_error_limit_rad
+            and np.all(np.max(np.abs(measured_velocity_array), axis=0) <= velocity_limits + 1e-5))
+        processed_carton_ids = sorted(set(completed_carton_ids) | set(ideal_received_ids))
         if physical_cycle_completed and str(metadata["target"]) not in completed_carton_ids:
             completed_carton_ids.append(str(metadata["target"]))
             retained_receiver_records[str(metadata["target"])] = {
                 "receiver": place_surface, "direction_world": conveyor_initial_direction_world.tolist(),
                 "held": place_surface in held_conveyor_surfaces}
+        processed_carton_ids = sorted(set(completed_carton_ids) | set(ideal_received_ids))
         (args.output / "actual_remaining_state.json").write_text(json.dumps({
             "schema": "m710id70_actual_motion_state_v1",
             "q_rad": np.asarray(articulation.get_dof_positions().numpy())[0].tolist(),
@@ -4861,6 +4903,8 @@ try:
                          "angular_velocity_rad_s": item["angular_velocity_rad_s"]} for item in final_carton_states
                          if item["name"] not in handed_off_ids],
             "completed_carton_ids": completed_carton_ids,
+            "processed_carton_ids": processed_carton_ids, "ideal_received_ids": ideal_received_ids,
+            "simulation_profile": metadata.get("simulation_profile"),
             "handed_off_ids": handed_off_ids,
             "post_landing_transport": post_landing_policy,
             "inactive_carton_ids": handed_off_ids,
@@ -5108,6 +5152,9 @@ try:
                 "constraint_independence_is_separate": True,
                 "normal_rule_resumes_after_all_known_target_cup_proximity_lost": True},
             "physical_cycle_completed": physical_cycle_completed,
+            "workflow_cycle_completed": workflow_cycle_completed,
+            "simulation_profile": metadata.get("simulation_profile"),
+            "assumed_reception_state": assumed_reception_state,
             "peak_actual_tcp_translation_error_m": max((item["tcp_translation_error_m"] for item in actual_frame_states), default=None),
             "peak_actual_tcp_rotation_error_rad": max((item["tcp_rotation_error_rad"] for item in actual_frame_states), default=None),
             "cup_collision_representation": "ALL_CUPS_COMPRESSED_BELLOWS_ENVELOPES_PLUS_VERIFIED_RIGID_INSERTS",
@@ -5521,9 +5568,13 @@ try:
         (args.output / "evidence_manifest.json").write_text(
             json.dumps(result["evidence_manifest"], indent=2), encoding="utf-8"
         )
+        from unloading_sim.qualification import reception_counts
+        result["execution_counts"] = {**reception_counts(completed_carton_ids, ideal_transport_records),
+            "actual_grasp": int(bool(grasp_enabled)), "actual_release": int(bool(release_open_confirmed))}
         result["post_landing_transport"] = {
             "policy": post_landing_policy, "states": ideal_transport_records,
             "events": session_transport_events, "actual_received_ids": completed_carton_ids,
+            "ideal_received_ids": ideal_received_ids, "processed_carton_ids": processed_carton_ids,
             "ideal_outfed_ids": handed_off_ids, "post_landing_physics_qualified": False,
             "video_excludes_offline_planning_pauses": True}
         (args.output / "ideal_transport_events.json").write_text(
@@ -5548,7 +5599,7 @@ try:
         session_time_offset_s += simulation_time
         session_segment_index += 1
         if (args.continuation_dir is None or session_segment_index >= args.maximum_segments
-                or not physical_cycle_completed):
+                or not workflow_cycle_completed):
             break
         request_path = args.continuation_dir / f"segment_{session_segment_index + 1:03d}_request.json"
         ready_path = args.continuation_dir / f"segment_{session_segment_index + 1:03d}_ready.json"
@@ -5567,7 +5618,7 @@ try:
         }, indent=2), encoding="utf-8")
         print("FANUC_REPLAY_STAGE=awaiting_same_world_continuation " + str(ready_path), flush=True)
         wait_started = time.monotonic()
-        while not request_path.is_file() and time.monotonic() - wait_started < args.continuation_wait_seconds:
+        while not request_path.is_file() and (args.continuation_wait_seconds is None or time.monotonic() - wait_started < args.continuation_wait_seconds):
             time.sleep(0.2)
         if not request_path.is_file():
             ready_path.write_text(json.dumps({"status": "CONTINUATION_WAIT_BUDGET_ENDED",

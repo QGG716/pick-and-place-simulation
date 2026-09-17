@@ -1,0 +1,165 @@
+{
+  "target": "carton_l07_c02",
+  "simulation_profile": {
+    "name": "proof_of_concept",
+    "ideal_suction": true,
+    "ideal_reception": true,
+    "ideal_outfeed": true,
+    "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+    "machine_qualification_claimed": false
+  },
+  "workflow_cycle_completed": true,
+  "physical_cycle_completed": false,
+  "actual_reception_succeeded": false,
+  "execution_counts": {
+    "actual_reception": 0,
+    "ideal_reception": 1,
+    "ideal_outfeed": 1,
+    "workflow_processed": 1,
+    "downstream_physical_qualification_claimed": false,
+    "actual_grasp": 1,
+    "actual_release": 1
+  },
+  "qualification_passed": false,
+  "qualification_failures": [
+    "joint_efforts_within_limit"
+  ],
+  "runtime_stop_reason": null,
+  "unexpected_robot_scene_contacts": [],
+  "replayed_simulation_seconds": 99.275,
+  "replay_wall_seconds": 815.0984408594668,
+  "physics_steps": 23826,
+  "physics_hz": 240.0,
+  "effective_render_rate_hz": 5.0,
+  "replay_video_frame_count": 496,
+  "replay_video_physical_time_scale": 1.0,
+  "replay_preview_speed": null,
+  "camera_rgba_shape": [
+    360,
+    640,
+    4
+  ],
+  "payload_grasp_command_succeeded": true,
+  "payload_release_executed": true,
+  "payload_release_open_confirmed": true,
+  "joint_positions_within_official_limits": true,
+  "model_inverse_dynamics_effort_limit_ratio": [
+    0.025120882287176984,
+    0.11110543433374921,
+    0.14550118314073593,
+    0.03044627062676878,
+    0.046720449707357246,
+    0.029895491673582405
+  ],
+  "world_session_id": "1789622627.8082964",
+  "qualification_check_details": {
+    "full_schedule_replayed": {
+      "status": "PASS",
+      "reason": "complete command schedule replayed"
+    },
+    "collision_scope_complete": {
+      "status": "PASS",
+      "reason": "robot self-collision and robot/payload scene contacts were monitored"
+    },
+    "unexpected_contacts_clear": {
+      "status": "PASS",
+      "reason": "no unexpected contacts",
+      "unexpected_contact_count": 0
+    },
+    "premature_payload_conveyor_contacts_clear": {
+      "status": "PASS",
+      "reason": "payload did not touch a conveyor before release",
+      "premature_payload_conveyor_contact_count": 0
+    },
+    "joint_tracking_within_limit": {
+      "status": "PASS",
+      "reason": "joint tracking is within limit",
+      "measured": 0.0009769201278686523,
+      "limit": 0.05,
+      "unit": "rad"
+    },
+    "joint_efforts_within_limit": {
+      "status": "NOT_EVALUATED",
+      "reason": "joint effort ratios are unavailable"
+    },
+    "payload_attachment_intact": {
+      "status": "PASS",
+      "reason": "payload remained attached through transport",
+      "peak_position_error_m": 1.2496723142649814e-05,
+      "position_tolerance_m": 0.02,
+      "peak_rotation_error_rad": 2.9172439827509728e-05,
+      "rotation_tolerance_rad": 0.1,
+      "payload_displacement_m": 3.9397281621141342,
+      "minimum_payload_displacement_m": 0.02
+    },
+    "release_event_executed": {
+      "status": "PASS",
+      "reason": "release event executed"
+    },
+    "placement_within_tolerance": {
+      "status": "PASS",
+      "reason": "settled placement is within tolerance",
+      "measured": 0.022504637526410524,
+      "limit": 0.08,
+      "unit": "m"
+    },
+    "gripper_wrench_envelope_complete": {
+      "status": "NOT_APPLICABLE",
+      "reason": "ideal_independent_cups explicitly assumes holding capacity",
+      "suction_mode": "ideal_independent_cups"
+    },
+    "gripper_limits_from_configuration": {
+      "status": "NOT_APPLICABLE",
+      "reason": "vacuum force/break limits are outside the ideal-independent-cup mode",
+      "suction_mode": "ideal_independent_cups"
+    },
+    "gripper_limits_calibrated": {
+      "status": "NOT_APPLICABLE",
+      "reason": "no calibrated vacuum envelope is claimed in ideal-independent-cup mode",
+      "suction_mode": "ideal_independent_cups"
+    },
+    "production_release_adapter": {
+      "status": "PASS",
+      "reason": "the original payload was opened by the production release adapter"
+    },
+    "joint_positions_within_limits": {
+      "status": "PASS",
+      "reason": "measured joint positions stayed inside the official limits"
+    }
+  },
+  "takeover": {
+    "state": "OUTFED_ASSUMED",
+    "completion_source": "RECEPTION_ASSUMED",
+    "actual_attachment_observed": true,
+    "attachment_removed": true,
+    "actual_top_contact_observed": false,
+    "takeover_time_s": 89.22083333333333,
+    "outfeed_time_s": 99.27499999999085,
+    "full_envelope_max_x_m": -3.200686460639619,
+    "disabled_collider_paths": [
+      "/Validation/Scene/carton_l07_c02"
+    ]
+  },
+  "vertical_correction_m": -0.02244309702849656,
+  "remaining_active_cartons": 39,
+  "inactive_carton_ids": [
+    "carton_l07_c02"
+  ],
+  "completed_carton_ids": [],
+  "processed_carton_ids": [
+    "carton_l07_c02"
+  ],
+  "artifacts_root": "/root/autodl-tmp/m710-poc-step1-20260917/outputs/poc_single_world/isaac",
+  "new_world": true,
+  "physical_runs": 1,
+  "extra_physical_runs": 0,
+  "artifact_sha256": {
+    "result.json": "41a7c3f3ef14cd171b8e062682679bfb592ab5cfb717e1788569fbae9b91f6de",
+    "replay.mp4": "d39b0b9d62c2437666f7a070dffca7a871b74ef618571b91ba0840229c816467",
+    "actual_remaining_state.json": "e5586bce2d5e46a108063fedfb8e9f1316197efc223a6b6653b564ff4ef19194",
+    "execution_events.json": "8db73ab145623077e3cbceb115b36946e20fbca2162b6d4d810af775fd615fcd",
+    "ideal_transport_events.json": "571fecf9ed2f46a4758becb6a7bef16ec07db3bfb1942bf0c4541c8b316a05a6"
+  },
+  "qualification_note": "Legacy execution_qualified fields are imported preflight metadata; runtime qualification_passed is false because measured drive effort ratios are unavailable, not an observed effort exceedance.",
+  "raw_video_hud_known_issue": "Original HUD incorrectly labels assumed reception as Actual received; authoritative actual reception count is zero. Final HUD corrected, no physical rerun. Final recorded frame 99.2 s precedes outfeed crossing at 99.275 s."
+}

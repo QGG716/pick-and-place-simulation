@@ -1,0 +1,29 @@
+{
+  "base_commit": "9db77cb8a51e9bf1821c6e84e90a7632fbce6b26",
+  "source_tree_before_report": "8e2d3f2af109399c7adc944406773746da3cbc11",
+  "logical_source_changes_after_physical_launch": [
+    "src/unloading_sim/layout_single_carton.py",
+    "scripts/isaacsim_fanuc_replay.py"
+  ],
+  "newline_or_content_byte_changes": [
+    "src/unloading_sim/contact_scheduler.py",
+    "src/unloading_sim/history_adaptation.py",
+    "src/unloading_sim/layout_single_carton.py",
+    "src/unloading_sim/layout_trajectory.py",
+    "src/unloading_sim/post_landing_transport.py",
+    "src/unloading_sim/serial_unloading.py",
+    "src/unloading_sim/wrist_transfer.py",
+    "scripts/isaacsim_fanuc_replay.py"
+  ],
+  "same_numeric_joint_path": true,
+  "same_release_prediction": true,
+  "same_runtime_script_bytes": false,
+  "executed_motion_fingerprint": "9f5be931ec93e7d946f998ae699513c9a9d6473ca9cf2dc9d0fd15d828702753",
+  "final_motion_fingerprint": "b9a8db316312d8837690eea760900346b70548e74a78da580bd41e7d938503c8",
+  "final_canonical_plan": "final-source/outputs/canonical_hud_plan",
+  "runtime_ast_identical_except_hud": true,
+  "runtime_adapter_sha256": {
+    "executed": "ff59461aef0b6d965ac08a7cfa0a28a86d919fe746042a283d1f1badd2b71c0b",
+    "final": "de9f74ca9a253db204ca854ea6d595338ebc8c860299aed6c6a5e5b18a647abb"
+  }
+}

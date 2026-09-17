@@ -130,7 +130,7 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
     landing = desired.copy()
     landing[2, 3] -= drop
     payload = OBB(landing[:3, 3], target.half_extents, landing[:3, :3], target.name, target.category)
-    support = support_union_audit(payload, supports, contact_tolerance_m=c.contact_tolerance_m,
+    support = support_union_audit(payload, supports, contact_tolerance_m=(c.budget.maximum_drop_m if c.budget.proof_of_concept else c.contact_tolerance_m),
                                  edge_tolerance_m=c.placement_policy.edge_tolerance_m)
     if not support["supported"]:
         return rejected({"reason": "HISTORY_RECEIVER_SUPPORT_INVALID", "stage": "place", "support": support})
@@ -218,6 +218,8 @@ def checked_departure(c, hint, start, placed, obstacles, direction, prediction):
         "sweep_samples": len(sweep), "stationary_carton_included": True,
         "next_approach_start_q_rad": path[-1].tolist(), "current_flight_and_residence_checked": True,
         "next_contact": {"status": "NOT_EVALUATED_HISTORY_HINT", "joint_path_length_rad": None}}
+    if c.budget.proof_of_concept:
+        return path, None, evidence
     # The old departure is already safe. Optional lookahead shares the same
     # production provider, 4 s call / 12 s request caps and parent's history slice.
     try:

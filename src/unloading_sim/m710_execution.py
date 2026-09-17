@@ -63,6 +63,7 @@ DEFAULT_CONFIG_PATH = (
     / "m710id70_dynamic_execution_v1.yaml"
 )
 EXECUTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/planning_profile.py",
     "src/unloading_sim/post_landing_transport.py",
     "src/unloading_sim/release_motion.py",
     "src/unloading_sim/layout_trajectory.py",
@@ -1072,6 +1073,8 @@ def _initialization_blocked_preflight(execution, policy, dynamics, motion, backe
             "video": "NOT_PRODUCED_WITHOUT_A_PHYSICAL_EXECUTION",
         },
     }
+    from .planning_profile import profile_evidence
+    result["simulation_profile"] = profile_evidence(policy.data)
     result["preflight_fingerprint"] = canonical_digest(result)
     return result
 
@@ -1127,6 +1130,14 @@ def build_m710_execution_preflight(
             motion_input=motion_input,
         )
     )
+    from .planning_profile import profile_evidence
+    expected_profile = profile_evidence(policy.data)
+    if motion.get("simulation_profile", expected_profile) != expected_profile:
+        raise ValueError("motion simulation profile mismatch")
+    segment = motion.get("selected_trajectory_segment")
+    if segment and ((segment.get("place", {}).get("release_mode") == "IDEAL_RECEPTION_RELEASE")
+                    != expected_profile["ideal_reception"]):
+        raise ValueError("motion release mode disagrees with execution profile")
     if motion.get("schema") != MOTION_RESULT_SCHEMA:
         raise ValueError("motion result has an unsupported schema")
     motion_identity = copy.deepcopy(motion)
@@ -1253,7 +1264,9 @@ def build_m710_execution_preflight(
         "stack_carton_names": list(scene.remaining_stack_names) if scene.remaining_stack_names is not None else [box.name for box in scene.cartons],
         "row_selection": copy.deepcopy(motion.get("task_population", {}).get("row_selection", {})),
         "completed_carton_ids": list(scene.snapshot.get("actual_state_context", {}).get("completed_carton_ids", [])),
+        "processed_carton_ids": list(scene.snapshot.get("actual_state_context", {}).get("processed_carton_ids", [])),
         "handed_off_ids": list(scene.snapshot.get("actual_state_context", {}).get("handed_off_ids", [])),
+        "simulation_profile": motion["simulation_profile"],
         "post_landing_transport": dict(scene.policy.data["search_strategy"].get("post_landing_transport", {"mode": "strict_physics"})),
         "receiver_transport_state": dict(scene.snapshot.get("actual_state_context", {}).get("receiver_transport_state", {})),
         "scene_primitives": primitives,
@@ -1358,6 +1371,8 @@ def build_m710_execution_preflight(
             "video": "NOT_PRODUCED_WITHOUT_A_PHYSICAL_EXECUTION",
         },
     }
+    from .planning_profile import profile_evidence
+    result["simulation_profile"] = profile_evidence(policy.data)
     result["preflight_fingerprint"] = canonical_digest(result)
     return result
 

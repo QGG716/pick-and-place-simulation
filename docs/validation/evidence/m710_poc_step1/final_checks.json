@@ -1,0 +1,84 @@
+{
+  "profile_mismatch": "REJECTED: motion simulation profile mismatch",
+  "immutable_baseline_equal": {
+    "motion.json": true,
+    "preflight.json": true,
+    "replay_bundle.json": true
+  },
+  "zero_budget": {
+    "complete_trajectory_status": "FAIL_CLOSED",
+    "statistics": {
+      "generated_candidate_count": 432,
+      "unique_candidates_evaluated": 0,
+      "total_attempt_count": 0,
+      "retry_count": 0,
+      "actual_complete_connection_attempt_count": 0,
+      "remaining_unsearched_count": 432,
+      "candidate_count_scope": "GENERATED_POOLS_ONLY_NOT_UNENUMERATED_TASKS",
+      "history_attempt_count": 0,
+      "quality_connection_attempt_count": 0,
+      "quality_generation_statistics": {
+        "ik_calls": 0,
+        "ik_seeds_attempted": 0,
+        "ik_iterations_consumed": 0,
+        "trajectory_ik_wall_seconds": 0
+      },
+      "history_complete_connection_attempt_count": 0,
+      "combined_actual_attempt_count": 0,
+      "combined_complete_connection_attempt_count": 0,
+      "candidate_schedule_statistics_scope": "ORDINARY_QUEUE_ONLY_HISTORY_ATTEMPTS_REPORTED_SEPARATELY",
+      "ordinary_queue_order_unchanged": true,
+      "unenumerated_task_count": 0,
+      "task_count": 5,
+      "task_success_count": 0,
+      "candidate_pose_attempts": 0,
+      "coverage_rejected": 0,
+      "ik_calls": 0,
+      "ik_seed_pool_available": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "ik_converged_pose_results": 0,
+      "ik_valid_solutions": 0,
+      "ik_deduplicated_candidates": 0,
+      "ik_deduplicated_candidate_records": 0,
+      "ik_stream_count_scope": "SUM_OF_ATTEMPT_STREAM_RECORDS_NOT_GLOBAL_UNIQUE_SOLUTIONS",
+      "path_connection_attempts": 0,
+      "trajectory_pose_attempts": 0,
+      "trajectory_pose_attempt_budget_scope": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+      "trajectory_pose_attempt_limit_per_task": null,
+      "trajectory_ik_calls": 0,
+      "trajectory_ik_seeds_attempted": 0,
+      "trajectory_ik_iterations_consumed": 0,
+      "trajectory_state_validations": 0,
+      "trajectory_edge_validation_calls": 0,
+      "trajectory_edge_state_samples": 0,
+      "trajectory_rrt_iterations_consumed": 0,
+      "trajectory_cartesian_samples": 0,
+      "complete_trajectory_success_count": 0,
+      "placement_candidates_generated": 0,
+      "state_cache_hits": 0,
+      "state_cache_misses": 0,
+      "task_failure_counts": {
+        "PLANNING_WALL_CLOCK_DEADLINE": 5
+      },
+      "candidate_failure_counts": {}
+    },
+    "initial_state_audit": {
+      "status": "NOT_EVALUATED",
+      "failure": {
+        "reason": "PLANNING_WALL_CLOCK_DEADLINE",
+        "stage": "actual_task_start"
+      },
+      "source": "FROZEN_INITIAL_LAYOUT_STATE",
+      "validator_identity": "m710id70_exact_mesh_tool:0b8476cafc1e7516671b55c23148a152d55a04b12f63b4a6fadd9bf58a6ff0fd",
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ]
+    }
+  }
+}

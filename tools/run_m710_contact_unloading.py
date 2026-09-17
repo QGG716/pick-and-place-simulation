@@ -8,6 +8,8 @@ import subprocess
 import sys
 import time
 import copy
+import signal
+import shutil
 from dataclasses import replace
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,13 +19,14 @@ from unloading_sim.layout_single_carton import (  # noqa: E402
     build_verified_motion_input, load_layout_motion_policy,
     run_layout_single_carton_audit, write_layout_single_carton_audit,
 )
+from unloading_sim.planning_profile import DEFAULT_MOTION, DEFAULT_EXECUTION, POC, profile_evidence
 from unloading_sim.serial_unloading import apply_actual_motion_state  # noqa: E402
 from unloading_sim.unloading_sequence import RowSequencePolicy, RowUnloadingState  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", default="configs/validation/m710id70_layout_v1_single_carton.yaml")
+    parser.add_argument("--config", default=DEFAULT_MOTION)
     parser.add_argument("--output", default="outputs/m710_contact_unloading_round01")
     parser.add_argument("--approach-mode", choices=("auto", "direct", "adaptive_pregrasp"))
     parser.add_argument("--planning-wall-time-s", type=float)
@@ -38,9 +41,16 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
+    if (output / "motion.json").exists() or (output / "first_feasible").exists():
+        raise FileExistsError("use a new output directory; existing planning evidence is immutable")
     start = time.monotonic()
+    def cancelled(signum, frame):
+        raise KeyboardInterrupt(f"signal {signum}")
+    signal.signal(signal.SIGTERM, cancelled)
     scene = None
     planning_policy = load_layout_motion_policy(args.config)
+    if args.execution_config is None and profile_evidence(planning_policy.data)["name"] == POC:
+        args.execution_config = ROOT / DEFAULT_EXECUTION
     if args.history_source is not None and args.reuse_motion is not None:
         raise ValueError("choose one history source")
     if (args.approach_mode is not None or args.planning_wall_time_s is not None
@@ -52,7 +62,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.approach_mode is not None:
             data["search_strategy"]["approach_mode"] = args.approach_mode
         if args.planning_wall_time_s is not None:
-            if not 0 < args.planning_wall_time_s < float("inf"):
+            if not 0 <= args.planning_wall_time_s < float("inf"):
                 raise ValueError("planning-wall-time-s must be finite and positive")
             data["search_strategy"]["planning_wall_time_s"] = args.planning_wall_time_s
         planning_policy = replace(planning_policy, data=data)
@@ -82,11 +92,19 @@ def main(argv: list[str] | None = None) -> int:
             failure = record.get("failure")
             summary["failure"] = failure.get("reason") if isinstance(failure, dict) else failure
             print(json.dumps(summary), flush=True)
-        result = run_layout_single_carton_audit(
-            planning_policy, progress_callback=progress, motion_input=scene, row_state=row_state)
+        try:
+            result = run_layout_single_carton_audit(
+                planning_policy, progress_callback=progress, motion_input=scene, row_state=row_state)
+        except BaseException as exc:
+            progress({"event": "CANCELLED" if isinstance(exc, KeyboardInterrupt) else "ERROR",
+                      "reason": str(exc), "exception_type": type(exc).__name__,
+                      "simulation_profile": profile_evidence(planning_policy.data),
+                      "best_complete_result": None, "resume_supported": False,
+                      "progress_evidence": "planning_progress.jsonl"})
+            raise
     serialize_started = time.monotonic()
     write_layout_single_carton_audit(result, output / "motion.json")
-    delivery = {"planning_seconds": result["planning_performance"]["planning_total_wall_seconds"],
+    delivery = {"simulation_profile": profile_evidence(planning_policy.data), "planning_seconds": result["planning_performance"]["planning_total_wall_seconds"],
         "serialization_seconds": time.monotonic()-serialize_started,
         "preflight_seconds": None, "export_seconds": None, "isaac_executed": False,
         "actual_state_sha256": None, "archived_or_live_state_not_modified": True}
@@ -138,6 +156,16 @@ def main(argv: list[str] | None = None) -> int:
                 json.loads(args.execution_bundle.read_text(encoding="utf-8")), project_root=ROOT)
             delivery["bundle_readback_seconds"] = time.monotonic()-readback_started
             delivery["bundle_path"] = str(args.execution_bundle.resolve())
+            baseline = output / "first_feasible"
+            baseline.mkdir(exist_ok=False)
+            for source, name in ((output / "motion.json", "motion.json"),
+                                 (output / "preflight.json", "preflight.json"),
+                                 (args.execution_bundle, "replay_bundle.json")):
+                shutil.copyfile(source, baseline / name)
+            delivery["first_complete_feasible_result_seconds"] = result["planning_performance"]["planning_total_wall_seconds"]
+            delivery["first_exportable_result_seconds"] = time.monotonic() - start
+            delivery["subsequent_optimization_seconds"] = 0.
+            delivery["immutable_baseline_directory"] = str(baseline.resolve())
             register = planning_policy.data["search_strategy"].get("history", {}).get("register_directory")
             if register:
                 from unloading_sim.history_candidates import register_planned_motion

@@ -113,10 +113,20 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
     handed_off = _identity_set(state.get("handed_off_ids", []), "handed_off_ids")
     from .post_landing_transport import ideal_transport_ids, OUTFED
     transport_state = copy.deepcopy(state.get("receiver_transport_state", {}))
-    ideal_ids = ideal_transport_ids(scene.policy.data["search_strategy"].get("post_landing_transport"),
+    ideal_ids = ideal_transport_ids(scene.policy.data.get("search_strategy", {}).get("post_landing_transport"),
                                     transport_state)
+    from .post_landing_transport import RECEPTION_SOURCE
+    actual_completed = completed.copy()
+    assumed = {name for name in ideal_ids if transport_state[name].get("completion_source") == RECEPTION_SOURCE}
+    if set(state.get("ideal_received_ids", [])) != assumed:
+        raise ValueError("ideal reception counts disagree with event sources")
+    if assumed & completed:
+        raise ValueError("assumed reception must not populate actual completion IDs")
+    completed |= assumed
     if not ideal_ids <= completed:
-        raise ValueError("ideal transport must preserve actual reception completion events")
+        raise ValueError("ideal transport must preserve reception completion events")
+    if state.get("processed_carton_ids") is not None and set(state["processed_carton_ids"]) != completed:
+        raise ValueError("processed identities disagree with reception sources")
     ideal_handoffs = {name for name in ideal_ids if transport_state[name]["state"] == OUTFED}
     if ideal_handoffs != handed_off.intersection(ideal_ids):
         raise ValueError("ideal outfeed events and cumulative handoffs disagree")
@@ -221,7 +231,8 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
         "schema": expected_schema, "source": source,
         "parent_scene_fingerprint": scene.snapshot["scene_fingerprint"],
         "initial_carton_registry": registry, "initial_carton_count": len(initial_names),
-        "completed_carton_ids": sorted(completed), "handed_off_ids": sorted(handed_off),
+        "completed_carton_ids": sorted(actual_completed), "processed_carton_ids": sorted(completed),
+        "ideal_received_ids": sorted(assumed), "handed_off_ids": sorted(handed_off),
         "remaining_stack_names": list(remaining_names), "active_body_count": len(actual_cartons),
         "world_session_id": world_session, "time_s": time_s, "carton_velocities": velocities,
         "row_selection": selection.as_dict(), "actual_state_fingerprint": state_fingerprint,
@@ -229,7 +240,7 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
         "completion_source": "EXPLICIT_EXECUTION_EVENTS_NOT_POSITION_CLASSIFICATION",
         "receiver_transport_state": transport_state,
         "ideal_transport_carton_ids": sorted(ideal_ids),
-        "post_landing_transport": dict(scene.policy.data["search_strategy"].get("post_landing_transport", {"mode": "strict_physics"})),
+        "post_landing_transport": dict(scene.policy.data.get("search_strategy", {}).get("post_landing_transport", {"mode": "strict_physics"})),
     }
     # Historical initial audit is retained with its original scope; it cannot
     # be mistaken for validation of the newly observed planner start.
@@ -291,7 +302,8 @@ class SerialUnloadingSession:
         self.scene = scene
         self.row_state = row_state or RowUnloadingState()
         self.maximum_completed_tasks = int(maximum_completed_tasks)
-        self.completed_at_start = len(scene.snapshot.get("actual_state_context", {}).get("completed_carton_ids", []))
+        self.completed_at_start = len(scene.snapshot.get("actual_state_context", {}).get("processed_carton_ids",
+            scene.snapshot.get("actual_state_context", {}).get("completed_carton_ids", [])))
         remaining = scene.cartons if scene.remaining_stack_names is None else tuple(
             box for box in scene.cartons if box.name in scene.remaining_stack_names)
         self.row_state.rank(remaining, support_graph=scene.support_graph)
@@ -302,7 +314,8 @@ class SerialUnloadingSession:
 
     def plan_next(self, *, progress_callback: Callable[..., Any] | None = None,
                   planner: Callable[..., Any] | None = None, **planner_kwargs: Any) -> Any:
-        completed = len(self.scene.snapshot.get("actual_state_context", {}).get("completed_carton_ids", []))
+        completed = len(self.scene.snapshot.get("actual_state_context", {}).get("processed_carton_ids",
+            self.scene.snapshot.get("actual_state_context", {}).get("completed_carton_ids", [])))
         if completed - self.completed_at_start >= self.maximum_completed_tasks:
             return {"status": "EXECUTION_BUDGET_EXHAUSTED", "completed_carton_count": completed,
                     "remaining_stack_names": list(self.scene.remaining_stack_names or ())}

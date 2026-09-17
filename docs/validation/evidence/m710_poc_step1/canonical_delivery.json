@@ -1,0 +1,30 @@
+{
+  "simulation_profile": {
+    "name": "proof_of_concept",
+    "ideal_suction": true,
+    "ideal_reception": true,
+    "ideal_outfeed": true,
+    "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+    "machine_qualification_claimed": false
+  },
+  "planning_seconds": 11.209702730178833,
+  "serialization_seconds": 0.006194073706865311,
+  "preflight_seconds": 0.2736598178744316,
+  "export_seconds": 0.28564196079969406,
+  "isaac_executed": false,
+  "actual_state_sha256": null,
+  "archived_or_live_state_not_modified": true,
+  "simulation_execution_ready": true,
+  "bundle_readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "773f6d8ae3c82651b8bd79b3eda697a2a10e6057d8265e2d4aeff3a17af80674",
+    "source_preflight_fingerprint": "12c9d9ddb6a954adf7c824b8ecb7dfe7deb0a06ee79875da7e4769d56b13443b",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "bundle_readback_seconds": 0.09617846459150314,
+  "bundle_path": "/root/autodl-tmp/m710-poc-step1-20260917/final-source/outputs/canonical_hud_plan/replay_bundle.json",
+  "first_complete_feasible_result_seconds": 11.209702730178833,
+  "first_exportable_result_seconds": 12.147120367735624,
+  "subsequent_optimization_seconds": 0.0,
+  "immutable_baseline_directory": "/root/autodl-tmp/m710-poc-step1-20260917/final-source/outputs/canonical_hud_plan/first_feasible"
+}

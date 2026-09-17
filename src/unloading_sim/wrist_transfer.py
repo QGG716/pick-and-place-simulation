@@ -56,7 +56,7 @@ def improve_complete_task(c, scene, target, baseline, scheduled_poses, *, deadli
     started = perf_counter()
     report = dict(status="NOT_EVALUATED", candidates=[], selected="BASELINE",
         baseline_content_sha256=baseline.get("validation", {}).get("completion", {}).get("content_sha256"),
-        maximum_connections=2, maximum_seed_solves=3, wall_budget_s=12.,
+        maximum_connections=2, maximum_seed_solves=3, wall_budget_s=None if c.budget.proof_of_concept else 12.,
         generation_statistics={}, attempts_count=0)
     attempts = []
     selected = deepcopy(baseline)
@@ -64,7 +64,7 @@ def improve_complete_task(c, scene, target, baseline, scheduled_poses, *, deadli
     if "J6" not in names or not report["baseline_content_sha256"] or attempt_limit <= 0:
         report["reason"] = "NO_NAMED_BOUND_BASELINE_OR_ATTEMPT_ALLOWANCE"
         return selected, attempts, report
-    stop = c._limit(deadline, c._optional_deadline(comparison=True), started + 12.)
+    stop = c._limit(deadline, c._optional_deadline(comparison=True), None if c.budget.proof_of_concept else started + 12.)
     report["deadline_monotonic"] = stop
     if stop is not None and stop-started < 1.:
         report["reason"] = "INSUFFICIENT_REMAINING_TIME"

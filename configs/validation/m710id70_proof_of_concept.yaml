@@ -1,0 +1,203 @@
+schema: m710id70_layout_single_carton_motion_v1
+layout_validation_config: m710id70_layout_v1.yaml
+task_population:
+  selector: support_relation_graph_removable
+  expected_scene_cartons: 40
+  expected_removable_cartons: 5
+  face_modes:
+  - front
+  - top
+  - side
+  support_contact_tolerance_m: 0.0002
+  support_minimum_overlap_ratio: 0.2
+receiver:
+  name: conveyor_longitudinal
+  fixed: true
+search_strategy:
+  history:
+    source: null
+    register_directory: null
+    maximum_files: 16
+    maximum_file_bytes: 4000000
+    maximum_candidates: 2
+    maximum_variants: 4
+    screening_wall_time_s: null
+    wall_time_s: null
+    request_fraction: 0.5
+    candidate_wall_time_s: null
+    normal_step_m: 0.0005
+    maximum_normal_offset_m: 0.0015
+    maximum_target_translation_m: 0.02
+    maximum_target_rotation_rad: 0.03
+    maximum_joint_adaptation_rad: 0.15
+  post_landing_transport:
+    mode: ideal_outfeed
+    tail_protection_enabled: false
+    evaluate_tipping: false
+    evaluate_post_landing_environment_collisions: false
+    downstream_capacity: assumed_sufficient
+    output_plane:
+      name: trailer_opening_x
+      direction: -X
+      x_m: -3.2
+    reception_mode: ideal
+  motion_semantics: m710_adaptive_contact_release_v2
+  placement_semantics: working_normal_into_carton_transverse_plus_x_v2
+  approach_mode: auto
+  maximum_drop_m: 0.05
+  receiver_edge_reserve_m: 0.01
+  grasp_poses_per_task: null
+  face_height_transition_m: 0.35
+  placement_candidates: 12
+  coarse_place_samples_per_axis: 3
+  fine_place_samples_per_axis: 7
+  row_height_fraction: 0.05
+  planning_wall_time_s: null
+  stage_connection_iterations: 600
+  continuation_stage_connection_iterations: 1800
+  local_transit_outward_step_m: 0.12
+  local_transit_outward_attempts: 3
+  placement_normal_tolerance_deg: 5.0
+  conveyor_footprint_boundary_tolerance_m: 0.002
+  surface_process_families:
+    conveyor_transverse: transverse
+    conveyor_longitudinal: longitudinal
+  overlap_process_priority:
+  - longitudinal
+  - transverse
+  allowed_placement_families:
+    transverse:
+    - TOP_DOWN
+    - TRANSVERSE_SIDE
+    longitudinal:
+    - TOP_DOWN
+    - RIGHT_WALL_FACING
+  extraction_runtime_clearance_reserve_m: 0.003
+  surface_directions_world:
+    conveyor_transverse:
+    - 0.0
+    - -1.0
+    - 0.0
+    conveyor_longitudinal:
+    - -1.0
+    - 0.0
+    - 0.0
+  profile: proof_of_concept
+fixed_cell:
+  lift_enabled: false
+  conveyor_extension_enabled: false
+  conveyor_z_optimization_enabled: false
+  base_scan_enabled: false
+tool_frame_contract:
+  schema: m710id70_planner_tool_frames_v1
+  transform_convention: T_parent_child_maps_child_coordinates_into_parent
+  planner_axes:
+    x: cup_array_row_tangent
+    y: cup_array_column_tangent
+    z: flange_toward_carton_inward_normal_at_contact
+  T_flange_virtual_task_tcp:
+  - - 0.0
+    - 0.0
+    - 1.0
+    - 0.25
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+  T_flange_uncompressed_cup_plane:
+  - - 0.0
+    - 0.0
+    - 1.0
+    - 0.2275
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+  T_flange_nominal_compressed_contact:
+  - - 0.0
+    - 0.0
+    - 1.0
+    - 0.2175
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+  active_physical_contact_frame: nominal_compressed_contact
+  virtual_task_tcp_role: strict_ik_fk_residual_only_never_attachment
+  attachment_frame_role: actual_physical_contact_only
+  tool0_clocking_status: OFFICIAL_FLANGE_TO_PROJECT_TOOL0_ADAPTER_RESOLVED
+  execution_qualified: true
+suction:
+  mode: ideal_independent_cups
+  holding_capacity_assumption: sufficient_for_selected_geometric_contacts
+  enforce_vacuum_force_capacity: false
+  enforce_vacuum_break_force: false
+  enforce_vacuum_break_torque: false
+  selection_policy: command_all_geometrically_eligible_cups
+  require_nonempty_geometric_contact: true
+  cup_rows: 6
+  cup_columns: 12
+  cup_pitch_m:
+  - 0.048
+  - 0.048
+  cup_radius_m: 0.0215
+  suction_edge_margin_m: 0.0
+ik:
+  seed: 71070
+  roll_candidates_deg:
+  - 0
+  - 90
+  - 180
+  - 270
+  grasp_face_offset_candidates_m:
+  - 0.0
+  - -0.024
+  - 0.024
+  grasp_tilt_candidates_rad:
+  - 0.0
+  - -0.03490658503988659
+  - 0.03490658503988659
+  random_restarts: 12
+  candidate_limit: 4
+  max_iterations: 180
+  damping: 0.015
+  max_step_rad: 0.2
+  position_tolerance_m: 0.0001
+  orientation_tolerance_rad: 0.0002
+  orientation_weight: 0.55
+  candidate_dedup_tolerance_rad: 0.001
+  candidate_dedup_tolerance_m: 0.0001
+state_validity:
+  collision_margin_m: 0.01
+  contact_tolerance_m: 0.0002
+  joint_margin_rad: 0.0174532925199433
+  maximum_jacobian_condition: 10000.0
+  official_radial_reach_m: 2.104
+  radial_guard_tolerance_m: 0.002
+execution_collision:
+  require_execution_qualified_cad_collision: true
+  qualification_manifest: ../../assets/robots/fanuc_m710id_70/official/provenance.yaml

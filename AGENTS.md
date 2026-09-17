@@ -9,17 +9,24 @@ The active user-approved simulation policy exempts the official J5_link/J6_link 
 
 This round uses `ideal_independent_cups`: all 72 cups have stable independent IDs and commands, every commanded cup must have a geometrically valid full seal ring on the selected target, and at least one valid cup is required.  No minimum load-bearing cup count, vacuum-force, shear, peel, leakage, or break-envelope check may reject a grasp in this explicit mode.  This holding-capacity assumption never permits remote attachment, wrong-carton attachment, rigid-tool penetration, collision bypass, payload mass reduction, infinite joint effort, or pose teleportation.
 
-The September 15 user update selects `post_landing_transport.mode=ideal_outfeed`.
-Only after real constraint removal and the same body's first qualified actual
-receiver-top contact, that carton becomes collision-disabled kinematic ideal
-transport. It moves continuously in simulation time via -Y transverse / -X
-longitudinal routing until its entire envelope crosses trailer opening X=-3.2 m.
-It then records OUTFED_ASSUMED and may become inactive, retaining its identity.
-Post-landing tipping, collisions, tail holds and capacity are not evaluated in
-this explicit assumption. All pre-landing physics and other object pairs retain
-their prior rules. Count actual reception and assumed outfeed separately; do not
-claim downstream physical qualification. The current run stops after the initial
-highest row and its ideal outfeed, leaving the lower 35 cartons physical.
+The September 17 step-one update selects the explicit `proof_of_concept`
+profile for the ordinary planning and continuation entries. It uses
+`ideal_independent_cups`, bounded ideal reception after actual attachment and
+constraint removal on the same carton in a checked receiving region, and ideal
+outfeed via -Y transverse / -X longitudinal routing until the entire envelope
+crosses X=-3.2 m. Record `RECEPTION_ASSUMED` separately from measured physical
+reception; never synthesize top-contact observations. Other colliders and all
+pre-handoff physics retain the existing rules. Explicit historical configurations
+retain physical-reception/strict-physics semantics. This is not machine or
+physical-downstream qualification.
+
+Planning in this profile has no business wall-clock deadline. Finite solver
+iterations and the existing finite candidate definitions remain, with fair seeded
+retries and visible unsearched counts. Preserve input resource limits and all
+physical failure monitors. Deliver a checked complete baseline and execution
+bundle before optional optimization. This round runs one representative new-world
+single-carton cycle only, retaining any failure; no full row or repeated physical
+trials without further instruction.
 
 The user-selected default recording profile is 640x360 at 5 fps, normal time.
 Keep the existing live world and its recording profile until that run finishes.
@@ -53,7 +60,7 @@ Lower rendering cadence must not lower physics or receiver-monitor cadence.
 6. Optimize bounded offline approach, SE(3) extraction, release and departure with one-step next-carton lookahead in the existing same-world executor. Pregrasp, support lift, normal withdrawal and vertical residence are optional motions, never mandatory 100/300 mm stations. Keep base scans, lift/extension changes, general online control and ROS/vision out of scope.
 7. Placement working normals point into the carton: TOP_DOWN=[0,0,-1], RIGHT_WALL_FACING=[0,-1,0], TRANSVERSE_SIDE=[1,0,0]. Preserve historical plans separately and invalidate stale motion semantics.
 8. The user restored GPU-server access during this round. Run all further planning, checks and Isaac execution on that server. Commit and push only feat/v0.5-feasibility-core; record actual physical execution and continuous video separately from CPU plans.
-9. The current motion-quality round stops after a same-actual-state unloaded-transition comparison, one bounded reproduction of the fifth-carton failure, and a real release-to-next-grasp fragment. Retain failures. Do not default to another full row or the historical populations. Use 640x360 at 5 fps and 1x physical time, preserving physics/control/contact-monitor rates. The previous physical world ended; new-world trials must be identified separately without cross-world completion counts.
+9. The September 17 proof-of-concept step stops after the directed CPU checks and one representative single-carton Isaac cycle. Retain failures. Do not default to another full row, fifth-carton search, or the historical populations. Use 640x360 at 5 fps and 1x physical time, preserving physics/control/contact-monitor rates. The previous physical world ended; new-world trials must be identified separately without cross-world completion counts.
 
 The detailed contracts, failure taxonomy, metrics, and acceptance gates are in `docs/development_priorities_m710id70_v3_recovery.md`.
 

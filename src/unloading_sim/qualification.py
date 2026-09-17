@@ -20,6 +20,20 @@ NOT_APPLICABLE = "NOT_APPLICABLE"
 BLOCKED_BY = "BLOCKED_BY"
 
 
+def reception_counts(actual_received_ids, transport_records):
+    """Count identities by evidence source without promoting ideal reception."""
+    from .post_landing_transport import RECEPTION_SOURCE, OUTFED
+    actual = set(actual_received_ids)
+    assumed = {name for name, record in transport_records.items()
+               if record.get("completion_source") == RECEPTION_SOURCE}
+    if actual & assumed:
+        raise ValueError("a reception cannot be both physically qualified and assumed")
+    outfed = {name for name, record in transport_records.items() if record.get("state") == OUTFED}
+    return {"actual_reception": len(actual), "ideal_reception": len(assumed),
+            "ideal_outfeed": len(outfed), "workflow_processed": len(actual | assumed),
+            "downstream_physical_qualification_claimed": False}
+
+
 @dataclass(frozen=True)
 class ReplayQualificationPolicy:
     tracking_error_limit_rad: float = 0.05

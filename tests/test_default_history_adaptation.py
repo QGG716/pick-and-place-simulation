@@ -72,7 +72,9 @@ def test_source_missing_empty_size_count_and_nonrecursive_bounds(tmp_path):
     for i in range(4):
         (tmp_path / f"{i}.json").write_text("x" * 100)
     source = history.HistorySource(history.HistoryPolicy(source=str(tmp_path), maximum_files=2, maximum_file_bytes=20))
-    assert len(source.records) == 2 and all("size limit" in r["reason"] for r in source.records)
+    rejected = [r for r in source.records if r["status"] == "REJECTED"]
+    assert len(rejected) == 2 and all("size limit" in r["reason"] for r in rejected)
+    assert {"status": "INPUT_FILE_LIMIT", "omitted_files": 2} in source.records
 
 
 @pytest.mark.parametrize("change", ["model", "tool", "layout", "dimensions", "joint_order", "stage", "target"])

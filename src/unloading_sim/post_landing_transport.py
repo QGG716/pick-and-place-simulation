@@ -13,11 +13,21 @@ from .geometry import OBB
 LANDED = "LANDED_IDEAL_TRANSPORT"
 OUTFED = "OUTFED_ASSUMED"
 LANDING_SOURCE = "ACTUAL_RELEASE_AND_RECEIVER_TOP_CONTACT"
+RECEPTION_SOURCE = "RECEPTION_ASSUMED"
+IDEAL_RECEPTION_ACCEPTED = "IDEAL_RECEPTION_ACCEPTED"
 HANDOFF_SOURCE = "IDEAL_DOWNSTREAM_FULL_ENVELOPE_CROSSING"
 
 
 def transport_policy(value=None):
     policy = dict(value or {"mode": "strict_physics"})
+    allowed = {"mode", "reception_mode", "tail_protection_enabled", "evaluate_tipping",
+               "evaluate_post_landing_environment_collisions", "downstream_capacity", "output_plane"}
+    if set(policy) - allowed:
+        raise ValueError("unknown transport policy fields")
+    if policy.get("reception_mode", "physical") not in {"physical", "ideal"}:
+        raise ValueError("unknown reception mode")
+    if policy.get("reception_mode") == "ideal" and policy.get("mode") != "ideal_outfeed":
+        raise ValueError("ideal reception requires ideal outfeed")
     if policy.get("mode") not in {"strict_physics", "ideal_outfeed"}:
         raise ValueError("unsupported post-landing transport mode")
     if policy["mode"] == "ideal_outfeed":
@@ -42,12 +52,19 @@ def ideal_transport_ids(policy, records):
     for name, record in records.items():
         if record.get("state") not in {LANDED, OUTFED}:
             continue
-        if not enabled or record.get("completion_source") != LANDING_SOURCE:
+        if not enabled or record.get("completion_source") not in {LANDING_SOURCE, RECEPTION_SOURCE}:
             raise ValueError("ideal state lacks its policy or actual reception source")
         if record.get("carton_id") != name or not record.get("attachment_removed"):
             raise ValueError("ideal transport requires the same released carton identity")
-        if not record.get("actual_top_contact_observed") or "takeover_pose_world" not in record:
-            raise ValueError("ideal transport requires observed receiver top contact and pose")
+        assumed = record.get("completion_source") == RECEPTION_SOURCE
+        if assumed:
+            if (policy.get("reception_mode") != "ideal" or not record.get("actual_attachment_observed")
+                    or not record.get("reception_region", {}).get("accepted")):
+                raise ValueError("assumed reception cannot satisfy physical reception policy")
+        elif not record.get("actual_top_contact_observed"):
+            raise ValueError("physical reception requires observed receiver contact")
+        if "takeover_pose_world" not in record:
+            raise ValueError("takeover pose is missing")
         if record["state"] == OUTFED and record.get("handoff_source") != HANDOFF_SOURCE:
             raise ValueError("outfed state lacks explicit ideal handoff evidence")
         result.add(name)
@@ -56,10 +73,21 @@ def ideal_transport_ids(policy, records):
 
 def begin_ideal_transport(box: OBB, *, receiver_name, receivers, directions,
                           time_s, policy, attachment_removed, top_contact_observed,
-                          support_geometry_accepted):
+                          support_geometry_accepted, expected_target=None, actual_attachment_observed=False,
+                          maximum_drop_m=.05, reception_supports=None):
     policy = transport_policy(policy)
+    assumed = policy.get("reception_mode") == "ideal"
+    region = None
+    if assumed:
+        if box.name != expected_target or not actual_attachment_observed:
+            raise ValueError("ideal reception requires the actually attached task target")
+        from .release_motion import ideal_reception_region
+        region = ideal_reception_region(box, reception_supports or [receivers[receiver_name]],
+                                        maximum_drop_m=maximum_drop_m)
+        if not region["accepted"]:
+            raise ValueError("ideal reception region rejected")
     if (policy["mode"] != "ideal_outfeed" or not attachment_removed
-            or not top_contact_observed or not support_geometry_accepted):
+            or (not assumed and (not top_contact_observed or not support_geometry_accepted))):
         raise ValueError("ideal takeover requires actual release and qualified first top contact")
     if receiver_name not in receivers:
         raise ValueError("unknown actual receiving conveyor")
@@ -69,6 +97,11 @@ def begin_ideal_transport(box: OBB, *, receiver_name, receivers, directions,
         raise ValueError("fixed longitudinal conveyor is missing")
     direction = np.asarray(directions[receiver_name], float)
     route = []
+    release_box = box
+    if assumed:
+        pose = np.asarray(region["reception_pose_world"])
+        box = OBB(pose[:3, 3], box.half_extents, pose[:3, :3], box.name, box.category)
+        route.append(box.center.tolist())
     if np.allclose(direction, [0., -1., 0.]):
         # The connector is an explicit ideal transfer at the longitudinal
         # centreline. Preserve the measured height and rotation throughout.
@@ -83,15 +116,17 @@ def begin_ideal_transport(box: OBB, *, receiver_name, receivers, directions,
         raise ValueError("output plane must be downstream of actual landing")
     route.append([exit_x, route[-1][1] if route else float(box.center[1]), float(box.center[2])])
     return {"carton_id": box.name, "state": LANDED,
-            "completion_source": LANDING_SOURCE, "attachment_removed": True,
-            "actual_top_contact_observed": True, "receiver": receiver_name,
+            "completion_source": RECEPTION_SOURCE if assumed else LANDING_SOURCE, "attachment_removed": True,
+            "actual_attachment_observed": bool(actual_attachment_observed), "reception_region": region,
+            "actual_top_contact_observed": bool(top_contact_observed), "receiver": receiver_name,
             "direction_world": direction.tolist(), "held": False,
             "takeover_time_s": float(time_s), "time_s": float(time_s),
-            "takeover_pose_world": box.world_from_local.tolist(),
-            "pose_world": box.world_from_local.tolist(),
+            "takeover_pose_world": release_box.world_from_local.tolist(),
+            "pose_world": release_box.world_from_local.tolist(),
             "half_extents_m": box.half_extents.tolist(), "route_world_m": route,
             "route_index": 0, "output_plane": copy.deepcopy(policy["output_plane"]),
-            "model": "SAME_BODY_KINEMATIC_COLLISION_DISABLED_AFTER_ACTUAL_LANDING",
+            "model": ("SAME_BODY_BOUNDED_IDEAL_RECEPTION" if assumed else
+                      "SAME_BODY_KINEMATIC_COLLISION_DISABLED_AFTER_ACTUAL_LANDING"),
             "post_landing_physics_qualified": False}
 
 

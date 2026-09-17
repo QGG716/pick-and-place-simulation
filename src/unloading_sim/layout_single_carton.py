@@ -63,6 +63,8 @@ from .workcell_layout import (
 )
 
 
+from .planning_profile import POC, profile_evidence, deadline_after, optional_seconds
+
 MOTION_SCHEMA = "m710id70_layout_single_carton_motion_v1"
 RESULT_SCHEMA = "m710id70_layout_single_carton_motion_audit_v1"
 EXPECTED_LAYOUT_ID = "m710id70_unloading_layout_v1"
@@ -97,6 +99,7 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/robot_load/task.py",
     "src/unloading_sim/scene.py",
     "src/unloading_sim/serial_unloading.py",
+    "src/unloading_sim/planning_profile.py",
     "src/unloading_sim/post_landing_transport.py",
     "src/unloading_sim/support.py",
     "src/unloading_sim/timing.py",
@@ -371,7 +374,7 @@ class FrozenLayoutMotionInput:
     @property
     def ideal_transport_ids(self):
         from .post_landing_transport import ideal_transport_ids
-        return ideal_transport_ids(self.policy.data["search_strategy"].get("post_landing_transport"),
+        return ideal_transport_ids(self.policy.data.get("search_strategy", {}).get("post_landing_transport"),
             self.snapshot.get("actual_state_context", {}).get("receiver_transport_state", {}))
 
     @property
@@ -464,10 +467,42 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
         raise ValueError("layout v1 forbids lift, conveyor extension/Z optimization, and base scans")
 
     strategy = _mapping(data["search_strategy"], "search_strategy")
+    allowed_strategy_keys = {
+        'allowed_placement_families',
+        'approach_mode',
+        'coarse_place_samples_per_axis',
+        'continuation_stage_connection_iterations',
+        'conveyor_footprint_boundary_tolerance_m',
+        'extraction_runtime_clearance_reserve_m',
+        'face_height_transition_m',
+        'fine_place_samples_per_axis',
+        'grasp_poses_per_task',
+        'history',
+        'local_transit_outward_attempts',
+        'local_transit_outward_step_m',
+        'maximum_drop_m',
+        'motion_semantics',
+        'overlap_process_priority',
+        'placement_candidates',
+        'placement_normal_tolerance_deg',
+        'placement_semantics',
+        'planning_wall_time_s',
+        'post_landing_transport',
+        'profile',
+        'receiver_edge_reserve_m',
+        'row_height_fraction',
+        'stage_connection_iterations',
+        'surface_directions_world',
+        'surface_process_families',
+    }
+    if set(strategy) - allowed_strategy_keys:
+        raise ValueError("unknown search_strategy fields")
     from .history_candidates import history_policy
     history_policy(strategy.get("history"))
-    _integer(strategy.get("grasp_poses_per_task", 48),
-             "search_strategy.grasp_poses_per_task", minimum=1)
+    profile_evidence(data)
+    if strategy.get("grasp_poses_per_task", 48) is not None:
+        _integer(strategy.get("grasp_poses_per_task", 48),
+                 "search_strategy.grasp_poses_per_task", minimum=0)
     from .post_landing_transport import transport_policy
     transport_policy(strategy.get("post_landing_transport"))
     directions = _mapping(
@@ -508,7 +543,7 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
         "longitudinal": ("TOP_DOWN", "RIGHT_WALL_FACING"),
     }:
         raise ValueError("configured placement families do not match the approved process")
-    _finite(strategy.get("planning_wall_time_s"), "planning_wall_time_s", minimum=1e-9)
+    optional_seconds(strategy.get("planning_wall_time_s"), "planning_wall_time_s")
     _finite(
         strategy.get("local_transit_outward_step_m"),
         "local_transit_outward_step_m",
@@ -1288,7 +1323,10 @@ def _build_automatic_trajectory_connector(
             extraction_runtime_clearance_reserve_m=float(
                 strategy.get("extraction_runtime_clearance_reserve_m", 0.0)
             ),
-            planning_wall_time_s=float(strategy.get("planning_wall_time_s", 900.0)),
+            planning_wall_time_s=optional_seconds(strategy.get("planning_wall_time_s", 900.0)),
+            proof_of_concept=strategy.get("profile") == POC,
+            **({"candidate_wall_time_s": None, "stage_wall_time_s": None, "postprocess_wall_time_s": None}
+               if strategy.get("profile") == POC else {}),
             local_transit_outward_step_m=float(strategy.get(
                 "local_transit_outward_step_m", 0.03
             )),
@@ -1363,6 +1401,7 @@ def _blocked_initial_state_result(
     )
     result: dict[str, Any] = {
         "schema": RESULT_SCHEMA,
+        "simulation_profile": profile_evidence(policy.data),
         "run_status": "BLOCKED",
         "layout_id": layout.data["layout_id"],
         "layout_fingerprint": layout.layout_fingerprint,
@@ -1521,14 +1560,15 @@ def run_layout_single_carton_audit(
             raise ValueError("motion-state continuation requires the exact state validator")
         initial_failure = trajectory_connector.validate_unloaded_state(
             policy.layout_validation.initial_q, scene.all_obstacles, stage="actual_task_start")
-        if initial_failure is not None:
+        if initial_failure is not None and initial_failure.get("reason") != "PLANNING_WALL_CLOCK_DEADLINE":
             raise ValueError(f"ACTUAL_TASK_START_INVALID: {initial_failure}")
         motion_state_source = str(
             motion_input.snapshot.get("actual_state_context", {}).get(
                 "source", "FROZEN_INITIAL_LAYOUT_STATE"
             )
         )
-        initial = {"status": "PASS", "source": motion_state_source,
+        initial = {"status": "PASS" if initial_failure is None else "NOT_EVALUATED",
+                   "failure": initial_failure, "source": motion_state_source,
                    "validator_identity": trajectory_connector.validator_identity,
                    "q_rad": policy.layout_validation.initial_q.tolist()}
     shapes = (
@@ -1581,8 +1621,8 @@ def run_layout_single_carton_audit(
     if trajectory_connector is not None and history_config.source is not None:
         remaining_seconds = trajectory_connector._remaining_wall_time()
         history_deadline = trajectory_connector._limit(trajectory_connector._deadline_monotonic,
-            history_started + min(history_config.wall_time_s, history_config.wall_time_s
-                if remaining_seconds is None else max(0., remaining_seconds)*history_config.request_fraction))
+            deadline_after(history_started, trajectory_connector._limit(history_config.wall_time_s,
+                None if remaining_seconds is None else max(0., remaining_seconds)*history_config.request_fraction)))
     history_source = HistorySource(history_config, deadline=history_deadline)
     for task_index, target_name in enumerate(scene.removable_cartons):
         target = cartons_by_name[target_name]
@@ -1608,9 +1648,11 @@ def run_layout_single_carton_audit(
         generation_started = perf_counter()
         scheduled_contact_poses = tuple(_scheduled_contact_poses(scene, target, faces))
         candidate_generation_seconds += perf_counter() - generation_started
-        pose_cap = int(strategy.get("grasp_poses_per_task", 48))
-        connection_limit = (trajectory_connector.budget.task_complete_connection_attempt_limit
-                            if trajectory_connector else pose_cap)
+        pose_cap = strategy.get("grasp_poses_per_task", 48)
+        if pose_cap is None:
+            pose_cap = len(scheduled_contact_poses) * 3  # full finite pool plus two seeded retries
+        connection_limit = (pose_cap if strategy.get("profile") == POC else
+            trajectory_connector.budget.task_complete_connection_attempt_limit if trajectory_connector else pose_cap)
         history_attempts, history_segment = evaluate_history(history_source, scene,
             trajectory_connector, target, connector_build.evidence, deadline=history_deadline,
             attempt_limit=max(0, min(pose_cap, connection_limit)//2))
@@ -1625,7 +1667,8 @@ def run_layout_single_carton_audit(
             batch_size=(trajectory_connector.budget.task_pose_batch_size if trajectory_connector
                         else max(1, len(faces))),
             attempt_limit=max(0, min(pose_cap, connection_limit)-len(history_attempts)),
-            complete_connection_limit=max(0, connection_limit-len(history_attempts)))
+            complete_connection_limit=max(0, connection_limit-len(history_attempts)),
+            fair_retries=strategy.get("profile") == POC)
         if selected_trajectory_segment is not None:
             scheduler.termination = "HISTORY_COMPLETE_TRAJECTORY_FOUND"
         while selected_trajectory_segment is None:
@@ -1637,11 +1680,16 @@ def run_layout_single_carton_audit(
             candidate, schedule_record = scheduled
             face, roll = candidate["face"], candidate["roll"]
             requested_physical_contact, task_set = candidate["pose"], candidate["variant"]
+            if strategy.get("profile") == POC:
+                schedule_record["candidate_wall_budget_s"] = None
             slice_seconds = schedule_record["candidate_wall_budget_s"]
             attempt_started = perf_counter()
+            if progress_callback is not None:
+                progress_callback({"event": "CONTACT_CANDIDATE_STARTED", "stage": "grasp_ik",
+                    "target": target_name, "scheduler": dict(schedule_record)})
             complete_connection_attempted = False
             if trajectory_connector is not None:
-                trajectory_connector.candidate_slice_s = slice_seconds
+                trajectory_connector.candidate_slice_s = None if strategy.get("profile") == POC else slice_seconds
             requested_virtual_task_tcp = virtual_tcp_from_physical_contact(
                 requested_physical_contact,
                 policy.tool_frames.flange_from_virtual_task_tcp,
@@ -1681,8 +1729,8 @@ def run_layout_single_carton_audit(
                         else None
                     ),
                     deadline_monotonic=(None if trajectory_connector is None else
-                                        min(float("inf") if trajectory_connector._deadline_monotonic is None
-                                            else trajectory_connector._deadline_monotonic, perf_counter() + 3.)),
+                                        trajectory_connector._limit(trajectory_connector._deadline_monotonic,
+                                            None if strategy.get("profile") == POC else perf_counter() + 3.)),
                     consume_candidate=None,
                 )
             attempt.update({key: schedule_record[key] for key in ("family_id", "candidate_id", "attempt_id")})
@@ -1792,7 +1840,8 @@ def run_layout_single_carton_audit(
                 scheduler.termination = task_search_termination
                 break
         quality_improvement = None
-        if selected_trajectory_segment is not None and trajectory_connector is not None:
+        if (selected_trajectory_segment is not None and trajectory_connector is not None
+                and strategy.get("profile") != POC):
             from .wrist_transfer import improve_complete_task
             selected_trajectory_segment, quality_attempts, quality_improvement = improve_complete_task(
                 trajectory_connector, scene, target, selected_trajectory_segment, scheduled_contact_poses,
@@ -1911,7 +1960,7 @@ def run_layout_single_carton_audit(
         "trajectory_pose_attempts": sum(
             int(task.get("trajectory_pose_attempts", 0)) for task in tasks
         ),
-        "trajectory_pose_attempt_budget_scope": SCHEDULE_MODE,
+        "trajectory_pose_attempt_budget_scope": ("FAIR_FULL_POOL_AND_SEEDED_RETRIES" if strategy.get("profile") == POC else SCHEDULE_MODE),
         "trajectory_pose_attempt_limit_per_task": (
             None
             if trajectory_connector is None
@@ -1966,6 +2015,7 @@ def run_layout_single_carton_audit(
     }
     result: dict[str, Any] = {
         "schema": RESULT_SCHEMA,
+        "simulation_profile": profile_evidence(policy.data),
         "run_status": "COMPLETED",
         "layout_id": scene.snapshot["layout_id"],
         "layout_fingerprint": scene.snapshot["layout_fingerprint"],
@@ -2020,7 +2070,8 @@ def run_layout_single_carton_audit(
         "execution_collision_qualification": execution,
         "trajectory_backend": dict(connector_build.evidence),
         "history_source": history_source.evidence(),
-        "history_compatibility": {"joint_names": list(scene.snapshot["robot"]["joint_names"]),
+        "effective_motion_policy": copy.deepcopy(dict(policy.data)),
+        "history_compatibility": {"simulation_profile": profile_evidence(policy.data), "joint_names": list(scene.snapshot["robot"]["joint_names"]),
             "coordinate_convention": "+X into trailer, +Y left, +Z up; SI",
             "hints_only": True},
         "tasks": tasks,

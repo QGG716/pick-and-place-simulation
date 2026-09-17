@@ -21,6 +21,7 @@ import xml.etree.ElementTree as ET
 
 import numpy as np
 
+from .planning_profile import deadline_after, optional_seconds
 from .depalletizing import minimum_clearance_extraction_distance
 from .collision_policy import SimulationCollisionPolicy, PhysicsCheckedStackTracker
 from .conveyor_placement import (
@@ -32,7 +33,7 @@ from .conveyor_placement import (
     placement_working_normal, PLACEMENT_SEMANTICS,
 )
 from .release_motion import (MOTION_SEMANTICS, ReleasePolicy, predict_release,
-                             SUPPORTED_RELEASE, SHORT_DROP_RELEASE, departure_sweep, verify_release_prediction,
+                             SUPPORTED_RELEASE, SHORT_DROP_RELEASE, IDEAL_RECEPTION_RELEASE, departure_sweep, verify_release_prediction,
                              receiver_transport_support, receiver_footprint_reserve)
 from .geometry import OBB, rotation_matrix_from_rotation_vector, rotation_vector_from_matrix
 from .ik import iter_ik_solutions, pose_error, solve_ik_multistart
@@ -259,10 +260,10 @@ def validate_layout_trajectory_stage_contract(
             )
     place = segment.get("place")
     support = place.get("support") if isinstance(place, Mapping) else None
-    drop = isinstance(place, Mapping) and place.get("release_mode") == SHORT_DROP_RELEASE
+    drop = isinstance(place, Mapping) and place.get("release_mode") in {SHORT_DROP_RELEASE, IDEAL_RECEPTION_RELEASE}
     prediction = place.get("release_prediction", {}) if isinstance(place, Mapping) else {}
     if drop and (not adaptive or prediction.get("accepted") is not True
-                 or prediction.get("mode") != SHORT_DROP_RELEASE
+                 or prediction.get("mode") != place.get("release_mode")
                  or prediction.get("actual_landing_state") is not None):
         raise ValueError("short drop requires qualified prediction, never fabricated actual landing")
     if not isinstance(support, Mapping) or (not drop and support.get("supported") is not True):
@@ -292,7 +293,8 @@ def validate_layout_trajectory_stage_contract(
 class LayoutTrajectoryBudget:
     """Deterministic search limits; none of these values relax geometry."""
 
-    candidate_wall_time_s: float = 30.0
+    proof_of_concept: bool = False
+    candidate_wall_time_s: float | None = 30.0
     stage_wall_time_s: float = 12.0
     postprocess_wall_time_s: float = 3.0
     grasp_branches: int = 4
@@ -342,8 +344,10 @@ class LayoutTrajectoryBudget:
                 or int(self.local_transit_cartesian_sample_budget) != self.local_transit_cartesian_sample_budget
                 or self.local_transit_cartesian_sample_budget < 0):
             raise ValueError("local transit sample budget must be a nonnegative integer")
+        for name in ("candidate_wall_time_s", "stage_wall_time_s", "postprocess_wall_time_s", "planning_wall_time_s"):
+            optional_seconds(getattr(self, name), name)
         positive_names = (
-            "candidate_wall_time_s", "stage_wall_time_s", "postprocess_wall_time_s",
+
             "rrt_step_rad",
             "edge_resolution_rad",
             "cartesian_step_m",
@@ -373,7 +377,7 @@ class LayoutTrajectoryBudget:
             raise ValueError("extraction_runtime_clearance_reserve_m must be finite and non-negative")
         if (self.planning_wall_time_s is not None
                 and (not np.isfinite(self.planning_wall_time_s)
-                     or self.planning_wall_time_s <= 0.0)):
+                     or self.planning_wall_time_s < 0.0)):
             raise ValueError("planning_wall_time_s must be finite and positive when configured")
 
 
@@ -383,7 +387,7 @@ class LayoutTrajectoryBudget:
 
     @property
     def task_complete_connection_attempt_limit(self):
-        return 3 * self.task_pose_connection_attempts
+        return None if self.proof_of_concept else 3 * self.task_pose_connection_attempts
 
 
 @dataclass(frozen=True)
@@ -903,9 +907,9 @@ class LayoutTrajectoryConnector:
         # Bounded allowance for the necessary continuation, inside parent time.
         now = perf_counter()
         remaining = self._remaining_wall_time()
-        reserve = min(3., self.budget.stage_wall_time_s)
+        reserve = 0. if self.budget.stage_wall_time_s is None else min(3., self.budget.stage_wall_time_s)
         return self._limit(self._deadline_monotonic,
-            None if comparison else now + self.budget.postprocess_wall_time_s,
+            None if comparison else deadline_after(now, self.budget.postprocess_wall_time_s),
             None if remaining is None else now + max(0., remaining - reserve))
 
     def _context_identity(self, obstacles, *, attachment=None, support_names=(),
@@ -917,7 +921,7 @@ class LayoutTrajectoryConnector:
         v = self.robot_state_validator
         values = (self._request_generation, getattr(self, "_candidate_identity", None),
             self.validator_identity, id(self.robot), id(getattr(v, "mesh_robot", None)),
-            self.collision_policy.to_mapping(),
+            self.collision_policy.to_mapping(), self.budget.proof_of_concept, self.post_landing_transport,
             self.collision_margin_m, self.contact_tolerance_m, self.joint_margin_rad,
             self.maximum_jacobian_condition, self.official_radial_reach_m,
             self.radial_guard_tolerance_m, self.budget.edge_resolution_rad, dict(self.ik),
@@ -1060,7 +1064,7 @@ class LayoutTrajectoryConnector:
             "final_export_reserve_s": getattr(self, "_final_export_reserve_s", 0.),
             "final_reserve_scope": "COMPLETE_TASK_VALIDATION_AND_IN_PROCESS_BINDING_ONLY",
             "independent_preflight_export_in_request_budget": False,
-            "optional_continuation_reserve_s": min(3., self.budget.stage_wall_time_s),
+            "optional_continuation_reserve_s": 0. if self.budget.stage_wall_time_s is None else min(3., self.budget.stage_wall_time_s),
             "deadline_boundary": "completion < deadline; new work requires now < deadline",
             "task_pose_scope": "shared_by_one_task_across_faces_rolls_and_task_set_variants",
             "grasp_branches_per_pose": self.budget.grasp_branches,
@@ -1496,6 +1500,8 @@ class LayoutTrajectoryConnector:
         """
         baseline = [np.asarray(q).copy() for q in path]
         started = perf_counter()
+        if self.budget.proof_of_concept:
+            return [np.asarray(q).copy() for q in path], {"adopted": False, "reason": "DEFERRED_UNTIL_BASELINE_DELIVERY"}
         deadline = self._optional_deadline()
         identity = self._context_identity(obstacles, stage="pregrasp")
         evidence = dict(started_monotonic=started, deadline_monotonic=deadline,
@@ -1627,7 +1633,7 @@ class LayoutTrajectoryConnector:
                 selected = candidate.q.copy()
                 selected_path = path
                 failure = None
-                if attachment is not None or len(feasible) >= 2 or self._deadline_reached():
+                if self.budget.proof_of_concept or attachment is not None or len(feasible) >= 2 or self._deadline_reached():
                     break
             elif not feasible:
                 failure = candidate_failure
@@ -1975,7 +1981,10 @@ class LayoutTrajectoryConnector:
         unique: list[np.ndarray] = []
         for direction in directions:
             direction = np.asarray(direction, dtype=float)
-            direction /= np.linalg.norm(direction)
+            norm = float(np.linalg.norm(direction))
+            if not np.isfinite(norm) or norm <= 1e-12:
+                continue
+            direction /= norm
             if not any(np.allclose(direction, other, atol=1e-12, rtol=0.0) for other in unique):
                 unique.append(direction)
         constraints = [
@@ -2003,7 +2012,7 @@ class LayoutTrajectoryConnector:
         routes = [(unique[0], "straight")]
         routes += [(unique[0], "outward_then_turn"), (unique[0], "coupled_lift_turn")]
         routes += [(direction, "straight") for direction in unique[1:]]
-        for index, (direction, route) in enumerate(routes[: self.budget.extraction_direction_attempts]):
+        for index, (direction, route) in enumerate(routes if self.budget.proof_of_concept else routes[: self.budget.extraction_direction_attempts]):
             distance = minimum_clearance_extraction_distance(
                 box,
                 direction,
@@ -2300,6 +2309,9 @@ class LayoutTrajectoryConnector:
             placement_attempts = []
             residence_fallback = None
             for placement_index, placement in enumerate(placements):
+                if self.budget.proof_of_concept:
+                    self._placement_remaining = self.budget.stage_connection_iterations
+                    self._local_transit_remaining = self.budget.local_transit_cartesian_sample_budget
                 if self._deadline_reached():
                     break
                 # One shared downstream budget; reserve real connection work for
@@ -2330,6 +2342,8 @@ class LayoutTrajectoryConnector:
                         transit_hint=transit_hint)
                     record = {"height_m": height, "failure": failure}
                     if segment is not None:
+                        if self.budget.proof_of_concept:
+                            return segment, None, branch_trace
                         # All later release/placement alternatives are optional.
                         # One window, shared by their search, scoring and final
                         # checks; no new reserve per alternative.
@@ -2478,8 +2492,8 @@ class LayoutTrajectoryConnector:
                       self.next_contact_provider(placed.name))
         if not candidates:
             return {"status": "NOT_EVALUATED", "reason": "NO_NEXT_CONTACT_CANDIDATE", "joint_path_length_rad": None, "attempts": []}
-        remaining = getattr(self, "_lookahead_remaining_s", 12.0)
-        if remaining <= 0:
+        remaining = None if self.budget.proof_of_concept else getattr(self, "_lookahead_remaining_s", 12.0)
+        if remaining is not None and remaining <= 0:
             return {"status": "NOT_EVALUATED", "joint_path_length_rad": None,
                     "reason": "REQUEST_LOOKAHEAD_BUDGET_EXHAUSTED", "attempts": [],
                     "requires_actual_state_replan": True}
@@ -2496,7 +2510,7 @@ class LayoutTrajectoryConnector:
         world = [*obstacles, future]
         attempts = []
         try:
-            self._deadline_monotonic = self._limit(outer_deadline, before + min(4., remaining))
+            self._deadline_monotonic = self._limit(outer_deadline, None if self.budget.proof_of_concept else before + min(4., remaining))
             for index, candidate in enumerate(candidates):
                 with self._contact_context():
                     if self._deadline_reached():
@@ -2565,7 +2579,7 @@ class LayoutTrajectoryConnector:
                 "planning_wall_seconds": perf_counter() - before,
                 "safe_current_residence_remains_valid": True}
         finally:
-            self._lookahead_remaining_s = max(0., remaining - (perf_counter() - before))
+            self._lookahead_remaining_s = None if remaining is None else max(0., remaining - (perf_counter() - before))
             self._deadline_monotonic = outer_deadline
 
     def _departure(self, start, placed, obstacles, direction, *, seed, working_normal,
@@ -2612,6 +2626,10 @@ class LayoutTrajectoryConnector:
                     for turn in ((0., 1.) if future_contacts and i < 2 else (0.,))]
         attempts, safe_choices, tested_directions = [], [], []
         def score_departure(path, evidence, candidate_seed):
+            if self.budget.proof_of_concept:
+                evidence.update(next_contact={"status": "DEFERRED_UNTIL_BASELINE_DELIVERY"},
+                                two_task_cost_rad=None, departure_quality=None)
+                return ((True, None), [q.copy() for q in path], deepcopy(evidence))
             lookahead = self._next_contact_cost(path[-1], placed, obstacles, sweep, seed=candidate_seed)
             quality = self._optional_quality(path, self._deadline_monotonic)
             departure_cost = float(np.linalg.norm(np.diff(path, axis=0), axis=1).sum())
@@ -2632,6 +2650,8 @@ class LayoutTrajectoryConnector:
             # alternative is useful if the baseline next-target cost is unknown.
             variants = variants[:2] if safe_choices[0][0][1] is not None else []
         for index, (vector, turn) in enumerate(variants):
+            if self.budget.proof_of_concept and safe_choices:
+                break
             if self._deadline_reached():
                 break
             if np.linalg.norm(vector) < 1e-10:
@@ -2820,7 +2840,8 @@ class LayoutTrajectoryConnector:
             edge_tolerance_m=self.placement_policy.edge_tolerance_m,
             engineering_edge_margin_m=self.placement_policy.engineering_edge_margin_m,
         )
-        release_mode = SHORT_DROP_RELEASE if release_height > 0 else SUPPORTED_RELEASE
+        release_mode = (IDEAL_RECEPTION_RELEASE if self.budget.proof_of_concept else
+                        SHORT_DROP_RELEASE if release_height > 0 else SUPPORTED_RELEASE)
         release_prediction = predict_release(placed, selected_supports, mode=release_mode,
             obstacles=payload_obstacles, policy=ReleasePolicy(maximum_drop_m=self.budget.maximum_drop_m),
             contact_tolerance_m=self.contact_tolerance_m,
@@ -2879,7 +2900,7 @@ class LayoutTrajectoryConnector:
         landing_pose = np.asarray(release_prediction["predicted_landing_pose_world"])
         landing_box = OBB(landing_pose[:3, 3], placed.half_extents, landing_pose[:3, :3], placed.name, placed.category)
         edge_reserve = receiver_footprint_reserve(landing_box, selected_supports, self.budget.receiver_edge_reserve_m,
-            contact_tolerance_m=self.contact_tolerance_m, edge_tolerance_m=self.placement_policy.edge_tolerance_m)
+            contact_tolerance_m=(self.budget.maximum_drop_m if self.budget.proof_of_concept else self.contact_tolerance_m), edge_tolerance_m=self.placement_policy.edge_tolerance_m)
         if not edge_reserve["supported"]:
             return None, {"reason": "RECEIVER_EDGE_RESERVE_UNAVAILABLE", "stage": "place",
                           "edge_reserve": edge_reserve}, trace
@@ -3001,7 +3022,7 @@ class LayoutTrajectoryConnector:
         allowance = getattr(self, "candidate_slice_s", self.budget.candidate_wall_time_s)
         started = perf_counter()
         self._candidate_final_deadline = self._limit(
-            getattr(self, "_request_deadline_monotonic", outer), started + allowance)
+            getattr(self, "_request_deadline_monotonic", outer), deadline_after(started, allowance))
         if kwargs.pop("optional_quality", False) or kwargs.get("history_hint") is not None:
             # History's share cannot borrow the ordinary-search/final reserve.
             self._candidate_final_deadline = self._limit(self._candidate_final_deadline, outer)
@@ -3073,8 +3094,9 @@ class LayoutTrajectoryConnector:
             candidate_deadline = self._deadline_monotonic
             slots = min(len(grasp_candidates), self.budget.grasp_branches)-index
             remaining_s = self._remaining_wall_time()
-            branch_seconds = (self.budget.candidate_wall_time_s/slots if remaining_s is None else remaining_s/slots)
-            self._deadline_monotonic = self._limit(candidate_deadline, perf_counter()+branch_seconds)
+            branch_seconds = (None if self.budget.proof_of_concept else
+                self.budget.candidate_wall_time_s/slots if remaining_s is None else remaining_s/slots)
+            self._deadline_monotonic = self._limit(candidate_deadline, deadline_after(perf_counter(), branch_seconds))
             old_final = getattr(self, "_branch_final_deadline", None)
             old_identity = getattr(self, "_candidate_identity", None)
             final_limit = getattr(self, "_candidate_final_deadline", candidate_deadline)
