@@ -1,0 +1,266 @@
+{
+  "schema": "production_rejection_replay_v1",
+  "rows": [
+    {
+      "group": "[\"rrt_success_full_edge_recheck\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"carton_l06_c01\"]]",
+      "observed_count": 1,
+      "example": {
+        "candidate": {
+          "candidate_id": "24cc94805ac2da8d94e80b490844dad63a10f5a50b9dacbb394ef65375543b8f",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "24cc94805ac2da8d94e80b490844dad63a10f5a50b9dacbb394ef65375543b8f:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 3796592966,
+          "path_seed": 1281902372,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          -0.5621395048947619,
+          0.0912840709862667,
+          0.32052799561110673,
+          0.45790643521378077,
+          -0.46868539693967776,
+          1.1604549891561313
+        ],
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "CLEARANCE_INSUFFICIENT",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_rigid_0",
+            "carton_l06_c01"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": false,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0049993944938984194,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "rrt_success_full_edge_recheck",
+        "edge": {
+          "start_q_rad": [
+            -0.5450072199767525,
+            0.08680297999148709,
+            0.3195968054013685,
+            0.4857277176378989,
+            -0.4802946216872922,
+            1.181282071898904
+          ],
+          "end_q_rad": [
+            -0.6291816915361799,
+            0.10881951008659299,
+            0.3241719361677052,
+            0.34903598285977877,
+            -0.4232560910405223,
+            1.0789542917815824
+          ],
+          "index": 28,
+          "fraction": 0.20353302611367127
+        },
+        "context": "3fbab55c37a49e722cf9ab5cc1ecf2dde92f15d7b8336267e63a12de3abf141e"
+      },
+      "replay_failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "pregrasp",
+        "pair": [
+          "tool_rigid_0",
+          "carton_l06_c01"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0049993944938984194,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "carton_l06_c01",
+          "pose_world": [
+            [
+              0.9999999951135643,
+              -9.867761123668276e-05,
+              5.9666033833557994e-06,
+              0.29974400997161865
+            ],
+            [
+              9.867751441530559e-05,
+              0.9999999949997433,
+              1.622533607436036e-05,
+              -0.4194844961166382
+            ],
+            [
+              -5.96820443092658e-06,
+              -1.6224747225484923e-05,
+              0.9999999998505691,
+              1.9500489234924316
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "world_aabb_m": [
+            [
+              -0.00027661907520543094,
+              -0.6195165321713226,
+              1.800043888104072
+            ],
+            [
+              0.5997646390184428,
+              -0.21945246006195376,
+              2.1000539588807916
+            ]
+          ]
+        },
+        {
+          "name": "tool_rigid_0",
+          "pose_world": [
+            [
+              -0.6873002466839087,
+              -0.16834696683640096,
+              0.7065958319047897,
+              -0.06255477277893076
+            ],
+            [
+              -0.725103587089329,
+              0.10151741978046822,
+              -0.6811159970748772,
+              -0.5247916319441617
+            ],
+            [
+              0.04293202648869882,
+              -0.980486365146451,
+              -0.1918419371865123,
+              2.3946426299175583
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.144000002,
+            0.288000002,
+            0.012000001999999996
+          ],
+          "world_aabb_m": [
+            [
+              -0.21848908785764062,
+              -0.6666169603621724,
+              2.103778239264249
+            ],
+            [
+              0.0933795422997791,
+              -0.3829663035261509,
+              2.6855070205708675
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        2.6667196112947478,
+        1.400281009982014,
+        1.725518043466542,
+        6.523410572763537,
+        1.7129761680532343,
+        5.820862018821186
+      ],
+      "jacobian_condition": 14.14647076638785,
+      "original_cad_intersection_proven": false
+    }
+  ],
+  "all_matched": true,
+  "source_part_probe": {
+    "part": {
+      "schema": "wantai_single_part_mesh_probe_v1",
+      "source_step_sha256": "d54ec5818a772877162e7d8eded484c67920de148037373d9d7d8e35cfa0694b",
+      "coverage_sha256": "10759d0b68212540c2b9ea48ee124832446ef73f6b282eff796f3d531be1b7fc",
+      "tool_part_index": 0,
+      "source_solid_index": 0,
+      "source_bounds_step_mm": [
+        -336.56173150640416,
+        -12.659188413158216,
+        -144.0,
+        239.43826849359596,
+        11.340811586841786,
+        144.00000000000006
+      ],
+      "mesh_path": "/root/autodl-tmp/m710-official-dynamics-20260910/tool-part-diagnostic/part0/tool_rigid_000_source_solid_000.stl",
+      "mesh_sha256": "56b831d96c1c9a88075e5fa9938d9707ee186690593f2cb0221ff10fe1da92a8",
+      "mesh_units": "millimetre",
+      "linear_deflection_mm": 0.05,
+      "angular_deflection_rad": 0.05,
+      "generator_sha256": "be252fb9d33ff30a309c6f48474bcb539079cdc0d4ff1e6f91057f660afcedd4",
+      "runtime_collision_policy_changed": false
+    },
+    "cases": [
+      {
+        "q_rad": [
+          -0.5621395048947619,
+          0.0912840709862667,
+          0.32052799561110673,
+          0.45790643521378077,
+          -0.46868539693967776,
+          1.1604549891561313
+        ],
+        "pair": [
+          "tool_rigid_0",
+          "carton_l06_c01"
+        ],
+        "stage": "pregrasp",
+        "mesh_distance_m": 0.011373608585381875,
+        "mesh_contacts": 0,
+        "required_pair_clearance_m": 0.005,
+        "classification": "PROXY_REJECTION_NOT_CONFIRMED_BY_SOURCE_MESH"
+      }
+    ],
+    "current_coverage_sha256": "d6d337df797c5adac5d0f5d0b725df0e9136674091278e17759a68757cea926a",
+    "coverage_binding": "EXACT_BYTES_OR_LF_NORMALIZATION_ONLY",
+    "runtime_geometry_changed": false,
+    "scope": "OFFLINE_TESSELLATED_SOURCE_SOLID_NOT_ANALYTIC_BREP_PROOF"
+  }
+}

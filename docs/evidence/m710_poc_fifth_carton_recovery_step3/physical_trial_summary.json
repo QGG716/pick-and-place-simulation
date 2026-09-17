@@ -1,0 +1,393 @@
+{
+  "target": "carton_l07_c04",
+  "runtime_stop_reason": "UNEXPECTED_ROBOT_OR_RIGID_TOOL_PROXIMITY",
+  "new_target_execution_counts": {
+    "target": "carton_l07_c04",
+    "actual_grasp": 1,
+    "actual_release": 0,
+    "actual_received": 0,
+    "ideal_received": 0,
+    "ideal_outfed": 0,
+    "workflow_completed": 0
+  },
+  "archive_initialization": {
+    "world_scope": "NEW_WORLD_RECONSTRUCTED_FROM_ARCHIVED_ACTUAL_STATE",
+    "source_world_session_id": "1789448839.7527404",
+    "new_world_session_id": "1789650082.7890007",
+    "source_actual_state_fingerprint": "2dcfe706fbb21524dc44af72333289355f3494cd6a3baefac70fdeabd81d913d",
+    "historical_counts": {
+      "actual_received": 4,
+      "ideal_received": 0,
+      "processed": 4,
+      "outfed": 3
+    },
+    "initial_binding": {
+      "accepted": true,
+      "retained_carton_count": 37,
+      "recording_output_changed": false,
+      "world_session_id": "1789650082.7890007",
+      "scene_restored_or_teleported": false
+    },
+    "historical_events_counted_as_new_task_completion": false
+  },
+  "initial_state_settling": {
+    "status": "PASS",
+    "dynamic_body_count": 37,
+    "elapsed_s": 0.9041666666666667,
+    "stable_duration_s": 0.5,
+    "max_linear_speed_m_s": 0.0,
+    "max_angular_speed_rad_s": 0.0,
+    "position_drift_from_configured_m": 8.228286824446711e-05,
+    "stable_window_position_drift_m": 0.0,
+    "peak_position_drift_from_configured_m": 0.0001156792873761236,
+    "current_max_penetration_m": 1.330878314881323e-05,
+    "peak_settling_penetration_m": 1.4020668338859954e-05,
+    "thresholds": {
+      "max_angular_speed_rad_s": 0.03,
+      "max_position_drift_m": 0.002,
+      "max_linear_speed_m_s": 0.01,
+      "max_penetration_m": 0.001,
+      "required_stable_duration_s": 0.5,
+      "maximum_settle_time_s": 10.0
+    }
+  },
+  "replayed_simulation_seconds": 164.87916666666666,
+  "command_schedule_duration_seconds": 178.13933611192203,
+  "physics_steps": 39571,
+  "physics_hz": 240.0,
+  "effective_render_rate_hz": 5.0,
+  "replay_video_physical_time_scale": 1.0,
+  "actual_free_transit_gate": {
+    "maximum_wait_s": 1.0,
+    "trajectory_boundary_s": 72.91449824821166,
+    "passed": true,
+    "events": [
+      {
+        "event": "actual_free_transit_gate_passed",
+        "time_s": 73.02083333333333,
+        "wait_elapsed_s": 0.0
+      }
+    ],
+    "clearance_policy_changed": false
+  },
+  "payload_grasp_closed_time_s": 47.40833333333333,
+  "payload_grip_lost_time_s": null,
+  "payload_attachment_intact": true,
+  "peak_payload_attachment_position_error_m": 1.518438389459019e-05,
+  "peak_payload_attachment_rotation_error_rad": 4.232347410788982e-05,
+  "joint_positions_within_official_limits": true,
+  "peak_error_rad": 0.008667569607496262,
+  "drive_input_effort_source": "isaac_articulation_commanded_effort_channel_not_position_drive_output",
+  "drive_effort_output_qualified": false,
+  "qualification_check_details": {
+    "full_schedule_replayed": {
+      "status": "FAIL",
+      "reason": "replay was truncated"
+    },
+    "collision_scope_complete": {
+      "status": "PASS",
+      "reason": "robot self-collision and robot/payload scene contacts were monitored"
+    },
+    "unexpected_contacts_clear": {
+      "status": "FAIL",
+      "reason": "unexpected contacts occurred",
+      "unexpected_contact_count": 1
+    },
+    "premature_payload_conveyor_contacts_clear": {
+      "status": "PASS",
+      "reason": "payload did not touch a conveyor before release",
+      "premature_payload_conveyor_contact_count": 0
+    },
+    "joint_tracking_within_limit": {
+      "status": "PASS",
+      "reason": "joint tracking is within limit",
+      "measured": 0.008667569607496262,
+      "limit": 0.05,
+      "unit": "rad"
+    },
+    "joint_efforts_within_limit": {
+      "status": "NOT_EVALUATED",
+      "reason": "joint effort ratios are unavailable"
+    },
+    "payload_attachment_intact": {
+      "status": "NOT_EVALUATED",
+      "reason": "full transport was not replayed"
+    },
+    "release_event_executed": {
+      "status": "NOT_EVALUATED",
+      "reason": "release event was outside the replayed interval"
+    },
+    "placement_within_tolerance": {
+      "status": "BLOCKED_BY",
+      "reason": "placement cannot be evaluated because payload transport did not pass",
+      "blocked_by": "payload_attachment_intact"
+    },
+    "gripper_wrench_envelope_complete": {
+      "status": "NOT_APPLICABLE",
+      "reason": "ideal_independent_cups explicitly assumes holding capacity",
+      "suction_mode": "ideal_independent_cups"
+    },
+    "gripper_limits_from_configuration": {
+      "status": "NOT_APPLICABLE",
+      "reason": "vacuum force/break limits are outside the ideal-independent-cup mode",
+      "suction_mode": "ideal_independent_cups"
+    },
+    "gripper_limits_calibrated": {
+      "status": "NOT_APPLICABLE",
+      "reason": "no calibrated vacuum envelope is claimed in ideal-independent-cup mode",
+      "suction_mode": "ideal_independent_cups"
+    },
+    "production_release_adapter": {
+      "status": "FAIL",
+      "reason": "release used a diagnostic state-handoff adapter"
+    },
+    "joint_positions_within_limits": {
+      "status": "PASS",
+      "reason": "measured joint positions stayed inside the official limits"
+    }
+  },
+  "qualification_failures": [
+    "full_schedule_replayed",
+    "unexpected_contacts_clear",
+    "joint_efforts_within_limit",
+    "payload_attachment_intact",
+    "release_event_executed",
+    "placement_within_tolerance",
+    "production_release_adapter"
+  ],
+  "schema": "fifth_carton_single_trial_evidence_v1",
+  "server_directory": "/root/autodl-tmp/m710-poc-fifth-step3-v4-20260917/outputs/isaac_fifth_archive_once",
+  "trial_count": 1,
+  "source_commit": "ef2dea2f053ec8291ab84752c43b093bd45658c2",
+  "first_rejection": {
+    "time_s": 164.87916666666666,
+    "actors": [
+      "/Validation/Scene/carton_l07_c04",
+      "/Validation/Scene/conveyor_longitudinal/TopCollision"
+    ],
+    "colliders": [
+      "/Validation/Scene/carton_l07_c04",
+      "/Validation/Scene/conveyor_longitudinal/TopCollision"
+    ],
+    "minimum_separation_m": 0.0049581085331737995,
+    "reason": "CLEARANCE_INSUFFICIENT",
+    "pair_evidence": {
+      "classification": "CLEARANCE_INSUFFICIENT",
+      "accepted": false,
+      "stage": "transit",
+      "pair": [
+        "/Validation/Scene/carton_l07_c04",
+        "/Validation/Scene/conveyor_longitudinal/TopCollision"
+      ],
+      "geometry_scope": "ACTUAL_PHYSX_COLLIDERS_NOT_ORIGINAL_CAD",
+      "query_method": "PHYSX_FINITE_CONTACT_POINT_SEPARATION",
+      "geometry_intersection_confirmed": false,
+      "original_cad_intersection_confirmed": false,
+      "surface_distance_m": 0.0049581085331737995,
+      "required_pair_clearance_m": 0.005,
+      "numerical_gap_tolerance_m": 1e-09,
+      "contact_permission_source": null,
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "measured_contact_separation_m": 0.0049581085331737995,
+      "pair_kind": "external",
+      "contact_offset_is_not_clearance": true
+    },
+    "stage": "transit",
+    "attached": true,
+    "actual_free_space": true,
+    "release_validation_pending": false
+  },
+  "q_rad": [
+    -0.7828850150108337,
+    0.27441492676734924,
+    -0.30381056666374207,
+    -0.0004958999925293028,
+    -0.9924537539482117,
+    3.924762487411499
+  ],
+  "command_q_rad": [
+    -0.7827504873275757,
+    0.2739143967628479,
+    -0.3037570118904114,
+    -0.0005892474437132478,
+    -0.9926162362098694,
+    3.9247560501098633
+  ],
+  "carton_state": {
+    "name": "carton_l07_c04",
+    "position_m": [
+      -0.36008134484291077,
+      -0.6092712879180908,
+      0.9050231575965881
+    ],
+    "orientation_wxyz": [
+      0.707267701625824,
+      9.302428952651098e-05,
+      0.7069457769393921,
+      7.992864993866533e-05
+    ],
+    "linear_velocity_m_s": [
+      -0.0024240261409431696,
+      -0.01417613122612238,
+      0.005771207623183727
+    ],
+    "angular_velocity_rad_s": [
+      0.0048254430294036865,
+      0.01919563114643097,
+      -0.0008756672032177448
+    ]
+  },
+  "carton_size_m": [
+    0.6,
+    0.4,
+    0.3
+  ],
+  "receiver_primitive": {
+    "name": "conveyor_longitudinal",
+    "category": "conveyor",
+    "center_m": [
+      -1.6,
+      -0.7500000000000001,
+      0.54
+    ],
+    "size_m": [
+      2.8,
+      0.7,
+      0.12
+    ],
+    "rotation_matrix": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "dynamic": false,
+    "material": "conveyor_belt"
+  },
+  "collision_policy": {
+    "schema": "m710_poc_pair_collision_policy_v4",
+    "wrist_tool_exempt_links": [
+      "J5_link",
+      "J6_link"
+    ],
+    "stack_contact_mode": "planner_relaxed_physics_checked",
+    "stack_contact_stages": [
+      "support-release",
+      "extraction"
+    ],
+    "maximum_planned_stack_penetration_m": 0.01,
+    "free_space_clearance_m": 0.0052,
+    "free_space_clearance_loss_tolerance_m": 0.0002,
+    "maximum_actual_penetration_m": 0.01,
+    "maximum_neighbor_displacement_m": 0.06,
+    "maximum_neighbor_tilt_rad": 0.2,
+    "progress_timeout_s": 3.0,
+    "minimum_progress_m": 0.002,
+    "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+    "compliant_cup_neighbor_contact_mode": "ignore",
+    "maximum_compliant_cup_additional_compression_m": 0.005,
+    "required_pair_clearance_m": 0.005,
+    "self_collision_clearance_m": 0.0,
+    "boundary_mode": "finite_frozen_scene_walls",
+    "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+    "box_box_physics_enabled": true
+  },
+  "replayed_classification": {
+    "classification": "CLEARANCE_INSUFFICIENT",
+    "accepted": false,
+    "stage": "transit",
+    "pair": [
+      "/Validation/Scene/carton_l07_c04",
+      "/Validation/Scene/conveyor_longitudinal/TopCollision"
+    ],
+    "geometry_scope": "ACTUAL_PHYSX_COLLIDERS_NOT_ORIGINAL_CAD",
+    "query_method": "PHYSX_FINITE_CONTACT_POINT_SEPARATION",
+    "geometry_intersection_confirmed": false,
+    "original_cad_intersection_confirmed": false,
+    "surface_distance_m": 0.0049581085331737995,
+    "required_pair_clearance_m": 0.005,
+    "numerical_gap_tolerance_m": 1e-09,
+    "contact_permission_source": null,
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "measured_contact_separation_m": 0.0049581085331737995,
+    "pair_kind": "external",
+    "contact_offset_is_not_clearance": true
+  },
+  "classification_replay_matches": true,
+  "pair_distance_offline_m": {
+    "actual_carton_pose": 0.004905988141354178,
+    "nominal_attachment_at_measured_q": 0.005155767504416986,
+    "nominal_attachment_at_command_q": 0.005804531029181492
+  },
+  "joint_margin_rad": [
+    2.4459741011786758,
+    1.5834118657630964,
+    1.1011794811916933,
+    6.980821107984789,
+    1.1892078110447004,
+    3.056554520565819
+  ],
+  "jacobian_condition": 4.710756050061401,
+  "stage_windows": [
+    {
+      "stage": "home",
+      "start_time_s": 0.0,
+      "end_time_s": 0.0
+    },
+    {
+      "stage": "contact",
+      "start_time_s": 0.0,
+      "end_time_s": 47.103537055746834
+    },
+    {
+      "stage": "extraction",
+      "start_time_s": 47.103537055746834,
+      "end_time_s": 72.91449824821166
+    },
+    {
+      "stage": "transit",
+      "start_time_s": 72.91449824821166,
+      "end_time_s": 164.90199792980792
+    },
+    {
+      "stage": "place",
+      "start_time_s": 164.90199792980792,
+      "end_time_s": 165.24344900577003
+    },
+    {
+      "stage": "withdrawal",
+      "start_time_s": 165.24344900577003,
+      "end_time_s": 178.13933611192203
+    }
+  ],
+  "release_time_seconds": 165.34344900577003,
+  "stopped_state_load": {
+    "accepted": false,
+    "reason": "between-task scene update requires actual attachment release"
+  },
+  "source_sha256": {
+    "result.json": "2847f33dfc5255e65fc661d3d7005a8dff56179f46c51fd7b6bd601b3eb06925",
+    "actual_remaining_state.json": "2f24ac7e3c9bd9571208eda9b1c5c1c1c76a0fec60d873a642ce992d5f8bb7b1",
+    "joint_tracking.csv": "748d744a256835b26aa8a382effdbdeb517801f6416ef45bb118e0a5f85781bf",
+    "execution_events.json": "9d7d5015e2dbc0f35d96ed4b28bb6cbe5d2474924f48e6f8422d410b806c7f2e",
+    "initialized_actual_state.json": "938c67443e883f19142d1616d4bc1a73e44d5609b5b9819cf25fb0fbf08341b1",
+    "replay.mp4": "326b5fc3bf442cd827454bca6492c60bc43bed1aec9c00346de95621772f6097"
+  },
+  "classifier_source_sha256": {
+    "src/unloading_sim/isaac_collision_policy.py": "c33443a0ac14d79c645d3809389ee50e8aeb597ac3f6c8f6276fe0811e5dd884",
+    "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+    "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136"
+  }
+}

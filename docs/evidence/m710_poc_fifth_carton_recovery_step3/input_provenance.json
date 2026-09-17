@@ -1,0 +1,124 @@
+{
+  "baseline": "a8af775b14afc6732c1b950004f9d2f3b900db34",
+  "files": [
+    {
+      "path": "/root/autodl-tmp/m710-ideal-outfeed-20260915-retry02/delivery/segment_004_actual_remaining_state.json",
+      "sha256": "a7063b72dccf396e6a5ccaa24ffd2e1f12f599f7b7773153e081e95a7988f72e"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-ideal-outfeed-20260915-retry02/isaac/segment_004/actual_remaining_state.json",
+      "sha256": "a7063b72dccf396e6a5ccaa24ffd2e1f12f599f7b7773153e081e95a7988f72e"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-ideal-outfeed-20260915-retry02/repo/outputs/ideal_plan_005/actual_scene_snapshot.json",
+      "sha256": "3bb3d8836aa97cc3d090f00e8a297ba1846a7214ea0f1613fe21803bc9fd437a"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-motion-quality-20260915/repo/outputs/fifth_reproduction/motion.json",
+      "sha256": "2f526b9dd7d1c8b2350a82f36478d75e445c4d0180aa3349bf0fa549f97f2865"
+    }
+  ],
+  "all_37_active_carton_records_equal_original_snapshot": true,
+  "q_rad": [
+    -0.8773534893989563,
+    0.4496802091598511,
+    -0.02197902463376522,
+    1.4869361848468543e-06,
+    -1.0991413593292236,
+    4.018947601318359
+  ],
+  "historical_world": "1789448839.7527404",
+  "historical_time_s": 452.76249999999993,
+  "actual_received": [
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03"
+  ],
+  "ideal_received": [],
+  "processed": [
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03"
+  ],
+  "outfed": [
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03"
+  ],
+  "legal_candidates": [
+    {
+      "carton_name": "carton_l07_c04",
+      "row_id": "row_000",
+      "row_center_y_m": 0.0,
+      "center_distance_m": 0.8399220108985901,
+      "normalized_center_cost": 0.8076173181717212,
+      "normalized_actual_cost": 0.0,
+      "score": 0.8076173181717212,
+      "available_faces": [
+        "front",
+        "top",
+        "left"
+      ],
+      "support_names": [
+        "carton_l06_c04"
+      ],
+      "reasons": [
+        "HIGHEST_UNFINISHED_ROW",
+        "STABLE_INITIAL_ROW_CENTER",
+        "LATEST_GEOMETRY_AND_SUPPORT",
+        "ALTERNATIVE_FACES_RETAINED"
+      ]
+    }
+  ],
+  "retained_receiver_body": {
+    "name": "carton_l07_c00",
+    "category": "carton",
+    "shape": "box",
+    "pose_world": [
+      [
+        1.1717968065871887e-05,
+        -0.00032430832413440317,
+        0.9999999473433986,
+        -0.7226541638374329
+      ],
+      [
+        -7.057933495365978e-06,
+        0.9999999473871201,
+        0.00032430840685322595,
+        -0.8399209976196289
+      ],
+      [
+        -0.9999999999064374,
+        -7.061733359274152e-06,
+        1.1715678502777216e-05,
+        0.90000981092453
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "center_m": [
+      -0.7226541638374329,
+      -0.8399209976196289,
+      0.90000981092453
+    ],
+    "half_extents_m": [
+      0.3,
+      0.2,
+      0.15
+    ]
+  },
+  "actual_state_fingerprint": "2dcfe706fbb21524dc44af72333289355f3494cd6a3baefac70fdeabd81d913d",
+  "new_scene_fingerprint": "9717e65615b5b3cafa5171d4c34c867e848d9a2d7406ea36bc749f8fc4dadeac",
+  "new_isaac_world_started": false,
+  "original_failure_motion_q_matches_snapshot": true,
+  "original_failure_motion_scene_fingerprint_matches_snapshot": true,
+  "original_failure_motion_task_ids": [
+    "carton_l07_c04"
+  ]
+}

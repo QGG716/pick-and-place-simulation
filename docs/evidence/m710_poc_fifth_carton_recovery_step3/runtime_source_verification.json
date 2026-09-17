@@ -1,0 +1,17 @@
+{
+  "commit": "ef2dea2f053ec8291ab84752c43b093bd45658c2",
+  "groups": {
+    "cpu": {
+      "checked": 35,
+      "mismatches": []
+    },
+    "execution": {
+      "checked": 22,
+      "mismatches": []
+    },
+    "asset_bound_source": {
+      "checked": 1,
+      "mismatches": []
+    }
+  }
+}

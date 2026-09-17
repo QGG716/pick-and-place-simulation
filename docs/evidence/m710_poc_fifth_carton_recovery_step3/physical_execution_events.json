@@ -1,0 +1,56 @@
+{
+  "format": "isaacsim_fanuc_execution_events_v1",
+  "events": [
+    {
+      "event": "grasp_contact_attempt",
+      "simulation_time_s": 47.40833333333333,
+      "trajectory_time_s": 47.30416666667735,
+      "accepted": true,
+      "target": "carton_l07_c04",
+      "actual_contact_count": 48
+    },
+    {
+      "event": "actual_free_transit_gate_passed",
+      "time_s": 73.02083333333333,
+      "wait_elapsed_s": 0.0
+    },
+    {
+      "time_s": 164.87916666666666,
+      "actors": [
+        "/Validation/Scene/carton_l07_c04",
+        "/Validation/Scene/conveyor_longitudinal/TopCollision"
+      ],
+      "colliders": [
+        "/Validation/Scene/carton_l07_c04",
+        "/Validation/Scene/conveyor_longitudinal/TopCollision"
+      ],
+      "minimum_separation_m": 0.0049581085331737995,
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "pair_evidence": {
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "/Validation/Scene/carton_l07_c04",
+          "/Validation/Scene/conveyor_longitudinal/TopCollision"
+        ],
+        "geometry_scope": "ACTUAL_PHYSX_COLLIDERS_NOT_ORIGINAL_CAD",
+        "query_method": "PHYSX_FINITE_CONTACT_POINT_SEPARATION",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0049581085331737995,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "measured_contact_separation_m": 0.0049581085331737995,
+        "pair_kind": "external",
+        "contact_offset_is_not_clearance": true
+      },
+      "stage": "transit",
+      "attached": true,
+      "actual_free_space": true,
+      "release_validation_pending": false
+    }
+  ]
+}

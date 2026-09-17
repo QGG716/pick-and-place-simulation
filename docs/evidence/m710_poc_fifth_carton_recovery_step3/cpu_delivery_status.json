@@ -1,0 +1,23 @@
+{
+  "cpu_source_commit": "6dfa496e84ee5a8c469cc1c7f6568f35f99a71bc",
+  "execution_source_commit": "ef2dea2f053ec8291ab84752c43b093bd45658c2",
+  "source_motion_sha256": "52ac4db8a2987bcc1f9d4898dffe8c3e6643f6baea68eda750e8d9257ba302f1",
+  "status": "COMPLETE_PREFLIGHT_EXPORT_READBACK_PASS",
+  "preflight_seconds": 0.2827206328511238,
+  "export_seconds": 0.34872985631227493,
+  "readback_seconds": 0.14443697407841682,
+  "bundle_readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "0067bfe76ec791ed4b8411c504b6d07eb295a65b406f43790478ae7fc49ed39c",
+    "source_preflight_fingerprint": "a3bf3abe2ef5a48ca19b8e48f5d7a06aa1dc8ea60567db2c368389e5e7ec48f8",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "first_feasible_sha256": {
+    "motion.json": "52ac4db8a2987bcc1f9d4898dffe8c3e6643f6baea68eda750e8d9257ba302f1",
+    "preflight.json": "6102e80c356530b32ffcb22a200cea4f50ff4d7f7f6991667493c95a5d816662",
+    "replay_bundle.json": "5963334c8abf80781dfdc19a548e9a182422b353e6cec8223a6fdc1191eaa55c"
+  },
+  "original_motion_path": "/root/autodl-tmp/m710-poc-fifth-step3-v3-20260917/outputs/fifth_search_007_fixed/motion.json",
+  "original_actual_state_sha256": "a7063b72dccf396e6a5ccaa24ffd2e1f12f599f7b7773153e081e95a7988f72e",
+  "isaac_executed": false
+}

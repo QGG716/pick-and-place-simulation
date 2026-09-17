@@ -1,0 +1,1811 @@
+{
+  "schema": "production_rejection_replay_v1",
+  "rows": [
+    {
+      "group": "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_ceiling\"]]",
+      "observed_count": 160,
+      "example": {
+        "candidate": {
+          "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 493350205,
+          "path_seed": 3002348253,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          0.36703220816153226,
+          -0.1619101441669659,
+          0.08238729081292251,
+          0.7845141867492762,
+          -0.3848693220941074,
+          1.9669891012342307
+        ],
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "PROXY_GEOMETRY_INTERSECTION",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_rigid_0",
+            "trailer_ceiling"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "rrt_internal",
+        "edge": {
+          "start_q_rad": [
+            0.37542623213365733,
+            -0.1798059132202943,
+            0.03528631975327745,
+            0.8755179468135799,
+            -0.419797897724947,
+            1.9823112945396564
+          ],
+          "end_q_rad": [
+            0.36031698898383224,
+            -0.14759352892430316,
+            0.12006806766063854,
+            0.7117111786978332,
+            -0.35692646158943575,
+            1.95473134658989
+          ],
+          "fraction": 0.5555555555555556
+        },
+        "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+      },
+      "replay_failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "pregrasp",
+        "pair": [
+          "tool_rigid_0",
+          "trailer_ceiling"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "trailer_ceiling",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              2.725
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            3.2,
+            1.15,
+            0.025
+          ],
+          "world_aabb_m": [
+            [
+              -3.2,
+              -1.15,
+              2.7
+            ],
+            [
+              3.2,
+              1.15,
+              2.75
+            ]
+          ]
+        },
+        {
+          "name": "tool_rigid_0",
+          "pose_world": [
+            [
+              0.0705417693569516,
+              0.07616080802574128,
+              0.9945970993808785,
+              -0.07642202080989534
+            ],
+            [
+              -0.4016530044139595,
+              -0.9105107492399196,
+              0.09820916232103935,
+              0.7342552130077228
+            ],
+            [
+              0.9130710393070358,
+              -0.4064107612249295,
+              -0.033638821907773876,
+              2.454669472385596
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.144000002,
+            0.288000002,
+            0.012000001999999996
+          ],
+          "world_aabb_m": [
+            [
+              -0.12044951578387975,
+              0.4130115718224175,
+              2.2057372749234685
+            ],
+            [
+              -0.03239452583591093,
+              1.0554988541930281,
+              2.7036016698477234
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        2.861826908027977,
+        1.1470867948287813,
+        1.4873773386683578,
+        6.196802821228042,
+        1.7967922428988046,
+        5.0143279067430875
+      ],
+      "jacobian_condition": 17.543920578736255,
+      "original_cad_intersection_proven": false
+    },
+    {
+      "group": "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_ceiling\"]]",
+      "observed_count": 107,
+      "example": {
+        "candidate": {
+          "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 493350205,
+          "path_seed": 3002348253,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          0.3897114416191835,
+          -0.20003804568566913,
+          -0.04053066688588511,
+          1.4333978019106084,
+          -0.5013658978525074,
+          1.0807741511467297
+        ],
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "CLEARANCE_INSUFFICIENT",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_rigid_0",
+            "trailer_ceiling"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": false,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.004954067980586084,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "rrt_internal",
+        "edge": {
+          "start_q_rad": [
+            0.409163069798596,
+            -0.206065970245898,
+            -0.06435518820436296,
+            1.427613201864309,
+            -0.5143698978243185,
+            1.1170388013952701
+          ],
+          "end_q_rad": [
+            0.33135655708094597,
+            -0.18195427200498243,
+            0.03094289706954846,
+            1.4507516020495062,
+            -0.4623538979370742,
+            0.9719802004011086
+          ],
+          "fraction": 0.25
+        },
+        "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+      },
+      "replay_failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "pregrasp",
+        "pair": [
+          "tool_rigid_0",
+          "trailer_ceiling"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.004954067980586084,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "trailer_ceiling",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              2.725
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            3.2,
+            1.15,
+            0.025
+          ],
+          "world_aabb_m": [
+            [
+              -3.2,
+              -1.15,
+              2.7
+            ],
+            [
+              3.2,
+              1.15,
+              2.75
+            ]
+          ]
+        },
+        {
+          "name": "tool_rigid_0",
+          "pose_world": [
+            [
+              -0.12545494012949499,
+              -0.03652532022899885,
+              0.991426729001833,
+              -0.08724712712140031
+            ],
+            [
+              -0.6241428041631035,
+              -0.7738809656572003,
+              -0.10748958556482129,
+              0.6849177462445628
+            ],
+            [
+              0.7711723659523355,
+              -0.6322769582830362,
+              0.07429017442319714,
+              2.401009862288206
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.144000002,
+            0.288000002,
+            0.012000001999999996
+          ],
+          "world_aabb_m": [
+            [
+              -0.12772905378083524,
+              0.3708735862979977,
+              2.106973792556998
+            ],
+            [
+              -0.046765200461965396,
+              0.9989619061911279,
+              2.695045932019414
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        2.839147674570326,
+        1.108958893310078,
+        1.3644593809695502,
+        5.54791920606671,
+        1.6802956671404048,
+        5.900542856830588
+      ],
+      "jacobian_condition": 12.663316241183976,
+      "original_cad_intersection_proven": false
+    },
+    {
+      "group": "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l04_c00\"]]",
+      "observed_count": 106,
+      "example": {
+        "candidate": {
+          "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 493350205,
+          "path_seed": 3002348253,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          -0.6757520317664243,
+          0.3667807955489957,
+          -0.02356525718274317,
+          0.2617888395553668,
+          -1.0054341656997825,
+          3.745868169802918
+        ],
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "PROXY_GEOMETRY_INTERSECTION",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_rigid_0",
+            "carton_l04_c00"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "rrt_internal",
+        "edge": {
+          "start_q_rad": [
+            -0.708169407231263,
+            0.3714517640842929,
+            -0.038071327924287114,
+            0.18529260641879275,
+            -1.0256448408264514,
+            3.7269483593573653
+          ],
+          "end_q_rad": [
+            -0.635230312435376,
+            0.3609420848798741,
+            -0.00543266875581324,
+            0.3574091309760844,
+            -0.9801708217914463,
+            3.769517932859859
+          ],
+          "fraction": 0.4444444444444444
+        },
+        "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+      },
+      "replay_failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "pregrasp",
+        "pair": [
+          "tool_rigid_0",
+          "carton_l04_c00"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "carton_l04_c00",
+          "pose_world": [
+            [
+              0.999999999979071,
+              -4.530424349856232e-06,
+              -4.618813287327498e-06,
+              0.30008769035339355
+            ],
+            [
+              4.5304084309825245e-06,
+              0.9999999999837984,
+              -3.446533586329667e-06,
+              -0.8399064540863037
+            ],
+            [
+              4.618828901512348e-06,
+              3.446512661146876e-06,
+              0.999999999983394,
+              1.3500490188598633
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "world_aabb_m": [
+            [
+              8.60914528091894e-05,
+              -1.0399083301856307,
+              1.2000469439111514
+            ],
+            [
+              0.600089289253978,
+              -0.6399045779869768,
+              1.5000510938085752
+            ]
+          ]
+        },
+        {
+          "name": "tool_rigid_0",
+          "pose_world": [
+            [
+              0.9987801020991242,
+              0.0487739156145887,
+              0.007707970321959079,
+              -0.150458053037158
+            ],
+            [
+              0.048937945380503105,
+              -0.9568985469738844,
+              -0.28626953785061315,
+              -0.6859731995739969
+            ],
+            [
+              -0.0065867406809526526,
+              0.28629753047291506,
+              -0.9581181236634198,
+              1.43716554748102
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.144000002,
+            0.288000002,
+            0.012000001999999996
+          ],
+          "world_aabb_m": [
+            [
+              -0.3084217731908209,
+              -0.9720422822756876,
+              1.3422659480607975
+            ],
+            [
+              0.0075056671165049105,
+              -0.39990411687230637,
+              1.5320651469012427
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        2.553107084423085,
+        1.6757777345447429,
+        1.3814247906726922,
+        6.719528168421951,
+        1.1762273992931296,
+        3.2354488381744
+      ],
+      "jacobian_condition": 5.675979572603233,
+      "original_cad_intersection_proven": false
+    },
+    {
+      "group": "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l07_c04\"]]",
+      "observed_count": 97,
+      "example": {
+        "candidate": {
+          "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 493350205,
+          "path_seed": 3002348253,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          0.12922421964914427,
+          -0.06196960641556341,
+          0.0006514739653627755,
+          1.6973600487653406,
+          -0.5171654474679025,
+          1.6391408940147045
+        ],
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "PROXY_GEOMETRY_INTERSECTION",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_rigid_0",
+            "carton_l07_c04"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "rrt_internal",
+        "edge": {
+          "start_q_rad": [
+            0.022053465604516792,
+            -0.02577973877992376,
+            0.04507137016790455,
+            1.7520085095427973,
+            -0.5218838501298094,
+            1.6383309754206823
+          ],
+          "end_q_rad": [
+            0.18280959667145802,
+            -0.08006454023338323,
+            -0.021558474135908112,
+            1.6700358183766124,
+            -0.514806246136949,
+            1.6395458533117158
+          ],
+          "fraction": 0.6666666666666666
+        },
+        "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+      },
+      "replay_failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "pregrasp",
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "carton_l07_c04",
+          "pose_world": [
+            [
+              0.9999999959210666,
+              -8.976311198279608e-05,
+              1.0022499741515407e-05,
+              0.29956337809562683
+            ],
+            [
+              8.976302180871217e-05,
+              0.9999999959308247,
+              8.997252359716566e-06,
+              0.8399220108985901
+            ],
+            [
+              -1.0023307322103201e-05,
+              -8.996352673154496e-06,
+              0.9999999999092994,
+              2.2500271797180176
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "world_aabb_m": [
+            [
+              -0.00045607667805092067,
+              0.6398937332180286,
+              2.1000223734688914
+            ],
+            [
+              0.5995828328693046,
+              1.0399502885791516,
+              2.4000319859671437
+            ]
+          ]
+        },
+        {
+          "name": "tool_rigid_0",
+          "pose_world": [
+            [
+              -0.051352373197529715,
+              -0.3894434370421085,
+              0.9196177157448692,
+              0.10240118446067605
+            ],
+            [
+              0.17969790581144998,
+              -0.9094064971193917,
+              -0.37508463797390756,
+              0.36881246908519283
+            ],
+            [
+              0.9823805761587315,
+              0.14599189135656587,
+              0.1166823518968134,
+              2.3326670571516694
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.144000002,
+            0.288000002,
+            0.012000001999999996
+          ],
+          "world_aabb_m": [
+            [
+              -0.028188682457660943,
+              0.07652588089389428,
+              2.14775839876125
+            ],
+            [
+              0.23299105137901305,
+              0.6610990572764914,
+              2.517575715542089
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        3.099634896540365,
+        1.2470273325801837,
+        1.405641521820798,
+        5.283956959211977,
+        1.6644961175250095,
+        5.342176113962614
+      ],
+      "jacobian_condition": 12.551861491342331,
+      "original_cad_intersection_proven": false
+    },
+    {
+      "group": "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_34\", \"carton_l07_c04\"]]",
+      "observed_count": 72,
+      "example": {
+        "candidate": {
+          "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 493350205,
+          "path_seed": 3002348253,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          0.37343659575193455,
+          -0.1883693124383888,
+          -0.04776102998091938,
+          1.0396569477496644,
+          -0.39084132058746224,
+          1.9627571546520266
+        ],
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "CLEARANCE_INSUFFICIENT",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_compliant_bellows_34",
+            "carton_l07_c04"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": false,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.003968654774345345,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "rrt_internal",
+        "edge": {
+          "start_q_rad": [
+            0.3846453719205274,
+            -0.19408710182365538,
+            -0.04799207172848716,
+            1.0489736712279352,
+            -0.3844939912564144,
+            1.9443308985197665
+          ],
+          "end_q_rad": [
+            0.2949751625717845,
+            -0.14834478674152288,
+            -0.04614373774794491,
+            0.9744398834017693,
+            -0.435272625904797,
+            2.0917409475778483
+          ],
+          "fraction": 0.125
+        },
+        "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+      },
+      "replay_failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "pregrasp",
+        "pair": [
+          "tool_compliant_bellows_34",
+          "carton_l07_c04"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.003968654774345345,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "carton_l07_c04",
+          "pose_world": [
+            [
+              0.9999999959210666,
+              -8.976311198279608e-05,
+              1.0022499741515407e-05,
+              0.29956337809562683
+            ],
+            [
+              8.976302180871217e-05,
+              0.9999999959308247,
+              8.997252359716566e-06,
+              0.8399220108985901
+            ],
+            [
+              -1.0023307322103201e-05,
+              -8.996352673154496e-06,
+              0.9999999999092994,
+              2.2500271797180176
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "world_aabb_m": [
+            [
+              -0.00045607667805092067,
+              0.6398937332180286,
+              2.1000223734688914
+            ],
+            [
+              0.5995828328693046,
+              1.0399502885791516,
+              2.4000319859671437
+            ]
+          ]
+        },
+        {
+          "name": "tool_compliant_bellows_34",
+          "pose_world": [
+            [
+              0.06651408915620428,
+              0.02828953741729107,
+              0.9973843682434753,
+              -0.023307537629285894
+            ],
+            [
+              -0.1496141009176469,
+              -0.9880139280403984,
+              0.03800130004074109,
+              0.7395040447838306
+            ],
+            [
+              0.9865046866337354,
+              -0.15175038738302435,
+              -0.06148433279118653,
+              2.410633054121372
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.021850001999999997,
+            0.021850002499999997,
+            0.018750002499999988
+          ],
+          "world_aabb_m": [
+            [
+              -0.04407995647169486,
+              0.7139343451110671,
+              2.384609347008175
+            ],
+            [
+              -0.0025351187868769276,
+              0.765073744456594,
+              2.4366567612345693
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        2.8554225204375747,
+        1.1206276265573585,
+        1.3572290178745159,
+        5.941660060227654,
+        1.7908202444054497,
+        5.018559853325291
+      ],
+      "jacobian_condition": 16.37542852542447,
+      "original_cad_intersection_proven": false
+    },
+    {
+      "group": "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_compliant_bellows_0\", \"carton_l07_c04\"]]",
+      "observed_count": 70,
+      "example": {
+        "candidate": {
+          "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 493350205,
+          "path_seed": 3002348253,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          0.46815924334341175,
+          -0.1724667893235554,
+          -0.14996032582430807,
+          1.4736126998446284,
+          -0.5146271414981637,
+          1.6966919081367167
+        ],
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "PROXY_GEOMETRY_INTERSECTION",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_compliant_bellows_0",
+            "carton_l07_c04"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "rrt_internal",
+        "edge": {
+          "start_q_rad": [
+            0.49988125874985423,
+            -0.18713462277522253,
+            -0.15297763269128092,
+            1.5083547847476173,
+            -0.5008465442788939,
+            1.6419420502690303
+          ],
+          "end_q_rad": [
+            0.41528921766600757,
+            -0.14802040023744348,
+            -0.14493148104601997,
+            1.4157092250063135,
+            -0.53759480353028,
+            1.7879416712495273
+          ],
+          "fraction": 0.375
+        },
+        "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+      },
+      "replay_failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "pregrasp",
+        "pair": [
+          "tool_compliant_bellows_0",
+          "carton_l07_c04"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "carton_l07_c04",
+          "pose_world": [
+            [
+              0.9999999959210666,
+              -8.976311198279608e-05,
+              1.0022499741515407e-05,
+              0.29956337809562683
+            ],
+            [
+              8.976302180871217e-05,
+              0.9999999959308247,
+              8.997252359716566e-06,
+              0.8399220108985901
+            ],
+            [
+              -1.0023307322103201e-05,
+              -8.996352673154496e-06,
+              0.9999999999092994,
+              2.2500271797180176
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "world_aabb_m": [
+            [
+              -0.00045607667805092067,
+              0.6398937332180286,
+              2.1000223734688914
+            ],
+            [
+              0.5995828328693046,
+              1.0399502885791516,
+              2.4000319859671437
+            ]
+          ]
+        },
+        {
+          "name": "tool_compliant_bellows_0",
+          "pose_world": [
+            [
+              0.02944624546317572,
+              -0.04314118544618105,
+              0.9986349466879378,
+              -0.01820332993719359
+            ],
+            [
+              0.028920630726532223,
+              -0.9986131443380134,
+              -0.043993011646458996,
+              1.061803943781796
+            ],
+            [
+              0.9991478948316421,
+              0.030176581543378055,
+              -0.02815773747753702,
+              2.101808061563296
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.021850002000000007,
+            0.021850002500000007,
+            0.018750002499999988
+          ],
+          "world_aabb_m": [
+            [
+              -0.03851377321629468,
+              1.038527459163908,
+              2.0787893620326665
+            ],
+            [
+              0.0021071133419074996,
+              1.0850804283996842,
+              2.1248267610939253
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        2.760699872846098,
+        1.1365301496721918,
+        1.2550297220311273,
+        5.5077043081326895,
+        1.6670344234947483,
+        5.284625099840602
+      ],
+      "jacobian_condition": 11.927493283436439,
+      "original_cad_intersection_proven": false
+    },
+    {
+      "group": "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_5\", \"trailer_ceiling\"]]",
+      "observed_count": 50,
+      "example": {
+        "candidate": {
+          "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 493350205,
+          "path_seed": 3002348253,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          0.5326472078800891,
+          -0.21164677817601857,
+          -0.004499702799295333,
+          1.734661103725223,
+          -0.5901698418023641,
+          1.4047225908055632
+        ],
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "CLEARANCE_INSUFFICIENT",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_compliant_bellows_5",
+            "trailer_ceiling"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": false,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0007425034629008551,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "rrt_internal",
+        "edge": {
+          "start_q_rad": [
+            0.5373578375707952,
+            -0.21120283197005324,
+            -0.02383499268380232,
+            1.7344612687781606,
+            -0.589838952969153,
+            1.4028225846636475
+          ],
+          "end_q_rad": [
+            0.49025154066373366,
+            -0.21564229402970653,
+            0.16951790616126752,
+            1.7364596182487855,
+            -0.593147841301264,
+            1.4218226460828043
+          ],
+          "fraction": 0.1
+        },
+        "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+      },
+      "replay_failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "pregrasp",
+        "pair": [
+          "tool_compliant_bellows_5",
+          "trailer_ceiling"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0007425034629008551,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "trailer_ceiling",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              2.725
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            3.2,
+            1.15,
+            0.025
+          ],
+          "world_aabb_m": [
+            [
+              -3.2,
+              -1.15,
+              2.7
+            ],
+            [
+              3.2,
+              1.15,
+              2.75
+            ]
+          ]
+        },
+        {
+          "name": "tool_compliant_bellows_5",
+          "pose_world": [
+            [
+              -0.2668133608686723,
+              -0.03325835323014018,
+              0.9631741859094766,
+              -0.17013154844755093
+            ],
+            [
+              -0.12781990618459418,
+              -0.9893543548240197,
+              -0.069570339755599,
+              1.0521131300303226
+            ],
+            [
+              0.955234370217553,
+              -0.14167513024933892,
+              0.2597218809109231,
+              2.6704202357708566
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.021850001999999993,
+            0.021850002500000007,
+            0.018750002499999988
+          ],
+          "world_aabb_m": [
+            [
+              -0.19474763441112072,
+              1.0263984256539154,
+              2.641582975004614
+            ],
+            [
+              -0.14551546248398115,
+              1.0778278344067298,
+              2.6992574965370992
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        2.6962119083094205,
+        1.0973501608197287,
+        1.4004903450561401,
+        5.246655904252095,
+        1.5914917231905479,
+        5.576594417171755
+      ],
+      "jacobian_condition": 11.022260273199066,
+      "original_cad_intersection_proven": false
+    },
+    {
+      "group": "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"carton_l04_c00\"]]",
+      "observed_count": 48,
+      "example": {
+        "candidate": {
+          "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 493350205,
+          "path_seed": 3002348253,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          -0.6797558934670785,
+          0.373553028438215,
+          -0.005450205006848535,
+          0.22226351884617992,
+          -1.030375999029369,
+          3.7265088572672505
+        ],
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "CLEARANCE_INSUFFICIENT",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_rigid_0",
+            "carton_l04_c00"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": false,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0014392571051344586,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "rrt_internal",
+        "edge": {
+          "start_q_rad": [
+            -0.708169407231263,
+            0.3714517640842929,
+            -0.038071327924287114,
+            0.18529260641879275,
+            -1.0256448408264514,
+            3.7269483593573653
+          ],
+          "end_q_rad": [
+            -0.6087221090566175,
+            0.37880618932302007,
+            0.07610260228674792,
+            0.3146907999146479,
+            -1.0422038945366634,
+            3.7254101020419634
+          ],
+          "fraction": 0.2857142857142857
+        },
+        "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+      },
+      "replay_failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "pregrasp",
+        "pair": [
+          "tool_rigid_0",
+          "carton_l04_c00"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0014392571051344586,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "carton_l04_c00",
+          "pose_world": [
+            [
+              0.999999999979071,
+              -4.530424349856232e-06,
+              -4.618813287327498e-06,
+              0.30008769035339355
+            ],
+            [
+              4.5304084309825245e-06,
+              0.9999999999837984,
+              -3.446533586329667e-06,
+              -0.8399064540863037
+            ],
+            [
+              4.618828901512348e-06,
+              3.446512661146876e-06,
+              0.999999999983394,
+              1.3500490188598633
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "world_aabb_m": [
+            [
+              8.60914528091894e-05,
+              -1.0399083301856307,
+              1.2000469439111514
+            ],
+            [
+              0.600089289253978,
+              -0.6399045779869768,
+              1.5000510938085752
+            ]
+          ]
+        },
+        {
+          "name": "tool_rigid_0",
+          "pose_world": [
+            [
+              0.999920990544944,
+              0.0028518529922593318,
+              0.012242532504699238,
+              -0.14623704804466628
+            ],
+            [
+              0.00585617810224196,
+              -0.9674637099939182,
+              -0.2529420388603657,
+              -0.6846510658710926
+            ],
+            [
+              0.01112285240632544,
+              0.2529937484984846,
+              -0.9674039721724492,
+              1.4435540290936593
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.144000002,
+            0.288000002,
+            0.012000001999999996
+          ],
+          "world_aabb_m": [
+            [
+              -0.29119391676499606,
+              -0.9671592109149121,
+              1.3574812886504743
+            ],
+            [
+              -0.0012801793243365223,
+              -0.4021429208272731,
+              1.5296267695368442
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        2.549103222722431,
+        1.6825499674339621,
+        1.3995398428485868,
+        6.759053489131138,
+        1.151285565963543,
+        3.2548081507100677
+      ],
+      "jacobian_condition": 5.683631157798806,
+      "original_cad_intersection_proven": false
+    }
+  ],
+  "all_matched": true,
+  "source_part_probe": {
+    "part": {
+      "schema": "wantai_single_part_mesh_probe_v1",
+      "source_step_sha256": "d54ec5818a772877162e7d8eded484c67920de148037373d9d7d8e35cfa0694b",
+      "coverage_sha256": "10759d0b68212540c2b9ea48ee124832446ef73f6b282eff796f3d531be1b7fc",
+      "tool_part_index": 0,
+      "source_solid_index": 0,
+      "source_bounds_step_mm": [
+        -336.56173150640416,
+        -12.659188413158216,
+        -144.0,
+        239.43826849359596,
+        11.340811586841786,
+        144.00000000000006
+      ],
+      "mesh_path": "/root/autodl-tmp/m710-official-dynamics-20260910/tool-part-diagnostic/part0/tool_rigid_000_source_solid_000.stl",
+      "mesh_sha256": "56b831d96c1c9a88075e5fa9938d9707ee186690593f2cb0221ff10fe1da92a8",
+      "mesh_units": "millimetre",
+      "linear_deflection_mm": 0.05,
+      "angular_deflection_rad": 0.05,
+      "generator_sha256": "be252fb9d33ff30a309c6f48474bcb539079cdc0d4ff1e6f91057f660afcedd4",
+      "runtime_collision_policy_changed": false
+    },
+    "cases": [
+      {
+        "q_rad": [
+          0.36703220816153226,
+          -0.1619101441669659,
+          0.08238729081292251,
+          0.7845141867492762,
+          -0.3848693220941074,
+          1.9669891012342307
+        ],
+        "pair": [
+          "tool_rigid_0",
+          "trailer_ceiling"
+        ],
+        "stage": "pregrasp",
+        "mesh_distance_m": -4.581604058748884e-05,
+        "mesh_contacts": 1,
+        "required_pair_clearance_m": 0.005,
+        "classification": "TESSELLATED_SOURCE_CONTACT"
+      },
+      {
+        "q_rad": [
+          0.3897114416191835,
+          -0.20003804568566913,
+          -0.04053066688588511,
+          1.4333978019106084,
+          -0.5013658978525074,
+          1.0807741511467297
+        ],
+        "pair": [
+          "tool_rigid_0",
+          "trailer_ceiling"
+        ],
+        "stage": "pregrasp",
+        "mesh_distance_m": 0.009388301952096521,
+        "mesh_contacts": 0,
+        "required_pair_clearance_m": 0.005,
+        "classification": "PROXY_REJECTION_NOT_CONFIRMED_BY_SOURCE_MESH"
+      },
+      {
+        "q_rad": [
+          -0.6757520317664243,
+          0.3667807955489957,
+          -0.02356525718274317,
+          0.2617888395553668,
+          -1.0054341656997825,
+          3.745868169802918
+        ],
+        "pair": [
+          "tool_rigid_0",
+          "carton_l04_c00"
+        ],
+        "stage": "pregrasp",
+        "mesh_distance_m": -0.0045021753096799715,
+        "mesh_contacts": 1,
+        "required_pair_clearance_m": 0.005,
+        "classification": "TESSELLATED_SOURCE_CONTACT"
+      },
+      {
+        "q_rad": [
+          0.12922421964914427,
+          -0.06196960641556341,
+          0.0006514739653627755,
+          1.6973600487653406,
+          -0.5171654474679025,
+          1.6391408940147045
+        ],
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "stage": "pregrasp",
+        "mesh_distance_m": -0.007912539775294918,
+        "mesh_contacts": 1,
+        "required_pair_clearance_m": 0.005,
+        "classification": "TESSELLATED_SOURCE_CONTACT"
+      },
+      {
+        "q_rad": [
+          -0.6797558934670785,
+          0.373553028438215,
+          -0.005450205006848535,
+          0.22226351884617992,
+          -1.030375999029369,
+          3.7265088572672505
+        ],
+        "pair": [
+          "tool_rigid_0",
+          "carton_l04_c00"
+        ],
+        "stage": "pregrasp",
+        "mesh_distance_m": 0.0015548991121986258,
+        "mesh_contacts": 0,
+        "required_pair_clearance_m": 0.005,
+        "classification": "TESSELLATED_SOURCE_CLEARANCE_SHORTFALL"
+      }
+    ],
+    "current_coverage_sha256": "d6d337df797c5adac5d0f5d0b725df0e9136674091278e17759a68757cea926a",
+    "coverage_binding": "EXACT_BYTES_OR_LF_NORMALIZATION_ONLY",
+    "runtime_geometry_changed": false,
+    "scope": "OFFLINE_TESSELLATED_SOURCE_SOLID_NOT_ANALYTIC_BREP_PROOF"
+  }
+}

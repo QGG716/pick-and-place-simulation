@@ -1,0 +1,12 @@
+{
+  "path": "/root/autodl-tmp/m710-poc-fifth-step3-v4-20260917/outputs/isaac_fifth_archive_once/replay.mp4",
+  "width": 640,
+  "height": 360,
+  "fps": 5.0,
+  "declared_frames": 824,
+  "decoded_frames": 824,
+  "duration_seconds": 164.8,
+  "sha256": "326b5fc3bf442cd827454bca6492c60bc43bed1aec9c00346de95621772f6097",
+  "bytes": 5877442,
+  "simulation_app_started": false
+}

@@ -1,0 +1,21 @@
+{
+  "classification_replay_matches": true,
+  "classification": "CLEARANCE_INSUFFICIENT",
+  "stage": "transit",
+  "q_rad": [
+    -0.7828850150108337,
+    0.27441492676734924,
+    -0.30381056666374207,
+    -0.0004958999925293028,
+    -0.9924537539482117,
+    3.924762487411499
+  ],
+  "pair": [
+    "/Validation/Scene/carton_l07_c04",
+    "/Validation/Scene/conveyor_longitudinal/TopCollision"
+  ],
+  "recorded_physx_separation_m": 0.0049581085331737995,
+  "offline_pose_obb_distance_m": 0.004905988141354178,
+  "required_pair_clearance_m": 0.005,
+  "scope": "RECORDED_PAIR_CLASSIFICATION_AND_POSE_GEOMETRY_NOT_NEW_PHYSX_RUN"
+}

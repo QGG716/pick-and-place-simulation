@@ -1,0 +1,203 @@
+{
+  "target": "carton_l07_c04",
+  "complete_trajectory_status": "PASS",
+  "source_motion_sha256": "52ac4db8a2987bcc1f9d4898dffe8c3e6643f6baea68eda750e8d9257ba302f1",
+  "statistics": {
+    "generated_candidate_count": 108,
+    "unique_candidates_evaluated": 1,
+    "total_attempt_count": 1,
+    "retry_count": 0,
+    "actual_complete_connection_attempt_count": 1,
+    "remaining_unsearched_count": 107,
+    "candidate_count_scope": "GENERATED_POOLS_ONLY_NOT_UNENUMERATED_TASKS",
+    "history_attempt_count": 0,
+    "quality_connection_attempt_count": 0,
+    "quality_generation_statistics": {
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "trajectory_ik_wall_seconds": 0
+    },
+    "history_complete_connection_attempt_count": 0,
+    "combined_actual_attempt_count": 1,
+    "combined_complete_connection_attempt_count": 1,
+    "candidate_schedule_statistics_scope": "ORDINARY_QUEUE_ONLY_HISTORY_ATTEMPTS_REPORTED_SEPARATELY",
+    "ordinary_queue_order_unchanged": true,
+    "unenumerated_task_count": 0,
+    "task_count": 1,
+    "task_success_count": 1,
+    "candidate_pose_attempts": 1,
+    "coverage_rejected": 0,
+    "ik_calls": 1,
+    "ik_seed_pool_available": 14,
+    "ik_seeds_attempted": 4,
+    "ik_iterations_consumed": 100,
+    "ik_converged_pose_results": 4,
+    "ik_valid_solutions": 4,
+    "ik_deduplicated_candidates": 4,
+    "ik_deduplicated_candidate_records": 4,
+    "ik_stream_count_scope": "SUM_OF_ATTEMPT_STREAM_RECORDS_NOT_GLOBAL_UNIQUE_SOLUTIONS",
+    "path_connection_attempts": 1,
+    "trajectory_pose_attempts": 1,
+    "trajectory_pose_attempt_budget_scope": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+    "trajectory_pose_attempt_limit_per_task": null,
+    "trajectory_ik_calls": 209,
+    "trajectory_ik_seeds_attempted": 209,
+    "trajectory_ik_iterations_consumed": 620,
+    "trajectory_state_validations": 106579,
+    "trajectory_edge_validation_calls": 210,
+    "trajectory_edge_state_samples": 104570,
+    "trajectory_rrt_iterations_consumed": 1667,
+    "trajectory_cartesian_samples": 208,
+    "complete_trajectory_success_count": 1,
+    "placement_candidates_generated": 12,
+    "state_cache_hits": 4016,
+    "state_cache_misses": 99630,
+    "task_failure_counts": {},
+    "candidate_failure_counts": {
+      "OK": 1
+    }
+  },
+  "planning_performance": {
+    "schema": "first_carton_planning_wall_timing_v1",
+    "planning_total_wall_seconds": 2864.2231214419007,
+    "model_load_and_initialization_seconds": 0.3454507254064083,
+    "candidate_generation_seconds": 0.047006819397211075,
+    "grasp_candidate_generation_seconds": 0.015350330621004105,
+    "placement_candidate_generation_seconds": 0.03165648877620697,
+    "grasp_ik_seconds_inclusive_of_endpoint_validation": 0.20569616183638573,
+    "trajectory_search_seconds_inclusive": 2863.62505986169,
+    "trajectory_ik_seconds": 0.01366235688328743,
+    "path_connection_seconds_inclusive_of_collision": 59.14801364019513,
+    "collision_validation_seconds_nested": 2842.3834034390748,
+    "final_recheck_seconds": 0.006764184683561325,
+    "time_parameterization_seconds": null,
+    "trajectory_physical_execution_seconds": null,
+    "isaac_replay_wall_seconds": null,
+    "nesting": {
+      "trajectory_search_seconds_inclusive": [
+        "trajectory_ik_seconds",
+        "path_connection_seconds_inclusive_of_collision",
+        "collision_validation_seconds_nested",
+        "final_recheck_seconds"
+      ],
+      "path_connection_seconds_inclusive_of_collision": [
+        "collision_validation_seconds_nested"
+      ]
+    },
+    "unmeasured_value": null
+  },
+  "events": {
+    "CONTACT_CANDIDATE_STARTED": 1,
+    "progress": 2,
+    "connection_started": 1,
+    "connection_finished": 1,
+    "LOCAL_TRANSIT_FINISHED": 1,
+    "CONTACT_CANDIDATE_FINISHED": 1
+  },
+  "state_query_counts": {
+    "[\"state\", \"actual_task_start\", \"ACCEPTED\"]": 1,
+    "[\"state\", \"contact_endpoint\", \"ACCEPTED\"]": 9,
+    "[\"state\", \"pregrasp_ik_endpoint\", \"ACCEPTED\"]": 1,
+    "[\"rrt_internal\", \"pregrasp\", \"ACCEPTED\"]": 4355,
+    "[\"rrt_internal\", \"pregrasp\", \"REJECTED\"]": 1667,
+    "[\"rrt_success_full_edge_recheck\", \"pregrasp\", \"ACCEPTED\"]": 58325,
+    "[\"full_edge_recheck\", \"contact\", \"ACCEPTED\"]": 359,
+    "[\"full_edge_recheck\", \"extraction\", \"ACCEPTED\"]": 6949,
+    "[\"full_edge_recheck\", \"transit\", \"ACCEPTED\"]": 33249,
+    "[\"full_edge_recheck\", \"transit\", \"REJECTED\"]": 1,
+    "[\"full_edge_recheck\", \"place\", \"ACCEPTED\"]": 33,
+    "[\"full_edge_recheck\", \"withdrawal\", \"ACCEPTED\"]": 5654,
+    "[\"state\", \"residence\", \"ACCEPTED\"]": 1
+  },
+  "stage_ranges": {
+    "home": [
+      0,
+      0
+    ],
+    "contact": [
+      0,
+      50
+    ],
+    "extraction": [
+      50,
+      91
+    ],
+    "transit": [
+      91,
+      223
+    ],
+    "place": [
+      223,
+      224
+    ],
+    "withdrawal": [
+      224,
+      249
+    ]
+  },
+  "first_q_rad": [
+    -0.8773534893989563,
+    0.4496802091598511,
+    -0.02197902463376522,
+    1.4869361848468543e-06,
+    -1.0991413593292236,
+    4.018947601318359
+  ],
+  "trajectory_duration_s": 178.13933611192203,
+  "release_mode": "IDEAL_RECEPTION_RELEASE",
+  "place_surface": "conveyor_longitudinal",
+  "stop_reason": "FIRST_COMPLETE_FEASIBLE_POC_TASK_SAVED_NO_OPTIONAL_QUALITY_SEARCH",
+  "actual_candidates_searched": 1,
+  "generated_candidates": 108,
+  "local_transit_events": [
+    {
+      "elapsed_s": 2830.2674354687333,
+      "candidate": {
+        "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+        "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+        "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+        "retry_index": 0,
+        "retry_reason": null,
+        "variant": {
+          "variant": "nominal",
+          "face_offset_local_xy_m": [
+            0.0,
+            0.0
+          ],
+          "orientation_offset_local_xy_rad": [
+            0.0,
+            0.0
+          ],
+          "height_face_prior": 0.9,
+          "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+          "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+        },
+        "face": "front",
+        "roll_deg": 90,
+        "pose_ordinal": 0,
+        "batch_index": 0,
+        "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+        "ik_seed": 493350205,
+        "path_seed": 3002348253,
+        "candidate_wall_budget_s": null,
+        "actual_complete_connection_attempted": false,
+        "target": "carton_l07_c04",
+        "roll": 90
+      },
+      "event": "LOCAL_TRANSIT_FINISHED",
+      "stage": "transit",
+      "success": true,
+      "seed": 3002348308,
+      "remaining_samples": 582
+    }
+  ],
+  "numerical_quotas": {
+    "continuation_stage_connection_iterations": 54000,
+    "local_transit_cartesian_sample_budget": 720,
+    "ik_request_seed": 175799,
+    "business_wall_deadline": null
+  },
+  "cpu_source_commit": "6dfa496e84ee5a8c469cc1c7f6568f35f99a71bc",
+  "execution_source_commit": "ef2dea2f053ec8291ab84752c43b093bd45658c2"
+}

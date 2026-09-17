@@ -1,0 +1,2695 @@
+{
+  "schema": "production_search_diagnostics_v1",
+  "identity": {
+    "implementation": {
+      "source_sha256": {
+        "src/unloading_sim/search_diagnostics.py": "4ecb355246a00c4caf67c6f2800124024ccc5cc890773f88b21b4abc8d84b5d3",
+        "src/unloading_sim/wrist_transfer.py": "325ca2f61f220c68f26fc9d4cbaafdb2bc6d3d6075a600f4c8e378dd25c30c69",
+        "src/unloading_sim/history_candidates.py": "56342afc56c84bf9c00301d7cf148be97e4a5f3c300396eb47132f52fa2fc553",
+        "src/unloading_sim/history_adaptation.py": "bce0d93a8a968cb21a73013e8d46ac5ff92d1838de1a4b09bcdeb901db257f5a",
+        "src/unloading_sim/contact_scheduler.py": "7ab9a8bf8e6e9d961d599846ab00d87b30c1bc2c0d5079ed090c3caee270a427",
+        "src/unloading_sim/motion_quality.py": "cb8ab84a9b747b3dd0709d1e0a3ad5a8e2a42e1d78e6816d82c90f01ec7e0d82",
+        "src/unloading_sim/release_motion.py": "d47e1c2430489644c08537cd1d95b7417aa31b474aabc894344fe5814244ebc1",
+        "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+        "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+        "src/unloading_sim/conveyor_placement.py": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503",
+        "src/unloading_sim/unloading_sequence.py": "1881b114d280286ffaaf22d9ad306040bcf435dd64efad0a4d3b41fcee6ae915",
+        "src/unloading_sim/tool_geometry.py": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d",
+        "src/unloading_sim/depalletizing.py": "aef4ff69219ca4ff27d1da9cd3b7f7567b5de5c4b0f59310b44b821f070f59e3",
+        "src/unloading_sim/fanuc_m710id70.py": "f60871dccd361c6d6a6da32ef55b0f67f02f1a76f9f18268fe4783bae8b7eff3",
+        "src/unloading_sim/geometry.py": "793384532bf599bb7b7a4f1199bde36b9ad170b4b38f4989975ac4d911508c87",
+        "src/unloading_sim/grasp.py": "4f5856d1c36f78ad8c58c0df7f23e7c280a83a7c84bdefe2a6a3461026b50a60",
+        "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+        "src/unloading_sim/ik.py": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5",
+        "src/unloading_sim/layout_single_carton.py": "54906ec9052f4bed22a9e7302273dbd3d47f0ee8a83d593b4769c783fefbaee8",
+        "src/unloading_sim/layout_trajectory.py": "88bccb92f9e5f14185248713437255798c699be52dbf218e48b9998dbc3b1f8a",
+        "src/unloading_sim/pinocchio_backend.py": "febe67199d3acf927240055b067d707c6cf92b784e1beae639ab0650fa34530a",
+        "src/unloading_sim/planner.py": "73b9c9d1afecc76a441d1e66bba3c593dfdba4eb28d9dae00c95563d42e049b9",
+        "src/unloading_sim/robot.py": "8fff99fe5a1f969c5c06aeccc9858f4ec3d47f36c45c24b17e7561b40b2b64d5",
+        "src/unloading_sim/robot_load/model.py": "6fd02fe472b4c142689f12420b145e7a41ea837ebe449d2bcee00e87379f8979",
+        "src/unloading_sim/robot_load/spatial.py": "2d56858234b59e5ef239a39b8fd7d924e4c4148f4b72d17d582819306a10d363",
+        "src/unloading_sim/robot_load/task.py": "6ca40eb357be668ece73fbdf5540ee9efb5c364df60cf53f79c9c62e331df363",
+        "src/unloading_sim/scene.py": "6178c10ab83b561613399d5fd710a165cfe49762550b769780b249578e91017a",
+        "src/unloading_sim/serial_unloading.py": "e3451a69b770a513731cfdceb2bd5551cbb9a840440dcd8e0c21e187d6aec8be",
+        "src/unloading_sim/planning_profile.py": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee",
+        "src/unloading_sim/post_landing_transport.py": "7dbda39d5253cde6899b3ad31b55f130e8e77a7728a1b0b40256110e55243d40",
+        "src/unloading_sim/support.py": "c752893bb3f94a620d2921b6c2a93d1bb34c1102f1521cdba8d1b72e703ae4cf",
+        "src/unloading_sim/timing.py": "9e8951093f357b2eba05d8670bbf21b93be1f17016d08e4a4bc889eafebc13a9",
+        "src/unloading_sim/validation_motion.py": "5d79a2a7ee8897249db52ede23f48529356a89ddaacf1539003944c382d52d0e",
+        "src/unloading_sim/validation_physics.py": "770cbc4acc32d58eb8fc4f422d18d03b56c3a4eb54f4f1cae380d4e8939e7ab8",
+        "src/unloading_sim/workcell_layout.py": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2"
+      },
+      "runtime": {
+        "python": "3.12.3",
+        "python_implementation": "CPython",
+        "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+        "numpy": "2.3.2"
+      }
+    },
+    "policy": "5609c5c2d2b50eeee5951f63617657c93ccd06742393456212894bb96f6f0362",
+    "scene": "9717e65615b5b3cafa5171d4c34c867e848d9a2d7406ea36bc749f8fc4dadeac",
+    "target_id": "carton_l07_c04"
+  },
+  "events": {
+    "CONTACT_CANDIDATE_STARTED": 1,
+    "progress": 1,
+    "connection_started": 1,
+    "connection_finished": 1
+  },
+  "validation_queries": {
+    "[\"state\", \"actual_task_start\", \"ACCEPTED\"]": 1,
+    "[\"state\", \"contact_endpoint\", \"ACCEPTED\"]": 8,
+    "[\"state\", \"pregrasp_ik_endpoint\", \"ACCEPTED\"]": 1,
+    "[\"rrt_internal\", \"pregrasp\", \"ACCEPTED\"]": 4355,
+    "[\"rrt_internal\", \"pregrasp\", \"REJECTED\"]": 1667,
+    "[\"rrt_success_full_edge_recheck\", \"pregrasp\", \"ACCEPTED\"]": 9328
+  },
+  "last_validation": {
+    "stage": "pregrasp",
+    "origin": "rrt_success_full_edge_recheck",
+    "failed": false
+  },
+  "outcomes": {
+    "[null, null, \"TRAJECTORY_SEARCH_PENDING\"]": {
+      "count": 1,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "elapsed_s": 0.8549327738583088,
+          "target": "carton_l07_c04",
+          "face": "front",
+          "roll": 90,
+          "pose": 0,
+          "valid_grasps": 4,
+          "failure": "TRAJECTORY_SEARCH_PENDING",
+          "ik": {
+            "policy": "lazy_distinct_valid_solutions",
+            "seed_pool_available": 14,
+            "explicit_seed_count": 2,
+            "random_restart_count": 12,
+            "seeds_attempted": 4,
+            "last_seed_index": 3,
+            "iterations_per_seed_available": 180,
+            "iteration_capacity_available": 2520,
+            "iteration_capacity_for_attempted_seeds": 720,
+            "iterations_consumed": 100,
+            "converged_pose_results": 4,
+            "valid_solutions": 4,
+            "deduplicated_candidates": 4,
+            "duplicate_candidates": 0,
+            "candidate_limit": 4,
+            "dedup_tolerance_rad": 0.001,
+            "dedup_tolerance_m": 0.0001,
+            "seed_stream_exhausted": false,
+            "termination": "IK_CANDIDATE_LIMIT_REACHED",
+            "parent_deadline_monotonic": null,
+            "effective_deadline_monotonic": null,
+            "last_solve_deadline_monotonic": null,
+            "last_deadline_stop": null,
+            "best_failure": null
+          },
+          "scheduler": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false
+          }
+        }
+      ]
+    },
+    "[\"connection_finished\", \"pregrasp\", \"connected\"]": {
+      "count": 1,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "elapsed_s": 60.02496350929141,
+          "event": "connection_finished",
+          "stage": "pregrasp",
+          "success": true,
+          "iterations": 1667,
+          "termination": "connected",
+          "statistics": {
+            "state_validations": 5040,
+            "edge_validation_calls": 0,
+            "edge_state_samples": 0,
+            "ik_calls": 0,
+            "ik_seeds_attempted": 0,
+            "ik_iterations_consumed": 0,
+            "connection_attempts": 0,
+            "rrt_iterations_consumed": 0,
+            "cartesian_samples": 0,
+            "placement_candidates_generated": 0,
+            "placement_candidate_generation_wall_seconds": 0,
+            "state_cache_hits": 983,
+            "state_cache_misses": 5040,
+            "trajectory_ik_wall_seconds": 0.01366235688328743,
+            "path_connection_wall_seconds_inclusive": 59.14801364019513,
+            "collision_validation_wall_seconds_nested": 56.117835350334644,
+            "kinematics_and_joint_checks_wall_seconds": 1.4164908565580845,
+            "final_recheck_wall_seconds": 0
+          }
+        }
+      ]
+    }
+  },
+  "last_event": {
+    "elapsed_s": 60.02496350929141,
+    "event": "connection_finished",
+    "stage": "pregrasp",
+    "success": true,
+    "iterations": 1667,
+    "termination": "connected",
+    "statistics": {
+      "state_validations": 5040,
+      "edge_validation_calls": 0,
+      "edge_state_samples": 0,
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 0,
+      "placement_candidates_generated": 0,
+      "placement_candidate_generation_wall_seconds": 0,
+      "state_cache_hits": 983,
+      "state_cache_misses": 5040,
+      "trajectory_ik_wall_seconds": 0.01366235688328743,
+      "path_connection_wall_seconds_inclusive": 59.14801364019513,
+      "collision_validation_wall_seconds_nested": 56.117835350334644,
+      "kinematics_and_joint_checks_wall_seconds": 1.4164908565580845,
+      "final_recheck_wall_seconds": 0
+    }
+  },
+  "groups": {
+    "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": {
+      "count": 160,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "q_rad": [
+            0.36703220816153226,
+            -0.1619101441669659,
+            0.08238729081292251,
+            0.7845141867492762,
+            -0.3848693220941074,
+            1.9669891012342307
+          ],
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "PROXY_GEOMETRY_INTERSECTION",
+            "accepted": false,
+            "stage": "pregrasp",
+            "pair": [
+              "tool_rigid_0",
+              "trailer_ceiling"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+          },
+          "origin": "rrt_internal",
+          "edge": {
+            "start_q_rad": [
+              0.37542623213365733,
+              -0.1798059132202943,
+              0.03528631975327745,
+              0.8755179468135799,
+              -0.419797897724947,
+              1.9823112945396564
+            ],
+            "end_q_rad": [
+              0.36031698898383224,
+              -0.14759352892430316,
+              0.12006806766063854,
+              0.7117111786978332,
+              -0.35692646158943575,
+              1.95473134658989
+            ],
+            "fraction": 0.5555555555555556
+          },
+          "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+        }
+      ]
+    },
+    "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": {
+      "count": 107,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "q_rad": [
+            0.3897114416191835,
+            -0.20003804568566913,
+            -0.04053066688588511,
+            1.4333978019106084,
+            -0.5013658978525074,
+            1.0807741511467297
+          ],
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "CLEARANCE_INSUFFICIENT",
+            "accepted": false,
+            "stage": "pregrasp",
+            "pair": [
+              "tool_rigid_0",
+              "trailer_ceiling"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": false,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.004954067980586084,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+          },
+          "origin": "rrt_internal",
+          "edge": {
+            "start_q_rad": [
+              0.409163069798596,
+              -0.206065970245898,
+              -0.06435518820436296,
+              1.427613201864309,
+              -0.5143698978243185,
+              1.1170388013952701
+            ],
+            "end_q_rad": [
+              0.33135655708094597,
+              -0.18195427200498243,
+              0.03094289706954846,
+              1.4507516020495062,
+              -0.4623538979370742,
+              0.9719802004011086
+            ],
+            "fraction": 0.25
+          },
+          "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+        }
+      ]
+    },
+    "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l04_c00\"]]": {
+      "count": 106,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "q_rad": [
+            -0.6757520317664243,
+            0.3667807955489957,
+            -0.02356525718274317,
+            0.2617888395553668,
+            -1.0054341656997825,
+            3.745868169802918
+          ],
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "PROXY_GEOMETRY_INTERSECTION",
+            "accepted": false,
+            "stage": "pregrasp",
+            "pair": [
+              "tool_rigid_0",
+              "carton_l04_c00"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+          },
+          "origin": "rrt_internal",
+          "edge": {
+            "start_q_rad": [
+              -0.708169407231263,
+              0.3714517640842929,
+              -0.038071327924287114,
+              0.18529260641879275,
+              -1.0256448408264514,
+              3.7269483593573653
+            ],
+            "end_q_rad": [
+              -0.635230312435376,
+              0.3609420848798741,
+              -0.00543266875581324,
+              0.3574091309760844,
+              -0.9801708217914463,
+              3.769517932859859
+            ],
+            "fraction": 0.4444444444444444
+          },
+          "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+        }
+      ]
+    },
+    "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l07_c04\"]]": {
+      "count": 97,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "q_rad": [
+            0.12922421964914427,
+            -0.06196960641556341,
+            0.0006514739653627755,
+            1.6973600487653406,
+            -0.5171654474679025,
+            1.6391408940147045
+          ],
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "PROXY_GEOMETRY_INTERSECTION",
+            "accepted": false,
+            "stage": "pregrasp",
+            "pair": [
+              "tool_rigid_0",
+              "carton_l07_c04"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+          },
+          "origin": "rrt_internal",
+          "edge": {
+            "start_q_rad": [
+              0.022053465604516792,
+              -0.02577973877992376,
+              0.04507137016790455,
+              1.7520085095427973,
+              -0.5218838501298094,
+              1.6383309754206823
+            ],
+            "end_q_rad": [
+              0.18280959667145802,
+              -0.08006454023338323,
+              -0.021558474135908112,
+              1.6700358183766124,
+              -0.514806246136949,
+              1.6395458533117158
+            ],
+            "fraction": 0.6666666666666666
+          },
+          "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+        }
+      ]
+    },
+    "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_34\", \"carton_l07_c04\"]]": {
+      "count": 72,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "q_rad": [
+            0.37343659575193455,
+            -0.1883693124383888,
+            -0.04776102998091938,
+            1.0396569477496644,
+            -0.39084132058746224,
+            1.9627571546520266
+          ],
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "CLEARANCE_INSUFFICIENT",
+            "accepted": false,
+            "stage": "pregrasp",
+            "pair": [
+              "tool_compliant_bellows_34",
+              "carton_l07_c04"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": false,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.003968654774345345,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+          },
+          "origin": "rrt_internal",
+          "edge": {
+            "start_q_rad": [
+              0.3846453719205274,
+              -0.19408710182365538,
+              -0.04799207172848716,
+              1.0489736712279352,
+              -0.3844939912564144,
+              1.9443308985197665
+            ],
+            "end_q_rad": [
+              0.2949751625717845,
+              -0.14834478674152288,
+              -0.04614373774794491,
+              0.9744398834017693,
+              -0.435272625904797,
+              2.0917409475778483
+            ],
+            "fraction": 0.125
+          },
+          "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+        }
+      ]
+    },
+    "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_compliant_bellows_0\", \"carton_l07_c04\"]]": {
+      "count": 70,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "q_rad": [
+            0.46815924334341175,
+            -0.1724667893235554,
+            -0.14996032582430807,
+            1.4736126998446284,
+            -0.5146271414981637,
+            1.6966919081367167
+          ],
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "PROXY_GEOMETRY_INTERSECTION",
+            "accepted": false,
+            "stage": "pregrasp",
+            "pair": [
+              "tool_compliant_bellows_0",
+              "carton_l07_c04"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+          },
+          "origin": "rrt_internal",
+          "edge": {
+            "start_q_rad": [
+              0.49988125874985423,
+              -0.18713462277522253,
+              -0.15297763269128092,
+              1.5083547847476173,
+              -0.5008465442788939,
+              1.6419420502690303
+            ],
+            "end_q_rad": [
+              0.41528921766600757,
+              -0.14802040023744348,
+              -0.14493148104601997,
+              1.4157092250063135,
+              -0.53759480353028,
+              1.7879416712495273
+            ],
+            "fraction": 0.375
+          },
+          "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+        }
+      ]
+    },
+    "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_5\", \"trailer_ceiling\"]]": {
+      "count": 50,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "q_rad": [
+            0.5326472078800891,
+            -0.21164677817601857,
+            -0.004499702799295333,
+            1.734661103725223,
+            -0.5901698418023641,
+            1.4047225908055632
+          ],
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "CLEARANCE_INSUFFICIENT",
+            "accepted": false,
+            "stage": "pregrasp",
+            "pair": [
+              "tool_compliant_bellows_5",
+              "trailer_ceiling"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": false,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.0007425034629008551,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+          },
+          "origin": "rrt_internal",
+          "edge": {
+            "start_q_rad": [
+              0.5373578375707952,
+              -0.21120283197005324,
+              -0.02383499268380232,
+              1.7344612687781606,
+              -0.589838952969153,
+              1.4028225846636475
+            ],
+            "end_q_rad": [
+              0.49025154066373366,
+              -0.21564229402970653,
+              0.16951790616126752,
+              1.7364596182487855,
+              -0.593147841301264,
+              1.4218226460828043
+            ],
+            "fraction": 0.1
+          },
+          "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+        }
+      ]
+    },
+    "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"carton_l04_c00\"]]": {
+      "count": 48,
+      "examples": [
+        {
+          "candidate": {
+            "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 493350205,
+            "path_seed": 3002348253,
+            "candidate_wall_budget_s": null,
+            "actual_complete_connection_attempted": false,
+            "target": "carton_l07_c04",
+            "roll": 90
+          },
+          "q_rad": [
+            -0.6797558934670785,
+            0.373553028438215,
+            -0.005450205006848535,
+            0.22226351884617992,
+            -1.030375999029369,
+            3.7265088572672505
+          ],
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "CLEARANCE_INSUFFICIENT",
+            "accepted": false,
+            "stage": "pregrasp",
+            "pair": [
+              "tool_rigid_0",
+              "carton_l04_c00"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": false,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.0014392571051344586,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+          },
+          "origin": "rrt_internal",
+          "edge": {
+            "start_q_rad": [
+              -0.708169407231263,
+              0.3714517640842929,
+              -0.038071327924287114,
+              0.18529260641879275,
+              -1.0256448408264514,
+              3.7269483593573653
+            ],
+            "end_q_rad": [
+              -0.6087221090566175,
+              0.37880618932302007,
+              0.07610260228674792,
+              0.3146907999146479,
+              -1.0422038945366634,
+              3.7254101020419634
+            ],
+            "fraction": 0.2857142857142857
+          },
+          "context": "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b"
+        }
+      ]
+    }
+  },
+  "contexts": {
+    "f86abce54e350c26ddcb1925303f4ead0ed3832607e77bd866a631d71db09b1b": {
+      "attachment": null,
+      "branch_seed": 3002348253,
+      "cartesian_sample_index": null,
+      "collision_policy": {
+        "boundary_mode": "finite_frozen_scene_walls",
+        "box_box_physics_enabled": true,
+        "compliant_cup_neighbor_contact_mode": "ignore",
+        "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "free_space_clearance_loss_tolerance_m": 0.0002,
+        "free_space_clearance_m": 0.0052,
+        "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+        "maximum_actual_penetration_m": 0.01,
+        "maximum_compliant_cup_additional_compression_m": 0.005,
+        "maximum_neighbor_displacement_m": 0.06,
+        "maximum_neighbor_tilt_rad": 0.2,
+        "maximum_planned_stack_penetration_m": 0.01,
+        "minimum_progress_m": 0.002,
+        "progress_timeout_s": 3.0,
+        "required_pair_clearance_m": 0.005,
+        "schema": "m710_poc_pair_collision_policy_v4",
+        "self_collision_clearance_m": 0.0,
+        "stack_contact_mode": "planner_relaxed_physics_checked",
+        "stack_contact_stages": [
+          "support-release",
+          "extraction"
+        ],
+        "wrist_tool_exempt_links": [
+          "J5_link",
+          "J6_link"
+        ],
+        "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION"
+      },
+      "commanded_cup_mask": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "contact_target_name": "carton_l07_c04",
+      "ik_seed": 3002348263,
+      "ik_seed_kind": "LAZY_IK_STREAM",
+      "initial_proximity": null,
+      "joint_limits": [
+        [
+          -3.2288591161895095,
+          3.2288591161895095
+        ],
+        [
+          -1.3089969389957472,
+          2.6179938779914944
+        ],
+        [
+          -1.4049900478554354,
+          3.5779249665883754
+        ],
+        [
+          -6.981317007977318,
+          6.981317007977318
+        ],
+        [
+          -2.181661564992912,
+          2.181661564992912
+        ],
+        [
+          -6.981317007977318,
+          6.981317007977318
+        ]
+      ],
+      "joint_margin_rad": 0.0174532925199433,
+      "maximum_jacobian_condition": 10000.0,
+      "obstacles": [
+        {
+          "category": "chassis",
+          "half_extents_m": [
+            1.05,
+            0.75,
+            0.3
+          ],
+          "name": "chassis",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -1.95
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.35
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "conveyor",
+          "half_extents_m": [
+            0.35,
+            0.75,
+            0.06
+          ],
+          "name": "conveyor_transverse",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -0.55
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.35
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.54
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "conveyor",
+          "half_extents_m": [
+            1.4,
+            0.35,
+            0.06
+          ],
+          "name": "conveyor_longitudinal",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -1.6
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.7500000000000001
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.54
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "floor",
+          "half_extents_m": [
+            3.2,
+            1.15,
+            0.025
+          ],
+          "name": "trailer_floor",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -0.025
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "trailer",
+          "half_extents_m": [
+            3.2,
+            0.025,
+            1.35
+          ],
+          "name": "trailer_left_wall",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              1.1749999999999998
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              1.35
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "trailer",
+          "half_extents_m": [
+            3.2,
+            0.025,
+            1.35
+          ],
+          "name": "trailer_right_wall",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -1.1749999999999998
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              1.35
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "trailer",
+          "half_extents_m": [
+            3.2,
+            1.15,
+            0.025
+          ],
+          "name": "trailer_ceiling",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              2.725
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "trailer",
+          "half_extents_m": [
+            0.025,
+            1.15,
+            1.35
+          ],
+          "name": "trailer_closed_end_wall",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              3.225
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              1.35
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l00_c00",
+          "pose_world": [
+            [
+              0.9999999998894364,
+              1.2514394867273083e-06,
+              -1.481758949861623e-05,
+              0.2999937832355499
+            ],
+            [
+              -1.2517830167446856e-06,
+              0.9999999997304688,
+              -2.3183947450416e-05,
+              -0.8400143980979919
+            ],
+            [
+              1.4817560481315128e-05,
+              2.3183965996259584e-05,
+              0.9999999996214718,
+              0.15000198781490326
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l00_c01",
+          "pose_world": [
+            [
+              0.9999999998951206,
+              6.3038080762877004e-06,
+              -1.3039209444923629e-05,
+              0.3000001907348633
+            ],
+            [
+              -6.304133165005851e-06,
+              0.9999999996693332,
+              -2.493173706653619e-05,
+              -0.4200304448604584
+            ],
+            [
+              1.3039052275726518e-05,
+              2.493181926483407e-05,
+              0.9999999996041937,
+              0.1500011384487152
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l00_c02",
+          "pose_world": [
+            [
+              0.9999999999743172,
+              3.873554634133195e-06,
+              -6.030022143998331e-06,
+              0.30000269412994385
+            ],
+            [
+              -3.873626736577612e-06,
+              0.9999999999210093,
+              -1.1957277964305401e-05,
+              -1.5045493455545511e-05
+            ],
+            [
+              6.029975826352545e-06,
+              1.1957301322053303e-05,
+              0.9999999999103312,
+              0.15000037848949432
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l00_c03",
+          "pose_world": [
+            [
+              0.9999999998277754,
+              3.981526325268495e-06,
+              -1.8127235946060793e-05,
+              0.29999858140945435
+            ],
+            [
+              -3.982128424378944e-06,
+              0.9999999994404449,
+              -3.32152488279588e-05,
+              0.41996458172798157
+            ],
+            [
+              1.812710368853e-05,
+              3.3215321007219835e-05,
+              0.9999999992840752,
+              0.1500014215707779
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l00_c04",
+          "pose_world": [
+            [
+              0.999999999975908,
+              1.3122380434704118e-06,
+              -6.816301323780435e-06,
+              0.2999960482120514
+            ],
+            [
+              -1.312314236810698e-06,
+              0.9999999999366638,
+              -1.1178113783880012e-05,
+              0.8399903178215027
+            ],
+            [
+              6.8162866550025545e-06,
+              1.1178122728739977e-05,
+              0.9999999999142939,
+              0.1500009000301361
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l01_c00",
+          "pose_world": [
+            [
+              0.9999999998517266,
+              3.358209674932892e-06,
+              -1.6889916643364627e-05,
+              0.3000136911869049
+            ],
+            [
+              -3.3584268867785514e-06,
+              0.9999999999116651,
+              -1.2860433176059669e-05,
+              -0.8400142788887024
+            ],
+            [
+              1.6889873453841542e-05,
+              1.2860489897702978e-05,
+              0.99999999977467,
+              0.45001572370529175
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l01_c01",
+          "pose_world": [
+            [
+              0.9999999998193374,
+              1.237206967826849e-05,
+              -1.4431115637258781e-05,
+              0.30003538727760315
+            ],
+            [
+              -1.2372006973694552e-05,
+              0.9999999999140264,
+              4.345176561769071e-06,
+              -0.4200485348701477
+            ],
+            [
+              1.4431169394845274e-05,
+              -4.344998019120757e-06,
+              0.9999999998864312,
+              0.45000964403152466
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l01_c02",
+          "pose_world": [
+            [
+              0.9999999999468615,
+              1.0001408368772362e-05,
+              -2.499745127382321e-06,
+              0.30006352066993713
+            ],
+            [
+              -1.0001441480971556e-05,
+              0.9999999998622497,
+              -1.3246568646432888e-05,
+              3.6486359022092074e-05
+            ],
+            [
+              2.499612642695463e-06,
+              1.3246593646783595e-05,
+              0.9999999999091398,
+              0.45000818371772766
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l01_c03",
+          "pose_world": [
+            [
+              0.9999999999992956,
+              1.3904518797660347e-07,
+              -1.1787925793915782e-06,
+              0.30003437399864197
+            ],
+            [
+              -1.3900891436691792e-07,
+              0.9999999995265392,
+              3.077177833081359e-05,
+              0.4199168384075165
+            ],
+            [
+              1.1787968575011686e-06,
+              -3.077177816692924e-05,
+              0.999999999525854,
+              0.4500215947628021
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l01_c04",
+          "pose_world": [
+            [
+              0.9999999999671683,
+              1.99029833590699e-06,
+              7.855068886396978e-06,
+              0.29999497532844543
+            ],
+            [
+              -1.99039580974086e-06,
+              0.999999999921027,
+              1.2409047853188564e-05,
+              0.8399850726127625
+            ],
+            [
+              -7.855044188069347e-06,
+              -1.240906348747735e-05,
+              0.9999999998921567,
+              0.45000866055488586
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l02_c00",
+          "pose_world": [
+            [
+              0.9999999998993897,
+              1.939575450057335e-06,
+              -1.4051999522822548e-05,
+              0.3000190258026123
+            ],
+            [
+              -1.9390993095607546e-06,
+              0.9999999994240533,
+              3.388411548182838e-05,
+              -0.8399979472160339
+            ],
+            [
+              1.4052065235527882e-05,
+              -3.388408823019671e-05,
+              0.999999999327204,
+              0.750035285949707
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l02_c01",
+          "pose_world": [
+            [
+              0.9999999998823659,
+              1.343605121679173e-05,
+              -7.39870590184697e-06,
+              0.30008190870285034
+            ],
+            [
+              -1.343606841507234e-05,
+              0.9999999999070345,
+              -2.32445367968075e-06,
+              -0.4199981391429901
+            ],
+            [
+              7.398674669680454e-06,
+              2.324553088925995e-06,
+              0.999999999969928,
+              0.7500207424163818
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l02_c02",
+          "pose_world": [
+            [
+              0.9999999999600903,
+              7.402687834568162e-06,
+              5.001959832690791e-06,
+              0.30010464787483215
+            ],
+            [
+              -7.402799062000754e-06,
+              0.9999999997253546,
+              2.2237117846400286e-05,
+              6.860982830403373e-05
+            ],
+            [
+              -5.001795216875268e-06,
+              -2.2237154874016366e-05,
+              0.9999999997402454,
+              0.7500190734863281
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l02_c03",
+          "pose_world": [
+            [
+              0.9999999996578707,
+              -3.503230337795534e-06,
+              -2.5922693944884324e-05,
+              0.30005690455436707
+            ],
+            [
+              3.5033840571764694e-06,
+              0.9999999999762814,
+              5.929872325109488e-06,
+              0.4199349582195282
+            ],
+            [
+              2.5922673170560846e-05,
+              -5.929963140233391e-06,
+              0.9999999996464253,
+              0.7500243186950684
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l02_c04",
+          "pose_world": [
+            [
+              0.9999999999956202,
+              6.748547023036868e-07,
+              -2.8817052437960813e-06,
+              0.3000020980834961
+            ],
+            [
+              -6.748482817353705e-07,
+              0.9999999999972902,
+              2.2280451677167505e-06,
+              0.8399999141693115
+            ],
+            [
+              2.881706747395031e-06,
+              -2.2280432229931597e-06,
+              0.9999999999933658,
+              0.7500098943710327
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l03_c00",
+          "pose_world": [
+            [
+              0.9999999999955079,
+              -9.167632368966419e-07,
+              -2.8537012742113936e-06,
+              0.30003419518470764
+            ],
+            [
+              9.167801282204824e-07,
+              0.9999999999820619,
+              5.91909753135287e-06,
+              -0.8399670720100403
+            ],
+            [
+              2.8536958477491915e-06,
+              -5.919100147542902e-06,
+              0.9999999999784104,
+              1.0500377416610718
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l03_c01",
+          "pose_world": [
+            [
+              0.9999999999898725,
+              3.758544477801604e-06,
+              -2.475543071823236e-06,
+              0.30014604330062866
+            ],
+            [
+              -3.758549740353078e-06,
+              0.9999999999906771,
+              -2.125815749260168e-06,
+              -0.4198932647705078
+            ],
+            [
+              2.4755350818271115e-06,
+              2.125825053690409e-06,
+              0.9999999999946763,
+              1.050031304359436
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l03_c02",
+          "pose_world": [
+            [
+              0.9999999999798391,
+              -1.2086517233371124e-07,
+              6.3487849172712965e-06,
+              0.3001319468021393
+            ],
+            [
+              1.2070645432846156e-07,
+              0.9999999996874992,
+              2.4999739632225707e-05,
+              9.64787250268273e-05
+            ],
+            [
+              -6.348787936885135e-06,
+              -2.4999738865382372e-05,
+              0.999999999667353,
+              1.0500258207321167
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l03_c03",
+          "pose_world": [
+            [
+              0.9999999997934992,
+              -1.4549390438840571e-05,
+              -1.4188621438295151e-05,
+              0.3001263737678528
+            ],
+            [
+              1.4549477811519938e-05,
+              0.9999999998751967,
+              6.157856214464866e-06,
+              0.4200153946876526
+            ],
+            [
+              1.4188531843470035e-05,
+              -6.158062650226056e-06,
+              0.9999999998803819,
+              1.0500355958938599
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l03_c04",
+          "pose_world": [
+            [
+              0.9999999999929762,
+              -2.4166248124540864e-06,
+              2.8648849648714397e-06,
+              0.3000514507293701
+            ],
+            [
+              2.416614205410826e-06,
+              0.999999999990226,
+              3.7024302001758836e-06,
+              0.84005206823349
+            ],
+            [
+              -2.8648939122281265e-06,
+              -3.702423276828175e-06,
+              0.9999999999890422,
+              1.0500150918960571
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l04_c00",
+          "pose_world": [
+            [
+              0.999999999979071,
+              -4.530424349856232e-06,
+              -4.618813287327498e-06,
+              0.30008769035339355
+            ],
+            [
+              4.5304084309825245e-06,
+              0.9999999999837984,
+              -3.446533586329667e-06,
+              -0.8399064540863037
+            ],
+            [
+              4.618828901512348e-06,
+              3.446512661146876e-06,
+              0.999999999983394,
+              1.3500490188598633
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l04_c01",
+          "pose_world": [
+            [
+              0.9999999999153885,
+              -1.3007470467793088e-05,
+              1.6980095881929697e-07,
+              0.30023446679115295
+            ],
+            [
+              1.3007470417049116e-05,
+              0.9999999999153582,
+              2.988415376286733e-07,
+              -0.41973429918289185
+            ],
+            [
+              -1.6980484597739997e-07,
+              -2.988393289224392e-07,
+              0.9999999999999409,
+              1.3500407934188843
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l04_c02",
+          "pose_world": [
+            [
+              0.9999999999837659,
+              -4.0555191936773714e-06,
+              4.00263095039582e-06,
+              0.30020034313201904
+            ],
+            [
+              4.055489161769477e-06,
+              0.9999999999636289,
+              7.5030215374360116e-06,
+              0.00016939282068051398
+            ],
+            [
+              -4.002661378898096e-06,
+              -7.503005304687769e-06,
+              0.9999999999638418,
+              1.3500282764434814
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l04_c03",
+          "pose_world": [
+            [
+              0.9999999996820513,
+              -2.517687860727077e-05,
+              1.4219947792332076e-06,
+              0.3002241253852844
+            ],
+            [
+              2.5176844431742274e-05,
+              0.9999999993943808,
+              2.402841862766048e-05,
+              0.4201136827468872
+            ],
+            [
+              -1.4225997389509337e-06,
+              -2.4028382818679342e-05,
+              0.9999999997103065,
+              1.350048542022705
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l04_c04",
+          "pose_world": [
+            [
+              0.9999999999344614,
+              -3.630482609443187e-06,
+              1.0858022916944214e-05,
+              0.3001019060611725
+            ],
+            [
+              3.630305541888716e-06,
+              0.9999999998604431,
+              1.6307507093233698e-05,
+              0.8400924205780029
+            ],
+            [
+              -1.0858082119549808e-05,
+              -1.6307467674224158e-05,
+              0.9999999998080843,
+              1.3500219583511353
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l05_c00",
+          "pose_world": [
+            [
+              0.9999999999449591,
+              -6.993079469881581e-06,
+              -7.821669839271568e-06,
+              0.3001851737499237
+            ],
+            [
+              6.992999995494269e-06,
+              0.9999999999239283,
+              -1.0160776646144634e-05,
+              -0.839831531047821
+            ],
+            [
+              7.821740893795123e-06,
+              1.0160721948648224e-05,
+              0.9999999999177901,
+              1.6500593423843384
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l05_c01",
+          "pose_world": [
+            [
+              0.9999999988356038,
+              -4.819979638659811e-05,
+              2.3605206699790765e-06,
+              0.30043917894363403
+            ],
+            [
+              4.819977343894373e-05,
+              0.9999999987911465,
+              9.72052980530292e-06,
+              -0.41950926184654236
+            ],
+            [
+              -2.360989194682939e-06,
+              -9.720416017422881e-06,
+              0.9999999999499696,
+              1.6500489711761475
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l05_c02",
+          "pose_world": [
+            [
+              0.9999999996006746,
+              -2.775572739724784e-05,
+              5.316972237497681e-06,
+              0.30032965540885925
+            ],
+            [
+              2.7755627317449598e-05,
+              0.9999999994376815,
+              1.8821853817713544e-05,
+              0.00029762802296318114
+            ],
+            [
+              -5.3174946487515245e-06,
+              -1.8821706234297617e-05,
+              0.9999999998087338,
+              1.6500329971313477
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l05_c03",
+          "pose_world": [
+            [
+              0.9999999994792205,
+              -3.22720096598051e-05,
+              2.7630811125741087e-07,
+              0.30028748512268066
+            ],
+            [
+              3.22720062341821e-05,
+              0.9999999994025166,
+              1.238887844161519e-05,
+              0.42017853260040283
+            ],
+            [
+              -2.767079250970633e-07,
+              -1.2388869518146228e-05,
+              0.9999999999232196,
+              1.650052785873413
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l05_c04",
+          "pose_world": [
+            [
+              0.9999999999402996,
+              -9.475997371664737e-07,
+              1.0885893812283557e-05,
+              0.30014708638191223
+            ],
+            [
+              9.474707170489734e-07,
+              0.9999999999293157,
+              1.1852045345003634e-05,
+              0.8401239514350891
+            ],
+            [
+              -1.0885905042509149e-05,
+              -1.1852035030230445e-05,
+              0.9999999998705131,
+              1.6500245332717896
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l06_c00",
+          "pose_world": [
+            [
+              0.9999999998493786,
+              -1.7136138350581462e-05,
+              -2.755997818827362e-06,
+              0.30009111762046814
+            ],
+            [
+              1.713613949097444e-05,
+              0.9999999998530907,
+              4.1376279599945774e-07,
+              -0.8398827314376831
+            ],
+            [
+              2.7559907281259637e-06,
+              -4.1381002310019643e-07,
+              0.9999999999961167,
+              1.9500598907470703
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l06_c01",
+          "pose_world": [
+            [
+              0.9999999951135643,
+              -9.867761123668276e-05,
+              5.9666033833557994e-06,
+              0.29974400997161865
+            ],
+            [
+              9.867751441530559e-05,
+              0.9999999949997433,
+              1.622533607436036e-05,
+              -0.4194844961166382
+            ],
+            [
+              -5.96820443092658e-06,
+              -1.6224747225484923e-05,
+              0.9999999998505691,
+              1.9500489234924316
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l06_c02",
+          "pose_world": [
+            [
+              0.9999999842409172,
+              -0.00017748761168952595,
+              4.038946006542112e-06,
+              0.30030086636543274
+            ],
+            [
+              0.0001774875564183581,
+              0.9999999841555014,
+              1.3680798564303479e-05,
+              0.0003194247547071427
+            ],
+            [
+              -4.041374114810221e-06,
+              -1.3680081486049434e-05,
+              0.9999999998982614,
+              1.9500341415405273
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l06_c03",
+          "pose_world": [
+            [
+              0.9999999995035614,
+              -3.134983002944206e-05,
+              -3.172575651180575e-06,
+              0.30034497380256653
+            ],
+            [
+              3.13498397522866e-05,
+              0.9999999995038977,
+              3.064650010330947e-06,
+              0.4202331602573395
+            ],
+            [
+              3.1724795733497293e-06,
+              -3.0647494685478033e-06,
+              0.9999999999902713,
+              1.9500534534454346
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l06_c04",
+          "pose_world": [
+            [
+              0.9999999999580363,
+              1.9677702737694283e-06,
+              8.9473562800342e-06,
+              0.3001888394355774
+            ],
+            [
+              -1.967813844277867e-06,
+              0.9999999999862071,
+              4.869645472868088e-06,
+              0.840154230594635
+            ],
+            [
+              -8.947346697567184e-06,
+              -4.869663079395298e-06,
+              0.9999999999481157,
+              1.9500250816345215
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        {
+          "category": "carton",
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "name": "carton_l07_c04",
+          "pose_world": [
+            [
+              0.9999999959210666,
+              -8.976311198279608e-05,
+              1.0022499741515407e-05,
+              0.29956337809562683
+            ],
+            [
+              8.976302180871217e-05,
+              0.9999999959308247,
+              8.997252359716566e-06,
+              0.8399220108985901
+            ],
+            [
+              -1.0023307322103201e-05,
+              -8.996352673154496e-06,
+              0.9999999999092994,
+              2.2500271797180176
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        }
+      ],
+      "path_seed": 3002348264,
+      "stack_carton_names": [
+        "carton_l00_c00",
+        "carton_l00_c01",
+        "carton_l00_c02",
+        "carton_l00_c03",
+        "carton_l00_c04",
+        "carton_l01_c00",
+        "carton_l01_c01",
+        "carton_l01_c02",
+        "carton_l01_c03",
+        "carton_l01_c04",
+        "carton_l02_c00",
+        "carton_l02_c01",
+        "carton_l02_c02",
+        "carton_l02_c03",
+        "carton_l02_c04",
+        "carton_l03_c00",
+        "carton_l03_c01",
+        "carton_l03_c02",
+        "carton_l03_c03",
+        "carton_l03_c04",
+        "carton_l04_c00",
+        "carton_l04_c01",
+        "carton_l04_c02",
+        "carton_l04_c03",
+        "carton_l04_c04",
+        "carton_l05_c00",
+        "carton_l05_c01",
+        "carton_l05_c02",
+        "carton_l05_c03",
+        "carton_l05_c04",
+        "carton_l06_c00",
+        "carton_l06_c01",
+        "carton_l06_c02",
+        "carton_l06_c03",
+        "carton_l06_c04",
+        "carton_l07_c04"
+      ],
+      "stage": "pregrasp",
+      "support_names": [],
+      "target_contact": null,
+      "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129"
+    }
+  },
+  "selection_scope": "First V3 checkpoint, eight most frequent groups, first representative each; full counts/logs remain on server."
+}

@@ -1,0 +1,261 @@
+[
+  {
+    "directory": "/root/autodl-tmp/m710-poc-fifth-step3-20260917/outputs/fifth_search_002",
+    "diagnostics_sha256": "75ccea0064e5b3611ce6be02d63d1937aabe59b535e3540c195ccff358dd253f",
+    "events": {
+      "CONTACT_CANDIDATE_STARTED": 1,
+      "progress": 1,
+      "connection_started": 55,
+      "connection_finished": 55,
+      "CANCELLED": 1
+    },
+    "queries": null,
+    "outcomes": {},
+    "candidate_started": [
+      {
+        "elapsed_s": 0.6143104024231434,
+        "event": "CONTACT_CANDIDATE_STARTED",
+        "stage": "grasp_ik",
+        "target": "carton_l07_c04"
+      }
+    ],
+    "last_event": {
+      "elapsed_s": 9701.69988591969,
+      "event": "CANCELLED",
+      "reason": "signal 15",
+      "exception_type": "KeyboardInterrupt",
+      "best_complete_result": null,
+      "resume_supported": false,
+      "progress_evidence": "planning_progress.jsonl"
+    },
+    "motion_exists": false,
+    "rejection_counts": {
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 1688,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 1521,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l04_c01\"]]": 1471,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l04_c00\"]]": 1446,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"carton_l04_c01\"]]": 1349,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"carton_l04_c00\"]]": 1137,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_left_wall\"]]": 1048,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_left_wall\"]]": 1044,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_0\", \"carton_l07_c04\"]]": 940,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_right_wall\"]]": 806,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_71\", \"trailer_right_wall\"]]": 781,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_71\", \"trailer_ceiling\"]]": 775
+    },
+    "total_rejections": 28210,
+    "distinct_rejection_groups": 451,
+    "rrt_summary": {
+      "connections_finished": 55,
+      "successful_rrt_before_full_recheck": 1,
+      "iterations_consumed": 28097,
+      "stages": [
+        "pregrasp",
+        "transit"
+      ],
+      "last_elapsed_s": 9701.69988591969
+    }
+  },
+  {
+    "directory": "/root/autodl-tmp/m710-poc-fifth-step3-20260917/outputs/fifth_search_003_expanded",
+    "diagnostics_sha256": "fc7fe5a5f4ea9a215cf21c029a89ff41719f05c8f5497671aec8564305bd0735",
+    "events": {
+      "CONTACT_CANDIDATE_STARTED": 1,
+      "progress": 1,
+      "connection_started": 16,
+      "connection_finished": 16,
+      "CANCELLED": 1
+    },
+    "queries": null,
+    "outcomes": {},
+    "candidate_started": [
+      {
+        "elapsed_s": 0.6183677092194557,
+        "event": "CONTACT_CANDIDATE_STARTED",
+        "stage": "grasp_ik",
+        "target": "carton_l07_c04"
+      }
+    ],
+    "last_event": {
+      "elapsed_s": 9015.971102371812,
+      "event": "CANCELLED",
+      "reason": "signal 15",
+      "exception_type": "KeyboardInterrupt",
+      "best_complete_result": null,
+      "resume_supported": false,
+      "progress_evidence": "planning_progress.jsonl"
+    },
+    "motion_exists": false,
+    "rejection_counts": {
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 547,
+      "[\"rrt_internal\", \"transit\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 486,
+      "[\"rrt_internal\", \"transit\", \"PAYLOAD_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"carton_l07_c04\", \"carton_l06_c04\"]]": 398,
+      "[\"rrt_internal\", \"transit\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 383,
+      "[\"rrt_internal\", \"transit\", \"PAYLOAD_COLLISION\", \"GEOMETRY_CONTACT_OR_INTERSECTION\", [\"carton_l07_c04\", \"carton_l02_c04\"]]": 375,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 372,
+      "[\"rrt_internal\", \"transit\", \"PAYLOAD_COLLISION\", \"GEOMETRY_CONTACT_OR_INTERSECTION\", [\"carton_l07_c04\", \"trailer_right_wall\"]]": 364,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_left_wall\"]]": 362,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_5\", \"trailer_ceiling\"]]": 362,
+      "[\"rrt_internal\", \"transit\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"carton_l04_c04\"]]": 358,
+      "[\"rrt_internal\", \"transit\", \"PAYLOAD_COLLISION\", \"GEOMETRY_CONTACT_OR_INTERSECTION\", [\"carton_l07_c04\", \"carton_l06_c04\"]]": 329,
+      "[\"rrt_internal\", \"transit\", \"PAYLOAD_COLLISION\", \"GEOMETRY_CONTACT_OR_INTERSECTION\", [\"carton_l07_c04\", \"carton_l06_c03\"]]": 319
+    },
+    "total_rejections": 13762,
+    "distinct_rejection_groups": 405,
+    "rrt_summary": {
+      "connections_finished": 16,
+      "successful_rrt_before_full_recheck": 1,
+      "iterations_consumed": 13688,
+      "stages": [
+        "pregrasp",
+        "transit"
+      ],
+      "last_elapsed_s": 9015.971102371812
+    }
+  },
+  {
+    "directory": "/root/autodl-tmp/m710-poc-fifth-step3-v2-20260917/outputs/fifth_search_005_local720",
+    "diagnostics_sha256": "871a680754141860f610c6217ecc0e3c503674c2e8506d2a18c854f60638448d",
+    "events": {
+      "CONTACT_CANDIDATE_STARTED": 1,
+      "progress": 1,
+      "connection_started": 6,
+      "connection_finished": 6,
+      "LOCAL_TRANSIT_FINISHED": 1,
+      "CANCELLED": 1
+    },
+    "queries": {
+      "[\"state\", \"actual_task_start\", \"ACCEPTED\"]": 1,
+      "[\"state\", \"contact_endpoint\", \"ACCEPTED\"]": 9,
+      "[\"state\", \"pregrasp_ik_endpoint\", \"ACCEPTED\"]": 9,
+      "[\"rrt_internal\", \"pregrasp\", \"ACCEPTED\"]": 15825,
+      "[\"rrt_internal\", \"pregrasp\", \"REJECTED\"]": 9310,
+      "[\"rrt_success_full_edge_recheck\", \"pregrasp\", \"ACCEPTED\"]": 96296,
+      "[\"rrt_success_full_edge_recheck\", \"pregrasp\", \"REJECTED\"]": 1,
+      "[\"full_edge_recheck\", \"contact\", \"ACCEPTED\"]": 359,
+      "[\"full_edge_recheck\", \"extraction\", \"ACCEPTED\"]": 6949,
+      "[\"full_edge_recheck\", \"transit\", \"ACCEPTED\"]": 55161,
+      "[\"full_edge_recheck\", \"transit\", \"REJECTED\"]": 2,
+      "[\"full_edge_recheck\", \"place\", \"ACCEPTED\"]": 33,
+      "[\"full_edge_recheck\", \"withdrawal\", \"ACCEPTED\"]": 5654,
+      "[\"state\", \"residence\", \"ACCEPTED\"]": 1
+    },
+    "outcomes": {
+      "[null, null, \"TRAJECTORY_SEARCH_PENDING\"]": 1,
+      "[\"connection_finished\", \"pregrasp\", \"maximum iterations reached\"]": 4,
+      "[\"connection_finished\", \"pregrasp\", \"connected\"]": 2,
+      "[\"CANCELLED\", null, null]": 1
+    },
+    "candidate_started": [
+      {
+        "elapsed_s": 0.6177210919559002,
+        "event": "CONTACT_CANDIDATE_STARTED",
+        "stage": "grasp_ik",
+        "target": "carton_l07_c04"
+      }
+    ],
+    "last_event": {
+      "elapsed_s": 4627.261936411262,
+      "event": "CANCELLED",
+      "reason": "signal 15",
+      "exception_type": "KeyboardInterrupt",
+      "best_complete_result": null,
+      "resume_supported": false,
+      "progress_evidence": "planning_progress.jsonl"
+    },
+    "motion_exists": false,
+    "rejection_counts": {
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 827,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 518,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_right_wall\"]]": 477,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l03_c00\"]]": 406,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_compliant_bellows_5\", \"trailer_ceiling\"]]": 393,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_5\", \"trailer_ceiling\"]]": 371,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_71\", \"trailer_ceiling\"]]": 315,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_left_wall\"]]": 303,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_right_wall\"]]": 301,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l04_c00\"]]": 297,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_compliant_bellows_0\", \"carton_l07_c04\"]]": 278,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_left_wall\"]]": 235
+    },
+    "total_rejections": 9313,
+    "distinct_rejection_groups": 256,
+    "rrt_summary": {
+      "connections_finished": 6,
+      "successful_rrt_before_full_recheck": 2,
+      "iterations_consumed": 9306,
+      "stages": [
+        "pregrasp"
+      ],
+      "last_elapsed_s": 4627.261936411262
+    }
+  },
+  {
+    "directory": "/root/autodl-tmp/m710-poc-fifth-step3-v2-20260917/outputs/fifth_search_006_deep",
+    "diagnostics_sha256": "717070f7d7cdf0902eaf89278639da6baedbed06c8d4e8e6999f31bc4093a579",
+    "events": {
+      "CONTACT_CANDIDATE_STARTED": 1,
+      "progress": 1,
+      "connection_started": 4,
+      "connection_finished": 4,
+      "CANCELLED": 1
+    },
+    "queries": {
+      "[\"state\", \"actual_task_start\", \"ACCEPTED\"]": 1,
+      "[\"state\", \"contact_endpoint\", \"ACCEPTED\"]": 8,
+      "[\"state\", \"pregrasp_ik_endpoint\", \"ACCEPTED\"]": 5,
+      "[\"rrt_internal\", \"pregrasp\", \"ACCEPTED\"]": 14804,
+      "[\"rrt_internal\", \"pregrasp\", \"REJECTED\"]": 5979,
+      "[\"rrt_success_full_edge_recheck\", \"pregrasp\", \"ACCEPTED\"]": 229224,
+      "[\"rrt_success_full_edge_recheck\", \"pregrasp\", \"REJECTED\"]": 1
+    },
+    "outcomes": {
+      "[null, null, \"TRAJECTORY_SEARCH_PENDING\"]": 1,
+      "[\"connection_finished\", \"pregrasp\", \"connected\"]": 4,
+      "[\"CANCELLED\", null, null]": 1
+    },
+    "candidate_started": [
+      {
+        "elapsed_s": 0.6195332296192646,
+        "event": "CONTACT_CANDIDATE_STARTED",
+        "stage": "grasp_ik",
+        "target": "carton_l07_c04"
+      }
+    ],
+    "last_event": {
+      "elapsed_s": 2840.4710533358157,
+      "event": "CANCELLED",
+      "reason": "signal 15",
+      "exception_type": "KeyboardInterrupt",
+      "best_complete_result": null,
+      "resume_supported": false,
+      "progress_evidence": "planning_progress.jsonl"
+    },
+    "motion_exists": false,
+    "rejection_counts": {
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 584,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"trailer_ceiling\"]]": 495,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l05_c00\"]]": 278,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l04_c00\"]]": 219,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"carton_l04_c00\"]]": 204,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l06_c01\"]]": 178,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"carton_l05_c00\"]]": 140,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_compliant_bellows_0\", \"carton_l07_c04\"]]": 138,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"trailer_left_wall\"]]": 129,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"PROXY_GEOMETRY_INTERSECTION\", [\"tool_rigid_0\", \"carton_l06_c00\"]]": 129,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_compliant_bellows_50\", \"carton_l07_c04\"]]": 126,
+      "[\"rrt_internal\", \"pregrasp\", \"RIGID_TOOL_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"tool_rigid_0\", \"carton_l04_c01\"]]": 120
+    },
+    "total_rejections": 5980,
+    "distinct_rejection_groups": 304,
+    "rrt_summary": {
+      "connections_finished": 4,
+      "successful_rrt_before_full_recheck": 4,
+      "iterations_consumed": 5979,
+      "stages": [
+        "pregrasp"
+      ],
+      "last_elapsed_s": 2840.4710533358157
+    }
+  }
+]

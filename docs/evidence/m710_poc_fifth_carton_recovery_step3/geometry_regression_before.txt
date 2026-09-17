@@ -1,0 +1,180 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_ test_distance_queries_preserve_both_frozen_boxes[signed_distance_obb-False] __
+
+query = <function OBB.signed_distance_obb at 0x7fd0886423e0>, readonly = False
+
+    @pytest.mark.parametrize("readonly", [False, True])
+    @pytest.mark.parametrize("query", [OBB.signed_distance_obb, obb_surface_distance])
+    def test_distance_queries_preserve_both_frozen_boxes(query, readonly):
+        items = boxes(readonly)
+        before = state_bytes(items)
+        first = query(*items)
+        assert np.isfinite(first) and first > 0
+>       assert state_bytes(items) == before
+E       AssertionError: assert [(b'\x00\x00\...00\x00\xf0?')] == [(b'\x00\x00\...00\x00\xf0?')]
+E
+E         At index 0 diff: (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', b'333333\xd3?\x9a\x99\x99\x99\x99\x99\xc9?333333\xc3?', b'\xf4a\xff\xff\xff\xff\xef?\xd4c\x82\xad\xef\xc2\xae\xbe6R\xd9\xddF\xf0\xc7\xbe\xbd\xb3z\xd2\x14\xc3\xae>\xdc\x88\xfd\xff\xff\xff\xef?\x19H\xf2#\x95\xd3\xd8>{j$\xe2C\xf0\xc7>\x17_\x0b\xdc\x95\xd3\xd8\xbeb\x08\xfd\xff\xff\xff\xef?') != (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', b'333333\xd3?\x9a\x99\x99\x99\x99\x99\xc9?333333\xc3?', b'\xf3a...
+E
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_obb_query_identity.py:38: AssertionError
+__ test_distance_queries_preserve_both_frozen_boxes[signed_distance_obb-True] __
+
+query = <function OBB.signed_distance_obb at 0x7fd0886423e0>, readonly = True
+
+    @pytest.mark.parametrize("readonly", [False, True])
+    @pytest.mark.parametrize("query", [OBB.signed_distance_obb, obb_surface_distance])
+    def test_distance_queries_preserve_both_frozen_boxes(query, readonly):
+        items = boxes(readonly)
+        before = state_bytes(items)
+>       first = query(*items)
+                ^^^^^^^^^^^^^
+
+tests/test_obb_query_identity.py:36:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = OBB(center=array([0., 0., 0.]), half_extents=array([0.3 , 0.2 , 0.15]), rotation=array([[ 1.00000000e+00, -9.16763237e...+00,  5.91909753e-06],
+       [ 2.85369585e-06, -5.91910015e-06,  1.00000000e+00]]), name='first', category='obstacle')
+other = OBB(center=array([0.605, 0.   , 0.   ]), half_extents=array([0.3 , 0.2 , 0.15]), rotation=array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]]), name='second', category='obstacle')
+
+    def signed_distance_obb(self, other: "OBB") -> float:
+        """Return a signed SAT separation distance to another OBB.
+
+        Positive values certify separation, zero is contact, and negative
+        values mean overlap.  The value is the largest normalized gap over
+        the 15 separating-axis candidates.  It is the exact face-normal gap
+        for the parallel cartons used by the depalletizing scenes; for general
+        skew boxes its sign is exact while its magnitude is a conservative
+        separating-axis distance rather than the Euclidean closest distance.
+
+        Unlike :meth:`intersects_obb`, this query never applies an engineering
+        collision margin or hidden axis padding.  It is therefore suitable
+        for auditing whether an already-close pair is separating or worsening.
+        """
+        delta = other.center - self.center
+        axes = [self.rotation[:, i] for i in range(3)]
+        axes.extend(other.rotation[:, i] for i in range(3))
+        for i in range(3):
+            for j in range(3):
+                axis = np.cross(self.rotation[:, i], other.rotation[:, j])
+                norm = float(np.linalg.norm(axis))
+                if norm > _EPS:
+                    axes.append(axis / norm)
+
+        best = -np.inf
+        for axis in axes:
+            # Rotation columns are expected to be orthonormal, but normalize
+            # every candidate so the result remains expressed in metres.
+            axis = np.asarray(axis, dtype=float)
+>           axis /= np.linalg.norm(axis)
+E           ValueError: output array is read-only
+
+src/unloading_sim/geometry.py:233: ValueError
+_ test_distance_queries_preserve_both_frozen_boxes[obb_surface_distance-False] _
+
+query = <function obb_surface_distance at 0x7fd088561a80>, readonly = False
+
+    @pytest.mark.parametrize("readonly", [False, True])
+    @pytest.mark.parametrize("query", [OBB.signed_distance_obb, obb_surface_distance])
+    def test_distance_queries_preserve_both_frozen_boxes(query, readonly):
+        items = boxes(readonly)
+        before = state_bytes(items)
+        first = query(*items)
+        assert np.isfinite(first) and first > 0
+>       assert state_bytes(items) == before
+E       AssertionError: assert [(b'\x00\x00\...00\x00\xf0?')] == [(b'\x00\x00\...00\x00\xf0?')]
+E
+E         At index 0 diff: (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', b'333333\xd3?\x9a\x99\x99\x99\x99\x99\xc9?333333\xc3?', b'\xf4a\xff\xff\xff\xff\xef?\xd4c\x82\xad\xef\xc2\xae\xbe6R\xd9\xddF\xf0\xc7\xbe\xbd\xb3z\xd2\x14\xc3\xae>\xdc\x88\xfd\xff\xff\xff\xef?\x19H\xf2#\x95\xd3\xd8>{j$\xe2C\xf0\xc7>\x17_\x0b\xdc\x95\xd3\xd8\xbeb\x08\xfd\xff\xff\xff\xef?') != (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', b'333333\xd3?\x9a\x99\x99\x99\x99\x99\xc9?333333\xc3?', b'\xf3a...
+E
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_obb_query_identity.py:38: AssertionError
+_ test_distance_queries_preserve_both_frozen_boxes[obb_surface_distance-True] __
+
+query = <function obb_surface_distance at 0x7fd088561a80>, readonly = True
+
+    @pytest.mark.parametrize("readonly", [False, True])
+    @pytest.mark.parametrize("query", [OBB.signed_distance_obb, obb_surface_distance])
+    def test_distance_queries_preserve_both_frozen_boxes(query, readonly):
+        items = boxes(readonly)
+        before = state_bytes(items)
+>       first = query(*items)
+                ^^^^^^^^^^^^^
+
+tests/test_obb_query_identity.py:36:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/unloading_sim/pair_clearance.py:12: in obb_surface_distance
+    if first.signed_distance_obb(second) <= 0.:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = OBB(center=array([0., 0., 0.]), half_extents=array([0.3 , 0.2 , 0.15]), rotation=array([[ 1.00000000e+00, -9.16763237e...+00,  5.91909753e-06],
+       [ 2.85369585e-06, -5.91910015e-06,  1.00000000e+00]]), name='first', category='obstacle')
+other = OBB(center=array([0.605, 0.   , 0.   ]), half_extents=array([0.3 , 0.2 , 0.15]), rotation=array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]]), name='second', category='obstacle')
+
+    def signed_distance_obb(self, other: "OBB") -> float:
+        """Return a signed SAT separation distance to another OBB.
+
+        Positive values certify separation, zero is contact, and negative
+        values mean overlap.  The value is the largest normalized gap over
+        the 15 separating-axis candidates.  It is the exact face-normal gap
+        for the parallel cartons used by the depalletizing scenes; for general
+        skew boxes its sign is exact while its magnitude is a conservative
+        separating-axis distance rather than the Euclidean closest distance.
+
+        Unlike :meth:`intersects_obb`, this query never applies an engineering
+        collision margin or hidden axis padding.  It is therefore suitable
+        for auditing whether an already-close pair is separating or worsening.
+        """
+        delta = other.center - self.center
+        axes = [self.rotation[:, i] for i in range(3)]
+        axes.extend(other.rotation[:, i] for i in range(3))
+        for i in range(3):
+            for j in range(3):
+                axis = np.cross(self.rotation[:, i], other.rotation[:, j])
+                norm = float(np.linalg.norm(axis))
+                if norm > _EPS:
+                    axes.append(axis / norm)
+
+        best = -np.inf
+        for axis in axes:
+            # Rotation columns are expected to be orthonormal, but normalize
+            # every candidate so the result remains expressed in metres.
+            axis = np.asarray(axis, dtype=float)
+>           axis /= np.linalg.norm(axis)
+E           ValueError: output array is read-only
+
+src/unloading_sim/geometry.py:233: ValueError
+________ test_production_state_query_keeps_validation_context_identity _________
+
+    def test_production_state_query_keeps_validation_context_identity():
+        from test_search_diagnostics import connector
+        items = boxes()
+        def validate(q, obstacles, **kwargs):
+            distance = obb_surface_distance(*obstacles)
+            if distance < .005:
+                return dict(reason="CLEARANCE_INSUFFICIENT", pair=[b.name for b in obstacles],
+                            surface_distance_m=distance, required_pair_clearance_m=.005)
+        c = connector(validate)
+        before = c._context_identity(items, stage="pregrasp")
+        failure = c.validate_unloaded_state(np.zeros(6), items, stage="pregrasp")
+        assert failure["reason"] == "CLEARANCE_INSUFFICIENT"
+>       assert c._context_identity(items, stage="pregrasp") == before
+E       AssertionError: assert '10b4536ae076...e06aa562e80a6' == '981e73e1e9ad...28292579e7dbc'
+E
+E         - 981e73e1e9ad6a7bac00f903048c477d8fd336ba288bf8b332828292579e7dbc
+E         + 10b4536ae0767b1555cd04c8aed9e5841dff411629d799cacb8e06aa562e80a6
+
+tests/test_obb_query_identity.py:55: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_obb_query_identity.py::test_distance_queries_preserve_both_frozen_boxes[signed_distance_obb-False]
+FAILED tests/test_obb_query_identity.py::test_distance_queries_preserve_both_frozen_boxes[signed_distance_obb-True]
+FAILED tests/test_obb_query_identity.py::test_distance_queries_preserve_both_frozen_boxes[obb_surface_distance-False]
+FAILED tests/test_obb_query_identity.py::test_distance_queries_preserve_both_frozen_boxes[obb_surface_distance-True]
+FAILED tests/test_obb_query_identity.py::test_production_state_query_keeps_validation_context_identity
+5 failed in 0.17s

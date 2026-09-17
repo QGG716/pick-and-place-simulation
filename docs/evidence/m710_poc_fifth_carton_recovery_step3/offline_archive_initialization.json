@@ -1,0 +1,16 @@
+{
+  "scene_matches_live_cpu_search": true,
+  "cpu_implementation_matches_live_search": true,
+  "historical_counts": {
+    "actual_received": 4,
+    "ideal_received": 0,
+    "processed": 4,
+    "outfed": 3
+  },
+  "active_ideal_transport_ids": [
+    "carton_l07_c00"
+  ],
+  "dynamic_bodies": 37,
+  "world_scope": "NEW_WORLD_RECONSTRUCTED_FROM_ARCHIVED_ACTUAL_STATE",
+  "isaac_started": false
+}

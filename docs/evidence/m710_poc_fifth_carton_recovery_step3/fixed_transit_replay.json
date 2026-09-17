@@ -1,0 +1,246 @@
+{
+  "schema": "production_rejection_replay_v1",
+  "rows": [
+    {
+      "group": "[\"full_edge_recheck\", \"transit\", \"PAYLOAD_COLLISION\", \"CLEARANCE_INSUFFICIENT\", [\"carton_l07_c04\", \"carton_l06_c04\"]]",
+      "observed_count": 1,
+      "example": {
+        "candidate": {
+          "candidate_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c",
+          "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+          "attempt_id": "372dfa69f59825b6233b98695cea85a0beffaf4819b034f96f94eddf4092fc5c:attempt_0",
+          "retry_index": 0,
+          "retry_reason": null,
+          "variant": {
+            "variant": "nominal",
+            "face_offset_local_xy_m": [
+              0.0,
+              0.0
+            ],
+            "orientation_offset_local_xy_rad": [
+              0.0,
+              0.0
+            ],
+            "height_face_prior": 0.9,
+            "rigid_tool_bottom_above_box_bottom_m": 0.006005656318644359,
+            "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+          },
+          "face": "front",
+          "roll_deg": 90,
+          "pose_ordinal": 0,
+          "batch_index": 0,
+          "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+          "ik_seed": 493350205,
+          "path_seed": 3002348253,
+          "candidate_wall_budget_s": null,
+          "actual_complete_connection_attempted": false,
+          "target": "carton_l07_c04",
+          "roll": 90
+        },
+        "q_rad": [
+          0.9054744713331971,
+          -0.7207916993920802,
+          -0.5001000298523148,
+          1.3188756037094822,
+          -0.9448234795311973,
+          1.8972770876073515
+        ],
+        "failure": {
+          "reason": "PAYLOAD_COLLISION",
+          "classification": "CLEARANCE_INSUFFICIENT",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "carton_l07_c04",
+            "carton_l06_c04"
+          ],
+          "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": false,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0049968880257103,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+        },
+        "origin": "full_edge_recheck",
+        "edge": {
+          "start_q_rad": [
+            0.9112590192433163,
+            -0.7172416152698797,
+            -0.4975037508217213,
+            1.3270475901450585,
+            -0.9486057681573845,
+            1.8913213722804847
+          ],
+          "end_q_rad": [
+            0.8945079325869296,
+            -0.7275220672070852,
+            -0.5050221421811484,
+            1.303382879425369,
+            -0.9376528906773839,
+            1.9085681312478695
+          ],
+          "index": 0,
+          "fraction": 0.34532374100719426
+        },
+        "context": "04a5f66e561cf532eb265d72c5ce2e33e4dae56d7bbfaec180cd477e27500df9"
+      },
+      "replay_failure": {
+        "reason": "PAYLOAD_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0049968880257103,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      },
+      "matched": true,
+      "pair_obb_geometry": [
+        {
+          "name": "carton_l06_c04",
+          "pose_world": [
+            [
+              0.9999999999580363,
+              1.9677702737694283e-06,
+              8.9473562800342e-06,
+              0.3001888394355774
+            ],
+            [
+              -1.967813844277867e-06,
+              0.9999999999862071,
+              4.869645472868088e-06,
+              0.840154230594635
+            ],
+            [
+              -8.947346697567184e-06,
+              -4.869663079395298e-06,
+              0.9999999999481157,
+              1.9500250816345215
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "world_aabb_m": [
+            [
+              0.00018710379066977367,
+              0.6401529098064194,
+              1.800021423505679
+            ],
+            [
+              0.600190575080485,
+              1.0401555513828507,
+              2.100028739763364
+            ]
+          ]
+        },
+        {
+          "name": "carton_l07_c04",
+          "pose_world": [
+            [
+              0.9976283677869128,
+              -6.524418092721764e-05,
+              0.06883048401701856,
+              -0.2997178831418972
+            ],
+            [
+              6.129697863740274e-05,
+              0.9999999963536673,
+              5.945877033328723e-05,
+              0.7763042973916857
+            ],
+            [
+              -0.06883048764537848,
+              -5.509865528988419e-05,
+              0.9976283681484993,
+              2.184422055655423
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "world_aabb_m": [
+            [
+              -0.6093440149167093,
+              0.576276990211811,
+              2.0141176344084766
+            ],
+            [
+              0.009908248632914896,
+              0.9763316045715604,
+              2.3547264769023695
+            ]
+          ]
+        }
+      ],
+      "joint_margin_rad": [
+        2.3233846448563122,
+        0.588205239603667,
+        0.9048900180031205,
+        5.662441404267836,
+        1.2368380854617147,
+        5.084039920369967
+      ],
+      "jacobian_condition": 7.452602846144228,
+      "original_cad_intersection_proven": false
+    }
+  ],
+  "all_matched": true,
+  "source_part_probe": {
+    "part": {
+      "schema": "wantai_single_part_mesh_probe_v1",
+      "source_step_sha256": "d54ec5818a772877162e7d8eded484c67920de148037373d9d7d8e35cfa0694b",
+      "coverage_sha256": "10759d0b68212540c2b9ea48ee124832446ef73f6b282eff796f3d531be1b7fc",
+      "tool_part_index": 0,
+      "source_solid_index": 0,
+      "source_bounds_step_mm": [
+        -336.56173150640416,
+        -12.659188413158216,
+        -144.0,
+        239.43826849359596,
+        11.340811586841786,
+        144.00000000000006
+      ],
+      "mesh_path": "/root/autodl-tmp/m710-official-dynamics-20260910/tool-part-diagnostic/part0/tool_rigid_000_source_solid_000.stl",
+      "mesh_sha256": "56b831d96c1c9a88075e5fa9938d9707ee186690593f2cb0221ff10fe1da92a8",
+      "mesh_units": "millimetre",
+      "linear_deflection_mm": 0.05,
+      "angular_deflection_rad": 0.05,
+      "generator_sha256": "be252fb9d33ff30a309c6f48474bcb539079cdc0d4ff1e6f91057f660afcedd4",
+      "runtime_collision_policy_changed": false
+    },
+    "cases": [],
+    "current_coverage_sha256": "d6d337df797c5adac5d0f5d0b725df0e9136674091278e17759a68757cea926a",
+    "coverage_binding": "EXACT_BYTES_OR_LF_NORMALIZATION_ONLY",
+    "runtime_geometry_changed": false,
+    "scope": "OFFLINE_TESSELLATED_SOURCE_SOLID_NOT_ANALYTIC_BREP_PROOF"
+  }
+}
