@@ -379,12 +379,31 @@ class PinocchioHppFclBackend:
         recorded = getattr(result, "min_distance", value)
         return float(recorded)
 
+    def _poc_pair_result(self, first, first_tf, second, second_tf, required, policy,
+                         pair, stage, proxy=False):
+        from .pair_clearance import classify_pair_distance
+        try:
+            contact = self.coal.CollisionResult()
+            self.coal.collide(first, first_tf, second, second_tf, self.coal.CollisionRequest(), contact)
+            intersects = bool(contact.isCollision())
+            distance = 0. if intersects else self._distance(first, first_tf, second, second_tf)
+            if distance < 0 and not intersects:
+                distance = None
+        except Exception:
+            distance, intersects = None, None
+        evidence = classify_pair_distance(distance, required, intersection=intersects,
+            proxy=proxy, stage=stage, pair=pair, policy=policy,
+            query_method="COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+            geometry_scope="OFFICIAL_MESH_VS_TOOL_PROXY" if proxy else "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS")
+        return CollisionResult(not evidence["accepted"], evidence["classification"], *pair, evidence=evidence)
+
     def _environment_collision(
         self,
         obstacles: Sequence[OBB],
         ignored: set[str],
         minimum_distance: float,
         ignored_pairs: set[tuple[str, str]],
+        pair_policy=None, stage="unspecified", proxy=False,
     ) -> CollisionResult:
         active_obstacles = [obstacle for obstacle in obstacles if obstacle.name not in ignored]
         if not active_obstacles:
@@ -447,6 +466,13 @@ class PinocchioHppFclBackend:
                         entry[4] = _transform(self.coal, obstacle.rotation, obstacle.center)
                     obstacle_exact[obstacle_index] = (entry[3], entry[4])
                 box, box_tf = obstacle_exact[obstacle_index]
+                if pair_policy is not None and pair_policy.poc_pair_clearance:
+                    result = self._poc_pair_result(geometry_object.geometry, robot_tf, box, box_tf,
+                        minimum_distance, pair_policy, (link_name, obstacle.name), stage, proxy)
+                    if result.in_collision:
+                        result.evidence["colliders"] = [str(geometry_object.name), obstacle.name]
+                        return result
+                    continue
                 if self._distance(geometry_object.geometry, robot_tf, box, box_tf) <= minimum_distance:
                     return CollisionResult(True, "robot_obstacle", link_name, obstacle.name)
         return CollisionResult(False)
@@ -508,7 +534,7 @@ class PinocchioHppFclBackend:
             result[link]["sources"].append(source)
         return result
 
-    def _self_clearance_failure(self, minimum_distance: float) -> CollisionResult:
+    def _self_clearance_failure(self, minimum_distance: float, pair_policy=None, stage="unspecified") -> CollisionResult:
         for pair in self.geometry_model.collisionPairs:
             first = self.geometry_model.geometryObjects[int(pair.first)]
             second = self.geometry_model.geometryObjects[int(pair.second)]
@@ -527,6 +553,12 @@ class PinocchioHppFclBackend:
                     continue
             first_tf = _transform(self.coal, first_pose[:3, :3], first_pose[:3, 3])
             second_tf = _transform(self.coal, second_pose[:3, :3], second_pose[:3, 3])
+            if pair_policy is not None and pair_policy.poc_pair_clearance:
+                result = self._poc_pair_result(first.geometry, first_tf, second.geometry, second_tf,
+                    minimum_distance, pair_policy, (str(first.name), str(second.name)), stage)
+                if result.in_collision:
+                    return result
+                continue
             if self._distance(first.geometry, first_tf, second.geometry, second_tf) <= minimum_distance:
                 return CollisionResult(True, "self_collision", first.name, second.name)
         return CollisionResult(False)
@@ -539,6 +571,7 @@ class PinocchioHppFclBackend:
         ignored_obstacle_names: set[str] | None = None,
         ignored_geometry_obstacle_pairs: set[tuple[str, str]] | None = None,
         check_self: bool = True,
+        pair_policy=None, stage="unspecified", proxy=False,
     ) -> CollisionResult:
         if not np.isfinite(margin) or margin < 0.0:
             raise ValueError("collision margin must be finite and non-negative")
@@ -549,9 +582,12 @@ class PinocchioHppFclBackend:
         # Repository margins are per body.  Requiring a surface distance of
         # twice that value preserves the same pairwise engineering clearance
         # without convexifying or scaling either official mesh.
-        minimum_distance = 2.0 * float(margin)
+        if pair_policy is not None and pair_policy.poc_pair_clearance and margin != 0.:
+            raise ValueError("POC total pair clearance cannot be combined with a per-body margin")
+        minimum_distance = (pair_policy.pair_clearance("external", margin) if pair_policy is not None else 2.0*margin)
+        self_distance = pair_policy.pair_clearance("robot_self", margin) if pair_policy is not None else minimum_distance
         if check_self:
-            failure = self._profile_call("self_collision", self._self_clearance_failure, minimum_distance)
+            failure = self._profile_call("self_collision", self._self_clearance_failure, self_distance, pair_policy, stage)
             if failure.in_collision:
                 return failure
         return self._profile_call("robot_environment", self._environment_collision,
@@ -559,6 +595,7 @@ class PinocchioHppFclBackend:
             ignored_obstacle_names or set(),
             minimum_distance,
             ignored_geometry_obstacle_pairs or set(),
+            pair_policy, stage, proxy,
         )
 
     def is_collision_free(

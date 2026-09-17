@@ -224,14 +224,20 @@ def test_runtime_consumes_velocity_and_payload_ff_without_uncapped_effort_source
     assert "free_transit_gate.advance(trajectory_time, physics_dt, requested_duration)" in source
 
 
-def test_actual_runtime_classifier_does_not_hide_rigid_shape_in_an_allowed_actor_pair():
+@pytest.mark.parametrize('poc,gap,rejected', [(False, .019, True), (True, .015, False),
+                                            (True, .004, True), (True, 0., True)])
+def test_actual_runtime_classifier_does_not_hide_rigid_shape_in_an_allowed_actor_pair(poc, gap, rejected):
+    from types import SimpleNamespace
     from unloading_sim.collision_policy import SimulationCollisionPolicy
-    from unloading_sim.isaac_collision_policy import classify_compliant_cup_contact, ZeroPointContactResolver
+    from unloading_sim.isaac_collision_policy import classify_compliant_cup_contact, ZeroPointContactResolver, classify_poc_runtime_pair
+    from unloading_sim.layout_single_carton import load_layout_motion_policy
+    from unloading_sim.planning_profile import DEFAULT_MOTION
     import math
     source = (Path(__file__).resolve().parents[1] / "scripts/isaacsim_fanuc_replay.py").read_text(encoding="utf-8")
     node = next(node for node in ast.walk(ast.parse(source))
                 if isinstance(node, ast.FunctionDef) and node.name == "_classify_runtime_contact")
-    namespace = {"math": math, "classify_compliant_cup_contact": classify_compliant_cup_contact,
+    namespace = {"math": math, "args": SimpleNamespace(demonstration_target_cup_contact_exemption=False),
+                 "classify_compliant_cup_contact": classify_compliant_cup_contact,
                  "zero_point_contact_resolver": ZeroPointContactResolver(),
                  "_contact_scope_token": lambda: ("contact", "/Validation/Scene/target", False, False, False),
                  "compliant_cup_index_by_path": {"/robot/J6/cup": 0}, "commanded_cup_mask": [False],
@@ -241,12 +247,21 @@ def test_actual_runtime_classifier_does_not_hide_rigid_shape_in_an_allowed_actor
                  "contact_runtime_context": {"stage": "contact", "attached": False, "actual_free_space": False,
                                              "release_validation_pending": False},
                  "unexpected_robot_contact_events": []}
+    if poc:
+        namespace.update(effective_collision_policy=SimulationCollisionPolicy.from_mapping(
+            load_layout_motion_policy(DEFAULT_MOTION).layout_validation.data['collision_policy']),
+            classify_poc_runtime_pair=classify_poc_runtime_pair, robot_link_by_collider={},
+            owned_tool_collider_paths={'/robot/J6/rigid_insert', '/robot/J6/cup'}, runtime_pair_queries=[])
     exec(compile(ast.Module(body=[node], type_ignores=[]), "runtime_classifier", "exec"), namespace)
     record = {}
     callback = namespace["_classify_runtime_contact"]
     callback(record, "/robot/J6", "/Validation/Scene/neighbor", "/robot/J6/cup", "/Validation/Scene/neighbor", [.001], lost=False)
     assert not namespace["unexpected_robot_contact_events"]
-    callback(record, "/robot/J6", "/Validation/Scene/neighbor", "/robot/J6/rigid_insert", "/Validation/Scene/neighbor", [.019], lost=False)
-    assert record["unexpected_runtime_event_count"] == 1
+    callback(record, "/robot/J6", "/Validation/Scene/neighbor", "/robot/J6/rigid_insert", "/Validation/Scene/neighbor", [gap], lost=False)
+    assert record.get("unexpected_runtime_event_count", 0) == int(rejected)
     assert len(record["runtime_collider_classifications"]) == 2
-    assert namespace["unexpected_robot_contact_events"][0]["minimum_separation_m"] == .019
+    if rejected:
+        assert namespace["unexpected_robot_contact_events"][0]["minimum_separation_m"] == gap
+    else:
+        assert not namespace['unexpected_robot_contact_events']
+        assert record['runtime_classification_event_counts']['CLEAR'] == 1

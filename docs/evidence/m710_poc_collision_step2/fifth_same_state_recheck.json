@@ -1,0 +1,132 @@
+{
+  "input_paths": [
+    "/root/autodl-tmp/m710-motion-quality-20260915/repo/outputs/fifth_reproduction/motion.json",
+    "/root/autodl-tmp/m710-ideal-outfeed-20260915-retry02/repo/outputs/ideal_plan_005/actual_scene_snapshot.json"
+  ],
+  "sha256": {
+    "/root/autodl-tmp/m710-motion-quality-20260915/repo/outputs/fifth_reproduction/motion.json": "2f526b9dd7d1c8b2350a82f36478d75e445c4d0180aa3349bf0fa549f97f2865",
+    "/root/autodl-tmp/m710-ideal-outfeed-20260915-retry02/repo/outputs/ideal_plan_005/actual_scene_snapshot.json": "3bb3d8836aa97cc3d090f00e8a297ba1846a7214ea0f1613fe21803bc9fd437a"
+  },
+  "same_q_obstacles_tool_and_stage": true,
+  "rows": [
+    {
+      "case": "fifth_actual_start",
+      "policy": "legacy",
+      "q_rad": [
+        -0.8773534893989563,
+        0.4496802091598511,
+        -0.02197902463376522,
+        1.4869361848468543e-06,
+        -1.0991413593292236,
+        4.018947601318359
+      ],
+      "historical_record": {
+        "status": "PASS",
+        "source": "ACTUAL_RIGID_BODY_STATE",
+        "validator_identity": "m710id70_exact_mesh_tool:5cecc4ae42902d1b1a18081672dd568bd3f866f261b0db4d63dda628327b7a67",
+        "q_rad": [
+          -0.8773534893989563,
+          0.4496802091598511,
+          -0.02197902463376522,
+          1.4869361848468543e-06,
+          -1.0991413593292236,
+          4.018947601318359
+        ]
+      },
+      "first_rejection": null,
+      "closest_rigid_proxy_pair": [
+        0.022141173216753483,
+        "tool_rigid_0",
+        "trailer_right_wall"
+      ],
+      "scope": "FIXED_SAVED_ENDPOINT_NOT_RECONSTRUCTED_RRT_REJECTION",
+      "policy_fingerprint": "a4e1d53c75298fc0c460c4569f20e1cb30c05f43beeb1ac1e9f6c51574d5bb7a"
+    },
+    {
+      "case": "fifth_saved_pregrasp_endpoint",
+      "policy": "legacy",
+      "q_rad": [
+        0.49982133350105773,
+        -0.18160237573967397,
+        -0.12511319056518178,
+        1.4678064521130607,
+        -0.5026280264095944,
+        1.6882114071769214
+      ],
+      "historical_record": {
+        "reason": "STAGE_CONNECTION_DEADLINE",
+        "stage": "pregrasp",
+        "detail": "time limit reached",
+        "iterations": 127
+      },
+      "first_rejection": null,
+      "closest_rigid_proxy_pair": [
+        0.022106399571922973,
+        "tool_rigid_0",
+        "trailer_left_wall"
+      ],
+      "scope": "FIXED_SAVED_ENDPOINT_NOT_RECONSTRUCTED_RRT_REJECTION",
+      "policy_fingerprint": "a4e1d53c75298fc0c460c4569f20e1cb30c05f43beeb1ac1e9f6c51574d5bb7a"
+    },
+    {
+      "case": "fifth_actual_start",
+      "policy": "poc",
+      "q_rad": [
+        -0.8773534893989563,
+        0.4496802091598511,
+        -0.02197902463376522,
+        1.4869361848468543e-06,
+        -1.0991413593292236,
+        4.018947601318359
+      ],
+      "historical_record": {
+        "status": "PASS",
+        "source": "ACTUAL_RIGID_BODY_STATE",
+        "validator_identity": "m710id70_exact_mesh_tool:5cecc4ae42902d1b1a18081672dd568bd3f866f261b0db4d63dda628327b7a67",
+        "q_rad": [
+          -0.8773534893989563,
+          0.4496802091598511,
+          -0.02197902463376522,
+          1.4869361848468543e-06,
+          -1.0991413593292236,
+          4.018947601318359
+        ]
+      },
+      "first_rejection": null,
+      "closest_rigid_proxy_pair": [
+        0.022141173216753483,
+        "tool_rigid_0",
+        "trailer_right_wall"
+      ],
+      "scope": "FIXED_SAVED_ENDPOINT_NOT_RECONSTRUCTED_RRT_REJECTION",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+    },
+    {
+      "case": "fifth_saved_pregrasp_endpoint",
+      "policy": "poc",
+      "q_rad": [
+        0.49982133350105773,
+        -0.18160237573967397,
+        -0.12511319056518178,
+        1.4678064521130607,
+        -0.5026280264095944,
+        1.6882114071769214
+      ],
+      "historical_record": {
+        "reason": "STAGE_CONNECTION_DEADLINE",
+        "stage": "pregrasp",
+        "detail": "time limit reached",
+        "iterations": 127
+      },
+      "first_rejection": null,
+      "closest_rigid_proxy_pair": [
+        0.022106399571922973,
+        "tool_rigid_0",
+        "trailer_left_wall"
+      ],
+      "scope": "FIXED_SAVED_ENDPOINT_NOT_RECONSTRUCTED_RRT_REJECTION",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+    }
+  ],
+  "limitation": "Historical fifth failure is a connection deadline. Rejected interior RRT q values were not stored; endpoint checks do not establish fifth-carton recovery."
+}

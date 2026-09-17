@@ -18,6 +18,7 @@ import yaml
 
 from .geometry import OBB, make_transform, rotation_matrix_from_rpy
 from .collision_policy import SimulationCollisionPolicy
+from .pair_clearance import obb_pair_failure
 from .identity import load_tool_config
 from .robot import URDFRobot
 from .validation_physics import contact_separated, urdf_collision_shapes, world_link_boxes
@@ -641,27 +642,31 @@ def _audit_initial_state_prepared(
         chassis = next(box for box in fixed if box.name == "chassis")
         for link in links:
             for obstacle in obstacles:
-                if not link.intersects_obb(obstacle, margin=margin):
+                query = obb_pair_failure(link, obstacle, effective, margin, stage="initial_state", proxy=True, reason="ROBOT_COLLISION")
+                if query is None:
                     continue
                 if link.name in {"base_link", "J1_link"} and obstacle.name == "chassis" and robot_chassis_support_contact_allowed(link, chassis, tolerance):
                     continue
-                failures.append({"reason": "ROBOT_COLLISION", "pair": [link.name, obstacle.name]})
+                failures.append(query)
         tools = robot.tool_collision_obbs(q)
         legacy_tool = robot.tool_collision_obb(q)
         if not tools and legacy_tool is not None:
             tools = [legacy_tool]
         for tool in tools:
             for obstacle in obstacles:
-                if tool.intersects_obb(obstacle, margin=margin):
-                    failures.append({"reason": "TOOL_COLLISION", "pair": [tool.name, obstacle.name]})
+                query = obb_pair_failure(tool, obstacle, effective, margin, stage="initial_state", proxy=True, reason="TOOL_COLLISION")
+                if query is not None:
+                    failures.append(query)
             for link in links:
-                if link.name not in effective.wrist_tool_exempt_links and tool.intersects_obb(link, margin=margin):
-                    failures.append({"reason": "TOOL_SELF_COLLISION", "pair": [tool.name, link.name]})
+                if link.name not in effective.wrist_tool_exempt_links:
+                    query = obb_pair_failure(tool, link, effective, margin, stage="initial_state", proxy=True, reason="TOOL_SELF_COLLISION")
+                    if query is not None:
+                        failures.append(query)
         y_min = float(layout.data["trailer"]["right_wall_y_m"])
         y_max = float(layout.data["trailer"]["left_wall_y_m"])
         for body in [*links, *tools]:
             corners = body.corners()
-            if float(np.min(corners[:, 1])) < y_min + margin or float(np.max(corners[:, 1])) > y_max - margin:
+            if not effective.poc_pair_clearance and (float(np.min(corners[:, 1])) < y_min + margin or float(np.max(corners[:, 1])) > y_max - margin):
                 failures.append({"reason": "TRAILER_SIDE_CLEARANCE", "body": body.name, "y_bounds_m": [float(np.min(corners[:, 1])), float(np.max(corners[:, 1]))]})
     unique = list({json.dumps(item, sort_keys=True): item for item in failures}.values())
     return {

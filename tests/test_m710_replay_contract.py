@@ -282,6 +282,15 @@ def test_bundle_payload_hash_detects_waypoint_and_metadata_tampering():
         verify_m710_replay_bundle(metadata_changed)
 
 
+def test_bundle_rejects_unbound_pair_policy_even_with_valid_outer_hash():
+    bundle = _bundle(_ready_preflight())
+    bundle['metadata']['collision_policy'] = {
+        'schema': 'm710_poc_pair_collision_policy_v4', 'required_pair_clearance_m': .005}
+    bundle = add_bundle_payload_sha256(bundle)
+    with pytest.raises(M710ReplayContractError, match="collision_policy differs from bound preflight"):
+        verify_m710_replay_bundle(bundle)
+
+
 def test_workspace_verifier_checks_sources_manifests_and_optional_asset_audit(tmp_path):
     preflight = _ready_preflight()
     source = tmp_path / "source.py"

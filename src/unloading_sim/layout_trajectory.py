@@ -9,6 +9,8 @@ audit, but can never be promoted to an executable trajectory by this class.
 
 from __future__ import annotations
 
+from .pair_clearance import obb_pair_failure, obb_surface_distance
+
 from contextlib import contextmanager, nullcontext
 from copy import deepcopy
 from dataclasses import dataclass, replace
@@ -584,8 +586,13 @@ class ExactM710LayoutStateValidator:
         return {
             "reason": reason,
             "collision_kind": str(result.reason),
+            **(getattr(result, "evidence", None) or {}),
             "pair": [result.first_link, result.first_obstacle],
         }
+
+    def _mesh_pair_options(self, stage, proxy=False):
+        return ({"margin": 0., "pair_policy": self.collision_policy, "stage": stage, "proxy": proxy}
+                if self.collision_policy.poc_pair_clearance else {"margin": self.collision_margin_m})
 
     def _compliant_boxes(self, q):
         # Source bounds are uncompressed. Match Isaac's 72 nominally
@@ -618,7 +625,7 @@ class ExactM710LayoutStateValidator:
             body_bounds.append((body.name, corners.min(axis=0), corners.max(axis=0)))
         for name, lower, upper in body_bounds:
             y_min, y_max, z_min = float(lower[1]), float(upper[1]), float(lower[2])
-            if (
+            if not self.collision_policy.poc_pair_clearance and (
                 y_min < self.right_wall_y_m + self.collision_margin_m
                 or y_max > self.left_wall_y_m - self.collision_margin_m
             ):
@@ -627,7 +634,8 @@ class ExactM710LayoutStateValidator:
                     "body": name,
                     "y_bounds_m": [y_min, y_max],
                 }
-            floor_margin = self.collision_margin_m
+            floor_margin = (self.collision_policy.pair_clearance("external", self.collision_margin_m)
+                            if self.collision_policy.poc_pair_clearance else self.collision_margin_m)
             if payload is not None and name == payload.name and self.collision_policy.allows_stack_planning_contact(stage):
                 floor_margin = -0.0002
             if z_min < self.floor_z_m + floor_margin:
@@ -686,18 +694,19 @@ class ExactM710LayoutStateValidator:
         if static_key not in self._static_cache:
             if len(self._static_cache) >= 4096:
                 self._static_cache.clear()
-            result = self._profile_call("robot_fixed_including_self", self.mesh_robot.collision_result, q, fixed, margin=self.collision_margin_m,
+            result = self._profile_call("robot_fixed_including_self", self.mesh_robot.collision_result, q, fixed, **self._mesh_pair_options(stage),
                 ignored_geometry_obstacle_pairs={("base_link", self.base_support_obstacle_name)}, check_self=True)
             failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
             if failure is None:
-                result = self._profile_call("robot_tool", self.mesh_robot.collision_result, q, tool_boxes, margin=self.collision_margin_m,
+                result = self._profile_call("robot_tool", self.mesh_robot.collision_result, q, tool_boxes, **self._mesh_pair_options(stage, proxy=True),
                     ignored_geometry_obstacle_pairs=self.collision_policy.wrist_tool_pairs([box.name for box in tool_boxes]),
                     check_self=False)
                 failure = self._collision_failure(result, "ROBOT_RIGID_TOOL_COLLISION")
             if failure is None:
                 for i, j in self._profile_call("tool_fixed_broadphase", possible_inflated_obb_pairs, tool_boxes, fixed, self.collision_margin_m):
-                    if self._profile_call("tool_fixed_narrowphase", tool_boxes[i].intersects_obb, fixed[j], margin=self.collision_margin_m):
-                        failure = {"reason": "RIGID_TOOL_COLLISION", "pair": [tool_boxes[i].name, fixed[j].name]}
+                    failure = obb_pair_failure(tool_boxes[i], fixed[j], self.collision_policy,
+                        self.collision_margin_m, stage=stage, proxy=True, reason="RIGID_TOOL_COLLISION")
+                    if failure is not None:
                         break
             if failure is None:
                 failure = self._profile_call("plane_bounds", self._plane_failure, q, None, stage)
@@ -707,7 +716,7 @@ class ExactM710LayoutStateValidator:
         failure = self._static_cache[static_key]
         if failure is not None:
             return failure
-        result = self._profile_call("robot_dynamic", self.mesh_robot.collision_result, q, dynamic, margin=self.collision_margin_m, check_self=False)
+        result = self._profile_call("robot_dynamic", self.mesh_robot.collision_result, q, dynamic, **self._mesh_pair_options(stage), check_self=False)
         failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
         if failure is not None:
             return failure
@@ -737,18 +746,18 @@ class ExactM710LayoutStateValidator:
                 if (current_target or stack_contact) and tool.signed_distance_obb(obstacle) >= (
                     -self.collision_policy.maximum_compliant_cup_additional_compression_m):
                     continue
-            if self._profile_call("tool_dynamic_narrowphase", tool.intersects_obb, obstacle, margin=self.collision_margin_m):
-                return {
-                    "reason": "RIGID_TOOL_COLLISION",
-                    "pair": [tool.name, obstacle.name],
-                }
+            failure = obb_pair_failure(tool, obstacle, self.collision_policy, self.collision_margin_m,
+                                       stage=stage, proxy=True, reason="RIGID_TOOL_COLLISION")
+            if failure is not None:
+                return failure
 
         if payload is not None:
             lower, upper = payload.corners().min(axis=0), payload.corners().max(axis=0)
-            floor_margin = -0.0002 if self.collision_policy.allows_stack_planning_contact(stage) else self.collision_margin_m
+            floor_margin = (-0.0002 if self.collision_policy.allows_stack_planning_contact(stage) else
+                self.collision_policy.pair_clearance("external", self.collision_margin_m) if self.collision_policy.poc_pair_clearance else self.collision_margin_m)
             if lower[2] < self.floor_z_m + floor_margin:
                 return {"reason": "FLOOR_CLEARANCE", "body": payload.name}
-            if lower[1] < self.right_wall_y_m + self.collision_margin_m or upper[1] > self.left_wall_y_m - self.collision_margin_m:
+            if not self.collision_policy.poc_pair_clearance and (lower[1] < self.right_wall_y_m + self.collision_margin_m or upper[1] > self.left_wall_y_m - self.collision_margin_m):
                 return {"reason": "TRAILER_SIDE_CLEARANCE", "body": payload.name}
         return None
 
@@ -1086,7 +1095,7 @@ class LayoutTrajectoryConnector:
             "withdrawal_distance_m": self.budget.withdrawal_distance_m,
             "post_release_vertical_lift_m": self.budget.post_release_vertical_lift_m,
             "post_release_conveyor_escape_clearance_m": (
-                2.0 * self.collision_margin_m + self.contact_tolerance_m
+                self.collision_policy.pair_clearance("external", self.collision_margin_m) + self.contact_tolerance_m
             ),
             "planning_wall_time_s": self.budget.planning_wall_time_s,
             "wall_clock_scope": "one_shared_first_carton_planning_request",
@@ -1246,12 +1255,10 @@ class LayoutTrajectoryConnector:
                 payload, obstacle, self.contact_tolerance_m
             ):
                 continue
-            if payload.intersects_obb(obstacle, margin=self.collision_margin_m):
-                return finish({
-                    "reason": "PAYLOAD_COLLISION",
-                    "pair": [payload.name, obstacle.name],
-                    "stage": stage,
-                })
+            failure = obb_pair_failure(payload, obstacle, self.collision_policy, self.collision_margin_m,
+                                       stage=stage, reason="PAYLOAD_COLLISION")
+            if failure is not None:
+                return finish(failure)
         return finish(None)
 
     def _path_failure(
@@ -1288,6 +1295,10 @@ class LayoutTrajectoryConnector:
                     )
                 ),
             )
+            if self.collision_policy.poc_pair_clearance:
+                # <= 1.25 mm point-motion bound per final sample (4 m conservative
+                # lever arm, all six joint increments). Never coarsen legacy checks.
+                samples = max(samples, int(np.ceil(4.0*np.sum(np.abs(goal-start))/.0025)))
             for fraction in np.linspace(0.0, 1.0, 2 * samples + 1):
                 self._statistics["edge_state_samples"] += 1
                 q = start + float(fraction) * (goal - start)
@@ -1912,7 +1923,7 @@ class LayoutTrajectoryConnector:
             }
             return [], failure, failure
         box = attachment.box_at(start)
-        clearance = 2.0 * self.collision_margin_m + 2.0 * self.contact_tolerance_m
+        clearance = self.collision_policy.pair_clearance("external", self.collision_margin_m) + 2.0 * self.contact_tolerance_m
         bottom = float(np.min(box.corners()[:, 2]))
         lifts = {
             name: max(
@@ -1950,9 +1961,7 @@ class LayoutTrajectoryConnector:
             blocked = [
                 name
                 for name in names
-                if released.intersects_obb(
-                    by_name[name], margin=self.collision_margin_m
-                )
+                if obb_pair_failure(released, by_name[name], self.collision_policy, self.collision_margin_m)
             ]
             if blocked:
                 failure = {
@@ -1993,7 +2002,7 @@ class LayoutTrajectoryConnector:
             if obstacle.category == "carton" and obstacle.name != box.name
         ]
         attempts: list[dict[str, Any]] = []
-        free_clearance = max(2.0 * self.collision_margin_m + self.contact_tolerance_m,
+        free_clearance = max(self.collision_policy.pair_clearance("external", self.collision_margin_m) + self.contact_tolerance_m,
                              self.collision_policy.free_space_clearance_m)
         runtime_clearance_goal = (
             free_clearance + self.budget.extraction_runtime_clearance_reserve_m
@@ -2118,7 +2127,7 @@ class LayoutTrajectoryConnector:
         tool = list(self.tool_collision_obbs_provider(grasp_q))
         depth = max((float(np.ptp(b.corners() @ outward)) for b in tool), default=0.03)
         error = 2 * float(self.ik["position_tolerance_m"]) + self.contact_tolerance_m
-        terminal = max(2 * self.collision_margin_m + error, min(depth / 4, self.budget.pregrasp_standoff_m))
+        terminal = max(self.collision_policy.pair_clearance("external", self.collision_margin_m) + error, min(depth / 4, self.budget.pregrasp_standoff_m))
         current_distance = float(np.linalg.norm(self.robot.fk(start)[:3, 3] - requested[:3, 3]))
         adaptive_distances = sorted({terminal, min(max(terminal, current_distance / 3), depth),
                                      self.budget.pregrasp_standoff_m})
@@ -2604,7 +2613,7 @@ class LayoutTrajectoryConnector:
         tool = list(self.tool_collision_obbs_provider(start))
         if not tool:
             return [], {"reason": "POST_RELEASE_TOOL_ENVELOPE_UNAVAILABLE"}, {}
-        clearance = 2 * self.collision_margin_m + self.contact_tolerance_m
+        clearance = self.collision_policy.pair_clearance("external", self.collision_margin_m) + self.contact_tolerance_m
         # Sweep far enough to pass the entire tool, including a stalled carton.
         span = max(float(np.max(b.corners() @ direction)) for b in tool) - float(np.min(placed.corners() @ direction))
         flight_envelope = release_flight_envelope(placed, release_prediction)
@@ -2776,7 +2785,7 @@ class LayoutTrajectoryConnector:
         preplace_physical = desired_physical.copy()
         # Receiver approach and final working normal are independent.
         # Derive clearance from the unchanged margins and strict FK residual.
-        receiver_clearance = (2 * self.collision_margin_m + self.contact_tolerance_m
+        receiver_clearance = (self.collision_policy.pair_clearance("external", self.collision_margin_m) + self.contact_tolerance_m
                               + 2 * float(self.ik["position_tolerance_m"]))
         preplace_physical[2, 3] += max(0., receiver_clearance - release_height)
         preplace_virtual = self.virtual_from_physical(preplace_physical)

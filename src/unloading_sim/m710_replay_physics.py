@@ -419,12 +419,16 @@ class BoundedTargetCupReleaseClearance:
     """Separate constraint independence from restoration of target-cup margin.
 
     The caller keeps moving the verified withdrawal while this latch is open.
-    Only actual LOST for every known compliant-cup/selected-target proximity
-    closes it. No robot, rigid insert or neighbor obtains this permission.
+    Legacy mode requires LOST. POC also accepts fresh measured separation at
+    its policy entry clearance for every known compliant-cup/selected-target
+    pair. No robot, rigid insert or neighbor obtains this permission.
     """
 
-    def __init__(self, maximum_wait_s):
+    def __init__(self, maximum_wait_s, *, required_clearance_m=None):
         self.maximum_wait_s = float(maximum_wait_s)
+        self.required_clearance_m = required_clearance_m
+        if required_clearance_m is not None and (not np.isfinite(required_clearance_m) or required_clearance_m <= 0):
+            raise ValueError("release pair clearance must be positive and finite")
         if not np.isfinite(self.maximum_wait_s) or self.maximum_wait_s < 0:
             raise ValueError("release clearance wait must be finite and nonnegative")
         self.started_s = None
@@ -439,16 +443,23 @@ class BoundedTargetCupReleaseClearance:
         self.events.append({"event": "target_cup_release_clearance_started", "time_s": float(time_s),
                             "maximum_wait_s": self.maximum_wait_s})
 
-    def observe(self, time_s, active_headers, *, target_path, compliant_paths):
+    def observe(self, time_s, active_headers, *, target_path, compliant_paths, current_pair_separations=None):
         if not self.pending:
             return None
         keys = [key for key in active_headers if target_path in key[:2]
                 and any(path in compliant_paths for path in key[2:])]
+        if self.required_clearance_m is not None:
+            measurements = current_pair_separations or {}
+            keys = [key for key in keys if not (
+                key in measurements and np.isfinite(measurements[key])
+                and measurements[key] >= self.required_clearance_m)]
         elapsed = float(time_s) - self.started_s
         if not keys:
             self.pending = False
             self.events.append({"event": "target_cup_release_clearance_restored", "time_s": float(time_s),
-                                "elapsed_s": elapsed, "active_target_compliant_pairs": 0})
+                                "elapsed_s": elapsed, "active_target_compliant_pairs": 0,
+                                "required_clearance_m": self.required_clearance_m,
+                                "source": "fresh_pair_separation_or_lost" if self.required_clearance_m is not None else "lost"})
             return None
         if elapsed >= self.maximum_wait_s:
             reason = "TARGET_CUP_RELEASE_CLEARANCE_TIMEOUT"
@@ -643,6 +654,10 @@ class ActualStackContactMonitor:
         clearance = min((target.signed_distance_obb(current[name])
                          for name in self.initial_neighbors), default=float("inf"))
         penetration = max(0.0, -clearance)
+        if self.policy.poc_pair_clearance and clearance > 0:
+            from .pair_clearance import obb_surface_distance
+            clearance = min((obb_surface_distance(target, current[name])
+                             for name in self.initial_neighbors), default=float("inf"))
         drift = max((float(np.linalg.norm(current[name].center - original.center))
                      for name, original in self.initial_neighbors.items()), default=0.0)
         tilt = max((float(np.arccos(np.clip(current[name].rotation[:, 2] @ original.rotation[:, 2], -1, 1)))
@@ -680,8 +695,10 @@ class ActualStackContactMonitor:
         elif not self.free_space_reached and time_s - self.progress_clock > self.policy.progress_timeout_s:
             reason = reason or "ACTUAL_STACK_EXTRACTION_STALLED"
         return {"accepted": reason is None, "reason": reason,
-                "minimum_stack_clearance_m": None if not np.isfinite(clearance) else float(clearance),
-                "actual_penetration_m": penetration, "neighbor_displacement_m": drift,
+                "minimum_stack_clearance_m": None if not np.isfinite(clearance) else float(max(0., clearance) if self.policy.poc_pair_clearance else clearance),
+                "actual_penetration_m": None if self.policy.poc_pair_clearance else penetration,
+                "sat_overlap_bound_m": penetration, "penetration_query_scope": "SAT_BOUND_NOT_MEASURED_DEPTH",
+                "policy_fingerprint": self.policy.fingerprint, "neighbor_displacement_m": drift,
                 "neighbor_tilt_rad": tilt, "free_space_reached": self.free_space_reached,
                 "first_free_space_time_s": self.first_free_space_time_s}
 
@@ -689,7 +706,8 @@ class ActualStackContactMonitor:
         return {"observations": self.observations, "box_box_physics_enabled": True,
                 "free_space_reached": self.free_space_reached,
                 "first_free_space_time_s": self.first_free_space_time_s,
-                "peak_actual_penetration_m": self.peak_penetration_m,
+                "peak_actual_penetration_m": None if self.policy.poc_pair_clearance else self.peak_penetration_m,
+                "peak_sat_overlap_bound_m": self.peak_penetration_m,
                 "peak_neighbor_displacement_m": self.peak_neighbor_displacement_m,
                 "peak_neighbor_tilt_rad": self.peak_neighbor_tilt_rad,
                 "contact_force_channel": "NOT_USED_BY_GEOMETRIC_DISTURBANCE_MONITOR"}

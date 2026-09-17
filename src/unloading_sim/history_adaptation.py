@@ -182,7 +182,7 @@ def current_release_sweep(c, placed, prediction, start, direction):
     if not tools or direction is None:
         raise ValueError("current departure geometry/direction unavailable")
     distance = max(float(np.max(b.corners() @ direction)) for b in tools) - float(np.min(placed.corners() @ direction))
-    return departure_sweep(flight, direction, distance_m=max(.01, distance + 2*c.collision_margin_m + c.contact_tolerance_m),
+    return departure_sweep(flight, direction, distance_m=max(.01, distance + c.collision_policy.pair_clearance("external", c.collision_margin_m) + c.contact_tolerance_m),
                            resolution_m=c.budget.cartesian_step_m)
 
 

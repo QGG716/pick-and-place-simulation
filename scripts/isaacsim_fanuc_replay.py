@@ -2126,13 +2126,14 @@ try:
         ActiveContactPairIndex, ContactPathCache, ContactReportProbe, read_effective_collision_offsets,
         PhysicalContactLedger, physical_support_contact_observed, robot_proximity_is_safety_relevant,
         premature_physical_conveyor_contacts, placement_support_window_start,
-        classify_compliant_cup_contact, ZeroPointContactResolver,
+        classify_compliant_cup_contact, ZeroPointContactResolver, classify_poc_runtime_pair,
     )
     active_contacts = ActiveContactPairIndex(active_contact_headers)
     contact_path_cache = ContactPathCache(PhysicsSchemaTools.intToSdfPath)
     contact_probe = ContactReportProbe() if args.diagnostic_only else None
     physical_contact_ledger = PhysicalContactLedger(
         metadata["actual_state_gates"]["support_max_gap_m"])
+    current_pair_separations = {}
     contact_clock_s = [0.0]
     contact_trajectory_clock_s = [0.0]
     contact_callback_wall_s = [0.0]
@@ -2153,6 +2154,8 @@ try:
         "stages": [],
     }
     zero_point_contact_resolver = ZeroPointContactResolver()
+    robot_link_by_collider = {str(path): link for link, paths in official_robot_link_colliders.items() for path in paths}
+    runtime_pair_queries = []
 
     def _contact_scope_token():
         return (contact_runtime_context["stage"], target_carton_path,
@@ -2223,7 +2226,36 @@ try:
                 )
                 if stage_name not in demonstration_contact_exemption_audit["stages"]:
                     demonstration_contact_exemption_audit["stages"].append(stage_name)
-        classification = reason or "UNEXPECTED_ROBOT_OR_RIGID_TOOL_PROXIMITY"
+        pair_evidence = None
+        if effective_collision_policy.poc_pair_clearance:
+            target_involved = target_carton_path in {actor0, actor1}
+            other = actor1 if actor0 == target_carton_path else actor0
+            stack_paths = {f"/Validation/Scene/{_safe_prim_name(name)}" for name in metadata.get("stack_carton_names", [])}
+            # Initial supported stack contact and attached separation retain their
+            # existing physical response and monitored penetration/disturbance limits.
+            if (reason is None and target_involved and other in stack_paths and other != target_carton_path
+                    and not contact_runtime_context["actual_free_space"] and lower is not None
+                    and lower >= -effective_collision_policy.maximum_actual_penetration_m
+                    and (contact_runtime_context["stage"] in {"settling", "pregrasp", "approach", "contact"}
+                         or contact_runtime_context["attached"] and effective_collision_policy.allows_stack_planning_contact(contact_runtime_context["stage"]))):
+                reason = "APPROVED_TARGET_STACK_CONTACT_BEFORE_FREE_TRANSIT"
+            receiver_paths = {f"/Validation/Scene/{_safe_prim_name(name)}" for name in metadata.get("selected_place_support_names", [metadata.get("place_surface")])}
+            if (reason is None and target_involved and other in receiver_paths
+                    and contact_runtime_context["stage"] == "place" and lower is not None
+                    and lower >= -float(metadata["actual_state_gates"]["support_maximum_penetration_m"])):
+                # Existing bounded support contact; the full support /
+                # ideal receiving-region audit still gates actual constraint removal.
+                reason = "DECLARED_PLACEMENT_RECEIVER_BOUNDED_SUPPORT_CONTACT"
+            pair_evidence = classify_poc_runtime_pair(collider0=collider0, collider1=collider1,
+                minimum_separation_m=lower, policy=effective_collision_policy,
+                robot_link_by_collider=robot_link_by_collider, owned_tool_colliders=owned_tool_collider_paths,
+                stage=contact_runtime_context["stage"], permission_source=reason)
+            if len(runtime_pair_queries) < 200 or not pair_evidence["accepted"]:
+                runtime_pair_queries.append({"time_s": contact_clock_s[0], **pair_evidence})
+            classification = pair_evidence["classification"]
+            reason = (reason or classification) if pair_evidence["accepted"] else None
+        else:
+            classification = reason or "UNEXPECTED_ROBOT_OR_RIGID_TOOL_PROXIMITY"
         counts = record.setdefault("runtime_classification_event_counts", {})
         counts[classification] = counts.get(classification, 0) + 1
         per_shape = record.setdefault("runtime_collider_classifications", {})
@@ -2240,7 +2272,7 @@ try:
             if not unexpected_robot_contact_events:
                 unexpected_robot_contact_events.append({"time_s": contact_clock_s[0], "actors": [actor0, actor1],
                     "colliders": [collider0, collider1], "minimum_separation_m": lower,
-                    "reason": classification, **contact_runtime_context})
+                    "reason": classification, "pair_evidence": pair_evidence, **contact_runtime_context})
     for prim in stage.Traverse():
         prim_path = str(prim.GetPath())
         monitor_payload = prim_path in {*dynamic_scene_prim_paths, target_carton_path, released_payload_path}
@@ -2330,13 +2362,17 @@ try:
                 else 0.0
             )
             record["peak_impulse_ns"] = max(float(record["peak_impulse_ns"]), impulse)
+            if event_separations and all(math.isfinite(value) for value in event_separations):
+                current_pair_separations[contact_key] = min(event_separations)
+            else:
+                current_pair_separations.pop(contact_key, None)
             physical_contact_ledger.observe(
                 contact_key, event_separations,
                 lost=event_type_value == int(ContactEventType.CONTACT_LOST),
                 time_s=contact_clock_s[0], record=record,
                 trajectory_time_s=contact_trajectory_clock_s[0],
             )
-            if robot_involved:
+            if robot_involved or (payload_involved and effective_collision_policy.poc_pair_clearance):
                 _classify_runtime_contact(record, actor0, actor1, collider0, collider1, event_separations,
                                           lost=event_type_value == int(ContactEventType.CONTACT_LOST))
         contact_callback_wall_s[0] += time.perf_counter() - callback_started
@@ -2583,6 +2619,17 @@ try:
                 effective_offset_arrays["cartons"],
                 expected_shape_count=len(dynamic_scene_prim_paths), **offset_policy),
         }
+        if effective_collision_policy.poc_pair_clearance:
+            envelope = 2 * float(offset_policy["contact_offset_m"])
+            required_gap = effective_collision_policy.required_pair_clearance_m
+            if envelope < required_gap:
+                raise ValueError("PhysX contact generation envelope does not cover POC pair clearance")
+            runtime_collision_offset_evidence["poc_acceptance"] = {
+                "required_pair_clearance_m": required_gap,
+                "pair_contact_generation_envelope_m": envelope,
+                "offsets_added_to_acceptance_clearance": False,
+                "solver_offsets_changed_for_poc": False,
+            }
         (args.output / "collision_offset_readback.json").write_text(
             json.dumps(runtime_collision_offset_evidence, indent=2), encoding="utf-8")
         print("FANUC_REPLAY_STAGE=collision_offsets_verified " + json.dumps({
@@ -3100,7 +3147,8 @@ try:
             expected_wait = float(departure_policy["required_observed_progress_m"]) / nominal_speed
             maximum_release_clearance_wait_s = min(5., max(maximum_release_clearance_wait_s, 2 * expected_wait))
         target_cup_release_gate = BoundedTargetCupReleaseClearance(
-            maximum_release_clearance_wait_s
+            maximum_release_clearance_wait_s,
+            required_clearance_m=effective_collision_policy.free_space_clearance_m if effective_collision_policy.poc_pair_clearance else None,
         )
         target_cup_release_logged_events = 0
         physical_runtime_limit = (replay_duration + maximum_contact_wait_s + maximum_support_wait_s
@@ -3282,7 +3330,7 @@ try:
 
         def _actual_conveyor_start_interlock() -> dict[str, object]:
             required = float(dict(conveyor_cfg.get("actual_start_interlock", {})).get(
-                "require_tool_target_clearance_m", 0.0202
+                "require_tool_target_clearance_m", effective_collision_policy.free_space_clearance_m
             ))
             result = {
                 "attachment_released": bool(release_open_confirmed),
@@ -3420,6 +3468,7 @@ try:
                     break
             # Commands/events above world.step use the pre-step time.  Contact
             # callbacks and measured state are produced by the completed step.
+            current_pair_separations.clear()  # no stale separation can close the release latch
             contact_clock_s[0] = simulation_time + physics_dt
             conveyor_start_due = bool(
                 conveyor_start_policy == "immediate"
@@ -4450,7 +4499,8 @@ try:
                         )
             release_clearance_failure = target_cup_release_gate.observe(
                 simulation_time, active_contact_headers, target_path=target_carton_path,
-                compliant_paths=compliant_cup_collider_paths)
+                compliant_paths=compliant_cup_collider_paths,
+                current_pair_separations=current_pair_separations)
             for event in target_cup_release_gate.events[target_cup_release_logged_events:]:
                 event_log.append(event)
                 print("FANUC_REPLAY_EVENT=" + json.dumps(event), flush=True)
@@ -4696,7 +4746,7 @@ try:
                 time_tolerance_s=release_contact_tolerance_s,
             )
         unexpected_contacts = [
-            record for record in robot_contact_records
+            record for record in (contact_records if effective_collision_policy.poc_pair_clearance else robot_contact_records)
             if record.get("unexpected_runtime_event_count", 0) > 0
         ]
         tracking_error_limit_rad = 0.05
@@ -5135,6 +5185,9 @@ try:
                 demonstration_contact_exemption_audit
             ),
             "collision_policy": metadata.get("collision_policy"),
+            "poc_pair_queries": runtime_pair_queries,
+            "poc_pair_query_record_scope": "FIRST_200_CLASSIFICATIONS_PLUS_ALL_REJECTIONS_NOT_EVENT_COUNTS",
+            "machine_collision_clearance_qualification_claimed": False,
             "first_unexpected_runtime_robot_contact": unexpected_robot_contact_events[0] if unexpected_robot_contact_events else None,
             "zero_point_contact_resolution": zero_point_contact_resolver.snapshot(),
             "cup_mask_change_log": cup_mask_change_log,
@@ -5150,7 +5203,8 @@ try:
                 "maximum_wait_s": target_cup_release_gate.maximum_wait_s,
                 "pending": target_cup_release_gate.pending, "events": target_cup_release_gate.events,
                 "constraint_independence_is_separate": True,
-                "normal_rule_resumes_after_all_known_target_cup_proximity_lost": True},
+                "normal_rule_resumes_after_all_known_target_cup_proximity_lost": not effective_collision_policy.poc_pair_clearance,
+                "required_pair_entry_clearance_m": target_cup_release_gate.required_clearance_m},
             "physical_cycle_completed": physical_cycle_completed,
             "workflow_cycle_completed": workflow_cycle_completed,
             "simulation_profile": metadata.get("simulation_profile"),
@@ -5487,7 +5541,7 @@ try:
             ),
             "robot_scene_contact_pairs": robot_contact_records,
             "contact_report_semantics": {
-                "legacy_contact_pairs": "all reported proximity headers; robot margin safety remains on this layer",
+                "legacy_contact_pairs": "all reported proximity headers; POC acceptance uses measured pair separation and owned stage permissions",
                 "physical_contact": "finite separation <= bound existing support_max_gap_m; impulse is not an acceptance bypass",
                 "physical_contact_tolerance_m": physical_contact_ledger.contact_tolerance_m,
                 "tolerance_source": "metadata.actual_state_gates.support_max_gap_m",
@@ -5685,6 +5739,8 @@ try:
         contact_pairs = {}
         unexpected_robot_contact_events = []
         zero_point_contact_resolver = ZeroPointContactResolver()
+        runtime_pair_queries = []
+        current_pair_separations.clear()
         args.output = session_output_root / f"segment_{session_segment_index + 1:03d}"
         args.output.mkdir(parents=True, exist_ok=False)
         run_status_path = args.output / "run_status.json"

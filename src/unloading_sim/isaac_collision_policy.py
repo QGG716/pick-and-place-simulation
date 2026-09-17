@@ -161,6 +161,30 @@ def robot_proximity_is_safety_relevant(record, robot_root_path):
     return any(str(record[name]).startswith(robot_root_path) for name in ("actor0", "actor1"))
 
 
+def classify_poc_runtime_pair(*, collider0, collider1, minimum_separation_m, policy,
+                              robot_link_by_collider, owned_tool_colliders, stage,
+                              permission_source=None):
+    """Interpret PhysX separation without adding contactOffset to engineering gap.
+
+    The caller retains its stage/ownership permissions and pending-header gate.
+    Missing measured points are UNKNOWN, never synthetic zero contact or clear.
+    """
+    from .pair_clearance import classify_pair_distance
+    import math
+    known = minimum_separation_m is not None and math.isfinite(minimum_separation_m)
+    kind = ("robot_self" if collider0 in robot_link_by_collider and collider1 in robot_link_by_collider
+            else "external")
+    return {**classify_pair_distance(minimum_separation_m, policy.pair_clearance(kind, 0.),
+        intersection=(minimum_separation_m <= 0. if known else None),
+        proxy=collider0 in owned_tool_colliders or collider1 in owned_tool_colliders,
+        stage=stage, pair=(collider0, collider1), policy=policy,
+        query_method="PHYSX_FINITE_CONTACT_POINT_SEPARATION",
+        geometry_scope="ACTUAL_PHYSX_COLLIDERS_NOT_ORIGINAL_CAD", permission_source=permission_source),
+        "original_cad_intersection_confirmed": False,
+        "measured_contact_separation_m": minimum_separation_m if known else None,
+        "pair_kind": kind, "contact_offset_is_not_clearance": True}
+
+
 def classify_compliant_cup_contact(
     *, collider0, collider1, actor0, actor1, compliant_cup_index_by_path,
     commanded_mask, target_path, stack_paths, stage, attached,

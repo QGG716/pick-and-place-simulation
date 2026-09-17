@@ -69,6 +69,7 @@ EXECUTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/layout_trajectory.py",
     "src/unloading_sim/serial_unloading.py",
     "src/unloading_sim/collision_policy.py",
+    "src/unloading_sim/pair_clearance.py",
     "src/unloading_sim/conveyor_placement.py",
     "src/unloading_sim/tool_geometry.py",
     "src/unloading_sim/isaac_collision_policy.py",
@@ -583,7 +584,7 @@ def _bridge_configuration(
                 "support_footprint_boundary_tolerance_m": float(
                     scene.policy.data.get("search_strategy", {}).get("conveyor_footprint_boundary_tolerance_m", 1e-6)),
                 # Pause the trajectory clock at the extraction/free-transit
-                # boundary.  The original 20.2 mm clearance still has to be
+                # boundary. The bound pair policy entry clearance must be
                 # observed; this only gives the finite drive time to converge.
                 "maximum_free_transit_wait_s": 1.0,
                 # Independent of support acquisition: continue the already
@@ -740,7 +741,7 @@ def _bridge_configuration(
                 "actual_start_interlock": {
                     "require_attachment_released": True,
                     "require_target_independent": True,
-                    "require_tool_target_clearance_m": 0.0202,
+                    "require_tool_target_clearance_m": SimulationCollisionPolicy.from_mapping(scene.policy.layout_validation.data.get("collision_policy")).free_space_clearance_m,
                     "require_transport_swept_conflict_clear": True,
                 },
                 "transport": {
@@ -1101,6 +1102,10 @@ def build_m710_execution_preflight(
     execution = config if isinstance(config, M710ExecutionConfig) else load_m710_execution_config(config)
     policy = load_layout_motion_policy(execution.motion_policy_path)
     if motion_input is not None:
+        configured_collision = SimulationCollisionPolicy.from_mapping(policy.layout_validation.data.get("collision_policy"))
+        input_collision = SimulationCollisionPolicy.from_mapping(motion_input.policy.layout_validation.data.get("collision_policy"))
+        if configured_collision.to_mapping() != input_collision.to_mapping():
+            raise ValueError("actual motion input collision policy differs from execution configuration")
         if motion_input.policy.policy_fingerprint != policy.policy_fingerprint:
             # CLI comparisons may override search strategy only. Physical,
             # contact and fixed-layout inputs must still match byte for byte;
@@ -1134,6 +1139,9 @@ def build_m710_execution_preflight(
     expected_profile = profile_evidence(policy.data)
     if motion.get("simulation_profile", expected_profile) != expected_profile:
         raise ValueError("motion simulation profile mismatch")
+    expected_collision = SimulationCollisionPolicy.from_mapping(policy.layout_validation.data.get("collision_policy"))
+    if expected_collision.poc_pair_clearance and canonical_digest(motion.get("collision_policy")) != canonical_digest(expected_collision.to_mapping()):
+        raise ValueError("motion collision policy differs from execution configuration")
     segment = motion.get("selected_trajectory_segment")
     if segment and ((segment.get("place", {}).get("release_mode") == "IDEAL_RECEPTION_RELEASE")
                     != expected_profile["ideal_reception"]):

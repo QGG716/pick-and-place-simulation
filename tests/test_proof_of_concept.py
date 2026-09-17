@@ -221,7 +221,8 @@ def test_extraction_expanded_routes_are_finite_and_not_prefix_truncated(monkeypa
     c.budget = LayoutTrajectoryBudget(proof_of_concept=True)
     c.collision_margin_m = .01
     c.contact_tolerance_m = .0002
-    c.collision_policy = SimpleNamespace(free_space_clearance_m=.0202)
+    from unloading_sim.collision_policy import SimulationCollisionPolicy
+    c.collision_policy = SimulationCollisionPolicy()
     c.ik = dict(position_tolerance_m=.0001, orientation_tolerance_rad=.0002)
     c.robot = SimpleNamespace(fk=lambda q: np.eye(4))
     directions = []

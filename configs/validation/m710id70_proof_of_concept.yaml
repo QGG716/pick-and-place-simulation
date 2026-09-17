@@ -1,5 +1,5 @@
 schema: m710id70_layout_single_carton_motion_v1
-layout_validation_config: m710id70_layout_v1.yaml
+layout_validation_config: m710id70_layout_poc_pair_clearance.yaml
 task_population:
   selector: support_relation_graph_removable
   expected_scene_cartons: 40

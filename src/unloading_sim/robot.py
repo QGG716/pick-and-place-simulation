@@ -62,6 +62,7 @@ class CollisionResult:
     reason: str = ""
     first_link: str | None = None
     first_obstacle: str | None = None
+    evidence: dict | None = None
 
 
 class RobotBackend(Protocol):

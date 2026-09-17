@@ -1,5 +1,5 @@
 schema: m710id70_dynamic_execution_v1
-layout_validation_config: ../validation/m710id70_layout_v1.yaml
+layout_validation_config: ../validation/m710id70_layout_poc_pair_clearance.yaml
 motion_policy_config: ../validation/m710id70_proof_of_concept.yaml
 dynamics_config: m710id70_official_dynamics_v2.yaml
 robot_cad_manifest: ../../assets/robots/fanuc_m710id_70/official/provenance.yaml

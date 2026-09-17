@@ -80,6 +80,7 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/motion_quality.py",
     "src/unloading_sim/release_motion.py",
     "src/unloading_sim/collision_policy.py",
+    "src/unloading_sim/pair_clearance.py",
     "src/unloading_sim/conveyor_placement.py",
     "src/unloading_sim/unloading_sequence.py",
     "src/unloading_sim/tool_geometry.py",
@@ -346,6 +347,10 @@ class LayoutMotionPolicy:
 
     @property
     def policy_fingerprint(self) -> str:
+        collision = SimulationCollisionPolicy.from_mapping(self.layout_validation.data.get("collision_policy"))
+        if collision.poc_pair_clearance:
+            return canonical_digest({"motion": self.data, "collision_policy": collision.to_mapping(),
+                                     "layout_geometry": self.layout_validation.layout.layout_fingerprint})
         return canonical_digest(self.data)
 
 
@@ -689,6 +694,9 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
     layout_validation = load_layout_validation_config(
         _resolve(config_path, str(data["layout_validation_config"]))
     )
+    pair_policy = SimulationCollisionPolicy.from_mapping(layout_validation.data["collision_policy"])
+    if pair_policy.poc_pair_clearance and data.get("search_strategy", {}).get("profile") != POC:
+        raise ValueError("POC pair clearance cannot be used by an explicit legacy profile")
     if layout_validation.layout.data["layout_id"] != EXPECTED_LAYOUT_ID:
         raise ValueError("motion policy is bound only to m710id70_unloading_layout_v1")
     if float(validity["collision_margin_m"]) < layout_validation.collision_margin_m:
@@ -867,6 +875,8 @@ def _state_failure(
     q: np.ndarray,
 ) -> dict[str, Any] | None:
     """Apply proxy checks with a face-scoped physical-contact exception."""
+    if SimulationCollisionPolicy.from_mapping(scene.policy.layout_validation.data.get("collision_policy")).poc_pair_clearance:
+        return {"reason": "POC_REQUIRES_OFFICIAL_EXACT_STATE_VALIDATOR", "classification": "UNKNOWN"}
     validity = scene.policy.data["state_validity"]
     q = np.asarray(q, dtype=float)
     if q.shape != (robot.dof,) or not np.all(np.isfinite(q)) or not robot.within_limits(q):
@@ -971,7 +981,8 @@ def _scheduled_contact_poses(scene, target, faces):
     physical_from_virtual = (np.linalg.inv(scene.policy.tool_frames.flange_from_physical_contact)
                              @ scene.policy.tool_frames.flange_from_virtual_task_tcp)
     target_bottom = float(np.min(target.corners()[:, 2]))
-    required_margin = 2.0 * float(scene.policy.data["state_validity"]["collision_margin_m"])
+    required_margin = SimulationCollisionPolicy.from_mapping(scene.policy.layout_validation.data.get("collision_policy")).pair_clearance(
+        "external", float(scene.policy.data["state_validity"]["collision_margin_m"]))
     for face in faces:
         rolls = []
         for roll in scene.policy.data["ik"]["roll_candidates_deg"]:
@@ -1404,6 +1415,7 @@ def _blocked_initial_state_result(
     result: dict[str, Any] = {
         "schema": RESULT_SCHEMA,
         "simulation_profile": profile_evidence(policy.data),
+        "collision_policy": SimulationCollisionPolicy.from_mapping(policy.layout_validation.data.get("collision_policy")).to_mapping(),
         "run_status": "BLOCKED",
         "layout_id": layout.data["layout_id"],
         "layout_fingerprint": layout.layout_fingerprint,
@@ -1544,7 +1556,8 @@ def run_layout_single_carton_audit(
             fine_samples_per_axis=int(strategy.get("fine_place_samples_per_axis", 7)),
             contact_tolerance_m=float(policy.data["state_validity"]["contact_tolerance_m"]),
             edge_tolerance_m=float(strategy.get("conveyor_footprint_boundary_tolerance_m", 1e-6)),
-            occupancy_clearance_m=2.0 * float(policy.data["state_validity"]["collision_margin_m"]),
+            occupancy_clearance_m=SimulationCollisionPolicy.from_mapping(policy.layout_validation.data.get("collision_policy")).pair_clearance(
+                "external", float(policy.data["state_validity"]["collision_margin_m"])) ,
             normal_tolerance_rad=np.deg2rad(float(strategy.get(
                 "placement_normal_tolerance_deg", 5.0))),
             process_family_by_support=dict(strategy.get("surface_process_families", {})),
@@ -2018,6 +2031,7 @@ def run_layout_single_carton_audit(
     result: dict[str, Any] = {
         "schema": RESULT_SCHEMA,
         "simulation_profile": profile_evidence(policy.data),
+        "collision_policy": SimulationCollisionPolicy.from_mapping(policy.layout_validation.data.get("collision_policy")).to_mapping(),
         "run_status": "COMPLETED",
         "layout_id": scene.snapshot["layout_id"],
         "layout_fingerprint": scene.snapshot["layout_fingerprint"],

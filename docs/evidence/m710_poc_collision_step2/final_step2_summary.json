@@ -1,0 +1,577 @@
+{
+  "server_workdir": "/root/autodl-tmp/m710-poc-collision-step2-20260917",
+  "world_scope": "ONE_NEW_WORLD_FIRST_CARTON_REGRESSION_NOT_FIFTH_RECOVERY",
+  "tests": {
+    "result": "156 passed in 4.96s",
+    "log": "focused_delivery_final.log"
+  },
+  "planning_export": {
+    "planning_seconds": 1163.545572578907,
+    "preflight_seconds": 0.28335506096482277,
+    "export_seconds": 0.28390806540846825,
+    "bundle_readback_seconds": 0.08351455256342888,
+    "bundle_readback": {
+      "status": "PASS",
+      "bundle_payload_sha256": "dc0758d0d3f81cbfded927479269115eb00ac420bc5ea67fa4aea9a96d6c817f",
+      "source_preflight_fingerprint": "dafe79b94b013adf9b70efe4d6515384d8ea55485eab753c0c6b2f5e855d3ed0",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+    },
+    "motion_status": "PASS",
+    "preflight_status": "READY",
+    "simulation_execution_ready": true,
+    "original_motion_path": "/root/autodl-tmp/m710-poc-collision-step2-20260917/outputs/poc_pair_canonical/motion.json",
+    "saved_motion_unmodified": true,
+    "resume_scope": "SAVED_COMPLETE_CPU_PLAN_THROUGH_PRODUCTION_PREFLIGHT_AND_EXPORT; NOT_SEARCH_RESUME",
+    "subsequent_optimization_seconds": 0,
+    "isaac_executed": false,
+    "statistics": {
+      "trajectory_edge_state_samples": 29798,
+      "trajectory_state_validations": 29693,
+      "trajectory_rrt_iterations_consumed": 0
+    },
+    "collision_policy": {
+      "schema": "m710_poc_pair_collision_policy_v4",
+      "wrist_tool_exempt_links": [
+        "J5_link",
+        "J6_link"
+      ],
+      "stack_contact_mode": "planner_relaxed_physics_checked",
+      "stack_contact_stages": [
+        "support-release",
+        "extraction"
+      ],
+      "maximum_planned_stack_penetration_m": 0.01,
+      "free_space_clearance_m": 0.0052,
+      "free_space_clearance_loss_tolerance_m": 0.0002,
+      "maximum_actual_penetration_m": 0.01,
+      "maximum_neighbor_displacement_m": 0.06,
+      "maximum_neighbor_tilt_rad": 0.2,
+      "progress_timeout_s": 3.0,
+      "minimum_progress_m": 0.002,
+      "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+      "compliant_cup_neighbor_contact_mode": "ignore",
+      "maximum_compliant_cup_additional_compression_m": 0.005,
+      "required_pair_clearance_m": 0.005,
+      "self_collision_clearance_m": 0.0,
+      "boundary_mode": "finite_frozen_scene_walls",
+      "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+      "box_box_physics_enabled": true
+    },
+    "target": "carton_l07_c02",
+    "source_scope_note": "CPU algorithm and complete-path proof unchanged; only execution config reference and stricter preflight policy mismatch check updated after CPU process exited."
+  },
+  "runtime": {
+    "simulation_profile": {
+      "name": "proof_of_concept",
+      "ideal_suction": true,
+      "ideal_reception": true,
+      "ideal_outfeed": true,
+      "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+      "machine_qualification_claimed": false
+    },
+    "collision_policy": {
+      "schema": "m710_poc_pair_collision_policy_v4",
+      "wrist_tool_exempt_links": [
+        "J5_link",
+        "J6_link"
+      ],
+      "stack_contact_mode": "planner_relaxed_physics_checked",
+      "stack_contact_stages": [
+        "support-release",
+        "extraction"
+      ],
+      "maximum_planned_stack_penetration_m": 0.01,
+      "free_space_clearance_m": 0.0052,
+      "free_space_clearance_loss_tolerance_m": 0.0002,
+      "maximum_actual_penetration_m": 0.01,
+      "maximum_neighbor_displacement_m": 0.06,
+      "maximum_neighbor_tilt_rad": 0.2,
+      "progress_timeout_s": 3.0,
+      "minimum_progress_m": 0.002,
+      "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+      "compliant_cup_neighbor_contact_mode": "ignore",
+      "maximum_compliant_cup_additional_compression_m": 0.005,
+      "required_pair_clearance_m": 0.005,
+      "self_collision_clearance_m": 0.0,
+      "boundary_mode": "finite_frozen_scene_walls",
+      "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+      "box_box_physics_enabled": true
+    },
+    "physical_cycle_completed": false,
+    "workflow_cycle_completed": true,
+    "runtime_stop_reason": null,
+    "first_unexpected_runtime_robot_contact": null,
+    "payload_actual_contact_cup_count_at_attach": 40,
+    "payload_attachment_intact": true,
+    "payload_release_command_succeeded": true,
+    "payload_release_executed": true,
+    "payload_release_open_confirmed": true,
+    "actual_reception_succeeded": false,
+    "qualification_passed": false,
+    "qualification_failures": [
+      "joint_efforts_within_limit"
+    ],
+    "physics_time_step_s": null,
+    "replay_wall_seconds": 1370.0785831212997,
+    "actual_stack_contact_monitor": {
+      "observations": 20419,
+      "box_box_physics_enabled": true,
+      "free_space_reached": true,
+      "first_free_space_time_s": 29.841666666666665,
+      "peak_actual_penetration_m": null,
+      "peak_sat_overlap_bound_m": 5.072749144519051e-06,
+      "peak_neighbor_displacement_m": 0.0011014396690415234,
+      "peak_neighbor_tilt_rad": 8.577849399210893e-05,
+      "contact_force_channel": "NOT_USED_BY_GEOMETRIC_DISTURBANCE_MONITOR"
+    },
+    "target_cup_release_clearance_gate": {
+      "policy_source": "actual_state_gates.maximum_release_clearance_wait_s; independent bounded timer",
+      "maximum_wait_s": 1.0,
+      "pending": false,
+      "events": [
+        {
+          "event": "target_cup_release_clearance_started",
+          "time_s": 89.2,
+          "maximum_wait_s": 1.0
+        },
+        {
+          "event": "target_cup_clearance_ended_by_assumed_reception",
+          "time_s": 89.22083333333333,
+          "physical_clearance_certified": false
+        }
+      ],
+      "constraint_independence_is_separate": true,
+      "normal_rule_resumes_after_all_known_target_cup_proximity_lost": false,
+      "required_pair_entry_clearance_m": 0.0052
+    },
+    "poc_pair_query_record_scope": "FIRST_200_CLASSIFICATIONS_PLUS_ALL_REJECTIONS_NOT_EVENT_COUNTS"
+  },
+  "state": {
+    "schema": "m710id70_actual_motion_state_v1",
+    "world_session_id": "1789633559.8247085",
+    "time_s": 99.275,
+    "attached": false,
+    "attachment_target": null,
+    "completed_carton_ids": [],
+    "ideal_received_ids": [
+      "carton_l07_c02"
+    ],
+    "processed_carton_ids": [
+      "carton_l07_c02"
+    ],
+    "handed_off_ids": [
+      "carton_l07_c02"
+    ],
+    "inactive_carton_ids": [
+      "carton_l07_c02"
+    ]
+  },
+  "counts": {
+    "actual_received": 0,
+    "ideal_received": 1,
+    "processed": 1,
+    "ideal_outfed": 1
+  },
+  "source_scope": {
+    "baseline_commit": "1cdbee11a6652637b48acf7c30f9624ce25983d1",
+    "changed_tracked_file_sha256": {
+      "AGENTS.md": "23ed9a9488869f50537a92e25e186c1eb1bbae512ec984dc03b82b3869b2840b",
+      "configs/validation/m710id70_layout_poc_pair_clearance.yaml": "4419763b556e491242e2d1696ebf38405e2835a75640a2572478e40156772abd",
+      "configs/validation/m710id70_proof_of_concept.yaml": "53c33ed4bccb62dcd6bd927ec3ed3dc543c520587fadb239805c4392c44a3d47",
+      "scripts/isaacsim_fanuc_replay.py": "6dc19589db3ddd094077b5c6d642030e8fd5595d3d6e653966449d800d8631cb",
+      "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+      "src/unloading_sim/history_adaptation.py": "bce0d93a8a968cb21a73013e8d46ac5ff92d1838de1a4b09bcdeb901db257f5a",
+      "src/unloading_sim/isaac_collision_policy.py": "c33443a0ac14d79c645d3809389ee50e8aeb597ac3f6c8f6276fe0811e5dd884",
+      "src/unloading_sim/layout_single_carton.py": "3e3e5ce7e30a83aebc91cabbbbe55dd584415226380c6d0466809d20a92c62ca",
+      "src/unloading_sim/layout_trajectory.py": "6643b4ebf0d84b640f15cbc7792359876a8a2dbcaa50a896c3c5c13b1fcde7d8",
+      "src/unloading_sim/m710_execution.py": "73d59b0c1a7961c4402ec74e571d36066f31c9383f8a927bfb70071bd66525de",
+      "src/unloading_sim/m710_replay_contract.py": "b49b385f8cf3cdf5af012d905b5409c2edb8a0fe25baca5c31804957839a6e9d",
+      "src/unloading_sim/m710_replay_physics.py": "363bf5dfabe621a65a2c07ff0db25345850b88c5c7a8439ce417cab8a6e426dc",
+      "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+      "src/unloading_sim/pinocchio_backend.py": "febe67199d3acf927240055b067d707c6cf92b784e1beae639ab0650fa34530a",
+      "src/unloading_sim/robot.py": "8fff99fe5a1f969c5c06aeccc9858f4ec3d47f36c45c24b17e7561b40b2b64d5",
+      "src/unloading_sim/workcell_layout.py": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2",
+      "tests/test_m710_drive_reference.py": "10e3dfe1f40672eee32f2b354fba190dbc0a8715799e1dd24ef00f260e97bc92",
+      "tests/test_m710_replay_contract.py": "696bf4f1a3f7335ec0448903e562df933d977baa27f75aeb0cd5e41f072707b3",
+      "tests/test_poc_pair_clearance.py": "3ad513835764c0e040115f1844ffc0f9939d652833a347a4a1e7d5000073a271",
+      "tests/test_proof_of_concept.py": "b366699f2ef934f33f1c69550ce1ff73af46ed984aa0551e344baefb6c235366",
+      "configs/simulation/m710id70_proof_of_concept.yaml": "a6b9c9c71f6e7ee55e61bb63d46710e6168648a6bd97eec208fa5f1116e2f7d0"
+    },
+    "canonical_git_index_matches_server": true,
+    "cpu_motion_implementation_unchanged_since_full_plan": true,
+    "execution_preflight_rebuilt_after_configuration_fix": true,
+    "running_sources_modified": false
+  },
+  "solver_offset_readback": {
+    "schema": "m710_explicit_collision_offset_readback_v1",
+    "policy": {
+      "contact_offset_m": 0.01,
+      "rest_offset_m": 0.0
+    },
+    "authored_all_colliders": {
+      "status": "PASS",
+      "scope": "all USD collision shapes including static surfaces",
+      "collider_count": 259
+    },
+    "articulation": {
+      "status": "PASS",
+      "shape_count": 209,
+      "source": "PhysX tensor backend getters",
+      "read_only": true,
+      "shape_path_mapping": "backend shape order; no unverified path-order assumption",
+      "contact_offsets_m_range": [
+        0.009999999776482582,
+        0.009999999776482582
+      ],
+      "rest_offsets_m_range": [
+        0.0,
+        0.0
+      ]
+    },
+    "cartons": {
+      "status": "PASS",
+      "shape_count": 40,
+      "source": "PhysX tensor backend getters",
+      "read_only": true,
+      "shape_path_mapping": "backend shape order; no unverified path-order assumption",
+      "contact_offsets_m_range": [
+        0.009999999776482582,
+        0.009999999776482582
+      ],
+      "rest_offsets_m_range": [
+        0.0,
+        0.0
+      ]
+    },
+    "poc_acceptance": {
+      "required_pair_clearance_m": 0.005,
+      "pair_contact_generation_envelope_m": 0.02,
+      "offsets_added_to_acceptance_clearance": false,
+      "solver_offsets_changed_for_poc": false
+    }
+  },
+  "physics_backend_readback": {
+    "status": "PASS",
+    "requested": {
+      "mode": "physx_cpu",
+      "device": "cpu",
+      "broadphase_type": "MBP",
+      "gpu_dynamics_enabled": false,
+      "fabric_enabled": true,
+      "ccd_enabled": true
+    },
+    "actual": {
+      "mode": "physx_cpu",
+      "device": "cpu",
+      "broadphase_type": "MBP",
+      "gpu_dynamics_enabled": false,
+      "fabric_enabled": true,
+      "ccd_enabled": true
+    },
+    "source": "SimulationManager_and_PhysicsContext_runtime_readback"
+  },
+  "finite_scene_geometry": {
+    "baseline_commit": "1cdbee11a6652637b48acf7c30f9624ce25983d1",
+    "server_workdir": "/root/autodl-tmp/m710-poc-collision-step2-20260917",
+    "new_world_required": true,
+    "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+    "layout_fingerprint": "5ad315d60b22fcffdb5fcebc9b28e98dccea8fd0268aa6e6d7164ec944c3d540",
+    "finite_walls": [
+      {
+        "name": "trailer_floor",
+        "center_m": [
+          0.0,
+          0.0,
+          -0.025
+        ],
+        "half_extents_m": [
+          3.2,
+          1.15,
+          0.025
+        ],
+        "rotation": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "name": "trailer_left_wall",
+        "center_m": [
+          0.0,
+          1.1749999999999998,
+          1.35
+        ],
+        "half_extents_m": [
+          3.2,
+          0.025,
+          1.35
+        ],
+        "rotation": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "name": "trailer_right_wall",
+        "center_m": [
+          0.0,
+          -1.1749999999999998,
+          1.35
+        ],
+        "half_extents_m": [
+          3.2,
+          0.025,
+          1.35
+        ],
+        "rotation": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "name": "trailer_ceiling",
+        "center_m": [
+          0.0,
+          0.0,
+          2.725
+        ],
+        "half_extents_m": [
+          3.2,
+          1.15,
+          0.025
+        ],
+        "rotation": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "name": "trailer_closed_end_wall",
+        "center_m": [
+          3.225,
+          0.0,
+          1.35
+        ],
+        "half_extents_m": [
+          0.025,
+          1.15,
+          1.35
+        ],
+        "rotation": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ]
+  },
+  "robot_contact_classification_event_counts": {
+    "ALLOWED_STAGE_CONTACT": 1254909
+  },
+  "payload_contact_classification_event_counts": {
+    "ALLOWED_STAGE_CONTACT": 1260928,
+    "CLEAR": 309
+  },
+  "classification_count_scope": "robot and payload records overlap on robot/target pairs; do not sum the two groups",
+  "runtime_query_examples": [
+    {
+      "time_s": 0.0,
+      "classification": "ALLOWED_STAGE_CONTACT",
+      "accepted": true,
+      "stage": "settling",
+      "pair": [
+        "/Validation/Scene/carton_l07_c02",
+        "/Validation/Scene/carton_l06_c01"
+      ],
+      "geometry_scope": "ACTUAL_PHYSX_COLLIDERS_NOT_ORIGINAL_CAD",
+      "query_method": "PHYSX_FINITE_CONTACT_POINT_SEPARATION",
+      "geometry_intersection_confirmed": false,
+      "original_cad_intersection_confirmed": false,
+      "surface_distance_m": 0.019999980926513672,
+      "required_pair_clearance_m": 0.005,
+      "numerical_gap_tolerance_m": 1e-09,
+      "contact_permission_source": "APPROVED_TARGET_STACK_CONTACT_BEFORE_FREE_TRANSIT",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "measured_contact_separation_m": 0.019999980926513672,
+      "pair_kind": "external",
+      "contact_offset_is_not_clearance": true
+    },
+    {
+      "time_s": 0.0,
+      "classification": "ALLOWED_STAGE_CONTACT",
+      "accepted": true,
+      "stage": "settling",
+      "pair": [
+        "/Validation/Scene/carton_l07_c02",
+        "/Validation/Scene/carton_l06_c02"
+      ],
+      "geometry_scope": "ACTUAL_PHYSX_COLLIDERS_NOT_ORIGINAL_CAD",
+      "query_method": "PHYSX_FINITE_CONTACT_POINT_SEPARATION",
+      "geometry_intersection_confirmed": true,
+      "original_cad_intersection_confirmed": false,
+      "surface_distance_m": null,
+      "required_pair_clearance_m": 0.005,
+      "numerical_gap_tolerance_m": 1e-09,
+      "contact_permission_source": "APPROVED_TARGET_STACK_CONTACT_BEFORE_FREE_TRANSIT",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "measured_contact_separation_m": -1.4901161193847656e-07,
+      "pair_kind": "external",
+      "contact_offset_is_not_clearance": true
+    },
+    {
+      "time_s": 0.0,
+      "classification": "ALLOWED_STAGE_CONTACT",
+      "accepted": true,
+      "stage": "settling",
+      "pair": [
+        "/Validation/Scene/carton_l07_c02",
+        "/Validation/Scene/carton_l06_c03"
+      ],
+      "geometry_scope": "ACTUAL_PHYSX_COLLIDERS_NOT_ORIGINAL_CAD",
+      "query_method": "PHYSX_FINITE_CONTACT_POINT_SEPARATION",
+      "geometry_intersection_confirmed": false,
+      "original_cad_intersection_confirmed": false,
+      "surface_distance_m": 0.019999980926513672,
+      "required_pair_clearance_m": 0.005,
+      "numerical_gap_tolerance_m": 1e-09,
+      "contact_permission_source": "APPROVED_TARGET_STACK_CONTACT_BEFORE_FREE_TRANSIT",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "measured_contact_separation_m": 0.019999980926513672,
+      "pair_kind": "external",
+      "contact_offset_is_not_clearance": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/root/autodl-tmp/m710-poc-collision-step2-20260917/outputs/poc_pair_single_world/isaac/result.json",
+      "bytes": 862276,
+      "sha256": "c88d62533791f7743991bc350ea49694c82eecf489baffc260bd3ab0204d0290"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-collision-step2-20260917/outputs/poc_pair_single_world/isaac/actual_remaining_state.json",
+      "bytes": 26724,
+      "sha256": "e6e88249579afe8b98b5a024812dc50c4f1bfc5b026ba029bea34b12089b726f"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-collision-step2-20260917/outputs/poc_pair_single_world/isaac/replay.mp4",
+      "bytes": 3890003,
+      "sha256": "64800b9c9ddf36fbdf9c3d60c7145e9838647ea651c7dea72efc11ddd3ca5497"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-collision-step2-20260917/outputs/poc_pair_single_world/isaac/run_status.json",
+      "bytes": 247,
+      "sha256": "da31d6cbea8bbfbf86421cc49fbdb3bc81c300ff8478b31a62c9563b09f41f96"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-collision-step2-20260917/outputs/poc_pair_single_world/isaac/collision_offset_readback.json",
+      "bytes": 75863,
+      "sha256": "86d477284e125c81ecb1e544ed6d2398556be59e212e213158ac56e40ecca09a"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-collision-step2-20260917/outputs/poc_pair_delivery_final/motion.json",
+      "bytes": 341167,
+      "sha256": "84a5da3e7f82d379ef039a118aebaa47bd5a508649283e6b5f8eb1db9db9d80b"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-collision-step2-20260917/outputs/poc_pair_delivery_final/preflight.json",
+      "bytes": 622902,
+      "sha256": "4829e1755faa30242aa8b73fd1fc888202d93eb9da3fb7463fc9ec9edcbd2157"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-collision-step2-20260917/outputs/poc_pair_delivery_final/replay_bundle.json",
+      "bytes": 1849254,
+      "sha256": "51432777003a43ef5e2e192844df7094c4e3e0bc77b3b96350e9b83b631ede6d"
+    }
+  ],
+  "video_probe": {
+    "method": "EXISTING_OPENCV_VIDEO_READBACK_NO_SIMULATION_APP",
+    "width": 640,
+    "height": 360,
+    "fps": 5.0,
+    "frames": 496,
+    "duration_seconds": 99.2
+  },
+  "offline_new_state_check": {
+    "scope": "OFFLINE_STATE_LOAD_NO_NEW_WORLD_OR_SEARCH",
+    "world_session_id": "1789633559.8247085",
+    "actual_received": 0,
+    "ideal_received": 1,
+    "processed_carton_ids": [
+      "carton_l07_c02"
+    ],
+    "pending_candidate_ids": [
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "processed_reentered_candidates": false,
+    "stage_connection_iterations": 1800
+  }
+}

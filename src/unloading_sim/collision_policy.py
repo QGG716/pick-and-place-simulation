@@ -9,6 +9,7 @@ from typing import Mapping, Sequence
 import numpy as np
 
 from .geometry import OBB
+from .pair_clearance import obb_pair_failure, obb_surface_distance
 from .validation_physics import contact_separated
 
 
@@ -29,10 +30,20 @@ class SimulationCollisionPolicy:
     inactive_compliant_cup_stack_contact_mode: str = "physical_contact_within_compression"
     compliant_cup_neighbor_contact_mode: str = "check"
     maximum_compliant_cup_additional_compression_m: float = 0.005
+    required_pair_clearance_m: float | None = None
+    self_collision_clearance_m: float = 0.0
+    boundary_mode: str = "legacy_infinite_side_planes"
 
     def __post_init__(self):
-        if self.schema != "m710_simulation_collision_policy_v3":
+        if self.schema not in {"m710_simulation_collision_policy_v3", "m710_poc_pair_collision_policy_v4"}:
             raise ValueError("unsupported collision policy")
+        if self.poc_pair_clearance:
+            if (self.required_pair_clearance_m != .005 or self.self_collision_clearance_m != 0.
+                    or self.boundary_mode != "finite_frozen_scene_walls"
+                    or abs(self.free_space_clearance_m-(.005+self.free_space_clearance_loss_tolerance_m)) > 1e-12):
+                raise ValueError("POC pair policy requires 5 mm total gap, zero self gap and finite walls")
+        elif self.required_pair_clearance_m is not None or self.boundary_mode != "legacy_infinite_side_planes":
+            raise ValueError("pair clearance must be explicitly bound to the POC schema")
         if not set(self.wrist_tool_exempt_links) <= {"J5_link", "J6_link"}:
             raise ValueError("only the explicitly authorized wrist/tool pairs may be exempt")
         if self.stack_contact_mode not in {"strict_initial_proximity", "planner_relaxed_physics_checked"}:
@@ -67,10 +78,26 @@ class SimulationCollisionPolicy:
 
     @property
     def fingerprint(self):
-        return hashlib.sha256(json.dumps(asdict(self), sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        return hashlib.sha256(json.dumps(self._data(), sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+    @property
+    def poc_pair_clearance(self):
+        return self.schema == "m710_poc_pair_collision_policy_v4"
+
+    def pair_clearance(self, pair_kind, legacy_margin):
+        if not self.poc_pair_clearance:
+            return 2.0 * legacy_margin
+        return self.self_collision_clearance_m if pair_kind == "robot_self" else self.required_pair_clearance_m
+
+    def _data(self):
+        data = asdict(self)
+        if not self.poc_pair_clearance:
+            for key in ("required_pair_clearance_m", "self_collision_clearance_m", "boundary_mode"):
+                data.pop(key)
+        return data
 
     def to_mapping(self):
-        return {**asdict(self), "fingerprint": self.fingerprint,
+        return {**self._data(), "fingerprint": self.fingerprint,
                 "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION" if self.wrist_tool_exempt_links else "NONE",
                 "box_box_physics_enabled": True}
 
@@ -102,7 +129,7 @@ class PhysicsCheckedStackTracker:
     def _update_released(self, box):
         self.last_box = box
         self.fully_released = self.fully_released or all(
-            box.signed_distance_obb(other) >= self.policy.free_space_clearance_m
+            (obb_surface_distance(box, other) if self.policy.poc_pair_clearance else box.signed_distance_obb(other)) >= self.policy.free_space_clearance_m
             for other in self.neighbors.values())
 
     def clone(self):
@@ -116,17 +143,19 @@ class PhysicsCheckedStackTracker:
         for obstacle in obstacles:
             if obstacle.name in self.neighbors:
                 distance = box.signed_distance_obb(obstacle)
-                if self.fully_released and box.intersects_obb(obstacle, margin=self.margin_m):
-                    return {"reason": "PAYLOAD_COLLISION", "pair": [box.name, obstacle.name],
-                            "contact_state": "FREE_SPACE_RULES_RESTORED"}
+                if self.fully_released:
+                    failure = obb_pair_failure(box, obstacle, self.policy, self.margin_m, reason="PAYLOAD_COLLISION")
+                    if failure is not None:
+                        return {**failure, "contact_state": "FREE_SPACE_RULES_RESTORED"}
                 if distance < -self.policy.maximum_planned_stack_penetration_m:
                     return {"reason": "GROSS_PLANNED_STACK_PENETRATION", "pair": [box.name, obstacle.name],
                             "signed_distance_m": distance}
                 continue
             if obstacle.name in supports and contact_separated(box, obstacle, self.tolerance_m):
                 continue
-            if box.intersects_obb(obstacle, margin=self.margin_m):
-                return {"reason": "PAYLOAD_COLLISION", "pair": [box.name, obstacle.name]}
+            failure = obb_pair_failure(box, obstacle, self.policy, self.margin_m, reason="PAYLOAD_COLLISION")
+            if failure is not None:
+                return failure
         self._update_released(box)
         return None
 
