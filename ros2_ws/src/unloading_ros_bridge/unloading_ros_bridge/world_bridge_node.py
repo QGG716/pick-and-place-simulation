@@ -14,7 +14,7 @@ from sensor_msgs.msg import JointState
 from tf2_ros import Buffer, TransformException, TransformListener
 from unloading_contracts import ObservationStatus, RobotStateRevision
 from unloading_interfaces.msg import MechanismState, PerceptionObservation, PlanningWorldSnapshot
-from visualization_msgs.msg import Marker, MarkerArray
+from visualization_msgs.msg import MarkerArray
 
 from unloading_perception.geometry import rotation_from_quaternion, transform_pose
 from unloading_perception.scene import (
@@ -24,6 +24,7 @@ from unloading_perception.scene import (
 
 from .common import require_humble_python310, time_to_float
 from .mapping import observation_from_msg, observation_source_times, snapshot_to_msg
+from .marker_display import MarkerScene, marker_qos
 
 
 class WorldBridgeNode(Node):
@@ -69,7 +70,8 @@ class WorldBridgeNode(Node):
         self.create_subscription(MechanismState, "/unloading/mechanism_state", self.on_mechanism, reliable)
         self.create_subscription(PerceptionObservation, "/unloading/perception", self.on_observation, reliable)
         self.publisher = self.create_publisher(PlanningWorldSnapshot, "/unloading/world_snapshot", reliable)
-        self.marker_publisher = self.create_publisher(MarkerArray, "/unloading/markers", reliable)
+        self.marker_scene = MarkerScene(self.get_fully_qualified_name())
+        self.marker_publisher = self.create_publisher(MarkerArray, "/unloading/markers", marker_qos())
         # Only the wake-up uses steady time. All age calculations use ROS time.
         self.watchdog_clock = Clock(clock_type=ClockType.STEADY_TIME)
         self.watchdog = self.create_timer(0.1, self.check_freshness, clock=self.watchdog_clock)
@@ -312,27 +314,35 @@ class WorldBridgeNode(Node):
         self.stale_key = stale_key
 
     def publish_markers(self, snapshot: PlanningWorldSnapshot, frame_id: str) -> None:
-        markers = MarkerArray()
-        for index, cargo in enumerate(snapshot.obstacles):
-            if not cargo.has_pose or not cargo.has_full_dimensions or cargo.pose_frame_id != frame_id:
-                continue
-            marker = Marker()
-            marker.header.frame_id = frame_id
-            marker.header.stamp = snapshot.source_capture_time
-            marker.ns, marker.id, marker.type, marker.action = "cargo", index, Marker.CUBE, Marker.ADD
-            marker.pose = cargo.pose
-            marker.scale.x, marker.scale.y, marker.scale.z = cargo.full_dimensions_m
-            marker.color.r, marker.color.g, marker.color.b, marker.color.a = (0.9, 0.5, 0.1, 0.5)
-            markers.markers.append(marker)
-        self.marker_publisher.publish(markers)
+        self.marker_publisher.publish(self.marker_scene.render(snapshot, frame_id))
+        for diagnostic in self.marker_scene.diagnostics:
+            self.get_logger().warning('display: ' + diagnostic)
+
+    def destroy_node(self):
+        # Normal shutdown while DDS is alive clears only our known markers.
+        # A killed process / unavailable DDS context cannot guarantee delivery.
+        try:
+            if rclpy.ok(context=self.context):
+                self.marker_publisher.publish(self.marker_scene.clear())
+                if not self.marker_publisher.wait_for_all_acked(Duration(seconds=.5)):
+                    self.get_logger().warning('display cleanup was not acknowledged')
+        except Exception as exc:
+            self.get_logger().warning(f'display cleanup failed: {exc}')
+        finally:
+            result = super().destroy_node()
+        return result
 
 
 def main(args=None) -> None:
     require_humble_python310()
-    rclpy.init(args=args)
+    # Keep the context alive for owned-marker cleanup on ordinary Ctrl-C.
+    from rclpy.signals import SignalHandlerOptions
+    rclpy.init(args=args, signal_handler_options=SignalHandlerOptions.NO)
     node = WorldBridgeNode()
     try:
         rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
     finally:
         node.destroy_node()
         if rclpy.ok():

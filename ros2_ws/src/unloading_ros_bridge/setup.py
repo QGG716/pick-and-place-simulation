@@ -20,6 +20,7 @@ setup(
     entry_points={"console_scripts": [
         "perception_node = unloading_ros_bridge.perception_node:main",
         "world_bridge_node = unloading_ros_bridge.world_bridge_node:main",
+        "marker_demo = unloading_ros_bridge.marker_demo:main",
         "execution_bridge_node = unloading_ros_bridge.execution_bridge_node:main",
         "mock_follow_joint_trajectory = unloading_ros_bridge.mock_follow_joint_trajectory:main",
         "mock_state_publisher = unloading_ros_bridge.mock_state_publisher:main",
