@@ -1,0 +1,41 @@
+schema_version: 1
+phase: BOOTSTRAP
+repository: https://github.com/QGG716/pick-and-place-simulation.git
+target_branch: feat/v0.6-eco65-desktop
+integration_status: not_integrated
+acquisition_method: local_git_fetch_from_same_repository_copies
+history: full_history_without_alternates
+sources:
+  feasibility:
+    branch: feat/v0.5-feasibility-core
+    sha: 9db77cb8a51e9bf1821c6e84e90a7632fbce6b26
+    local_ref: refs/sources/eco65-desktop/feasibility
+    acquisition_status: acquired
+    integration_status: checked_out_as_main_baseline
+  perception:
+    branch: feat/v0.5-perception-ros2
+    sha: f7668c37019c31b85cc848243231f7c99a6d171d
+    local_ref: refs/sources/eco65-desktop/perception
+    acquisition_status: acquired
+    integration_status: source_only_not_integrated
+  online:
+    branch: feat/v0.5-online-continuous
+    sha: f7f7e0934ad425ab62cd2df8201812df1ba8e505
+    local_ref: refs/sources/eco65-desktop/online
+    acquisition_status: acquired
+    integration_status: source_only_not_integrated
+hardware:
+  robot_family: ECO65
+  robot_variant: ECO65-B
+  robot_variant_evidence: user_confirmed_2026-09-17
+  controller_generation: null
+  power_supply_nameplate_w: 1000
+  power_supply_compatibility: unknown
+  suction_tool:
+    step_status: awaiting_user_file_not_processed
+    mass_kg: null
+    material: null
+    tcp: null
+    flange_relationship: null
+    cup_count: null
+    vacuum_circuit: null

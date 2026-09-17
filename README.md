@@ -1,3 +1,19 @@
+# ECO65-B 桌面样机：BOOTSTRAP 准备阶段
+
+当前分支 `feat/v0.6-eco65-desktop` 仅准备本地源码、CPU 环境和官方资料。
+feasibility 主基线已检出；perception/online 已获取并锁定，三来源功能尚未集成。
+用户已确认实机是 ECO65-B，控制器代际待确认。ECO65 模型、吸具、规划和仿真尚未适配或验证。
+下文 FANUC 结果仅为历史证据。
+
+详情和资料缺项见 [准备报告](docs/eco65_desktop_bootstrap.md)。
+真实 STEP 唯一投放位置：`assets/tools/desktop_suction/cad/raw/`，保留原文件名。
+[投放说明](assets/tools/desktop_suction/README.md)。准备后停止，等待用户下一条明确继续指令。
+文件到达不会触发自动处理。
+
+---
+
+# 以下为继承的 FANUC 历史文档，不是本分支当前任务或 ECO65 验证结果
+
 # Trailer Unloading Geometric Simulator v0.5 feasibility core
 
 当前入口：固定布局 `m710id70_unloading_layout_v1`，官方 FANUC M-710iD/70，20 kg 工具、42.5 kg 箱体，`ideal_independent_cups` 和 `ideal_outfeed`。仅采用已批准的 J5/J6 自有工具碰撞例外和阶段限定的脱垛接触策略。

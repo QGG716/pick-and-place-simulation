@@ -20,3 +20,17 @@ tmp/
 .test-tmp/
 .pytest-tmp-*/
 .vscode/
+
+# ECO65 local-only originals and derived assets
+/assets/tools/desktop_suction/cad/raw/*
+!/assets/tools/desktop_suction/cad/raw/.gitkeep
+!/assets/tools/desktop_suction/cad/raw/README.md
+/assets/tools/desktop_suction/meshes/*
+!/assets/tools/desktop_suction/meshes/.gitkeep
+/assets/tools/desktop_suction/collision/*
+!/assets/tools/desktop_suction/collision/.gitkeep
+/assets/robots/realman_eco65/official/*
+!/assets/robots/realman_eco65/official/SOURCE_MANIFEST.json
+!/assets/robots/realman_eco65/official/README.md
+.firecrawl/
+.tmp-eco65-*.log
