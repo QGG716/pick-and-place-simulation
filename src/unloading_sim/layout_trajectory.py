@@ -1125,7 +1125,50 @@ class LayoutTrajectoryConnector:
             stage=stage,
         )
 
-    def _state_failure(
+    def _diagnostic_event(self, item):
+        diagnostics = getattr(self, "diagnostics", None)
+        if diagnostics is not None:
+            callback = getattr(self, "progress_callback", None)
+            (callback or diagnostics.event)({"candidate": dict(diagnostics.candidate), **item})
+
+    def _state_failure(self, q, obstacles, *, diagnostic_origin="state", diagnostic_edge=None, **kwargs):
+        failure = self._checked_state_failure(q, obstacles, **kwargs)
+        diagnostics = getattr(self, "diagnostics", None)
+        if diagnostics is not None:
+            diagnostics.observe(kwargs["stage"], diagnostic_origin, failure is not None)
+        if failure is not None and diagnostics is not None:
+            def context():
+                def box(b):
+                    return None if b is None else dict(name=b.name, category=b.category,
+                        pose_world=b.world_from_local.tolist(), half_extents_m=b.half_extents.tolist())
+                attachment = kwargs.get("attachment")
+                v = self.robot_state_validator
+                return dict(stage=kwargs["stage"], obstacles=[box(b) for b in obstacles],
+                    target_contact=box(kwargs.get("target_contact")),
+                    support_names=list(kwargs.get("support_names", ())),
+                    attachment=None if attachment is None else dict(
+                        tcp_from_box=attachment.rigid.tcp_from_box.tolist(),
+                        payload=box(attachment.box_at(q))),
+                    initial_proximity=(None if kwargs.get("initial_proximity") is None else
+                        kwargs["initial_proximity"].evidence()),
+                    commanded_cup_mask=getattr(v, "commanded_cup_mask", None),
+                    contact_target_name=getattr(v, "contact_target_name", None),
+                    stack_carton_names=sorted(getattr(v, "stack_carton_names", ())),
+                    collision_policy=self.collision_policy.to_mapping(),
+                    validator_identity=self.validator_identity,
+                    joint_limits=self.robot.joint_limits, joint_margin_rad=self.joint_margin_rad,
+                    maximum_jacobian_condition=self.maximum_jacobian_condition,
+                    path_seed=getattr(self, "diagnostic_path_seed", None),
+                    ik_seed=getattr(self, "diagnostic_ik_seed", None),
+                    cartesian_sample_index=getattr(self, "diagnostic_cartesian_sample", None),
+                    ik_seed_kind=("PREVIOUS_Q_NO_RANDOM_RESTARTS" if
+                        getattr(self, "diagnostic_cartesian_sample", None) is not None else "LAZY_IK_STREAM"),
+                    branch_seed=getattr(self, "diagnostic_branch_seed", None))
+            diagnostics.reject(failure, np.asarray(q), origin=diagnostic_origin,
+                               edge=diagnostic_edge, context=context)
+        return failure
+
+    def _checked_state_failure(
         self,
         q: Sequence[float],
         obstacles: Sequence[OBB],
@@ -1271,6 +1314,7 @@ class LayoutTrajectoryConnector:
         target_contact: OBB | None = None,
         initial_proximity: InitialProximityTracker | None = None,
         stage: str,
+        diagnostic_origin: str = "full_edge_recheck",
     ) -> Mapping[str, Any] | None:
         self._statistics["edge_validation_calls"] += 1
         arrays = [np.asarray(q, dtype=float) for q in path]
@@ -1309,7 +1353,9 @@ class LayoutTrajectoryConnector:
                     support_names=support_names,
                     target_contact=target_contact,
                     initial_proximity=initial_proximity,
-                    stage=stage,
+                    stage=stage, diagnostic_origin=diagnostic_origin,
+                    diagnostic_edge=dict(start_q_rad=start.tolist(), end_q_rad=goal.tolist(),
+                                         index=edge, fraction=float(fraction)),
                 )
                 if failure is not None:
                     return {
@@ -1337,13 +1383,16 @@ class LayoutTrajectoryConnector:
             return [], {"reason": "STAGE_CONNECTION_DEADLINE", "stage": stage}, {
                 "stage": stage, "planning_iterations_consumed": 0,
                 "validation_level": "A_UNVERIFIED_GEOMETRY", "search_started": False}
+        self.diagnostic_path_seed = int(seed)
+        self.diagnostic_cartesian_sample = None
         state = lambda q: self._state_failure(
             q,
             obstacles,
             attachment=attachment,
             support_names=support_names,
             target_contact=target_contact,
-            stage=stage,
+            stage=stage, diagnostic_origin="rrt_internal",
+            diagnostic_edge=planner.sample_context,
         ) is None
         callback = getattr(self, "progress_callback", None)
         if callback is not None:
@@ -1358,6 +1407,7 @@ class LayoutTrajectoryConnector:
             max_iterations=int(iteration_budget),
             goal_bias=self.budget.rrt_goal_bias,
             rng=np.random.default_rng(seed),
+            diagnostic_context=getattr(self, "diagnostics", None) is not None,
         )
         connection_started = perf_counter()
         result = planner.plan(
@@ -1370,6 +1420,7 @@ class LayoutTrajectoryConnector:
         if callback is not None:
             callback({"event": "connection_finished", "stage": stage,
                       "success": bool(result.success), "iterations": int(result.iterations),
+                      "termination": result.message,
                       "statistics": dict(self._statistics)})
         self._statistics["connection_attempts"] += 1
         self._statistics["rrt_iterations_consumed"] += int(result.iterations)
@@ -1399,7 +1450,7 @@ class LayoutTrajectoryConnector:
             attachment=attachment,
             support_names=support_names,
             target_contact=target_contact,
-            stage=stage,
+            stage=stage, diagnostic_origin="rrt_success_full_edge_recheck",
         )
         if failure is not None:
             evidence["success"] = False
@@ -1437,6 +1488,8 @@ class LayoutTrajectoryConnector:
         contact_candidate: Mapping[str, Any] | None = None,
         endpoint_checks: list[dict[str, Any]] | None = None,
     ):
+        self.diagnostic_ik_seed = int(seed)
+        self.diagnostic_cartesian_sample = None
         # Only this named contact search shares the normal grasp endpoint.
         # Unknown stages (including other *_ik_endpoint names) stay strict.
         endpoint_stage = "contact_endpoint" if stage == "next_contact" else f"{stage}_ik_endpoint"
@@ -1758,6 +1811,8 @@ class LayoutTrajectoryConnector:
                 rotation_matrix_from_rotation_vector(rotation_vector * fraction)
                 @ origin[:3, :3]
             )
+            self.diagnostic_ik_seed = int(seed) + index
+            self.diagnostic_cartesian_sample = index
             ik = solve_ik_multistart(
                 self.robot,
                 pose,
@@ -1790,6 +1845,11 @@ class LayoutTrajectoryConnector:
             }
             samples.append(sample)
             if not ik.success:
+                self._diagnostic_event({"event": "CARTESIAN_IK_REJECTED", "stage": stage,
+                    "failure": {"reason": "NO_IK", **sample}, "q_rad": np.asarray(ik.q).tolist(),
+                    "seed_q_rad": path[-1].tolist(), "ik_seed": int(seed) + index,
+                    "requested_pose_world": pose.tolist(), "ik_policy": dict(self.ik),
+                    "random_restarts": 0})
                 return path, {
                     "reason": "NO_IK",
                     "stage": stage,
@@ -1798,6 +1858,12 @@ class LayoutTrajectoryConnector:
             branch_step = float(np.max(np.abs(ik.q - path[-1])))
             sample["maximum_joint_step_rad"] = branch_step
             if branch_step > self.budget.cartesian_max_branch_step_rad:
+                self._diagnostic_event({"event": "CARTESIAN_IK_REJECTED", "stage": stage,
+                    "failure": {"reason": "IK_BRANCH_JUMP", "maximum_joint_step_rad": branch_step,
+                                "required_maximum_joint_step_rad": self.budget.cartesian_max_branch_step_rad},
+                    "q_rad": np.asarray(ik.q).tolist(), "seed_q_rad": path[-1].tolist(),
+                    "ik_seed": int(seed) + index, "requested_pose_world": pose.tolist(),
+                    "ik_policy": dict(self.ik), "random_restarts": 0})
                 return path, {
                     "reason": "IK_BRANCH_JUMP",
                     "stage": stage,
@@ -2190,6 +2256,7 @@ class LayoutTrajectoryConnector:
         suction: Mapping[str, Any],
         seed: int,
     ) -> tuple[Mapping[str, Any] | None, Mapping[str, Any] | None, Mapping[str, Any]]:
+        self.diagnostic_branch_seed = int(seed)
         trace: dict[str, Any] = {"seed": int(seed), "stages": {}}
         actual = self.robot.fk(grasp_q)
         _, position_error, orientation_error = pose_error(actual, requested_virtual_contact)
@@ -2467,6 +2534,8 @@ class LayoutTrajectoryConnector:
                                          "searches": searches})
             if last_failure is None:
                 evidence["remaining_samples"] = self._local_transit_remaining
+                self._diagnostic_event({"event": "LOCAL_TRANSIT_FINISHED", "stage": "transit",
+                    "success": True, "seed": seed, "remaining_samples": self._local_transit_remaining})
                 return [*prefix, *path[1:]], None, evidence
             if index == self.budget.local_transit_outward_attempts or self._local_transit_remaining <= 0:
                 break
@@ -2489,6 +2558,10 @@ class LayoutTrajectoryConnector:
                 break
             prefix.extend(step[1:])
         evidence["remaining_samples"] = self._local_transit_remaining
+        self._diagnostic_event({"event": "LOCAL_TRANSIT_FINISHED", "stage": "transit",
+            "success": False, "failure": last_failure, "seed": seed,
+            "configured_sample_budget": self.budget.local_transit_cartesian_sample_budget,
+            "remaining_samples": self._local_transit_remaining})
         return [], last_failure, evidence
 
     def _next_contact_cost(self, start, placed, obstacles, sweep, *, seed):

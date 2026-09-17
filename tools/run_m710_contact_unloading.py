@@ -38,6 +38,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="optional execution policy paired with the motion --config")
     parser.add_argument("--execution-bundle", type=Path, metavar="JSON",
                         help="export a ready motion through scripts/export_isaac_fanuc_replay.py")
+    parser.add_argument("--target-id", help="select one member of the current legal row candidate set")
+    parser.add_argument("--diagnostics", action="store_true", help="save bounded production rejection evidence")
     args = parser.parse_args(argv)
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
@@ -83,18 +85,27 @@ def main(argv: list[str] | None = None) -> int:
         planning_policy = scene.policy
         (output / "actual_scene_snapshot.json").write_text(
             json.dumps(scene.snapshot, indent=2), encoding="utf-8")
+    from unloading_sim.search_diagnostics import SearchDiagnostics
+    from unloading_sim.layout_single_carton import motion_implementation_identity
+    diagnostics = SearchDiagnostics(output / "search_diagnostics.json", identity=dict(
+        implementation=motion_implementation_identity(ROOT), policy=planning_policy.policy_fingerprint,
+        scene=None if scene is None else scene.snapshot["scene_fingerprint"],
+        target_id=args.target_id)) if args.diagnostics else None
     with (output / "planning_progress.jsonl").open("w", encoding="utf-8") as stream:
         def progress(item):
             record = {"elapsed_s": time.monotonic() - start, **dict(item)}
             stream.write(json.dumps(record, default=str) + "\n")
             stream.flush()
+            if diagnostics is not None:
+                diagnostics.event(record)
             summary = {key: record[key] for key in ("elapsed_s", "event", "stage", "success", "iterations", "target", "face", "roll", "pose", "valid_grasps", "trajectory_success") if key in record}
             failure = record.get("failure")
             summary["failure"] = failure.get("reason") if isinstance(failure, dict) else failure
             print(json.dumps(summary), flush=True)
         try:
             result = run_layout_single_carton_audit(
-                planning_policy, progress_callback=progress, motion_input=scene, row_state=row_state)
+                planning_policy, progress_callback=progress, motion_input=scene, row_state=row_state,
+                diagnostics=diagnostics, target_id=args.target_id)
         except BaseException as exc:
             progress({"event": "CANCELLED" if isinstance(exc, KeyboardInterrupt) else "ERROR",
                       "reason": str(exc), "exception_type": type(exc).__name__,
@@ -102,6 +113,9 @@ def main(argv: list[str] | None = None) -> int:
                       "best_complete_result": None, "resume_supported": False,
                       "progress_evidence": "planning_progress.jsonl"})
             raise
+        finally:
+            if diagnostics is not None:
+                diagnostics.flush()
     serialize_started = time.monotonic()
     write_layout_single_carton_audit(result, output / "motion.json")
     delivery = {"simulation_profile": profile_evidence(planning_policy.data), "planning_seconds": result["planning_performance"]["planning_total_wall_seconds"],

@@ -52,7 +52,10 @@ class RRTConnectPlanner:
         max_iterations: int = 4000,
         goal_bias: float = 0.12,
         rng: np.random.Generator | None = None,
+        diagnostic_context: bool = False,
     ) -> None:
+        self.diagnostic_context = diagnostic_context
+        self.sample_context = None
         self.lower = np.asarray(lower_limits, dtype=float)
         self.upper = np.asarray(upper_limits, dtype=float)
         self.is_state_valid = is_state_valid
@@ -99,6 +102,8 @@ class RRTConnectPlanner:
                 return False
             q = a + (i / n) * delta
             self._edge_state_samples += 1
+            if self.diagnostic_context:
+                self.sample_context = dict(start_q_rad=a.tolist(), end_q_rad=b.tolist(), fraction=i/n)
             if not self._state_valid(q):
                 return False
         return True

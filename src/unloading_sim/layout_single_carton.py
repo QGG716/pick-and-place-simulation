@@ -73,6 +73,7 @@ EXECUTION_GATE_REASON = "EXECUTION_COLLISION_GEOMETRY_NOT_QUALIFIED"
 PATH_BACKEND_UNAVAILABLE_REASON = "EXECUTION_PATH_BACKEND_UNAVAILABLE"
 TOOL_FRAME_SCHEMA = "m710id70_planner_tool_frames_v1"
 MOTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/search_diagnostics.py",
     "src/unloading_sim/wrist_transfer.py",
     "src/unloading_sim/history_candidates.py",
     "src/unloading_sim/history_adaptation.py",
@@ -483,6 +484,7 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
         'fine_place_samples_per_axis',
         'grasp_poses_per_task',
         'history',
+        'local_transit_cartesian_sample_budget',
         'local_transit_outward_attempts',
         'local_transit_outward_step_m',
         'maximum_drop_m',
@@ -505,6 +507,8 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
     from .history_candidates import history_policy
     history_policy(strategy.get("history"))
     profile_evidence(data)
+    _integer(strategy.get("local_transit_cartesian_sample_budget", 240),
+             "search_strategy.local_transit_cartesian_sample_budget", minimum=0)
     if strategy.get("grasp_poses_per_task", 48) is not None:
         _integer(strategy.get("grasp_poses_per_task", 48),
                  "search_strategy.grasp_poses_per_task", minimum=0)
@@ -1346,6 +1350,9 @@ def _build_automatic_trajectory_connector(
             local_transit_outward_attempts=int(strategy.get(
                 "local_transit_outward_attempts", 3
             )),
+            local_transit_cartesian_sample_budget=int(strategy.get(
+                "local_transit_cartesian_sample_budget", 240
+            )),
         ),
         collision_policy=policy.layout_validation.data.get("collision_policy"),
         surface_directions_world=strategy.get("surface_directions_world", {}),
@@ -1474,6 +1481,8 @@ def run_layout_single_carton_audit(
     progress_callback: Callable[[Mapping[str, Any]], None] | None = None,
     motion_input: FrozenLayoutMotionInput | None = None,
     row_state: RowUnloadingState | None = None,
+    diagnostics=None,
+    target_id: str | None = None,
 ) -> dict[str, Any]:
     """Search the initial top layer and expose one replay-ready full segment.
 
@@ -1516,6 +1525,8 @@ def run_layout_single_carton_audit(
         scene_context={"q_rad": policy.layout_validation.initial_q.tolist(),
                        "receiver_occupancy": [box.name for box in scene.occupied]})
     scene = replace(scene, removable_cartons=tuple(item.name for item in row_selection.candidates))
+    if target_id is not None and target_id not in scene.removable_cartons:
+        raise ValueError(f"target is not a legal current row candidate: {target_id}")
     execution = audit_execution_collision_geometry(scene, root)
     lightweight_robot = policy.layout_validation.layout.robot()
     if trajectory_connector is None and execution["qualified"]:
@@ -1549,6 +1560,7 @@ def run_layout_single_carton_audit(
     if trajectory_connector is not None:
         trajectory_connector.start_planning_request(planning_request_started)
         trajectory_connector.progress_callback = progress_callback
+        trajectory_connector.diagnostics = diagnostics
         strategy = policy.data.get("search_strategy", {})
         trajectory_connector.placement_policy = PlacementPolicy(
             maximum_candidates=int(strategy.get("placement_candidates", 12)),
@@ -1645,7 +1657,7 @@ def run_layout_single_carton_audit(
         trajectory_pose_attempts = 0
         task_search_termination: str | None = None
         faces = _exposed_faces(scene, target_name)
-        if selected_trajectory_segment is not None:
+        if selected_trajectory_segment is not None or (target_id is not None and target_name != target_id):
             tasks.append(
                 {
                     "task_id": target_name,
@@ -1656,7 +1668,8 @@ def run_layout_single_carton_audit(
                     "face_summary": {},
                     "strict_grasp_candidate_count": 0,
                     "complete_trajectory": False,
-                    "failure_reason": "NOT_SEARCHED_AFTER_FIRST_COMPLETE_TRAJECTORY",
+                    "failure_reason": ("NOT_SELECTED_EXPLICIT_TARGET" if target_id is not None and target_name != target_id
+                                       else "NOT_SEARCHED_AFTER_FIRST_COMPLETE_TRAJECTORY"),
                 }
             )
             continue
@@ -1699,6 +1712,8 @@ def run_layout_single_carton_audit(
                 schedule_record["candidate_wall_budget_s"] = None
             slice_seconds = schedule_record["candidate_wall_budget_s"]
             attempt_started = perf_counter()
+            if diagnostics is not None:
+                diagnostics.bind_candidate(schedule_record, target=target_name, face=face, roll=roll)
             if progress_callback is not None:
                 progress_callback({"event": "CONTACT_CANDIDATE_STARTED", "stage": "grasp_ik",
                     "target": target_name, "scheduler": dict(schedule_record)})
@@ -1711,6 +1726,9 @@ def run_layout_single_carton_audit(
                 policy.tool_frames.flange_from_physical_contact,
             )
             rng_seed = schedule_record["ik_seed"]
+            if trajectory_connector is not None:
+                trajectory_connector.diagnostic_ik_seed = int(rng_seed)
+                trajectory_connector.diagnostic_cartesian_sample = None
             progressive_outcomes = []
             endpoint_checks = Counter()
             def exact_contact_failure(q):
