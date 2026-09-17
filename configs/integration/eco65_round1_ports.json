@@ -1,0 +1,70 @@
+[
+  {
+    "source_sha": "f7668c37019c31b85cc848243231f7c99a6d171d",
+    "source_path": "packages/unloading_contracts/src/unloading_contracts/models.py",
+    "destination": "src/unloading_sim/eco65/observation_contracts.py",
+    "definitions": [
+      "EvidenceKind",
+      "Pose3D",
+      "_canonical",
+      "_finite_tuple",
+      "canonical_fingerprint"
+    ],
+    "source_sha256": "09eb2cfb787ee06d391679c802e4df55f07bfadb8f282c39c7da04c2dcf7a0b4"
+  },
+  {
+    "source_sha": "f7f7e0934ad425ab62cd2df8201812df1ba8e505",
+    "source_path": "src/unloading_sim/online_planning.py",
+    "destination": "src/unloading_sim/eco65/planning_contracts.py",
+    "definitions": [
+      "ArtifactKind",
+      "BackendCapabilities",
+      "BackendHealth",
+      "BackendIdentity",
+      "BackendProvenance",
+      "BoundaryMode",
+      "FailureDetails",
+      "FailureScope",
+      "MotionBoundaryState",
+      "OperationalOutcome",
+      "OutcomeCategory",
+      "PlanArtifactKind",
+      "PlanEnvelope",
+      "PlanStatus",
+      "PlanValidationResult",
+      "PlanValidator",
+      "PlannerBackend",
+      "PlanningCandidate",
+      "PlanningPath",
+      "PlanningRequest",
+      "PlanningResult",
+      "PlanningWorldSnapshot",
+      "ReplanReason",
+      "RobotStateRevision",
+      "SceneRevision",
+      "ValidationStatus",
+      "_canonical",
+      "_freeze",
+      "scene_fingerprint"
+    ],
+    "source_sha256": "0616a5e7af3655d5dcb85c6a8db16262e328e860cb8fbd01929627069029ca68"
+  },
+  {
+    "source_sha": "f7f7e0934ad425ab62cd2df8201812df1ba8e505",
+    "source_path": "src/unloading_sim/online_execution.py",
+    "destination": "src/unloading_sim/eco65/execution_contracts.py",
+    "definitions": [
+      "ExecutionBackend",
+      "ExecutionBackendCapabilities",
+      "ExecutionBackendHealth",
+      "ExecutionBackendIdentity",
+      "ExecutionBackendState",
+      "ExecutionCommandResult",
+      "ExecutionCommandStatus",
+      "ExecutionFeedback",
+      "ExecutionFeedbackStatus",
+      "_freeze_metadata"
+    ],
+    "source_sha256": "1012bd9265821c02697aac61baa24bb0ae3ac5b00963b0724e03c9cd0e05578a"
+  }
+]

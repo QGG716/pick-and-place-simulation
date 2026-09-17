@@ -34,3 +34,7 @@ tmp/
 !/assets/robots/realman_eco65/official/README.md
 .firecrawl/
 .tmp-eco65-*.log
+
+# Private round-1 derived geometry and generated configuration
+/assets/tools/desktop_suction/derived/
+/configs/local/eco65_desktop/

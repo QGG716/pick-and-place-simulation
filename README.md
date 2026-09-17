@@ -1,14 +1,12 @@
-# ECO65-B 桌面样机：BOOTSTRAP 准备阶段
+# ECO65-B 桌面样机：第一轮正式适配
 
-当前分支 `feat/v0.6-eco65-desktop` 仅准备本地源码、CPU 环境和官方资料。
-feasibility 主基线已检出；perception/online 已获取并锁定，三来源功能尚未集成。
-用户已确认实机是 ECO65-B，控制器代际待确认。ECO65 模型、吸具、规划和仿真尚未适配或验证。
-下文 FANUC 结果仅为历史证据。
+当前分支 `feat/v0.6-eco65-desktop` 已接入官方 ECO65-B、用户真实 STEP 的 12 个吸附组件和单箱桌面场景。沿用固定 feasibility 主干，最小移植 perception/online 契约；硬件执行永久禁用。
 
-详情和资料缺项见 [准备报告](docs/eco65_desktop_bootstrap.md)。
-真实 STEP 唯一投放位置：`assets/tools/desktop_suction/cad/raw/`，保留原文件名。
-[投放说明](assets/tools/desktop_suction/README.md)。准备后停止，等待用户下一条明确继续指令。
-文件到达不会触发自动处理。
+当前结果和实际回放见 [第一轮报告](docs/eco65_desktop_round1.md)。这是本地几何适配；假设转接架、自由状态 TCP 与有限质量假设均有标注，Isaac 动力学另记 `NOT_EVALUATED`。
+
+入口：`tools/run_eco65_desktop.py`；可选依赖：`requirements/eco65-cad.txt`、`requirements/eco65-desktop.txt`。原 STEP、派生网格、详细配置、图片及视频全部保存在 Git 忽略的本地目录。
+
+[准备轮历史](docs/eco65_desktop_bootstrap.md) · [吸具资产说明](assets/tools/desktop_suction/README.md)。下文 FANUC 结果仅为历史证据。
 
 ---
 
