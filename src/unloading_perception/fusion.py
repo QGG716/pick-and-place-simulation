@@ -54,7 +54,8 @@ class FusionResult:
 def _points(face_set: ObservedFaceSet) -> np.ndarray:
     if not face_set.faces:
         return np.empty((0, 3), dtype=float)
-    return np.vstack([np.asarray(face.corners_3d_m, dtype=float) for face in face_set.faces])
+    # Fix floating-point reduction order without changing association geometry.
+    return np.asarray(sorted(point for face in face_set.faces for point in face.corners_3d_m), dtype=float)
 
 
 def _face_distance(first: ObservedFace, second: ObservedFace) -> tuple[float, float, float]:
@@ -70,8 +71,8 @@ def _face_distance(first: ObservedFace, second: ObservedFace) -> tuple[float, fl
     return normal_alignment, plane_distance, corner_distance
 
 
-def _overlap(first: ObservedFace, second: ObservedFace) -> float:
-    """Convex intersection / smaller patch area, in their common plane."""
+def _intersection(first: ObservedFace, second: ObservedFace) -> tuple[float, tuple]:
+    """Intersection ratio and polygon projected onto the first measured plane."""
     p=np.asarray(first.corners_3d_m); q=np.asarray(second.corners_3d_m)
     u=p[1]-p[0]; u/=np.linalg.norm(u)
     v=np.cross(first.plane_normal,u)
@@ -92,7 +93,14 @@ def _overlap(first: ObservedFace, second: ObservedFace) -> float:
             ds,de=side(s),side(e)
             if (ds>=0)!=(de>=0): poly.append(s+(e-s)*ds/(ds-de))
             if de>=0: poly.append(e)
-    return abs(signed(poly))/max(1e-12,min(abs(signed(a)),abs(signed(b))))
+    ratio = abs(signed(poly))/max(1e-12,min(abs(signed(a)),abs(signed(b))))
+    polygon = tuple(tuple(float(x) for x in p[0] + point[0]*u + point[1]*v) for point in poly)
+    return ratio, polygon
+
+
+def _overlap(first: ObservedFace, second: ObservedFace) -> float:
+    """Convex intersection / smaller patch area, in their common plane."""
+    return _intersection(first, second)[0]
 
 
 def _association_score(first: ObservedFaceSet, second: ObservedFaceSet) -> tuple[float, dict]:
@@ -122,26 +130,65 @@ def _association_score(first: ObservedFaceSet, second: ObservedFaceSet) -> tuple
     return score, diagnostics
 
 
+def _reduce_faces(face_sets: Sequence[ObservedFaceSet], tolerance_m: float) -> tuple[tuple[ObservedFace, ...], dict]:
+    """Reduce only an associated group; conflicts always compare raw observations.
+
+    Highest support wins, then lexicographic acquisition/source identity. A
+    removed member never acts as a bridge in a non-transitive duplicate chain.
+    """
+    records = sorted([
+        ((item.module_id, item.capture_id, item.source_instance_id, face.face_id), face)
+        for item in face_sets for face in item.faces
+    ], key=lambda record: record[0])
+    keys = [key for key, _ in records]
+    if len(set(keys)) != len(keys):
+        raise ValueError("DUPLICATE_FACE_SOURCE_IDENTITY")
+
+    def source(key):
+        return dict(zip(("module_id", "capture_id", "source_instance_id", "face_id"), key))
+
+    duplicates = set()
+    conflicts = []
+    for i, (left_key, left) in enumerate(records):
+        for right_key, right in records[i + 1:]:
+            alignment, plane_distance, corner_distance = _face_distance(left, right)
+            if alignment < .94 or plane_distance > .06:
+                continue
+            overlap, polygon = _intersection(left, right)
+            if corner_distance <= tolerance_m and plane_distance <= .01 and overlap > 0.:
+                duplicates.add((left_key, right_key))
+            elif overlap >= .20 and plane_distance > .01:
+                conflicts.append({
+                    "first": source(left_key), "second": source(right_key),
+                    "reason": "OVERLAPPING_PLANE_POSITION_CONFLICT",
+                    "normal_alignment": alignment, "plane_distance_m": plane_distance,
+                    "corner_distance_m": corner_distance,
+                    "intersection_over_smaller_patch": overlap,
+                    "overlap_polygon_on_first_plane_m": polygon,
+                })
+
+    retained = []
+    members = []
+    for key, face in sorted(records, key=lambda record: (-record[1].point_support_count, record[0])):
+        # Check every surviving representative, never the first unrelated plane.
+        matches = [rep_key for rep_key, _ in retained
+                   if tuple(sorted((key, rep_key))) in duplicates]
+        if matches:
+            members.append({"member": source(key), "representative": source(matches[0])})
+        else:
+            retained.append((key, face))
+    retained.sort(key=lambda record: record[0])
+    members.sort(key=lambda item: tuple(item["member"].values()))
+    return tuple(face for _, face in retained), {
+        "input_face_count": len(records), "representative_count": len(retained),
+        "representatives": [source(key) for key, _ in retained],
+        "duplicate_members": members, "conflicts": conflicts,
+    }
+
+
 def _merge_faces(face_sets: Sequence[ObservedFaceSet], tolerance_m: float) -> tuple[tuple[ObservedFace, ...], bool]:
-    fused: list[ObservedFace] = []
-    conflict = False
-    for face_set in face_sets:
-        for face in face_set.faces:
-            duplicate = False
-            for retained in fused:
-                alignment, plane_distance, corner_distance = _face_distance(face, retained)
-                if alignment >= 0.94 and plane_distance <= 0.06:
-                    if corner_distance <= tolerance_m and plane_distance <= .01:
-                        duplicate = True
-                        # Keep the higher-support actual observation; never average.
-                        if face.point_support_count > retained.point_support_count:
-                            fused[fused.index(retained)] = face
-                    elif _overlap(face, retained) >= .20 and plane_distance > .01:
-                        conflict = True
-                    break
-            if not duplicate:
-                fused.append(face)
-    return tuple(fused), conflict
+    faces, diagnostics = _reduce_faces(face_sets, tolerance_m)
+    return faces, bool(diagnostics["conflicts"])
 
 
 def fuse_module_face_batches(
@@ -201,14 +248,15 @@ def fuse_module_face_batches(
     coverage = "COMPLETE_MODULE_SET" if received == expected else "DEGRADED_MISSING_MODULE"
     objects = []
     for index, group in enumerate(groups):
-        faces, conflict = _merge_faces(group, duplicate_face_tolerance_m)
+        faces, reduction = _reduce_faces(group, duplicate_face_tolerance_m)
+        conflict = bool(reduction["conflicts"])
         contributors = tuple(sorted(item.module_id for item in group))
         members = tuple(sorted((item.module_id, item.source_instance_id) for item in group))
         objects.append(FusedObservedObject(
             "fusion-" + hashlib.sha256(json.dumps([(v.module_id,v.capture_id,v.source_instance_id) for v in group]).encode()).hexdigest()[:20], members, faces, contributors,
             "CONFLICT_RETAINED_NO_AVERAGE" if conflict else "AMBIGUOUS_RETAINED" if len(group)==1 and candidates[values.index(group[0])] else "ASSOCIATED_BY_WORLD_FACE_GEOMETRY" if len(group)>1 else "UNASSOCIATED_RETAINED",
             coverage,
-            {"oracle_identity_used": False, "association_records": [
+            {"oracle_identity_used": False, "face_reduction": reduction, "association_records": [
                 item for item in association_diagnostics if all(member in item["members"] for member in members)
             ]},
         ))
