@@ -1,0 +1,21 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_original_near_occluder_then_far_background_is_not_physical ________
+
+    def test_original_near_occluder_then_far_background_is_not_physical():
+        polygon = np.array([[20., 20.], [60., 20.], [60., 60.], [20., 60.]])
+        K = np.array([[100., 0, 39.5], [0, 120., 39.5], [0, 0, 1.]])
+        depth = np.full((80, 80), 3.)
+        depth[18, :] = 1.5  # top edge: 2 px occluder; 4/6 px background
+        edge = _boundary_kinds(polygon, np.array([0., 0., 1.]), -2., depth, K)[0]
+>       assert edge['kind'] == 'UNCLASSIFIED_BOUNDARY', edge
+E       AssertionError: {'kind': 'PHYSICAL_EDGE_SUPPORTED', 'support_fraction': 1.0}
+E       assert 'PHYSICAL_EDGE_SUPPORTED' == 'UNCLASSIFIED_BOUNDARY'
+E
+E         - UNCLASSIFIED_BOUNDARY
+E         + PHYSICAL_EDGE_SUPPORTED
+
+tests_metric/test_boundary_evidence.py:13: AssertionError
+=========================== short test summary info ============================
+FAILED tests_metric/test_boundary_evidence.py::test_original_near_occluder_then_far_background_is_not_physical
+1 failed in 0.10s

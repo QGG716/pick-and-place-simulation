@@ -1,0 +1,13 @@
+{
+  "baseline": "f7668c37019c31b85cc848243231f7c99a6d171d",
+  "environment": {
+    "os": "Ubuntu 22.04.5",
+    "compute": "server CPU only",
+    "metric_python": "/root/autodl-tmp/v05-acceptance/boundary-evidence-20260917/venv/bin/python"
+  },
+  "sha256_lf": {
+    "src/unloading_perception/metric_faces.py": "36064547bdc0e6671d5983bfa26bccf91df6a46e53140b0019deb3ea29e06c67",
+    "tests_metric/test_depth_solver.py": "3ccbda1cba28f70010810a0eb7cbd3e13aa050c0c4ce19d33e4b5806b4d28a47",
+    "tests_metric/test_boundary_evidence.py": "2b857bb0919d5bd1a215f59f36ee02ed6bed87551a725ca13c21ac1753f1052d"
+  }
+}

@@ -8,7 +8,7 @@ from unloading_perception.final_geometry import validate_final_record
 from tools.validate_metric_analytic import render
 
 
-def test_analytic_three_faces_joint_so3_and_independent_rejection():
+def analytic_box_fixture():
     K=np.array([[700.,0,249.5],[0,800.,249.5],[0,0,1.]])
     T=np.eye(4); T[:3,:3]=Rotation.from_euler('xyz',[15,25,10],degrees=True).as_matrix(); T[:3,3]=[.1,.1,2.5]
     dims=np.array([.6,.4,.3]); box={'T_W_object':T.tolist(),'full_dimensions_m':dims.tolist()}
@@ -21,6 +21,11 @@ def test_analytic_three_faces_joint_so3_and_independent_rejection():
     axis=np.argmin(np.abs(np.abs(local)-dims/2),axis=1)
     labels=np.full(mask.shape,-1,np.int16); labels[y,x]=axis
     seeds=[{'normal':T[:3,i].tolist(),'offset_m':0.,'initial_plane_index':i} for i in range(3)]
+    return depth, mask, K, labels, seeds, T
+
+
+def test_analytic_three_faces_joint_so3_and_independent_rejection():
+    depth, mask, K, labels, seeds, T = analytic_box_fixture()
     result=fit_metric_faces(depth,mask,K,labels,seeds,mask_id=1,config=MetricFitConfig(positive_infinity_is_no_hit=True))
     assert len(result['camera_facing_faces'])==3
     assert result['accepted']

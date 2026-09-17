@@ -1,0 +1,15 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__ test_conflicting_external_depth_rejects_complete_cuboid_not_measured_faces __
+
+    def test_conflicting_external_depth_rejects_complete_cuboid_not_measured_faces():
+        good, bad, depth, mask, K, label, edge_index = analytic_conflict_pair()
+        edge = next(f for f in bad['completion_diagnostics']['candidate_faces'] if f['support_label'] == label)['boundary_evidence'][edge_index]
+>       assert not bad['accepted'], {'accepted': bad['accepted'], 'target_edge': edge}
+E       AssertionError: {'accepted': True, 'target_edge': {'kind': 'PHYSICAL_EDGE_SUPPORTED', 'support_fraction': 1.0}}
+E       assert not True
+
+tests_metric/test_boundary_evidence.py:60: AssertionError
+=========================== short test summary info ============================
+FAILED tests_metric/test_boundary_evidence.py::test_conflicting_external_depth_rejects_complete_cuboid_not_measured_faces
+1 failed, 1 deselected in 0.69s

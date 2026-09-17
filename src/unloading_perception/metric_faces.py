@@ -218,11 +218,28 @@ def _orthogonal_fit(groups, config):
                   'calibration_optimised': False, 'scale_optimised': False}
 
 
-def _boundary_kinds(polygon, normal, offset, depth, K, *, search_px=6, positive_infinity_is_no_hit=False):
-    """Classify by outside depth: nearer occluder, farther silhouette or crop.
+def _reduce_boundary_probe_evidence(classifications, *, candidate_cropped=False):
+    """One along-edge point: reconcile distances before any along-edge vote.
 
-    A mask/proposal edge alone is insufficient physical-edge evidence. Sampling
-    excludes edge endpoints and preserves unknown when observations disagree.
+    Unknown/continuous depth and out-of-image probes supply no decisive depth
+    evidence. Opposite decisive observations remain a conflict, irrespective
+    of order or multiplicity. A cropped candidate itself is not a silhouette.
+    """
+    decisive = set(classifications) & {'OCCLUSION_BOUNDARY', 'PHYSICAL_EDGE_SUPPORTED'}
+    if len(decisive) > 1:
+        return 'UNCLASSIFIED_BOUNDARY', 'DEPTH_EVIDENCE_CONFLICT'
+    if candidate_cropped:
+        return 'IMAGE_CROP_BOUNDARY', 'CANDIDATE_EDGE_AT_IMAGE_CROP'
+    if decisive:
+        return next(iter(decisive)), 'CONSISTENT_DECISIVE_DEPTH_EVIDENCE'
+    return 'UNCLASSIFIED_BOUNDARY', 'NO_DECISIVE_DEPTH_EVIDENCE'
+
+
+def _boundary_kinds(polygon, normal, offset, depth, K, *, search_px=6, positive_infinity_is_no_hit=False):
+    """Two-level depth evidence; support_fraction is physical votes / all 15.
+
+    Keep the original 2/4/search pixel probes, 10 mm comparison and 10-of-15
+    along-edge rule. A local conflict abstains; it does not veto the whole edge.
     """
     h, w = depth.shape
     center = np.mean(polygon, axis=0)
@@ -235,33 +252,53 @@ def _boundary_kinds(polygon, normal, offset, depth, K, *, search_px=6, positive_
             outward *= -1
         outward /= max(np.linalg.norm(outward), 1e-9)
         evidence = []
-        for p in samples:
-            classifications = []
+        counts = dict(physical_support=0, occlusion=0, crop=0, unknown=0, conflict=0)
+        categories = {'PHYSICAL_EDGE_SUPPORTED': 'physical_support', 'OCCLUSION_BOUNDARY': 'occlusion',
+                      'IMAGE_CROP_BOUNDARY': 'crop', 'UNCLASSIFIED_BOUNDARY': 'unknown'}
+        for sample_index, p in enumerate(samples):
+            # Pixel-centre footprint of the candidate, not of a distant probe.
+            px, py = np.rint(p).astype(int)
+            cropped = px <= 0 or px >= w-1 or py <= 0 or py >= h-1
+            probes = []
             for distance in (2, 4, search_px):
-                xy = p + outward*distance
-                x, y = np.rint(xy).astype(int)
+                x, y = np.rint(p + outward*distance).astype(int)
+                kind, reason = 'UNCLASSIFIED_BOUNDARY', 'INVALID_DEPTH'
                 if x < 0 or x >= w or y < 0 or y >= h:
-                    classifications.append('IMAGE_CROP_BOUNDARY'); continue
-                z = depth[y, x]
-                ray = backproject_pixels(np.array([[x, y]]), [1.], K)[0]
-                denominator = normal @ ray
-                predicted = -offset/denominator if abs(denominator) > 1e-9 else np.nan
-                if positive_infinity_is_no_hit and np.isposinf(z) and np.isfinite(predicted):
-                    classifications.append('PHYSICAL_EDGE_SUPPORTED')
-                elif not np.isfinite(z) or z <= 0 or not np.isfinite(predicted):
-                    classifications.append('UNCLASSIFIED_BOUNDARY')
-                elif z < predicted-.01:
-                    classifications.append('OCCLUSION_BOUNDARY')
-                elif z > predicted+.01:
-                    classifications.append('PHYSICAL_EDGE_SUPPORTED')
+                    kind, reason = 'IMAGE_CROP_BOUNDARY', 'OUTER_PROBE_OUTSIDE_IMAGE'
                 else:
-                    classifications.append('UNCLASSIFIED_BOUNDARY')
-            known = [c for c in classifications if c != 'UNCLASSIFIED_BOUNDARY']
-            evidence.append(known[-1] if known else 'UNCLASSIFIED_BOUNDARY')
-        kind = max(sorted(set(evidence)), key=evidence.count)
-        if evidence.count(kind) < 10:
-            kind = 'UNCLASSIFIED_BOUNDARY'
-        result.append({'kind': kind, 'support_fraction': evidence.count(kind)/len(evidence)})
+                    z = depth[y, x]
+                    ray = backproject_pixels(np.array([[x, y]]), [1.], K)[0]
+                    denominator = normal @ ray
+                    predicted = -offset/denominator if abs(denominator) > 1e-9 else np.nan
+                    if not np.isfinite(predicted) or predicted <= 0:
+                        reason = 'INVALID_PREDICTED_OPTICAL_Z'
+                    elif positive_infinity_is_no_hit and np.isposinf(z):
+                        kind, reason = 'PHYSICAL_EDGE_SUPPORTED', 'EXPLICIT_POSITIVE_INFINITY_NO_HIT'
+                    elif not np.isfinite(z) or z <= 0:
+                        pass
+                    elif z < predicted-.01:
+                        kind, reason = 'OCCLUSION_BOUNDARY', 'NEARER_THAN_CANDIDATE'
+                    elif z > predicted+.01:
+                        kind, reason = 'PHYSICAL_EDGE_SUPPORTED', 'FARTHER_THAN_CANDIDATE'
+                    else:
+                        reason = 'CONTINUOUS_WITH_CANDIDATE'
+                probes.append({'distance_px': float(distance), 'pixel': [int(x), int(y)],
+                               'kind': kind, 'reason': reason})
+            kind, reason = _reduce_boundary_probe_evidence([v['kind'] for v in probes], candidate_cropped=bool(cropped))
+            category = 'conflict' if reason == 'DEPTH_EVIDENCE_CONFLICT' else categories[kind]
+            counts[category] += 1
+            evidence.append({'sample_index': sample_index, 'pixel': p.tolist(), 'candidate_at_image_crop': bool(cropped),
+                             'kind': kind, 'reason': reason, 'probes': probes})
+        # With 15 total samples, at most one decisive kind can reach 10 votes.
+        kind = next((k for k in ('PHYSICAL_EDGE_SUPPORTED', 'OCCLUSION_BOUNDARY', 'IMAGE_CROP_BOUNDARY')
+                     if counts[categories[k]] >= 10), 'UNCLASSIFIED_BOUNDARY')
+        conflicts = [v['sample_index'] for v in evidence if v['reason'] == 'DEPTH_EVIDENCE_CONFLICT']
+        result.append({'kind': kind, 'sample_count': len(samples), 'sample_counts': counts,
+                       'support_fraction': counts['physical_support']/len(samples),
+                       'support_fraction_numerator': counts['physical_support'], 'support_fraction_denominator': len(samples),
+                       'reason': ('DEPTH_EVIDENCE_CONFLICT' if conflicts else 'INSUFFICIENT_ALONG_EDGE_SUPPORT')
+                                 if kind == 'UNCLASSIFIED_BOUNDARY' else 'SUFFICIENT_ALONG_EDGE_SUPPORT',
+                       'conflict_sample_indices': conflicts, 'samples': evidence})
     return result
 
 
@@ -514,6 +551,12 @@ def _complete(output, groups, axes, all_points, depth, K, config, mask):
                                          'silhouette_bound_parameters':free,
                                          'observed_plane_bounds':len(observed),'hidden_bound_constraints':'OBSERVED_SILHOUETTE_ENDPOINTS'}
     if not physical:
+        output['completion_diagnostics'].update(
+            rejection='UNSUPPORTED_PHYSICAL_BOUNDARY',
+            rejected_boundaries=[{'support_label': f['support_label'], 'axis': f['axis'], 'side': f['side'],
+                                 'edge_index': i, 'kind': b['kind'], 'reason': b['reason']}
+                                for f in candidate_faces for i, b in enumerate(f['boundary_evidence'])
+                                if b['kind'] != 'PHYSICAL_EDGE_SUPPORTED'])
         return
     output.update(accepted=True, corners_3d=corners.tolist(), corners_2d=project(corners,K).tolist(),
                   orthogonal_axes_3d=axes.tolist(), shape_dimensions=(high-low).tolist(),
