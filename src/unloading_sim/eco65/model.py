@@ -82,6 +82,7 @@ class World:
         import mujoco
         self.mj=mujoco;require_simulation(scene)
         self.tool,self.scene=tool,scene;self.robot=robot_for(tool,scene)
+        self.boxes={b["id"]:b for b in (scene.get("boxes") or [scene["box"]])}
         self.flange_cad=check_transform(tool["T_flange_tool_cad"])
         assert np.allclose(self.flange_cad@check_transform(tool["T_tool_cad_tcp"]),self.robot.tip_from_tcp)
         self.entries=[];self.body_names=[];self.adjacent=set()
@@ -121,9 +122,9 @@ class World:
             b=body(a["id"]);attrs=dict(name=a["id"],type=a["kind"],pos=" ".join(map(str,a["position"])),rgba=".85 .57 .15 1",contype="0",conaffinity="0")
             attrs["size"]=" ".join(map(str,np.array(a["size"])/2)) if a["kind"]=="box" else f'{a["radius"]} {a["half_length"]}'
             ET.SubElement(b,"geom",**attrs);self.entries.append(dict(name=a["id"],kind="adapter",owner=a["id"]))
-        for obj in scene["obstacles"]+[dict(id=scene["box"]["id"],size_m=scene["box"]["size_m"],position_m=scene["box"]["pose"],rgba=[.65,.43,.22,1])]:
+        for obj in scene["obstacles"]+[dict(id=b["id"],size_m=b["size_m"],position_m=b["pose"],rgba=b.get("rgba",[.65,.43,.22,1])) for b in self.boxes.values()]:
             b=body(obj["id"]);ET.SubElement(b,"geom",name=obj["id"],type="box",size=" ".join(map(str,np.array(obj["size_m"])/2)),rgba=" ".join(map(str,obj["rgba"])),contype="0",conaffinity="0")
-            self.entries.append(dict(name=obj["id"],kind="payload" if obj["id"]==scene["box"]["id"] else "environment",owner=obj["id"]))
+            self.entries.append(dict(name=obj["id"],kind="payload" if obj["id"] in self.boxes else "environment",owner=obj["id"]))
         self.xml=ET.tostring(xml,encoding="unicode")
         self.model=mujoco.MjModel.from_xml_string(self.xml);self.data=mujoco.MjData(self.model)
         for e in self.entries:e["gid"]=mujoco.mj_name2id(self.model,mujoco.mjtObj.mjOBJ_GEOM,e["name"])
@@ -158,7 +159,8 @@ class World:
         for p in self.tool["visual_parts"]:self.pose_body("tool_"+p["id"],cad)
         for a in self.tool["adapter"]:self.pose_body(a["id"],flange)
         for o in self.scene["obstacles"]:self.pose_body(o["id"],transform(o["position_m"]))
-        box=self.box_pose(q,phase);self.pose_body(self.box_id,box)
+        box=self.box_pose(q,phase)
+        for name,carton in self.boxes.items():self.pose_body(name,box if name==self.box_id else transform(carton["pose"]))
         self.mj.mj_forward(self.model,self.data);return cad,box
     def seal_fit(self,q,box):
         T=self.robot.named_link_frames(q)["link_6"]@self.flange_cad

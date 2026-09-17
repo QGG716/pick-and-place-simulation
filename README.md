@@ -1,12 +1,12 @@
-# ECO65-B 桌面样机：第一轮正式适配
+# ECO65-B 桌面卸货系统：布局候选
 
-当前分支 `feat/v0.6-eco65-desktop` 已接入官方 ECO65-B、用户真实 STEP 的 12 个吸附组件和单箱桌面场景。沿用固定 feasibility 主干，最小移植 perception/online 契约；硬件执行永久禁用。
+正式目标为固定 ECO65-B、真实吸具、完整厢体、3×3 箱堆与 L 形横/纵输送线。机器人和吸具保持 1:1，无底盘；当前方案标为 `DESIGN_CANDIDATE`，待用户确认排布及办公桌尺寸。
 
-当前结果和实际回放见 [第一轮报告](docs/eco65_desktop_round1.md)。这是本地几何适配；假设转接架、自由状态 TCP 与有限质量假设均有标注，Isaac 动力学另记 `NOT_EVALUATED`。
+[布局报告与本地图纸](docs/eco65_desktop_unloading_layout_v1.md) · [公开布局配置](configs/workcells/eco65_desktop_unloading_layout_v1.yaml) · [固定来源尺寸映射](configs/integration/eco65_desktop_layout_sources.json)。入口为 `tools/run_eco65_unloading_layout.py`，本轮只完成结构、支撑与代表性姿态检查，没有整堆、完整路径或动力学结果。
 
-入口：`tools/run_eco65_desktop.py`；可选依赖：`requirements/eco65-cad.txt`、`requirements/eco65-desktop.txt`。原 STEP、派生网格、详细配置、图片及视频全部保存在 Git 忽略的本地目录。
+原来的单箱静态接收台保留为[基础回归场景](docs/eco65_desktop_round1.md)，不是正式卸货布局。[准备轮资料](docs/eco65_desktop_bootstrap.md)继续保留。
 
-[准备轮历史](docs/eco65_desktop_bootstrap.md) · [吸具资产说明](assets/tools/desktop_suction/README.md)。下文 FANUC 结果仅为历史证据。
+原 STEP、派生网格、详细工具配置、完整场景、图片和视频全部在本地忽略目录；硬件执行始终禁用。下文 FANUC 记录仅为历史参考。
 
 ---
 

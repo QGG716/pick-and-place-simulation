@@ -1,0 +1,80 @@
+schema: eco65_desktop_unloading_layout_v1
+status: DESIGN_CANDIDATE
+units: {length: metre, angle: radian, mass: kilogram}
+reference:
+  sha: 9db77cb8a51e9bf1821c6e84e90a7632fbce6b26
+  layout: configs/workcells/m710id70_unloading_layout_v1.yaml
+  nominal_plan_scale: 0.3333333333333333
+world:
+  origin: stack_front_center_tabletop_projection
+  axes: {x: into_trailer, y: left_when_facing_into_trailer, z: up}
+  tabletop_z_m: 0.0
+  T_world_installation: [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
+robot:
+  variant: ECO65-B
+  geometry_scale: 1.0
+  base_xy_m: [-0.445, 0.145]
+  mounting_plate_size_m: [0.16, 0.16, 0.012]
+  private_tool_config: configs/local/eco65_desktop/tool.json
+  mounting_status: inherited_simulation_adapter_not_measured
+  mobility: fixed
+trailer:
+  opening_x_m: -1.10
+  closed_end_inner_x_m: 0.30
+  inner_width_m: 0.90
+  inner_height_m: 0.80
+  wall_thickness_m: 0.012
+  floor_thickness_m: 0.012
+  panels: {left: true, right: true, rear: true, roof: true}
+carton_stack:
+  carton_size_xyz_m: [0.24, 0.20, 0.16]
+  front_face_x_m: 0.0
+  depth_rows: 1
+  width_columns: 3
+  height_layers: 3
+  column_gap_m: 0.01
+  layer_gap_m: 0.0
+  mass_kg_assumed: 0.3
+conveyors:
+  surface_z_m: 0.13
+  belt_thickness_m: 0.004
+  body_thickness_m: 0.04
+  leg_width_m: 0.018
+  end_dead_zone_m: 0.02
+  transverse:
+    bounds_xy_m: [-0.36, -0.08, -0.125, 0.415]
+    direction: [0, -1, 0]
+    receive_center_xy_m: [-0.22, 0.145]
+    process_owner: transverse
+  longitudinal:
+    bounds_xy_m: [-1.05, -0.08, -0.415, -0.135]
+    direction: [-1, 0, 0]
+    receive_center_xy_m: [-0.52, -0.275]
+    process_owner: longitudinal
+  transfer:
+    bridge_bounds_xy_m: [-0.36, -0.08, -0.135, -0.125]
+    bridge_thickness_m: 0.006
+    process_owner: longitudinal
+    mechanics: coplanar_passive_bridge_assumption_no_90deg_transfer_physics
+  outlet:
+    bridge_bounds_xy_m: [-1.15, -1.05, -0.415, -0.135]
+    catch_bounds_xy_m: [-1.47, -1.15, -0.435, -0.115]
+    final_center_xy_m: [-1.31, -0.275]
+    support: static_catch_table_no_object_disappearance
+installation:
+  desk_fit: PENDING_MEASURED_DESK_DIMENSIONS
+  recommended_edge_reserve_m: 0.10
+  recommended_front_access_m: 0.60
+validation:
+  collision_margin_m: 0.002
+  mesh_error_reserve_m: 0.0002
+  contact_tolerance_m: 0.0004
+  seal_edge_reserve_m: 0.003
+  seed: 6517
+  ik_restarts_per_pose: 16
+  ik_iterations: 220
+  ik_seconds_per_pose: 20
+  execution_mode: simulation
+  enable_hardware: false
+  full_path_search: false
+  dynamics: NOT_EVALUATED
