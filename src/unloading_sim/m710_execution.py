@@ -1277,6 +1277,7 @@ def build_m710_execution_preflight(
         "simulation_profile": motion["simulation_profile"],
         "post_landing_transport": dict(scene.policy.data["search_strategy"].get("post_landing_transport", {"mode": "strict_physics"})),
         "receiver_transport_state": dict(scene.snapshot.get("actual_state_context", {}).get("receiver_transport_state", {})),
+        "initial_actual_state_context": copy.deepcopy(scene.snapshot.get("actual_state_context")),
         "scene_primitives": primitives,
         "layout_fingerprint": scene.snapshot["layout_fingerprint"],
         "scene_fingerprint": scene.snapshot["scene_fingerprint"],

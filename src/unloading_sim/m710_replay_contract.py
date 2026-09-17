@@ -640,7 +640,7 @@ def verify_m710_replay_bundle(
         raise M710ReplayContractError("M-710 bundle is not simulation-execution ready")
     if metadata.get("scene_primitives") != preflight["scene"]["primitives"]:
         raise M710ReplayContractError("bundle scene primitives disagree with preflight")
-    for field in ("simulation_profile", "post_landing_transport", "collision_policy"):
+    for field in ("simulation_profile", "post_landing_transport", "collision_policy", "initial_actual_state_context"):
         if metadata.get(field) != preflight["replay_adapter_inputs"]["plan_common"].get(field):
             raise M710ReplayContractError(f"bundle {field} differs from bound preflight")
     segment = preflight["replay_adapter_inputs"].get("trajectory_segment", {})

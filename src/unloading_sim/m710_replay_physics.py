@@ -14,6 +14,104 @@ from typing import Any, Mapping, Sequence
 import numpy as np
 
 
+def archived_replay_initialization(metadata):
+    """Validate a bound archive context before constructing a *new* world.
+
+    Historical events are initialization context, never new execution results.
+    The caller authors the bundle's poses only during initial scene creation.
+    """
+    from copy import deepcopy
+    from .serial_unloading import _identity_set, _reception_event_sets
+    context = metadata.get("initial_actual_state_context")
+    if not context:
+        if (metadata.get("completed_carton_ids") or metadata.get("processed_carton_ids")
+                or metadata.get("handed_off_ids") or metadata.get("receiver_transport_state")):
+            raise ValueError("archived events require the bound actual-state initialization context")
+        return None
+    if (context.get("schema") != "m710id70_actual_motion_state_v1"
+            or context.get("source") != "ACTUAL_RIGID_BODY_STATE"
+            or context.get("completion_source") != "EXPLICIT_EXECUTION_EVENTS_NOT_POSITION_CLASSIFICATION"):
+        raise ValueError("archive initialization requires validated actual-state provenance")
+    fingerprint = context.get("actual_state_fingerprint")
+    if (not isinstance(fingerprint, str) or len(fingerprint) != 64
+            or any(c not in "0123456789abcdef" for c in fingerprint)):
+        raise ValueError("archive initialization requires its actual-state fingerprint")
+    initial = _identity_set([r["name"] for r in context["initial_carton_registry"]], "archive registry")
+    actual, ideal, processed, transported = _reception_event_sets(
+        context, metadata.get("post_landing_transport"), initial)
+    handed = _identity_set(context.get("handed_off_ids", []), "archive outfed identities")
+    active = _identity_set([p["name"] for p in metadata["scene_primitives"] if p.get("dynamic")],
+                           "archive active identities")
+    if not handed <= processed or active != initial - handed:
+        raise ValueError("archive active identities disagree with historical events")
+    for field, expected in (("completed_carton_ids", actual), ("processed_carton_ids", processed),
+                            ("handed_off_ids", handed)):
+        if _identity_set(metadata.get(field, []), field) != expected:
+            raise ValueError(f"archive metadata changed historical events: {field}")
+    if metadata.get("receiver_transport_state", {}) != context.get("receiver_transport_state", {}):
+        raise ValueError("archive metadata changed reception provenance")
+    if metadata.get("target") not in active - processed:
+        raise ValueError("archive replay target must be active and unprocessed")
+    velocities = context.get("carton_velocities", {})
+    if set(velocities) != active:
+        raise ValueError("archive must retain every active body's observed velocity")
+    for record in velocities.values():
+        for field in ("linear_velocity_m_s", "angular_velocity_rad_s"):
+            value = np.asarray(record.get(field), dtype=float)
+            if value.shape != (3,) or not np.all(np.isfinite(value)):
+                raise ValueError(f"archive has invalid {field}")
+    time_s = context.get("time_s")
+    if not context.get("world_session_id") or not isinstance(time_s, (int, float)) or not np.isfinite(time_s) or time_s < 0:
+        raise ValueError("archive requires its original world and time")
+    result = deepcopy(context)
+    result["world_scope"] = "NEW_WORLD_RECONSTRUCTED_FROM_ARCHIVED_ACTUAL_STATE"
+    result["historical_counts"] = {"actual_received": len(actual), "ideal_received": len(ideal),
+                                   "processed": len(processed), "outfed": len(handed)}
+    result["active_ideal_transport_ids"] = sorted(transported & active)
+    return result
+
+
+def archived_world_actual_state(metadata, initialization, *, q_rad, joint_names, cartons, world_session_id):
+    """Capture post-settling measurements; do not restore any pose to the plan."""
+    from copy import deepcopy
+    from .serial_unloading import _identity_set, _vector, rotation_from_actual_quaternion
+    if not world_session_id or world_session_id == initialization["world_session_id"]:
+        raise ValueError("archive reconstruction requires a distinct new-world identity")
+    expected = {p["name"] for p in metadata["scene_primitives"] if p.get("dynamic")}
+    if _identity_set([c["name"] for c in cartons], "measured active bodies") != expected:
+        raise ValueError("post-settling readback lost active carton identities")
+    if _identity_set(joint_names, "measured joint names") != set(metadata["joint_names"]):
+        raise ValueError("post-settling readback changed joint identities")
+    q = _vector(q_rad, len(joint_names), "measured q_rad")
+    records = []
+    for item in cartons:
+        rotation_from_actual_quaternion(item["quaternion_wxyz"])
+        record = {"name": item["name"], "orientation_wxyz": list(item["quaternion_wxyz"])}
+        for destination, source in (("position_m", "center_m"),
+                                    ("linear_velocity_m_s", "linear_velocity_m_s"),
+                                    ("angular_velocity_rad_s", "angular_velocity_rad_s")):
+            record[destination] = _vector(item[source], 3, source).tolist()
+        records.append(record)
+    return {
+        "schema": "m710id70_actual_motion_state_v1", "q_rad": q.tolist(),
+        "joint_names": list(joint_names), "world_session_id": world_session_id,
+        "time_s": float(initialization["time_s"]), "attached": False, "attachment_target": None,
+        "cartons": records,
+        **{field: deepcopy(initialization[field]) for field in (
+            "completed_carton_ids", "processed_carton_ids", "ideal_received_ids",
+            "handed_off_ids", "receiver_transport_state")},
+        "inactive_carton_ids": list(initialization["handed_off_ids"]),
+        "post_landing_transport": deepcopy(metadata["post_landing_transport"]),
+        "simulation_profile": deepcopy(metadata.get("simulation_profile")),
+        "initialization_provenance": {
+            "world_scope": initialization["world_scope"],
+            "source_world_session_id": initialization["world_session_id"],
+            "source_actual_state_fingerprint": initialization["actual_state_fingerprint"],
+            "historical_events_counted_as_new_task_completion": False,
+        },
+    }
+
+
 def verify_physics_backend_readback(requested, actual):
     """The configured engine/device policy must be the one PhysX reports."""
     fields = {"mode", "device", "broadphase_type", "gpu_dynamics_enabled", "fabric_enabled", "ccd_enabled"}

@@ -2205,6 +2205,7 @@ def build_fanuc_isaac_replay_bundle(
         "simulation_profile": dict(plan.get("simulation_profile", {})),
         "post_landing_transport": dict(plan.get("post_landing_transport", {"mode": "strict_physics"})),
         "receiver_transport_state": dict(plan.get("receiver_transport_state", {})),
+        "initial_actual_state_context": copy.deepcopy(plan.get("initial_actual_state_context")),
         "trajectory_stage_ranges": dict(segment.get("stage_ranges", {})),
         "free_transit_start_time_seconds": (
             float(replay_motion_times[segment["stage_ranges"]["extraction"][1]])

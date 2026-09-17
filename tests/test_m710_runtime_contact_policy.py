@@ -220,7 +220,8 @@ def test_initial_and_continuation_consume_real_exported_command_schema():
     with pytest.raises(ValueError, match="dimensions or times"):
         replay_command_arrays({**bundle, "timestamps_seconds": [0, 0.02, 0.01]}, ["J1"])
     source = (Path(__file__).resolve().parents[1] / "scripts/isaacsim_fanuc_replay.py").read_text(encoding="utf-8")
-    assert source.count("timestamps, positions = replay_command_arrays(bundle, expected_joint_names)") == 2
+    # Initial bundle, archived-world initial replan, and same-world continuation.
+    assert source.count("timestamps, positions = replay_command_arrays(bundle, expected_joint_names)") == 3
     assert 'bundle["timestamps_s"]' not in source
 
 

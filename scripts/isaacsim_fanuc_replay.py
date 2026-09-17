@@ -2114,7 +2114,27 @@ try:
     if ideal_reception_mode != bool(metadata.get("simulation_profile", {}).get("ideal_reception")):
         raise ValueError("runtime profile and reception mode mismatch")
     ideal_actor_paths = set()
-    ideal_transport_records = {}
+    from unloading_sim.m710_replay_physics import archived_replay_initialization
+    archive_initialization = archived_replay_initialization(metadata)
+    ideal_transport_records = (archive_initialization["receiver_transport_state"]
+                               if archive_initialization is not None else {})
+    if archive_initialization is not None:
+        (args.output / "archive_initialization.json").write_text(
+            json.dumps(archive_initialization, indent=2), encoding="utf-8")
+        # This is initial scene construction, never an in-run correction.
+        # Preserve the same historical reception source and every active body.
+        paths_by_name = dict(zip((r["name"] for r in dynamic_scene_records),
+                                 dynamic_scene_prim_paths, strict=True))
+        for name in archive_initialization["active_ideal_transport_ids"]:
+            path = paths_by_name[name]
+            prim = stage.GetPrimAtPath(path)
+            colliders = [item for item in Usd.PrimRange(prim) if item.HasAPI(UsdPhysics.CollisionAPI)]
+            if not colliders:
+                raise RuntimeError(f"archived ideal body has no owned collider: {name}")
+            for collider in colliders:
+                UsdPhysics.CollisionAPI(collider).CreateCollisionEnabledAttr().Set(False)
+            UsdPhysics.RigidBodyAPI(prim).CreateKinematicEnabledAttr().Set(True)
+            ideal_actor_paths.add(path)
     session_transport_events = []
     pending_ideal_outfeed_events = {}
     grasp_joint = None
@@ -2597,6 +2617,15 @@ try:
     print("FANUC_REPLAY_STAGE=world_reset_started", flush=True)
     world.reset()
     print("FANUC_REPLAY_STAGE=world_reset_completed", flush=True)
+    if archive_initialization is not None:
+        for item, body in zip(dynamic_scene_records, dynamic_scene_bodies, strict=True):
+            name = item["name"]
+            if name not in archive_initialization["active_ideal_transport_ids"]:
+                observed = archive_initialization["carton_velocities"][name]
+                body.set_velocities(np.asarray([observed["linear_velocity_m_s"]], dtype=np.float32),
+                                    np.asarray([observed["angular_velocity_rad_s"]], dtype=np.float32))
+        # Historical kinematic transport is held during initialization/settling;
+        # its event clock resumes from the archived time when the task starts.
     if metadata.get("robot_model") == "fanuc_m710id_70":
         runtime_backend_evidence = verify_physics_backend_readback(requested_backend, _read_physics_backend())
         (args.output / "physics_backend_post_reset.json").write_text(
@@ -3037,7 +3066,8 @@ try:
 
     session_output_root = args.output
     session_segment_index = 0
-    session_time_offset_s = 0.0
+    session_time_offset_s = (float(archive_initialization["time_s"])
+                             if archive_initialization is not None else 0.0)
     retained_receiver_records = ideal_transport_records
     dynamic_index_by_name = {item["name"]: index for index, item in enumerate(dynamic_scene_records)}
     def _advance_ideal_bodies(dt_s):
@@ -3096,6 +3126,74 @@ try:
         args.continuation_dir.mkdir(parents=True, exist_ok=True)
         if not ideal_independent_mode:
             raise ValueError("same-world continuation currently requires ideal_independent_cups")
+    initial_archive_binding = None
+    if archive_initialization is not None:
+        from unloading_sim.m710_replay_physics import validate_same_world_continuation, archived_world_actual_state
+        settled_actual_state = archived_world_actual_state(metadata, archive_initialization,
+            q_rad=np.asarray(articulation.get_dof_positions().numpy())[0].tolist(),
+            joint_names=discovered_joint_names, cartons=_capture_carton_states(),
+            world_session_id=str(run_started_unix_s))
+        actual_state_path = args.output / "initialized_actual_state.json"
+        actual_state_path.write_text(json.dumps(settled_actual_state, indent=2), encoding="utf-8")
+        actual_state_sha256 = _sha256_path(actual_state_path)
+        try:
+            initial_archive_binding = validate_same_world_continuation(metadata, bundle, settled_actual_state)
+        except ValueError as stale:
+            initial_archive_binding = {"accepted": False, "reason": str(stale), "replan_required": True}
+        (args.output / "initial_archive_binding.json").write_text(
+            json.dumps(initial_archive_binding, indent=2), encoding="utf-8")
+        if not initial_archive_binding["accepted"]:
+            if args.continuation_dir is None:
+                raise RuntimeError("archived-world settled state requires offline replanning and continuation-dir")
+            ready_path = args.continuation_dir / "initial_ready.json"
+            request_path = args.continuation_dir / "initial_request.json"
+            ready_path.write_text(json.dumps({
+                "status": "NEW_ARCHIVED_WORLD_PAUSED_FOR_INITIAL_REPLAN",
+                "world_session_id": str(run_started_unix_s), "completed_segments": 0,
+                "target": metadata["target"], "actual_state_path": str(actual_state_path),
+                "actual_state_sha256": actual_state_sha256, "request_path": str(request_path),
+                "physics_time_paused_for_offline_planning": True,
+                "no_reset_no_body_replacement": True, "binding_failure": initial_archive_binding,
+            }, indent=2), encoding="utf-8")
+            print("FANUC_REPLAY_STAGE=awaiting_archived_world_initial_plan " + str(ready_path), flush=True)
+            while not request_path.is_file():
+                time.sleep(0.2)
+            request = json.loads(request_path.read_text(encoding="utf-8"))
+            if _sha256_path(actual_state_path) != actual_state_sha256:
+                raise ValueError("initialized actual state changed while its world was paused")
+            validate_continuation_request(request, world_session_id=str(run_started_unix_s),
+                                          actual_state_sha256=actual_state_sha256)
+            if request.get("stop"):
+                raise RuntimeError("initial offline planning stopped: " + str(request.get("reason")))
+            next_bundle_path = Path(request["bundle_path"]).resolve()
+            if not next_bundle_path.is_relative_to(args.project_root.resolve()):
+                raise ValueError("initial replan bundle must remain inside the selected project")
+            next_bundle = json.loads(next_bundle_path.read_text(encoding="utf-8"))
+            if next_bundle["metadata"]["target"] != metadata["target"]:
+                raise ValueError("initial replan changed the requested archived target")
+            initial_archive_binding = validate_same_world_continuation(metadata, next_bundle, settled_actual_state)
+            if initial_archive_binding["recording_output_changed"]:
+                raise ValueError("initial archived-world replan changed recording output")
+            pre_simulation_integrity_gate = contract_module.verify_m710_replay_bundle(
+                next_bundle, project_root=args.project_root.resolve(),
+                current_asset_audit=audit_m710_replay_assets(args.project_root.resolve(), next_bundle["metadata"]))
+            metadata, bundle, args.bundle = next_bundle["metadata"], next_bundle, next_bundle_path
+            timestamps, positions = replay_command_arrays(bundle, expected_joint_names)
+            scene_primitives = list(metadata["scene_primitives"])
+            target_primitive = next(item for item in scene_primitives if item["name"] == str(metadata["target"]))
+            gripper_cfg = metadata["gripper"]
+            cup_bit_order = list(gripper_cfg["mask_bit_order_cup_ids"])
+            eligible_cup_mask = list(gripper_cfg["geometrically_eligible_mask"])
+            commanded_cup_mask = list(gripper_cfg["commanded_active_mask"])
+            planned_fk_contact_mask = list(gripper_cfg["planned_fk_contact_mask"])
+            actual_contact_mask = [False] * physical_cup_count
+            active_cup_indices = [index for index, active in enumerate(commanded_cup_mask) if active]
+            physical_contact_offsets = physical_cup_centers[np.asarray(active_cup_indices, dtype=int)]
+            for cup_index, active in enumerate(commanded_cup_mask):
+                cup_prim = stage.GetPrimAtPath(f"{grasp_body_path}/FG42CupVisual_{cup_index:02d}")
+                UsdShade.MaterialBindingAPI.Apply(cup_prim).Bind(active_rubber_material if active else rubber_material)
+            (args.output / "initial_archive_replan_binding.json").write_text(
+                json.dumps(initial_archive_binding, indent=2), encoding="utf-8")
     while True:
         actual_frame_states = []
         capture_max_joint_delta_rad = 0.0
@@ -5623,6 +5721,24 @@ try:
             json.dumps(result["evidence_manifest"], indent=2), encoding="utf-8"
         )
         from unloading_sim.qualification import reception_counts
+        if archive_initialization is not None:
+            result["archive_initialization"] = {
+                "world_scope": archive_initialization["world_scope"],
+                "source_world_session_id": archive_initialization["world_session_id"],
+                "new_world_session_id": str(run_started_unix_s),
+                "source_actual_state_fingerprint": archive_initialization["actual_state_fingerprint"],
+                "historical_counts": archive_initialization["historical_counts"],
+                "initial_binding": initial_archive_binding,
+                "historical_events_counted_as_new_task_completion": False,
+            }
+            result["new_target_execution_counts"] = {
+                "target": str(metadata["target"]),
+                "actual_grasp": int(bool(grasp_enabled)), "actual_release": int(bool(release_open_confirmed)),
+                "actual_received": int(str(metadata["target"]) in completed_carton_ids),
+                "ideal_received": int(str(metadata["target"]) in ideal_received_ids),
+                "ideal_outfed": int(str(metadata["target"]) in handed_off_ids),
+                "workflow_completed": int(workflow_cycle_completed),
+            }
         result["execution_counts"] = {**reception_counts(completed_carton_ids, ideal_transport_records),
             "actual_grasp": int(bool(grasp_enabled)), "actual_release": int(bool(release_open_confirmed))}
         result["post_landing_transport"] = {
