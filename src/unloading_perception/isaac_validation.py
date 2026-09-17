@@ -8,7 +8,8 @@ builds the handoff consumed by a future feasibility checkout.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from copy import deepcopy
 import hashlib
 import json
 from math import isfinite, sqrt
@@ -546,6 +547,7 @@ class IsaacCaptureBinding:
     camera_calibration_identity: str
     gt_snapshot_sha256: str
     schema_version: str = ISAAC_CAPTURE_BINDING_SCHEMA
+    extensions: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.schema_version != ISAAC_CAPTURE_BINDING_SCHEMA or not self.simulation_epoch or self.frame_sequence < 0:
@@ -562,10 +564,14 @@ class IsaacCaptureBinding:
             str(value["simulation_epoch"]), int(value["frame_sequence"]), float(value["simulation_time"]),
             str(value["rgb_sha256"]), str(value["camera_calibration_identity"]), str(value["gt_snapshot_sha256"]),
             str(value.get("schema_version", ISAAC_CAPTURE_BINDING_SCHEMA)),
+            deepcopy({key: item for key, item in value.items() if key not in (
+                'schema_version', 'simulation_epoch', 'frame_sequence', 'simulation_time',
+                'rgb_sha256', 'camera_calibration_identity', 'gt_snapshot_sha256')}),
         )
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            **deepcopy(dict(self.extensions)),
             "schema_version": self.schema_version,
             "simulation_epoch": self.simulation_epoch,
             "frame_sequence": self.frame_sequence,

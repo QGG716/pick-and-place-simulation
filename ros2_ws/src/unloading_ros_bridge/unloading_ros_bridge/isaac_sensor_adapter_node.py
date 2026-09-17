@@ -8,6 +8,7 @@ the two Python ABIs never import each other's extension modules.
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
@@ -24,13 +25,10 @@ from vision_msgs.msg import Detection2D, Detection2DArray, Detection3D, Detectio
 from unloading_interfaces.msg import PerceptionObservation, RgbdCaptureMetadata
 from unloading_perception.geometry import quaternion_from_rotation
 from unloading_perception.isaac_validation import (
-    IsaacCaptureBinding,
-    IsaacSceneManifest,
     ground_truth_observation,
-    sha256_file,
     validate_capture_robot_state,
 )
-from unloading_perception.rgbd import CaptureMetadata
+from unloading_perception.isaac_payload import CapturePayloadError, load_capture_payload
 
 from .common import float_to_time, require_humble_python310
 from .mapping import capture_metadata_to_msg, observation_to_msg
@@ -73,6 +71,7 @@ class IsaacSensorAdapterNode(Node):
         if self.sequence_hold_cycles <= 0:
             raise RuntimeError("sequence_hold_cycles must be positive")
         self.sequence_hold_count = 0
+        self.publish_pointcloud_on_demand = bool(self.get_parameter("publish_pointcloud_on_demand").value)
         self._load_capture(*self.samples[0])
 
         sensor_qos = QoSProfile(depth=2, reliability=ReliabilityPolicy.RELIABLE)
@@ -82,7 +81,6 @@ class IsaacSensorAdapterNode(Node):
         self.info_pub = self.create_publisher(CameraInfo, "/isaac/vision_mast/module_0_main/camera_info", sensor_qos)
         self.metadata_pub = self.create_publisher(RgbdCaptureMetadata, "/isaac/vision_mast/module_0_main/capture_metadata", sensor_qos)
         self.cloud_pub = self.create_publisher(PointCloud2, "/isaac/vision_mast/module_0_main/pointcloud_on_demand", sensor_qos)
-        self.publish_pointcloud_on_demand = bool(self.get_parameter("publish_pointcloud_on_demand").value)
         self.tf_pub = self.create_publisher(TFMessage, "/tf", sensor_qos)
         self.joints_pub = self.create_publisher(JointState, "/joint_states", sensor_qos)
         self.gt2_pub = self.create_publisher(Detection2DArray, "/isaac/ground_truth/detections_2d", sensor_qos)
@@ -94,63 +92,50 @@ class IsaacSensorAdapterNode(Node):
         self.timer = self.create_timer(period, self.publish_capture)
 
     def _load_capture(self, capture: Path, manifest_path: Path) -> None:
-        if not capture.is_dir() or not manifest_path.is_file():
-            raise RuntimeError("every capture and scene manifest in the sequence must exist")
-        self.capture = capture
-        self.manifest = IsaacSceneManifest.from_dict(json.loads(manifest_path.read_text(encoding="utf-8")))
-        binding_payload = json.loads((capture / "capture_binding.json").read_text(encoding="utf-8"))
-        self.binding = IsaacCaptureBinding.from_dict(binding_payload)
-        # Reset on every sample, including invalid samples in a replay sequence.
-        self.robot_state = None
-        self.robot_state_rejection = None
+        # Old arrays may remain for diagnosis, but cannot publish after failure.
+        self.sample_ready = False
+        self.capture_rejection = None
         try:
-            self.robot_state = validate_capture_robot_state(binding_payload.get('robot_state'), self.manifest, self.binding)
-        except (ValueError, TypeError, KeyError) as exc:
-            self.robot_state_rejection = str(exc)
-            self.get_logger().error(f'robot JointState suppressed: {exc}; image replay remains available')
-        self.capture_metadata = CaptureMetadata.from_dict(json.loads((capture / "capture_metadata.json").read_text(encoding="utf-8")))
-        self.annotations = json.loads((capture / "gt_annotations.json").read_text(encoding="utf-8"))
-        if sha256_file(capture / "sensor_rgb.png") != self.binding.rgb_sha256:
-            raise RuntimeError("Isaac RGB hash differs from capture binding")
-        if sha256_file(capture / "gt_annotations.json") != self.binding.gt_snapshot_sha256:
-            raise RuntimeError("Isaac GT hash differs from capture binding")
-        if (self.binding.simulation_epoch, self.binding.frame_sequence) != (
-            self.manifest.timing["simulation_epoch"], self.manifest.timing["simulation_frame"],
-        ):
-            raise RuntimeError("capture and scene manifest timing identities differ")
-        cameras = [
-            camera for camera in self.manifest.cameras
-            if str(camera["frame_id"]) == self.capture_metadata.rgb_frame_id
-        ]
-        if len(cameras) != 1:
-            raise RuntimeError("capture frame is not bound to exactly one manifest camera")
-        self.camera = cameras[0]
-        camera = self.camera
-        if (
-            self.capture_metadata.sensor_epoch != self.binding.simulation_epoch
-            or self.capture_metadata.frame_sequence != self.binding.frame_sequence
-            or self.capture_metadata.capture_center_time != self.binding.simulation_time
-            or self.capture_metadata.calibration_identity != self.binding.camera_calibration_identity
-            or self.capture_metadata.T_W_C_at_capture != tuple(tuple(float(value) for value in row) for row in camera["T_W_C"])
-        ):
-            raise RuntimeError("unified RGB-D metadata differs from capture/manifest identity")
-        self.frame_id = str(camera["frame_id"])
-        self.depth_frame_id = str(camera["depth_frame_id"])
-        self.stamp = _stamp(float(self.binding.simulation_time))
-        self.rgb = np.load(capture / "sensor_rgb.npy", allow_pickle=False).astype(np.uint8)
-        self.depth = np.load(capture / "metric_depth_m.npy", allow_pickle=False).astype(np.float32)
-        self.points = np.load(capture / "pointcloud_world_m.npz", allow_pickle=False)["xyz_m"].astype(np.float32)
-        if self.rgb.ndim != 3 or self.rgb.shape[2] != 3 or self.rgb.shape[:2] != self.depth.shape:
-            raise RuntimeError("RGB and depth dimensions differ")
-        self.observation = ground_truth_observation(
-            self.manifest, self.annotations["objects"], camera_frame_id=self.frame_id,
-        )
+            sample = load_capture_payload(capture, manifest_path,
+                with_pointcloud=self.publish_pointcloud_on_demand)
+            robot_state, robot_rejection = None, None
+            try:
+                robot_state = validate_capture_robot_state(sample.binding.extensions.get('robot_state'),
+                    sample.manifest, sample.binding)
+            except (ValueError, TypeError, KeyError) as exc:
+                robot_rejection = str(exc)
+                self.get_logger().error(f'robot JointState suppressed: {exc}; verified image replay remains available')
+            observation = ground_truth_observation(sample.manifest, sample.annotations['objects'],
+                camera_frame_id=sample.camera['frame_id'])
+            # Commit one fully verified sample only after every load succeeds.
+            self.__dict__.update(capture=capture, manifest=sample.manifest, binding=sample.binding,
+                capture_metadata=sample.metadata, annotations=sample.annotations, camera=sample.camera,
+                frame_id=sample.camera['frame_id'], depth_frame_id=sample.camera['depth_frame_id'],
+                stamp=_stamp(sample.binding.simulation_time), rgb=sample.rgb, depth=sample.depth,
+                points=sample.points, robot_state=robot_state, robot_state_rejection=robot_rejection,
+                observation=observation, sample_ready=True)
+        except (CapturePayloadError, ValueError, TypeError, KeyError) as exc:
+            self.capture_rejection = str(exc)
+            self.get_logger().error(f'capture suppressed: {exc}')
+            raise
+
+    def _advance_sample(self) -> None:
+        if self.sample_index + 1 < len(self.samples):
+            self.sample_index += 1
+            self.sequence_hold_count = 0
+            try:
+                self._load_capture(*self.samples[self.sample_index])
+            except (CapturePayloadError, ValueError, TypeError, KeyError):
+                pass  # diagnostic already recorded; no publication from this sample
 
     def _header(self, message, frame_id: str) -> None:
         message.header.stamp = self.stamp
         message.header.frame_id = frame_id
 
     def publish_capture(self) -> None:
+        if not self.sample_ready:
+            self._advance_sample()
+            return
         clock = Clock(clock=self.stamp)
         self.clock_pub.publish(clock)
 
@@ -168,14 +153,14 @@ class IsaacSensorAdapterNode(Node):
         self.info_pub.publish(info)
         self.metadata_pub.publish(capture_metadata_to_msg(self.capture_metadata))
 
-        cloud = PointCloud2(height=1, width=len(self.points), is_bigendian=False, point_step=12, row_step=12 * len(self.points), is_dense=bool(np.isfinite(self.points).all()), data=self.points.astype("<f4", copy=False).tobytes())
-        cloud.fields = [
-            PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
-            PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
-            PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
-        ]
-        self._header(cloud, "world")
         if self.publish_pointcloud_on_demand:
+            cloud = PointCloud2(height=1, width=len(self.points), is_bigendian=False, point_step=12, row_step=12 * len(self.points), is_dense=bool(np.isfinite(self.points).all()), data=self.points.astype("<f4", copy=False).tobytes())
+            cloud.fields = [
+                PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
+                PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
+                PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
+            ]
+            self._header(cloud, "world")
             self.cloud_pub.publish(cloud)
 
         transform = np.asarray(camera["T_W_C"], dtype=float)
@@ -185,7 +170,9 @@ class IsaacSensorAdapterNode(Node):
         tf.child_frame_id = self.frame_id
         tf.transform.translation.x, tf.transform.translation.y, tf.transform.translation.z = transform[:3, 3].tolist()
         tf.transform.rotation.x, tf.transform.rotation.y, tf.transform.rotation.z, tf.transform.rotation.w = quaternion
-        message = TFMessage(transforms=[tf])
+        depth_tf = deepcopy(tf)
+        depth_tf.child_frame_id = self.depth_frame_id  # verified coaxial registered depth
+        message = TFMessage(transforms=[tf, depth_tf])
         self.tf_pub.publish(message)
 
         if self.robot_state is not None:
@@ -220,9 +207,7 @@ class IsaacSensorAdapterNode(Node):
         self.domain_pub.publish(observation_to_msg(self.observation))
         self.sequence_hold_count += 1
         if self.sample_index + 1 < len(self.samples) and self.sequence_hold_count >= self.sequence_hold_cycles:
-            self.sample_index += 1
-            self.sequence_hold_count = 0
-            self._load_capture(*self.samples[self.sample_index])
+            self._advance_sample()
 
 
 def main(args=None) -> None:

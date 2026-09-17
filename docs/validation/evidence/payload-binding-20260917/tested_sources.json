@@ -1,0 +1,20 @@
+{
+  "baseline": "43ed5eb893ffe6f63fda7f0fc1ae6632663b2e8e",
+  "environment": {
+    "os": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12",
+    "ros": "humble",
+    "compute": "server CPU only"
+  },
+  "sha256_lf": {
+    "pyproject.toml": "872b74e6968eb9efc73eada42060900f97daeba3fc616c5bf970736dbb122752",
+    "ros2_ws/src/unloading_ros_bridge/package.xml": "a8fc2dfc74ecb2e0e8e5afacc9897bc211208f631c4351dabddbd42c0869ff59",
+    "src/unloading_perception/isaac_validation.py": "2b2e208c9a442494bd370b6abb64d50576bcfcef3aa2ce6ba8e5fc7e83516aa0",
+    "src/unloading_perception/isaac_payload.py": "dc3c4aadcc36ecc7ed78ab046b33aa47491809091d5cde2132568353ab6d786e",
+    "scripts/isaacsim_perception_capture.py": "3474ab61f34f0fd02a937409661555b0a446c9248f84823ab9b3609d81c56b7a",
+    "ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/isaac_sensor_adapter_node.py": "dd1493ddfa0e175737055133751f83f1916c28d5d235dd0b0f52f095fbcc85a4",
+    "ros2_ws/src/unloading_ros_bridge/test/isaac_joint_fixture.py": "b2623e1eca2722b002368d1074c47ae2105e0e6407272062766c95558ed955f8",
+    "ros2_ws/src/unloading_ros_bridge/test/test_isaac_payload_transport.py": "cc21a9444ecd019f8336a3f49fa2463357bf9abc23d17bbb7c4f99f64077d5eb",
+    "tests/test_isaac_payload_binding.py": "feec6313e040c25d0e4fc0745a1b61a33845cfbd201f978b072a1b47c11e6e30"
+  }
+}

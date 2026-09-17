@@ -1,0 +1,24 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_original_depth_replacement_is_rejected_by_production_loader _______
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-106/test_original_depth_replacemen0')
+
+    def test_original_depth_replacement_is_rejected_by_production_loader(tmp_path):
+        _, path, _ = capture_fixture(tmp_path)
+        rclpy.init(args=['--ros-args', '-p', f'capture_directory:={tmp_path}',
+            '-p', f'scene_manifest:={path}', '-p', 'publish_period_seconds:=3600.0'])
+        adapter = None
+        try:
+            adapter = IsaacSensorAdapterNode()
+            depth = np.load(tmp_path/'metric_depth_m.npy', allow_pickle=False)
+            depth[0, 0] += .125
+            np.save(tmp_path/'metric_depth_m.npy', depth)
+            # PNG, GT, metadata and binding remain byte-for-byte unchanged.
+>           with pytest.raises(RuntimeError, match='HASH_MISMATCH.*metric_depth'):
+E           Failed: DID NOT RAISE <class 'RuntimeError'>
+
+ros2_ws/src/unloading_ros_bridge/test/test_isaac_payload_transport.py:20: Failed
+=========================== short test summary info ============================
+FAILED ros2_ws/src/unloading_ros_bridge/test/test_isaac_payload_transport.py::test_original_depth_replacement_is_rejected_by_production_loader
+1 failed in 0.21s

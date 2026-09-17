@@ -115,6 +115,7 @@ try:
         verify_text_asset_identity,
     )
     from unloading_perception.rgbd import CaptureMetadata, IlluminationState
+    from unloading_perception.isaac_payload import begin_capture_write, finalize_capture_binding, write_capture_pointcloud
     from unloading_perception.vision_rig import evaluate_vision_rig_pose, load_vision_rig_spec
 
     bundle_index = json.loads((args.bundle_directory / "index.json").read_text(encoding="utf-8"))
@@ -750,10 +751,13 @@ try:
         rgb = rgba[:, :, :3].astype(np.uint8)
         module_dir = scene_dir / "modules" / str(camera["module_id"])
         module_dir.mkdir(parents=True, exist_ok=True)
+        begin_capture_write(module_dir)
         rgb_path = module_dir / "sensor_rgb.png"
-        cv2.imwrite(str(rgb_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+        if not cv2.imwrite(str(rgb_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)):
+            raise RuntimeError(f"RGB PNG write failed: {rgb_path}")
         np.save(module_dir / "sensor_rgb.npy", rgb)
         np.save(module_dir / "metric_depth_m.npy", depth)
+        write_capture_pointcloud(module_dir, depth, camera)
         finite = np.isfinite(depth) & (depth > 0.0)
         depth_visual = np.zeros_like(depth, dtype=np.uint8)
         if np.any(finite):
@@ -822,7 +826,6 @@ try:
             "rgb_sha256": sha256(rgb_path), "camera_calibration_identity": calibration_identity,
             "gt_snapshot_sha256": sha256(annotations_path),
         }
-        (module_dir / "capture_binding.json").write_text(json.dumps(binding, indent=2), encoding="utf-8")
         metadata = CaptureMetadata(
             capture_id=f"{manifest.timing['simulation_epoch']}:{camera['module_id']}:{manifest.timing['simulation_frame']}",
             sensor_epoch=str(manifest.timing["simulation_epoch"]), frame_sequence=int(manifest.timing["simulation_frame"]),
@@ -834,16 +837,8 @@ try:
             T_W_C_at_capture=tuple(tuple(float(value) for value in row) for row in camera["T_W_C"]),
         )
         (module_dir / "capture_metadata.json").write_text(json.dumps(metadata.to_dict(), indent=2), encoding="utf-8")
-        (module_dir / "capture_binding.json").write_text(json.dumps({
-            "schema_version": "isaac_capture_binding_v1", "module_id": camera["module_id"],
-            "simulation_epoch": manifest.timing["simulation_epoch"], "frame_sequence": manifest.timing["simulation_frame"],
-            "simulation_time": capture_time, "rgb_sha256": sha256(rgb_path),
-            "camera_calibration_identity": calibration_identity, "gt_snapshot_sha256": sha256(annotations_path),
-            "metric_depth_sha256": sha256(module_dir / "metric_depth_m.npy"),
-            "instance_masks_sha256": masks_hash,
-            "capture_metadata_sha256": sha256(module_dir / "capture_metadata.json"),
-            "robot_state": captured_robot_state(manifest),
-        }, indent=2), encoding="utf-8")
+        binding.update(instance_masks_sha256=masks_hash, robot_state=captured_robot_state(manifest))
+        binding = finalize_capture_binding(module_dir, manifest, camera, binding, with_pointcloud=True)
         (module_dir / "instance_segmentation_info.json").write_text(
             json.dumps(segmentation_info, indent=2, default=str), encoding="utf-8"
         )
@@ -943,6 +938,7 @@ try:
         camera, rgb_annotator, depth_annotator, instance_annotator = scene_cameras[0]
         scene_dir = args.output / scene_name
         scene_dir.mkdir(parents=True, exist_ok=True)
+        begin_capture_write(scene_dir)
         apply_manifest(manifest, scene_name)
         articulation.set_dof_positions(command[None, :])
         articulation.set_dof_position_targets(command[None, :])
@@ -1070,7 +1066,8 @@ try:
                 "semantic_mask": carton_mask(frame_instance_result),
             }
         rgb_path = scene_dir / "sensor_rgb.png"
-        cv2.imwrite(str(rgb_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+        if not cv2.imwrite(str(rgb_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)):
+            raise RuntimeError(f"RGB PNG write failed: {rgb_path}")
         np.save(scene_dir / "sensor_rgb.npy", rgb)
         cv2.imwrite(str(scene_dir / "isaac_overview.png"), cv2.cvtColor(overview, cv2.COLOR_RGB2BGR))
         np.save(scene_dir / "metric_depth_m.npy", depth)
@@ -1097,16 +1094,10 @@ try:
             cv2.imwrite(str(args.output / "09_registered_rgbd.png"), registered_preview)
 
         k = np.asarray(camera["K"], dtype=float).reshape(3, 3)
-        rows, columns = np.indices(depth.shape)
-        stride = 2
-        selected = finite & ((rows % stride) == 0) & ((columns % stride) == 0)
-        z = depth[selected]
-        camera_points = np.column_stack(((columns[selected] - k[0, 2]) * z / k[0, 0], (rows[selected] - k[1, 2]) * z / k[1, 1], z))
-        t_w_c = np.asarray(camera["T_W_C"], dtype=float)
-        world_points = (t_w_c[:3, :3] @ camera_points.T).T + t_w_c[:3, 3]
-        np.savez_compressed(scene_dir / "pointcloud_world_m.npz", xyz_m=world_points.astype(np.float32))
+        write_capture_pointcloud(scene_dir, depth, camera)
 
         camera_info = {
+            "module_id": camera["module_id"],
             "camera_id": camera["camera_id"], "frame_id": camera["frame_id"],
             "width": args.width, "height": args.height, "K": camera["K"],
             "distortion_model": camera["distortion_model"], "D": camera["distortion"],
@@ -1203,11 +1194,10 @@ try:
             "camera_calibration_identity": hashlib.sha256(json.dumps(camera_info, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
             "gt_snapshot_sha256": sha256(annotations_path),
         }
-        (scene_dir / "capture_binding.json").write_text(json.dumps(binding, indent=2), encoding="utf-8")
         scene_record = next(item for item in bundle_index["scenes"] if item["scene"] == scene_name)
         capture_time = float(manifest.timing["simulation_time"])
         capture_metadata = CaptureMetadata(
-            capture_id=f"{manifest.timing['simulation_epoch']}:module_0_main:{manifest.timing['simulation_frame']}",
+            capture_id=f"{manifest.timing['simulation_epoch']}:{camera['module_id']}:{manifest.timing['simulation_frame']}",
             sensor_epoch=str(manifest.timing["simulation_epoch"]),
             frame_sequence=int(manifest.timing["simulation_frame"]),
             requested_time=capture_time,
@@ -1231,6 +1221,8 @@ try:
         (scene_dir / "capture_metadata.json").write_text(
             json.dumps(capture_metadata.to_dict(), indent=2), encoding="utf-8"
         )
+        binding['instance_masks_sha256'] = masks_sha256
+        binding = finalize_capture_binding(scene_dir, manifest, camera, binding, with_pointcloud=True)
 
         module_results = [
             capture_module_artifacts(
