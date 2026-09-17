@@ -1,0 +1,16 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_original_future_counterexample_blocks_otherwise_plannable_geometry ____
+
+    def test_original_future_counterexample_blocks_otherwise_plannable_geometry():
+        valid = build_scene_update(observation(100), now=100, max_age_seconds=2)
+        assert valid.planning_admissible
+        future = build_scene_update(observation(110), now=100, max_age_seconds=2)
+>       assert not future.planning_admissible
+E       AssertionError: assert not True
+E        +  where True = PerceptionSceneUpdate(observation=PerceptionObservation(schema_version='1.1.0', observation_id='synthetic-observation-...rint='b4b012a1ab4599014457575fb32b2213e66e38b761ac735e2604abbcde9ffef6', planning_admissible=True, blocking_reasons=()).planning_admissible
+
+tests/test_perception_time_admission.py:20: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_perception_time_admission.py::test_original_future_counterexample_blocks_otherwise_plannable_geometry
+1 failed, 23 deselected in 0.12s

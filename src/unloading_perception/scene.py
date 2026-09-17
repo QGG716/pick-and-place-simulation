@@ -158,7 +158,51 @@ class ObservationTracker:
         return tuple(item for item, _ in updated.values())
 
 
-def build_scene_update(observation: PerceptionObservation, tracked: tuple[CargoObservation, ...] | None = None, *, now: float | None = None, max_age_seconds: float | None = None) -> PerceptionSceneUpdate:
+def validate_observation_time_config(max_age_seconds: float, future_tolerance_seconds: float) -> None:
+    if not math.isfinite(max_age_seconds) or max_age_seconds <= 0:
+        raise ValueError('max_age_seconds must be finite and positive')
+    if not math.isfinite(future_tolerance_seconds) or future_tolerance_seconds < 0:
+        raise ValueError('future_tolerance_seconds must be finite and non-negative')
+
+
+def observation_time_reasons(capture_time: float, *, now: float, max_age_seconds: float,
+                             future_tolerance_seconds: float = 0.0,
+                             observation_clock_domain: str | None = None,
+                             clock_domain: str | None = None,
+                             clock_initialized: bool | None = None) -> tuple[str, ...]:
+    """Inclusive IEEE-float bounds, with no hidden epsilon or timestamp rewrite.
+
+    No clock context means an offline comparison of numbers already in one
+    timescale. Online callers must supply both consumer domain and initialized
+    status. A domain mismatch is rejected *before* subtracting timestamps.
+    """
+    validate_observation_time_config(max_age_seconds, future_tolerance_seconds)
+    if not math.isfinite(now) or not math.isfinite(capture_time):
+        raise ValueError('observation time and now must be finite')
+    reasons = []
+    if clock_domain is not None or clock_initialized is not None:
+        if clock_initialized is not True:
+            reasons.append('CLOCK_NOT_INITIALIZED')
+        if (not isinstance(clock_domain, str) or not clock_domain.strip()
+                or not isinstance(observation_clock_domain, str) or not observation_clock_domain.strip()
+                or clock_domain != observation_clock_domain):
+            reasons.append('OBSERVATION_CLOCK_DOMAIN_MISMATCH')
+        if reasons:
+            return tuple(reasons)
+    age = now - capture_time
+    if age < -future_tolerance_seconds:
+        reasons.append('OBSERVATION_TIME_IN_FUTURE')
+    if age > max_age_seconds:
+        reasons.append('OBSERVATION_STALE')
+    return tuple(reasons)
+
+
+def build_scene_update(observation: PerceptionObservation, tracked: tuple[CargoObservation, ...] | None = None, *,
+                       now: float | None = None, max_age_seconds: float | None = None,
+                       future_tolerance_seconds: float = 0.0, clock_domain: str | None = None,
+                       clock_initialized: bool | None = None) -> PerceptionSceneUpdate:
+    if max_age_seconds is None:
+        validate_observation_time_config(1.0, future_tolerance_seconds)
     cargo = observation.cargo if tracked is None else tracked
     unknown = list(observation.unknown_regions)
     blocking = []
@@ -172,12 +216,14 @@ def build_scene_update(observation: PerceptionObservation, tracked: tuple[CargoO
         unknown.append(UnknownRegion(f"empty-{observation.observation_id}", "coverage", "EMPTY_OBSERVATION_DOES_NOT_PROVE_FREE_SPACE"))
         blocking.append("EMPTY_OBSERVATION")
     if max_age_seconds is not None:
-        if max_age_seconds <= 0.0:
-            raise ValueError("max_age_seconds must be positive")
         if now is None:
             raise ValueError("freshness evaluation requires now")
-        if now - observation.capture_time > max_age_seconds:
-            blocking.append("OBSERVATION_STALE")
+        blocking.extend(observation_time_reasons(observation.capture_time, now=now,
+            max_age_seconds=max_age_seconds, future_tolerance_seconds=future_tolerance_seconds,
+            observation_clock_domain=observation.clock_domain, clock_domain=clock_domain,
+            clock_initialized=clock_initialized))
+    elif now is not None or clock_domain is not None or clock_initialized is not None:
+        raise ValueError('online/freshness evaluation requires max_age_seconds')
     for item in cargo:
         if item.pose is None:
             unknown.append(UnknownRegion(f"object-{item.source_instance_id}", "source_image", "OBJECT_WITHOUT_WORLD_GEOMETRY", item.bbox_xyxy))

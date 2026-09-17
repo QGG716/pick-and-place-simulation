@@ -5,9 +5,11 @@ import math
 from uuid import uuid4
 
 import rclpy
+from rclpy.clock import Clock, ClockType
 from rclpy.duration import Duration
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, qos_profile_sensor_data
+from rcl_interfaces.msg import SetParametersResult
 from sensor_msgs.msg import JointState
 from tf2_ros import Buffer, TransformException, TransformListener
 from unloading_contracts import ObservationStatus, RobotStateRevision
@@ -17,11 +19,11 @@ from visualization_msgs.msg import Marker, MarkerArray
 from unloading_perception.geometry import rotation_from_quaternion, transform_pose
 from unloading_perception.scene import (
     ObservationTracker, SnapshotAssembler, SourceEpochGuard,
-    build_scene_update, parse_mechanism_bundle,
+    build_scene_update, parse_mechanism_bundle, observation_time_reasons, validate_observation_time_config,
 )
 
 from .common import require_humble_python310, time_to_float
-from .mapping import observation_from_msg, snapshot_to_msg
+from .mapping import observation_from_msg, observation_source_times, snapshot_to_msg
 
 
 class WorldBridgeNode(Node):
@@ -33,8 +35,15 @@ class WorldBridgeNode(Node):
         self.declare_parameter("expected_joint_names", ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"])
         self.declare_parameter("tf_timeout_seconds", 0.2)
         self.declare_parameter("snapshot_freshness_seconds", 2.0)
+        self.declare_parameter("observation_future_tolerance_seconds", 0.0)
         self.declare_parameter("robot_state_freshness_seconds", 0.5)
         self.declare_parameter("mechanism_state_freshness_seconds", 2.0)
+        initial = self._validate_time_parameters(self.get_parameters([
+            'snapshot_freshness_seconds', 'observation_future_tolerance_seconds',
+            'robot_state_freshness_seconds', 'mechanism_state_freshness_seconds']))
+        if not initial.successful:
+            raise ValueError(initial.reason)
+        self.add_on_set_parameters_callback(self._validate_time_parameters)
         self.buffer = Buffer()
         self.listener = TransformListener(self.buffer, self)
         self.tracker = ObservationTracker()
@@ -50,6 +59,8 @@ class WorldBridgeNode(Node):
         self.last_observation = None
         self.last_tracked = None
         self.last_snapshot = None
+        self.time_admission_blocking_reasons = ()
+        self.last_time_rejection = None
         self.stale_key = None
         self.publisher_epoch = str(uuid4())
         self.publisher_sequence = 0
@@ -59,7 +70,37 @@ class WorldBridgeNode(Node):
         self.create_subscription(PerceptionObservation, "/unloading/perception", self.on_observation, reliable)
         self.publisher = self.create_publisher(PlanningWorldSnapshot, "/unloading/world_snapshot", reliable)
         self.marker_publisher = self.create_publisher(MarkerArray, "/unloading/markers", reliable)
-        self.watchdog = self.create_timer(0.1, self.check_freshness)
+        # Only the wake-up uses steady time. All age calculations use ROS time.
+        self.watchdog_clock = Clock(clock_type=ClockType.STEADY_TIME)
+        self.watchdog = self.create_timer(0.1, self.check_freshness, clock=self.watchdog_clock)
+
+    def _validate_time_parameters(self, parameters):
+        try:
+            for parameter in parameters:
+                if parameter.name == 'observation_future_tolerance_seconds':
+                    validate_observation_time_config(1.0, parameter.value)
+                elif parameter.name in ('snapshot_freshness_seconds', 'robot_state_freshness_seconds',
+                                        'mechanism_state_freshness_seconds'):
+                    validate_observation_time_config(parameter.value, 0.0)
+        except (ValueError, TypeError) as exc:
+            return SetParametersResult(successful=False, reason=str(exc))
+        return SetParametersResult(successful=True)
+
+    def _time_context(self, now):
+        simulation = bool(self.get_parameter('use_sim_time').value)
+        return dict(now=now, max_age_seconds=float(self.get_parameter('snapshot_freshness_seconds').value),
+            future_tolerance_seconds=float(self.get_parameter('observation_future_tolerance_seconds').value),
+            clock_domain='ros_sim_time' if simulation else 'ros',
+            clock_initialized=(now > 0.0 if simulation else True))
+
+    def _reject_observation_time(self, message, reasons):
+        self.time_admission_blocking_reasons = tuple(reasons)
+        self.last_time_rejection = {'blocking_reasons': tuple(reasons),
+            'source_epoch': message.source_epoch, 'source_sequence': int(message.source_sequence),
+            'clock_domain': message.clock_domain}
+        self.get_logger().error('rejecting observation time: ' + ','.join(reasons))
+        # Keep the last valid geometry/source but revoke its planning admission.
+        self._commit_snapshot('observation_time_rejected')
 
     def on_mechanism(self, message: MechanismState) -> None:
         expected_clock = "ros_sim_time" if self.get_parameter("use_sim_time").value else "ros"
@@ -183,6 +224,16 @@ class WorldBridgeNode(Node):
         return replace(observation, cargo=tuple(transformed))
 
     def on_observation(self, message: PerceptionObservation) -> None:
+        # Before TF lookup, tracking or either source sequence/epoch guard.
+        try:
+            capture_time, _ = observation_source_times(message)
+            reasons = observation_time_reasons(capture_time, observation_clock_domain=message.clock_domain,
+                **self._time_context(self.get_clock().now().nanoseconds / 1e9))
+        except (ValueError, TypeError, OverflowError):
+            reasons = ('OBSERVATION_TIME_INVALID',)
+        if reasons:
+            self._reject_observation_time(message, reasons)
+            return
         try:
             observation = self._transform_observation(observation_from_msg(message))
             if observation.provider == "registered-rgbd-fused-algorithm":
@@ -198,6 +249,9 @@ class WorldBridgeNode(Node):
             self.get_logger().error(f"rejecting invalid perception observation: {exc}")
             return
         self.last_observation, self.last_tracked = observation, tracked
+        # Only a time-valid observation that also passes existing source guards
+        # may clear a time fault. Clock recovery or a joint heartbeat cannot.
+        self.time_admission_blocking_reasons = ()
         self._commit_snapshot("perception")
 
     def _commit_snapshot(self, event: str, *, now: float | None = None) -> None:
@@ -205,10 +259,16 @@ class WorldBridgeNode(Node):
         if self.last_observation is None or self.last_tracked is None or self.assembler.robot_state is None:
             return
         current = self.get_clock().now().nanoseconds / 1e9 if now is None else now
+        context = self._time_context(current)
+        reasons = observation_time_reasons(self.last_observation.capture_time,
+            observation_clock_domain=self.last_observation.clock_domain, **context)
+        self.time_admission_blocking_reasons = tuple(dict.fromkeys(self.time_admission_blocking_reasons + reasons))
         update = build_scene_update(
-            self.last_observation, self.last_tracked, now=current,
-            max_age_seconds=float(self.get_parameter("snapshot_freshness_seconds").value),
+            self.last_observation, self.last_tracked, **context,
         )
+        if self.time_admission_blocking_reasons:
+            update = replace(update, planning_admissible=False,
+                blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + self.time_admission_blocking_reasons)))
         if self.last_joint_stamp is None or current - self.last_joint_stamp > float(self.get_parameter("robot_state_freshness_seconds").value) or current < self.last_joint_stamp:
             update = replace(update, planning_admissible=False, blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + ("ROBOT_STATE_STALE_OR_TIME_JUMP",))))
         if self.mechanism_stamp is None or current - self.mechanism_stamp > float(self.get_parameter("mechanism_state_freshness_seconds").value) or current < self.mechanism_stamp:
@@ -240,10 +300,11 @@ class WorldBridgeNode(Node):
         if self.last_observation is None:
             return
         now = self.get_clock().now().nanoseconds / 1e9
-        observation_age = now - self.last_observation.capture_time
+        reasons = observation_time_reasons(self.last_observation.capture_time,
+            observation_clock_domain=self.last_observation.clock_domain, **self._time_context(now))
         robot_age = math.inf if self.last_joint_stamp is None else now - self.last_joint_stamp
         mechanism_age = math.inf if self.mechanism_stamp is None else now - self.mechanism_stamp
-        stale_key = (observation_age > float(self.get_parameter("snapshot_freshness_seconds").value) or observation_age < 0.0,
+        stale_key = (reasons,
                      robot_age > float(self.get_parameter("robot_state_freshness_seconds").value) or robot_age < 0.0,
                      mechanism_age > float(self.get_parameter("mechanism_state_freshness_seconds").value) or mechanism_age < 0.0)
         if stale_key != self.stale_key:

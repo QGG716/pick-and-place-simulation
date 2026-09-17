@@ -219,13 +219,22 @@ def observation_to_msg(observation: PerceptionObservation) -> PerceptionObservat
     return message
 
 
-def observation_from_msg(message: PerceptionObservationMsg) -> PerceptionObservation:
-    coverage = from_wire(json.loads(message.coverage_json)) if message.coverage_json else {"absence_means_free_space": False}
+def observation_source_times(message: PerceptionObservationMsg) -> tuple[float, float]:
+    """Validate source times before online admission or any tracker mutation."""
+    from math import isfinite
     capture, processed = time_to_float(message.capture_time), time_to_float(message.processed_time)
     if message.has_exact_source_times:
         if float_to_time(message.exact_capture_time_s) != message.capture_time or float_to_time(message.exact_processed_time_s) != message.processed_time:
             raise ValueError("exact source timestamps disagree with ROS Time")
         capture, processed = message.exact_capture_time_s, message.exact_processed_time_s
+    if not isfinite(capture) or not isfinite(processed) or processed < capture:
+        raise ValueError('observation sequence/times are invalid')
+    return capture, processed
+
+
+def observation_from_msg(message: PerceptionObservationMsg) -> PerceptionObservation:
+    coverage = from_wire(json.loads(message.coverage_json)) if message.coverage_json else {"absence_means_free_space": False}
+    capture, processed = observation_source_times(message)
     return PerceptionObservation(
         message.schema_version, message.observation_id, message.source_epoch,
         int(message.source_sequence), capture,

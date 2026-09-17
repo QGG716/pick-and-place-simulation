@@ -1,0 +1,17 @@
+{
+  "baseline": "a052997f5f5914bc6ce1c05c6a8005556f6bd62f",
+  "environment": {
+    "os": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12",
+    "ros": "humble",
+    "compute": "server CPU only"
+  },
+  "sha256_lf": {
+    "src/unloading_perception/scene.py": "a99c7fd2515f67d8c6a89ecd3795185958704474e11021061d54602ec1aa4416",
+    "ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/world_bridge_node.py": "32c378083dea07315356dea135b80d02f15283807691123a77f505dffb644933",
+    "ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/mapping.py": "2d0a3dfe956b662e18fa82c6481df99af684e6f9b88acc8c133e756a68f06832",
+    "ros2_ws/src/unloading_ros_bridge/package.xml": "818642f66da7c8d1b181faff1b6550b87d80371fdffed65fd0fe9218cb7c8769",
+    "tests/test_perception_time_admission.py": "cbba12937ca085a40ea465be2c187dfb8702f0fbc6d0c4c814a6fdc5685ad270",
+    "ros2_ws/src/unloading_ros_bridge/test/test_perception_time_transport.py": "5a3fe36d1e3b3ec82dd3922bbd356e2735673ed92cdff20db065ef0f76b254c4"
+  }
+}
