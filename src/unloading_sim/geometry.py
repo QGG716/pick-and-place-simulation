@@ -229,8 +229,10 @@ class OBB:
         for axis in axes:
             # Rotation columns are expected to be orthonormal, but normalize
             # every candidate so the result remains expressed in metres.
-            axis = np.asarray(axis, dtype=float)
-            axis /= np.linalg.norm(axis)
+            # Face axes are views of the frozen input rotations. Normalize a
+            # temporary vector; an in-place divide silently rewrites the scene
+            # and invalidates the production validation-context fingerprint.
+            axis = np.asarray(axis, dtype=float) / np.linalg.norm(axis)
             radius_self = float(self.half_extents @ np.abs(self.rotation.T @ axis))
             radius_other = float(other.half_extents @ np.abs(other.rotation.T @ axis))
             gap = abs(float(delta @ axis)) - radius_self - radius_other
