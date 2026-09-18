@@ -1,0 +1,35 @@
+........................................................................ [ 11%]
+............F........................................................... [ 22%]
+........................................................................ [ 34%]
+........................................................................ [ 45%]
+........................................................................ [ 57%]
+........................................................................ [ 68%]
+........................................................................ [ 80%]
+........................................................................ [ 91%]
+.....................................................                    [100%]
+================================== FAILURES ===================================
+________ test_derived_scene_preserves_parent_cartons_and_fixed_layout _________
+
+    def test_derived_scene_preserves_parent_cartons_and_fixed_layout():
+        config = load_validation_config(ROOT / 'configs/isaac/perception_validation.yaml')
+>       snapshot = json.loads((ROOT / config['layout_bundle']['snapshot']).read_text())
+
+tests\test_effective_scene.py:29:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('D:/code/simulation/pick-and-place-simulation-v0.5-perception-ros2/integration/isaac_scene_contract/m710id70_layout_v1/scene_snapshot.json')
+encoding = 'locale', errors = None
+
+    def read_text(self, encoding=None, errors=None):
+        """
+        Open the file in text mode, read it, and close the file.
+        """
+        encoding = io.text_encoding(encoding)
+        with self.open(mode='r', encoding=encoding, errors=errors) as f:
+>           return f.read()
+E           UnicodeDecodeError: 'gbk' codec can't decode byte 0xba in position 40253: illegal multibyte sequence
+
+.codex-tools\python\cpython-3.10.21-windows-x86_64-none\lib\pathlib.py:1135: UnicodeDecodeError
+=========================== short test summary info ===========================
+FAILED tests/test_effective_scene.py::test_derived_scene_preserves_parent_cartons_and_fixed_layout
+1 failed, 628 passed, 1 deselected in 90.12s (0:01:30)

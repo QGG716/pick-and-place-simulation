@@ -9,6 +9,7 @@ from visualization_msgs.msg import Marker
 from unloading_ros_bridge.world_bridge_node import WorldBridgeNode
 from unloading_ros_bridge.marker_display import MarkerScene
 from unloading_ros_bridge.marker_display import BLOCKED, CONFLICT, HISTORY
+from unloading_ros_bridge.timing import Timing
 from unloading_interfaces.msg import UnknownRegion
 
 
@@ -48,7 +49,9 @@ def display():
     # Only transport is captured here. No alternate marker generation logic.
     output = []
     owner = SimpleNamespace(marker_publisher=SimpleNamespace(publish=output.append),
-        marker_scene=MarkerScene(), get_logger=lambda: SimpleNamespace(warning=lambda text: None))
+        marker_scene=MarkerScene(), get_logger=lambda: SimpleNamespace(warning=lambda text: None),
+        get_name=lambda: 'synthetic_marker_test')
+    owner.timing = Timing(owner)
     def publish(value):
         before = deepcopy(value)
         WorldBridgeNode.publish_markers(owner, value, 'world')

@@ -17,6 +17,7 @@ from unloading_perception.replay import replay_publication
 
 from .common import require_humble_python310
 from .mapping import observation_to_msg
+from .timing import Timing, timed_callback
 
 
 def _sha256(path: Path) -> str:
@@ -32,6 +33,7 @@ class PerceptionNode(Node):
 
     def __init__(self) -> None:
         super().__init__("unloading_perception")
+        self.timing = Timing(self)
         self.declare_parameter("backend", "replay")
         self.declare_parameter("replay_path", "")
         self.declare_parameter("artifact_sha256", "")
@@ -95,6 +97,7 @@ class PerceptionNode(Node):
             raise RuntimeError("backend must be replay, algorithm_replay or pipeline; simulation truth is never an implicit fallback")
         self.timer = self.create_timer(float(self.get_parameter("publish_period_seconds").value), self.poll)
 
+    @timed_callback('perception_publish_callback')
     def poll(self) -> None:
         if self.mode in ("replay", "algorithm_replay"):
             now = self.get_clock().now().nanoseconds / 1e9

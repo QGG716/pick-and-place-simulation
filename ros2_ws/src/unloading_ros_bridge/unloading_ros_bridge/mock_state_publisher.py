@@ -10,11 +10,13 @@ from sensor_msgs.msg import JointState
 from unloading_interfaces.msg import MechanismState
 
 from .common import require_humble_python310
+from .timing import Timing, timed_callback
 
 
 class MockStatePublisher(Node):
     def __init__(self) -> None:
         super().__init__("unloading_mock_state_publisher")
+        self.timing = Timing(self)
         self.declare_parameter("joint_names", [f"joint_{index}" for index in range(1, 7)])
         self.declare_parameter("period_seconds", 0.1)
         self.declare_parameter("robot_model_fingerprint", "synthetic-robot-v1")
@@ -26,6 +28,7 @@ class MockStatePublisher(Node):
         self.sequence = 0
         self.timer = self.create_timer(float(self.get_parameter("period_seconds").value), self.publish_state)
 
+    @timed_callback('source_callback')
     def publish_state(self) -> None:
         stamp = self.get_clock().now().to_msg()
         names = list(self.get_parameter("joint_names").value)
@@ -45,6 +48,8 @@ class MockStatePublisher(Node):
             base_state_json='{"position_m":[0.0,0.0,0.0]}', conveyor_state_json='{"running":false}',
         ))
         self.sequence += 1
+        self.timing.event('source_published', sample_time=stamp.sec+stamp.nanosec/1e9,
+                          sequence=self.sequence-1, epoch=self.epoch)
 
 
 def main(args=None) -> None:

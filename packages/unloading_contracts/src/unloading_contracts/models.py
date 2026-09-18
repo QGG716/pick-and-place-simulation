@@ -601,6 +601,19 @@ class PlanningWorldSnapshot:
     def current_q(self) -> tuple[float, ...]:
         return self.robot_state_revision.current_q
 
+    def with_robot_sampling(self, state: RobotStateRevision) -> PlanningWorldSnapshot:
+        """Share immutable content when only validated source sampling metadata changes.
+
+        Sampling is deliberately excluded from robot/world content fingerprints.
+        Content changes must use the normal constructor and its full validation.
+        """
+        if not isinstance(state, RobotStateRevision) or state != self.robot_state_revision:
+            raise ValueError('robot content changed; full snapshot assembly required')
+        from copy import copy
+        result = copy(self)
+        object.__setattr__(result, 'robot_state_revision', state)
+        return result
+
     @property
     def robot_model_fingerprint(self) -> str:
         if isinstance(self.config_identity, Mapping) and self.config_identity.get("robot_model_fingerprint"):

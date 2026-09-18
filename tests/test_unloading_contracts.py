@@ -69,3 +69,27 @@ def test_contract_freeze_normalizes_numpy_scalars_and_arrays_without_aliasing():
     revision = RobotStateRevision(1, (0.0,), {"count": np.int64(2), "samples": np.array([1.0, 2.0])})
     assert revision.robot_state["count"] == 2
     assert revision.robot_state["samples"] == (1.0, 2.0)
+
+
+def test_sampling_only_snapshot_reuse_matches_full_validated_construction():
+    from dataclasses import replace
+    from unloading_contracts import PlanningWorldSnapshot
+    scene = {'obstacles': [], 'planning_admissible': False}
+    original = PlanningWorldSnapshot(SceneRevision(1, canonical_fingerprint(scene)), scene,
+        RobotStateRevision(1, (0.,), {'joints': [0.]}, sample_time=10., clock_domain='ros', source='test'),
+        {'tool': 'synthetic'}, None, {'base': 0}, {'running': False}, 'synthetic-config')
+    state = replace(original.robot_state_revision, sample_time=11.)
+    reused = original.with_robot_sampling(state)
+    rebuilt = replace(original, robot_state_revision=state)
+    assert dumps(reused) == dumps(rebuilt)
+    assert reused.fingerprint == rebuilt.fingerprint == original.fingerprint
+    assert original.robot_state_revision.sample_time == 10.
+    assert reused.scene_snapshot is original.scene_snapshot
+    with pytest.raises(FrozenInstanceError):
+        reused.robot_state_revision = state
+    with pytest.raises(TypeError):
+        reused.scene_snapshot['planning_admissible'] = True
+    for changed in (replace(state, current_q=(1.,)), replace(state, sequence=2),
+                    replace(state, robot_state={'joints': [1.]})):
+        with pytest.raises(ValueError, match='content changed'):
+            original.with_robot_sampling(changed)

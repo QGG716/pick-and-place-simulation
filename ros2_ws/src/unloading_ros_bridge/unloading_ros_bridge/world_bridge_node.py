@@ -27,6 +27,8 @@ from unloading_perception.scene import (
 from .common import require_humble_python310, state_time_to_float
 from .mapping import observation_from_msg, observation_source_times, snapshot_to_msg
 from .marker_display import MarkerScene, marker_qos
+from .timing import Timing, timed_callback
+from .replay_cache import ReplayRecordCache, HeartbeatTemplate
 
 
 class WorldBridgeNode(Node):
@@ -34,12 +36,15 @@ class WorldBridgeNode(Node):
 
     def __init__(self) -> None:
         super().__init__("unloading_world_bridge")
+        self.timing = Timing(self)
         self.declare_parameter('observation_mode', 'online', ParameterDescriptor(read_only=True))
         self.observation_mode = str(self.get_parameter('observation_mode').value)
         if self.observation_mode not in ('online', 'replay_display_only'):
             raise ValueError('observation_mode must be online or replay_display_only')
         self.replay_guard = SourceEpochGuard()
-        self.replay_binding = None
+        self.replay_epoch = None
+        self.replay_record_cache = ReplayRecordCache()
+        self.heartbeat_templates = []  # At most eight admission variants for the pinned content.
         self.declare_parameter("world_frame", "world")
         self.declare_parameter("expected_joint_names", ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"])
         self.declare_parameter("tf_timeout_seconds", 0.2)
@@ -137,6 +142,7 @@ class WorldBridgeNode(Node):
         self._commit_snapshot('state_time_rejected', now=now)
         return None
 
+    @timed_callback('mechanism')
     def on_mechanism(self, message: MechanismState) -> None:
         now = self.get_clock().now().nanoseconds / 1e9
         if message.schema_version != "1.1.0" or not all((message.source_epoch, message.tool_state_identity, message.payload_state_identity, message.base_state_identity, message.conveyor_state_identity, message.config_identity, message.robot_model_fingerprint, message.world_model_fingerprint)):
@@ -195,6 +201,7 @@ class WorldBridgeNode(Node):
         if content_changed or was_stale or had_fault:
             self._commit_snapshot("mechanism", now=now)
 
+    @timed_callback('joints')
     def on_joints(self, message: JointState) -> None:
         now = self.get_clock().now().nanoseconds / 1e9
         expected = tuple(str(name) for name in self.get_parameter("expected_joint_names").value)
@@ -274,6 +281,7 @@ class WorldBridgeNode(Node):
             transformed.append(replace(cargo, pose=pose, corners_3d_m=corners, axes_3d_rows=axes))
         return replace(observation, cargo=tuple(transformed))
 
+    @timed_callback('perception')
     def on_observation(self, message: PerceptionObservation) -> None:
         if self.observation_mode == 'replay_display_only':
             self._on_replay_observation(message)
@@ -314,28 +322,35 @@ class WorldBridgeNode(Node):
 
     def _on_replay_observation(self, message):
         try:
+            publication = self.replay_record_cache.matching_publication(message)
+            if publication is not None:
+                self.replay_guard.accept(publication.source_epoch, publication.source_sequence,
+                    restart=bool(publication.coverage.get('source_restart', False)))
+                # This is another transport of the exact pinned content. Keep the
+                # admitted content record; independent world heartbeats own liveness.
+                return
             observation = observation_from_msg(message)
-            metadata = validate_replay_observation(observation, require_publication=True)
+            validate_replay_observation(observation, require_publication=True)
             if observation.provider == 'registered-rgbd-fused-algorithm':
                 from unloading_perception.algorithm_artifact import validate_algorithm_replay
                 validate_algorithm_replay(observation)
-            identity = canonical_fingerprint({
-                'record': {k: v for k, v in metadata.items() if k not in (
-                    'publication_sequence', 'session_elapsed_seconds', 'published_time', 'publication_clock_domain')},
-                'cargo': observation.cargo, 'unknown_regions': observation.unknown_regions})
-            if (self.replay_binding is not None and self.replay_binding[0] == observation.source_epoch
-                    and self.replay_binding[1] != identity):
+            # A cache miss in an admitted session changed actual immutable wire
+            # content (including provenance), regardless of declared record IDs.
+            if self.replay_epoch == observation.source_epoch:
                 raise ValueError('REPLAY_SESSION_RECORD_CHANGED')
             self.replay_guard.accept(observation.source_epoch, observation.source_sequence,
                 restart=bool(observation.coverage.get('source_restart', False)))
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             self.get_logger().error(f'rejecting replay observation: {exc}')
             return
-        self.replay_binding = (observation.source_epoch, identity)
+        self.replay_epoch = observation.source_epoch
+        self.replay_record_cache.remember(message, observation)
+        self.heartbeat_templates.clear()
         # No current TF or image tracking can supply missing historical evidence.
         self.last_observation, self.last_tracked = observation, observation.cargo
         self._commit_snapshot('historical_replay')
 
+    @timed_callback('commit')
     def _commit_snapshot(self, event: str, *, now: float | None = None) -> None:
         """Single entry for evaluating and publishing every world-state event."""
         if self.last_observation is None or self.last_tracked is None or self.assembler.robot_state is None:
@@ -346,23 +361,43 @@ class WorldBridgeNode(Node):
         reasons = () if replay else observation_time_reasons(self.last_observation.capture_time,
             observation_clock_domain=self.last_observation.clock_domain, **context)
         self.time_admission_blocking_reasons = tuple(dict.fromkeys(self.time_admission_blocking_reasons + reasons))
+        admission_reasons = (self.time_admission_blocking_reasons
+            + self.state_time_blocking_reasons['robot'] + self.state_time_blocking_reasons['mechanism'])
+        if self.last_joint_stamp is None or current - self.last_joint_stamp > float(self.get_parameter('robot_state_freshness_seconds').value) or current < self.last_joint_stamp:
+            admission_reasons += ('ROBOT_STATE_STALE_OR_TIME_JUMP',)
+        if self.mechanism_stamp is None or current - self.mechanism_stamp > float(self.get_parameter('mechanism_state_freshness_seconds').value) or current < self.mechanism_stamp:
+            admission_reasons += ('MECHANISM_STATE_STALE_OR_TIME_JUMP',)
+        # Actual validated state content, not caller-declared revision IDs. Sample
+        # metadata is excluded by RobotStateRevision equality, as in its fingerprint.
+        key = (self.assembler.robot_state, self.last_mechanism_content, admission_reasons,
+               str(self.get_parameter('world_frame').value))
+        if replay:
+            for previous, template in self.heartbeat_templates:
+                if previous == key:
+                    started = self.timing.start()
+                    snapshot, output = template.sample(self.assembler.robot_state, now=current,
+                        sequence=self.publisher_sequence, robot_sample=self.last_joint_stamp,
+                        mechanism_sample=self.mechanism_stamp, mechanism_sequence=self.mechanism_sequence)
+                    self.timing.finish('heartbeat_reuse', started)
+                    self.assembler.update = template.update
+                    self._publish_snapshot(snapshot, output, current)
+                    return
+        started = self.timing.start()
         update = build_scene_update(
             self.last_observation, self.last_tracked, replay_display_only=replay, **context,
         )
-        admission_reasons = (self.time_admission_blocking_reasons
-            + self.state_time_blocking_reasons['robot'] + self.state_time_blocking_reasons['mechanism'])
+        self.timing.finish('scene_update', started)
         if admission_reasons:
             update = replace(update, planning_admissible=False,
                 blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + admission_reasons)))
-        if self.last_joint_stamp is None or current - self.last_joint_stamp > float(self.get_parameter("robot_state_freshness_seconds").value) or current < self.last_joint_stamp:
-            update = replace(update, planning_admissible=False, blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + ("ROBOT_STATE_STALE_OR_TIME_JUMP",))))
-        if self.mechanism_stamp is None or current - self.mechanism_stamp > float(self.get_parameter("mechanism_state_freshness_seconds").value) or current < self.mechanism_stamp:
-            update = replace(update, planning_admissible=False, blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + ("MECHANISM_STATE_STALE_OR_TIME_JUMP",))))
         self.assembler.update = update
+        started = self.timing.start()
         result = self.assembler.assemble()
+        self.timing.finish('domain_assemble', started)
         if result.snapshot is None:
             self.get_logger().warning("world snapshot blocked: " + ",".join(result.missing))
             return
+        started = self.timing.start()
         output = snapshot_to_msg(
             result.snapshot, source_epoch=self.last_observation.source_epoch,
             source_capture_time=self.last_observation.capture_time,
@@ -376,11 +411,23 @@ class WorldBridgeNode(Node):
             mechanism_sample_time=self.mechanism_stamp,
             mechanism_revision_sequence=self.mechanism_sequence,
         )
+        self.timing.finish('world_mapping', started)
+        if replay:
+            self.heartbeat_templates.append((key, HeartbeatTemplate(result.snapshot, output, update)))
+            self.heartbeat_templates = self.heartbeat_templates[-8:]
+        self._publish_snapshot(result.snapshot, output, current)
+
+    def _publish_snapshot(self, snapshot, output, current):
+        started = self.timing.start()
         self.publisher.publish(output)
+        self.timing.finish('world_publish', started, evaluation_time=current,
+            robot_sample=self.last_joint_stamp, mechanism_sample=self.mechanism_stamp,
+            reasons=list(output.blocking_reasons), publisher_sequence=self.publisher_sequence)
         self.publisher_sequence += 1
-        self.last_snapshot = result.snapshot
+        self.last_snapshot = snapshot
         self.publish_markers(output, str(self.get_parameter("world_frame").value))
 
+    @timed_callback('watchdog')
     def check_freshness(self) -> None:
         if self.last_observation is None:
             return
@@ -393,13 +440,18 @@ class WorldBridgeNode(Node):
                      robot_age > float(self.get_parameter("robot_state_freshness_seconds").value) or robot_age < 0.0,
                      mechanism_age > float(self.get_parameter("mechanism_state_freshness_seconds").value) or mechanism_age < 0.0)
         # Coalesce unchanged high-rate samples at the existing 0.1 s steady
-        # watchdog cadence. Reassemble from admitted source samples; never
-        # refresh their timestamps or copy/re-date an old world message.
+        # watchdog cadence. Reevaluate admitted source samples; reusable content
+        # never supplies their timestamps or suppresses current time faults.
         self._commit_snapshot("freshness" if stale_key != self.stale_key else "heartbeat", now=now)
         self.stale_key = stale_key
 
     def publish_markers(self, snapshot: PlanningWorldSnapshot, frame_id: str) -> None:
-        self.marker_publisher.publish(self.marker_scene.render(snapshot, frame_id))
+        started = self.timing.start()
+        markers = self.marker_scene.render(snapshot, frame_id)
+        self.timing.finish('marker_render', started)
+        started = self.timing.start()
+        self.marker_publisher.publish(markers)
+        self.timing.finish('marker_publish', started)
         for diagnostic in self.marker_scene.diagnostics:
             self.get_logger().warning('display: ' + diagnostic)
 

@@ -1,0 +1,522 @@
+{
+  "algorithm_run_id": "80d4988224e04069bdee66eab0f5695f",
+  "artifact": {
+    "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/algorithm_artifact.json",
+    "sha256": "c91e80018c7b46b98bcf7b701da5faa2869e5b22f4e97993bc8721bd5ebc7b58"
+  },
+  "phase_times": {
+    "warmup": [
+      25481586.275708254,
+      25481588.291123778
+    ],
+    "steady": [
+      25481588.291138027,
+      25481600.30144114
+    ],
+    "stopped": [
+      25481600.301796623,
+      25481604.32104301
+    ],
+    "recovery_initialization": [
+      25481604.321122173,
+      25481606.3263642
+    ],
+    "recovered": [
+      25481606.3263676,
+      25481611.34626207
+    ]
+  },
+  "state_control": "SIGSTOP/SIGCONT same mock process: BOTH robot and mechanism sources",
+  "steady_seconds": 12.0,
+  "discovery_seconds": 0.3705257587134838,
+  "first_complete_seconds": 2.745839651674032,
+  "late_subscriber": true,
+  "dropped_receiver_events": 0,
+  "windows": {
+    "discovery": {
+      "world_count": 0,
+      "reasons": {},
+      "world_interval_s": {
+        "count": 0
+      },
+      "robot_evaluation_age_s": {
+        "count": 0
+      },
+      "robot_receive_age_s": {
+        "count": 0
+      },
+      "mechanism_evaluation_age_s": {
+        "count": 0
+      },
+      "mechanism_receive_age_s": {
+        "count": 0
+      },
+      "source_counts": {},
+      "receiver_callback_s": {
+        "count": 0
+      }
+    },
+    "initialization": {
+      "world_count": 1,
+      "reasons": {
+        "HISTORICAL_REPLAY_DISPLAY_ONLY": {
+          "count": 1,
+          "first": 25481586.241873916,
+          "last": 25481586.241873916
+        },
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS": {
+          "count": 1,
+          "first": 25481586.241873916,
+          "last": 25481586.241873916
+        },
+        "ROBOT_STATE_STALE_OR_TIME_JUMP": {
+          "count": 1,
+          "first": 25481586.241873916,
+          "last": 25481586.241873916
+        }
+      },
+      "world_interval_s": {
+        "count": 0
+      },
+      "robot_evaluation_age_s": {
+        "count": 1,
+        "min": 0.550529956817627,
+        "max": 0.550529956817627,
+        "p50": 0.550529956817627,
+        "p95": 0.550529956817627,
+        "p99": 0.550529956817627
+      },
+      "robot_receive_age_s": {
+        "count": 1,
+        "min": 1.6167595386505127,
+        "max": 1.6167595386505127,
+        "p50": 1.6167595386505127,
+        "p95": 1.6167595386505127,
+        "p99": 1.6167595386505127
+      },
+      "mechanism_evaluation_age_s": {
+        "count": 1,
+        "min": 0.550529956817627,
+        "max": 0.550529956817627,
+        "p50": 0.550529956817627,
+        "p95": 0.550529956817627,
+        "p99": 0.550529956817627
+      },
+      "mechanism_receive_age_s": {
+        "count": 1,
+        "min": 1.6167595386505127,
+        "max": 1.6167595386505127,
+        "p50": 1.6167595386505127,
+        "p95": 1.6167595386505127,
+        "p99": 1.6167595386505127
+      },
+      "source_counts": {
+        "joints": 24,
+        "mechanism": 24,
+        "perception": 17,
+        "world": 1,
+        "markers": 1
+      },
+      "receiver_callback_s": {
+        "count": 67,
+        "min": 1.6402453184127808e-05,
+        "max": 0.00015223771333694458,
+        "p50": 5.571916699409485e-05,
+        "p95": 0.00010122358798980713,
+        "p99": 0.00011729076504707336
+      }
+    },
+    "warmup": {
+      "world_count": 17,
+      "reasons": {
+        "HISTORICAL_REPLAY_DISPLAY_ONLY": {
+          "count": 17,
+          "first": 25481586.293919824,
+          "last": 25481588.22881209
+        },
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS": {
+          "count": 17,
+          "first": 25481586.293919824,
+          "last": 25481588.22881209
+        },
+        "ROBOT_STATE_STALE_OR_TIME_JUMP": {
+          "count": 4,
+          "first": 25481586.293919824,
+          "last": 25481587.36656242
+        }
+      },
+      "world_interval_s": {
+        "count": 16,
+        "min": 0.02252412959933281,
+        "max": 0.9158968068659306,
+        "p50": 0.08645375445485115,
+        "p95": 0.11609126627445221,
+        "p99": 0.9158968068659306
+      },
+      "robot_evaluation_age_s": {
+        "count": 17,
+        "min": 0.06178593635559082,
+        "max": 1.6459803581237793,
+        "p50": 0.44564366340637207,
+        "p95": 1.453061580657959,
+        "p99": 1.6459803581237793
+      },
+      "robot_receive_age_s": {
+        "count": 17,
+        "min": 0.08590364456176758,
+        "max": 1.668804407119751,
+        "p50": 0.4661843776702881,
+        "p95": 1.4739222526550293,
+        "p99": 1.668804407119751
+      },
+      "mechanism_evaluation_age_s": {
+        "count": 17,
+        "min": 0.022151470184326172,
+        "max": 1.6799125671386719,
+        "p50": 0.06359505653381348,
+        "p95": 1.6459803581237793,
+        "p99": 1.6799125671386719
+      },
+      "mechanism_receive_age_s": {
+        "count": 17,
+        "min": 0.04138612747192383,
+        "max": 2.584702491760254,
+        "p50": 0.10391354560852051,
+        "p95": 1.668804407119751,
+        "p99": 2.584702491760254
+      },
+      "source_counts": {
+        "world": 17,
+        "markers": 18,
+        "joints": 20,
+        "mechanism": 20,
+        "perception": 20
+      },
+      "receiver_callback_s": {
+        "count": 95,
+        "min": 6.545335054397583e-06,
+        "max": 0.00029193609952926636,
+        "p50": 7.503107190132141e-05,
+        "p95": 0.0002020038664340973,
+        "p99": 0.00026643648743629456
+      }
+    },
+    "steady": {
+      "world_count": 121,
+      "reasons": {
+        "HISTORICAL_REPLAY_DISPLAY_ONLY": {
+          "count": 121,
+          "first": 25481588.316032466,
+          "last": 25481600.301329046
+        },
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS": {
+          "count": 121,
+          "first": 25481588.316032466,
+          "last": 25481600.301329046
+        }
+      },
+      "world_interval_s": {
+        "count": 120,
+        "min": 0.08474894613027573,
+        "max": 0.12244419381022453,
+        "p50": 0.09998317807912827,
+        "p95": 0.10998333245515823,
+        "p99": 0.1156652458012104
+      },
+      "robot_evaluation_age_s": {
+        "count": 121,
+        "min": 0.06146883964538574,
+        "max": 0.06706833839416504,
+        "p50": 0.06188464164733887,
+        "p95": 0.06271076202392578,
+        "p99": 0.0649712085723877
+      },
+      "robot_receive_age_s": {
+        "count": 121,
+        "min": 0.07297682762145996,
+        "max": 0.10382986068725586,
+        "p50": 0.0850381851196289,
+        "p95": 0.09462761878967285,
+        "p99": 0.10282087326049805
+      },
+      "mechanism_evaluation_age_s": {
+        "count": 121,
+        "min": 0.06146883964538574,
+        "max": 0.06706833839416504,
+        "p50": 0.06188464164733887,
+        "p95": 0.06271076202392578,
+        "p99": 0.0649712085723877
+      },
+      "mechanism_receive_age_s": {
+        "count": 121,
+        "min": 0.07297682762145996,
+        "max": 0.10382986068725586,
+        "p50": 0.0850381851196289,
+        "p95": 0.09462761878967285,
+        "p99": 0.10282087326049805
+      },
+      "source_counts": {
+        "world": 121,
+        "markers": 120,
+        "joints": 120,
+        "mechanism": 120,
+        "perception": 113
+      },
+      "receiver_callback_s": {
+        "count": 594,
+        "min": 6.3478946685791016e-06,
+        "max": 0.0003021359443664551,
+        "p50": 8.248910307884216e-05,
+        "p95": 0.00020639970898628235,
+        "p99": 0.0002282857894897461
+      }
+    },
+    "stopped": {
+      "world_count": 29,
+      "reasons": {
+        "MECHANISM_STATE_STALE_OR_TIME_JUMP": {
+          "count": 10,
+          "first": 25481603.49103524,
+          "last": 25481604.300501753
+        },
+        "HISTORICAL_REPLAY_DISPLAY_ONLY": {
+          "count": 29,
+          "first": 25481600.401781816,
+          "last": 25481604.300501753
+        },
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS": {
+          "count": 29,
+          "first": 25481600.401781816,
+          "last": 25481604.300501753
+        },
+        "ROBOT_STATE_STALE_OR_TIME_JUMP": {
+          "count": 25,
+          "first": 25481600.823071238,
+          "last": 25481604.300501753
+        }
+      },
+      "world_interval_s": {
+        "count": 28,
+        "min": 0.02800433337688446,
+        "max": 1.2885566912591457,
+        "p50": 0.09903237596154213,
+        "p95": 0.1212569810450077,
+        "p99": 1.2885566912591457
+      },
+      "robot_evaluation_age_s": {
+        "count": 29,
+        "min": 0.16184568405151367,
+        "max": 4.061791896820068,
+        "p50": 1.56180739402771,
+        "p95": 3.9614179134368896,
+        "p99": 4.061791896820068
+      },
+      "robot_receive_age_s": {
+        "count": 29,
+        "min": 0.17662477493286133,
+        "max": 4.075344085693359,
+        "p50": 1.5764849185943604,
+        "p95": 3.98287034034729,
+        "p99": 4.075344085693359
+      },
+      "mechanism_evaluation_age_s": {
+        "count": 29,
+        "min": 0.16184568405151367,
+        "max": 4.061791896820068,
+        "p50": 1.56180739402771,
+        "p95": 3.9614179134368896,
+        "p99": 4.061791896820068
+      },
+      "mechanism_receive_age_s": {
+        "count": 29,
+        "min": 0.17662477493286133,
+        "max": 4.075344085693359,
+        "p50": 1.5764849185943604,
+        "p95": 3.98287034034729,
+        "p99": 4.075344085693359
+      },
+      "source_counts": {
+        "perception": 38,
+        "markers": 29,
+        "world": 29
+      },
+      "receiver_callback_s": {
+        "count": 96,
+        "min": 1.4815479516983032e-05,
+        "max": 0.0004784241318702698,
+        "p50": 0.00010572373867034912,
+        "p95": 0.00022060424089431763,
+        "p99": 0.00023240596055984497
+      }
+    },
+    "recovery_initialization": {
+      "world_count": 12,
+      "reasons": {
+        "MECHANISM_STATE_STALE_OR_TIME_JUMP": {
+          "count": 1,
+          "first": 25481605.512000583,
+          "last": 25481605.512000583
+        },
+        "HISTORICAL_REPLAY_DISPLAY_ONLY": {
+          "count": 12,
+          "first": 25481605.512000583,
+          "last": 25481606.310772058
+        },
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS": {
+          "count": 12,
+          "first": 25481605.512000583,
+          "last": 25481606.310772058
+        },
+        "ROBOT_STATE_STALE_OR_TIME_JUMP": {
+          "count": 2,
+          "first": 25481605.548442733,
+          "last": 25481605.583400387
+        }
+      },
+      "world_interval_s": {
+        "count": 11,
+        "min": 0.034957654774188995,
+        "max": 0.1096280962228775,
+        "p50": 0.07141631096601486,
+        "p95": 0.1096280962228775,
+        "p99": 0.1096280962228775
+      },
+      "robot_evaluation_age_s": {
+        "count": 12,
+        "min": 0.005379438400268555,
+        "max": 1.2466843128204346,
+        "p50": 0.06183791160583496,
+        "p95": 1.2053182125091553,
+        "p99": 1.2466843128204346
+      },
+      "robot_receive_age_s": {
+        "count": 12,
+        "min": 0.07541036605834961,
+        "max": 1.2617428302764893,
+        "p50": 0.4074676036834717,
+        "p95": 1.2267837524414062,
+        "p99": 1.2617428302764893
+      },
+      "mechanism_evaluation_age_s": {
+        "count": 12,
+        "min": 0.0018115043640136719,
+        "max": 4.101880073547363,
+        "p50": 0.06180119514465332,
+        "p95": 0.14957833290100098,
+        "p99": 4.101880073547363
+      },
+      "mechanism_receive_age_s": {
+        "count": 12,
+        "min": 0.02327704429626465,
+        "max": 5.2868428230285645,
+        "p50": 0.08447098731994629,
+        "p95": 0.17028498649597168,
+        "p99": 5.2868428230285645
+      },
+      "source_counts": {
+        "joints": 22,
+        "mechanism": 21,
+        "markers": 12,
+        "perception": 18,
+        "world": 12
+      },
+      "receiver_callback_s": {
+        "count": 85,
+        "min": 7.2605907917022705e-06,
+        "max": 0.00022121518850326538,
+        "p50": 5.9295445680618286e-05,
+        "p95": 0.00016156956553459167,
+        "p99": 0.00021810829639434814
+      }
+    },
+    "recovered": {
+      "world_count": 50,
+      "reasons": {
+        "HISTORICAL_REPLAY_DISPLAY_ONLY": {
+          "count": 50,
+          "first": 25481606.411713675,
+          "last": 25481611.310800888
+        },
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS": {
+          "count": 50,
+          "first": 25481606.411713675,
+          "last": 25481611.310800888
+        }
+      },
+      "world_interval_s": {
+        "count": 49,
+        "min": 0.08217756822705269,
+        "max": 0.11313820257782936,
+        "p50": 0.10025370493531227,
+        "p95": 0.10949154570698738,
+        "p99": 0.11313820257782936
+      },
+      "robot_evaluation_age_s": {
+        "count": 50,
+        "min": 0.06124091148376465,
+        "max": 0.06896591186523438,
+        "p50": 0.06172370910644531,
+        "p95": 0.06475448608398438,
+        "p99": 0.06896591186523438
+      },
+      "robot_receive_age_s": {
+        "count": 50,
+        "min": 0.07279253005981445,
+        "max": 0.09119510650634766,
+        "p50": 0.08503508567810059,
+        "p95": 0.08757901191711426,
+        "p99": 0.09119510650634766
+      },
+      "mechanism_evaluation_age_s": {
+        "count": 50,
+        "min": 0.06124091148376465,
+        "max": 0.06896591186523438,
+        "p50": 0.06172370910644531,
+        "p95": 0.06475448608398438,
+        "p99": 0.06896591186523438
+      },
+      "mechanism_receive_age_s": {
+        "count": 50,
+        "min": 0.07279253005981445,
+        "max": 0.09119510650634766,
+        "p50": 0.08503508567810059,
+        "p95": 0.08757901191711426,
+        "p99": 0.09119510650634766
+      },
+      "source_counts": {
+        "mechanism": 51,
+        "markers": 51,
+        "perception": 47,
+        "world": 50,
+        "joints": 50
+      },
+      "receiver_callback_s": {
+        "count": 249,
+        "min": 6.373971700668335e-06,
+        "max": 0.00023046880960464478,
+        "p50": 7.983297109603882e-05,
+        "p95": 0.00018874183297157288,
+        "p99": 0.00020645931363105774
+      }
+    }
+  },
+  "message_bytes": {
+    "perception": 2472940,
+    "world": 4924741,
+    "markers": 178969
+  },
+  "receiver_postprocessing_s": {
+    "perception_serialize_s": 0.0017914175987243652,
+    "world_serialize_s": 0.0030005425214767456,
+    "markers_serialize_s": 0.002057299017906189,
+    "parse_and_fingerprint_s": 1.1873047165572643
+  },
+  "content_unchanged": true,
+  "objects": 37,
+  "surfaces": 71,
+  "marker_representatives": 71,
+  "world_unknown_regions": 121,
+  "status": "PASS",
+  "postprocessing_seconds": 1.5941268540918827,
+  "receiver_file_write_seconds": 0.008357033133506775
+}
