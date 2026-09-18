@@ -21,3 +21,11 @@ def float_to_time(value: float):
 
 def time_to_float(value) -> float:
     return float(value.sec) + float(value.nanosec) / 1_000_000_000.0
+
+
+def state_time_to_float(value) -> float:
+    """Reject non-normalized ROS state stamps before conversion hides bad encoding."""
+    if (not isinstance(value.sec, int) or not isinstance(value.nanosec, int)
+            or not 0 <= value.sec < 2**31 or not 0 <= value.nanosec < 1_000_000_000):
+        raise ValueError('invalid ROS state time encoding')
+    return time_to_float(value)

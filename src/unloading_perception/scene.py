@@ -198,6 +198,25 @@ def observation_time_reasons(capture_time: float, *, now: float, max_age_seconds
     return tuple(reasons)
 
 
+def state_time_reasons(sample_time: float, *, source: str, now: float, max_age_seconds: float,
+                       sample_clock_domain: str, clock_domain: str,
+                       clock_initialized: bool) -> tuple[str, ...]:
+    """State-source admission: positive samples, inclusive age bound, zero future tolerance.
+
+    JointState callers supply the configured clock domain, not a claimed source
+    identity: that standard message has no clock-domain or epoch field.
+    """
+    if source not in ('robot', 'mechanism'):
+        raise ValueError('unknown state source')
+    prefix = source.upper() + '_STATE_'
+    if not math.isfinite(sample_time) or sample_time <= 0.0 or not math.isfinite(now):
+        return (prefix + 'TIME_INVALID',)
+    reasons = observation_time_reasons(sample_time, now=now, max_age_seconds=max_age_seconds,
+        future_tolerance_seconds=0.0, observation_clock_domain=sample_clock_domain,
+        clock_domain=clock_domain, clock_initialized=clock_initialized)
+    return tuple(prefix + reason.removeprefix('OBSERVATION_') for reason in reasons)
+
+
 def build_scene_update(observation: PerceptionObservation, tracked: tuple[CargoObservation, ...] | None = None, *,
                        now: float | None = None, max_age_seconds: float | None = None,
                        future_tolerance_seconds: float = 0.0, clock_domain: str | None = None,

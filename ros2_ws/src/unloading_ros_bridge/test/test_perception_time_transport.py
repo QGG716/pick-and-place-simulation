@@ -3,6 +3,7 @@
 No Isaac, model inference, execution node, authorization or trajectory.
 """
 from dataclasses import replace
+from contextlib import contextmanager
 import math
 import os
 import time
@@ -21,9 +22,10 @@ from unloading_ros_bridge.mapping import observation_to_msg
 from unloading_ros_bridge.world_bridge_node import WorldBridgeNode
 
 
-@pytest.fixture
-def transport():
-    rclpy.init(args=['--ros-args', '-p', 'use_sim_time:=true'], domain_id=120 + os.getpid() % 30)
+@contextmanager
+def time_transport(*, domain_id=None):
+    rclpy.init(args=['--ros-args', '-p', 'use_sim_time:=true'],
+               domain_id=120 + os.getpid() % 30 if domain_id is None else domain_id)
     bridge = WorldBridgeNode()
     node = rclpy.create_node('synthetic_time_admission_inputs')
     executor = SingleThreadedExecutor()
@@ -71,6 +73,12 @@ def transport():
         node.destroy_node()
         bridge.destroy_node()
         rclpy.shutdown()
+
+
+@pytest.fixture
+def transport():
+    with time_transport() as graph:
+        yield graph
 
 
 def sample(t, seq, provider, *, unknown=False):

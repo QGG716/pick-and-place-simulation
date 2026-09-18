@@ -20,10 +20,11 @@ from unloading_perception.geometry import rotation_from_quaternion, transform_po
 from unloading_perception.replay import validate_replay_observation
 from unloading_perception.scene import (
     ObservationTracker, SnapshotAssembler, SourceEpochGuard,
-    build_scene_update, parse_mechanism_bundle, observation_time_reasons, validate_observation_time_config,
+    build_scene_update, parse_mechanism_bundle, observation_time_reasons, state_time_reasons,
+    validate_observation_time_config,
 )
 
-from .common import require_humble_python310, time_to_float
+from .common import require_humble_python310, state_time_to_float
 from .mapping import observation_from_msg, observation_source_times, snapshot_to_msg
 from .marker_display import MarkerScene, marker_qos
 
@@ -69,6 +70,8 @@ class WorldBridgeNode(Node):
         self.last_snapshot = None
         self.time_admission_blocking_reasons = ()
         self.last_time_rejection = None
+        self.state_time_blocking_reasons = {'robot': (), 'mechanism': ()}
+        self.last_state_time_rejection = {}  # at most one diagnostic per source
         self.stale_key = None
         self.publisher_epoch = str(uuid4())
         self.publisher_sequence = 0
@@ -111,14 +114,37 @@ class WorldBridgeNode(Node):
         # Keep the last valid geometry/source but revoke its planning admission.
         self._commit_snapshot('observation_time_rejected')
 
+    def _state_sample_time(self, source, raw_time, *, now, clock_domain, message):
+        simulation = bool(self.get_parameter('use_sim_time').value)
+        try:
+            stamp = state_time_to_float(raw_time)
+            reasons = state_time_reasons(stamp, source=source, now=now,
+                max_age_seconds=float(self.get_parameter(source + '_state_freshness_seconds').value),
+                sample_clock_domain=clock_domain, clock_domain='ros_sim_time' if simulation else 'ros',
+                clock_initialized=now > 0.0 if simulation else True)
+        except (ValueError, TypeError, OverflowError):
+            reasons = (source.upper() + '_STATE_TIME_INVALID',)
+        if not reasons:
+            return stamp
+        self.state_time_blocking_reasons[source] = reasons
+        diagnostic = {'source': source, 'blocking_reasons': reasons, 'rejected_at': now,
+                      'sample_sec': raw_time.sec, 'sample_nanosec': raw_time.nanosec,
+                      'clock_domain': clock_domain}
+        if source == 'mechanism':
+            diagnostic.update(source_epoch=message.source_epoch, source_sequence=int(message.sequence))
+        self.last_state_time_rejection[source] = diagnostic
+        self.get_logger().error('rejecting state time: ' + ','.join(reasons))
+        self._commit_snapshot('state_time_rejected', now=now)
+        return None
+
     def on_mechanism(self, message: MechanismState) -> None:
-        expected_clock = "ros_sim_time" if self.get_parameter("use_sim_time").value else "ros"
-        if message.schema_version != "1.1.0" or message.clock_domain != expected_clock or not all((message.source_epoch, message.tool_state_identity, message.payload_state_identity, message.base_state_identity, message.conveyor_state_identity, message.config_identity, message.robot_model_fingerprint, message.world_model_fingerprint)):
+        now = self.get_clock().now().nanoseconds / 1e9
+        if message.schema_version != "1.1.0" or not all((message.source_epoch, message.tool_state_identity, message.payload_state_identity, message.base_state_identity, message.conveyor_state_identity, message.config_identity, message.robot_model_fingerprint, message.world_model_fingerprint)):
             self.get_logger().error("rejecting incomplete mechanism state")
             return
-        stamp = time_to_float(message.observed_time)
-        if stamp <= 0.0:
-            self.get_logger().error("rejecting mechanism state without sample time")
+        stamp = self._state_sample_time('mechanism', message.observed_time, now=now,
+                                        clock_domain=message.clock_domain, message=message)
+        if stamp is None:
             return
         try:
             bundle = parse_mechanism_bundle(
@@ -128,11 +154,27 @@ class WorldBridgeNode(Node):
                 conveyor_identity=message.conveyor_state_identity, conveyor_json=message.conveyor_state_json,
                 source_epoch=message.source_epoch, source_sequence=int(message.sequence), sample_time=stamp,
             )
+            config = {
+                'identity': message.config_identity,
+                'robot_model_fingerprint': message.robot_model_fingerprint,
+                'world_model_fingerprint': message.world_model_fingerprint,
+                'source': 'mechanism_state_topic', 'source_epoch': message.source_epoch,
+            }
+            content = (bundle['tool_attachment'], bundle['payload_attachment'],
+                       bundle['base_state'], bundle['conveyor_state'], config)
+            # Validate everything the domain fingerprint will consume, including
+            # nested JSON values, before the mutating source guard may accept.
+            canonical_fingerprint(content)
             if (
                 message.source_epoch == self.mechanism_guard.current_epoch
                 and self.mechanism_stamp is not None and stamp <= self.mechanism_stamp
             ):
                 raise ValueError("mechanism sample time is duplicate or out of order")
+            content_changed = content != self.last_mechanism_content
+            sequence = self.mechanism_sequence + int(content_changed)
+            was_stale = self.mechanism_stamp is None or (
+                now - self.mechanism_stamp
+                > float(self.get_parameter('mechanism_state_freshness_seconds').value))
             self.mechanism_guard.accept(
                 message.source_epoch, int(message.sequence), restart=bool(message.source_restart)
             )
@@ -144,60 +186,60 @@ class WorldBridgeNode(Node):
         self.assembler.payload_attachment = bundle["payload_attachment"]
         self.assembler.base_state = bundle["base_state"]
         self.assembler.conveyor_state = bundle["conveyor_state"]
-        self.assembler.config_identity = {
-            "identity": message.config_identity,
-            "robot_model_fingerprint": message.robot_model_fingerprint,
-            "world_model_fingerprint": message.world_model_fingerprint,
-            "source": "mechanism_state_topic", "source_epoch": message.source_epoch,
-        }
-        content = (
-            self.assembler.tool_attachment, self.assembler.payload_attachment,
-            self.assembler.base_state, self.assembler.conveyor_state,
-            self.assembler.config_identity,
-        )
-        content_changed = content != self.last_mechanism_content
-        was_stale = self.mechanism_stamp is None or (
-            self.get_clock().now().nanoseconds / 1e9 - self.mechanism_stamp
-            > float(self.get_parameter("mechanism_state_freshness_seconds").value)
-        )
+        self.assembler.config_identity = config
         self.last_mechanism_content = content
-        if content_changed:
-            self.mechanism_sequence += 1
+        self.mechanism_sequence = sequence
         self.mechanism_stamp = stamp
-        if content_changed or was_stale:
-            self._commit_snapshot("mechanism")
+        had_fault = bool(self.state_time_blocking_reasons['mechanism'])
+        self.state_time_blocking_reasons['mechanism'] = ()
+        if content_changed or was_stale or had_fault:
+            self._commit_snapshot("mechanism", now=now)
 
     def on_joints(self, message: JointState) -> None:
+        now = self.get_clock().now().nanoseconds / 1e9
         expected = tuple(str(name) for name in self.get_parameter("expected_joint_names").value)
         names = tuple(message.name)
         positions = tuple(message.position)
         velocities = tuple(message.velocity)
-        stamp = time_to_float(message.header.stamp)
         invalid = (
             names != expected or len(names) != len(set(names)) or len(positions) != len(names)
             or len(velocities) != len(names) or (message.effort and len(message.effort) != len(names))
             or not all(math.isfinite(value) for value in positions + velocities + tuple(message.effort))
-            or stamp <= 0.0 or (self.last_joint_stamp is not None and stamp <= self.last_joint_stamp)
         )
         if invalid:
             self.get_logger().error("rejecting malformed, unordered, non-finite, or stale JointState")
             return
+        clock_domain = 'ros_sim_time' if self.get_parameter('use_sim_time').value else 'ros'
+        stamp = self._state_sample_time('robot', message.header.stamp, now=now,
+                                        clock_domain=clock_domain, message=message)
+        if stamp is None:
+            return
+        if self.last_joint_stamp is not None and stamp <= self.last_joint_stamp:
+            self.get_logger().error('rejecting duplicate or out-of-order JointState')
+            return
         was_stale = self.last_joint_stamp is None or (
-            self.get_clock().now().nanoseconds / 1e9 - self.last_joint_stamp
+            now - self.last_joint_stamp
             > float(self.get_parameter("robot_state_freshness_seconds").value)
         )
-        self.last_joint_stamp = stamp
         content = (positions, velocities, tuple(message.effort), names)
         content_changed = content != self.last_robot_content
-        if content != self.last_robot_content:
-            self.robot_sequence += 1
-            self.last_robot_content = content
-        self.assembler.robot_state = RobotStateRevision(self.robot_sequence, positions, {
-            "joint_names": names, "actual_velocities": velocities,
-            "actual_efforts": tuple(message.effort),
-        }, sample_time=stamp, clock_domain="ros_sim_time" if self.get_parameter("use_sim_time").value else "ros", source="joint_states")
-        if content_changed or was_stale:
-            self._commit_snapshot("robot")
+        sequence = self.robot_sequence + int(content_changed)
+        try:
+            state = RobotStateRevision(sequence, positions, {
+                'joint_names': names, 'actual_velocities': velocities,
+                'actual_efforts': tuple(message.effort),
+            }, sample_time=stamp, clock_domain=clock_domain, source='joint_states')
+        except (ValueError, TypeError) as exc:
+            self.get_logger().error(f'rejecting invalid robot domain state: {exc}')
+            return
+        self.last_joint_stamp = stamp
+        self.last_robot_content = content
+        self.robot_sequence = sequence
+        self.assembler.robot_state = state
+        had_fault = bool(self.state_time_blocking_reasons['robot'])
+        self.state_time_blocking_reasons['robot'] = ()
+        if content_changed or was_stale or had_fault:
+            self._commit_snapshot("robot", now=now)
 
     def _transform_observation(self, observation):
         world_frame = str(self.get_parameter("world_frame").value)
@@ -304,9 +346,11 @@ class WorldBridgeNode(Node):
         update = build_scene_update(
             self.last_observation, self.last_tracked, replay_display_only=replay, **context,
         )
-        if self.time_admission_blocking_reasons:
+        admission_reasons = (self.time_admission_blocking_reasons
+            + self.state_time_blocking_reasons['robot'] + self.state_time_blocking_reasons['mechanism'])
+        if admission_reasons:
             update = replace(update, planning_admissible=False,
-                blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + self.time_admission_blocking_reasons)))
+                blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + admission_reasons)))
         if self.last_joint_stamp is None or current - self.last_joint_stamp > float(self.get_parameter("robot_state_freshness_seconds").value) or current < self.last_joint_stamp:
             update = replace(update, planning_admissible=False, blocking_reasons=tuple(dict.fromkeys(update.blocking_reasons + ("ROBOT_STATE_STALE_OR_TIME_JUMP",))))
         if self.mechanism_stamp is None or current - self.mechanism_stamp > float(self.get_parameter("mechanism_state_freshness_seconds").value) or current < self.mechanism_stamp:
