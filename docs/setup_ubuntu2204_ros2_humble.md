@@ -26,14 +26,23 @@ RUN_ID=smoke-final tools/run_gpu_vision_smoke.sh
 
 The preparation script refuses a different MoGe source SHA, installs PyTorch 2.7.1 CUDA 12.8 and the bounded worker dependencies in the venv, checks installed dependency consistency, downloads only the fixed SAM/MoGe files, verifies a real CUDA tensor operation, and records a model manifest plus `pip freeze`. MoGe is exposed from the exact source checkout because its application metadata includes unrelated Gradio/CLI dependencies that the headless model API does not use.
 
-Launch the replay/mock graph after providing a real path and publishing `sensor_msgs/JointState` plus the required capture-time TF:
+From the repository root, source the Humble workspace installation and launch the read-only replay/mock graph.
+The launch explicitly selects `observation_mode=replay_display_only` and includes the synthetic robot/mechanism state publisher:
 
 ```bash
 ros2 launch unloading_bringup replay_mock.launch.py \
-  replay_path:=$(pwd)/../tests/fixtures/vision_upstream/cargo7_minimal.json
+  replay_path:=$(pwd)/tests/fixtures/vision_upstream/cargo7_minimal.json
 ```
 
-The replay is expected to publish a complete but non-plannable snapshot because the real monocular sample lacks independently verified scale/extrinsics/uncertainty. Use `python -m unloading_perception.demo --mode synthetic` for the explicitly synthetic contract/mock execution demonstration; it is not physical planning evidence.
+Replay snapshots always carry `HISTORICAL_REPLAY_DISPLAY_ONLY` and remain non-plannable, even for complete metric geometry.
+Existing scale/extrinsics/unknown-region limitations also remain. No current TF substitutes for missing historical TF.
+The file is read and hashed once per session; repeated publication changes transport sequence and session elapsed time,
+not acquisition evidence. `capture_time=0` in the replay clock is an explicit placeholder; original time is preserved in
+`coverage.replay`, or marked `NOT_PROVIDED`. Restart the node to load a changed file. Standalone world nodes default to
+strict online time admission and do not automatically accept replay. See
+[replay time semantics](validation/replay_entry_time_semantics_fix.md) for metadata and validation.
+Use `python -m unloading_perception.demo --mode synthetic` for the explicitly synthetic contract/mock execution demonstration;
+it is not physical planning evidence.
 
 For the finite performance run, use `WARMUPS` and `MEASUREMENTS`; do not infer population percentiles from a tiny repeated sample. The checked-in default is 3 warm-ups and 10 measurements, one GPU and batch size 1:
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 from pathlib import Path
+import time
 from uuid import uuid4
 
 import rclpy
@@ -12,6 +13,7 @@ from unloading_contracts import ImageMapping, ResourceReference, SensorFrame
 from unloading_interfaces.msg import PerceptionObservation
 
 from unloading_perception.backends import CargoJsonReplayBackend, CargoPipelineBackend
+from unloading_perception.replay import replay_publication
 
 from .common import require_humble_python310
 from .mapping import observation_to_msg
@@ -57,6 +59,9 @@ class PerceptionNode(Node):
             if not self.path.is_file():
                 raise RuntimeError(f"replay_path does not exist: {self.path}")
             self.backend = CargoJsonReplayBackend(str(self.get_parameter("upstream_commit").value))
+            # Pin one immutable file record for this session, including its exact bytes hash.
+            self.replay_record = self.backend.read(self.path, replay_epoch=self.epoch)
+            self.replay_started = time.monotonic()
         elif self.mode == "pipeline":
             self.path = Path(str(self.get_parameter("input_image").value)).resolve()
             cwd = Path(str(self.get_parameter("worker_cwd").value)).resolve()
@@ -87,7 +92,9 @@ class PerceptionNode(Node):
     def poll(self) -> None:
         if self.mode == "replay":
             now = self.get_clock().now().nanoseconds / 1e9
-            observation = self.backend.read(self.path, replay_time=now, replay_sequence=self.sequence, replay_epoch=self.epoch)
+            observation = replay_publication(self.replay_record, sequence=self.sequence,
+                elapsed=time.monotonic() - self.replay_started, published_time=now,
+                clock_domain='ros_sim_time' if self.get_parameter('use_sim_time').value else 'ros')
             self.publisher.publish(observation_to_msg(observation))
             self.sequence += 1
             return

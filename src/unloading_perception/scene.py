@@ -7,6 +7,7 @@ from dataclasses import dataclass, replace
 import json
 import math
 from typing import Any, Mapping
+from .replay import HISTORICAL_REPLAY, validate_replay_observation
 
 from unloading_contracts import (
     CargoObservation, PerceptionObservation, PerceptionSceneUpdate,
@@ -200,12 +201,17 @@ def observation_time_reasons(capture_time: float, *, now: float, max_age_seconds
 def build_scene_update(observation: PerceptionObservation, tracked: tuple[CargoObservation, ...] | None = None, *,
                        now: float | None = None, max_age_seconds: float | None = None,
                        future_tolerance_seconds: float = 0.0, clock_domain: str | None = None,
-                       clock_initialized: bool | None = None) -> PerceptionSceneUpdate:
+                       clock_initialized: bool | None = None, replay_display_only: bool = False) -> PerceptionSceneUpdate:
     if max_age_seconds is None:
         validate_observation_time_config(1.0, future_tolerance_seconds)
     cargo = observation.cargo if tracked is None else tracked
     unknown = list(observation.unknown_regions)
     blocking = []
+    # Declared history remains blocked even in offline callers. Only the ROS
+    # mode switch permits its ingestion; this metadata never enables online admission.
+    if replay_display_only or 'replay' in observation.coverage:
+        validate_replay_observation(observation)
+        blocking.append(HISTORICAL_REPLAY)
     if observation.coverage.get("coverage_status") == "DEGRADED_MISSING_MODULE":
         unknown.append(UnknownRegion(f"missing-module-{observation.observation_id}", "world", "DEGRADED_MISSING_MODULE"))
         blocking.append("DEGRADED_MISSING_MODULE")

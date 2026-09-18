@@ -84,6 +84,7 @@ class MarkerScene:
     def render(self, snapshot, frame):
         markers, diagnostics = [], []
         reasons = list(snapshot.blocking_reasons)
+        replay = 'HISTORICAL_REPLAY_DISPLAY_ONLY' in reasons
         historical = any(any(word in reason for word in ('STALE', 'TIME', 'CLOCK')) for reason in reasons)
         entries = []
         for cargo in snapshot.obstacles:
@@ -115,6 +116,8 @@ class MarkerScene:
         status = 'PLANNING_ADMISSIBLE' if snapshot.planning_admissible else 'NOT PLANNING ADMISSIBLE'
         if historical:
             status = 'HISTORY / TIME INVALID - retained observation\n' + status
+        if replay:
+            status = 'HISTORICAL REPLAY / READ ONLY; capture=0 is a replay placeholder, NOT sensor time\n' + status
         unknown = [f'{r.region_id}: {r.reason} (frame={r.frame_id})' for r in snapshot.unknown_regions]
         text = ('UI LEGEND / fixed anchor, NOT a spatial region\n'
                 'green: complete | cyan: observed patch / unknown volume\n'
@@ -125,7 +128,7 @@ class MarkerScene:
                 f'Unknown regions (no 3D extent): {len(unknown)}\n' + '\n'.join(unknown))
         if diagnostics:
             text += '\nDISPLAY DIAGNOSTICS:\n' + '\n'.join(sorted(set(diagnostics)))
-        color = HISTORY if historical else BLOCKED if not snapshot.planning_admissible or diagnostics else COMPLETE
+        color = HISTORY if historical or replay else BLOCKED if not snapshot.planning_admissible or diagnostics else COMPLETE
         markers.append(self._text(('ui',), text, (0., 0., 2.8), snapshot, frame, color))
         current = {(m.ns, m.id) for m in markers}
         self.owned.update(current)
@@ -143,10 +146,13 @@ class MarkerScene:
         conflict_records = (reduction or {}).get('conflicts', [])
         conflict = ('CONFLICT' in cargo.association_status.upper()
                     or 'CONFLICT' in cargo.geometry_validity.upper() or bool(conflict_records))
-        history = historical or 'STALE' in cargo.association_status.upper()
+        replay = 'HISTORICAL_REPLAY_DISPLAY_ONLY' in snapshot.blocking_reasons
+        history = historical or replay or 'STALE' in cargo.association_status.upper()
         color = (HISTORY if history else CONFLICT if conflict else
                  BLOCKED if not snapshot.planning_admissible or not cargo.candidate_eligible else COMPLETE)
         state = ('HISTORY / TIME INVALID; ' if history else '') + ('CONFLICT; ' if conflict else '')
+        if replay:
+            state = 'HISTORICAL REPLAY / READ ONLY; ' + ('CONFLICT; ' if conflict else '')
         state += (f'candidate_eligible={cargo.candidate_eligible}; association={cargo.association_status}'
                   f'; geometry_validity={cargo.geometry_validity}')
         if conflict_records:

@@ -23,6 +23,7 @@ from unloading_contracts import (
 )
 
 from .geometry import pose_from_axes_rows, quaternion_from_rotation
+from .replay import source_metadata, validate_replay_observation
 
 
 UPSTREAM_COMMIT = "1d208f2ed380a207e6e46b4a62d2ac640edfe477"
@@ -157,15 +158,19 @@ class CargoJsonReplayBackend:
         self.upstream_commit = upstream_commit
 
     def read(self, path: Path, *, frame: SensorFrame | None = None, replay_time: float = 0.0, replay_sequence: int = 0, replay_epoch: str = "replay-file") -> PerceptionObservation:
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        content = path.read_bytes()
+        payload = json.loads(content.decode('utf-8'))
         instances = payload.get("instances")
         if not isinstance(instances, list):
             raise ValueError("upstream JSON must contain an instances array")
         size = payload.get("source_size") or (1, 1)
+        replay = None
         if frame is None:
+            digest = hashlib.sha256(content).hexdigest()
+            replay = source_metadata(payload, path.resolve().as_uri(), digest, replay_epoch, replay_sequence, replay_time)
             frame = SensorFrame(
                 "cargo-detection-and-6D-estimation", str(path), replay_epoch, replay_sequence,
-                float(replay_time), float(replay_time), "replay", "source_image",
+                0.0, float(replay_time), "replay", "source_image",
                 int(size[0]), int(size[1]), "external-json-reference",
                 ResourceReference(path.resolve().as_uri(), media_type="application/json"),
                 image_mapping=ImageMapping(int(size[0]), int(size[1])),
@@ -175,14 +180,18 @@ class CargoJsonReplayBackend:
             UnknownRegion(f"cargo-{item.source_instance_id}", "source_image", ";".join(item.eligibility_reasons), item.bbox_xyxy)
             for item in cargo if item.pose is None or item.metric_scale_validity is not Validity.VALID
         )
-        return PerceptionObservation(
-            SCHEMA_VERSION, f"replay-{frame.epoch}-{frame.sequence}", frame.epoch, frame.sequence,
+        observation = PerceptionObservation(
+            SCHEMA_VERSION, 'replay-record-' + digest if replay is not None else f"replay-{frame.epoch}-{frame.sequence}", frame.epoch, frame.sequence,
             frame.capture_time, max(frame.capture_time, frame.receive_time), frame.clock_domain,
             self.provider_name, self.upstream_commit, "published-upstream-json", "fixture-or-manifest-bound",
             ObservationStatus.PARTIAL, None, None, cargo, unknown,
-            {"coordinate_space_2d": payload.get("coordinate_space"), "source_size": size, "absence_means_free_space": False},
+            {"coordinate_space_2d": payload.get("coordinate_space"), "source_size": size, "absence_means_free_space": False,
+             **({'replay': replay, 'source_restart': replay_sequence == 0} if replay is not None else {})},
             False,
         )
+        if replay is not None:
+            validate_replay_observation(observation)
+        return observation
 
 
 class SimGroundTruthBackend:

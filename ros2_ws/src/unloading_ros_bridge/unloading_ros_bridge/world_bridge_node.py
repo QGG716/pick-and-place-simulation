@@ -9,14 +9,15 @@ from rclpy.clock import Clock, ClockType
 from rclpy.duration import Duration
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, qos_profile_sensor_data
-from rcl_interfaces.msg import SetParametersResult
+from rcl_interfaces.msg import ParameterDescriptor, SetParametersResult
 from sensor_msgs.msg import JointState
 from tf2_ros import Buffer, TransformException, TransformListener
-from unloading_contracts import ObservationStatus, RobotStateRevision
+from unloading_contracts import ObservationStatus, RobotStateRevision, canonical_fingerprint
 from unloading_interfaces.msg import MechanismState, PerceptionObservation, PlanningWorldSnapshot
 from visualization_msgs.msg import MarkerArray
 
 from unloading_perception.geometry import rotation_from_quaternion, transform_pose
+from unloading_perception.replay import validate_replay_observation
 from unloading_perception.scene import (
     ObservationTracker, SnapshotAssembler, SourceEpochGuard,
     build_scene_update, parse_mechanism_bundle, observation_time_reasons, validate_observation_time_config,
@@ -32,6 +33,12 @@ class WorldBridgeNode(Node):
 
     def __init__(self) -> None:
         super().__init__("unloading_world_bridge")
+        self.declare_parameter('observation_mode', 'online', ParameterDescriptor(read_only=True))
+        self.observation_mode = str(self.get_parameter('observation_mode').value)
+        if self.observation_mode not in ('online', 'replay_display_only'):
+            raise ValueError('observation_mode must be online or replay_display_only')
+        self.replay_guard = SourceEpochGuard()
+        self.replay_binding = None
         self.declare_parameter("world_frame", "world")
         self.declare_parameter("expected_joint_names", ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"])
         self.declare_parameter("tf_timeout_seconds", 0.2)
@@ -226,6 +233,9 @@ class WorldBridgeNode(Node):
         return replace(observation, cargo=tuple(transformed))
 
     def on_observation(self, message: PerceptionObservation) -> None:
+        if self.observation_mode == 'replay_display_only':
+            self._on_replay_observation(message)
+            return
         # Before TF lookup, tracking or either source sequence/epoch guard.
         try:
             capture_time, _ = observation_source_times(message)
@@ -237,7 +247,11 @@ class WorldBridgeNode(Node):
             self._reject_observation_time(message, reasons)
             return
         try:
-            observation = self._transform_observation(observation_from_msg(message))
+            observation = observation_from_msg(message)
+            if 'replay' in observation.coverage:
+                self._reject_observation_time(message, ('OBSERVATION_REPLAY_TIME_NOT_ONLINE',))
+                return
+            observation = self._transform_observation(observation)
             if observation.provider == "registered-rgbd-fused-algorithm":
                 from unloading_perception.algorithm_handoff import validate_algorithm_capture
                 validate_algorithm_capture(observation)
@@ -256,17 +270,39 @@ class WorldBridgeNode(Node):
         self.time_admission_blocking_reasons = ()
         self._commit_snapshot("perception")
 
+    def _on_replay_observation(self, message):
+        try:
+            observation = observation_from_msg(message)
+            metadata = validate_replay_observation(observation, require_publication=True)
+            identity = canonical_fingerprint({
+                'record': {k: v for k, v in metadata.items() if k not in (
+                    'publication_sequence', 'session_elapsed_seconds', 'published_time', 'publication_clock_domain')},
+                'cargo': observation.cargo, 'unknown_regions': observation.unknown_regions})
+            if (self.replay_binding is not None and self.replay_binding[0] == observation.source_epoch
+                    and self.replay_binding[1] != identity):
+                raise ValueError('REPLAY_SESSION_RECORD_CHANGED')
+            self.replay_guard.accept(observation.source_epoch, observation.source_sequence,
+                restart=bool(observation.coverage.get('source_restart', False)))
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            self.get_logger().error(f'rejecting replay observation: {exc}')
+            return
+        self.replay_binding = (observation.source_epoch, identity)
+        # No current TF or image tracking can supply missing historical evidence.
+        self.last_observation, self.last_tracked = observation, observation.cargo
+        self._commit_snapshot('historical_replay')
+
     def _commit_snapshot(self, event: str, *, now: float | None = None) -> None:
         """Single entry for evaluating and publishing every world-state event."""
         if self.last_observation is None or self.last_tracked is None or self.assembler.robot_state is None:
             return
         current = self.get_clock().now().nanoseconds / 1e9 if now is None else now
-        context = self._time_context(current)
-        reasons = observation_time_reasons(self.last_observation.capture_time,
+        replay = self.observation_mode == 'replay_display_only'
+        context = {} if replay else self._time_context(current)
+        reasons = () if replay else observation_time_reasons(self.last_observation.capture_time,
             observation_clock_domain=self.last_observation.clock_domain, **context)
         self.time_admission_blocking_reasons = tuple(dict.fromkeys(self.time_admission_blocking_reasons + reasons))
         update = build_scene_update(
-            self.last_observation, self.last_tracked, **context,
+            self.last_observation, self.last_tracked, replay_display_only=replay, **context,
         )
         if self.time_admission_blocking_reasons:
             update = replace(update, planning_admissible=False,
@@ -302,7 +338,7 @@ class WorldBridgeNode(Node):
         if self.last_observation is None:
             return
         now = self.get_clock().now().nanoseconds / 1e9
-        reasons = observation_time_reasons(self.last_observation.capture_time,
+        reasons = () if self.observation_mode == 'replay_display_only' else observation_time_reasons(self.last_observation.capture_time,
             observation_clock_domain=self.last_observation.clock_domain, **self._time_context(now))
         robot_age = math.inf if self.last_joint_stamp is None else now - self.last_joint_stamp
         mechanism_age = math.inf if self.mechanism_stamp is None else now - self.mechanism_stamp
