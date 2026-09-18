@@ -117,6 +117,13 @@ try:
             q=measured['quaternion_wxyz'];slide.CreateLocalRot0Attr(Gf.Quatf(q[0],Gf.Vec3f(*q[1:])))
             slide_enabled.Set(True);drive_enabled=True
             result['drive_attachment_actual_state']=measured
+            result['drive_constraint_readback']=dict(enabled=slide_enabled.Get(),
+                body1=[str(p) for p in slide.GetBody1Rel().GetTargets()],axis=slide.GetAxisAttr().Get(),
+                local_anchor_position_m=list(slide.GetLocalPos0Attr().Get()),
+                max_force_n=drive.GetMaxForceAttr().Get(),stiffness_n_m=drive.GetStiffnessAttr().Get(),
+                damping_ns_m=drive.GetDampingAttr().Get())
+            assert result['drive_constraint_readback']['body1']==[paths[1]]
+            assert (drive.GetMaxForceAttr().Get(),drive.GetStiffnessAttr().Get(),drive.GetDampingAttr().Get())==(1000.,20000.,2000.)
         if command_time < .5:
             target_x=0.;target_v=0.
         elif not returning:
@@ -126,7 +133,9 @@ try:
         if gate.hold:target_v=0.
         position.Set(target_x);velocity.Set(target_v)
         gate.begin_step(step=step,time_s=physical_time,trajectory_time_s=command_time,
-            context=dict(stage='extraction',attached=True,actual_free_space=monitor.free_space_reached),states=capture())
+            context=dict(stage='extraction' if drive_enabled else 'settling',attached=drive_enabled,
+                         actual_free_space=monitor.free_space_reached),states=capture(),
+            world_id=gate.world_id,task_id=gate.task_id)
         world.step(render=False,update_fabric=True)
         outcome=gate.finish_step(states=capture(),time_s=(step+1)*dt,monitor=monitor,commanded_motion=bool(target_v))
         row=gate.last
