@@ -345,8 +345,10 @@ class WorldBridgeNode(Node):
         stale_key = (reasons,
                      robot_age > float(self.get_parameter("robot_state_freshness_seconds").value) or robot_age < 0.0,
                      mechanism_age > float(self.get_parameter("mechanism_state_freshness_seconds").value) or mechanism_age < 0.0)
-        if stale_key != self.stale_key:
-            self._commit_snapshot("freshness", now=now)
+        # Coalesce unchanged high-rate samples at the existing 0.1 s steady
+        # watchdog cadence. Reassemble from admitted source samples; never
+        # refresh their timestamps or copy/re-date an old world message.
+        self._commit_snapshot("freshness" if stale_key != self.stale_key else "heartbeat", now=now)
         self.stale_key = stale_key
 
     def publish_markers(self, snapshot: PlanningWorldSnapshot, frame_id: str) -> None:

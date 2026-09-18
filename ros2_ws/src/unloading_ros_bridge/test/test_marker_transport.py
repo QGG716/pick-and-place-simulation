@@ -61,11 +61,15 @@ def test_actual_world_markers_watchdog_deletion_and_late_subscriber(transport):
         observations.publish(observation_to_msg(observed_sample(100., 2)))
         wait(lambda: bridge.last_observation.source_sequence == 2 and len(worlds[-1].obstacles) == 1)
         # Join after publication; no additional perception or geometry change.
+        # Pause executor callbacks while retaining the real DDS publisher. This
+        # isolates cached delivery from the new periodic world heartbeat.
+        executor.remove_node(bridge)
         sequence = bridge.publisher_sequence
         late = []
         subscription = receiver.create_subscription(MarkerArray, '/unloading/markers', late.append, marker_qos())
         wait(lambda: bool(late))
         assert bridge.publisher_sequence == sequence
+        executor.add_node(bridge)
         current = geometry(late[-1].markers)
         assert len(current) == 1
         assert first_keys - {(m.ns, m.id) for m in current} <= {

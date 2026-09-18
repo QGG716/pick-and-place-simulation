@@ -4,6 +4,7 @@ No Isaac, model inference, execution node, authorization or trajectory.
 """
 from dataclasses import replace
 import math
+import os
 import time
 
 import pytest
@@ -22,7 +23,7 @@ from unloading_ros_bridge.world_bridge_node import WorldBridgeNode
 
 @pytest.fixture
 def transport():
-    rclpy.init(args=['--ros-args', '-p', 'use_sim_time:=true'])
+    rclpy.init(args=['--ros-args', '-p', 'use_sim_time:=true'], domain_id=120 + os.getpid() % 30)
     bridge = WorldBridgeNode()
     node = rclpy.create_node('synthetic_time_admission_inputs')
     executor = SingleThreadedExecutor()
