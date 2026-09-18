@@ -1,0 +1,24 @@
+[
+  {
+    "path": "/root/autodl-tmp/m710-stack-transition-20260918/repo/outputs/stack_slide/slide.mp4",
+    "bytes": 105897,
+    "opened": true,
+    "fps": 5.0,
+    "width": 640.0,
+    "height": 360.0,
+    "advertised_frames": 64.0,
+    "sha256": "d4dd85a849b035fad79d69be100c16f5785872002a8516c9ed558f21567341f2",
+    "decoded_frames": 64
+  },
+  {
+    "path": "/root/autodl-tmp/m710-stack-transition-20260918/repo/outputs/isaac_highest_row/replay.mp4",
+    "bytes": 257,
+    "opened": false,
+    "fps": 0.0,
+    "width": 0.0,
+    "height": 0.0,
+    "advertised_frames": 0.0,
+    "sha256": "bfc863a48a95219a7e0c4c681fa3f7c60de8fce01dc5e9a8413934925924d53a",
+    "decoded_frames": 0
+  }
+]

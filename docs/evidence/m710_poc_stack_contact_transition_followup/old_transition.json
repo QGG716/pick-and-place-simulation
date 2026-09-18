@@ -1,0 +1,16 @@
+[
+  {
+    "post_gap_m": 0.00519,
+    "hold": false,
+    "free": false,
+    "reason": "RESOLVED",
+    "stop_reason": null
+  },
+  {
+    "post_gap_m": 0.00521,
+    "hold": true,
+    "free": false,
+    "reason": "STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT",
+    "stop_reason": null
+  }
+]

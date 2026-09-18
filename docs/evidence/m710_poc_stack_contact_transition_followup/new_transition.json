@@ -1,0 +1,16 @@
+[
+  {
+    "post_gap_m": 0.00519,
+    "hold": false,
+    "free": false,
+    "reason": "RESOLVED",
+    "stop_reason": null
+  },
+  {
+    "post_gap_m": 0.00521,
+    "hold": false,
+    "free": true,
+    "reason": "RESOLVED",
+    "stop_reason": null
+  }
+]

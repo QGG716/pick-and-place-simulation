@@ -1,0 +1,59 @@
+{
+  "world": "1789719626.6563382",
+  "source_commit": "6f19e16acb269dc7ceef4ff4fdc46861a1672619",
+  "highest_row_ids": [
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "denominator": 5,
+  "historical_completion_events_imported": false,
+  "primary_event": {
+    "event": "actual_stack_clearance_stop",
+    "reason": "ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST",
+    "time_s": 0.004166666666666667,
+    "step": 0,
+    "nearest_neighbor": "carton_l06_c02"
+  },
+  "secondary_exception": {
+    "status": "failed",
+    "started_unix_s": 1789719626.6563382,
+    "failed_unix_s": 1789719647.592821,
+    "exception_type": "ValueError",
+    "exception": "zero-size array to reduction operation maximum which has no identity"
+  },
+  "completed": 0,
+  "actual_grasps": 0,
+  "actual_releases": 0,
+  "actual_receptions": 0,
+  "ideal_receptions": 0,
+  "withdrawals": 0,
+  "ideal_outfeeds": 0,
+  "second_carton_status": "NOT_REACHED_FIRST_TASK_INITIAL_STEP_STOP",
+  "task_physics_seconds": 0.004166666666666667,
+  "trajectory_seconds": 0.0,
+  "new_continuation_plans": 0,
+  "initial_settling": {
+    "current_max_penetration_m": 6.750847432956952e-06,
+    "dynamic_body_count": 40,
+    "elapsed_s": 0.9041666666666667,
+    "max_angular_speed_rad_s": 0.0,
+    "max_linear_speed_m_s": 0.0,
+    "peak_position_drift_from_configured_m": 0.00014937055662556838,
+    "peak_settling_penetration_m": 1.3587364517952949e-05,
+    "position_drift_from_configured_m": 0.0001298729572103984,
+    "stable_duration_s": 0.5,
+    "stable_window_position_drift_m": 0.0,
+    "status": "PASS",
+    "thresholds": {
+      "max_angular_speed_rad_s": 0.03,
+      "max_linear_speed_m_s": 0.01,
+      "max_penetration_m": 0.001,
+      "max_position_drift_m": 0.002,
+      "maximum_settle_time_s": 10.0,
+      "required_stable_duration_s": 0.5
+    }
+  }
+}

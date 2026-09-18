@@ -1,0 +1,15 @@
+{
+  "scope": "OFFLINE_REPLAY_OF_RECORDED_INITIAL_STEP_PAIR_NOT_NEW_PHYSICS",
+  "old_stage": "home",
+  "new_stage": "pregrasp",
+  "old_stop": "ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST",
+  "new_stop": null,
+  "actual_geometry": {
+    "carton_l06_c02": {
+      "surface_distance_m": 5.550826011613275e-07,
+      "intersection": false,
+      "sat_overlap_bound_m": 0.0
+    }
+  },
+  "historical_physical_result_unchanged": true
+}

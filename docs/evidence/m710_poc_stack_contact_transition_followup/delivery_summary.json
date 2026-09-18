@@ -1,0 +1,46 @@
+[
+  {
+    "status": "COMPLETE_PREFLIGHT_EXPORT_READBACK_PASS",
+    "source_commit": "6f19e16acb269dc7ceef4ff4fdc46861a1672619",
+    "source_motion": "/root/autodl-tmp/m710-stack-clearance-20260918/repo/outputs/initial_plan/motion.json",
+    "source_motion_sha256": "ee3a667fd7da12f53e506d9818df1e26b6a58c58e8be154a744ed2d45862a49e",
+    "target": "carton_l07_c02",
+    "preflight_seconds": 0.2880171164870262,
+    "export_seconds": 0.3383779898285866,
+    "bundle_readback_seconds": 0.11296690627932549,
+    "bundle_readback": {
+      "status": "PASS",
+      "bundle_payload_sha256": "04794404dfadaf5a2c71a556ea09189db47174e5f0ab768ee13ace7305e6f4b6",
+      "source_preflight_fingerprint": "5ca4a856b07478bbfbdde154dc4bf3ebf333964bf527ab5f205093779b8be6bd",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+    },
+    "simulation_execution_ready": true,
+    "new_search_performed": false,
+    "isaac_executed": false,
+    "immutable_baseline_directory": "/root/autodl-tmp/m710-stack-transition-20260918/repo/outputs/initial_plan/first_feasible",
+    "historical_planning_seconds": 1334.4715034663677,
+    "current_round_new_search_seconds": 0.0
+  },
+  {
+    "status": "COMPLETE_PREFLIGHT_EXPORT_READBACK_PASS",
+    "source_commit": "f0aa89098e2bce93c4cf47742438b77115a9672e",
+    "source_motion": "/root/autodl-tmp/m710-stack-clearance-20260918/repo/outputs/initial_plan/motion.json",
+    "source_motion_sha256": "ee3a667fd7da12f53e506d9818df1e26b6a58c58e8be154a744ed2d45862a49e",
+    "target": "carton_l07_c02",
+    "preflight_seconds": 0.26661360263824463,
+    "export_seconds": 0.28610867634415627,
+    "bundle_readback_seconds": 0.10938089340925217,
+    "bundle_readback": {
+      "status": "PASS",
+      "bundle_payload_sha256": "3ab883ef1a51575fe852f64babc27f4e911c22aa46dd6346906c6ba44ce102a0",
+      "source_preflight_fingerprint": "3a6109ba4f4a5fc09ea921d2d8c7e465384358a90ff878d82ba402633411299f",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+    },
+    "simulation_execution_ready": true,
+    "new_search_performed": false,
+    "isaac_executed": false,
+    "immutable_baseline_directory": "/root/autodl-tmp/m710-stack-transition-20260918/review_repo/outputs/initial_plan/first_feasible",
+    "historical_planning_seconds": 1334.4715034663677,
+    "current_round_new_search_seconds": 0.0
+  }
+]
