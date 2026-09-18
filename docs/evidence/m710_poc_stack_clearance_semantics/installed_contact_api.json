@@ -1,0 +1,22 @@
+{
+  "isaac_version": "6.0.1-rc.7+release.42383.32955d8d.gl",
+  "physx_extension": "omni.physx-110.1.13+110.1.2.lx64.r.cp312.u7f4",
+  "api_stub_path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/extscache/omni.physx-110.1.13+110.1.2.lx64.r.cp312.u7f4/omni/physx/bindings/_physx.pyi",
+  "api_stub_sha256": "23ea6ea0070a56fccee5d90843186e2b1a430f5112800a9549b8becdb88480b4",
+  "contact_fields": [
+    "position",
+    "normal",
+    "separation",
+    "impulse",
+    "face_index0",
+    "face_index1"
+  ],
+  "buffer_lifetime": "one simulation step; copied inside callback",
+  "callback_timing": "callback after simulation step; contact generation subtime not exposed",
+  "manifold_identifier": "NOT_EXPOSED",
+  "pose_source": "RigidBodyView get_transforms through RigidPrim get_world_poses; batch current physics backend",
+  "reference_urls": [
+    "https://docs.omniverse.nvidia.com/kit/docs/omni_physics/latest/extensions/runtime/source/omni.physx/docs/dev_guide/contact_reports.html",
+    "https://nvidia-omniverse.github.io/PhysX/physx/5.1.0/_build/physx/latest/struct_px_contact_pair_point.html"
+  ]
+}

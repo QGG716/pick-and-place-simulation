@@ -1,0 +1,16 @@
+[
+  {
+    "execution_config": "configs/simulation/m710id70_proof_of_concept.yaml",
+    "motion_config": "configs/validation/m710id70_proof_of_concept.yaml",
+    "execution_sha256": "a6b9c9c71f6e7ee55e61bb63d46710e6168648a6bd97eec208fa5f1116e2f7d0",
+    "motion_sha256": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0",
+    "paired": true
+  },
+  {
+    "execution_config": "configs/simulation/m710id70_handoff_continuation.yaml",
+    "motion_config": "configs/validation/m710id70_handoff_continuation.yaml",
+    "execution_sha256": "bd417cca10660994cbe6a7a1b8955a53116bc0c435a75f54a8e3f8ddab115a1c",
+    "motion_sha256": "2c163170e8492d5e96a3ff498343dd0357baeadc0bb22acf628316f36f9f2f71",
+    "paired": true
+  }
+]

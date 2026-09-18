@@ -1,0 +1,711 @@
+{
+  "scope": "MECHANISM_SAMPLED_STEPS_NOT_FIRST_CONFLICT_STEP",
+  "source_world": "stack-slide-1789714693.4192889",
+  "shapes": {
+    "target": {
+      "name": "target",
+      "actor": "/Probe/target",
+      "collider": "/Probe/target",
+      "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+      "half_extents_m": [
+        0.30000001192092896,
+        0.20000000298023224,
+        0.15000000596046448
+      ],
+      "local_center_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "local_rotation": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "meters_per_unit": 1.0,
+      "contact_offset_in_geometry": false,
+      "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+      "backend_shapes_per_actor": 1
+    },
+    "neighbor": {
+      "name": "neighbor",
+      "actor": "/Probe/neighbor",
+      "collider": "/Probe/neighbor",
+      "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+      "half_extents_m": [
+        0.30000001192092896,
+        0.20000000298023224,
+        0.15000000596046448
+      ],
+      "local_center_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "local_rotation": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "meters_per_unit": 1.0,
+      "contact_offset_in_geometry": false,
+      "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+      "backend_shapes_per_actor": 1
+    }
+  },
+  "initial_states": [
+    {
+      "name": "neighbor",
+      "prim_path": "/Probe/neighbor",
+      "center_m": [
+        0.0,
+        0.0,
+        0.15000000596046448
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "name": "target",
+      "prim_path": "/Probe/target",
+      "center_m": [
+        0.0,
+        0.0,
+        0.44999998807907104
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "step": 3023,
+      "time_s": 12.6,
+      "trajectory_time_s": 12.595833333332939,
+      "world_id": "stack-slide-1789714693.4192889",
+      "task_id": "mechanism",
+      "target": "target",
+      "context": {
+        "stage": "extraction",
+        "attached": true,
+        "actual_free_space": false
+      },
+      "pre_time_s": 12.595833333333333,
+      "pre_sample_phase": "PRE_WORLD_STEP_PHYSX_TENSOR",
+      "post_sample_phase": "POST_WORLD_STEP_PHYSX_TENSOR",
+      "pre_states": {
+        "target": {
+          "name": "target",
+          "prim_path": "/Probe/target",
+          "center_m": [
+            -0.6042389273643494,
+            2.214558634250352e-07,
+            0.44999945163726807
+          ],
+          "quaternion_wxyz": [
+            1.0,
+            -1.5206982340032482e-08,
+            -3.7209252923275926e-07,
+            1.1520895526473396e-07
+          ],
+          "linear_velocity_m_s": [
+            -0.049997758120298386,
+            -1.1520379317175866e-08,
+            -3.780221291549424e-08
+          ],
+          "angular_velocity_rad_s": [
+            -1.402438321723709e-11,
+            -1.9657575567322283e-10,
+            4.2916433050076423e-16
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ]
+        },
+        "neighbor": {
+          "name": "neighbor",
+          "prim_path": "/Probe/neighbor",
+          "center_m": [
+            4.411492431934377e-15,
+            3.7750752473421437e-20,
+            0.15000000596046448
+          ],
+          "quaternion_wxyz": [
+            1.0,
+            5.07293114308284e-15,
+            5.628411961760421e-15,
+            1.3170297334765708e-19
+          ],
+          "linear_velocity_m_s": [
+            2.1878034106581623e-11,
+            -2.81079413216867e-17,
+            -9.921440058402453e-11
+          ],
+          "angular_velocity_rad_s": [
+            -9.757902125206996e-11,
+            -4.524186025811616e-10,
+            8.612087318408707e-16
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ]
+        }
+      },
+      "post_states": {
+        "target": {
+          "name": "target",
+          "prim_path": "/Probe/target",
+          "center_m": [
+            -0.6044474840164185,
+            2.214078165252431e-07,
+            0.44999945163726807
+          ],
+          "quaternion_wxyz": [
+            1.0,
+            -1.5207005432671394e-08,
+            -3.720925860761781e-07,
+            1.1520895526473396e-07
+          ],
+          "linear_velocity_m_s": [
+            -0.049998462200164795,
+            -1.1520541853826671e-08,
+            -3.706164974914827e-08
+          ],
+          "angular_velocity_rad_s": [
+            1.1082860323918808e-10,
+            5.247907663985529e-10,
+            9.33665359517102e-16
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ]
+        },
+        "neighbor": {
+          "name": "neighbor",
+          "prim_path": "/Probe/neighbor",
+          "center_m": [
+            -8.851972872422637e-15,
+            9.290437852417416e-21,
+            0.15000000596046448
+          ],
+          "quaternion_wxyz": [
+            1.0,
+            1.9168516532624795e-14,
+            -1.5046414092965976e-13,
+            -4.1023293526652595e-19
+          ],
+          "linear_velocity_m_s": [
+            -3.5877830654312826e-12,
+            -1.7963451228895574e-18,
+            6.954660736191443e-10
+          ],
+          "angular_velocity_rad_s": [
+            1.309838071339442e-10,
+            -1.5324924662607486e-10,
+            -1.628491647756827e-17
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ]
+        }
+      },
+      "pair_geometry": {
+        "neighbor": {
+          "surface_distance_m": 0.0044473024632363245,
+          "intersection": false,
+          "sat_overlap_bound_m": 0.0
+        }
+      },
+      "contacts": [
+        {
+          "actor0": "/Probe/target",
+          "actor1": "/Probe/neighbor",
+          "collider0": "/Probe/target",
+          "collider1": "/Probe/neighbor",
+          "event": "CONTACT_PERSIST",
+          "points": [
+            {
+              "contact_point_separation_m": -3.3792488807193877e-07,
+              "position_m": [
+                -0.30000001192092896,
+                -0.19999998807907104,
+                0.30000001192092896
+              ],
+              "normal": [
+                -7.441847174050054e-07,
+                3.041391849478714e-08,
+                1.0
+              ],
+              "impulse_ns": [
+                -3.323988906345221e-08,
+                1.3584736668903474e-09,
+                0.04466618224978447
+              ],
+              "face_index0": 0,
+              "face_index1": 0
+            },
+            {
+              "contact_point_separation_m": -3.528260492657864e-07,
+              "position_m": [
+                -0.30000001192092896,
+                0.20000001788139343,
+                0.30000001192092896
+              ],
+              "normal": [
+                -7.441847174050054e-07,
+                3.041391849478714e-08,
+                1.0
+              ],
+              "impulse_ns": [
+                -2.5191756236608853e-08,
+                1.029556218057337e-09,
+                0.03385148197412491
+              ],
+              "face_index0": 0,
+              "face_index1": 0
+            },
+            {
+              "contact_point_separation_m": -3.3792488807193877e-07,
+              "position_m": [
+                -0.29778558015823364,
+                0.20000001788139343,
+                0.30000001192092896
+              ],
+              "normal": [
+                -7.441847174050054e-07,
+                3.041391849478714e-08,
+                1.0
+              ],
+              "impulse_ns": [
+                -8.069566421461472e-16,
+                3.297933037174214e-17,
+                1.084349943170082e-09
+              ],
+              "face_index0": 0,
+              "face_index1": 0
+            },
+            {
+              "contact_point_separation_m": -3.3792488807193877e-07,
+              "position_m": [
+                -0.297756165266037,
+                -0.19999998807907104,
+                0.30000001192092896
+              ],
+              "normal": [
+                -7.441847174050054e-07,
+                3.041391849478714e-08,
+                1.0
+              ],
+              "impulse_ns": [
+                -0.0,
+                0.0,
+                0.0
+              ],
+              "face_index0": 0,
+              "face_index1": 0
+            }
+          ],
+          "step": 3023,
+          "context": {
+            "stage": "extraction",
+            "attached": true,
+            "actual_free_space": false
+          },
+          "sample_phase": "CONTACT_GENERATION_WITHIN_WORLD_STEP_SUBTIME_NOT_EXPOSED",
+          "manifold_id": "NOT_EXPOSED_BY_INSTALLED_API",
+          "geometry": {
+            "surface_distance_m": 0.0044473024632363245,
+            "intersection": false,
+            "sat_overlap_bound_m": 0.0
+          },
+          "evidence_reason": null,
+          "engineering_distance_source": "CURRENT_VERIFIED_BOX_EUCLIDEAN",
+          "phase_contact_permission": "EXISTING_TARGET_STACK_STAGE"
+        }
+      ],
+      "nearest_neighbor": "neighbor",
+      "observation": {
+        "accepted": true,
+        "reason": null,
+        "minimum_stack_clearance_m": 0.0044473024632363245,
+        "actual_penetration_m": null,
+        "sat_overlap_bound_m": 0.0,
+        "penetration_query_scope": "SAT_BOUND_NOT_MEASURED_DEPTH",
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "neighbor_displacement_m": 8.851972872427512e-15,
+        "neighbor_tilt_rad": 0.0,
+        "free_space_reached": false,
+        "first_free_space_time_s": null
+      },
+      "geometry_free_before": false,
+      "geometry_free_after": false,
+      "hold": false,
+      "evidence_status": "RESOLVED",
+      "stop_reason": null
+    },
+    {
+      "step": 3071,
+      "time_s": 12.8,
+      "trajectory_time_s": 12.612499999999605,
+      "world_id": "stack-slide-1789714693.4192889",
+      "task_id": "mechanism",
+      "target": "target",
+      "context": {
+        "stage": "extraction",
+        "attached": true,
+        "actual_free_space": false
+      },
+      "pre_time_s": 12.795833333333333,
+      "pre_sample_phase": "PRE_WORLD_STEP_PHYSX_TENSOR",
+      "post_sample_phase": "POST_WORLD_STEP_PHYSX_TENSOR",
+      "pre_states": {
+        "target": {
+          "name": "target",
+          "prim_path": "/Probe/target",
+          "center_m": [
+            -0.6060607433319092,
+            2.2103601793332928e-07,
+            0.44999945163726807
+          ],
+          "quaternion_wxyz": [
+            1.0,
+            -1.5206971681891446e-08,
+            -3.7209252923275926e-07,
+            1.1520895526473396e-07
+          ],
+          "linear_velocity_m_s": [
+            -2.786436652968405e-06,
+            -1.1937117960769683e-12,
+            2.1005561179343601e-10
+          ],
+          "angular_velocity_rad_s": [
+            -9.390652144780631e-11,
+            3.502986511971784e-10,
+            1.3403477546608533e-12
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ]
+        },
+        "neighbor": {
+          "name": "neighbor",
+          "prim_path": "/Probe/neighbor",
+          "center_m": [
+            1.3620751424805403e-15,
+            -6.196150564794634e-17,
+            0.15000000596046448
+          ],
+          "quaternion_wxyz": [
+            1.0,
+            -4.995288715005722e-15,
+            -3.339475506021483e-14,
+            2.4086783694703736e-15
+          ],
+          "linear_velocity_m_s": [
+            -2.1998403099132702e-11,
+            -1.7053025658242404e-13,
+            3.969678474824434e-10
+          ],
+          "angular_velocity_rad_s": [
+            -3.1896294633293465e-11,
+            -1.559724849276023e-10,
+            1.0722958979081376e-11
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ]
+        }
+      },
+      "post_states": {
+        "target": {
+          "name": "target",
+          "prim_path": "/Probe/target",
+          "center_m": [
+            -0.6060607433319092,
+            2.2103601793332928e-07,
+            0.44999945163726807
+          ],
+          "quaternion_wxyz": [
+            1.0,
+            -1.5206977010961964e-08,
+            -3.720924723893404e-07,
+            1.1520895526473396e-07
+          ],
+          "linear_velocity_m_s": [
+            -2.7863779905601405e-06,
+            -6.252776074688882e-13,
+            2.1673629557739105e-10
+          ],
+          "angular_velocity_rad_s": [
+            -9.390618144200502e-11,
+            -1.3040636626104884e-10,
+            6.701637942502225e-13
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ]
+        },
+        "neighbor": {
+          "name": "neighbor",
+          "prim_path": "/Probe/neighbor",
+          "center_m": [
+            3.2568556582364145e-15,
+            -2.692031642634145e-16,
+            0.15000000596046448
+          ],
+          "quaternion_wxyz": [
+            1.0,
+            -1.3049914745827049e-14,
+            2.6640846375724364e-14,
+            6.634048863772774e-16
+          ],
+          "linear_velocity_m_s": [
+            -2.1884716261411086e-11,
+            5.684341886080802e-14,
+            3.9029424137027036e-10
+          ],
+          "angular_velocity_rad_s": [
+            -1.1357014634283402e-10,
+            4.673771369922974e-10,
+            1.2063328634626114e-11
+          ],
+          "size_m": [
+            0.6,
+            0.4,
+            0.3
+          ]
+        }
+      },
+      "pair_geometry": {
+        "neighbor": {
+          "surface_distance_m": 0.00606056177882669,
+          "intersection": false,
+          "sat_overlap_bound_m": 0.0
+        }
+      },
+      "contacts": [
+        {
+          "actor0": "/Probe/target",
+          "actor1": "/Probe/neighbor",
+          "collider0": "/Probe/target",
+          "collider1": "/Probe/neighbor",
+          "event": "CONTACT_PERSIST",
+          "points": [
+            {
+              "contact_point_separation_m": -3.3656914411039907e-07,
+              "position_m": [
+                -0.30000001192092896,
+                -0.19999998807907104,
+                0.30000001192092896
+              ],
+              "normal": [
+                -7.441847742484242e-07,
+                3.041393981106921e-08,
+                1.0
+              ],
+              "impulse_ns": [
+                -3.3132920407297206e-08,
+                1.3541027188423982e-09,
+                0.04452243819832802
+              ],
+              "face_index0": 0,
+              "face_index1": 0
+            },
+            {
+              "contact_point_separation_m": -3.514703053042467e-07,
+              "position_m": [
+                -0.30000001192092896,
+                0.20000001788139343,
+                0.30000001192092896
+              ],
+              "normal": [
+                -7.441847742484242e-07,
+                3.041393981106921e-08,
+                1.0
+              ],
+              "impulse_ns": [
+                -2.504565976835238e-08,
+                1.0235861047647177e-09,
+                0.033655162900686264
+              ],
+              "face_index0": 0,
+              "face_index1": 0
+            },
+            {
+              "contact_point_separation_m": -3.3656914411039907e-07,
+              "position_m": [
+                -0.29778558015823364,
+                0.20000001788139343,
+                0.30000001192092896
+              ],
+              "normal": [
+                -7.441847742484242e-07,
+                3.041393981106921e-08,
+                1.0
+              ],
+              "impulse_ns": [
+                -3.4838975457920094e-15,
+                1.4238271795276086e-16,
+                4.681495191505292e-09
+              ],
+              "face_index0": 0,
+              "face_index1": 0
+            },
+            {
+              "contact_point_separation_m": -3.3656914411039907e-07,
+              "position_m": [
+                -0.297756165266037,
+                -0.19999998807907104,
+                0.30000001192092896
+              ],
+              "normal": [
+                -7.441847742484242e-07,
+                3.041393981106921e-08,
+                1.0
+              ],
+              "impulse_ns": [
+                -1.4077395356999669e-15,
+                5.753262844710472e-17,
+                1.891653278462968e-09
+              ],
+              "face_index0": 0,
+              "face_index1": 0
+            }
+          ],
+          "step": 3071,
+          "context": {
+            "stage": "extraction",
+            "attached": true,
+            "actual_free_space": false
+          },
+          "sample_phase": "CONTACT_GENERATION_WITHIN_WORLD_STEP_SUBTIME_NOT_EXPOSED",
+          "manifold_id": "NOT_EXPOSED_BY_INSTALLED_API",
+          "geometry": {
+            "surface_distance_m": 0.00606056177882669,
+            "intersection": false,
+            "sat_overlap_bound_m": 0.0
+          },
+          "evidence_reason": "STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT",
+          "engineering_distance_source": "CURRENT_VERIFIED_BOX_EUCLIDEAN",
+          "phase_contact_permission": "EXISTING_TARGET_STACK_STAGE"
+        }
+      ],
+      "nearest_neighbor": "neighbor",
+      "observation": {
+        "accepted": true,
+        "reason": null,
+        "minimum_stack_clearance_m": 0.00606056177882669,
+        "actual_penetration_m": null,
+        "sat_overlap_bound_m": 0.0,
+        "penetration_query_scope": "SAT_BOUND_NOT_MEASURED_DEPTH",
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "neighbor_displacement_m": 3.2679625337870663e-15,
+        "neighbor_tilt_rad": 0.0,
+        "free_space_reached": false,
+        "first_free_space_time_s": null
+      },
+      "geometry_free_before": false,
+      "geometry_free_after": false,
+      "hold": true,
+      "evidence_status": "STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT",
+      "stop_reason": null
+    }
+  ],
+  "effective_offsets": {
+    "source": "PhysX tensor backend getters",
+    "read_only": true,
+    "contact_offsets_m": [
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ]
+    ],
+    "rest_offsets_m": [
+      [
+        0.0
+      ],
+      [
+        0.0
+      ]
+    ],
+    "shape_path_mapping": "backend shape order; no unverified path-order assumption"
+  }
+}

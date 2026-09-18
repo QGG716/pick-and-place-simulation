@@ -1,0 +1,35 @@
+{
+  "schema": "production_search_diagnostics_v1",
+  "events": {
+    "HISTORY_CANDIDATE_STARTED": 1,
+    "HISTORY_CANDIDATE_FINISHED": 1
+  },
+  "validation_queries": {
+    "[\"state\", \"actual_task_start\", \"ACCEPTED\"]": 1,
+    "[\"state\", \"contact_endpoint\", \"ACCEPTED\"]": 1,
+    "[\"full_edge_recheck\", \"pregrasp\", \"ACCEPTED\"]": 6938,
+    "[\"full_edge_recheck\", \"contact\", \"ACCEPTED\"]": 750,
+    "[\"state\", \"support-release\", \"ACCEPTED\"]": 1,
+    "[\"full_edge_recheck\", \"extraction\", \"ACCEPTED\"]": 7426,
+    "[\"full_edge_recheck\", \"transit\", \"ACCEPTED\"]": 14503,
+    "[\"full_edge_recheck\", \"place\", \"ACCEPTED\"]": 3,
+    "[\"full_edge_recheck\", \"withdrawal\", \"ACCEPTED\"]": 5906,
+    "[\"state\", \"residence\", \"ACCEPTED\"]": 1
+  },
+  "last_validation": {
+    "stage": "residence",
+    "origin": "state",
+    "failed": false
+  },
+  "outcomes": {},
+  "last_event": {
+    "elapsed_s": 1334.023666381836,
+    "event": "HISTORY_CANDIDATE_FINISHED",
+    "target": "carton_l07_c02",
+    "candidate_id": "59e68636f11517fabf0a2dbd6fc347cbfa24031835960de34d16b3f3ba4c0e16",
+    "success": true,
+    "failure": null
+  },
+  "groups": {},
+  "contexts": {}
+}

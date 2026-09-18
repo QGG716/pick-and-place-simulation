@@ -1,0 +1,28 @@
+[
+  {
+    "step": 3023,
+    "geometry": {
+      "neighbor": {
+        "surface_distance_m": 0.0044473024632363245,
+        "intersection": false,
+        "sat_overlap_bound_m": 0.0
+      }
+    },
+    "evidence_status": "RESOLVED",
+    "hold": false,
+    "free_space_reached": false
+  },
+  {
+    "step": 3071,
+    "geometry": {
+      "neighbor": {
+        "surface_distance_m": 0.00606056177882669,
+        "intersection": false,
+        "sat_overlap_bound_m": 0.0
+      }
+    },
+    "evidence_status": "STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT",
+    "hold": true,
+    "free_space_reached": false
+  }
+]

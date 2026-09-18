@@ -1,0 +1,27 @@
+{
+  "status": "COMPLETE_PREFLIGHT_EXPORT_READBACK_PASS",
+  "source_commit": "b5c457086709d92d3b065c2256cda329c2c94bc9",
+  "source_motion": "/root/autodl-tmp/m710-stack-clearance-20260918/repo/outputs/initial_plan/motion.json",
+  "source_motion_sha256": "ee3a667fd7da12f53e506d9818df1e26b6a58c58e8be154a744ed2d45862a49e",
+  "target": "carton_l07_c02",
+  "planning_seconds": 1334.4715034663677,
+  "preflight_seconds": 0.28929607197642326,
+  "export_seconds": 0.3096700608730316,
+  "bundle_readback_seconds": 0.11441943421959877,
+  "bundle_readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "4755a51a56395ed67716fad36ffa0542f1bb110c62daa0ffd2f120b3ff3fa4f0",
+    "source_preflight_fingerprint": "aba3bc9e3e666c63bd4e540215384187750c93ec1702892e9ea909daf1ad2892",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "simulation_execution_ready": true,
+  "new_search_performed": false,
+  "isaac_executed": false,
+  "immutable_baseline_directory": "/root/autodl-tmp/m710-stack-clearance-20260918/repo/outputs/initial_plan_delivery/first_feasible",
+  "target_source": "exported replay bundle metadata",
+  "stage_scope": "CPU_ONLY_NO_ROBOT_WORLD_STARTED",
+  "original_delivery_sha256": "58f68906e5439fe75ec32e5dcf3b4232b46363b87a740d4ca7010765da774079",
+  "new_physical_receptions": 0,
+  "new_ideal_receptions": 0,
+  "new_robot_completions": 0
+}

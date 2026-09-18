@@ -1,0 +1,219 @@
+{
+  "scope": "NATIVE_BOX_CONTACT_TO_EDGE_SLIDE_MECHANISM_ONLY",
+  "robot_cartons_completed": 0,
+  "drive_attachment_actual_state": {
+    "name": "target",
+    "prim_path": "/Probe/target",
+    "center_m": [
+      -3.401543153813691e-07,
+      3.606832024161122e-07,
+      0.4499998688697815
+    ],
+    "quaternion_wxyz": [
+      1.0,
+      -1.520698589274616e-08,
+      -3.7209252923275926e-07,
+      1.1520895526473396e-07
+    ],
+    "linear_velocity_m_s": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "angular_velocity_rad_s": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size_m": [
+      0.6,
+      0.4,
+      0.3
+    ]
+  },
+  "stop_reason": "STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT",
+  "physics_seconds": 13.616666666666667,
+  "command_seconds": 12.612499999999605,
+  "raw_support_contact_points": 12404,
+  "initial_support_response_points": 388,
+  "entered_free_space": false,
+  "returning_to_insufficient_clearance": false,
+  "final_geometry": {
+    "neighbor": {
+      "surface_distance_m": 0.006060561778740592,
+      "intersection": false,
+      "sat_overlap_bound_m": 0.0
+    }
+  },
+  "counts": {
+    "physical_steps": 3268,
+    "contact_headers": 3101,
+    "RESOLVED": 3027,
+    "STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT": 241
+  },
+  "physics_config": {
+    "gravity_world_m_s2": [
+      0.0,
+      0.0,
+      -9.81
+    ],
+    "physics_time_step_s": 0.004166666666666667,
+    "solver_position_iterations": 16,
+    "solver_velocity_iterations": 4,
+    "execution_backend": "physx_cpu",
+    "device": "cpu",
+    "broadphase_type": "MBP",
+    "gpu_dynamics_enabled": false,
+    "fabric_enabled": true,
+    "ccd_enabled": true,
+    "contact_offset_m": 0.01,
+    "rest_offset_m": 0.0
+  },
+  "effective_offsets": {
+    "source": "PhysX tensor backend getters",
+    "read_only": true,
+    "contact_offsets_m": [
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ]
+    ],
+    "rest_offsets_m": [
+      [
+        0.0
+      ],
+      [
+        0.0
+      ]
+    ],
+    "shape_path_mapping": "backend shape order; no unverified path-order assumption"
+  },
+  "solver_iterations": [
+    16,
+    4
+  ],
+  "drive_scope": "MECHANISM_ONLY_FINITE_FORCE_PRISMATIC_1000N_20000N_PER_M_2000NS_PER_M",
+  "body_pose_resets_during_motion": 0,
+  "recording": {
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "physical_time_scale": 1.0
+  },
+  "status": "REVIEW_REQUIRED",
+  "source_result_sha256": "e6253ebff636eb30da7232358d948d3e790b72a23f66728f4b4450798135ca2c",
+  "source_evidence_sha256": "ccc04953b3cedc230a2ca7d3e2e6b07092008830ba4692510520c8a0ef448dda",
+  "first_conflict": {
+    "step": 3027,
+    "reason": "STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT",
+    "contacts": [
+      {
+        "actor0": "/Probe/target",
+        "actor1": "/Probe/neighbor",
+        "collider0": "/Probe/target",
+        "collider1": "/Probe/neighbor",
+        "event": "CONTACT_PERSIST",
+        "points": [
+          {
+            "contact_point_separation_m": -3.37304044251141e-07,
+            "position_m": [
+              -0.30000001192092896,
+              -0.19999998807907104,
+              0.30000001192092896
+            ],
+            "normal": [
+              -7.441846605615865e-07,
+              3.041395757463761e-08,
+              1.0
+            ],
+            "impulse_ns": [
+              -3.319090069453523e-08,
+              1.3564733780668803e-09,
+              0.04460035637021065
+            ],
+            "face_index0": 0,
+            "face_index1": 0
+          },
+          {
+            "contact_point_separation_m": -3.522052054449887e-07,
+            "position_m": [
+              -0.30000001192092896,
+              0.20000001788139343,
+              0.30000001192092896
+            ],
+            "normal": [
+              -7.441846605615865e-07,
+              3.041395757463761e-08,
+              1.0
+            ],
+            "impulse_ns": [
+              -2.512480179461818e-08,
+              1.0268212946584754e-09,
+              0.03376151621341705
+            ],
+            "face_index0": 0,
+            "face_index1": 0
+          },
+          {
+            "contact_point_separation_m": -3.37304044251141e-07,
+            "position_m": [
+              -0.29778558015823364,
+              0.20000001788139343,
+              0.30000001192092896
+            ],
+            "normal": [
+              -7.441846605615865e-07,
+              3.041395757463761e-08,
+              1.0
+            ],
+            "impulse_ns": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "face_index0": 0,
+            "face_index1": 0
+          },
+          {
+            "contact_point_separation_m": -3.37304044251141e-07,
+            "position_m": [
+              -0.297756165266037,
+              -0.19999998807907104,
+              0.30000001192092896
+            ],
+            "normal": [
+              -7.441846605615865e-07,
+              3.041395757463761e-08,
+              1.0
+            ],
+            "impulse_ns": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "face_index0": 0,
+            "face_index1": 0
+          }
+        ],
+        "step": 3027,
+        "context": {
+          "stage": "extraction",
+          "attached": true,
+          "actual_free_space": false
+        },
+        "sample_phase": "CONTACT_GENERATION_WITHIN_WORLD_STEP_SUBTIME_NOT_EXPOSED",
+        "manifold_id": "NOT_EXPOSED_BY_INSTALLED_API",
+        "geometry": {
+          "surface_distance_m": 0.00528164828081662,
+          "intersection": false,
+          "sat_overlap_bound_m": 0.0
+        },
+        "evidence_reason": "STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT",
+        "engineering_distance_source": "CURRENT_VERIFIED_BOX_EUCLIDEAN",
+        "phase_contact_permission": "EXISTING_TARGET_STACK_STAGE"
+      }
+    ]
+  }
+}

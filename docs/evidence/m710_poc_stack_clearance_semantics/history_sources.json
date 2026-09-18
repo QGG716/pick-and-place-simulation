@@ -1,0 +1,37 @@
+[
+  {
+    "source": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/initial_plan/motion.json",
+    "copy": "/root/autodl-tmp/m710-stack-clearance-20260918/history_hints/000_motion.json",
+    "sha256": "fbc3148c23a886b8ee1155090cc2ab897e1f691e6ef65a3afa41388c37cdf266"
+  },
+  {
+    "source": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/plan_002_delivery/motion.json",
+    "copy": "/root/autodl-tmp/m710-stack-clearance-20260918/history_hints/001_motion.json",
+    "sha256": "76a934d8f2ec3aefbb364bdc4d4ac12374517b0f2a6fd552156ef843c74ea351"
+  },
+  {
+    "source": "/root/autodl-tmp/m710-poc-handoff-20260918/history_hints/00_carton_l07_c02.json",
+    "copy": "/root/autodl-tmp/m710-stack-clearance-20260918/history_hints/002_00_carton_l07_c02.json",
+    "sha256": "6e0fd596b739ea0a02c8e0195e8e090510b146f9a0883c20e24deaf511cbfac7"
+  },
+  {
+    "source": "/root/autodl-tmp/m710-poc-handoff-20260918/history_hints/01_carton_l07_c01.json",
+    "copy": "/root/autodl-tmp/m710-stack-clearance-20260918/history_hints/003_01_carton_l07_c01.json",
+    "sha256": "0f09a05c29171c79b1a752560a6b476e787584f56de8b262886ac6226355fcb4"
+  },
+  {
+    "source": "/root/autodl-tmp/m710-poc-handoff-20260918/history_hints/02_carton_l07_c03.json",
+    "copy": "/root/autodl-tmp/m710-stack-clearance-20260918/history_hints/004_02_carton_l07_c03.json",
+    "sha256": "bfb9e2e5cdf1053f4d14bc3aefd6bdff85dad56c8a588fdb23de2d2bf499b269"
+  },
+  {
+    "source": "/root/autodl-tmp/m710-poc-handoff-20260918/history_hints/03_carton_l07_c00.json",
+    "copy": "/root/autodl-tmp/m710-stack-clearance-20260918/history_hints/005_03_carton_l07_c00.json",
+    "sha256": "eb6e9af187ea838211b852b4a97c28b79afb95543a9c6404552fb358e7fcf276"
+  },
+  {
+    "source": "/root/autodl-tmp/m710-poc-handoff-20260918/history_hints/04_carton_l07_c04.json",
+    "copy": "/root/autodl-tmp/m710-stack-clearance-20260918/history_hints/006_04_carton_l07_c04.json",
+    "sha256": "4e0a82a4866126c3f4d4f53429c6604ae3f59e16dd5da06c62580de05b2839a4"
+  }
+]

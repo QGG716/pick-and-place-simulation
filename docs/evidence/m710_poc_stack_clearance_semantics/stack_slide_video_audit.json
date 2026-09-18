@@ -1,0 +1,11 @@
+{
+  "path": "/root/autodl-tmp/m710-stack-clearance-20260918/repo/outputs/stack_slide/slide.mp4",
+  "sha256": "cfd0f9197431c11dc4331fb9b947a2817a02a4b701cd9097549a083055006d49",
+  "width": 640.0,
+  "height": 360.0,
+  "fps": 5.0,
+  "declared_frames": 68.0,
+  "decoded_frames": 68,
+  "all_frames_decoded": true,
+  "duration_s": 13.6
+}
