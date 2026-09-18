@@ -623,7 +623,7 @@ class IdealReleaseHandoff:
 class BoundedFreeTransitGate:
     """Pause command time, never physics, until unchanged actual clearance passes."""
 
-    def __init__(self, boundary_time_s, maximum_wait_s):
+    def __init__(self, boundary_time_s, maximum_wait_s, *, waive_timeout=False):
         self.boundary_time_s = float(boundary_time_s)
         self.maximum_wait_s = float(maximum_wait_s)
         if (not np.isfinite(self.boundary_time_s) or self.boundary_time_s < 0
@@ -631,6 +631,8 @@ class BoundedFreeTransitGate:
             raise ValueError("free-transit boundary and wait must be finite and nonnegative")
         self.wait_started_s = None
         self.passed = False
+        self.waive_timeout = bool(waive_timeout)
+        self.timeout_waived = False
         self.events = []
 
     def evaluate(self, trajectory_time_s, physical_time_s, actual_free):
@@ -641,6 +643,8 @@ class BoundedFreeTransitGate:
             self.events.append({"event": "actual_free_transit_gate_passed", "time_s": float(physical_time_s),
                                 "wait_elapsed_s": 0.0 if self.wait_started_s is None else physical_time_s - self.wait_started_s})
             return {"hold": False, "reason": None}
+        if self.timeout_waived:
+            return {"hold": False, "reason": None}
         if self.wait_started_s is None:
             self.wait_started_s = float(physical_time_s)
             self.events.append({"event": "actual_free_transit_wait_started", "time_s": float(physical_time_s),
@@ -650,11 +654,17 @@ class BoundedFreeTransitGate:
         if reason:
             self.events.append({"event": "actual_free_transit_wait_timeout", "time_s": float(physical_time_s),
                                 "wait_elapsed_s": float(elapsed), "reason": reason})
+            if self.waive_timeout:
+                self.timeout_waived = True
+                self.events.append({"event": "USER_WAIVED_FREE_TRANSIT_TIMEOUT", "time_s": float(physical_time_s),
+                                    "waived_reason": reason, "actual_clearance_passed": False,
+                                    "other_collision_and_physics_monitors_unchanged": True})
+                return {"hold": False, "reason": None}
         return {"hold": True, "reason": reason}
 
     def advance(self, trajectory_time_s, dt_s, duration_s):
         following = min(float(duration_s), trajectory_time_s + dt_s)
-        if not self.passed and trajectory_time_s < self.boundary_time_s <= following:
+        if not (self.passed or self.timeout_waived) and trajectory_time_s < self.boundary_time_s <= following:
             following = self.boundary_time_s
         return following
 

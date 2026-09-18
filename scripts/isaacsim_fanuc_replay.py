@@ -85,6 +85,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--continuation-dir", type=Path,
                         help="retain this World and accept numbered offline next-bundle requests")
     parser.add_argument("--maximum-segments", type=int, default=1)
+    parser.add_argument("--free-transit-timeout-waiver-target",
+                        help="explicit user waiver of the bounded free-transit timeout for this target only")
     parser.add_argument("--comparison-stop-after-grasp-segment", type=int,
                         help="end a comparison fragment after this segment has a real stable attachment")
     parser.add_argument("--diagnostic-only", action="store_true")
@@ -3264,15 +3266,19 @@ try:
             from unloading_sim.m710_replay_physics import ActualStackContactMonitor
             initial_actual_boxes = {_state_obb(item).name: _state_obb(item) for item in settled_carton_states}
             stack_names = set(metadata.get("stack_carton_names") or initial_actual_boxes)
-            if args.maximum_segments > 1 and archive_initialization is None:
+            if args.maximum_segments > 1:
                 if initial_highest_row is None:
                     from unloading_sim.unloading_sequence import cluster_carton_rows
-                    rows = cluster_carton_rows([box for name, box in initial_actual_boxes.items() if name in stack_names])
+                    rows = cluster_carton_rows([box for name, box in initial_actual_boxes.items()
+                        if name in stack_names and name not in set(metadata.get("processed_carton_ids", []))])
                     initial_highest_row = {"world_session_id": str(run_started_unix_s),
                         "carton_ids": sorted(box.name for box in rows[0]),
                         "initial_actual_q_rad": np.asarray(articulation.get_dof_positions().numpy())[0].tolist(),
                         "initial_actual_cartons": settled_carton_states,
-                        "source": "NEW_WORLD_SETTLED_ACTUAL_HIGHEST_ROW",
+                        "source": ("NEW_WORLD_SETTLED_ACTUAL_HIGHEST_ROW" if archive_initialization is None
+                                   else "ARCHIVED_NEW_WORLD_SETTLED_REMAINING_HIGHEST_ROW"),
+                        "source_world_session_id": None if archive_initialization is None else archive_initialization["world_session_id"],
+                        "historical_counts_excluded": {} if archive_initialization is None else archive_initialization["historical_counts"],
                         "historical_completion_events_imported": False}
                     initial_highest_row["denominator"] = len(initial_highest_row["carton_ids"])
                     args.maximum_segments = min(args.maximum_segments, initial_highest_row["denominator"])
@@ -3311,7 +3317,8 @@ try:
         maximum_release_clearance_wait_s = float(
             actual_state_gates.get("maximum_release_clearance_wait_s", 1.0)
         )
-        free_transit_gate = (BoundedFreeTransitGate(metadata["free_transit_start_time_seconds"], maximum_free_transit_wait_s)
+        free_transit_gate = (BoundedFreeTransitGate(metadata["free_transit_start_time_seconds"], maximum_free_transit_wait_s,
+            waive_timeout=(args.free_transit_timeout_waiver_target == str(metadata["target"])))
                              if metadata.get("free_transit_start_time_seconds") is not None else None)
         departure_policy = metadata.get("departure", {})
         if departure_policy.get("actual_separation_required"):
@@ -5486,6 +5493,9 @@ try:
                 "maximum_wait_s": maximum_free_transit_wait_s,
                 "trajectory_boundary_s": free_transit_gate.boundary_time_s,
                 "passed": free_transit_gate.passed, "events": free_transit_gate.events,
+                "timeout_waiver_authorized": free_transit_gate.waive_timeout,
+                "timeout_waived": free_transit_gate.timeout_waived,
+                "waiver_target": args.free_transit_timeout_waiver_target,
                 "clearance_policy_changed": False},
             "target_cup_release_clearance_gate": {
                 "policy_source": "actual_state_gates.maximum_release_clearance_wait_s; independent bounded timer",
