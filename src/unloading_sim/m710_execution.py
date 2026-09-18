@@ -953,6 +953,22 @@ def audit_m710_execution_asset_inputs(
     return assets, copy.deepcopy(dict(official_document)), official_report.to_mapping()
 
 
+def _validate_poc_release_policy(segment, strategy):
+    """Bind effective height targets and scoped reserves to the execution config."""
+    from .release_motion import ReleasePolicy
+    names = ("maximum_drop_m", "ideal_release_min_height_m", "ideal_release_max_height_m",
+             "ideal_release_height_reserve_m")
+    expected = ReleasePolicy(**{name: strategy[name] for name in names if name in strategy})
+    expected.ideal_heights()
+    actual = segment.get("place", {}).get("release_prediction", {}).get("policy")
+    if actual != expected.to_mapping():
+        raise ValueError("motion release height policy differs from execution configuration")
+    reserve_names = ("approach_runtime_clearance_reserve_m", "receiver_runtime_clearance_reserve_m",
+                     "departure_runtime_clearance_reserve_m", "extraction_runtime_clearance_reserve_m")
+    if segment.get("planning_execution_reserves") != {name: float(strategy.get(name, 0.)) for name in reserve_names}:
+        raise ValueError("motion planning execution reserves differ from execution configuration")
+
+
 def _motion_trajectory_segment(
     motion: Mapping[str, Any],
 ) -> tuple[dict[str, Any] | None, str | None]:
@@ -1146,6 +1162,8 @@ def build_m710_execution_preflight(
     if segment and ((segment.get("place", {}).get("release_mode") == "IDEAL_RECEPTION_RELEASE")
                     != expected_profile["ideal_reception"]):
         raise ValueError("motion release mode disagrees with execution profile")
+    if segment and expected_profile["ideal_reception"]:
+        _validate_poc_release_policy(segment, policy.data["search_strategy"])
     if motion.get("schema") != MOTION_RESULT_SCHEMA:
         raise ValueError("motion result has an unsupported schema")
     motion_identity = copy.deepcopy(motion)

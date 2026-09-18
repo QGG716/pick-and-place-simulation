@@ -190,3 +190,17 @@ def test_zero_displacement_place_keeps_actual_release_dwell_stage():
     assert resolve_actual_task_stage(windows,2.,**args)=='place'
     assert resolve_actual_task_stage(windows,2.05,**args)=='place'
     assert resolve_actual_task_stage(windows,2.11,**{**args,'attached':False,'release_commanded':True})=='withdrawal'
+
+
+def test_execution_preflight_policy_rejects_height_and_reserve_mismatch():
+    from unloading_sim.m710_execution import _validate_poc_release_policy
+    strategy=load_layout_motion_policy(DEFAULT_MOTION).data['search_strategy']
+    segment=dict(place=dict(release_prediction=dict(policy=ReleasePolicy().to_mapping())),
+        planning_execution_reserves={name:strategy[name] for name in (
+            'approach_runtime_clearance_reserve_m','receiver_runtime_clearance_reserve_m',
+            'departure_runtime_clearance_reserve_m','extraction_runtime_clearance_reserve_m')})
+    _validate_poc_release_policy(segment,strategy)
+    changed=deepcopy(segment);changed['place']['release_prediction']['policy']['ideal_release_min_height_m']=.015
+    with pytest.raises(ValueError,match='height policy'):_validate_poc_release_policy(changed,strategy)
+    changed=deepcopy(segment);changed['planning_execution_reserves']['receiver_runtime_clearance_reserve_m']=0.
+    with pytest.raises(ValueError,match='execution reserves'):_validate_poc_release_policy(changed,strategy)
