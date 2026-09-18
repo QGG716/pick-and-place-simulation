@@ -346,3 +346,20 @@ def test_runtime_empty_telemetry_retains_primary_gate_reason():
     code=compile(ast.Module(body=[node],type_ignores=[]),'production_empty_telemetry','exec')
     with pytest.raises(RuntimeError,match='ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST'):
         exec(code,dict(measured_rows=[],runtime_stop_reason='ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST'))
+
+
+def test_resolved_hold_resumes_actual_command_clock_without_skipping_boundary():
+    from unloading_sim.m710_replay_physics import BoundedFreeTransitGate
+    tree=ast.parse(Path('scripts/isaacsim_fanuc_replay.py').read_text(encoding='utf-8'))
+    node=next(n for n in ast.walk(tree) if isinstance(n,ast.If)
+              and ast.unparse(n.test)=='not hold_trajectory')
+    code=compile(ast.Module(body=[node],type_ignores=[]),'production_clock_advance','exec')
+    g,m=slide_setup();slide_step(g,m,.00499,.00521,0)
+    slide_step(g,m,.00521,.00543,1,points=[])
+    ns=dict(hold_trajectory=g.hold,trajectory_time=.995,physics_dt=.01,
+        requested_duration=10.,free_transit_gate=BoundedFreeTransitGate(1.,.1))
+    exec(code,ns);assert ns['trajectory_time']==.995
+    slide_step(g,m,.00543,.00565,2)
+    ns['hold_trajectory']=g.hold
+    exec(code,ns);assert ns['trajectory_time']==1.  # boundary is not skipped
+    assert not ns['free_transit_gate'].passed and g.issue_history[0]['status']=='EXPLAINED'
