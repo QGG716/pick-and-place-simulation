@@ -4880,6 +4880,9 @@ try:
             "observations": stack_monitor_history, "stop_reason": runtime_stop_reason,
         }, indent=2), encoding="utf-8")
 
+        if not measured_rows:
+            raise RuntimeError(runtime_stop_reason or "NO_EXECUTION_TELEMETRY_COLLECTED")
+
         measured_array = np.asarray(measured_rows)
         commanded_array = np.asarray(commanded_rows)
         measured_velocity_array = np.asarray(measured_velocity_rows)
@@ -6032,6 +6035,8 @@ except BaseException as exc:
                 ("completed_unix_s" if isinstance(exc, DiagnosticSettlingComplete) else "failed_unix_s"): time.time(),
                 "exception_type": type(exc).__name__,
                 "exception": str(exc),
+                "primary_runtime_stop_reason": globals().get("runtime_stop_reason"),
+                "telemetry_samples": len(globals().get("measured_rows", [])),
             },
             indent=2,
         ),
@@ -6050,6 +6055,14 @@ except BaseException as exc:
             (args.output / "execution_events.json").write_text(json.dumps({"events": event_log}, indent=2), encoding="utf-8")
         if "cup_mask_change_log" in locals():
             (args.output / "cup_mask_changes.json").write_text(json.dumps(cup_mask_change_log, indent=2), encoding="utf-8")
+        if "articulation" in locals():
+            (args.output / "failed_actual_robot_state.json").write_text(json.dumps({
+                "time_s": locals().get("simulation_time"),
+                "trajectory_time_s": locals().get("trajectory_time"),
+                "joint_names": discovered_joint_names,
+                "q_rad": np.asarray(articulation.get_dof_positions().numpy(), dtype=float)[0].tolist(),
+                "qd_rad_s": np.asarray(articulation.get_dof_velocities().numpy(), dtype=float)[0].tolist(),
+                "source": "CURRENT_PHYSX_TENSOR_AT_FAILURE"}, indent=2), encoding="utf-8")
         if "_capture_carton_states" in locals():
             (args.output / "failed_actual_carton_states.json").write_text(
                 json.dumps(_capture_carton_states(), indent=2), encoding="utf-8")

@@ -393,7 +393,12 @@ def resolve_actual_task_stage(
     """
     def stage_name(window):
         return str(window.get("stage", window.get("name", "motion")))
+    # A zero-duration home waypoint is a position marker, not an interval
+    # that can mask the actual pregrasp phase at trajectory time zero.
+    # Zero-duration contact/place windows retain their lifecycle rules below.
     planned = next((stage_name(window) for window in stage_windows
+                    if not (stage_name(window) == "home"
+                            and float(window.get("start_time_s", 0.)) == float(window.get("end_time_s", 0.)))
                     if float(window.get("start_time_s", 0.)) <= trajectory_time_s
                     <= float(window.get("end_time_s", 0.))), "motion")
     contact = next((window for window in stage_windows if stage_name(window) == "contact"), None)

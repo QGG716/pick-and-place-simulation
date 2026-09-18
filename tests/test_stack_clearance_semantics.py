@@ -322,3 +322,27 @@ def test_discontinuous_pose_or_changed_negative_feature_is_not_explained_as_old(
     g,m=slide_setup();slide_step(g,m,.00499,.00521,0)
     p=slide_contact();p['contact_point_separation_m']=-.009
     assert slide_step(g,m,.00521,.00543,1,points=[p])['hold']
+
+
+def test_zero_duration_home_marker_does_not_apply_free_transit_to_supported_ungrasped_box():
+    from unloading_sim.m710_replay_physics import resolve_actual_task_stage
+    windows=[dict(stage='home',start_time_s=0.,end_time_s=0.),
+             dict(stage='pregrasp',start_time_s=0.,end_time_s=2.0954883171955103),
+             dict(stage='contact',start_time_s=2.0954883171955103,end_time_s=3.819467604292219)]
+    stage=resolve_actual_task_stage(windows,0.,grasp_commanded=False,grasp_event_time_s=4.,
+        contact_wait_started_s=None,attached=False)
+    assert stage=='pregrasp'
+    g,m=slide_setup()
+    g.begin_step(step=0,time_s=0,trajectory_time_s=0,
+        context=dict(stage=stage,attached=False,actual_free_space=False),states=slide_states(-.6))
+    r=g.finish_step(states=slide_states(-.6),time_s=1/240,monitor=m,commanded_motion=False)
+    assert r['stop_reason'] is None and not r['hold'] and not m.free_space_reached
+
+
+def test_runtime_empty_telemetry_retains_primary_gate_reason():
+    tree=ast.parse(Path('scripts/isaacsim_fanuc_replay.py').read_text(encoding='utf-8'))
+    node=next(n for n in ast.walk(tree) if isinstance(n,ast.If)
+              and ast.unparse(n.test)=='not measured_rows')
+    code=compile(ast.Module(body=[node],type_ignores=[]),'production_empty_telemetry','exec')
+    with pytest.raises(RuntimeError,match='ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST'):
+        exec(code,dict(measured_rows=[],runtime_stop_reason='ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST'))
