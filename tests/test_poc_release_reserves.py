@@ -204,3 +204,65 @@ def test_execution_preflight_policy_rejects_height_and_reserve_mismatch():
     with pytest.raises(ValueError,match='height policy'):_validate_poc_release_policy(changed,strategy)
     changed=deepcopy(segment);changed['planning_execution_reserves']['receiver_runtime_clearance_reserve_m']=0.
     with pytest.raises(ValueError,match='execution reserves'):_validate_poc_release_policy(changed,strategy)
+
+
+def geometric_connector():
+    from test_search_diagnostics import connector
+    from unloading_sim.pair_clearance import obb_pair_failure
+    def tools(q):
+        return [OBB(np.asarray(q)[:3]+[-.010,0,0],[.004]*3,np.eye(3),'rigid_tool','tool')]
+    def validator(q, obstacles, **kwargs):
+        return next((failure for tool in tools(q) for obstacle in obstacles
+                     if (failure:=obb_pair_failure(tool,obstacle,policy(),.005))),None)
+    c=connector(validator);c.collision_policy=policy()
+    c.robot.clamp=lambda q: np.clip(q,-2.,2.)
+    c.ik=dict(load_layout_motion_policy(DEFAULT_MOTION).data['ik'])
+    c.tool_collision_obbs_provider=tools
+    c.budget=replace(c.budget,proof_of_concept=True,approach_runtime_clearance_reserve_m=.003,
+                    receiver_runtime_clearance_reserve_m=.003,departure_runtime_clearance_reserve_m=.003,
+                    extraction_runtime_clearance_reserve_m=.003)
+    return c
+
+
+def test_departure_generation_and_residence_retain_actual_tool_reserve():
+    from unloading_sim.pair_clearance import obb_surface_distance
+    c=geometric_connector();box=carton(.025);start=np.array([-.3,0,.775,0,0,0])
+    prediction=predict_release(box,[deck()],mode=IDEAL_RECEPTION_RELEASE)
+    path,failure,audit=c._departure(start,box,[deck()],[0,-1,0],seed=3,
+        working_normal=[1,0,0],release_prediction=prediction)
+    assert failure is None and len(path)>1
+    gap=obb_surface_distance(c.tool_collision_obbs_provider(path[-1])[0],release_flight_envelope(box,prediction))
+    assert gap>=.008-1e-9
+    assert audit['distance_m']==pytest.approx(.0024)
+
+
+def test_approach_generation_consumes_terminal_reserve_without_inflating_contact():
+    c=geometric_connector()
+    def fk(q):
+        pose=np.eye(4);pose[:3,:3]=rotation_matrix_from_rpy(0,np.pi/2,0);pose[:3,3]=np.asarray(q)[:3]
+        return pose
+    c.robot.fk=fk
+    target=OBB([.1,0,.5],[.1]*3,np.eye(3),'box','carton')
+    grasp=np.array([0,0,.5,0,0,0]);start=np.array([-.05,0,.5,0,0,0])
+    pre,contact,failure,audit=c._approach(start,grasp,fk(grasp),[target],target,seed=3)
+    assert failure is None and contact
+    assert audit['attempts'][0]['terminal_distance_m']==pytest.approx(.0084)
+    assert np.allclose(contact[-1],grasp,atol=1e-4)
+
+
+def test_extraction_generation_keeps_single_three_mm_reserve_after_fk():
+    from unloading_sim.layout_trajectory import PhysicalContactAttachment
+    from unloading_sim.validation_physics import RigidAttachment
+    from unloading_sim.pair_clearance import obb_surface_distance
+    c=geometric_connector();start=np.zeros(6)
+    body=OBB([0,0,0],[.1]*3,np.eye(3),'box','carton')
+    neighbor=OBB([.2,0,0],[.1]*3,np.eye(3),'neighbor','carton')
+    attachment=PhysicalContactAttachment(c.robot,RigidAttachment(np.eye(4),body.half_extents,body.name),np.eye(4),np.eye(4))
+    tracker,failure=c._initial_proximity(body,[neighbor],[])
+    assert failure is None
+    path,tracker,failure,audit=next(c._extraction_options(start,attachment,[neighbor],tracker,np.array([-1.,0,0]),seed=3))
+    assert failure is None and tracker.fully_released
+    attempt=audit['attempts'][audit['selected_attempt']]
+    assert attempt['runtime_clearance_goal_m']==pytest.approx(.0082)
+    assert attempt['runtime_clearance_reserve_m']==.003
+    assert obb_surface_distance(attachment.box_at(path[-1]),neighbor)>=.0082-1e-9

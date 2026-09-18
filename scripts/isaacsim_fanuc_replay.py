@@ -3802,6 +3802,23 @@ try:
                     grasp_enabled = True
                     grasp_closed_time = simulation_time
                     ideal_actual_contact_count_at_attach = int(sum(actual_contact_mask))
+                    # Capture the exact measured transform used at attachment;
+                    # this is distinct from later relative holding error.
+                    actual_contact_world = world_from_grasp @ grasp_from_contact
+                    event_log.append({
+                        "event": "actual_attachment_capture",
+                        "simulation_time_s": simulation_time,
+                        "trajectory_time_s": trajectory_time,
+                        "target": str(metadata["target"]),
+                        "physical_contact_pose_world": actual_contact_world.tolist(),
+                        "actual_box_pose_world": target_obb.world_from_local.tolist(),
+                        "physical_contact_from_box": (
+                            np.linalg.inv(actual_contact_world) @ target_obb.world_from_local).tolist(),
+                        "joint_local_position0_m": np.asarray(local_position).tolist(),
+                        "joint_local_quaternion0_wxyz": local_quaternion_array.tolist(),
+                        "actual_contact_mask": [int(value) for value in actual_contact_mask],
+                        "sample_source": "SAME_ATTACHMENT_STATE_NO_INTERVENING_PHYSICS_STEP",
+                    })
                 elif args.gripper_model == "surface_gripper":
                     close_results = [
                         bool(surface_gripper_interface.close_gripper(path))
