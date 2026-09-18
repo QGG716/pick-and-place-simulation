@@ -1,0 +1,15 @@
+{
+  "path": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/isaac_highest_row/replay.mp4",
+  "sha256": "4f42e36018fa868f97fb4e1ebc59838af0c2bcdc8adcf991f1d3b242203c770d",
+  "width": 640,
+  "height": 360,
+  "fps": 5.0,
+  "declared_frames": 511,
+  "decoded_frames": 511,
+  "duration_s": 102.2,
+  "all_frames_decoded": true,
+  "normal_time_profile_verified": true,
+  "replayed_simulation_seconds": 102.375,
+  "video_minus_physics_seconds": -0.17499999999999716,
+  "metadata_physical_time_scale": 1.0
+}

@@ -1,0 +1,43 @@
+[
+  {
+    "event": "INITIAL_ACTUAL_ROW_BOUND",
+    "world": "1789707683.8917766",
+    "carton_ids": [
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ]
+  },
+  {
+    "event": "OFFLINE_NEXT_PLAN_STARTED",
+    "segment": 2,
+    "processed": [
+      "carton_l07_c02"
+    ],
+    "actual_state_sha256": "524e93d6ddcb6d98806c291f8b10e2ac45aebd2ea8ff8831602d41620a725b6b",
+    "physics_paused": true
+  },
+  {
+    "event": "OFFLINE_NEXT_PLAN_FINISHED",
+    "segment": 2,
+    "returncode": 1,
+    "planning_wall_seconds": 1406.2088412567973
+  },
+  {
+    "event": "INITIAL_ACTUAL_ROW_BOUND",
+    "world": "1789707683.8917766",
+    "carton_ids": [
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ]
+  },
+  {
+    "event": "WORLD_ENDED",
+    "awaited_segment": 3
+  }
+]

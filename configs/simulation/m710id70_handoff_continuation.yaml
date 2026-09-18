@@ -1,0 +1,50 @@
+schema: m710id70_dynamic_execution_v1
+layout_validation_config: ../validation/m710id70_layout_poc_pair_clearance.yaml
+motion_policy_config: ../validation/m710id70_handoff_continuation.yaml
+dynamics_config: m710id70_official_dynamics_v2.yaml
+robot_cad_manifest: ../../assets/robots/fanuc_m710id_70/official/provenance.yaml
+tool_cad_manifest: ../../assets/grippers/shanghai_wantai_three_zone/asset_manifest.yaml
+physics_boundary_patches:
+  extent_basis: layout_trailer_boundaries_with_reachable_patch_fallback
+  robot_reach_m: 2.104
+  task_tcp_extension_m: 0.25
+  thickness_m: 0.05
+replay:
+  controller_period_s: 0.02
+  motion_limit_scale: 0.5
+  pre_grasp_controller_settle_s: 0.2
+  vacuum_establish_s: 0.3
+  release_hold_s: 0.1
+  release_clearance_wait_s: 1.0
+  post_release_settle_s: 3.0
+  normal_time_scale: 1.0
+  output_width_px: 640
+  output_height_px: 360
+  output_fps: 5
+  camera_mode: fixed_overview_with_contact_and_place_keyframes
+  command_mode: initialize_once_then_force_limited_position_drive_targets
+  camera:
+    eye_m:
+    - -3.8
+    - 0.0
+    - 2.7
+    target_m:
+    - -0.2
+    - 0.0
+    - 1.25
+    horizontal_fov_rad: 1.3089969389957472
+    horizontal_aperture_mm: 20.955
+    near_m: 0.03
+    far_m: 10.0
+qualification:
+  require_complete_collision_checked_motion_plan: true
+  require_robot_per_link_cad_visuals: true
+  require_robot_per_link_cad_collisions: true
+  require_tool_dynamic_collision_qualification: true
+  require_resolved_j3_coupling: true
+  require_resolved_tool0_clocking: true
+  require_real_base_mounting_extent: true
+  allow_proxy_collision_for_execution: false
+  allow_carton_pose_teleport_after_initialization: false
+  allow_joint_pose_reset_after_initialization: false
+  allow_infinite_drive_or_attachment_limits: false

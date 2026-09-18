@@ -1,0 +1,99 @@
+{
+  "target": "carton_l07_c02",
+  "complete_trajectory_status": "PASS",
+  "path_nodes": 174,
+  "stage_ranges": {
+    "home": [
+      0,
+      0
+    ],
+    "pregrasp": [
+      0,
+      3
+    ],
+    "contact": [
+      3,
+      6
+    ],
+    "extraction": [
+      6,
+      48
+    ],
+    "transit": [
+      48,
+      145
+    ],
+    "place": [
+      145,
+      146
+    ],
+    "withdrawal": [
+      146,
+      173
+    ]
+  },
+  "planned_fk_release_height_m": 0.024896611367060784,
+  "nominal_candidate_heights_m": [
+    0.025,
+    0.035,
+    0.045000000000000005
+  ],
+  "planning_execution_reserves": {
+    "approach_runtime_clearance_reserve_m": 0.003,
+    "receiver_runtime_clearance_reserve_m": 0.003,
+    "departure_runtime_clearance_reserve_m": 0.003,
+    "extraction_runtime_clearance_reserve_m": 0.003
+  },
+  "delivery": {
+    "simulation_profile": {
+      "name": "proof_of_concept",
+      "ideal_suction": true,
+      "ideal_reception": true,
+      "ideal_outfeed": true,
+      "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+      "machine_qualification_claimed": false
+    },
+    "planning_seconds": 1273.2473960891366,
+    "serialization_seconds": 0.007753137499094009,
+    "preflight_seconds": 0.2827957794070244,
+    "export_seconds": 0.28658443316817284,
+    "isaac_executed": false,
+    "actual_state_sha256": null,
+    "archived_or_live_state_not_modified": true,
+    "simulation_execution_ready": true,
+    "bundle_readback": {
+      "status": "PASS",
+      "bundle_payload_sha256": "5ad0f320a2a3644ebcaab7e46802f46e3fa750ff1ad9e1e0f35658af919f3421",
+      "source_preflight_fingerprint": "d496479b0289235eceba8f7c161e7a7c8cb43c31d924cbb49d77705b97723a3b",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+    },
+    "bundle_readback_seconds": 0.11002851277589798,
+    "bundle_path": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/initial_plan/replay_bundle.json",
+    "first_complete_feasible_result_seconds": 1273.2473960891366,
+    "first_exportable_result_seconds": 1274.375839535147,
+    "subsequent_optimization_seconds": 0.0,
+    "immutable_baseline_directory": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/initial_plan/first_feasible"
+  },
+  "search_validation_queries": {
+    "[\"state\", \"actual_task_start\", \"ACCEPTED\"]": 1,
+    "[\"state\", \"contact_endpoint\", \"ACCEPTED\"]": 1,
+    "[\"full_edge_recheck\", \"pregrasp\", \"ACCEPTED\"]": 6935,
+    "[\"full_edge_recheck\", \"contact\", \"ACCEPTED\"]": 750,
+    "[\"state\", \"support-release\", \"ACCEPTED\"]": 1,
+    "[\"full_edge_recheck\", \"extraction\", \"ACCEPTED\"]": 7426,
+    "[\"full_edge_recheck\", \"transit\", \"ACCEPTED\"]": 14503,
+    "[\"full_edge_recheck\", \"place\", \"ACCEPTED\"]": 3,
+    "[\"full_edge_recheck\", \"withdrawal\", \"ACCEPTED\"]": 5906,
+    "[\"state\", \"residence\", \"ACCEPTED\"]": 1
+  },
+  "search_events": {
+    "HISTORY_CANDIDATE_STARTED": 1,
+    "HISTORY_CANDIDATE_FINISHED": 1
+  },
+  "rejection_group_count": 0,
+  "first_feasible_sha256": {
+    "motion.json": "fbc3148c23a886b8ee1155090cc2ab897e1f691e6ef65a3afa41388c37cdf266",
+    "preflight.json": "a37dceb3f0e5a15de953e81f07bdf65c62527a9f71b9e9c97cb538c41c4a20c2",
+    "replay_bundle.json": "2158556d52327650ecc67237175fbb87373a76f4062454ed71971f05b35020e5"
+  }
+}

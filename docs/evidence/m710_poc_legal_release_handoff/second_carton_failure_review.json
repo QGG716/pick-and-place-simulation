@@ -1,0 +1,67 @@
+{
+  "production_pair_classifier_replay": {
+    "classification": "CLEARANCE_INSUFFICIENT",
+    "accepted": false,
+    "stage": "extraction",
+    "pair": [
+      "/Validation/Scene/carton_l07_c01",
+      "/Validation/Scene/carton_l06_c01"
+    ],
+    "geometry_scope": "ACTUAL_PHYSX_COLLIDERS_NOT_ORIGINAL_CAD",
+    "query_method": "PHYSX_FINITE_CONTACT_POINT_SEPARATION",
+    "geometry_intersection_confirmed": false,
+    "original_cad_intersection_confirmed": false,
+    "surface_distance_m": 6.643665983574465e-05,
+    "required_pair_clearance_m": 0.005,
+    "numerical_gap_tolerance_m": 1e-09,
+    "contact_permission_source": null,
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "measured_contact_separation_m": 6.643665983574465e-05,
+    "pair_kind": "external",
+    "contact_offset_is_not_clearance": true
+  },
+  "current_pair_obb_distance_m": 0.005388677305227511,
+  "current_pair_sat_gap_bound_m": 0.005385468818338068,
+  "single_observation_pair_monitor": {
+    "accepted": true,
+    "reason": null,
+    "minimum_stack_clearance_m": 0.005388677305227511,
+    "actual_penetration_m": null,
+    "sat_overlap_bound_m": 0.0,
+    "penetration_query_scope": "SAT_BOUND_NOT_MEASURED_DEPTH",
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "neighbor_displacement_m": 0.0035861969209808027,
+    "neighbor_tilt_rad": 1.1581414085979886e-05,
+    "free_space_reached": true,
+    "first_free_space_time_s": 40.37916666666667
+  },
+  "nearest_current_cartons": [
+    {
+      "name": "carton_l06_c01",
+      "surface_distance_m": 0.005388677305227511
+    },
+    {
+      "name": "carton_l07_c00",
+      "surface_distance_m": 0.026079310501747246
+    },
+    {
+      "name": "carton_l06_c00",
+      "surface_distance_m": 0.026862968976640162
+    },
+    {
+      "name": "carton_l06_c02",
+      "surface_distance_m": 0.02794652867523426
+    },
+    {
+      "name": "carton_l05_c01",
+      "surface_distance_m": 0.3001739406095083
+    }
+  ],
+  "free_space_to_failure_seconds": 0.0041666666666699825,
+  "scope": "OFFLINE_FIXED_SAVED_STATE_NO_ISAAC",
+  "limitations": [
+    "Final saved state is the stopped world state, not an independent timestamped PhysX manifold capture.",
+    "Reported finite contact-point separation and current box minimum surface distance disagree. Contact point coordinates/normals/manifold feature identities were not saved; no proof of solver staleness or geometric penetration.",
+    "Single-observation monitor replay checks current pair geometry; it does not reconstruct the entire historical free-space latch."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "config": "configs/validation/m710id70_handoff_continuation.yaml",
+  "sha256": "2c163170e8492d5e96a3ff498343dd0357baeadc0bb22acf628316f36f9f2f71",
+  "changes": {
+    "continuation_stage_connection_iterations": [
+      1800,
+      54000
+    ],
+    "local_transit_cartesian_sample_budget": [
+      240,
+      720
+    ]
+  },
+  "reason": "Previously supported sufficient finite quota; no physical or feasibility threshold change",
+  "planning_wall_time_s": null
+}

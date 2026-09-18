@@ -1,0 +1,24 @@
+{
+  "world_session_id": "1789707683.8917766",
+  "carton_ids": [
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "initial_actual_q_rad": [
+    -0.47384220361709595,
+    -0.4663845896720886,
+    -0.3545783758163452,
+    1.7851512432098389,
+    0.48589950799942017,
+    -3.3829965591430664
+  ],
+  "source": "NEW_WORLD_SETTLED_ACTUAL_HIGHEST_ROW",
+  "historical_completion_events_imported": false,
+  "denominator": 5,
+  "initial_actual_carton_count": 40,
+  "source_path": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/isaac_highest_row/initial_highest_row.json",
+  "source_sha256": "02dcd53e898da03b1f1101b293bef55061ea5928e6fc1cadd430b0f8158e9562"
+}

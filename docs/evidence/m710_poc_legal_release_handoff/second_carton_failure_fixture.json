@@ -1,0 +1,311 @@
+{
+  "schema": "m710_handoff_second_carton_failure_v1",
+  "source_commit": "1d9f3fed5513197e4d66b116e224957ff06b6355",
+  "world_session_id": "1789707683.8917766",
+  "physical_time_s": 142.75416666666666,
+  "segment_time_s": 40.37916666666667,
+  "q_rad": [
+    -1.171761393547058,
+    -0.3911304175853729,
+    -0.30697116255760193,
+    1.6064982414245605,
+    1.1731631755828857,
+    -4.804100036621094
+  ],
+  "attached": true,
+  "attachment_target": "carton_l07_c01",
+  "collision_policy": {
+    "schema": "m710_poc_pair_collision_policy_v4",
+    "wrist_tool_exempt_links": [
+      "J5_link",
+      "J6_link"
+    ],
+    "stack_contact_mode": "planner_relaxed_physics_checked",
+    "stack_contact_stages": [
+      "support-release",
+      "extraction"
+    ],
+    "maximum_planned_stack_penetration_m": 0.01,
+    "free_space_clearance_m": 0.0052,
+    "free_space_clearance_loss_tolerance_m": 0.0002,
+    "maximum_actual_penetration_m": 0.01,
+    "maximum_neighbor_displacement_m": 0.06,
+    "maximum_neighbor_tilt_rad": 0.2,
+    "progress_timeout_s": 3.0,
+    "minimum_progress_m": 0.002,
+    "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+    "compliant_cup_neighbor_contact_mode": "ignore",
+    "maximum_compliant_cup_additional_compression_m": 0.005,
+    "required_pair_clearance_m": 0.005,
+    "self_collision_clearance_m": 0.0,
+    "boundary_mode": "finite_frozen_scene_walls",
+    "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+    "box_box_physics_enabled": true
+  },
+  "current_pair": [
+    {
+      "name": "carton_l07_c01",
+      "position_m": [
+        -0.30767375230789185,
+        -0.4198114275932312,
+        2.2501471042633057
+      ],
+      "orientation_wxyz": [
+        1.0,
+        0.0001362664916086942,
+        -5.544103623833507e-05,
+        2.903822314692661e-05
+      ],
+      "linear_velocity_m_s": [
+        -0.01934663951396942,
+        9.687901911092922e-05,
+        0.022554906085133553
+      ],
+      "angular_velocity_rad_s": [
+        -0.008988556452095509,
+        -0.0008185805636458099,
+        0.002131377113983035
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    },
+    {
+      "name": "carton_l06_c01",
+      "position_m": [
+        0.29776567220687866,
+        -0.42272257804870605,
+        1.9500477313995361
+      ],
+      "orientation_wxyz": [
+        1.0,
+        -2.729316747718258e-06,
+        2.4358155314985197e-06,
+        0.00012377300299704075
+      ],
+      "linear_velocity_m_s": [
+        -0.03961043804883957,
+        -0.03323042765259743,
+        -0.06439447402954102
+      ],
+      "angular_velocity_rad_s": [
+        0.0916188508272171,
+        -0.06138060986995697,
+        -0.002626508940011263
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ]
+    }
+  ],
+  "initial_pair": [
+    {
+      "name": "carton_l07_c01",
+      "category": "carton",
+      "center_m": [
+        0.29953405261039734,
+        -0.4200740456581116,
+        2.2500290870666504
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "rotation_matrix": [
+        [
+          0.9999999992299564,
+          -3.1562640793693844e-05,
+          2.3321381474936234e-05
+        ],
+        [
+          3.15624178399117e-05,
+          0.9999999994562065,
+          9.560365163972499e-06
+        ],
+        [
+          -2.332168321262575e-05,
+          -9.559629077423885e-06,
+          0.9999999996823563
+        ]
+      ],
+      "dynamic": true,
+      "mass_kg": 42.5,
+      "inertia_at_com_kg_m2": [
+        [
+          0.885416666666667,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.59375,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.841666666666667
+        ]
+      ],
+      "material": "carton"
+    },
+    {
+      "name": "carton_l06_c01",
+      "category": "carton",
+      "center_m": [
+        0.3000529706478119,
+        -0.4199605882167816,
+        1.9500256776809692
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "rotation_matrix": [
+        [
+          0.9999999998642193,
+          2.5475793810406957e-06,
+          1.628101096212844e-05
+        ],
+        [
+          -2.547635947363347e-06,
+          0.9999999999907192,
+          3.474354295729437e-06
+        ],
+        [
+          -1.6281002110783972e-05,
+          -3.474395773346473e-06,
+          0.9999999998614287
+        ]
+      ],
+      "dynamic": true,
+      "mass_kg": 42.5,
+      "inertia_at_com_kg_m2": [
+        [
+          0.885416666666667,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.59375,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.841666666666667
+        ]
+      ],
+      "material": "carton"
+    }
+  ],
+  "contact": {
+    "time_s": 40.37916666666667,
+    "actors": [
+      "/Validation/Scene/carton_l07_c01",
+      "/Validation/Scene/carton_l06_c01"
+    ],
+    "colliders": [
+      "/Validation/Scene/carton_l07_c01",
+      "/Validation/Scene/carton_l06_c01"
+    ],
+    "minimum_separation_m": 6.643665983574465e-05,
+    "reason": "CLEARANCE_INSUFFICIENT",
+    "pair_evidence": {
+      "classification": "CLEARANCE_INSUFFICIENT",
+      "accepted": false,
+      "stage": "extraction",
+      "pair": [
+        "/Validation/Scene/carton_l07_c01",
+        "/Validation/Scene/carton_l06_c01"
+      ],
+      "geometry_scope": "ACTUAL_PHYSX_COLLIDERS_NOT_ORIGINAL_CAD",
+      "query_method": "PHYSX_FINITE_CONTACT_POINT_SEPARATION",
+      "geometry_intersection_confirmed": false,
+      "original_cad_intersection_confirmed": false,
+      "surface_distance_m": 6.643665983574465e-05,
+      "required_pair_clearance_m": 0.005,
+      "numerical_gap_tolerance_m": 1e-09,
+      "contact_permission_source": null,
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "measured_contact_separation_m": 6.643665983574465e-05,
+      "pair_kind": "external",
+      "contact_offset_is_not_clearance": true
+    },
+    "stage": "extraction",
+    "attached": true,
+    "actual_free_space": true,
+    "release_validation_pending": false
+  },
+  "monitor_summary": {
+    "observations": 5837,
+    "box_box_physics_enabled": true,
+    "free_space_reached": true,
+    "first_free_space_time_s": 40.375,
+    "peak_actual_penetration_m": null,
+    "peak_sat_overlap_bound_m": 1.7209812014362669e-06,
+    "peak_neighbor_displacement_m": 0.019764842988731417,
+    "peak_neighbor_tilt_rad": 0.00010468708541786726,
+    "contact_force_channel": "NOT_USED_BY_GEOMETRIC_DISTURBANCE_MONITOR"
+  },
+  "last_rendered_monitor_observations": [
+    {
+      "time_s": 40.0,
+      "accepted": true,
+      "reason": null,
+      "minimum_stack_clearance_m": 6.271210911816823e-05,
+      "actual_penetration_m": null,
+      "sat_overlap_bound_m": 0.0,
+      "penetration_query_scope": "SAT_BOUND_NOT_MEASURED_DEPTH",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "neighbor_displacement_m": 0.019415793847288303,
+      "neighbor_tilt_rad": 5.822079523066492e-05,
+      "free_space_reached": false,
+      "first_free_space_time_s": null
+    },
+    {
+      "time_s": 40.2,
+      "accepted": true,
+      "reason": null,
+      "minimum_stack_clearance_m": 3.11719084550258e-06,
+      "actual_penetration_m": null,
+      "sat_overlap_bound_m": 0.0,
+      "penetration_query_scope": "SAT_BOUND_NOT_MEASURED_DEPTH",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "neighbor_displacement_m": 0.01962534925124983,
+      "neighbor_tilt_rad": 7.223058113454853e-05,
+      "free_space_reached": false,
+      "first_free_space_time_s": null
+    }
+  ],
+  "source_artifacts": [
+    {
+      "path": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/isaac_highest_row/segment_002/actual_remaining_state.json",
+      "sha256": "90b88d459465f563fbd2472b14229d4b83150f815549914d5f35a7e52effc289"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/isaac_highest_row/segment_002/result.json",
+      "sha256": "9e4077510dafaa7b4be0841d9147b4b4998dfd12b874667b620ebe391219ef10"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/isaac_highest_row/segment_002/stack_contact_monitor.json",
+      "sha256": "cbc597d650dec492d1f796083217f238385dac83186981a2b0fb9bea661bcedf"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/plan_002_delivery/replay_bundle.json",
+      "sha256": "919569c4af1b960223ae6ddbf4247983a7edd3f2eeb1ff0d6a953275bd1b1f17"
+    },
+    {
+      "path": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/isaac_highest_row/segment_002/actual_frame_states.json",
+      "sha256": "ca66b1e3d0d5c247c9d365234046c762e07438dd594956e180e205e0ace4c739"
+    }
+  ]
+}

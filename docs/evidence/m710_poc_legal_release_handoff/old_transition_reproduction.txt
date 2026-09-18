@@ -1,0 +1,3 @@
+{'nominal_m': 0.022, 'production_audits': [{'height_m': 0.0215, 'accepted': True, 'reason': 'IDEAL_RECEPTION_REGION_ACCEPTED'}, {'height_m': 0.0195, 'accepted': False, 'reason': 'IDEAL_RELEASE_HEIGHT_OUT_OF_BOUNDS'}]}
+{'nominal_m': 0.025, 'production_audits': [{'height_m': 0.024, 'accepted': True, 'reason': 'IDEAL_RECEPTION_REGION_ACCEPTED'}, {'height_m': 0.0208, 'accepted': False, 'reason': 'ACTUAL_RELEASE_REGION_MISMATCH'}]}
+OLD IMPLEMENTATION: both legal post-release transitions rejected; reproduction confirmed

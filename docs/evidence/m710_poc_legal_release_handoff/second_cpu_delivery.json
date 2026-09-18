@@ -1,0 +1,125 @@
+{
+  "complete_trajectory_status": "PASS",
+  "planning_success": true,
+  "execution_ready": false,
+  "planning_performance": {
+    "schema": "first_carton_planning_wall_timing_v1",
+    "planning_total_wall_seconds": 1405.2674522846937,
+    "model_load_and_initialization_seconds": 0.34110356122255325,
+    "candidate_generation_seconds": 0.04061179980635643,
+    "grasp_candidate_generation_seconds": 0.01370280236005783,
+    "placement_candidate_generation_seconds": 0.0269089974462986,
+    "grasp_ik_seconds_inclusive_of_endpoint_validation": 0.3210791312158108,
+    "trajectory_search_seconds_inclusive": 1404.5088246949017,
+    "trajectory_ik_seconds": 0.01281086727976799,
+    "path_connection_seconds_inclusive_of_collision": 12.256997462362051,
+    "collision_validation_seconds_nested": 1397.3493950814009,
+    "final_recheck_seconds": 0.008012529462575912,
+    "time_parameterization_seconds": null,
+    "trajectory_physical_execution_seconds": null,
+    "isaac_replay_wall_seconds": null,
+    "nesting": {
+      "trajectory_search_seconds_inclusive": [
+        "trajectory_ik_seconds",
+        "path_connection_seconds_inclusive_of_collision",
+        "collision_validation_seconds_nested",
+        "final_recheck_seconds"
+      ],
+      "path_connection_seconds_inclusive_of_collision": [
+        "collision_validation_seconds_nested"
+      ]
+    },
+    "unmeasured_value": null
+  },
+  "policy_fingerprint": "650d04d1dfa47ed532448c09d415fba3c2dd945bd69ce58efbc217969212e0f3",
+  "implementation_identity": {
+    "source_sha256": {
+      "src/unloading_sim/search_diagnostics.py": "4ecb355246a00c4caf67c6f2800124024ccc5cc890773f88b21b4abc8d84b5d3",
+      "src/unloading_sim/wrist_transfer.py": "325ca2f61f220c68f26fc9d4cbaafdb2bc6d3d6075a600f4c8e378dd25c30c69",
+      "src/unloading_sim/history_candidates.py": "b801bb46c2128bcb681c079f37dc46f7674dc373f948f0d4e7aca364068f311a",
+      "src/unloading_sim/history_adaptation.py": "9358f7098cd3b2858d9312b30d918f594fdb19c8000b95105c648ab63e3fcbc6",
+      "src/unloading_sim/contact_scheduler.py": "7ab9a8bf8e6e9d961d599846ab00d87b30c1bc2c0d5079ed090c3caee270a427",
+      "src/unloading_sim/motion_quality.py": "cb8ab84a9b747b3dd0709d1e0a3ad5a8e2a42e1d78e6816d82c90f01ec7e0d82",
+      "src/unloading_sim/release_motion.py": "d714fa20c533fdc9c1c919fd1bb059c03527f35f7fbe4e6d19c776f425042422",
+      "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+      "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+      "src/unloading_sim/conveyor_placement.py": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503",
+      "src/unloading_sim/unloading_sequence.py": "1881b114d280286ffaaf22d9ad306040bcf435dd64efad0a4d3b41fcee6ae915",
+      "src/unloading_sim/tool_geometry.py": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d",
+      "src/unloading_sim/depalletizing.py": "aef4ff69219ca4ff27d1da9cd3b7f7567b5de5c4b0f59310b44b821f070f59e3",
+      "src/unloading_sim/fanuc_m710id70.py": "f60871dccd361c6d6a6da32ef55b0f67f02f1a76f9f18268fe4783bae8b7eff3",
+      "src/unloading_sim/geometry.py": "793384532bf599bb7b7a4f1199bde36b9ad170b4b38f4989975ac4d911508c87",
+      "src/unloading_sim/grasp.py": "4f5856d1c36f78ad8c58c0df7f23e7c280a83a7c84bdefe2a6a3461026b50a60",
+      "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+      "src/unloading_sim/ik.py": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5",
+      "src/unloading_sim/layout_single_carton.py": "42320d39241dbb8c6d7ec2b109e9d6e7bab456e1bf2bf3932f094e34b6b0f63b",
+      "src/unloading_sim/layout_trajectory.py": "54aeb445b3fcb8aa03f8786d72aec3516c9b8933f7e8125e696d629b2849a424",
+      "src/unloading_sim/pinocchio_backend.py": "febe67199d3acf927240055b067d707c6cf92b784e1beae639ab0650fa34530a",
+      "src/unloading_sim/planner.py": "73b9c9d1afecc76a441d1e66bba3c593dfdba4eb28d9dae00c95563d42e049b9",
+      "src/unloading_sim/robot.py": "8fff99fe5a1f969c5c06aeccc9858f4ec3d47f36c45c24b17e7561b40b2b64d5",
+      "src/unloading_sim/robot_load/model.py": "6fd02fe472b4c142689f12420b145e7a41ea837ebe449d2bcee00e87379f8979",
+      "src/unloading_sim/robot_load/spatial.py": "2d56858234b59e5ef239a39b8fd7d924e4c4148f4b72d17d582819306a10d363",
+      "src/unloading_sim/robot_load/task.py": "6ca40eb357be668ece73fbdf5540ee9efb5c364df60cf53f79c9c62e331df363",
+      "src/unloading_sim/scene.py": "6178c10ab83b561613399d5fd710a165cfe49762550b769780b249578e91017a",
+      "src/unloading_sim/serial_unloading.py": "e3451a69b770a513731cfdceb2bd5551cbb9a840440dcd8e0c21e187d6aec8be",
+      "src/unloading_sim/planning_profile.py": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee",
+      "src/unloading_sim/post_landing_transport.py": "1db1de76dcbcae6e0f45c811707f245f7fe9d21f662526270ff6210e8ace1223",
+      "src/unloading_sim/support.py": "c752893bb3f94a620d2921b6c2a93d1bb34c1102f1521cdba8d1b72e703ae4cf",
+      "src/unloading_sim/timing.py": "9e8951093f357b2eba05d8670bbf21b93be1f17016d08e4a4bc889eafebc13a9",
+      "src/unloading_sim/validation_motion.py": "5d79a2a7ee8897249db52ede23f48529356a89ddaacf1539003944c382d52d0e",
+      "src/unloading_sim/validation_physics.py": "770cbc4acc32d58eb8fc4f422d18d03b56c3a4eb54f4f1cae380d4e8939e7ab8",
+      "src/unloading_sim/workcell_layout.py": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2"
+    },
+    "runtime": {
+      "python": "3.12.3",
+      "python_implementation": "CPython",
+      "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+      "numpy": "2.3.2"
+    }
+  },
+  "scene_fingerprint": "b341b03d78f11c4c58051b91265fbf60e51cd21b2db4132e8fce4cc4707f7aae",
+  "delivery": {
+    "status": "COMPLETE_PREFLIGHT_EXPORT_READBACK_PASS",
+    "planning_seconds": 1405.2674522846937,
+    "preflight_seconds": 0.28363606706261635,
+    "export_seconds": 0.3279343582689762,
+    "bundle_readback_seconds": 0.1283751241862774,
+    "bundle_readback": {
+      "status": "PASS",
+      "bundle_payload_sha256": "cfa2f193e306617d1820d5f40e50bbfa7c34b224321ec9fb8e716b18008baa18",
+      "source_preflight_fingerprint": "dffe993c2981435e0a74b5c8a160b00d974d071c0193292fac2c3673c904dd64",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+    },
+    "simulation_execution_ready": true,
+    "source_motion_sha256": "76a934d8f2ec3aefbb364bdc4d4ac12374517b0f2a6fd552156ef843c74ea351",
+    "actual_state_sha256": "524e93d6ddcb6d98806c291f8b10e2ac45aebd2ea8ff8831602d41620a725b6b",
+    "source_motion": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/plan_002/motion.json",
+    "new_search_performed": false,
+    "subsequent_optimization_seconds": 0.0,
+    "immutable_baseline_directory": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/plan_002_delivery/first_feasible"
+  },
+  "target": "carton_l07_c01",
+  "task_complete_trajectory": true,
+  "path_nodes": 171,
+  "search_statistics_excerpt": {
+    "generated_candidate_count": 72,
+    "unique_candidates_evaluated": 1,
+    "remaining_unsearched_count": 71,
+    "history_attempt_count": 4,
+    "candidate_failure_counts": {"HISTORY_START_ADAPTATION_BOUND": 4, "OK": 1},
+    "trajectory_state_validations": 44468,
+    "trajectory_edge_state_samples": 43554,
+    "trajectory_rrt_iterations_consumed": 263,
+    "trajectory_cartesian_samples": 160,
+    "quality_connection_attempt_count": 0
+  },
+  "first_preflight_failure": {
+    "world_session_id": "1789707683.8917766",
+    "actual_state_sha256": "524e93d6ddcb6d98806c291f8b10e2ac45aebd2ea8ff8831602d41620a725b6b",
+    "planning_output": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/plan_002",
+    "status": "OFFLINE_PLANNING_FAILED_WORLD_RETAINED",
+    "planner_returncode": 1,
+    "request_published": false
+  },
+  "motion_sha256": "76a934d8f2ec3aefbb364bdc4d4ac12374517b0f2a6fd552156ef843c74ea351"
+}

@@ -1,0 +1,48 @@
+{
+  "states": [
+    {
+      "path": "outputs/isaac_highest_row/actual_remaining_state.json",
+      "sha256": "524e93d6ddcb6d98806c291f8b10e2ac45aebd2ea8ff8831602d41620a725b6b",
+      "world_session_id": "1789707683.8917766",
+      "time_s": 102.375,
+      "attached": false,
+      "attachment_target": null,
+      "completed_carton_ids": [],
+      "ideal_received_ids": [
+        "carton_l07_c02"
+      ],
+      "processed_carton_ids": [
+        "carton_l07_c02"
+      ],
+      "handed_off_ids": [
+        "carton_l07_c02"
+      ],
+      "inactive_carton_ids": [
+        "carton_l07_c02"
+      ]
+    },
+    {
+      "path": "outputs/isaac_highest_row/segment_002/actual_remaining_state.json",
+      "sha256": "90b88d459465f563fbd2472b14229d4b83150f815549914d5f35a7e52effc289",
+      "world_session_id": "1789707683.8917766",
+      "time_s": 142.75416666666666,
+      "attached": true,
+      "attachment_target": "carton_l07_c01",
+      "completed_carton_ids": [],
+      "ideal_received_ids": [
+        "carton_l07_c02"
+      ],
+      "processed_carton_ids": [
+        "carton_l07_c02"
+      ],
+      "handed_off_ids": [
+        "carton_l07_c02"
+      ],
+      "inactive_carton_ids": [
+        "carton_l07_c02"
+      ]
+    }
+  ],
+  "events_retained": true,
+  "new_planning_from_attached_failure_state_attempted": false
+}

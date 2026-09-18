@@ -1,0 +1,23 @@
+{
+  "execution_config": "configs/simulation/m710id70_handoff_continuation.yaml",
+  "sha256": "bd417cca10660994cbe6a7a1b8955a53116bc0c435a75f54a8e3f8ddab115a1c",
+  "only_change": {
+    "motion_policy_config": [
+      "../validation/m710id70_proof_of_concept.yaml",
+      "../validation/m710id70_handoff_continuation.yaml"
+    ]
+  },
+  "prior_failure": "actual motion input policy mismatch",
+  "binding_checks_preserved": true,
+  "fixed_execution_fields_identical": true,
+  "motion_differences": {
+    "local_transit_cartesian_sample_budget": [
+      null,
+      720
+    ],
+    "continuation_stage_connection_iterations": [
+      1800,
+      54000
+    ]
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "source_root": "/root/autodl-tmp/m710-poc-step31-v3-20260918",
+  "source_sha256": {
+    "src/unloading_sim/m710_replay_physics.py": "4f89a55441aa9c69d6517ccae355e90ff0d255d6f17df5e51eece8a722ecace4",
+    "src/unloading_sim/post_landing_transport.py": "565474ad39203dc4a75a4cc15f791983855c3ddf61a75cb825a6d567c50400ee",
+    "scripts/isaacsim_fanuc_replay.py": "bcc3cbeb039b1ff2c56b4eca552aa934ac5a29cbd8b6054405dcdbef59b985d1"
+  },
+  "cases": [
+    {
+      "nominal_m": 0.022,
+      "elapsed_s": 0.02019275109384608,
+      "production_audits": [
+        {
+          "height_m": 0.0215,
+          "position_m": [
+            0.0,
+            0.0,
+            0.7715
+          ],
+          "linear_velocity_m_s": [
+            0,
+            0,
+            0
+          ],
+          "time_s": 10.0,
+          "accepted": true,
+          "reason": "IDEAL_RECEPTION_REGION_ACCEPTED"
+        },
+        {
+          "height_m": 0.0195,
+          "position_m": [
+            0.0,
+            0.0,
+            0.7695
+          ],
+          "linear_velocity_m_s": [
+            0,
+            0,
+            -0.19809088823063004
+          ],
+          "time_s": 10.020192751093846,
+          "accepted": false,
+          "reason": "IDEAL_RELEASE_HEIGHT_OUT_OF_BOUNDS"
+        }
+      ]
+    },
+    {
+      "nominal_m": 0.025,
+      "elapsed_s": 0.025542034272564042,
+      "production_audits": [
+        {
+          "height_m": 0.024,
+          "position_m": [
+            0.0,
+            0.0,
+            0.774
+          ],
+          "linear_velocity_m_s": [
+            0,
+            0,
+            0
+          ],
+          "time_s": 10.0,
+          "accepted": true,
+          "reason": "IDEAL_RECEPTION_REGION_ACCEPTED"
+        },
+        {
+          "height_m": 0.0208,
+          "position_m": [
+            0.0,
+            0.0,
+            0.7708
+          ],
+          "linear_velocity_m_s": [
+            0,
+            0,
+            -0.2505673562138533
+          ],
+          "time_s": 10.025542034272563,
+          "accepted": false,
+          "reason": "ACTUAL_RELEASE_REGION_MISMATCH"
+        }
+      ]
+    }
+  ],
+  "old_legal_transitions_rejected": true
+}

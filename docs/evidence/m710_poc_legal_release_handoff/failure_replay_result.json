@@ -1,0 +1,8 @@
+{
+  "offline_replay": "PASS",
+  "contact_classification": "CLEARANCE_INSUFFICIENT",
+  "contact_point_separation_m": 6.643665983574465e-05,
+  "current_box_minimum_surface_distance_m": 0.005388677305227511,
+  "current_pair_monitor_accepted": true,
+  "simulator_started": false
+}
