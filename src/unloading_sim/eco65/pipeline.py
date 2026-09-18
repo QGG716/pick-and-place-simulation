@@ -43,16 +43,24 @@ def numeric_checks(world):
         assert np.allclose(world.data.xmat[bid].reshape(3,3),T[:3,:3],atol=1e-9)
     return dict(status="PASS",independent_method="SciPy XML FK + central differences",states=errors,zero_pose="numerical test only, not HOME")
 
+class IKSearchExhausted(RuntimeError):
+    def __init__(self,phase,found,collision):
+        self.found=found;self.collision=collision
+        super().__init__("IK_COLLISION_CANDIDATES_EXHAUSTED " + phase if found else "IK_NOT_FOUND_WITHIN_BUDGET " + phase)
+
 def find_ik(world,target,phase,seeds,rng,deadline,cancel=lambda:False):
+    found=0;collision=None
     for index,seed in enumerate(list(seeds)+[rng.uniform(world.robot.joint_limits[:,0],world.robot.joint_limits[:,1]) for _ in range(world.scene["ik_seeds"])]):
         if cancel():raise InterruptedError("CANCELLED")
         if time.perf_counter()>deadline:raise TimeoutError("BUDGET_EXHAUSTED")
         r=solve_ik(world.robot,target,seed,max_iterations=350,position_tolerance=.00002,orientation_tolerance=.0002,
                    deadline_monotonic=deadline)
+        if r.success:found+=1
         if r.success and world.valid(r.q,phase):
             return r.q,dict(seed_index=index,iterations=r.iterations,position_error_m=r.position_error,orientation_error_rad=r.orientation_error)
+        if r.success:collision=copy.deepcopy(world.last_failure)
         if index and index%20==0:print("IK",phase,"seeds",index,"last",world.last_failure,flush=True)
-    raise RuntimeError("CANDIDATES_EXHAUSTED "+phase+" "+str(world.last_failure))
+    raise IKSearchExhausted(phase,found,collision)
 
 def known_world(world,q):
     scene=world.scene
@@ -109,15 +117,18 @@ class ECO65PlannerBackend(P.PlannerBackend):
             retreat=place.copy();retreat[2,3]+=max(.035,.5*box["size_m"][2])
             add("retreat",retreat)
         except TimeoutError:
-            return P.PlanningResult.failed(candidate,P.PlanStatus.TIMEOUT,message="BUDGET_EXHAUSTED",metadata={"segments_completed":segments})
+            return P.PlanningResult.failed(status=P.PlanStatus.TIMEOUT,candidate=candidate,message="BUDGET_EXHAUSTED",metadata={"segments_completed":segments})
         except InterruptedError:
-            return P.PlanningResult.failed(candidate,P.PlanStatus.NOT_EVALUATED,message="CANCELLED")
+            return P.PlanningResult.operational_failure(outcome=P.OperationalOutcome.CANCELLED,candidate=candidate,failure=P.FailureDetails(True,P.FailureScope.BACKEND_LOCAL,native_code="CANCELLED"))
+        except IKSearchExhausted as exc:
+            return P.PlanningResult.failed(status=P.PlanStatus.COLLISION if exc.found else P.PlanStatus.NO_IK,candidate=candidate,message=str(exc),metadata={"collision":exc.collision,"bounded_search":True})
         except RuntimeError as exc:
-            save_json(OUTPUT/"reports/planning_failure.json",dict(message=str(exc),last_collision=w.last_failure,segments=segments))
-            return P.PlanningResult.failed(candidate,P.PlanStatus.COLLISION,message=str(exc))
+            return P.PlanningResult.failed(status=P.PlanStatus.NOT_EVALUATED,candidate=candidate,message="PATH_SEARCH_EXHAUSTED: "+str(exc),metadata={"segments_completed":segments,"last_collision":w.last_failure})
         payload=dict(segments=segments,attachment_tcp_to_box=relative.tolist(),released_box_pose=released.tolist(),
             box_id=box["id"],source_world=request.world_snapshot.fingerprint,tool_fingerprint=canonical_fingerprint(w.tool),
             geometry_mode="GEOMETRIC_REPLAY_ONLY",dynamics="NOT_EVALUATED",lift_distance_m=clearance)
+        from .task_checks import runtime_fingerprint
+        payload["runtime_fingerprint"]=runtime_fingerprint(w)
         payload["trajectory_fingerprint"]=canonical_fingerprint(payload)
         self.artifact=payload
         trajectory=[request.start_state]+[tuple(row) for seg in segments for row in seg["q"][1:]]
@@ -130,105 +141,176 @@ def artifact_dict(result):
     return json.loads(json.dumps(result.metadata,default=lambda x:dict(x)))
 
 class ECO65PlanValidator(P.PlanValidator):
-    def __init__(self,world):super().__init__("eco65-complete-geometry","1");self.world=world;self.report={}
+    def __init__(self,world,output=None):
+        super().__init__("eco65-complete-geometry","2");self.world=world;self.report={};self.output=output
     def validate(self,plan_envelope,current_world_snapshot,current_motion_boundary):
-        w=self.world;plan=plan_envelope;errors=[];artifact=artifact_dict(plan.result)
-        if not plan.planned_snapshot.planning_context_matches(current_world_snapshot):errors.append("world_identity")
-        if not np.allclose(current_motion_boundary.q,plan.expected_start_state,atol=1e-9):errors.append("start_state")
-        if artifact["tool_fingerprint"]!=canonical_fingerprint(w.tool):errors.append("tool_identity")
-        claimed=artifact.pop("trajectory_fingerprint")
-        if claimed!=canonical_fingerprint(artifact):errors.append("artifact_hash")
-        artifact["trajectory_fingerprint"]=claimed
-        if errors:return P.PlanValidationResult(P.ValidationStatus.INVALID,current_world_snapshot,current_motion_boundary,",".join(errors),self.name,self.version)
-        w.payload_relative=None;w.released_pose=None;count=0;pose_errors=[]
-        previous=np.array(plan.expected_start_state)
-        for seg in artifact["segments"]:
-            phase=seg["phase"];knots=np.array(seg["q"]);times=np.array(seg["t"])
-            if not np.allclose(previous,knots[0],atol=1e-9):errors.append("segment_discontinuity")
-            if not np.isfinite(times).all() or np.any(np.diff(times)<=0):errors.append("timestamps")
-            queries=[]
-            # Same monotone quintic interpolation as playback, refined in joint-space L1 and time.
-            # The nominal 0.0008-rad L1 subdivision is uniform in time; quintic peak spacing can be 1.875x larger.
-            # This is dense sampling, not a certified continuous swept-volume bound.
-            for a,b,ta,tb in zip(knots[:-1],knots[1:],times[:-1],times[1:]):
-                n=max(2,int(np.ceil(np.sum(np.abs(b-a))/.0008)),int(np.ceil((tb-ta)/.02)))
-                queries.extend(np.linspace(ta,tb,n+1))
-            qs,vel=sample_quintic_knots(times,knots,np.array(queries))
-            for row in qs:
-                if not w.valid(row,phase):errors.append(w.last_failure);break
-                count+=1
-            target=np.array(seg["target_tcp"]);actual=w.robot.fk(knots[-1])
-            pe=float(np.linalg.norm(actual[:3,3]-target[:3,3]));oe=float(Rotation.from_matrix(target[:3,:3]@actual[:3,:3].T).magnitude())
-            pose_errors.append(dict(phase=phase,position_error_m=pe,orientation_error_rad=oe))
-            if pe>.00005 or oe>.0003:errors.append("FK_residual")
-            if phase=="contact":
-                try:w.attach(knots[-1])
-                except ValueError as exc:errors.append(str(exc))
-            if phase=="place_contact":
-                try:w.release(knots[-1])
-                except ValueError as exc:errors.append(str(exc))
-            previous=knots[-1]
-            print("VALIDATED",phase,"samples",count,"errors",len(errors),flush=True)
-            if errors:break
-        self.report=dict(status="VALID" if not errors else "INVALID",samples=count,errors=errors,pose_errors=pose_errors,
-            trajectory_fingerprint=claimed,world_fingerprint=current_world_snapshot.fingerprint,
-            checks="robot self/environment/tool, all rigid tool protrusions, 12 terminal seals, same payload/support, full final quintic interpolation",
-            joint_l1_sampling_rad=.0008,time_sampling_s=.02,collision_margin_m=w.scene["margin_m"],
-            mesh_error_reserve_m=w.scene["mesh_error_reserve_m"],continuous_collision_certification=False,
-            scope="Dense geometric validation, no dynamics/tracking/hardware claim",
-            support="GEOMETRIC_SUPPORT_COMPUTED" if w.released_pose is not None else "NOT_RELEASED")
-        save_json(OUTPUT/"reports/validation.json",self.report)
+        from .task_checks import audit_task,runtime_fingerprint,current_kinematics_match_source,measure_motion_envelope
+        w=self.world;plan=plan_envelope;errors=[];count=0;pose_errors=[];events=[]
+        artifact=artifact_dict(plan.result)
+        try:
+            actual_snapshot=known_world(w,w.current_q)
+            if not plan.planned_snapshot.planning_context_matches(current_world_snapshot) or not plan.planned_snapshot.planning_context_matches(actual_snapshot):errors.append('actual_world_identity')
+            if not np.allclose(w.current_q,current_motion_boundary.q,atol=1e-9,rtol=0):errors.append('actual_start_state')
+            if not current_motion_boundary.matches(plan.expected_start_boundary):errors.append('start_boundary')
+            if plan.expected_start_boundary.boundary_mode!=P.BoundaryMode.STOP_BOUNDARY:errors.append('start_not_stopped')
+            if plan.expected_end_boundary.boundary_mode!=P.BoundaryMode.STOP_BOUNDARY:errors.append('end_not_stopped')
+            if artifact.get('tool_fingerprint')!=canonical_fingerprint(w.tool):errors.append('tool_identity')
+            if artifact.get('runtime_fingerprint')!=runtime_fingerprint(w) or not current_kinematics_match_source(w):errors.append('actual_model_identity')
+            if artifact.get('source_world')!=plan.planned_snapshot.fingerprint:errors.append('source_world')
+            if plan.result.target_id!=w.box_id or plan.candidate.target_id!=w.box_id:errors.append('target_identity')
+            velocity=[float(j.find('limit').attrib['velocity']) for j in ET.parse(URDF).getroot().findall('joint') if j.find('limit') is not None]
+            audit=audit_task(artifact,plan.result.trajectory,plan.expected_start_state,plan.expected_end_state,w.box_id,w.robot.joint_limits,w.scene,velocity)
+            errors.extend(audit['errors'])
+            if getattr(w,'attached',False) or w.released_pose is not None:errors.append('world_not_initial')
+            if errors:raise ValueError('preflight_failed')
+            if not w.valid(np.asarray(plan.expected_start_state),'initial'):raise ValueError('initial_clearance '+str(w.last_failure))
+            attached=False;released=False
+            for seg in artifact['segments']:
+                phase=seg['phase'];knots=np.array(seg['q']);times=np.array(seg['t']);queries=[]
+                if phase.startswith('loaded') or phase in ('front_separation','place_contact'):
+                    if not attached:raise ValueError('loaded_without_attach')
+                if phase=='retreat' and not released:raise ValueError('retreat_without_supported_release')
+                for a,b,ta,tb in zip(knots[:-1],knots[1:],times[:-1],times[1:]):
+                    n=max(2,int(np.ceil(np.sum(np.abs(b-a))/.0008)),int(np.ceil((tb-ta)/.02)))
+                    queries.extend(np.linspace(ta,tb,n+1))
+                qs,_=sample_quintic_knots(times,knots,np.array(queries))
+                for row in qs:
+                    if not w.valid(row,phase):raise ValueError('collision '+str(w.last_failure))
+                    measure_motion_envelope(w);count+=1
+                    if count%1000==0:print('VALIDATION_PROGRESS',phase,'samples',count,flush=True)
+                target=np.array(seg['target_tcp']);actual=w.robot.fk(knots[-1])
+                pe=float(np.linalg.norm(actual[:3,3]-target[:3,3]));oe=float(Rotation.from_matrix(target[:3,:3]@actual[:3,:3].T).magnitude())
+                pose_errors.append(dict(phase=phase,position_error_m=pe,orientation_error_rad=oe))
+                if pe>.00005 or oe>.0003:raise ValueError('FK_residual')
+                if phase=='contact':
+                    relative=w.attach(knots[-1]);attached=True;events.append('ATTACHED')
+                    if not np.allclose(relative,artifact['attachment_tcp_to_box'],atol=1e-8,rtol=0):raise ValueError('attachment_mismatch')
+                if phase=='place_contact':
+                    pose=w.release(knots[-1]);attached=False;released=True;events.append('SUPPORTED_RELEASE')
+                    if not np.allclose(pose,artifact['released_box_pose'],atol=1e-8,rtol=0):raise ValueError('release_mismatch')
+                if phase=='retreat':events.append('RETREAT_COMPLETE')
+                print('VALIDATED',phase,'samples',count,flush=True)
+            if events!=['ATTACHED','SUPPORTED_RELEASE','RETREAT_COMPLETE']:errors.append('incomplete_task')
+        except (KeyError,ValueError,TypeError,IndexError) as exc:
+            if str(exc)!='preflight_failed':errors.append(str(exc))
+        self.report=dict(status='VALID' if not errors else 'INVALID',samples=count,errors=errors,pose_errors=pose_errors,events=events,
+            trajectory_fingerprint=artifact.get('trajectory_fingerprint'),world_fingerprint=current_world_snapshot.fingerprint,
+            timing_audit=locals().get('audit'),motion_envelope=getattr(w,'motion_envelope',None),joint_l1_sampling_rad=.0008,time_sampling_s=.02,continuous_collision_certification=False,
+            collision_margin_m=w.scene['margin_m'],mesh_error_reserve_m=w.scene['mesh_error_reserve_m'],scope='GEOMETRIC_REPLAY_ONLY')
+        if self.output:save_json(self.output,self.report)
         return P.PlanValidationResult(P.ValidationStatus.VALID if not errors else P.ValidationStatus.INVALID,current_world_snapshot,current_motion_boundary,
-            "complete geometry "+self.report["status"],self.name,self.version)
+            'complete task '+self.report['status'],self.name,self.version)
 
 class GeometricExecutionBackend(E.ExecutionBackend):
-    """Consumes the validated interpolation and preserves one payload identity; never a hardware adapter."""
+    """Stoppable, stepped geometric executor; no dynamics or hardware claims."""
     def __init__(self,world,enable_hardware=False):
-        require_simulation({"enable_hardware":enable_hardware});self.w=world;self._state=E.ExecutionBackendState.IDLE;self._boundary=None;self.feedback=[];self.events=[]
+        require_simulation({'enable_hardware':enable_hardware});self.w=world;self._state=E.ExecutionBackendState.IDLE
+        self._boundary=None;self.feedback=[];self.events=[];self.frames=[];self.execution_id=None;self.sequence=0
     @property
-    def identity(self):return E.ExecutionBackendIdentity("eco65-geometric-simulation","1","1")
+    def identity(self):return E.ExecutionBackendIdentity('eco65-geometric-simulation','2','2')
     @property
-    def capabilities(self):return E.ExecutionBackendCapabilities(frozenset({P.PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY}),frozenset({P.BoundaryMode.STOP_BOUNDARY}),True,True,True,True,True,True,False,False)
+    def capabilities(self):return E.ExecutionBackendCapabilities(frozenset({P.PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY}),frozenset({P.BoundaryMode.STOP_BOUNDARY}),True,True,True,True,True,True,True,False)
     @property
-    def health(self):return E.ExecutionBackendHealth.READY
+    def health(self):
+        return {E.ExecutionBackendState.FAULTED:E.ExecutionBackendHealth.FAULTED,E.ExecutionBackendState.SHUTDOWN:E.ExecutionBackendHealth.SHUTDOWN}.get(self._state,E.ExecutionBackendHealth.READY)
     @property
     def state(self):return self._state
     def current_boundary(self):return self._boundary
+    def _command(self,status,plan_id,message):
+        import uuid
+        return E.ExecutionCommandResult(status,uuid.uuid4().hex,self.execution_id,plan_id,message)
     def start(self,plan_envelope):
+        import uuid
+        from .task_checks import audit_task,runtime_fingerprint,current_kinematics_match_source,measure_motion_envelope
         require_simulation(self.w.scene)
-        if not plan_envelope.executable:raise ValueError("Unvalidated envelope")
-        self.plan=plan_envelope;self.artifact=artifact_dict(plan_envelope.result);self._state=E.ExecutionBackendState.RUNNING
-        self.w.payload_relative=None;self.w.released_pose=None;self._boundary=plan_envelope.expected_start_boundary
-        return E.ExecutionCommandResult(E.ExecutionCommandStatus.ACCEPTED,"start_1","geometric_1",plan_envelope.plan_id,"simulation only")
+        if self._state in (E.ExecutionBackendState.RUNNING,E.ExecutionBackendState.STOPPING):return self._command(E.ExecutionCommandStatus.ALREADY_RUNNING,self.plan.plan_id,'Execution already active')
+        if self._state!=E.ExecutionBackendState.IDLE:return self._command(E.ExecutionCommandStatus.BACKEND_UNAVAILABLE,plan_envelope.plan_id,'Backend not idle')
+        if not plan_envelope.executable:raise ValueError('Unvalidated envelope')
+        if not self.capabilities.supports(plan_envelope):raise ValueError('Unsupported motion boundary or artifact')
+        w=self.w;artifact=artifact_dict(plan_envelope.result)
+        if not np.allclose(w.current_q,plan_envelope.expected_start_state,atol=1e-9,rtol=0):raise ValueError('Actual start mismatch')
+        if not plan_envelope.planned_snapshot.planning_context_matches(known_world(w,w.current_q)):raise ValueError('Actual world mismatch')
+        if artifact.get('runtime_fingerprint')!=runtime_fingerprint(w) or not current_kinematics_match_source(w):raise ValueError('Actual model mismatch')
+        velocity=[float(j.find('limit').attrib['velocity']) for j in ET.parse(URDF).getroot().findall('joint') if j.find('limit') is not None]
+        audit=audit_task(artifact,plan_envelope.result.trajectory,plan_envelope.expected_start_state,plan_envelope.expected_end_state,w.box_id,w.robot.joint_limits,w.scene,velocity)
+        if not audit['valid']:raise ValueError(str(audit['errors']))
+        if getattr(w,'attached',False) or w.released_pose is not None:raise ValueError('Execution world must be initial')
+        if not w.valid(w.current_q,'initial'):raise ValueError('Initial geometry rejected '+str(w.last_failure))
+        self.plan=plan_envelope;self.artifact=artifact;self.execution_id=uuid.uuid4().hex;w.execution_id=self.execution_id
+        self.elapsed=0.;self.local_time=0.;self.segment_index=0;self.events=[];self.frames=[];self.feedback=[];self.sequence=0;self.next_frame=.2
+        self.duration=sum(s['duration_s'] for s in artifact['segments']);self._state=E.ExecutionBackendState.RUNNING
+        self._boundary=P.MotionBoundaryState.stopped(w.current_q);self._record('initial')
+        return self._command(E.ExecutionCommandStatus.ACCEPTED,self.plan.plan_id,'GEOMETRIC_REPLAY_ONLY')
+    def _record(self,phase):
+        self.frames.append(dict(t=self.elapsed,q=list(self._boundary.q),qd=list(self._boundary.qd),phase=phase,box_id=self.w.box_id,
+            box_pose=self.w.box_pose(self._boundary.q,phase).tolist(),box_state=getattr(self.w,'box_states',{}).get(self.w.box_id,'GEOMETRIC')))
+    def _feedback(self,status,message=''):
+        self.sequence+=1
+        value=E.ExecutionFeedback(self.sequence,self.execution_id,self.plan.plan_id,status,min(1.,self.elapsed/self.duration),self._boundary,message,
+            metadata=dict(simulation_time_s=self.elapsed,box_id=self.w.box_id,box_pose=self.w.box_pose(self._boundary.q,self.w.phase if hasattr(self.w,'phase') else 'retreat').tolist()))
+        self.feedback.append(value)
+        # Feedback is a latest-state stream; keep terminal events and bounded recent states.
+        if len(self.feedback)>32:self.feedback.pop(0)
     def request_stop(self,plan_id,reason):
-        self._state=E.ExecutionBackendState.IDLE
-        return E.ExecutionCommandResult(E.ExecutionCommandStatus.ACCEPTED,"stop_1","geometric_1",plan_id,reason)
+        if self._state!=E.ExecutionBackendState.RUNNING or plan_id!=self.plan.plan_id:return self._command(E.ExecutionCommandStatus.NOT_RUNNING,plan_id,'No matching active plan')
+        self._state=E.ExecutionBackendState.STOPPING
+        return self._command(E.ExecutionCommandStatus.ACCEPTED,plan_id,reason)
     def poll(self):return self.feedback.pop(0) if self.feedback else None
+    def step(self,dt=.02):
+        if not np.isfinite(dt) or dt<=0 or dt>.02+1e-12:raise ValueError('Geometric control step must be in (0,0.02] s')
+        if self._state==E.ExecutionBackendState.STOPPING:
+            self._boundary=P.MotionBoundaryState.stopped(self._boundary.q,time_seconds=self.elapsed)
+            self._state=E.ExecutionBackendState.IDLE;self._feedback(E.ExecutionFeedbackStatus.STOPPED,'Geometric simulation stop completed; no controller claim');return False
+        if self._state!=E.ExecutionBackendState.RUNNING:return False
+        try:
+            seg=self.artifact['segments'][self.segment_index];phase=seg['phase']
+            if self.next_frame>self.elapsed+1e-10:dt=min(dt,self.next_frame-self.elapsed)
+            new=min(seg['duration_s'],self.local_time+dt)
+            q,v=sample_quintic_knots(seg['t'],seg['q'],np.array([new]));q=q[0];v=v[0]
+            ts=np.array(seg['t']);knots=np.array(seg['q']);i=min(max(0,np.searchsorted(ts,new,side='right')-1),len(ts)-2)
+            h=ts[i+1]-ts[i];u=(new-ts[i])/h;acc=(60*u-180*u*u+120*u**3)/h**2*(knots[i+1]-knots[i])
+            if not self.w.valid(q,phase):raise ValueError('Execution geometry: '+str(self.w.last_failure))
+            self.elapsed+=new-self.local_time;self.local_time=new
+            stopped=bool(np.max(np.abs(v))<1e-9 and np.max(np.abs(acc))<1e-9)
+            self._boundary=P.MotionBoundaryState(tuple(q),tuple(v),tuple(acc),self.elapsed,P.BoundaryMode.STOP_BOUNDARY if stopped else P.BoundaryMode.CONTINUOUS_BOUNDARY)
+            if self.elapsed+1e-9>=self.next_frame:
+                self._record(phase);self.next_frame+=.2
+            if new>=seg['duration_s']-1e-10:
+                if phase=='contact':
+                    relative=self.w.attach(q)
+                    if not np.allclose(relative,self.artifact['attachment_tcp_to_box'],atol=1e-8,rtol=0):raise ValueError('Actual attachment mismatch')
+                    self.events.append(dict(event='ATTACHED',box_id=self.w.box_id,time_s=self.elapsed,q=q.tolist(),relative_transform=relative.tolist()))
+                if phase=='place_contact':
+                    pose=self.w.release(q);self.events.append(dict(event='SUPPORTED_RELEASE',box_id=self.w.box_id,time_s=self.elapsed,q=q.tolist(),pose=pose.tolist(),support=getattr(self.w,'release_support',None)))
+                if phase=='retreat':self.events.append(dict(event='RETREAT_COMPLETE',box_id=self.w.box_id,time_s=self.elapsed,q=q.tolist()))
+                print('EXECUTED',phase,'actual_time_s',round(self.elapsed,3),flush=True)
+                self.segment_index+=1;self.local_time=0.
+                if self.segment_index==len(self.artifact['segments']):
+                    if [e['event'] for e in self.events]!=['ATTACHED','SUPPORTED_RELEASE','RETREAT_COMPLETE']:raise ValueError('Incomplete executed task')
+                    self.elapsed=self.duration;self._state=E.ExecutionBackendState.IDLE;self._record(phase);self._feedback(E.ExecutionFeedbackStatus.SUCCEEDED,'GEOMETRIC_PICK_PLACE_COMPLETE');return False
+            self._feedback(E.ExecutionFeedbackStatus.RUNNING)
+            return True
+        except Exception as exc:
+            self._state=E.ExecutionBackendState.FAULTED
+            try:
+                if hasattr(self.w,'set_state'):self.w.set_state(self._boundary.q,getattr(self.w,'phase','initial'))
+            except Exception as restore_error:
+                self.restore_error=str(restore_error)
+            self._feedback(E.ExecutionFeedbackStatus.FAULTED,str(exc));raise
+    def advance(self,max_steps=1):
+        done=0
+        for _ in range(max_steps):
+            if not self.step():break
+            done+=1
+        return done
     def run(self):
-        if self._state!=E.ExecutionBackendState.RUNNING:raise RuntimeError("not started")
-        tglobal=0.;frames=[]
-        for seg in self.artifact["segments"]:
-            duration=seg["t"][-1];times=np.unique(np.r_[np.arange(0,duration,.02),duration])
-            qs,vs=sample_quintic_knots(seg["t"],seg["q"],times)
-            next_video=0.
-            for t,q,v in zip(times,qs,vs):
-                if self._state!=E.ExecutionBackendState.RUNNING:raise InterruptedError("stopped")
-                if not self.w.valid(q,seg["phase"]):raise ValueError("Execution geometry rejected "+str(self.w.last_failure))
-                if t+1e-9>=next_video or t==duration:
-                    frames.append(dict(t=tglobal+float(t),q=q.tolist(),phase=seg["phase"],box_pose=self.w.box_pose(q,seg["phase"]).tolist()))
-                    next_video+=.2
-            if seg["phase"]=="contact":
-                actual=self.w.attach(q);self.events.append(dict(event="ATTACHED",box_id=self.w.box_id,time_s=tglobal+duration,relative_transform=actual.tolist(),seal_check=self.w.seal_fit(q,transform(self.w.scene["box"]["pose"]))))
-            if seg["phase"]=="place_contact":
-                released=self.w.release(q);self.events.append(dict(event="SUPPORTED_RELEASE",box_id=self.w.box_id,time_s=tglobal+duration,pose=released.tolist(),evidence="GEOMETRIC_SUPPORT_COMPUTED"))
-            tglobal+=duration
-        self._boundary=self.plan.expected_end_boundary;self._state=E.ExecutionBackendState.IDLE
-        self.feedback.append(E.ExecutionFeedback(1,"geometric_1",self.plan.plan_id,E.ExecutionFeedbackStatus.SUCCEEDED,1.,self._boundary,"GEOMETRIC_REPLAY_ONLY"))
-        self.events.append(dict(event="RETREAT_COMPLETE",time_s=tglobal,box_id=self.w.box_id))
-        return dict(status="GEOMETRIC_REPLAY_ONLY",geometric_tasks_completed=1,dynamics="NOT_EVALUATED",hardware_connected=False,
-            trajectory_fingerprint=self.artifact["trajectory_fingerprint"],
-            duration_s=tglobal,events=self.events,frames=frames,supports_continuous_handoff=False)
+        while self._state in (E.ExecutionBackendState.RUNNING,E.ExecutionBackendState.STOPPING):self.step()
+        complete=[e['event'] for e in self.events]==['ATTACHED','SUPPORTED_RELEASE','RETREAT_COMPLETE'] and self._state==E.ExecutionBackendState.IDLE
+        return dict(status='GEOMETRIC_PICK_PLACE_COMPLETE' if complete else 'INCOMPLETE',geometry_mode='GEOMETRIC_REPLAY_ONLY',execution_id=self.execution_id,
+            geometric_tasks_completed=int(complete),dynamics='NOT_EVALUATED',hardware_connected=False,trajectory_fingerprint=self.artifact['trajectory_fingerprint'],
+            duration_s=self.elapsed,events=self.events,frames=self.frames,supports_continuous_handoff=False)
     def shutdown(self):self._state=E.ExecutionBackendState.SHUTDOWN
+
 
 def plan_and_execute():
     cad=asset_check();tool=load_json(LOCAL/"tool.json");scene=load_json(LOCAL/"scene.json") if (LOCAL/"scene.json").exists() else design_scene(tool)
@@ -246,9 +328,12 @@ def plan_and_execute():
         planner.provenance.robot_model_fingerprint,planner.provenance.world_model_fingerprint)
     save_json(OUTPUT/"scene_snapshot.json",dict(scene=scene,tool=tool,world_fingerprint=snapshot.fingerprint,home_q=home.tolist()))
     save_json(OUTPUT/"trajectory/plan.json",planner.artifact)
-    validator=ECO65PlanValidator(w);validation=validator.validate(envelope,snapshot,request.motion_boundary)
+    validation_world=World(copy.deepcopy(tool),copy.deepcopy(scene));validation_world.set_state(home,"initial")
+    validator=ECO65PlanValidator(validation_world,OUTPUT/"reports/validation.json");validation=validator.validate(envelope,snapshot,request.motion_boundary)
+    validation_world.close()
     if not validation.valid:raise RuntimeError(validation.message)
     envelope=envelope.revalidated(validation,timestamp_seconds=time.monotonic(),generation=0)
+    w.close();w=World(copy.deepcopy(tool),copy.deepcopy(scene));w.set_state(home,"initial")
     execution=GeometricExecutionBackend(w);execution.start(envelope);replay=execution.run()
     save_json(OUTPUT/"replay/states.json",replay)
     print("GEOMETRIC EXECUTION COMPLETE",replay["duration_s"],"seconds",len(replay["frames"]),"video states",flush=True)

@@ -15,7 +15,7 @@ def _label(rgb,title,subtitle=''):
 def camera_image(w,q,title,subtitle,azimuth=320,elevation=-27,arrows=True):
     w.set_state(q,'pose')
     if not hasattr(w,'renderer'):w.renderer=w.mj.Renderer(w.model,height=720,width=1280)
-    camera=w.mj.MjvCamera();camera.lookat[:]=[-.52,0,.35];camera.distance=3.0;camera.azimuth=azimuth;camera.elevation=elevation
+    camera=w.mj.MjvCamera();camera.lookat[:]=[sum(w.scene['footprint']['bounds_xy_m'][:2])/2,0,w.scene['roof_inner_z_m']/2];camera.distance=max(w.scene['footprint']['minimum_static_size_m'])*1.65;camera.azimuth=azimuth;camera.elevation=elevation
     opt=w.mj.MjvOption();opt.geomgroup[3]=0
     w.renderer.update_scene(w.data,camera=camera,scene_option=opt)
     if arrows:
@@ -83,13 +83,15 @@ def render_figures(w,snapshot,results,out):
         for o in scene['obstacles']:
             if o['role'] in ('leg','frame','roof'):continue
             lo,hi=bounds(o);xy=[lo[0],hi[0],lo[1],hi[1]]
-            color={'table_envelope':'#ebe6dc','floor':'#e3e7ea','wall':'#9dabb6','mount':'#c0c7cc','bridge':'#e2b442','belt':COLORS.get(o['owner'],'#8db590')}.get(o['role'],'#ccc')
-            rect(ax,xy,color,alpha=.9,zorder=1 if o['role'] in ('floor','table_envelope') else 2)
+            color={'table_floor':'#ebe6dc','table_envelope':'#ebe6dc','floor':'#e3e7ea','wall':'#9dabb6','mount':'#c0c7cc','bridge':'#e2b442','belt':COLORS.get(o['owner'],'#8db590')}.get(o['role'],'#ccc')
+            rect(ax,xy,color,alpha=.9,zorder=1 if o['role'] in ('floor','table_floor','table_envelope') else 2)
         for b in scene['boxes']:
             if b['layer']!=0:continue
-            lo,hi=bounds(b);rect(ax,[lo[0],hi[0],lo[1],hi[1]],'#d6aa72',f"C{b['column']}\n3 layers")
+            lo,hi=bounds(b);rect(ax,[lo[0],hi[0],lo[1],hi[1]],'#d6aa72',f"C{b['column']}\n{c['carton_stack']['height_layers']} layers")
+        if c['conveyors']['transfer'].get('mode')=='longitudinal_front_partition':
+            xy=c['conveyors']['transfer']['bounds_xy_m'];ax.add_patch(Rectangle((xy[0],xy[2]),xy[1]-xy[0],xy[3]-xy[2],fill=False,ls='--',lw=1.3,edgecolor='#e6b34b',zorder=4))
         if robot:project_actual(w,q,ax)
-        ax.axvline(scene['opening_x_m'],color='#bd5448',ls='--',lw=1.5);ax.text(scene['opening_x_m']-.015,.48,'OPENING',ha='right',color='#994b41',fontsize=9)
+        ax.axvline(scene['opening_x_m'],color='#bd5448',ls='--',lw=1.5);ax.text(scene['opening_x_m']-.015,scene['footprint']['bounds_xy_m'][3]-.035,'OPENING',ha='right',color='#994b41',fontsize=9)
         a=c['conveyors'];arrows(ax,a['transverse']['bounds_xy_m'],a['longitudinal']['bounds_xy_m'],a['outlet']['final_center_xy_m'][0])
     def dimension(ax,p1,p2,text,rotation=0):
         ax.annotate('',xy=p1,xytext=p2,arrowprops=dict(arrowstyle='|-|',lw=1,color='#23415a'))
@@ -110,7 +112,7 @@ def render_figures(w,snapshot,results,out):
     arrows(ax,oldbounds['transverse'],oldbounds['longitudinal'],-3.12);ax.axvline(-3.2,color='#bd5448',ls='--')
     ax.text(1.8,0,'Unused rear development space\nshortened in desktop design',ha='center',va='center',fontsize=9)
     setup(ax,'Pinned reference: official-base layout / 1 x 5 x 8');ax.set_xlim(-3.5,3.45);ax.set_ylim(-1.5,1.5)
-    desktop(axs[1],robot=True);setup(axs[1],'Desktop DESIGN_CANDIDATE / 1 x 3 x 3');axs[1].set_xlim(-1.6,.5);axs[1].set_ylim(-.6,.6)
+    desktop(axs[1],robot=True);setup(axs[1],f"Desktop DESIGN_CANDIDATE / {len(scene['boxes'])} cartons");axs[1].set_xlim(-1.6,.5);axs[1].set_ylim(-.6,.6)
     fig.suptitle('Same L topology, separately designed dimensions | robot/tool remain 1:1 | no chassis',fontsize=14);fig.tight_layout(rect=(0,0,1,.94));save(fig,'01_reference_mapping')
     fig,ax=plt.subplots(figsize=(14,8));desktop(ax,robot=True);setup(ax,'Desktop unloading plan — DESIGN_CANDIDATE, all dimensions in metres')
     lo,hi,yl,yh=scene['footprint']['bounds_xy_m'];dimension(ax,(lo,-.57),(hi,-.57),f'{(hi-lo)*1000:.0f} mm static footprint')
@@ -118,10 +120,10 @@ def render_figures(w,snapshot,results,out):
     lg=c['conveyors']['longitudinal']['bounds_xy_m'];tr=c['conveyors']['transverse']['bounds_xy_m']
     dimension(ax,(lg[0],-.49),(lg[1],-.49),f'{(lg[1]-lg[0])*1000:.0f} mm longitudinal')
     dimension(ax,(-.045,tr[2]),(-.045,tr[3]),f'{(tr[3]-tr[2])*1000:.0f} mm transverse',90)
-    ax.text(-1.44,.50,'Catch table\n'+' x '.join(f'{1000*d:.0f}' for d in np.diff(np.array(c['conveyors']['outlet']['catch_bounds_xy_m']).reshape(2,2),axis=1).ravel())+' mm',ha='left',fontsize=9);ax.text(-.85,.50,'Robot fixed plate '+' x '.join(f'{d*1000:.0f}' for d in c['robot']['mounting_plate_size_m'])+' mm\nNo chassis / no lift',fontsize=9)
+    ax.text(-.90,.50,'Fixed installation support '+' x '.join(f'{d*1000:.0f}' for d in c['robot']['mounting_plate_size_m'])+' mm\n'+c['conveyors']['outlet']['support'],fontsize=9)
     ax.text(.13,.55,f'{len(scene["boxes"])} cartons\n'+' x '.join(f'{d*1000:.0f}' for d in c['carton_stack']['carton_size_xyz_m'])+f' mm\n{c["carton_stack"]["column_gap_m"]*1000:.0f} mm column gap',ha='center',fontsize=9)
-    ax.text(-.95,-.72,f'Effective widths: {(tr[1]-tr[0])*1000:.0f} / {(lg[3]-lg[2])*1000:.0f} mm | {(tr[2]-lg[3])*1000:.0f} mm transfer bridge | orange: -Y then -X\nDesk fit pending measurement; suggested edge reserve {c["installation"]["recommended_edge_reserve_m"]*1000:.0f} mm per side.',fontsize=10)
-    ax.set_xlim(-1.59,.55);ax.set_ylim(-.78,.72);save(fig,'02_dimensioned_top')
+    ax.text(-.95,-.72,f'Effective widths: {(tr[1]-tr[0])*1000:.0f} / {(lg[3]-lg[2])*1000:.0f} mm | {(tr[2]-lg[3])*1000:.0f} mm interface gap | orange: -Y then -X\nDesk fit pending measurement; suggested edge reserve {c["installation"]["recommended_edge_reserve_m"]*1000:.0f} mm per side.',fontsize=10)
+    ax.set_xlim(scene['footprint']['bounds_xy_m'][0]-.15,scene['footprint']['bounds_xy_m'][1]+.15);ax.set_ylim(-.78,.72);save(fig,'02_dimensioned_top')
     fig,ax=plt.subplots(figsize=(14,7))
     for o in scene['obstacles']:
         if o['id'] in ('trailer_left','trailer_right'):continue
@@ -140,8 +142,8 @@ def render_figures(w,snapshot,results,out):
     ax.set_aspect('equal');ax.set_xlim(-1.58,.52);ax.set_ylim(-.22,.93);ax.set_xlabel('X into trailer (m)');ax.set_ylabel('Z above tabletop (m)');ax.grid(alpha=.15)
     ax.set_title('Side projection: complete roof, floor, finite walls, belt bodies and supports',loc='left',fontweight='bold');save(fig,'03_height_side')
     w.select_target(scene['target_box_id'])
-    camera_image(w,q,'ECO65-B desktop unloading | DESIGN_CANDIDATE | 9 cartons', 'Actual robot + private CAD; assumed adapter | transparent enclosure remains in collision | no motion executed').save(folder/'04_assembly_overview.png')
-    camera_image(w,q,'L-shaped conveyors and supported outlet','Transverse -Y / longitudinal -X | gold bridges | static support only, transfer physics NOT_EVALUATED',azimuth=300,elevation=-52).save(folder/'05_conveyors_outlet.png')
+    camera_image(w,q,f"ECO65-B desktop unloading | DESIGN_CANDIDATE | {len(scene['boxes'])} cartons", 'Actual robot + private CAD; assumed adapter | transparent enclosure remains in collision | no motion executed').save(folder/'04_assembly_overview.png')
+    camera_image(w,q,'L-shaped conveyors and supported outlet','Transverse -Y / longitudinal -X | marked transfer region | transfer physics NOT_EVALUATED',azimuth=300,elevation=-52).save(folder/'05_conveyors_outlet.png')
     fig,ax=plt.subplots(figsize=(14,8));desktop(ax,robot=False);setup(ax,'Representative pose checks — pose success is not a complete motion path')
     lines=[]
     for i,r in enumerate(results['candidates'],1):
@@ -153,7 +155,7 @@ def render_figures(w,snapshot,results,out):
         candidate_q=r.get('q') or (r.get('collision_solutions') or [{}])[0].get('q')
         if candidate_q is not None:
             w.select_target(r['box_id'],np.array(r['box_pose']),r['face'])
-            camera_image(w,candidate_q,f'{i}. {r["id"]} | {r["status"]}',f'All 9 box IDs retained | {r["removal_status"]} | full path NOT_EVALUATED',arrows=False).save(folder/f'pose_{i:02d}.png')
+            camera_image(w,candidate_q,f'{i}. {r["id"]} | {r["status"]}',f'All {len(scene["boxes"])} box IDs retained | {r["removal_status"]} | full path NOT_EVALUATED',arrows=False).save(folder/f'pose_{i:02d}.png')
     ax.text(0,-.13,'\n'.join(lines),transform=ax.transAxes,va='top',fontsize=9,family='monospace')
     ax.set_xlim(-1.57,.45);ax.set_ylim(-.56,.60);fig.subplots_adjust(bottom=.29);save(fig,'06_representative_poses')
     w.select_target(scene['target_box_id']);w.set_state(q,'pose')

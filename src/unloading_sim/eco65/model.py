@@ -154,6 +154,7 @@ class World:
             return self.robot.fk(q)@self.payload_relative
         return self.released_pose if phase=="retreat" and self.released_pose is not None else transform(self.scene["box"]["pose"])
     def set_state(self,q,phase):
+        self.current_q=np.asarray(q,float).copy()
         frames=self.robot.named_link_frames(q);flange=frames["link_6"];cad=flange@self.flange_cad
         for name,T in frames.items():self.pose_body(name,T)
         for p in self.tool["visual_parts"]:self.pose_body("tool_"+p["id"],cad)

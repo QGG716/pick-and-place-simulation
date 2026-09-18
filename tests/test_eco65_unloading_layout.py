@@ -10,7 +10,7 @@ RUN=ROOT/'outputs/eco65_desktop_layout/layout_v1_20260917_candidate02'
 @pytest.fixture(scope='module')
 def data():
     if not (LOCAL/'tool.json').exists():pytest.skip('Private actual CAD is required; no generic substitute')
-    tool=load_json(LOCAL/'tool.json');cfg=yaml.safe_load(CONFIG.read_text(encoding='utf-8'));scene=build_scene(cfg)
+    tool=load_json(LOCAL/'tool.json');cfg=yaml.safe_load((ROOT/'configs/workcells/eco65_desktop_unloading_layout_v1.yaml').read_text(encoding='utf-8'));scene=build_scene(cfg)
     return cfg,scene,tool
 
 def test_layout_topology_literal_dimensions_and_no_chassis(data):

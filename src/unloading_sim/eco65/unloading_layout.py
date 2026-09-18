@@ -1,4 +1,4 @@
-"""Design-only desktop unloading layout. No RRT, scheduler, transport or hardware."""
+"""Parameterized desktop unloading geometry; task execution is a separate adapter."""
 from __future__ import annotations
 import copy,hashlib,json,subprocess,time
 from pathlib import Path
@@ -8,7 +8,7 @@ from scipy.spatial.transform import Rotation
 from .model import ROOT,URDF,LOCAL,World,asset_check,transform,check_transform,save_json,load_json,canonical_fingerprint,require_simulation
 from ..ik import solve_ik
 
-CONFIG=ROOT/'configs/workcells/eco65_desktop_unloading_layout_v1.yaml'
+CONFIG=ROOT/'configs/workcells/eco65_desktop_unloading_compact_v1.yaml'
 SOURCE_SHA='9db77cb8a51e9bf1821c6e84e90a7632fbce6b26'
 FACE_AXES={'top':(2,1),'front':(0,-1),'right_facing':(1,1)}
 FACE_ROTATIONS={
@@ -23,6 +23,7 @@ def bounds(obj):
 def build_scene(config):
     c=copy.deepcopy(config);v=c['validation'];require_simulation(v)
     assert c['robot']['geometry_scale']==1.0 and c['robot']['mobility']=='fixed'
+    if c['robot']['variant']!='ECO65-B' or c['reference']['sha']!=SOURCE_SHA:raise ValueError('This adapter requires the confirmed ECO65-B and pinned layout source')
     assert all(c['trailer']['panels'].values()),'This layout requires all four enclosing panels'
     check_transform(c['world']['T_world_installation'])
     assert np.allclose(c['world']['T_world_installation'],np.eye(4)), 'Nonidentity installation frame requires explicit conversion'
@@ -37,7 +38,10 @@ def build_scene(config):
     def rectangular(name,xy,bottom,top,role,color,owner=None,support=False):
         x0,x1,y0,y1=xy
         return part(name,[x1-x0,y1-y0,top-bottom],[(x0+x1)/2,(y0+y1)/2,(top+bottom)/2],role,color,owner,support)
-    rectangular('trailer_floor',[opening,rear+th,-half-th,half+th],z0,floor,'floor',[.43,.46,.49,1],support=True)
+    if f > 0:
+        rectangular('trailer_floor',[opening,rear+th,-half-th,half+th],z0,floor,'floor',[.43,.46,.49,1],support=True)
+    else:
+        rectangular('trailer_floor',c['table']['bounds_xy_m'],z0-c['table']['thickness_m'],z0,'table_floor',[.58,.51,.42,1],support=True)
     for side,y in [('left',half+th/2),('right',-half-th/2)]:
         part('trailer_'+side,[rear-opening,th,height],[(rear+opening)/2,y,floor+height/2],'wall',[.50,.65,.76,.15])
     part('trailer_rear',[th,2*(half+th),height],[rear+th/2,0,floor+height/2],'wall',[.50,.65,.76,.25])
@@ -56,9 +60,11 @@ def build_scene(config):
                 part(f'{name}_support_{i}{j}',[leg,leg,bottom-ground],[x,y,(ground+bottom)/2],'leg',[.40,.42,.45,1],owner)
     conveyor('conveyor_transverse',belts['transverse']['bounds_xy_m'],floor,[.10,.55,.68,1])
     conveyor('conveyor_longitudinal',belts['longitudinal']['bounds_xy_m'],floor,[.15,.61,.39,1])
-    rectangular('transfer_bridge',belts['transfer']['bridge_bounds_xy_m'],belt_z-belts['transfer']['bridge_thickness_m'],belt_z,'bridge',[.9,.7,.18,1],'conveyor_longitudinal',True)
-    rectangular('outlet_bridge',belts['outlet']['bridge_bounds_xy_m'],belt_z-.006,belt_z,'bridge',[.9,.7,.18,1],'outlet',True)
-    conveyor('outlet_catch',belts['outlet']['catch_bounds_xy_m'],z0,[.45,.67,.49,1])
+    if belts['transfer'].get('mode') != 'longitudinal_front_partition':
+        rectangular('transfer_bridge',belts['transfer']['bridge_bounds_xy_m'],belt_z-belts['transfer']['bridge_thickness_m'],belt_z,'bridge',[.9,.7,.18,1],'conveyor_longitudinal',True)
+    if belts['outlet'].get('mode') != 'longitudinal_direct':
+        rectangular('outlet_bridge',belts['outlet']['bridge_bounds_xy_m'],belt_z-.006,belt_z,'bridge',[.9,.7,.18,1],'outlet',True)
+        conveyor('outlet_catch',belts['outlet']['catch_bounds_xy_m'],z0,[.45,.67,.49,1])
     stack=c['carton_stack'];size=stack['carton_size_xyz_m'];assert stack['layer_gap_m']==0 and stack['depth_rows']==1
     boxes=[];cols=stack['width_columns'];layers=stack['height_layers']
     for layer in range(layers):
@@ -72,7 +78,8 @@ def build_scene(config):
     selected=next(b for b in boxes if b['layer']==layers-1 and b['column']==cols//2)
     lo=np.min([bounds(o)[0] for o in components],axis=0);hi=np.max([bounds(o)[1] for o in components],axis=0)
     # This is a required support envelope, not a measurement of the user's desk.
-    rectangular('required_tabletop_envelope',[lo[0],hi[0],lo[1],hi[1]],z0-.03,z0,'table_envelope',[.58,.51,.42,1])
+    if f > 0:
+        rectangular('required_tabletop_envelope',[lo[0],hi[0],lo[1],hi[1]],z0-.03,z0,'table_envelope',[.58,.51,.42,1])
     routes={
         'A':dict(receiving='conveyor_transverse',process=['transverse','longitudinal'],centers_xy_m=[belts['transverse']['receive_center_xy_m'],[(sum(belts['transverse']['bounds_xy_m'][:2]))/2,sum(belts['longitudinal']['bounds_xy_m'][2:])/2],belts['outlet']['final_center_xy_m']]),
         'B':dict(receiving='conveyor_longitudinal',process=['longitudinal'],centers_xy_m=[belts['longitudinal']['receive_center_xy_m'],belts['outlet']['final_center_xy_m']])}
@@ -131,9 +138,15 @@ def functional_regions(scene):
             direction=c[key]['direction'],process_owner=c[key]['process_owner'],belt_id=name+'_belt',body_id=name+'_body',
             support_ids=[o['id'] for o in scene['obstacles'] if o['owner']==name and o['role']=='leg'],
             construction='simplified flat belt/body/supports; rollers, motors and true transfer mechanics not qualified')
-    result['transfer']=dict(process_owner='longitudinal',bridge_id='transfer_bridge',bridge_bounds_xy_m=c['transfer']['bridge_bounds_xy_m'],
-        mechanics=c['transfer']['mechanics'],occupancy_initial=[])
-    result['outlet']=dict(bridge_id='outlet_bridge',catch_id='outlet_catch_belt',opening_x_m=scene['opening_x_m'],
+    transfer=c['transfer'];direct=c['outlet'].get('mode')=='longitudinal_direct'
+    result['transfer']=dict(process_owner='longitudinal',bounds_xy_m=transfer.get('bounds_xy_m',transfer.get('bridge_bounds_xy_m')),
+        physical_component_id='conveyor_longitudinal_belt' if transfer.get('mode')=='longitudinal_front_partition' else 'transfer_bridge',
+        mechanics=transfer['mechanics'],occupancy_initial=[])
+    if transfer.get('mode')=='longitudinal_front_partition':
+        xy=c['longitudinal']['bounds_xy_m'];front=transfer['bounds_xy_m']
+        result['conveyor_longitudinal']['straight_partition_bounds_xy_m']=[xy[0],front[0],xy[2],xy[3]]
+        result['conveyor_longitudinal']['transfer_partition_bounds_xy_m']=front
+    result['outlet']=dict(support_ids=['conveyor_longitudinal_belt'] if direct else ['outlet_bridge','outlet_catch_belt'],opening_x_m=scene['opening_x_m'],
         final_center_xy_m=c['outlet']['final_center_xy_m'],occupancy_initial=[],disappearance_allowed=False)
     return result
 
@@ -157,7 +170,8 @@ def audit_layout(scene,tool):
             if np.all(overlap>1e-8):penetrations.append([a['id'],b['id'],overlap.tolist()])
     if penetrations:errors.append('static_component_penetration')
     boxes=scene['boxes'];ids=[b['id'] for b in boxes]
-    assert len(ids)==len(set(ids))==9
+    expected=np.prod([c['carton_stack'][k] for k in ('depth_rows','width_columns','height_layers')])
+    if len(ids)!=len(set(ids)) or len(ids)!=expected:errors.append('box_count_or_identity')
     objects={o['id']:o for o in obs+boxes};supports=[]
     for b in boxes:
         lo,hi=bounds(b);parent=objects[b['supported_by'][0]];plo,phi=bounds(parent)
@@ -166,10 +180,14 @@ def audit_layout(scene,tool):
         if not good:errors.append('stack_support:'+b['id'])
     trans=c['conveyors']['transverse']['bounds_xy_m'];long=c['conveyors']['longitudinal']['bounds_xy_m'];stackfront=c['carton_stack']['front_face_x_m']
     assert scene['base_position_m'][0]<trans[0]<trans[1]<stackfront
-    assert abs(trans[1]-long[1])<1e-10 and long[3]<trans[2]
-    assert long[3]<0 and scene['opening_x_m']<long[0]
+    if abs(trans[1]-long[1])>1e-10 or long[3]>trans[2]+1e-10:errors.append('belt_interface_overlap_or_alignment')
+    if 'table' in c:
+        table=c['table']['bounds_xy_m']
+        for o in obs:
+            lo,hi=bounds(o)
+            if lo[0]<table[0]-1e-9 or hi[0]>table[1]+1e-9 or lo[1]<table[2]-1e-9 or hi[1]>table[3]+1e-9:errors.append('desk_boundary:'+o['id'])
     size=boxes[0]['size_m'];T=transform(boxes[0]['pose'])
-    faces={face:seal_check(tool,face_tcp(T,size,face),T,size,face) for face in ('top','front','right_facing')}
+    faces={face:seal_check(tool,face_tcp(T,size,face),T,size,face) for face in ('top','front','right_facing')} if tool else {}
     if not all(d['fits'] for d in faces.values()):errors.append('seal_footprint')
     route_reports={};z=c['conveyors']['surface_z_m']
     for name,route in scene['routes'].items():
@@ -195,7 +213,7 @@ class UnloadingWorld(World):
     def box_pose(self,q,phase):return self.active_pose
     def select_target(self,ident,pose=None,face=None):
         if ident not in self.boxes:raise KeyError(ident)
-        self.box_id=ident;self.active_pose=transform(self.boxes[ident]['pose']) if pose is None else check_transform(pose)
+        self.box_id=ident;self.scene['box']=copy.deepcopy(self.boxes[ident]);self.scene['target_box_id']=ident;self.active_pose=transform(self.boxes[ident]['pose']) if pose is None else check_transform(pose)
         self.active_face=face
     def _pose(self,name):return self.active_pose if name==self.box_id else transform(self.object_info[name].get('pose',self.object_info[name].get('position_m')))
     def _support_pair(self,a,b):
@@ -221,10 +239,10 @@ class UnloadingWorld(World):
             if pair=={'robot_base_link','robot_mount_plate'}:allowance='fixed_mount_interface'
             elif pair=={'robot_link_6','adapter_flange_disk'}:allowance='flange_interface'
             elif self._support_pair(a,b):allowance='carton_bottom_support_top'
-            if self.box_id in pair and self.active_face:
+            if self.box_id in pair and self.active_face and phase in ('pose','approach','contact','loaded_lift','front_separation','loaded_transfer','place_contact','retreat'):
                 other=b if a['name']==self.box_id else a
                 if other['kind']=='terminal_contact_band':
-                    if seal is None:seal=seal_check(self.tool,self.robot.fk(q),self.active_pose,self.boxes[self.box_id]['size_m'],self.active_face)
+                    if seal is None:seal=seal_check(self.tool,self.robot.fk(q),self.active_pose,self.boxes[self.box_id]['size_m'],self.active_face,tolerance=margin if phase in ('approach','contact','retreat') else self.scene['contact_tolerance_m'])
                     if seal['fits']:allowance='actual_target_seals_'+self.active_face
             threshold=-self.scene['contact_tolerance_m'] if allowance else margin
             distance=self.mj.mj_geomDistance(self.model,self.data,a['gid'],b['gid'],margin,None)
@@ -251,9 +269,24 @@ def inspect_pose(world,target,seed_q,rng,settings):
     return dict(status='IK_FOUND_COLLISION' if solved else 'IK_NOT_FOUND_WITHIN_BUDGET',elapsed_s=time.perf_counter()-start,attempts=i+1,ik_solutions=solved,collision_solutions=found,best_numerical_attempt=best,
         qualification='Finite pose search only; not a proof of global unreachability; no full path searched')
 
+def find_initial_pose(world):
+    """Finite HOME search generated from the current boxes, never a historical output file."""
+    c=world.scene['source_config'];settings=c['validation'];rng=np.random.default_rng(settings['seed'])
+    seed=c.get('task',{}).get('initial_seed_q_rad',[-.27,.77,-.33,1.13,-1.57,-1.85]);failures=[]
+    world.select_target(world.scene['target_box_id'])
+    if world.valid(seed,'initial'):return dict(home=dict(status='POSE_VALID',q=seed,source='configured seed checked in current complete geometry'),failures=[])
+    failures.append(dict(status='SEED_COLLISION',collision=copy.deepcopy(world.last_failure)))
+    for b in sorted((b for b in world.scene['boxes'] if not b['supports']),key=lambda b:-b['pose'][1]):
+        target=face_tcp(transform(b['pose']),b['size_m'],'top');target[2,3]+=.05
+        r=inspect_pose(world,target,seed,rng,settings);r['target_tcp']=target.tolist()
+        if r['status']=='POSE_VALID':return dict(home=r,failures=failures)
+        failures.append(r)
+    return dict(home=None,failures=failures,status='HOME_CANDIDATES_EXHAUSTED')
+
+
 def limited_reachability(world):
     s=world.scene;c=s['source_config'];v=c['validation'];rng=np.random.default_rng(v['seed'])
-    previous=load_json(ROOT/'outputs/eco65_desktop_round1/round1/reports/home.json')['q']
+    previous=c.get('task',{}).get('initial_seed_q_rad',[-.27,.77,-.33,1.13,-1.57,-1.85])
     world.select_target(s['target_box_id'])
     if world.valid(previous):home=dict(status='POSE_VALID',q=previous,source='prior q rechecked in new fully enclosed layout')
     else:
@@ -285,7 +318,7 @@ def limited_reachability(world):
         result['full_path_status']='NOT_EVALUATED';results.append(result)
         print('POSE',case['id'],result['status'],result['removal_status'],round(result.get('elapsed_s',0),2),'s',flush=True)
     world.select_target(s['target_box_id']);world.set_state(qhome,'pose')
-    return dict(status='FINITE_POSE_CHECKS_COMPLETE',home=home,candidates=results,full_paths='NOT_EVALUATED',dynamics='NOT_EVALUATED',all_nine_box_ids=list(world.boxes),seed=v['seed'])
+    return dict(status='FINITE_POSE_CHECKS_COMPLETE',home=home,candidates=results,full_paths='NOT_EVALUATED',dynamics='NOT_EVALUATED',all_box_ids=list(world.boxes),seed=v['seed'])
 
 def source_mapping(config,scene):
     path=config['reference']['layout'];raw=subprocess.check_output(['git','show',SOURCE_SHA+':'+path],cwd=ROOT);original=yaml.safe_load(raw)
@@ -294,14 +327,19 @@ def source_mapping(config,scene):
         b=original['conveyors'][key];center=A[:2]+b['center_xy_a_m'];half=np.array(b['size_xy_m'])/2
         old_belts[key]=[float(center[0]-half[0]),float(center[0]+half[0]),float(center[1]-half[1]),float(center[1]+half[1])]
     entries=[dict(item=key,source_bounds_xy_m=value,desktop_bounds_xy_m=config['conveyors'][key]['bounds_xy_m'],reason='preserve L topology; adjust width to full actual suction footprint and carton support') for key,value in old_belts.items()]
-    entries += [dict(item='robot_base',source_xyz_m=[float(A[0]+original['robot']['base_origin_xy_a_m'][0]),float(A[1]+original['robot']['base_origin_xy_a_m'][1]),float(A[2]+original['robot']['mounting_surface_z_a_m'])],desktop_xyz_m=scene['base_position_m'],reason='official ECO65-B unchanged; fixed 12 mm mounting plate replaces chassis'),
+    entries += [dict(item='robot_base',source_xyz_m=[float(A[0]+original['robot']['base_origin_xy_a_m'][0]),float(A[1]+original['robot']['base_origin_xy_a_m'][1]),float(A[2]+original['robot']['mounting_surface_z_a_m'])],desktop_xyz_m=scene['base_position_m'],reason='official ECO65-B unchanged; configured fixed installation support'),
         dict(item='carton',source_size_m=original['carton_stack']['carton_size_xyz_m'],desktop_size_m=config['carton_stack']['carton_size_xyz_m'],reason='initial user candidate checked against all CAD seal rings, no overall scaling'),
         dict(item='trailer',source=[original['trailer']['opening_x_m'],original['trailer']['closed_end_wall_x_m'],original['trailer']['inner_width_m'],original['trailer']['height_m']],desktop=[config['trailer'][k] for k in ['opening_x_m','closed_end_inner_x_m','inner_width_m','inner_height_m']],reason='recreate full work segment; shorten unused space behind stack; roof and both side walls retained'),
-        dict(item='heights',source=dict(chassis_top_m=.6,body_thickness_m=.12),desktop=dict(floor_top_m=scene['floor_z_m'],robot_mount_m=scene['base_position_m'][2],belt_top_m=config['conveyors']['surface_z_m'],body_thickness_m=config['conveyors']['body_thickness_m']),reason='no chassis inheritance: thin floor/plate and short real conveyor supports'),
-        dict(item='stack',source=[1,5,8],desktop=[1,3,3],reason='requested nine-carton candidate with neighbor and support relations'),
-        dict(item='outlet',source='ideal downstream extension in historical report',desktop=config['conveyors']['outlet'],reason='explicit bridge and catch support; no disappearing carton or dynamic transport claim')]
+        dict(item='heights',source=dict(chassis_top_m=.6,body_thickness_m=.12),desktop=dict(floor_top_m=scene['floor_z_m'],robot_mount_m=scene['base_position_m'][2],belt_top_m=config['conveyors']['surface_z_m'],body_thickness_m=config['conveyors']['body_thickness_m']),reason='configured fixed installation and finite conveyor supports; no chassis inheritance'),
+        dict(item='stack',source=[1,5,8],desktop=[config['carton_stack'][k] for k in ('depth_rows','width_columns','height_layers')],reason='configured stack with neighbor and support relations'),
+        dict(item='outlet',source='ideal downstream extension in historical report',desktop=config['conveyors']['outlet'],reason='support from the selected outlet configuration; actual transport is evaluated separately')]
     return dict(source_sha=SOURCE_SHA,source_path=path,source_sha256=hashlib.sha256(raw).hexdigest(),original_layout=original,entries=entries,
-        adjustments=[dict(field='box',initial=[.24,.20,.16],selected=config['carton_stack']['carton_size_xyz_m'],reason='all 12 seals checked on top and front'),
-            dict(field='inner_width',initial_range=[.80,.90],selected=.90,reason='280 mm longitudinal + 10 mm bridge + 540 mm transverse = 830 mm plus 35 mm side clearance each'),
-            dict(field='rear_inner_x',one_third_initial=original['trailer']['closed_end_wall_x_m']/3,selected=config['trailer']['closed_end_inner_x_m'],reason='retain 60 mm behind 240 mm stack; omit unused rear development volume'),
-            dict(field='outlet_support',initial='unspecified',selected='100 mm bridge + 320 mm catch table',reason='support the entire carton beyond the opening')])
+        adjustments=config.get('design_adjustments',[]))
+
+
+def audit_mount(world):
+    m=world.model;gid=world.geoms['robot_base_link']['gid'];mid=m.geom_dataid[gid];first=m.mesh_vertadr[mid];count=m.mesh_vertnum[mid]
+    points=m.mesh_vert[first:first+count]@world.data.geom_xmat[gid].reshape(3,3).T+world.data.geom_xpos[gid]
+    relative=points-np.array(world.scene['base_position_m']);low=relative.min(axis=0);high=relative.max(axis=0)
+    half=np.array(world.scene['source_config']['robot']['mounting_plate_size_m'])/2
+    return dict(relative_bounds_m=[low.tolist(),high.tolist()],mount_size_m=(2*half).tolist(),covered=bool(np.all(low[:2]>=-half[:2]) and np.all(high[:2]<=half[:2])),strength_bolts_table_load='NOT_EVALUATED',geometry_scale=1.)

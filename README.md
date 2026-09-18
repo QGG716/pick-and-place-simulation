@@ -1,12 +1,11 @@
-# ECO65-B 桌面卸货系统：布局候选
+# ECO65-B desktop: compact single-carton task
 
-正式目标为固定 ECO65-B、真实吸具、完整厢体、3×3 箱堆与 L 形横/纵输送线。机器人和吸具保持 1:1，无底盘；当前方案标为 `DESIGN_CANDIDATE`，待用户确认排布及办公桌尺寸。
+Default development scene: four cartons, fully enclosed trailer, fixed ECO65-B installation and actual private suction CAD, on a **1400 x 900 mm design boundary**. The desk, installation strength and tool mounting are not measured or certified. The nine-carton candidate and original single-carton regression remain separate, preserved configurations.
 
-[布局报告与本地图纸](docs/eco65_desktop_unloading_layout_v1.md) · [公开布局配置](configs/workcells/eco65_desktop_unloading_layout_v1.yaml) · [固定来源尺寸映射](configs/integration/eco65_desktop_layout_sources.json)。入口为 `tools/run_eco65_unloading_layout.py`，本轮只完成结构、支撑与代表性姿态检查，没有整堆、完整路径或动力学结果。
+Public configuration: `configs/workcells/eco65_desktop_unloading_compact_v1.yaml`.
+Completed in this round: **one full geometric pick/place and one IDEAL_OUTFEED**, using the upper-right carton, top suction and direct longitudinal route B. The final path passed 17,893 geometric samples; 55 focused tests passed. No remaining-carton scheduler, vision, ROS or hardware execution. Dynamics are `NOT_EVALUATED` when Isaac is unavailable.
 
-原来的单箱静态接收台保留为[基础回归场景](docs/eco65_desktop_round1.md)，不是正式卸货布局。[准备轮资料](docs/eco65_desktop_bootstrap.md)继续保留。
-
-原 STEP、派生网格、详细工具配置、完整场景、图片和视频全部在本地忽略目录；硬件执行始终禁用。下文 FANUC 记录仅为历史参考。
+Use a fresh `--run-id`; build, planning, validation and replay read one hash-checked frozen snapshot. All images, meshes, detailed snapshots and videos stay in local ignored `outputs/`. See [compact round report](docs/eco65_desktop_compact_round1.md) for actual results and commands. The earlier [nine-carton report](docs/eco65_desktop_unloading_layout_v1.md) remains historical evidence.
 
 ---
 
