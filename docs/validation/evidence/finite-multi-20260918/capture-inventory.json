@@ -1,0 +1,152 @@
+[
+  {
+    "capture": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c",
+    "status": "VERIFIED",
+    "modules": [
+      {
+        "module": "module_0_upper",
+        "epoch": "carton-assets-capture-acc6b8c",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-acc6b8c:module_0_upper:100",
+        "rgb_sha256": "f767f647130297cbe996eb0d9cf2d4d7d228e8228f494a903c739748c52162f3"
+      },
+      {
+        "module": "module_1_lower",
+        "epoch": "carton-assets-capture-acc6b8c",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-acc6b8c:module_1_lower:100",
+        "rgb_sha256": "9de24497928d6d35fcf90fa367312810ce00bab29b97b0957057f411215d21c9"
+      }
+    ]
+  },
+  {
+    "capture": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-f24f63a",
+    "status": "VERIFIED",
+    "modules": [
+      {
+        "module": "module_0_upper",
+        "epoch": "carton-assets-capture-f24f63a",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-f24f63a:module_0_upper:100",
+        "rgb_sha256": "c4fbcfd5ce8505a7404d63d2ddeeefbf50db54d063ddd172a45dc585e4577c03"
+      },
+      {
+        "module": "module_1_lower",
+        "epoch": "carton-assets-capture-f24f63a",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-f24f63a:module_1_lower:100",
+        "rgb_sha256": "ea0002c0243592ec8d7fdd0e3e42b34e7fc5ce18b83996504fbaaf72bdcc0b7d"
+      }
+    ]
+  },
+  {
+    "capture": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff",
+    "status": "VERIFIED",
+    "modules": [
+      {
+        "module": "module_0_upper",
+        "epoch": "carton-assets-capture-08748ff",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-08748ff:module_0_upper:100",
+        "rgb_sha256": "db8225f0189b7fc71aa92ba7200ce10f282f04e3c15b3fc0ba9065f47278d988"
+      },
+      {
+        "module": "module_1_lower",
+        "epoch": "carton-assets-capture-08748ff",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-08748ff:module_1_lower:100",
+        "rgb_sha256": "bc72b5dfb318ff6242c526316f58207a7607517fe5e93e67f825d3f61b26b020"
+      }
+    ]
+  },
+  {
+    "capture": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-3e36d55",
+    "status": "VERIFIED",
+    "modules": [
+      {
+        "module": "module_0_upper",
+        "epoch": "carton-assets-capture-3e36d55",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-3e36d55:module_0_upper:100",
+        "rgb_sha256": "b44cabba6e6cced9bed1c8918718b99a950a0a5b2c9b6f25929958543414a993"
+      },
+      {
+        "module": "module_1_lower",
+        "epoch": "carton-assets-capture-3e36d55",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-3e36d55:module_1_lower:100",
+        "rgb_sha256": "3e3f25407420a2f241ce3688bd648ce3d2a80d03db74650469ec9b53bb6de5e6"
+      }
+    ]
+  },
+  {
+    "capture": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-v2",
+    "status": "VERIFIED",
+    "modules": [
+      {
+        "module": "module_0_upper",
+        "epoch": "carton-assets-capture-v2",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-v2:module_0_upper:100",
+        "rgb_sha256": "34d3fda1a6e5358ca749344ac6bdb8cbc2149973688f9366cb15816b6d31afd3"
+      },
+      {
+        "module": "module_1_lower",
+        "epoch": "carton-assets-capture-v2",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-v2:module_1_lower:100",
+        "rgb_sha256": "0b0d06a4491322f71f79028f22c1de10629d7944e4012676de6eecbd76f5b62a"
+      }
+    ]
+  },
+  {
+    "capture": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-v3",
+    "status": "VERIFIED",
+    "modules": [
+      {
+        "module": "module_0_upper",
+        "epoch": "carton-assets-capture-v3",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-v3:module_0_upper:100",
+        "rgb_sha256": "002b80735c5006fb437f4575bba62b5d67444b1998e7e61077b1ed3d48ac6a31"
+      },
+      {
+        "module": "module_1_lower",
+        "epoch": "carton-assets-capture-v3",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-v3:module_1_lower:100",
+        "rgb_sha256": "ac3601e9731111b5cbcbc200be619d5abe651e14f1953c444f1f0e29b1755364"
+      }
+    ]
+  },
+  {
+    "capture": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-v4",
+    "status": "VERIFIED",
+    "modules": [
+      {
+        "module": "module_0_upper",
+        "epoch": "carton-assets-capture-v4",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-v4:module_0_upper:100",
+        "rgb_sha256": "2dda0f38aceeaa78b1801482b9afbef8393fd67d205330a3a3cbf2e336bb401c"
+      },
+      {
+        "module": "module_1_lower",
+        "epoch": "carton-assets-capture-v4",
+        "sequence": 100,
+        "capture_id": "carton-assets-capture-v4:module_1_lower:100",
+        "rgb_sha256": "0e4f6cf97d3648040b5b99f4c442a1edbd357080b6d985c22ac1af5504720eaa"
+      }
+    ]
+  },
+  {
+    "capture": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/A",
+    "status": "REJECTED",
+    "error": "BINDING_MISSING file=capture_metadata.json module=module_0_upper capture=module_0_upper epoch=appearance-capture-v1-A frame=100 expected SHA-256 is absent or invalid"
+  },
+  {
+    "capture": "/root/autodl-tmp/v05-acceptance/appearance-ab-d3e92cd-20260915/capture-v1/B",
+    "status": "REJECTED",
+    "error": "BINDING_MISSING file=capture_metadata.json module=module_0_upper capture=module_0_upper epoch=appearance-capture-v1-B frame=100 expected SHA-256 is absent or invalid"
+  }
+]

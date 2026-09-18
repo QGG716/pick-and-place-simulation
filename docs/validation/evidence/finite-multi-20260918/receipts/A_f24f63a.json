@@ -1,0 +1,464 @@
+{
+  "batch_id": "6004445febb64e33bdde5d4bce591d5d",
+  "task_id": "A_f24f63a",
+  "order": 0,
+  "session": "51c5ccb1375c49c786bca17ed6da7b34",
+  "artifact": {
+    "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/algorithm_artifact.json",
+    "sha256": "c91e80018c7b46b98bcf7b701da5faa2869e5b22f4e97993bc8721bd5ebc7b58"
+  },
+  "submitted_monotonic": 25488897.001707733,
+  "objects": 37,
+  "raw_surfaces": 71,
+  "marker_representatives": 71,
+  "unknown_regions": 121,
+  "previous_marker_deletes": 0,
+  "world_publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+  "mock_state_epoch": "e75174ec-20bb-4225-8b45-979b298b98e4",
+  "status": "ROS_ACCEPTED",
+  "perception_pid": 71741,
+  "execution_authorizations": 0,
+  "first_world_monotonic": 25488899.376861226,
+  "accepted_monotonic": 25488911.20008728,
+  "switch_latency_seconds": 2.3751534931361675,
+  "fixed_initialization_seconds": 5.0,
+  "steady_seconds": 5.0,
+  "world_events": [
+    {
+      "monotonic": 25488899.376861226,
+      "ros_time": 1789728571.22288,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 0,
+      "evaluated": 1789728570.0606148,
+      "robot_sample": 1789728569.5889554,
+      "mechanism_sample": 1789728569.5889554,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488900.59736828,
+      "ros_time": 1789728572.4433887,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 1,
+      "evaluated": 1789728571.101293,
+      "robot_sample": 1789728569.5889554,
+      "mechanism_sample": 1789728569.5889554,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS",
+        "ROBOT_STATE_STALE_OR_TIME_JUMP"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488901.727235135,
+      "ros_time": 1789728573.5732527,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 5,
+      "evaluated": 1789728573.546213,
+      "robot_sample": 1789728573.0890658,
+      "mechanism_sample": 1789728573.3889995,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488901.960633595,
+      "ros_time": 1789728573.8066514,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 10,
+      "evaluated": 1789728573.7578878,
+      "robot_sample": 1789728573.6888683,
+      "mechanism_sample": 1789728573.6888683,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488902.204219505,
+      "ros_time": 1789728574.0502357,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 12,
+      "evaluated": 1789728573.9578807,
+      "robot_sample": 1789728573.888973,
+      "mechanism_sample": 1789728573.888973,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488902.55361244,
+      "ros_time": 1789728574.3996305,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 16,
+      "evaluated": 1789728574.357897,
+      "robot_sample": 1789728574.28897,
+      "mechanism_sample": 1789728574.28897,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488902.797933728,
+      "ros_time": 1789728574.6439517,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 18,
+      "evaluated": 1789728574.5578685,
+      "robot_sample": 1789728574.4889777,
+      "mechanism_sample": 1789728574.4889777,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488903.15487173,
+      "ros_time": 1789728575.000889,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 22,
+      "evaluated": 1789728574.957917,
+      "robot_sample": 1789728574.889003,
+      "mechanism_sample": 1789728574.889003,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488903.39365889,
+      "ros_time": 1789728575.2396774,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 24,
+      "evaluated": 1789728575.157711,
+      "robot_sample": 1789728575.088906,
+      "mechanism_sample": 1789728575.088906,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488903.997398634,
+      "ros_time": 1789728575.8434155,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 30,
+      "evaluated": 1789728575.7578816,
+      "robot_sample": 1789728575.6889615,
+      "mechanism_sample": 1789728575.6889615,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488904.461051684,
+      "ros_time": 1789728576.3070707,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 35,
+      "evaluated": 1789728576.2578707,
+      "robot_sample": 1789728576.1888618,
+      "mechanism_sample": 1789728576.1888618,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488904.715876352,
+      "ros_time": 1789728576.5618954,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 37,
+      "evaluated": 1789728576.457592,
+      "robot_sample": 1789728576.3889945,
+      "mechanism_sample": 1789728576.3889945,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488904.964619976,
+      "ros_time": 1789728576.8106365,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 40,
+      "evaluated": 1789728576.7578962,
+      "robot_sample": 1789728576.6890018,
+      "mechanism_sample": 1789728576.6890018,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488905.19894328,
+      "ros_time": 1789728577.0449626,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 42,
+      "evaluated": 1789728576.95784,
+      "robot_sample": 1789728576.8889935,
+      "mechanism_sample": 1789728576.8889935,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488905.67747952,
+      "ros_time": 1789728577.523498,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 47,
+      "evaluated": 1789728577.4578502,
+      "robot_sample": 1789728577.3890162,
+      "mechanism_sample": 1789728577.3890162,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488905.918025747,
+      "ros_time": 1789728577.764043,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 49,
+      "evaluated": 1789728577.6592946,
+      "robot_sample": 1789728577.589001,
+      "mechanism_sample": 1789728577.589001,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488906.276273057,
+      "ros_time": 1789728578.1222918,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 53,
+      "evaluated": 1789728578.0578585,
+      "robot_sample": 1789728577.9888656,
+      "mechanism_sample": 1789728577.9888656,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488906.50753216,
+      "ros_time": 1789728578.3535483,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 55,
+      "evaluated": 1789728578.259365,
+      "robot_sample": 1789728578.1888733,
+      "mechanism_sample": 1789728578.1888733,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488906.873280607,
+      "ros_time": 1789728578.719299,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 59,
+      "evaluated": 1789728578.6578352,
+      "robot_sample": 1789728578.5889852,
+      "mechanism_sample": 1789728578.5889852,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488907.377916135,
+      "ros_time": 1789728579.2239335,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 64,
+      "evaluated": 1789728579.1578271,
+      "robot_sample": 1789728579.0889885,
+      "mechanism_sample": 1789728579.0889885,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488907.860359155,
+      "ros_time": 1789728579.7063777,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 69,
+      "evaluated": 1789728579.657812,
+      "robot_sample": 1789728579.588886,
+      "mechanism_sample": 1789728579.588886,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488908.111442283,
+      "ros_time": 1789728579.957459,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 71,
+      "evaluated": 1789728579.8578346,
+      "robot_sample": 1789728579.7889884,
+      "mechanism_sample": 1789728579.7889884,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488908.35132757,
+      "ros_time": 1789728580.1973457,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 74,
+      "evaluated": 1789728580.1578352,
+      "robot_sample": 1789728580.0889971,
+      "mechanism_sample": 1789728580.0889971,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488908.601468574,
+      "ros_time": 1789728580.447486,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 76,
+      "evaluated": 1789728580.3578525,
+      "robot_sample": 1789728580.2889729,
+      "mechanism_sample": 1789728580.2889729,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488908.94765281,
+      "ros_time": 1789728580.7936702,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 80,
+      "evaluated": 1789728580.7578087,
+      "robot_sample": 1789728580.6889668,
+      "mechanism_sample": 1789728580.6889668,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488909.20505503,
+      "ros_time": 1789728581.0510728,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 82,
+      "evaluated": 1789728580.957853,
+      "robot_sample": 1789728580.888996,
+      "mechanism_sample": 1789728580.888996,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488910.08267383,
+      "ros_time": 1789728581.9286923,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 91,
+      "evaluated": 1789728581.857847,
+      "robot_sample": 1789728581.789001,
+      "mechanism_sample": 1789728581.789001,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488910.779344767,
+      "ros_time": 1789728582.625364,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 98,
+      "evaluated": 1789728582.5577772,
+      "robot_sample": 1789728582.4888632,
+      "mechanism_sample": 1789728582.4888632,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    },
+    {
+      "monotonic": 25488911.187190756,
+      "ros_time": 1789728583.033209,
+      "source_epoch": "51c5ccb1375c49c786bca17ed6da7b34",
+      "publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+      "publisher_sequence": 102,
+      "evaluated": 1789728582.9577959,
+      "robot_sample": 1789728582.8889964,
+      "mechanism_sample": 1789728582.8889964,
+      "reasons": [
+        "HISTORICAL_REPLAY_DISPLAY_ONLY",
+        "UNKNOWN_OR_UNTRANSFORMED_REGIONS"
+      ],
+      "planning_admissible": false
+    }
+  ]
+}

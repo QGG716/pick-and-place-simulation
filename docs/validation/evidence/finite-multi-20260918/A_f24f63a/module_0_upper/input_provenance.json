@@ -1,0 +1,54 @@
+{
+  "source_directory": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-f24f63a/FULL_STACK_NOMINAL/modules/module_0_upper",
+  "input_directory": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper",
+  "capture_id": "carton-assets-capture-f24f63a:module_0_upper:100",
+  "module_id": "module_0_upper",
+  "sensor_epoch": "carton-assets-capture-f24f63a",
+  "frame_sequence": 100,
+  "original_binding": {
+    "schema_version": "isaac_capture_binding_v1",
+    "module_id": "module_0_upper",
+    "simulation_epoch": "carton-assets-capture-f24f63a",
+    "frame_sequence": 100,
+    "simulation_time": 1.6666666666666667,
+    "rgb_sha256": "c4fbcfd5ce8505a7404d63d2ddeeefbf50db54d063ddd172a45dc585e4577c03",
+    "camera_calibration_identity": "372d53029e85bd0e617ee1a2e523319c0d818ee4f47bc60f0d06f637ec7fe3b0",
+    "gt_snapshot_sha256": "e083c5e8181c67d03a3e8e0651d87fee70b937b416a5327d708c16ffdb2c967d",
+    "metric_depth_sha256": "c51f27ab6bbab7f4ee4e6e8b67d3cec9d2b662855c819a4fe5bfea93ea7ab9cd",
+    "instance_masks_sha256": "a69d074a8a0d40f8d1664a4981a53a9729137472e7665613b3d8a20562136d07",
+    "capture_metadata_sha256": "64c6b049ae405701ab02f948c273b26ff841f48c4e8b41cfa20f88f5881f80b3"
+  },
+  "consumed_files": {
+    "capture_binding.json": {
+      "sha256": "acd75102fe2e75215a108c54c3a436a6f7cef9b0fbdab3ec352c9fe72add607b",
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/capture_binding.json"
+    },
+    "capture_metadata.json": {
+      "sha256": "64c6b049ae405701ab02f948c273b26ff841f48c4e8b41cfa20f88f5881f80b3",
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/capture_metadata.json"
+    },
+    "gt_annotations.json": {
+      "sha256": "e083c5e8181c67d03a3e8e0651d87fee70b937b416a5327d708c16ffdb2c967d",
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/gt_annotations.json"
+    },
+    "camera_info.json": {
+      "sha256": "06fa09c365c92a4a3e0fa19ca62b0d70270c76f5bea9fbf750376376bc92f44f",
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/camera_info.json"
+    },
+    "sensor_rgb.png": {
+      "sha256": "c4fbcfd5ce8505a7404d63d2ddeeefbf50db54d063ddd172a45dc585e4577c03",
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/sensor_rgb.png"
+    },
+    "metric_depth_m.npy": {
+      "sha256": "c51f27ab6bbab7f4ee4e6e8b67d3cec9d2b662855c819a4fe5bfea93ea7ab9cd",
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/metric_depth_m.npy"
+    },
+    "gt_instance_masks.npz": {
+      "sha256": "a69d074a8a0d40f8d1664a4981a53a9729137472e7665613b3d8a20562136d07",
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/gt_instance_masks.npz"
+    }
+  },
+  "rgb_authority": "VERIFIED_PNG",
+  "original_rgb_npy_consumed": false,
+  "derived_inputs": {}
+}

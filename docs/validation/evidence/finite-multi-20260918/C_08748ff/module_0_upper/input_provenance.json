@@ -1,0 +1,54 @@
+{
+  "source_directory": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_0_upper",
+  "input_directory": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper",
+  "capture_id": "carton-assets-capture-08748ff:module_0_upper:100",
+  "module_id": "module_0_upper",
+  "sensor_epoch": "carton-assets-capture-08748ff",
+  "frame_sequence": 100,
+  "original_binding": {
+    "schema_version": "isaac_capture_binding_v1",
+    "module_id": "module_0_upper",
+    "simulation_epoch": "carton-assets-capture-08748ff",
+    "frame_sequence": 100,
+    "simulation_time": 1.6666666666666667,
+    "rgb_sha256": "db8225f0189b7fc71aa92ba7200ce10f282f04e3c15b3fc0ba9065f47278d988",
+    "camera_calibration_identity": "a434565f968f1931a779c064433f61439de70e6547ab6524bcde4e14dfe0fe22",
+    "gt_snapshot_sha256": "cd91b4d68df72aeb5729d834ec128fa34c6784371b69d18d831527220cf0748e",
+    "metric_depth_sha256": "2cfd61f9c1f34772702759b52cb9a5c495b5a15e828dd3c1921398cb1c9bd4d1",
+    "instance_masks_sha256": "12d5aee38f85944abaf02d2f5d1e310e40da17bf84271f5a93c754838c4f2698",
+    "capture_metadata_sha256": "752f2b3b071df97f2c748fc4f022fadeb546139b24bac8d0ba2dd5f29c112146"
+  },
+  "consumed_files": {
+    "capture_binding.json": {
+      "sha256": "e6ed4b0fa023f9f097a612605e53fda18476729b26f2a2fbf34ed4bc35f26869",
+      "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/capture_binding.json"
+    },
+    "capture_metadata.json": {
+      "sha256": "752f2b3b071df97f2c748fc4f022fadeb546139b24bac8d0ba2dd5f29c112146",
+      "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/capture_metadata.json"
+    },
+    "gt_annotations.json": {
+      "sha256": "cd91b4d68df72aeb5729d834ec128fa34c6784371b69d18d831527220cf0748e",
+      "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/gt_annotations.json"
+    },
+    "camera_info.json": {
+      "sha256": "f0c6bd6ebbb09e9fa4d686a25679c70c30f5e479aa9a8e32ae35585c62406817",
+      "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/camera_info.json"
+    },
+    "sensor_rgb.png": {
+      "sha256": "db8225f0189b7fc71aa92ba7200ce10f282f04e3c15b3fc0ba9065f47278d988",
+      "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/sensor_rgb.png"
+    },
+    "metric_depth_m.npy": {
+      "sha256": "2cfd61f9c1f34772702759b52cb9a5c495b5a15e828dd3c1921398cb1c9bd4d1",
+      "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/metric_depth_m.npy"
+    },
+    "gt_instance_masks.npz": {
+      "sha256": "12d5aee38f85944abaf02d2f5d1e310e40da17bf84271f5a93c754838c4f2698",
+      "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/gt_instance_masks.npz"
+    }
+  },
+  "rgb_authority": "VERIFIED_PNG",
+  "original_rgb_npy_consumed": false,
+  "derived_inputs": {}
+}

@@ -11,6 +11,7 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, qos_profile_sensor_data
 from rcl_interfaces.msg import ParameterDescriptor, SetParametersResult
 from sensor_msgs.msg import JointState
+from std_msgs.msg import String
 from tf2_ros import Buffer, TransformException, TransformListener
 from unloading_contracts import ObservationStatus, RobotStateRevision, canonical_fingerprint
 from unloading_interfaces.msg import MechanismState, PerceptionObservation, PlanningWorldSnapshot
@@ -86,6 +87,9 @@ class WorldBridgeNode(Node):
         self.create_subscription(PerceptionObservation, "/unloading/perception", self.on_observation, reliable)
         self.publisher = self.create_publisher(PlanningWorldSnapshot, "/unloading/world_snapshot", reliable)
         self.marker_scene = MarkerScene(self.get_fully_qualified_name())
+        self.batch_display_status = ''
+        if self.observation_mode == 'replay_display_only':
+            self.create_subscription(String, '/unloading/replay_progress', self.on_display_progress, marker_qos())
         self.marker_publisher = self.create_publisher(MarkerArray, "/unloading/markers", marker_qos())
         # Only the wake-up uses steady time. All age calculations use ROS time.
         self.watchdog_clock = Clock(clock_type=ClockType.STEADY_TIME)
@@ -445,9 +449,13 @@ class WorldBridgeNode(Node):
         self._commit_snapshot("freshness" if stale_key != self.stale_key else "heartbeat", now=now)
         self.stale_key = stale_key
 
+    def on_display_progress(self, message):
+        # Display-only text has no authority over identity, freshness or admission.
+        self.batch_display_status = message.data[:1000]
+
     def publish_markers(self, snapshot: PlanningWorldSnapshot, frame_id: str) -> None:
         started = self.timing.start()
-        markers = self.marker_scene.render(snapshot, frame_id)
+        markers = self.marker_scene.render(snapshot, frame_id, display_status=getattr(self, 'batch_display_status', ''))
         self.timing.finish('marker_render', started)
         started = self.timing.start()
         self.marker_publisher.publish(markers)

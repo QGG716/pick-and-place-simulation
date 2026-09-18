@@ -1,0 +1,312 @@
+{
+  "batch_id": "6004445febb64e33bdde5d4bce591d5d",
+  "exit_code": 1,
+  "status": "PARTIAL_OR_FAILED",
+  "sequence_kind": "INDEPENDENT_CAPTURE_GROUPS",
+  "groups": [
+    {
+      "task_id": "A_f24f63a",
+      "capture": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-f24f63a",
+      "action": "REUSE_VERIFIED",
+      "status": "ROS_ACCEPTED",
+      "result_origin": "REUSED_VERIFIED",
+      "algorithm_attempts": 0,
+      "sam_attempts": 0,
+      "metric_attempts": 0,
+      "algorithm_seconds": null,
+      "run_id": "80d4988224e04069bdee66eab0f5695f",
+      "artifact": {
+        "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/algorithm_artifact.json",
+        "sha256": "c91e80018c7b46b98bcf7b701da5faa2869e5b22f4e97993bc8721bd5ebc7b58"
+      },
+      "counts": {
+        "objects": 37,
+        "raw_surfaces": 71,
+        "representatives": 71,
+        "conflicts": 0,
+        "unknown_regions": 84
+      },
+      "failure_stage": null,
+      "error": null,
+      "artifact_completed_monotonic": 25488896.998264905,
+      "switch_submitted_monotonic": 25488897.001707733,
+      "ros": {
+        "batch_id": "6004445febb64e33bdde5d4bce591d5d",
+        "task_id": "A_f24f63a",
+        "order": 0,
+        "session": "51c5ccb1375c49c786bca17ed6da7b34",
+        "artifact": {
+          "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/algorithm_artifact.json",
+          "sha256": "c91e80018c7b46b98bcf7b701da5faa2869e5b22f4e97993bc8721bd5ebc7b58"
+        },
+        "submitted_monotonic": 25488897.001707733,
+        "objects": 37,
+        "raw_surfaces": 71,
+        "marker_representatives": 71,
+        "unknown_regions": 121,
+        "previous_marker_deletes": 0,
+        "world_publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+        "mock_state_epoch": "e75174ec-20bb-4225-8b45-979b298b98e4",
+        "status": "ROS_ACCEPTED",
+        "perception_pid": 71741,
+        "execution_authorizations": 0,
+        "first_world_monotonic": 25488899.376861226,
+        "accepted_monotonic": 25488911.20008728,
+        "switch_latency_seconds": 2.3751534931361675,
+        "fixed_initialization_seconds": 5.0,
+        "steady_seconds": 5.0
+      },
+      "windows": {
+        "switch": {
+          "world_count": 10,
+          "receive_interval_s": {
+            "count": 9,
+            "p50": 0.34939293563365936,
+            "p95": 1.2205070555210114,
+            "max": 1.2205070555210114
+          },
+          "evaluation_interval_s": {
+            "count": 9,
+            "p50": 0.40001630783081055,
+            "p95": 2.4449198246002197,
+            "max": 2.4449198246002197
+          },
+          "blocking_counts": {
+            "HISTORICAL_REPLAY_DISPLAY_ONLY": 10,
+            "ROBOT_STATE_STALE_OR_TIME_JUMP": 1,
+            "UNKNOWN_OR_UNTRANSFORMED_REGIONS": 10
+          },
+          "robot_evaluation_age_s": {
+            "count": 10,
+            "p50": 0.06892013549804688,
+            "p95": 1.5123376846313477,
+            "max": 1.5123376846313477
+          },
+          "robot_receive_age_s": {
+            "count": 10,
+            "p50": 0.15445399284362793,
+            "p95": 2.854433298110962,
+            "max": 2.854433298110962
+          },
+          "mechanism_evaluation_age_s": {
+            "count": 10,
+            "p50": 0.06892013549804688,
+            "p95": 1.5123376846313477,
+            "max": 1.5123376846313477
+          },
+          "mechanism_receive_age_s": {
+            "count": 10,
+            "p50": 0.15445399284362793,
+            "p95": 2.854433298110962,
+            "max": 2.854433298110962
+          }
+        },
+        "steady": {
+          "world_count": 19,
+          "receive_interval_s": {
+            "count": 18,
+            "p50": 0.2574022188782692,
+            "p95": 0.696670938283205,
+            "max": 0.8776188008487225
+          },
+          "evaluation_interval_s": {
+            "count": 18,
+            "p50": 0.3003041744232178,
+            "p95": 0.6999301910400391,
+            "max": 0.899993896484375
+          },
+          "blocking_counts": {
+            "HISTORICAL_REPLAY_DISPLAY_ONLY": 19,
+            "UNKNOWN_OR_UNTRANSFORMED_REGIONS": 19
+          },
+          "robot_evaluation_age_s": {
+            "count": 19,
+            "p50": 0.06885004043579102,
+            "p95": 0.07029366493225098,
+            "max": 0.07049179077148438
+          },
+          "robot_receive_age_s": {
+            "count": 19,
+            "p50": 0.13650083541870117,
+            "p95": 0.17290091514587402,
+            "max": 0.17504215240478516
+          },
+          "mechanism_evaluation_age_s": {
+            "count": 19,
+            "p50": 0.06885004043579102,
+            "p95": 0.07029366493225098,
+            "max": 0.07049179077148438
+          },
+          "mechanism_receive_age_s": {
+            "count": 19,
+            "p50": 0.13650083541870117,
+            "p95": 0.17290091514587402,
+            "max": 0.17504215240478516
+          }
+        }
+      },
+      "steady_ages_within_original_thresholds": true
+    },
+    {
+      "task_id": "B_acc6b8c",
+      "capture": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c",
+      "action": "RUN",
+      "status": "ROS_ACCEPTED",
+      "result_origin": "NEW_ALGORITHM_RUN",
+      "algorithm_attempts": 1,
+      "sam_attempts": 2,
+      "metric_attempts": 2,
+      "algorithm_seconds": 401.80164044350386,
+      "run_id": "d289a309067a4108b78a80759a50ebdf",
+      "artifact": {
+        "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/B_acc6b8c/algorithm/algorithm_artifact.json",
+        "sha256": "9b792fb16245485ab5d43ddd1cf0cbb3a3ae1802ed2f32faa2efb1064885d463"
+      },
+      "counts": {
+        "objects": 37,
+        "raw_surfaces": 57,
+        "representatives": 57,
+        "conflicts": 0,
+        "unknown_regions": 84
+      },
+      "failure_stage": null,
+      "error": null,
+      "artifact_completed_monotonic": 25489315.04207076,
+      "switch_submitted_monotonic": 25489315.0469138,
+      "ros": {
+        "batch_id": "6004445febb64e33bdde5d4bce591d5d",
+        "task_id": "B_acc6b8c",
+        "order": 1,
+        "session": "648dfeab3ae44e48ad5d41b4183b1fa7",
+        "artifact": {
+          "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/B_acc6b8c/algorithm/algorithm_artifact.json",
+          "sha256": "9b792fb16245485ab5d43ddd1cf0cbb3a3ae1802ed2f32faa2efb1064885d463"
+        },
+        "submitted_monotonic": 25489315.0469138,
+        "objects": 37,
+        "raw_surfaces": 57,
+        "marker_representatives": 57,
+        "unknown_regions": 121,
+        "previous_marker_deletes": 142,
+        "world_publisher_epoch": "4c34ea47-e5c9-4eba-9cc6-e99837a92dd1",
+        "mock_state_epoch": "e75174ec-20bb-4225-8b45-979b298b98e4",
+        "status": "ROS_ACCEPTED",
+        "perception_pid": 71741,
+        "execution_authorizations": 0,
+        "first_world_monotonic": 25489317.704100512,
+        "accepted_monotonic": 25489329.18191203,
+        "switch_latency_seconds": 2.6571867130696774,
+        "fixed_initialization_seconds": 5.0,
+        "steady_seconds": 5.0
+      },
+      "windows": {
+        "switch": {
+          "world_count": 30,
+          "receive_interval_s": {
+            "count": 29,
+            "p50": 0.23637225851416588,
+            "p95": 1.1227325238287449,
+            "max": 1.2372436448931694
+          },
+          "evaluation_interval_s": {
+            "count": 29,
+            "p50": 0.20006680488586426,
+            "p95": 0.835543155670166,
+            "max": 2.051718235015869
+          },
+          "blocking_counts": {
+            "HISTORICAL_REPLAY_DISPLAY_ONLY": 30,
+            "ROBOT_STATE_STALE_OR_TIME_JUMP": 1,
+            "UNKNOWN_OR_UNTRANSFORMED_REGIONS": 30
+          },
+          "robot_evaluation_age_s": {
+            "count": 30,
+            "p50": 0.06259942054748535,
+            "p95": 0.4435276985168457,
+            "max": 1.1919994354248047
+          },
+          "robot_receive_age_s": {
+            "count": 30,
+            "p50": 0.12409305572509766,
+            "p95": 1.261338710784912,
+            "max": 2.155470848083496
+          },
+          "mechanism_evaluation_age_s": {
+            "count": 30,
+            "p50": 0.06259942054748535,
+            "p95": 0.35645627975463867,
+            "max": 1.1919994354248047
+          },
+          "mechanism_receive_age_s": {
+            "count": 30,
+            "p50": 0.12409305572509766,
+            "p95": 1.261338710784912,
+            "max": 2.155470848083496
+          }
+        },
+        "steady": {
+          "world_count": 28,
+          "receive_interval_s": {
+            "count": 27,
+            "p50": 0.20800410211086273,
+            "p95": 0.5143742486834526,
+            "max": 0.6347822584211826
+          },
+          "evaluation_interval_s": {
+            "count": 27,
+            "p50": 0.19999456405639648,
+            "p95": 0.4999713897705078,
+            "max": 0.7001948356628418
+          },
+          "blocking_counts": {
+            "HISTORICAL_REPLAY_DISPLAY_ONLY": 28,
+            "UNKNOWN_OR_UNTRANSFORMED_REGIONS": 28
+          },
+          "robot_evaluation_age_s": {
+            "count": 28,
+            "p50": 0.062399864196777344,
+            "p95": 0.06702065467834473,
+            "max": 0.06800222396850586
+          },
+          "robot_receive_age_s": {
+            "count": 28,
+            "p50": 0.13829541206359863,
+            "p95": 0.17022442817687988,
+            "max": 0.1720571517944336
+          },
+          "mechanism_evaluation_age_s": {
+            "count": 28,
+            "p50": 0.062399864196777344,
+            "p95": 0.06702065467834473,
+            "max": 0.06800222396850586
+          },
+          "mechanism_receive_age_s": {
+            "count": 28,
+            "p50": 0.13829541206359863,
+            "p95": 0.17022442817687988,
+            "max": 0.1720571517944336
+          }
+        }
+      },
+      "steady_ages_within_original_thresholds": true
+    },
+    {
+      "task_id": "C_08748ff",
+      "capture": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff",
+      "action": "RUN",
+      "status": "FAILED",
+      "result_origin": null,
+      "algorithm_attempts": 1,
+      "sam_attempts": 2,
+      "metric_attempts": 2,
+      "algorithm_seconds": 305.267705719918,
+      "run_id": null,
+      "artifact": null,
+      "counts": null,
+      "failure_stage": "algorithm",
+      "error": "single-capture CLI exited 1",
+      "artifact_completed_monotonic": null,
+      "switch_submitted_monotonic": null
+    }
+  ]
+}

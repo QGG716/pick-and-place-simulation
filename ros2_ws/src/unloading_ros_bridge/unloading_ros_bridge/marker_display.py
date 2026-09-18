@@ -81,7 +81,7 @@ class MarkerScene:
         return MarkerArray(markers=[Marker(ns=ns, id=mid, action=Marker.DELETE)
                                     for ns, mid in sorted(self.owned)])
 
-    def render(self, snapshot, frame):
+    def render(self, snapshot, frame, *, display_status=''):
         markers, diagnostics = [], []
         reasons = list(snapshot.blocking_reasons)
         replay = 'HISTORICAL_REPLAY_DISPLAY_ONLY' in reasons
@@ -128,6 +128,8 @@ class MarkerScene:
                 f'Unknown regions (no 3D extent): {len(unknown)}\n' + '\n'.join(unknown))
         if diagnostics:
             text += '\nDISPLAY DIAGNOSTICS:\n' + '\n'.join(sorted(set(diagnostics)))
+        if display_status:
+            text += '\nBATCH PROGRESS (not capture evidence):\n' + display_status
         color = HISTORY if historical or replay else BLOCKED if not snapshot.planning_admissible or diagnostics else COMPLETE
         markers.append(self._text(('ui',), text, (0., 0., 2.8), snapshot, frame, color))
         current = {(m.ns, m.id) for m in markers}

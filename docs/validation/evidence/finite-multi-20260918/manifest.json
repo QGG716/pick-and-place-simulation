@@ -1,0 +1,22 @@
+{
+  "schema_version": "finite_capture_sequence_v1",
+  "sequence_kind": "INDEPENDENT_CAPTURE_GROUPS",
+  "groups": [
+    {
+      "task_id": "A_f24f63a",
+      "capture": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-f24f63a",
+      "action": "REUSE_VERIFIED",
+      "reuse_summary": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/summary.json"
+    },
+    {
+      "task_id": "B_acc6b8c",
+      "capture": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-acc6b8c",
+      "action": "RUN"
+    },
+    {
+      "task_id": "C_08748ff",
+      "capture": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff",
+      "action": "RUN"
+    }
+  ]
+}

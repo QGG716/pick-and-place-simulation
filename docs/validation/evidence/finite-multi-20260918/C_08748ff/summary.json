@@ -1,0 +1,263 @@
+{
+  "model_manifest": {
+    "manifest_version": 1,
+    "moge": {
+      "files": {
+        "model.pt": "79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc"
+      },
+      "model_path": "/root/autodl-tmp/huggingface/models--Ruicheng--moge-2-vits-normal/blobs/79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc",
+      "repository": "Ruicheng/moge-2-vits-normal",
+      "revision": "26b477f41595707c5db6770294c0d1721e8ed4ed"
+    },
+    "sam": {
+      "files": {
+        "config.json": "5ebd0d8643b486f3a716bf17c2a15531eb818b2b96ff0c6c5dcc88fa015161af",
+        "model.safetensors": "892c410e496344e527255ccdcb2cb7244a609acb5389c7c4fdba1288f861c579",
+        "preprocessor_config.json": "225545a743c654e3c495ec6f545a0eaba57c8ba3fbbd8483b3cb1c0fc58db517"
+      },
+      "repository": "facebook/sam-vit-base",
+      "revision": "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+      "snapshot_path": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f"
+    }
+  },
+  "runs": [
+    {
+      "module": "module_0_upper",
+      "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+      "stage": "completed",
+      "sam_attempts": 1,
+      "metric_attempts": 1,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+      "raw_image_automatic": false,
+      "planning_admissible": false,
+      "artifact_directory": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper",
+      "stage_seconds": {
+        "pending": 0.10870198532938957,
+        "payload_validation": 0.5737440064549446,
+        "inputs_ready": 2.908137809485197,
+        "oracle_proposals": 0.002504367381334305,
+        "sam_inference": 9.266613826155663,
+        "worker_artifacts": 0.9473037496209145,
+        "mask_evaluation": 0.9766761027276516,
+        "metric_geometry": 131.1951592490077
+      },
+      "rgb_sha256": "db8225f0189b7fc71aa92ba7200ce10f282f04e3c15b3fc0ba9065f47278d988",
+      "input_provenance": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_0_upper",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper",
+        "capture_id": "carton-assets-capture-08748ff:module_0_upper:100",
+        "module_id": "module_0_upper",
+        "sensor_epoch": "carton-assets-capture-08748ff",
+        "frame_sequence": 100,
+        "original_binding": {
+          "schema_version": "isaac_capture_binding_v1",
+          "module_id": "module_0_upper",
+          "simulation_epoch": "carton-assets-capture-08748ff",
+          "frame_sequence": 100,
+          "simulation_time": 1.6666666666666667,
+          "rgb_sha256": "db8225f0189b7fc71aa92ba7200ce10f282f04e3c15b3fc0ba9065f47278d988",
+          "camera_calibration_identity": "a434565f968f1931a779c064433f61439de70e6547ab6524bcde4e14dfe0fe22",
+          "gt_snapshot_sha256": "cd91b4d68df72aeb5729d834ec128fa34c6784371b69d18d831527220cf0748e",
+          "metric_depth_sha256": "2cfd61f9c1f34772702759b52cb9a5c495b5a15e828dd3c1921398cb1c9bd4d1",
+          "instance_masks_sha256": "12d5aee38f85944abaf02d2f5d1e310e40da17bf84271f5a93c754838c4f2698",
+          "capture_metadata_sha256": "752f2b3b071df97f2c748fc4f022fadeb546139b24bac8d0ba2dd5f29c112146"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "e6ed4b0fa023f9f097a612605e53fda18476729b26f2a2fbf34ed4bc35f26869",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "752f2b3b071df97f2c748fc4f022fadeb546139b24bac8d0ba2dd5f29c112146",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "cd91b4d68df72aeb5729d834ec128fa34c6784371b69d18d831527220cf0748e",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "f0c6bd6ebbb09e9fa4d686a25679c70c30f5e479aa9a8e32ae35585c62406817",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "db8225f0189b7fc71aa92ba7200ce10f282f04e3c15b3fc0ba9065f47278d988",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "2cfd61f9c1f34772702759b52cb9a5c495b5a15e828dd3c1921398cb1c9bd4d1",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "12d5aee38f85944abaf02d2f5d1e310e40da17bf84271f5a93c754838c4f2698",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_0_upper/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      },
+      "proposal_count": 15,
+      "mask_evaluation": {
+        "visible_gt_objects": 15,
+        "sam_count": 15,
+        "merged_prediction_count": 2,
+        "split_or_duplicate_gt_count": 2,
+        "gt_below_best_iou_0_5": 1,
+        "gt_without_significant_prediction": 0,
+        "rendered_mask_boundary": {
+          "prediction_pixels": 17721,
+          "gt_visible_physical_edge_pixels": 15899,
+          "precision_2px": 0.4772868348287343,
+          "recall_2px": 0.7536323039184855,
+          "gt_to_prediction_mean_px": 1.6620467901229858
+        },
+        "boundary_reference": "ACTUAL_RENDERED_OBJECT_MASK_CONTOURS_INCLUDES_OCCLUSION_AND_CLIP_EDGES",
+        "exact_mesh_planes_corners": "NOT_EVALUATED",
+        "policy": {
+          "significant_pixels": 50,
+          "minimum_fraction_each_region": 0.1,
+          "best_iou_threshold": 0.5
+        }
+      },
+      "observed_faces": 28,
+      "instances_without_accepted_face": 0,
+      "complete_cuboids_accepted": 1
+    },
+    {
+      "module": "module_1_lower",
+      "status": "TECHNICAL_FAILURE",
+      "stage": "metric_geometry",
+      "sam_attempts": 1,
+      "metric_attempts": 1,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+      "raw_image_automatic": false,
+      "planning_admissible": false,
+      "artifact_directory": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_1_lower",
+      "stage_seconds": {
+        "pending": 0.0013670995831489563,
+        "payload_validation": 0.9545183517038822,
+        "inputs_ready": 0.0016537494957447052,
+        "oracle_proposals": 0.001652490347623825,
+        "sam_inference": 19.623802859336138,
+        "worker_artifacts": 1.9905066415667534,
+        "mask_evaluation": 2.252788871526718
+      },
+      "rgb_sha256": "bc72b5dfb318ff6242c526316f58207a7607517fe5e93e67f825d3f61b26b020",
+      "input_provenance": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/carton-assets-20260915/capture-08748ff/FULL_STACK_NOMINAL/modules/module_1_lower",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_1_lower",
+        "capture_id": "carton-assets-capture-08748ff:module_1_lower:100",
+        "module_id": "module_1_lower",
+        "sensor_epoch": "carton-assets-capture-08748ff",
+        "frame_sequence": 100,
+        "original_binding": {
+          "schema_version": "isaac_capture_binding_v1",
+          "module_id": "module_1_lower",
+          "simulation_epoch": "carton-assets-capture-08748ff",
+          "frame_sequence": 100,
+          "simulation_time": 1.6666666666666667,
+          "rgb_sha256": "bc72b5dfb318ff6242c526316f58207a7607517fe5e93e67f825d3f61b26b020",
+          "camera_calibration_identity": "e6318d1f0cd52b9c8a12ca8df80192da9f5a4cdf7602fcc7b5d0473cd5bf180b",
+          "gt_snapshot_sha256": "64563b25b15f6a4c4d62b1a8c3283321ec0485ff25859ec2569c24a4587f24bb",
+          "metric_depth_sha256": "8a7261d194b298f33da352c0e5ab06f8d0c66896cded7ca34fb6e0306cf3f43c",
+          "instance_masks_sha256": "d8aed41c1d96e3792e129797f6713529b67edda168bf2af171e0906896839fa0",
+          "capture_metadata_sha256": "0ddf6b9688adb4b595c25c4ec5d917c44fb0669c653a5c959f6da3c469967c5c"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "d347e0f298c947e98aecbe87045e4790f845a8b3473a1f2d73084b299af3a79c",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_1_lower/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "0ddf6b9688adb4b595c25c4ec5d917c44fb0669c653a5c959f6da3c469967c5c",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_1_lower/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "64563b25b15f6a4c4d62b1a8c3283321ec0485ff25859ec2569c24a4587f24bb",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_1_lower/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_1_lower/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "bc72b5dfb318ff6242c526316f58207a7607517fe5e93e67f825d3f61b26b020",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_1_lower/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "8a7261d194b298f33da352c0e5ab06f8d0c66896cded7ca34fb6e0306cf3f43c",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_1_lower/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "d8aed41c1d96e3792e129797f6713529b67edda168bf2af171e0906896839fa0",
+            "path": "/root/autodl-tmp/v05-acceptance/finite-multi-20260918/batch-01/C_08748ff/algorithm/module_1_lower/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      },
+      "proposal_count": 31,
+      "mask_evaluation": {
+        "visible_gt_objects": 31,
+        "sam_count": 31,
+        "merged_prediction_count": 0,
+        "split_or_duplicate_gt_count": 0,
+        "gt_below_best_iou_0_5": 1,
+        "gt_without_significant_prediction": 0,
+        "rendered_mask_boundary": {
+          "prediction_pixels": 29421,
+          "gt_visible_physical_edge_pixels": 31329,
+          "precision_2px": 0.545358757350192,
+          "recall_2px": 0.8314660538159533,
+          "gt_to_prediction_mean_px": 1.4315189123153687
+        },
+        "boundary_reference": "ACTUAL_RENDERED_OBJECT_MASK_CONTOURS_INCLUDES_OCCLUSION_AND_CLIP_EDGES",
+        "exact_mesh_planes_corners": "NOT_EVALUATED",
+        "policy": {
+          "significant_pixels": 50,
+          "minimum_fraction_each_region": 0.1,
+          "best_iou_threshold": 0.5
+        }
+      },
+      "failure_stage": "metric_geometry",
+      "error_type": "ValueError",
+      "error": "FACE_BEHIND_CAMERA"
+    }
+  ],
+  "run_id": "745ff1bcd0c348299ab2e6f0064336ea",
+  "expected_module_count": 2,
+  "errors": [],
+  "stage": "runtime_guard",
+  "stage_seconds": {
+    "initial_summary": 2.5033950805664062e-06,
+    "run_identity": 0.0012776069343090057,
+    "manifest": 0.10870198532938957,
+    "payload_validation": 1.5282623581588268,
+    "module_directory": 0.07922282069921494,
+    "inputs_checked": 0.002348732203245163,
+    "capture_group": 0.0009346418082714081,
+    "models": 0.0008954107761383057,
+    "config": 0.007435739040374756,
+    "dependencies": 0.004661906510591507,
+    "runtime_initialize": 2.908137809485197,
+    "oracle_proposals": 0.00415685772895813,
+    "sam_inference": 28.8904166854918,
+    "worker_artifacts": 2.937810391187668,
+    "mask_evaluation": 3.2294649742543697,
+    "metric_geometry": 264.94293853640556,
+    "geometry_result": 0.018847312778234482,
+    "module_finished": 0.004752445966005325
+  },
+  "module_counts": {
+    "expected": 2,
+    "completed": 1,
+    "failed": 1,
+    "not_run": 0,
+    "running": 0
+  },
+  "finalized": true,
+  "overall_status": "TECHNICAL_FAILURE",
+  "exit_code": 1,
+  "handoff_not_run_reason": "MISSING_CURRENT_RUN_MODULE"
+}

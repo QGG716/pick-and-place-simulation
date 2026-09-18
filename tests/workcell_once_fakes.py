@@ -22,11 +22,11 @@ def write_json(path, payload):
     Path(path).write_text(json.dumps(payload), encoding="utf-8")
 
 
-def capture_fixture(root, scenarios=("sam_error", "normal")):
+def capture_fixture(root, scenarios=("sam_error", "normal"), **capture_options):
     capture = root / "capture"
     capture.mkdir()
     from ros2_ws.src.unloading_ros_bridge.test.isaac_joint_fixture import capture_fixture as bound_fixture
-    manifest, _, _ = bound_fixture(capture)
+    manifest, _, _ = bound_fixture(capture, **capture_options)
     modules = [camera['module_id'] for camera in manifest.cameras]
     assert len(modules) == len(scenarios) == 2
     write_json(capture / 'test-control.json', dict(zip(modules, scenarios)))
@@ -34,7 +34,7 @@ def capture_fixture(root, scenarios=("sam_error", "normal")):
     write_json(models, {'sam': {'snapshot_path': 'CPU_TEST_SUBSTITUTE'}})
     for index, module in enumerate(modules):
         folder = capture / 'FULL_STACK_NOMINAL/modules' / module
-        _, _, binding = bound_fixture(folder, camera_index=index)
+        _, _, binding = bound_fixture(folder, camera_index=index, **capture_options)
         annotations = json.loads((folder/'gt_annotations.json').read_text(encoding='utf-8'))
         object_id = manifest.objects[0]['simulation_object_id']
         annotations['objects'] = [{'simulation_object_id': object_id, 'mask_key': object_id,

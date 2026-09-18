@@ -19,6 +19,7 @@ setup(
     license="MIT",
     entry_points={"console_scripts": [
         "perception_node = unloading_ros_bridge.perception_node:main",
+        "finite_replay_node = unloading_ros_bridge.finite_replay_node:main",
         "world_bridge_node = unloading_ros_bridge.world_bridge_node:main",
         "marker_demo = unloading_ros_bridge.marker_demo:main",
         "execution_bridge_node = unloading_ros_bridge.execution_bridge_node:main",

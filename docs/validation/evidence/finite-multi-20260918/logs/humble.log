@@ -1,0 +1,19 @@
+Starting >>> unloading_interfaces
+Finished <<< unloading_interfaces [8.42s]
+Starting >>> unloading_ros_bridge
+Finished <<< unloading_ros_bridge [0.79s]
+Starting >>> unloading_bringup
+Finished <<< unloading_bringup [0.82s]
+
+Summary: 3 packages finished [10.2s]
+Starting >>> unloading_interfaces
+Finished <<< unloading_interfaces [0.03s]
+Starting >>> unloading_ros_bridge
+[Processing: unloading_ros_bridge]
+[Processing: unloading_ros_bridge]
+Finished <<< unloading_ros_bridge [1min 0s]
+Starting >>> unloading_bringup
+Finished <<< unloading_bringup [0.02s]
+
+Summary: 3 packages finished [1min 0s]
+Summary: 70 tests, 0 errors, 0 failures, 0 skipped
