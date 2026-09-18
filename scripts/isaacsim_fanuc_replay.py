@@ -4163,7 +4163,8 @@ try:
             if stack_clearance_step is not None and target_carton_path not in ideal_actor_paths:
                 stack_clearance_step.begin_step(step=step, time_s=simulation_time,
                     trajectory_time_s=trajectory_time, context=contact_runtime_context,
-                    states=_capture_carton_states())
+                    states=_capture_carton_states(), world_id=str(run_started_unix_s),
+                    task_id=str(session_segment_index))
             world.step(render=False, update_fabric=True)
             _verify_ideal_body_feedback()
             simulation_time = (step + 1) * physics_dt
@@ -4940,8 +4941,8 @@ try:
         if zero_point_contact_resolver.pending_keys and runtime_stop_reason is None:
             runtime_stop_reason = "UNRESOLVED_ZERO_POINT_ROBOT_CONTACT_HEADER"
         if stack_clearance_step is not None and stack_clearance_step.hold and runtime_stop_reason is None:
-            runtime_stop_reason = (stack_clearance_step.first_conflict["reason"] if stack_clearance_step.first_conflict
-                                   else "UNRESOLVED_STACK_CONTACT_AT_RUN_END")
+            runtime_stop_reason = (stack_clearance_step.active_reason
+                                   or "UNRESOLVED_STACK_CONTACT_AT_RUN_END")
         contact_records = [
             {"actor0": pair[0], "actor1": pair[1], **values}
             for pair, values in sorted(contact_pairs.items())
@@ -5437,6 +5438,9 @@ try:
                 "shape_fingerprint": stack_clearance_step.shape_fingerprint,
                 "transitions": stack_clearance_step.transitions,
                 "first_evidence_conflict": stack_clearance_step.first_conflict,
+                "active_evidence_reason": stack_clearance_step.active_reason,
+                "confirmed_violation": stack_clearance_step.confirmed_violation,
+                "issue_history": stack_clearance_step.issue_history,
                 "geometry_enter_gap_m": effective_collision_policy.free_space_clearance_m,
                 "geometry_maintain_gap_m": effective_collision_policy.required_pair_clearance_m,
                 "evidence_file": "stack_clearance_steps.json"},

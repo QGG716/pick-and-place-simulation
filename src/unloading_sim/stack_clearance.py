@@ -49,7 +49,7 @@ class StackClearanceStep:
         self.names = {target, *neighbors}
         self.target = target
         self.neighbors = self.names - {target}
-        self.shapes = {name: deepcopy(shapes[name]) for name in self.names}
+        self.shapes = {name: deepcopy(shapes[name]) for name in sorted(self.names)}
         self.policy = policy
         self.world_id, self.task_id = str(world_id), str(task_id)
         self.maximum_wait_s = float(maximum_wait_s)
@@ -78,7 +78,12 @@ class StackClearanceStep:
         self.transition_window = []
         self.transition_tail = 0
         self.transitions = []
-        self.first_conflict = None
+        self.first_conflict = None  # immutable historical first issue, not an active latch
+        self.confirmed_violation = None
+        self.active_issues = {}
+        self.issue_history = []
+        self.lifecycles = {}
+        self.previous_post = None
         self.conflict_window = []
         self.conflict_tail = 0
         self.last = None
@@ -92,7 +97,7 @@ class StackClearanceStep:
         if len(source) != len(states) or not self.names <= source.keys():
             raise ValueError('missing/duplicate current stack body')
         boxes, copied = {}, {}
-        for name in self.names:
+        for name in sorted(self.names):
             x, shape = source[name], self.shapes[name]
             if x.get('prim_path') != shape['actor']:
                 raise ValueError('current stack actor mismatch')
@@ -114,7 +119,10 @@ class StackClearanceStep:
                     policy_fingerprint=self.policy.fingerprint, shape_fingerprint=self.shape_fingerprint,
                     boxes=boxes, states=copied, pairs=pairs)
 
-    def begin_step(self, *, step, time_s, trajectory_time_s, context, states):
+    def begin_step(self, *, step, time_s, trajectory_time_s, context, states, world_id=None, task_id=None):
+        if (world_id is not None and str(world_id) != self.world_id
+                or task_id is not None and str(task_id) != self.task_id):
+            raise ValueError('stack measurement world/task mismatch')
         if self.open or step <= self.step or not np.isfinite([time_s, trajectory_time_s]).all():
             raise ValueError('stack geometry step is stale or unclosed')
         self.step, self.context = int(step), deepcopy(context)
@@ -135,8 +143,149 @@ class StackClearanceStep:
             manifold_id='NOT_EXPOSED_BY_INSTALLED_API'))
         return True
 
+    def _point_audit(self, points, neighbor, post):
+        seps = [float(p['contact_point_separation_m']) for p in points]
+        vectors = [np.asarray(p[k], float) for p in points for k in ('position_m','normal','impulse_ns')]
+        if not np.isfinite(seps).all() or any(v.shape != (3,) or not np.isfinite(v).all() for v in vectors):
+            raise ValueError('invalid point')
+        if any(abs(np.linalg.norm(p['normal'])-1) > 1e-4 for p in points):
+            raise ValueError('invalid contact normal')
+        for p in points:
+            for name in (self.target, neighbor):
+                offset = self.shapes[name]['contact_generation_offset_m']
+                motion = np.linalg.norm(post['boxes'][name].center-self.pre['boxes'][name].center)
+                radius = np.linalg.norm(post['boxes'][name].half_extents)
+                rotation_motion = radius*np.linalg.norm(post['boxes'][name].rotation-self.pre['boxes'][name].rotation)
+                bound = 2*offset + abs(p['contact_point_separation_m']) + motion + rotation_motion
+                distance = min(frame['boxes'][name].point_distance_squared(np.asarray(p['position_m']))
+                               for frame in (self.pre, post))**.5
+                if not np.isfinite(bound) or bound < 0 or distance > bound + 1e-9:
+                    raise ValueError('contact point does not bind either measured box pose')
+        return min(seps), any(np.linalg.norm(p['impulse_ns']) > 0 for p in points)
+
+    def _continuous_clearance(self, neighbor, post):
+        """Measured endpoint clearance and continuous backend readback chain.
+
+        Endpoint velocities and float32 representation bounds reject pose jumps.
+        This does not claim an unexposed exact contact-generation subtime or a
+        reconstructed solver trajectory. Both measured endpoints keep the same
+        5 mm gate; observable feature history is checked separately.
+        """
+        if self.previous_post is None or self.previous_post['time_s'] != self.pre['time_s']:
+            return False
+        dt = post['time_s'] - self.pre['time_s']
+        for name in (self.target, neighbor):
+            a, b = self.pre['states'][name], post['states'][name]
+            prev = self.previous_post['states'][name]
+            if any(a[k] != prev[k] for k in ('center_m','quaternion_wxyz','linear_velocity_m_s','angular_velocity_rad_s')):
+                return False
+            ca, cb = np.asarray(a['center_m']), np.asarray(b['center_m'])
+            distance = np.linalg.norm(cb-ca)
+            # Bounds derive from the actual tensor representation, not a new
+            # configurable physical epsilon or a contact/impulse threshold.
+            rounding = np.linalg.norm(np.abs(np.spacing(ca.astype(np.float32)))
+                                      + np.abs(np.spacing(cb.astype(np.float32))))
+            velocity_bound = dt * (np.linalg.norm(a['linear_velocity_m_s']) + np.linalg.norm(b['linear_velocity_m_s']))
+            if distance > velocity_bound + rounding + 1e-9:
+                return False
+            qa, qb = np.asarray(a['quaternion_wxyz']), np.asarray(b['quaternion_wxyz'])
+            angular_motion = min(np.linalg.norm(qa-qb), np.linalg.norm(qa+qb)) * 2
+            angular_rounding = 2*np.linalg.norm(np.abs(np.spacing(qa.astype(np.float32)))
+                                                + np.abs(np.spacing(qb.astype(np.float32))))
+            if angular_motion > dt*(np.linalg.norm(a['angular_velocity_rad_s'])+np.linalg.norm(b['angular_velocity_rad_s'])) + angular_rounding + 1e-9:
+                return False
+        before = obb_surface_distance(self.pre['boxes'][self.target], self.pre['boxes'][neighbor])
+        after = post['pairs'][neighbor]['surface_distance_m']
+        return before >= self.policy.required_pair_clearance_m and after >= self.policy.required_pair_clearance_m
+
+    def _features(self, contact, frame):
+        a, b = contact['actor0'], contact['actor1']
+        flip = a > b
+        actor = min(a, b)
+        rotation = frame['boxes'][self.actors[actor]].rotation
+        result = []
+        first, second = (frame['boxes'][self.actors[x]] for x in sorted((a,b)))
+        for p in contact['points']:
+            normal = np.asarray(p['normal'])*(-1 if flip else 1)
+            gap = self._normal_gap(first,second,normal)
+            result.append(dict(normal_local=(rotation.T@normal).tolist(),
+                faces=[p['face_index1'],p['face_index0']] if flip else [p['face_index0'],p['face_index1']],
+                separation_m=p['contact_point_separation_m'], normal_gap_m=gap))
+        return result
+
+    @staticmethod
+    def _normal_gap(first, second, normal):
+        return float((first.center-second.center)@normal
+            - np.abs(first.rotation.T@normal)@first.half_extents
+            - np.abs(second.rotation.T@normal)@second.half_extents)
+
+    def _separation_explained(self, old, feature, key, post):
+        values, rounding = [], 0.
+        for frame in (self.pre,post):
+            first,second = (frame['boxes'][self.actors[a]] for a in key[:2])
+            normal = first.rotation@np.asarray(feature['normal_local'])
+            values.append(old['separation_m']+self._normal_gap(first,second,normal)-old['normal_gap_m'])
+            # Sum represented-input ULP bounds for this projection. This does
+            # not enlarge the physical clearance or allowed penetration.
+            for box in (first,second):
+                for x in (box.center,box.half_extents,box.rotation):
+                    rounding += float(np.abs(np.spacing(np.asarray(x,dtype=np.float32))).sum())
+        return min(values)-rounding <= feature['separation_m'] <= max(values)+rounding
+
+    def _persistent_feature(self, key, contact, post, neighbor):
+        life = self.lifecycles.get(key)
+        if (life is None or life['closed'] or contact['event'] not in {'CONTACT_PERSIST','CONTACT_PERSISTS'}
+                or life['last_seen_step'] not in {self.step-1,self.step}
+                or not self._continuous_clearance(neighbor, post)):
+            return False
+        features = self._features(contact, post)
+        # Match observable normal/face features from the licensed contact
+        # process. These are NOT invented manifold IDs. Original points are
+        # retained and separately checked against both measured native boxes.
+        return all(any(f['faces']==old['faces'] and np.linalg.norm(
+            np.asarray(f['normal_local'])-old['normal_local']) <= 1e-4
+            and self._separation_explained(old,f,key,post)
+            for old in life['features']) for f in features)
+
+    def _issue(self, key, reason, contact, time_s, *, confirmed=False):
+        if key not in self.active_issues:
+            issue = dict(id=len(self.issue_history), key=list(key), reason=reason, step=self.step,
+                time_s=float(time_s), status='CONFIRMED_VIOLATION' if confirmed else 'PENDING_REVIEW',
+                original_contact=deepcopy(contact), review_action=(
+                    'STOP_CONFIRMED_VIOLATION' if confirmed else
+                    'VERIFY_FINITE_FEATURES_OF_SAME_UNBROKEN_CONTACT_PROCESS_AND_RETAINED_GEOMETRY'),
+                history_explainable=True)
+            self.issue_history.append(issue)
+            self.active_issues[key] = issue
+            if self.first_conflict is None:
+                self.first_conflict = deepcopy(issue)
+        if confirmed:
+            self.active_issues[key]['status'] = 'CONFIRMED_VIOLATION'
+            self.confirmed_violation = self.confirmed_violation or dict(step=self.step,reason=reason)
+        self.pending[key] = reason
+
+    def _resolve(self, key, explanation, time_s):
+        issue = self.active_issues.pop(key, None)
+        if issue is None and key in self.pending:
+            issue = dict(id=len(self.issue_history), key=list(key), reason=self.pending[key],
+                status='PENDING_REVIEW', source='EXPLICITLY_TRANSFERRED_INITIALIZATION_PENDING',
+                original_scope=next((deepcopy(r['original_scope']) for r in self.transferred_pending
+                                     if r['key']==list(key)), None))
+            self.issue_history.append(issue)
+        if issue is not None:
+            assert issue['status'] == 'PENDING_REVIEW'
+            issue.update(status='EXPLAINED', resolved_step=self.step, resolved_time_s=float(time_s),
+                         resolution=explanation)
+            self.counts['issues_explained'] += 1
+        self.pending.pop(key, None)
+
+    @property
+    def active_reason(self):
+        return (self.confirmed_violation['reason'] if self.confirmed_violation else
+                next(iter(self.pending.values()), None))
+
     def finish_step(self, *, states, time_s, monitor, commanded_motion):
-        if not self.open or time_s <= self.pre['time_s']:
+        if not self.open or not np.isfinite(time_s) or time_s <= self.pre['time_s']:
             raise ValueError('post-step measurement is not aligned')
         self.open = False
         post = self._frame(states, phase='POST_WORLD_STEP_PHYSX_TENSOR', time_s=time_s, distances=True)
@@ -145,94 +294,103 @@ class StackClearanceStep:
             raise ValueError('stack contact context changed within step')
         permits = bool(not prior_free and (self.context['stage'] in {'settling','pregrasp','approach','contact'}
             or self.context['attached'] and self.policy.allows_stack_planning_contact(self.context['stage'])))
-        verdicts, hard_reason = [], None
+        verdicts = []
         for contact in self.contacts:
-            a, b, c, d = (contact[k] for k in ('actor0','actor1','collider0','collider1'))
+            a,b,c,d = (contact[k] for k in ('actor0','actor1','collider0','collider1'))
             key = paired_contact_key(a,b,c,d)
             neighbor = next(n for n in (self.actors[a],self.actors[b]) if n != self.target)
             geometry = post['pairs'][neighbor]
-            reason = None
+            reason, explanation, confirmed = None, None, False
             response, lower = None, None
             points = contact['points']
+            life = self.lifecycles.get(key)
             if c != self.shapes[self.actors[a]]['collider'] or d != self.shapes[self.actors[b]]['collider']:
-                reason = 'STACK_CONTACT_SHAPE_IDENTITY_MISMATCH'
+                reason, confirmed = 'STACK_CONTACT_SHAPE_IDENTITY_MISMATCH', True
             elif contact['event'] not in {'CONTACT_FOUND','CONTACT_PERSIST','CONTACT_PERSISTS','CONTACT_LOST'}:
-                reason = 'STACK_CONTACT_UNKNOWN_EVENT'
+                reason, confirmed = 'STACK_CONTACT_UNKNOWN_EVENT', True
             elif contact['event'] == 'CONTACT_LOST':
-                self.pending.pop(key, None)
+                if life is not None:
+                    life['closed'] = True
+                # LOST is evidence of an ended report lifecycle, not a proof
+                # that an earlier missing/contradictory report was safe.
             elif not points:
-                self.pending.setdefault(key, 'STACK_CONTACT_POINTS_PENDING')
+                reason = 'STACK_CONTACT_POINTS_PENDING'
+                if life is not None and not life['closed'] and contact['event'] != 'CONTACT_FOUND':
+                    life['last_seen_step'] = self.step
             else:
                 try:
-                    seps = [float(p['contact_point_separation_m']) for p in points]
-                    vectors = [np.asarray(p[k], float) for p in points for k in ('position_m','normal','impulse_ns')]
-                    if not np.isfinite(seps).all() or any(v.shape != (3,) or not np.isfinite(v).all() for v in vectors):
-                        raise ValueError('invalid point')
-                    if any(abs(np.linalg.norm(p['normal'])-1) > 1e-4 for p in points):
-                        raise ValueError('invalid contact normal')
-                    for p in points:
-                        for name in (self.target, neighbor):
-                            # Offsets delimit plausible report points only. They
-                            # never inflate the solid or change its 5 mm gap.
-                            offset = self.shapes[name]['contact_generation_offset_m']
-                            motion = np.linalg.norm(post['boxes'][name].center-self.pre['boxes'][name].center)
-                            radius = np.linalg.norm(post['boxes'][name].half_extents)
-                            rotation_motion = radius*np.linalg.norm(post['boxes'][name].rotation-self.pre['boxes'][name].rotation)
-                            bound = 2*offset + abs(p['contact_point_separation_m']) + motion + rotation_motion
-                            distance = min(frame['boxes'][name].point_distance_squared(np.asarray(p['position_m']))
-                                           for frame in (self.pre, post))**.5
-                            if not np.isfinite(bound) or bound < 0 or distance > bound + 1e-9:
-                                raise ValueError('contact point does not bind either measured box pose')
-                    lower = min(seps)
-                    response = any(np.linalg.norm(p['impulse_ns']) > 0 for p in points)
+                    lower,response = self._point_audit(points,neighbor,post)
                     self.counts['headers_with_physical_response'] += int(response)
                     self.counts['headers_with_negative_point_separation'] += int(lower < 0)
                     self.counts['small_positive_point_separation_with_clear_box_geometry'] += int(
                         0 < lower < self.policy.required_pair_clearance_m
                         and geometry['surface_distance_m'] >= self.policy.required_pair_clearance_m)
-                    self.pending.pop(key, None)
                     if lower < -self.policy.maximum_actual_penetration_m:
-                        reason = 'STACK_CONTACT_SEPARATION_EXCEEDS_ALLOWED_RANGE'
-                    elif (lower < 0 or response) and not permits:
-                        # A separated post-solve box must not erase within-step response.
-                        reason = 'STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT'
-                    elif lower < 0 and geometry['surface_distance_m'] >= self.policy.free_space_clearance_m:
-                        reason = 'STACK_CONTACT_GEOMETRY_EVIDENCE_CONFLICT'
-                except (KeyError, ValueError, TypeError, OverflowError):
-                    reason = 'STACK_CONTACT_INVALID_MEASUREMENT'
+                        reason,confirmed = 'STACK_CONTACT_SEPARATION_EXCEEDS_ALLOWED_RANGE',True
+                    elif permits:
+                        # A licensed within-step contact can end in separated
+                        # post-solve geometry. Neither sign nor nonzero impulse
+                        # alone contradicts that allowed transition.
+                        explanation = 'LICENSED_STEP_CONTACT_CURRENT_GEOMETRY_DECIDES_EXIT'
+                        self.lifecycles[key] = dict(last_permitted_step=self.step, last_permitted_time_s=float(time_s),
+                            context=deepcopy(self.context), features=self._features(contact,post),
+                            last_seen_step=self.step, closed=False)
+                    elif lower < 0 or response:
+                        if self._persistent_feature(key,contact,post,neighbor):
+                            explanation = 'PERSISTING_LICENSED_FEATURE_WITH_CONTINUOUS_CLEAR_SOLIDS'
+                            life['last_seen_step'] = self.step
+                        else:
+                            reason = 'STACK_CONTACT_ORIGIN_OR_CONTINUITY_UNRESOLVED'
+                    else:
+                        explanation = 'VALID_POSITIVE_FEATURE_CURRENT_BOX_CLEARANCE'
+                        if life is not None and not life['closed'] and contact['event'] != 'CONTACT_FOUND':
+                            life['last_seen_step'] = self.step
+                    if contact['event'] == 'CONTACT_FOUND' and not permits and life is not None:
+                        life['closed'] = True
+                except (KeyError,ValueError,TypeError,OverflowError):
+                    reason,confirmed = 'STACK_CONTACT_INVALID_MEASUREMENT',True
             if reason:
-                # Conflicts are retained across later measurements, never erased by LOST.
-                hard_reason = hard_reason or reason
-            verdicts.append(dict(**contact, geometry=geometry, evidence_reason=reason,
+                self._issue(key,reason,contact,time_s,confirmed=confirmed)
+            elif explanation and key in self.pending:
+                issue = self.active_issues.get(key)
+                # Only missing finite data can be completed by subsequent
+                # matching features; contradictory finite evidence is never
+                # overwritten by a newer favorable report.
+                if ((issue is None or issue['reason']=='STACK_CONTACT_POINTS_PENDING'
+                     and issue['status']=='PENDING_REVIEW' and issue['history_explainable'])
+                        and (permits or explanation=='PERSISTING_LICENSED_FEATURE_WITH_CONTINUOUS_CLEAR_SOLIDS')):
+                    self._resolve(key,explanation,time_s)
+            issue = self.active_issues.get(key)
+            if issue is not None and issue['status']=='PENDING_REVIEW':
+                issue['history_explainable'] &= bool(permits or self._continuous_clearance(neighbor,post)
+                    and life is not None and not life['closed'])
+            verdicts.append(dict(**contact, geometry=geometry, evidence_reason=reason, explanation=explanation,
                 contact_response_observed=response, minimum_contact_point_separation_m=lower,
                 engineering_distance_source='CURRENT_VERIFIED_BOX_EUCLIDEAN',
                 phase_contact_permission='EXISTING_TARGET_STACK_STAGE' if permits else None))
-        if hard_reason and self.first_conflict is None:
-            self.first_conflict = dict(step=self.step, reason=hard_reason, contacts=deepcopy(verdicts))
-        unresolved = self.first_conflict['reason'] if self.first_conflict else next(iter(self.pending.values()),None)
-        observation = monitor.observe(time_s, post['boxes'][self.target], list(post['boxes'].values()),
-            commanded_motion=commanded_motion, geometry=post,
-            allow_free_space_transition=not unresolved)
-        if not observation['accepted']:
-            stop_reason = observation['reason']
-        else:
-            stop_reason = None
+        unresolved = self.active_reason
+        observation = monitor.observe(time_s,post['boxes'][self.target],list(post['boxes'].values()),
+            commanded_motion=commanded_motion,geometry=post,allow_free_space_transition=not unresolved)
+        stop_reason = observation['reason'] if not observation['accepted'] else None
         if not permits:
             if any(p['intersection'] for p in post['pairs'].values()):
                 stop_reason = stop_reason or 'STACK_GEOMETRY_INTERSECTION_OUTSIDE_CONTACT_PHASE'
-            elif any(p['surface_distance_m'] + 1e-9 < self.policy.required_pair_clearance_m
-                     for p in post['pairs'].values()):
+            elif any(p['surface_distance_m']+1e-9 < self.policy.required_pair_clearance_m for p in post['pairs'].values()):
                 stop_reason = stop_reason or 'ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST'
-        if hard_reason == 'STACK_CONTACT_SEPARATION_EXCEEDS_ALLOWED_RANGE':
-            stop_reason = stop_reason or hard_reason
+        if stop_reason:
+            self.confirmed_violation = self.confirmed_violation or dict(step=self.step,reason=stop_reason)
+        if self.confirmed_violation:
+            stop_reason = self.confirmed_violation['reason']
+        unresolved = self.active_reason
         self.hold = bool(unresolved)
         if self.hold:
             if self.hold_started is None:
                 self.hold_started = float(time_s)
             if time_s-self.hold_started >= self.maximum_wait_s:
-                stop_reason = unresolved
+                stop_reason = stop_reason or unresolved
         else:
             self.hold_started = None
+
         nearest = min(post['pairs'], key=lambda n: post['pairs'][n]['surface_distance_m'], default=None)
         evidence_names = {self.target, nearest} - {None}
         evidence_names.update(self.actors[c[k]] for c in self.contacts for k in ('actor0','actor1'))
@@ -265,13 +423,16 @@ class StackClearanceStep:
         elif self.transition_tail:
             self.transition_window.append(deepcopy(row)); self.transition_tail -= 1
         self.last = row
+        self.previous_post = post
         return dict(observation=observation, hold=self.hold, stop_reason=stop_reason)
 
     def evidence(self):
-        return deepcopy(dict(schema='m710_stack_clearance_step_v1', world_id=self.world_id,
+        return deepcopy(dict(schema='m710_stack_clearance_step_v2', world_id=self.world_id,
             task_id=self.task_id, target=self.target, shapes=self.shapes, shape_fingerprint=self.shape_fingerprint,
             counts=dict(self.counts), transitions=self.transitions, transition_window=self.transition_window,
             conflict_window=self.conflict_window,
             last_steps=list(self.ring), first_conflict=self.first_conflict,
+            confirmed_violation=self.confirmed_violation, issue_history=self.issue_history,
+            active_issues=list(self.active_issues.values()), lifecycles=[dict(key=list(k),**v) for k,v in self.lifecycles.items()],
             transferred_pending=self.transferred_pending,
             pending=[{'key':list(k),'reason':v} for k,v in self.pending.items()]))

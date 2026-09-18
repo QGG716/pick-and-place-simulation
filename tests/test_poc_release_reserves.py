@@ -179,7 +179,17 @@ def test_release_runtime_source_orders_actual_gate_before_removal_and_separate_t
     evidence=source.index('"event": "actual_constraint_removed"',remove)
     takeover=source.index('record = begin_ideal_transport(',evidence)
     assert check<remove<evidence<takeover
-    assert 'if ideal_reception_mode and release_open_confirmed and assumed_reception_state is None:' in source
+    import ast
+    from types import SimpleNamespace
+    branch=next(n for n in ast.walk(ast.parse(source)) if isinstance(n,ast.If)
+        and any(isinstance(x,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='ideal_takeover_audit'
+            for t in x.targets) for x in n.body))
+    condition=compile(ast.Expression(branch.test),'production_takeover_condition','eval')
+    inputs=dict(ideal_reception_mode=True,release_open_confirmed=True,assumed_reception_state=None,
+        stack_clearance_step=SimpleNamespace(hold=False))
+    assert eval(condition,inputs)
+    inputs['stack_clearance_step'].hold=True
+    assert not eval(condition,inputs)
 
 
 def test_zero_displacement_place_keeps_actual_release_dwell_stage():

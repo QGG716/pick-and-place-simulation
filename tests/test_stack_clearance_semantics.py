@@ -101,7 +101,7 @@ def test_intersection_only_has_existing_bounded_stage_permission():
 
 
 @pytest.mark.parametrize('p',[point(-.00001),point(.00001,1),{'invalid_contact_data':True}])
-def test_conflicting_step_contact_is_not_erased_by_post_step_clearance_or_lost(p):
+def test_unexplained_or_invalid_contact_is_not_erased_by_clearance_or_lost(p):
     g,m=setup();start(g,m,.006);finish(g,m,.006)
     start(g,m,.006,1);contact(g,[p]);r=finish(g,m,.006)
     assert r['hold'] and g.first_conflict
@@ -216,7 +216,8 @@ def test_real_runtime_action_conditions_respect_unresolved_production_hold():
     grasp=condition({'grasp_event_time','target_body','grasp_commanded'})
     release=condition({'release_event_time','grasp_enabled','release_commanded'})
     takeover=condition({'ideal_reception_mode','release_open_confirmed','assumed_reception_state'})
-    g,m=setup();start(g,m,.006);contact(g,[point(-.001)]);assert finish(g,m,.006)['hold']
+    g,m=setup();start(g,m,.006);finish(g,m,.006)
+    start(g,m,.006,1);contact(g,[point(-.001)]);assert finish(g,m,.006)['hold']
     ns=dict(stack_clearance_step=g,target_body=object(),grasp_enabled=True,grasp_commanded=False,release_commanded=False,
             grasp_event_time=1.,release_event_time=1.,trajectory_time=2.,ideal_reception_mode=True,
             release_open_confirmed=True,assumed_reception_state=None)
@@ -224,3 +225,100 @@ def test_real_runtime_action_conditions_respect_unresolved_production_hold():
 
     g.hold=False  # the same production branches open after a resolved step
     assert eval(grasp,ns) and eval(release,ns) and eval(takeover,ns)
+
+
+def slide_states(gap):
+    data=states(gap)
+    data[0].update(center_m=[-.6-gap,0,.44999965],linear_velocity_m_s=[-.022,0,0])
+    data[1].update(center_m=[0,0,.15])
+    return data
+
+
+def slide_setup():
+    g,_=setup();data=slide_states(-.6)
+    m=ActualStackContactMonitor(OBB(data[0]['center_m'],[.3,.2,.15],np.eye(3),'target'),
+        [OBB(data[1]['center_m'],[.3,.2,.15],np.eye(3),'neighbor')],policy())
+    return g,m
+
+
+def slide_contact():
+    # Vertical support feature while the upper box slides out horizontally.
+    # -0.00035 mm = -0.35 micrometres; NOT -0.35 mm.
+    return dict(contact_point_separation_m=-.00000035,position_m=[-.3,0,.3],
+        normal=[0,0,1],impulse_ns=[0,0,.05],face_index0=0,face_index1=0)
+
+
+def slide_step(g,m,pre,post,step,points=None,event='CONTACT_PERSIST'):
+    g.begin_step(step=step,time_s=step*.01,trajectory_time_s=step*.01,
+        context=dict(stage='extraction',attached=True,actual_free_space=m.free_space_reached),
+        states=slide_states(pre),world_id='world',task_id='task')
+    contact(g,[slide_contact()] if points is None else points,event=event)
+    return g.finish_step(states=slide_states(post),time_s=(step+1)*.01,monitor=m,commanded_motion=True)
+
+
+@pytest.mark.parametrize('gap,free',[(.00519,False),(.00521,True)])
+def test_licensed_contact_ending_is_not_made_invalid_by_better_geometry(gap,free):
+    g,m=slide_setup();r=slide_step(g,m,.00499,gap,0)
+    assert not r['hold'] and r['stop_reason'] is None and m.free_space_reached==free
+    assert g.last['contacts'][0]['contact_response_observed']
+    assert g.first_conflict is None
+
+
+def test_persistent_observable_feature_after_exit_requires_origin_and_continuity():
+    g,m=slide_setup();slide_step(g,m,.00499,.00521,0)
+    r=slide_step(g,m,.00521,.00543,1)
+    assert not r['hold'] and m.free_space_reached
+    assert g.last['contacts'][0]['phase_contact_permission'] is None
+    assert g.last['contacts'][0]['explanation']=='PERSISTING_LICENSED_FEATURE_WITH_CONTINUOUS_CLEAR_SOLIDS'
+    # A new response after LOST is not silently classified as the old feature.
+    slide_step(g,m,.00543,.00565,2,points=[],event='CONTACT_LOST')
+    assert slide_step(g,m,.00565,.00587,3,event='CONTACT_FOUND')['hold']
+    assert g.first_conflict and g.pending
+
+
+def test_missing_features_can_be_completed_without_erasing_history_or_faking_lost():
+    g,m=slide_setup();slide_step(g,m,.00499,.00521,0)
+    assert slide_step(g,m,.00521,.00543,1,points=[])['hold']
+    first=deepcopy(g.first_conflict)
+    r=slide_step(g,m,.00543,.00565,2)
+    assert not r['hold'] and not g.pending and g.first_conflict==first
+    assert g.issue_history[0]['status']=='EXPLAINED'
+    assert g.issue_history[0]['resolved_step']==2
+    assert g.counts['issues_explained']==1
+    assert all(c['event']!='CONTACT_LOST' for row in g.ring for c in row['contacts'])
+
+
+def test_unresolved_origin_cannot_be_cleared_by_new_geometry_or_time():
+    g,m=slide_setup()
+    g.begin_step(step=0,time_s=0,trajectory_time_s=0,
+        context=dict(stage='extraction',attached=True,actual_free_space=False),states=slide_states(.006))
+    g.finish_step(states=slide_states(.006),time_s=.01,monitor=m,commanded_motion=True)
+    r=slide_step(g,m,.006,.00622,1)
+    assert r['hold']
+    for i in range(2,14):
+        r=slide_step(g,m,.00622+(i-2)*.00022,.00622+(i-1)*.00022,i)
+    assert r['stop_reason']=='STACK_CONTACT_ORIGIN_OR_CONTINUITY_UNRESOLVED'
+    assert g.issue_history[0]['status']=='PENDING_REVIEW'
+
+
+def test_confirmed_geometry_violation_stays_failed_after_lost_and_separation():
+    g,m=slide_setup();slide_step(g,m,.00499,.00521,0)
+    r=slide_step(g,m,.00521,.004,1)
+    reason=r['stop_reason'];assert reason=='ACTUAL_FREE_TRANSIT_STACK_CLEARANCE_LOST'
+    r=slide_step(g,m,.004,.006,2,points=[],event='CONTACT_LOST')
+    assert r['stop_reason']==reason and g.confirmed_violation and m.free_space_reached
+
+
+@pytest.mark.parametrize('field,value',[('world_id','wrong'),('task_id','wrong')])
+def test_measurement_binding_rejects_wrong_world_or_task(field,value):
+    g,m=setup();args=dict(step=0,time_s=0,trajectory_time_s=0,context={},states=states(.006),
+        world_id='world',task_id='task');args[field]=value
+    with pytest.raises(ValueError,match='world/task'):g.begin_step(**args)
+
+
+def test_discontinuous_pose_or_changed_negative_feature_is_not_explained_as_old():
+    g,m=slide_setup();slide_step(g,m,.00499,.00521,0)
+    assert slide_step(g,m,.006,.00622,1)['hold']  # no previous readback continuity
+    g,m=slide_setup();slide_step(g,m,.00499,.00521,0)
+    p=slide_contact();p['contact_point_separation_m']=-.009
+    assert slide_step(g,m,.00521,.00543,1,points=[p])['hold']
