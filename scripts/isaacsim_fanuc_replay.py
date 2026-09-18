@@ -3079,6 +3079,38 @@ try:
             )
         return states
 
+    def _capture_delivery_snapshot(name, phase, task_time_s):
+        """Read the live world with a zero-time render, including before frame one."""
+        evidence = {"world_session_id": str(run_started_unix_s),
+                    "target": str(metadata["target"]), "phase": phase,
+                    "task_time_s": task_time_s, "world_physics_time_s": float(world.current_time),
+                    "source": "CURRENT_PHYSX_ZERO_TIME_RENDER", "image": name}
+        try:
+            before_q = np.asarray(articulation.get_dof_positions().numpy()).copy()
+            before_cartons = _capture_carton_states()
+            rep.orchestrator.step(rt_subframes=1, pause_timeline=False, delta_time=0.0, wait_for_render=True)
+            rgba = np.asarray(rgb_annotator.get_data())
+            if rgba.ndim != 3 or rgba.shape[:2] != (args.height, args.width) or rgba.shape[-1] < 3:
+                raise RuntimeError("delivery snapshot has no valid bound-size RGB")
+            evidence["physics_time_delta_s"] = float(world.current_time) - evidence["world_physics_time_s"]
+            evidence["joint_max_delta_rad"] = float(np.max(np.abs(
+                np.asarray(articulation.get_dof_positions().numpy()) - before_q)))
+            evidence["carton_state_unchanged"] = before_cartons == _capture_carton_states()
+            evidence["q_rad"] = before_q[0].tolist()
+            if (evidence["physics_time_delta_s"] != 0 or evidence["joint_max_delta_rad"] != 0
+                    or not evidence["carton_state_unchanged"]):
+                raise RuntimeError("zero-time capture changed the physical state")
+            if not cv2.imwrite(str(args.output / name), cv2.cvtColor(rgba[..., :3], cv2.COLOR_RGB2BGR)):
+                raise RuntimeError("delivery PNG write failed")
+        except BaseException as capture_error:
+            evidence["secondary_capture_error"] = str(capture_error)
+        try:
+            (args.output / (name + ".json")).write_text(json.dumps(evidence, indent=2), encoding="utf-8")
+        except BaseException as reporting_error:
+            print(f"FANUC_REPLAY_SECONDARY_REPORTING_ERROR={reporting_error}", flush=True)
+            return False
+        return "secondary_capture_error" not in evidence
+
     if effective_collision_policy.poc_pair_clearance:
         stack_cube_shapes = verified_stack_cube_shapes(stage, dynamic_scene_records,
             dynamic_scene_prim_paths, all_carton_bodies._physics_rigid_body_view)
@@ -3341,6 +3373,8 @@ try:
                     raise RuntimeError("OpenCV could not open the accelerated MP4 preview writer")
         measured_times: list[float] = []
         replay_started_at = time.perf_counter()
+        if args.record_video and not _capture_delivery_snapshot("initial.png", "initialized_before_motion", 0.0):
+            raise RuntimeError("INITIAL_DELIVERY_CAPTURE_FAILED")
         grasp_commanded = False
         grasp_command_succeeded = False
         grasp_enabled = False
@@ -4363,8 +4397,6 @@ try:
                             rendered_rgb, lines, assumption, status_color
                         )
                         video_frame = cv2.cvtColor(rendered_rgb, cv2.COLOR_RGB2BGR)
-                        if replay_video_frame_count == 0:
-                            cv2.imwrite(str(args.output / "initial.png"), video_frame)
                         if display_phase not in saved_phase_keyframes:
                             cv2.imwrite(str(args.output / f"phase_{_safe_prim_name(display_phase)}.png"), video_frame)
                             saved_phase_keyframes.add(display_phase)
@@ -4852,6 +4884,9 @@ try:
                                   "full_pick_place_cycle_claimed": False})
                 break
         replay_wall_s = time.perf_counter() - replay_started_at
+        if args.record_video:
+            _capture_delivery_snapshot("failure.png" if runtime_stop_reason else "final_actual.png",
+                                       contact_runtime_context["stage"], simulation_time)
         if last_video_frame is not None:
             cv2.imwrite(str(args.output / "final.png"), last_video_frame)
         if replay_video_writer is not None:
@@ -6022,6 +6057,12 @@ try:
         run_status_path.write_text(json.dumps({"status": "same_world_segment_started",
                                              "continuation_identity": continuation_identity}, indent=2), encoding="utf-8")
 except BaseException as exc:
+    if globals().get("_capture_delivery_snapshot") is not None:
+        try:
+            _capture_delivery_snapshot("failure.png", globals().get("contact_runtime_context", {}).get("stage"),
+                                       globals().get("simulation_time"))
+        except BaseException as capture_error:
+            print(f"FANUC_REPLAY_SECONDARY_CAPTURE_ERROR={capture_error}", flush=True)
     if globals().get("stack_clearance_step") is not None:
         (args.output / "stack_clearance_steps.json").write_text(
             json.dumps(stack_clearance_step.evidence(), indent=2), encoding="utf-8")
@@ -6045,8 +6086,6 @@ except BaseException as exc:
     # Preserve the physical failure, masks and recorded frames so the next
     # candidate can be chosen from evidence rather than an opaque timeout.
     try:
-        if locals().get("last_video_frame") is not None:
-            cv2.imwrite(str(args.output / "failure.png"), last_video_frame)
         if "actual_frame_states" in locals():
             (args.output / "actual_frame_states.json").write_text(
                 json.dumps({"format": "isaac_actual_frame_states_v2", "states": actual_frame_states,
@@ -6072,10 +6111,11 @@ except BaseException as exc:
         traceback.print_exc()
         raise
 finally:
-    pending_video_writer = locals().get("replay_video_writer")
-    if pending_video_writer is not None:
-        pending_video_writer.release()
-    pending_preview_writer = locals().get("preview_video_writer")
-    if pending_preview_writer is not None:
-        pending_preview_writer.release()
+    for writer_name in ("replay_video_writer", "preview_video_writer"):
+        try:
+            pending_writer = locals().get(writer_name)
+            if pending_writer is not None:
+                pending_writer.release()
+        except BaseException as writer_error:
+            print(f"FANUC_REPLAY_SECONDARY_CAPTURE_ERROR={writer_name}: {writer_error}", flush=True)
     simulation_app.close()
