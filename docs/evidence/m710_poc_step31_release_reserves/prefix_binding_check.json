@@ -1,0 +1,12 @@
+{
+  "start_q_matches_original_actual_exactly": true,
+  "retained_loaded_nodes_exactly_equal": 126,
+  "old_loaded_nodes": 133,
+  "new_loaded_nodes": 133,
+  "new_suffix_nodes": 7,
+  "old_motion_sha256": "52ac4db8a2987bcc1f9d4898dffe8c3e6643f6baea68eda750e8d9257ba302f1",
+  "original_actual_state_sha256": "a7063b72dccf396e6a5ccaa24ffd2e1f12f599f7b7773153e081e95a7988f72e",
+  "original_old_release_height_m": 4.344012315415924e-06,
+  "new_release_height_m": 0.024999959037191433,
+  "preplace_release_same_q": true
+}

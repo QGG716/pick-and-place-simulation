@@ -1,0 +1,15 @@
+{
+  "path": "/root/autodl-tmp/m710-poc-step31-v3-20260918/outputs/isaac_step31_once/replay.mp4",
+  "sha256": "c6c3e4c80a8b017597627ad5bf41afafffcbd5397d43b60fa3314336e683ec0a",
+  "width": 640,
+  "height": 360,
+  "fps": 5.0,
+  "declared_frames": 890,
+  "decoded_frames": 890,
+  "duration_s": 178.0,
+  "all_frames_decoded": true,
+  "normal_time_profile_verified": true,
+  "replayed_simulation_seconds": 178.025,
+  "video_minus_physics_seconds": -0.025000000000005684,
+  "metadata_physical_time_scale": 1.0
+}

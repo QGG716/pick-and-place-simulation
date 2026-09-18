@@ -1,0 +1,173 @@
+{
+  "config_path": "/root/autodl-tmp/m710-poc-step31-v3-20260918/configs/validation/m710id70_step31_recovery.yaml",
+  "config_sha256": "9f8b9be5cbb3e29e20e7f31d455c482e3d789ce6bdaa46647a2fc5ceaa68e9ed",
+  "search_strategy": {
+    "history": {
+      "source": "/root/autodl-tmp/m710-poc-fifth-step3-v4-20260917/outputs/fifth_search_007_delivery/first_feasible/motion.json",
+      "register_directory": null,
+      "maximum_files": 16,
+      "maximum_file_bytes": 4000000,
+      "maximum_candidates": 2,
+      "maximum_variants": 4,
+      "screening_wall_time_s": null,
+      "wall_time_s": null,
+      "request_fraction": 0.5,
+      "candidate_wall_time_s": null,
+      "normal_step_m": 0.0005,
+      "maximum_normal_offset_m": 0.0015,
+      "maximum_target_translation_m": 0.02,
+      "maximum_target_rotation_rad": 0.03,
+      "maximum_joint_adaptation_rad": 0.15
+    },
+    "post_landing_transport": {
+      "mode": "ideal_outfeed",
+      "tail_protection_enabled": false,
+      "evaluate_tipping": false,
+      "evaluate_post_landing_environment_collisions": false,
+      "downstream_capacity": "assumed_sufficient",
+      "output_plane": {
+        "name": "trailer_opening_x",
+        "direction": "-X",
+        "x_m": -3.2
+      },
+      "reception_mode": "ideal"
+    },
+    "motion_semantics": "m710_adaptive_contact_release_v2",
+    "placement_semantics": "working_normal_into_carton_transverse_plus_x_v2",
+    "approach_mode": "auto",
+    "maximum_drop_m": 0.05,
+    "ideal_release_min_height_m": 0.02,
+    "ideal_release_max_height_m": 0.05,
+    "ideal_release_height_reserve_m": 0.005,
+    "approach_runtime_clearance_reserve_m": 0.003,
+    "receiver_runtime_clearance_reserve_m": 0.003,
+    "departure_runtime_clearance_reserve_m": 0.003,
+    "receiver_edge_reserve_m": 0.01,
+    "grasp_poses_per_task": null,
+    "face_height_transition_m": 0.35,
+    "placement_candidates": 12,
+    "coarse_place_samples_per_axis": 3,
+    "fine_place_samples_per_axis": 7,
+    "row_height_fraction": 0.05,
+    "planning_wall_time_s": null,
+    "stage_connection_iterations": 600,
+    "continuation_stage_connection_iterations": 54000,
+    "local_transit_outward_step_m": 0.12,
+    "local_transit_outward_attempts": 3,
+    "placement_normal_tolerance_deg": 5.0,
+    "conveyor_footprint_boundary_tolerance_m": 0.002,
+    "surface_process_families": {
+      "conveyor_transverse": "transverse",
+      "conveyor_longitudinal": "longitudinal"
+    },
+    "overlap_process_priority": [
+      "longitudinal",
+      "transverse"
+    ],
+    "allowed_placement_families": {
+      "transverse": [
+        "TOP_DOWN",
+        "TRANSVERSE_SIDE"
+      ],
+      "longitudinal": [
+        "TOP_DOWN",
+        "RIGHT_WALL_FACING"
+      ]
+    },
+    "extraction_runtime_clearance_reserve_m": 0.003,
+    "surface_directions_world": {
+      "conveyor_transverse": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "conveyor_longitudinal": [
+        -1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "profile": "proof_of_concept",
+    "local_transit_cartesian_sample_budget": 720
+  },
+  "ik": {
+    "seed": 175799,
+    "roll_candidates_deg": [
+      0,
+      90,
+      180,
+      270
+    ],
+    "grasp_face_offset_candidates_m": [
+      0.0,
+      -0.024,
+      0.024
+    ],
+    "grasp_tilt_candidates_rad": [
+      0.0,
+      -0.03490658503988659,
+      0.03490658503988659
+    ],
+    "random_restarts": 12,
+    "candidate_limit": 4,
+    "max_iterations": 180,
+    "damping": 0.015,
+    "max_step_rad": 0.2,
+    "position_tolerance_m": 0.0001,
+    "orientation_tolerance_rad": 0.0002,
+    "orientation_weight": 0.55,
+    "candidate_dedup_tolerance_rad": 0.001,
+    "candidate_dedup_tolerance_m": 0.0001
+  },
+  "scene_fingerprint": "9717e65615b5b3cafa5171d4c34c867e848d9a2d7406ea36bc749f8fc4dadeac",
+  "layout_fingerprint": "5ad315d60b22fcffdb5fcebc9b28e98dccea8fd0268aa6e6d7164ec944c3d540",
+  "policy_fingerprint": "7bd30bc02ad06a54982a3a4df80ce6a8ce1bb4aed0da0c23d3c3e358a9cda7e9",
+  "implementation_identity": {
+    "source_sha256": {
+      "src/unloading_sim/search_diagnostics.py": "4ecb355246a00c4caf67c6f2800124024ccc5cc890773f88b21b4abc8d84b5d3",
+      "src/unloading_sim/wrist_transfer.py": "325ca2f61f220c68f26fc9d4cbaafdb2bc6d3d6075a600f4c8e378dd25c30c69",
+      "src/unloading_sim/history_candidates.py": "b801bb46c2128bcb681c079f37dc46f7674dc373f948f0d4e7aca364068f311a",
+      "src/unloading_sim/history_adaptation.py": "9358f7098cd3b2858d9312b30d918f594fdb19c8000b95105c648ab63e3fcbc6",
+      "src/unloading_sim/contact_scheduler.py": "7ab9a8bf8e6e9d961d599846ab00d87b30c1bc2c0d5079ed090c3caee270a427",
+      "src/unloading_sim/motion_quality.py": "cb8ab84a9b747b3dd0709d1e0a3ad5a8e2a42e1d78e6816d82c90f01ec7e0d82",
+      "src/unloading_sim/release_motion.py": "d714fa20c533fdc9c1c919fd1bb059c03527f35f7fbe4e6d19c776f425042422",
+      "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+      "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+      "src/unloading_sim/conveyor_placement.py": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503",
+      "src/unloading_sim/unloading_sequence.py": "1881b114d280286ffaaf22d9ad306040bcf435dd64efad0a4d3b41fcee6ae915",
+      "src/unloading_sim/tool_geometry.py": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d",
+      "src/unloading_sim/depalletizing.py": "aef4ff69219ca4ff27d1da9cd3b7f7567b5de5c4b0f59310b44b821f070f59e3",
+      "src/unloading_sim/fanuc_m710id70.py": "f60871dccd361c6d6a6da32ef55b0f67f02f1a76f9f18268fe4783bae8b7eff3",
+      "src/unloading_sim/geometry.py": "793384532bf599bb7b7a4f1199bde36b9ad170b4b38f4989975ac4d911508c87",
+      "src/unloading_sim/grasp.py": "4f5856d1c36f78ad8c58c0df7f23e7c280a83a7c84bdefe2a6a3461026b50a60",
+      "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+      "src/unloading_sim/ik.py": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5",
+      "src/unloading_sim/layout_single_carton.py": "42320d39241dbb8c6d7ec2b109e9d6e7bab456e1bf2bf3932f094e34b6b0f63b",
+      "src/unloading_sim/layout_trajectory.py": "54aeb445b3fcb8aa03f8786d72aec3516c9b8933f7e8125e696d629b2849a424",
+      "src/unloading_sim/pinocchio_backend.py": "febe67199d3acf927240055b067d707c6cf92b784e1beae639ab0650fa34530a",
+      "src/unloading_sim/planner.py": "73b9c9d1afecc76a441d1e66bba3c593dfdba4eb28d9dae00c95563d42e049b9",
+      "src/unloading_sim/robot.py": "8fff99fe5a1f969c5c06aeccc9858f4ec3d47f36c45c24b17e7561b40b2b64d5",
+      "src/unloading_sim/robot_load/model.py": "6fd02fe472b4c142689f12420b145e7a41ea837ebe449d2bcee00e87379f8979",
+      "src/unloading_sim/robot_load/spatial.py": "2d56858234b59e5ef239a39b8fd7d924e4c4148f4b72d17d582819306a10d363",
+      "src/unloading_sim/robot_load/task.py": "6ca40eb357be668ece73fbdf5540ee9efb5c364df60cf53f79c9c62e331df363",
+      "src/unloading_sim/scene.py": "6178c10ab83b561613399d5fd710a165cfe49762550b769780b249578e91017a",
+      "src/unloading_sim/serial_unloading.py": "e3451a69b770a513731cfdceb2bd5551cbb9a840440dcd8e0c21e187d6aec8be",
+      "src/unloading_sim/planning_profile.py": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee",
+      "src/unloading_sim/post_landing_transport.py": "565474ad39203dc4a75a4cc15f791983855c3ddf61a75cb825a6d567c50400ee",
+      "src/unloading_sim/support.py": "c752893bb3f94a620d2921b6c2a93d1bb34c1102f1521cdba8d1b72e703ae4cf",
+      "src/unloading_sim/timing.py": "9e8951093f357b2eba05d8670bbf21b93be1f17016d08e4a4bc889eafebc13a9",
+      "src/unloading_sim/validation_motion.py": "5d79a2a7ee8897249db52ede23f48529356a89ddaacf1539003944c382d52d0e",
+      "src/unloading_sim/validation_physics.py": "770cbc4acc32d58eb8fc4f422d18d03b56c3a4eb54f4f1cae380d4e8939e7ab8",
+      "src/unloading_sim/workcell_layout.py": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2"
+    },
+    "runtime": {
+      "python": "3.12.3",
+      "python_implementation": "CPython",
+      "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+      "numpy": "2.3.2"
+    }
+  },
+  "new_world_output": "/root/autodl-tmp/m710-poc-step31-v3-20260918/outputs/isaac_step31_once",
+  "physics_source": "UNCHANGED_OFFICIAL_DYNAMICS_V2",
+  "full_search_diagnostics": "/root/autodl-tmp/m710-poc-step31-20260918/outputs/recovery_001/search_diagnostics.json"
+}

@@ -1,0 +1,23 @@
+{
+  "cpu_source_commit": "d390509",
+  "execution_source_commit": "53537b7",
+  "source_motion_sha256": "4e0a82a4866126c3f4d4f53429c6604ae3f59e16dd5da06c62580de05b2839a4",
+  "status": "COMPLETE_PREFLIGHT_EXPORT_READBACK_PASS",
+  "preflight_seconds": 0.2994896210730076,
+  "export_seconds": 0.4423014149069786,
+  "readback_seconds": 0.15738914161920547,
+  "bundle_readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "ac6d0b389a4f6773ea6c17e5b75ca55f7544fae65a511e5c4efaa3ee5c9e79d2",
+    "source_preflight_fingerprint": "11b63a6dec4d3c33b7878e469cebfc07aaf21e0109351e99e931dc20e4dd6aa2",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "first_feasible_sha256": {
+    "motion.json": "4e0a82a4866126c3f4d4f53429c6604ae3f59e16dd5da06c62580de05b2839a4",
+    "preflight.json": "f8bbd1636c82c443b81c76ea919e9e596569661168286b9bf6e72389f87c8327",
+    "replay_bundle.json": "34fb623deb4b1527029a056502434c1627620a674491afaf12bc38027a380f42"
+  },
+  "original_motion_path": "/root/autodl-tmp/m710-poc-step31-20260918/outputs/recovery_001/motion.json",
+  "original_actual_state_sha256": "a7063b72dccf396e6a5ccaa24ffd2e1f12f599f7b7773153e081e95a7988f72e",
+  "isaac_executed": false
+}

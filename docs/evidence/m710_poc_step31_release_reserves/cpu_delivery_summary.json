@@ -1,0 +1,122 @@
+{
+  "target": "carton_l07_c04",
+  "motion_sha256": "4e0a82a4866126c3f4d4f53429c6604ae3f59e16dd5da06c62580de05b2839a4",
+  "complete_trajectory_status": "PASS",
+  "path_nodes": 251,
+  "stage_ranges": {
+    "home": [
+      0,
+      0
+    ],
+    "pregrasp": [
+      0,
+      48
+    ],
+    "contact": [
+      48,
+      51
+    ],
+    "extraction": [
+      51,
+      92
+    ],
+    "transit": [
+      92,
+      224
+    ],
+    "place": [
+      224,
+      225
+    ],
+    "withdrawal": [
+      225,
+      250
+    ]
+  },
+  "nominal_release_height_m": 0.024999959037191433,
+  "planning_wall_seconds": 2903.3133399263024,
+  "planning_execution_reserves": {
+    "approach_runtime_clearance_reserve_m": 0.003,
+    "receiver_runtime_clearance_reserve_m": 0.003,
+    "departure_runtime_clearance_reserve_m": 0.003,
+    "extraction_runtime_clearance_reserve_m": 0.003
+  },
+  "release_policy": {
+    "maximum_drop_m": 0.05,
+    "ideal_release_min_height_m": 0.02,
+    "ideal_release_max_height_m": 0.05,
+    "ideal_release_height_reserve_m": 0.005,
+    "maximum_flight_s": 0.25,
+    "maximum_angular_speed_rad_s": 0.08,
+    "maximum_landing_speed_m_s": 1.1,
+    "position_uncertainty_m": 0.002,
+    "velocity_uncertainty_m_s": 0.01,
+    "prediction_step_s": 0.005,
+    "gravity_m_s2": 9.81
+  },
+  "history_candidate_id": "0afb65f4664749590790574589cc6b82f852c7c244908596a9cddc2f09f714d6",
+  "history_validation_inherited": false,
+  "history_source_sha256": "52ac4db8a2987bcc1f9d4898dffe8c3e6643f6baea68eda750e8d9257ba302f1",
+  "history_old_release_height_m": 4.344012315415924e-06,
+  "history_retained_transit_nodes": 126,
+  "history_old_transit_nodes": 133,
+  "history_cut_height_m": 0.05515752804843277,
+  "diagnostic_queries": {
+    "[\"state\", \"actual_task_start\", \"ACCEPTED\"]": 1,
+    "[\"state\", \"contact_endpoint\", \"ACCEPTED\"]": 1,
+    "[\"full_edge_recheck\", \"pregrasp\", \"ACCEPTED\"]": 58328,
+    "[\"full_edge_recheck\", \"contact\", \"ACCEPTED\"]": 718,
+    "[\"state\", \"support-release\", \"ACCEPTED\"]": 1,
+    "[\"full_edge_recheck\", \"extraction\", \"ACCEPTED\"]": 6949,
+    "[\"full_edge_recheck\", \"transit\", \"ACCEPTED\"]": 31904,
+    "[\"full_edge_recheck\", \"place\", \"ACCEPTED\"]": 3,
+    "[\"full_edge_recheck\", \"withdrawal\", \"ACCEPTED\"]": 5774,
+    "[\"state\", \"residence\", \"ACCEPTED\"]": 1
+  },
+  "diagnostic_events": {
+    "HISTORY_CANDIDATE_STARTED": 1,
+    "HISTORY_CANDIDATE_FINISHED": 1
+  },
+  "diagnostic_outcomes": {},
+  "diagnostic_rejection_counts": {},
+  "new_release_q_rad": [
+    -0.7828620707232243,
+    0.26621092686632186,
+    -0.293715338648227,
+    3.260065735639403e-05,
+    -1.0108883569160507,
+    3.9245282530816037
+  ],
+  "sensitivity": {
+    "nominal": {
+      "samples": 3060,
+      "minimum_by_receiver": {
+        "conveyor_transverse": 0.02690733694884438,
+        "conveyor_longitudinal": 0.024999959037191932
+      },
+      "release_height_m": 0.024999959037191877,
+      "release_region_accepted": true,
+      "maximum_corner_displacement_m": 0.0
+    },
+    "observed_combined_max": {
+      "samples": 3060,
+      "minimum_by_receiver": {
+        "conveyor_transverse": 0.025835330571505853,
+        "conveyor_longitudinal": 0.023760818513022974
+      },
+      "release_height_m": 0.02376081851302292,
+      "release_region_accepted": true,
+      "maximum_corner_displacement_m": 0.0013271675908428037
+    },
+    "observed_attachment_difference_max": {
+      "samples": 3060,
+      "minimum_by_receiver": {
+        "conveyor_transverse": 0.02669378163514314,
+        "conveyor_longitudinal": 0.024859980704521167
+      },
+      "release_height_m": 0.024859980704521112,
+      "release_region_accepted": true,
+      "maximum_corner_displacement_m": 0.00044530769079901596
+    }
+  }
+}
