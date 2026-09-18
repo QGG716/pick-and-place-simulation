@@ -149,11 +149,13 @@ class PhysicalContactLedger:
                 )
 
 
-def physical_support_contact_observed(active_physical_headers, target_path, support_paths):
-    def support(path):
-        return any(path == root or path.startswith(root + "/") for root in support_paths)
-    return any((first == target_path and support(second)) or (second == target_path and support(first))
-               for first, second, _shape0, _shape1 in active_physical_headers)
+def physical_support_contact_observed(active_physical_headers, target_path, support_paths,
+                                      receiver_top_owners=None):
+    owners = receiver_top_owners if receiver_top_owners is not None else {p:p for p in support_paths}
+    return any(declared_receiver_top_contact(actor0=a, actor1=b, collider0=c, collider1=d,
+        target_path=target_path, receiver_top_owners=owners, declared_receivers=support_paths,
+        stage="place", attached=True, separation_m=0., maximum_penetration_m=0.)
+        for a,b,c,d in active_physical_headers)
 
 
 def robot_proximity_is_safety_relevant(record, robot_root_path):
@@ -183,6 +185,25 @@ def classify_poc_runtime_pair(*, collider0, collider1, minimum_separation_m, pol
         "original_cad_intersection_confirmed": False,
         "measured_contact_separation_m": minimum_separation_m if known else None,
         "pair_kind": kind, "contact_offset_is_not_clearance": True}
+
+
+def declared_receiver_top_contact(*, actor0, actor1, collider0, collider1, target_path,
+                                  receiver_top_owners, declared_receivers, stage, attached,
+                                  separation_m, maximum_penetration_m):
+    """Exact created top ownership only; no receiver subtree or tool exemption."""
+    import math
+    # Stage lifecycle is resolved by the existing runtime; supported/short-drop
+    # reception need not still have an attachment at receiver contact.
+    if (stage != "place" or separation_m is None
+            or not math.isfinite(separation_m) or separation_m < -maximum_penetration_m):
+        return None
+    for target_actor, other_actor, target_collider, other_collider in (
+        (actor0, actor1, collider0, collider1), (actor1, actor0, collider1, collider0)):
+        owner = receiver_top_owners.get(other_collider)
+        if (target_actor == target_path and target_collider == target_path
+                and owner in declared_receivers and other_actor in {owner, other_collider}):
+            return "DECLARED_PLACEMENT_RECEIVER_BOUNDED_SUPPORT_CONTACT"
+    return None
 
 
 def classify_compliant_cup_contact(

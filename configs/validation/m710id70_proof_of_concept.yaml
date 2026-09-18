@@ -45,6 +45,13 @@ search_strategy:
   placement_semantics: working_normal_into_carton_transverse_plus_x_v2
   approach_mode: auto
   maximum_drop_m: 0.05
+  ideal_release_min_height_m: 0.020
+  ideal_release_max_height_m: 0.050
+  # Engineering assumption for this POC, not a certified tracking bound.
+  ideal_release_height_reserve_m: 0.005
+  approach_runtime_clearance_reserve_m: 0.003
+  receiver_runtime_clearance_reserve_m: 0.003
+  departure_runtime_clearance_reserve_m: 0.003
   receiver_edge_reserve_m: 0.01
   grasp_poses_per_task: null
   face_height_transition_m: 0.35

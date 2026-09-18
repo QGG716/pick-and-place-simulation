@@ -206,7 +206,7 @@ def compatible_hint(old, scene, c, target, backend, policy):
         raise ValueError("physical/virtual tool frame convention mismatch")
     if segment.get("motion_semantics") != MOTION_SEMANTICS or segment.get("placement_semantics") != PLACEMENT_SEMANTICS:
         raise ValueError("unsupported historical stage semantics")
-    validate_layout_trajectory_stage_contract(segment)  # Structure only; no old pass is accepted.
+    validate_layout_trajectory_stage_contract(segment, historical_intent=True)  # No old release pass is accepted.
     path = np.asarray(segment["path"], float)
     if len(path) > 3000 or path.shape[1] != len(c.robot.joint_limits):
         raise ValueError("history path size or joint dimension mismatch")

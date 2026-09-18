@@ -22,6 +22,9 @@ MOTION_SEMANTICS = "m710_adaptive_contact_release_v2"
 @dataclass(frozen=True)
 class ReleasePolicy:
     maximum_drop_m: float = 0.05
+    ideal_release_min_height_m: float = 0.020
+    ideal_release_max_height_m: float = 0.050
+    ideal_release_height_reserve_m: float = 0.005
     maximum_flight_s: float = 0.25
     maximum_angular_speed_rad_s: float = 0.08
     maximum_landing_speed_m_s: float = 1.1
@@ -40,6 +43,15 @@ class ReleasePolicy:
     def to_mapping(self):
         return asdict(self)
 
+    def ideal_heights(self):
+        """Actual bounds are distinct from interior nominal engineering targets."""
+        lo, hi, reserve = (self.ideal_release_min_height_m,
+            self.ideal_release_max_height_m, self.ideal_release_height_reserve_m)
+        if (lo != .020 or hi != .050 or self.maximum_drop_m != hi
+                or reserve <= 0 or 2 * reserve >= hi - lo):
+            raise ValueError("POC requires consistent 20-50 mm bounds and an interior height reserve")
+        return tuple(dict.fromkeys((lo + reserve, (lo + hi) / 2, hi - reserve)))
+
 
 def rigid_com_velocity(tcp_velocity, angular_velocity, tcp_position, com_position):
     vectors = [np.asarray(v, dtype=float) for v in
@@ -51,7 +63,7 @@ def rigid_com_velocity(tcp_velocity, angular_velocity, tcp_position, com_positio
 
 
 def receiver_footprint_reserve(box: OBB, supports, reserve_m, *, contact_tolerance_m=.002,
-                               edge_tolerance_m=1e-6):
+                               edge_tolerance_m=1e-6, ideal_region=False):
     """Enlarge payload XY coverage, preserving adjoining support seams.
 
     This conservative coverage proxy does not alter the actual body's shape.
@@ -61,6 +73,8 @@ def receiver_footprint_reserve(box: OBB, supports, reserve_m, *, contact_toleran
         raise ValueError("footprint reserve must be finite and nonnegative")
     padding = reserve_m * (np.abs(box.rotation[0]) + np.abs(box.rotation[1]))
     proxy = OBB(box.center, box.half_extents + padding, box.rotation, box.name, box.category)
+    if ideal_region:
+        return reception_footprint_audit(proxy, supports, edge_tolerance_m=edge_tolerance_m)
     return support_union_audit(proxy, supports, contact_tolerance_m=contact_tolerance_m,
                                edge_tolerance_m=edge_tolerance_m)
 
@@ -111,7 +125,7 @@ def predict_release(box: OBB, supports: Sequence[OBB], *, mode: str,
     result["height_m"] = height
     if mode == IDEAL_RECEPTION_RELEASE:
         result["actual_support"] = None  # Ideal-region geometry is not physical support evidence.
-        region = ideal_reception_region(box, supports, maximum_drop_m=policy.maximum_drop_m,
+        region = ideal_reception_region(box, supports, policy=policy,
                                         edge_tolerance_m=edge_tolerance_m)
         result.update(accepted=region["accepted"], reason=region["reason"],
                       reception_region=region, landing_support=region["support"],
@@ -191,31 +205,59 @@ def predict_release(box: OBB, supports: Sequence[OBB], *, mode: str,
     return result
 
 
-def ideal_reception_region(box, supports, *, maximum_drop_m=.05, edge_tolerance_m=.002):
-    """Full footprint and bounded height, independently of simultaneous contact.
-
-    No orientation correction or horizontal displacement is permitted. The
-    same approved five-degree support-face limit and complete polygon coverage
-    apply. The 1 mm penetration bound is the existing runtime support bound.
-    """
-    if not supports or not np.isfinite(maximum_drop_m) or maximum_drop_m < 0:
-        raise ValueError("ideal reception requires finite bounds and named supports")
+def reception_footprint_audit(box, supports, *, edge_tolerance_m=.002):
+    """POC projection only; never proof of physical contact or coplanar bottom corners."""
+    from .conveyor_placement import _horizontal_support_face, _face_corners, _area, _intersection, _subtract
+    if (not supports or len({s.name for s in supports}) != len(supports)
+            or not np.isfinite(edge_tolerance_m) or edge_tolerance_m < 0
+            or not np.all(np.isfinite(box.world_from_local))):
+        raise ValueError("invalid ideal receiver projection inputs")
+    if any(not np.allclose(s.rotation[:, 2], [0, 0, 1], atol=1e-9, rtol=0) for s in supports):
+        raise ValueError("ideal receiver top must be horizontal")
     heights = [float(np.max(s.corners()[:, 2])) for s in supports]
     if max(heights) - min(heights) > 1e-8:
         raise ValueError("ideal reception cannot join different receiver heights")
+    bottom, axis, sign = _horizontal_support_face(box)  # Existing five-degree limit.
+    footprint = bottom[:, :2]
+    area = _area(footprint)
+    remaining, names = [footprint], []
+    for support in supports:
+        polygon = _face_corners(support, 1., -edge_tolerance_m)[:, :2]
+        if _area(_intersection(footprint, polygon)) > 1e-14:
+            names.append(support.name)
+        remaining = [piece for region in remaining for piece in _subtract(region, polygon)]
+    uncovered = sum(_area(region) for region in remaining)
+    accepted = area > 1e-14 and uncovered <= max(1e-12, area * 1e-10)
+    return dict(schema="ideal_receiver_projection_v1", supported=bool(accepted),
+        reason="IDEAL_FOOTPRINT_COVERED" if accepted else "IDEAL_POSE_OR_FOOTPRINT_REJECTED",
+        receiver_names=names, support_z_m=heights[0], footprint_area_m2=area,
+        unsupported_area_m2=uncovered, support_face_local_axis=axis, support_face_local_sign=sign,
+        payload_half_extents_m=box.half_extents.tolist(), actual_box_pose=box.world_from_local.tolist(),
+        support_obbs=[dict(name=s.name, category=s.category, pose_world=s.world_from_local.tolist(),
+                           half_extents_m=s.half_extents.tolist()) for s in supports],
+        tolerance_m=0., edge_tolerance_m=edge_tolerance_m, physical_support_observed=False)
+
+
+def ideal_reception_region(box, supports, *, maximum_drop_m=None, policy=None, edge_tolerance_m=.002):
+    """Check actual lowest-corner height separately from pose and XY coverage."""
+    policy = policy or ReleasePolicy()
+    policy.ideal_heights()
+    if maximum_drop_m is not None and maximum_drop_m != policy.ideal_release_max_height_m:
+        raise ValueError("maximum_drop_m conflicts with ideal release height policy")
+    region = reception_footprint_audit(box, supports, edge_tolerance_m=edge_tolerance_m)
+    heights = [region["support_z_m"]]
     gap = float(np.min(box.corners()[:, 2]) - heights[0])
     correction = max(0., gap)
     pose = box.world_from_local.copy()
     pose[2, 3] -= correction
     # This is explicitly a region audit, never an actual support observation.
-    region = support_union_audit(box, supports, contact_tolerance_m=maximum_drop_m,
-                                 edge_tolerance_m=edge_tolerance_m)
-    accepted = region["supported"] and -.001 <= gap <= maximum_drop_m
+    height_ok = policy.ideal_release_min_height_m - 1e-12 <= gap <= policy.ideal_release_max_height_m + 1e-12
+    accepted = region["supported"] and height_ok
     return {"accepted": bool(accepted), "reason": "IDEAL_RECEPTION_REGION_ACCEPTED" if accepted else
-            "IDEAL_RECEPTION_REGION_REJECTED", "support": region,
+            ("IDEAL_RELEASE_HEIGHT_OUT_OF_BOUNDS" if not height_ok else "IDEAL_RECEPTION_REGION_REJECTED"), "support": region,
             "actual_release_pose_world": box.world_from_local.tolist(),
             "reception_pose_world": pose.tolist(), "vertical_correction_m": -correction,
-            "maximum_drop_m": maximum_drop_m, "gap_m": gap,
+            "height_policy": policy.to_mapping(), "gap_m": gap,
             "actual_top_contact_observed": False, "physical_landing_qualified": False}
 
 
@@ -308,6 +350,10 @@ def verify_release_prediction(place, target_name, *, obstacles=None, supports=No
 def release_flight_envelope(box, prediction):
     """Conservative world AABB of bounded rotating flight, including between samples."""
     duration = float(prediction["flight_time_s"])
+    if prediction.get("mode") == IDEAL_RECEPTION_RELEASE:
+        delta = np.asarray(prediction["predicted_landing_pose_world"])[:3, 3] - box.center
+        return OBB(box.center + delta / 2, box.half_extents + np.abs(box.rotation.T @ delta) / 2,
+                   box.rotation, box.name, box.category)
     if duration == 0:
         return box
     policy = ReleasePolicy(**prediction["policy"])

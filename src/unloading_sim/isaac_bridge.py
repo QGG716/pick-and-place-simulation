@@ -2227,6 +2227,7 @@ def build_fanuc_isaac_replay_bundle(
         "motion_semantics": segment.get("motion_semantics"),
         "placement_semantics": segment.get("placement_semantics"),
         "approach": copy.deepcopy(segment.get("approach", {})),
+        "planning_execution_reserves": copy.deepcopy(segment.get("planning_execution_reserves", {})),
         "departure": copy.deepcopy(segment.get("post_release_safe_residence", {})),
         "release_mode": place_evidence.get("release_mode", SUPPORTED_RELEASE),
         "release_prediction": place_evidence.get("release_prediction"),

@@ -488,6 +488,12 @@ def load_layout_motion_policy(path: str | Path) -> LayoutMotionPolicy:
         'local_transit_outward_attempts',
         'local_transit_outward_step_m',
         'maximum_drop_m',
+        'ideal_release_min_height_m',
+        'ideal_release_max_height_m',
+        'ideal_release_height_reserve_m',
+        'approach_runtime_clearance_reserve_m',
+        'receiver_runtime_clearance_reserve_m',
+        'departure_runtime_clearance_reserve_m',
         'motion_semantics',
         'overlap_process_priority',
         'placement_candidates',
@@ -1336,6 +1342,12 @@ def _build_automatic_trajectory_connector(
                 else "stage_connection_iterations", 600)),
             approach_mode=str(strategy.get("approach_mode", "auto")),
             maximum_drop_m=float(strategy.get("maximum_drop_m", 0.05)),
+            ideal_release_min_height_m=float(strategy.get("ideal_release_min_height_m", .020)),
+            ideal_release_max_height_m=float(strategy.get("ideal_release_max_height_m", .050)),
+            ideal_release_height_reserve_m=float(strategy.get("ideal_release_height_reserve_m", .005)),
+            **{name: float(strategy.get(name, 0.)) for name in (
+                "approach_runtime_clearance_reserve_m", "receiver_runtime_clearance_reserve_m",
+                "departure_runtime_clearance_reserve_m")},
             receiver_edge_reserve_m=float(strategy.get("receiver_edge_reserve_m", 0.01)),
             extraction_runtime_clearance_reserve_m=float(
                 strategy.get("extraction_runtime_clearance_reserve_m", 0.0)

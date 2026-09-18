@@ -6,7 +6,8 @@ import numpy as np
 from .conveyor_placement import PlacementCandidate, support_union_audit
 from .geometry import OBB
 from .ik import solve_ik
-from .release_motion import ReleasePolicy, verify_release_prediction, release_flight_envelope, departure_sweep
+from .release_motion import (ReleasePolicy, verify_release_prediction, release_flight_envelope,
+                            departure_sweep, reception_footprint_audit)
 from .validation_physics import RigidAttachment
 
 
@@ -67,6 +68,9 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
     failure = c._path_failure(prefix, all_obstacles, stage="pregrasp")
     if failure:
         return rejected(failure)
+    failure = c._approach_reserve_failure(prefix[-1], target)
+    if failure:
+        return rejected(failure)
     c._remember_path(prefix, c._context_identity(all_obstacles, stage="pregrasp"),
                      "pregrasp", "B_STRICT_LOCAL_CONNECTION")
     prefix, improvement = c._improve_free_path(prefix, all_obstacles)
@@ -116,6 +120,9 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
         previous = points[-1]
     if not tracker.fully_released:
         return rejected({"reason": "ACTUAL_EXTRACTION_CLEARANCE_NOT_REACHED", "stage": "extraction"})
+    failure = c._extraction_reserve_failure(previous, attachment, payload_obstacles)
+    if failure:
+        return rejected(failure)
     # Preserve only receiver pose intent, not old support/prediction/occupancy.
     desired = c._se3(np.asarray(old["place"]["actual_box_pose_world"]), "history release intent").copy()
     names = tuple(old["place"]["support_names"])
@@ -125,13 +132,14 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
     box = OBB(desired[:3, 3], target.half_extents, desired[:3, :3], target.name, target.category)
     support_z = max(float(np.max(b.corners()[:, 2])) for b in supports)
     drop = max(0., float(np.min(box.corners()[:, 2])) - support_z)
-    if drop > c.budget.maximum_drop_m:
+    if not c.budget.proof_of_concept and drop > c.budget.maximum_drop_m:
         return rejected({"reason": "HISTORY_RELEASE_HEIGHT_BOUND", "stage": "place"})
     landing = desired.copy()
     landing[2, 3] -= drop
     payload = OBB(landing[:3, 3], target.half_extents, landing[:3, :3], target.name, target.category)
-    support = support_union_audit(payload, supports, contact_tolerance_m=(c.budget.maximum_drop_m if c.budget.proof_of_concept else c.contact_tolerance_m),
-                                 edge_tolerance_m=c.placement_policy.edge_tolerance_m)
+    support = (reception_footprint_audit(payload, supports, edge_tolerance_m=c.placement_policy.edge_tolerance_m)
+               if c.budget.proof_of_concept else support_union_audit(payload, supports,
+                   contact_tolerance_m=c.contact_tolerance_m, edge_tolerance_m=c.placement_policy.edge_tolerance_m))
     if not support["supported"]:
         return rejected({"reason": "HISTORY_RECEIVER_SUPPORT_INVALID", "stage": "place", "support": support})
     placement = PlacementCandidate(payload, tuple(support["receiver_names"]), support,
@@ -139,18 +147,47 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
         float(np.arctan2(payload.rotation[1, 0], payload.rotation[0, 0])), 0.,
         {name: c.surface_directions_world.get(name) for name in names},
         placement_family=old["place"]["placement_family"])
-    segment, failure, trace = c._finish_place_branch(target=target, face=face,
-        requested_virtual_contact=requested_virtual_contact, home_q=home_q, contact_q=q,
-        physical_contact=physical, rigid=rigid, attachment=attachment, selection=selection,
-        pregrasp=prefix, contact=contact, support_release=stages["support-release"],
-        extraction=stages["extraction"], released_tracker=tracker, payload_obstacles=payload_obstacles,
-        placement=placement, selected_supports=supports, trace=trace, seed=seed,
-        release_height=drop, history_hint=hint)
+    heights = c.budget.release_policy().ideal_heights() if c.budget.proof_of_concept else (drop,)
+    history["release_reconstruction"] = {"historical_height_m": drop, "current_nominal_heights_m": list(heights),
+        "old_release_proof_inherited": False, "source": "RECEIVER_XY_ORIENTATION_INTENT_ONLY"}
+    for height in heights:
+        segment, failure, trace = c._finish_place_branch(target=target, face=face,
+            requested_virtual_contact=requested_virtual_contact, home_q=home_q, contact_q=q,
+            physical_contact=physical, rigid=rigid, attachment=attachment, selection=selection,
+            pregrasp=prefix, contact=contact, support_release=stages["support-release"],
+            extraction=stages["extraction"], released_tracker=tracker, payload_obstacles=payload_obstacles,
+            placement=placement, selected_supports=supports, trace=trace, seed=seed,
+            release_height=height, history_hint=hint)
+        if segment is not None:
+            break
     return segment, failure, trace
 
 
 def loaded_suffix(c, hint, extraction, preplace_virtual, place_virtual, obstacles, attachment, support_names):
     """Re-solve both receiver endpoints under the new attachment; check every edge."""
+    if c.budget.proof_of_concept:
+        # Retain only the early loaded prefix. Rebuild well before the old low
+        # receiver approach; never edit the old release nodes in place.
+        old = _slice(hint, "transit")
+        supports = [b for b in obstacles if b.name in support_names]
+        top = max(float(b.corners()[:, 2].max()) for b in supports)
+        safe_height = c.budget.ideal_release_max_height_m + c.budget.receiver_runtime_clearance_reserve_m
+        cuts = [i for i, q in enumerate(old) if attachment.box_at(q).corners()[:, 2].min() >= top + safe_height]
+        cut = cuts[-1] if cuts else 0
+        prefix = [extraction[-1].copy(), *old[1:cut+1]]
+        failure = c._path_failure(prefix, obstacles, attachment=attachment, stage="transit")
+        if failure:
+            return [], [], failure
+        suffix, failure, evidence = c._cartesian(prefix[-1], preplace_virtual, obstacles,
+            seed=int(hint["attempt_provenance"]["candidate_id"][:8], 16), attachment=attachment, stage="transit")
+        hint["attempt_provenance"]["loaded_prefix_reconstruction"] = dict(
+            retained_nodes=len(prefix), old_nodes=len(old), safe_height_m=safe_height, suffix=evidence)
+        if failure:
+            return [], [], failure
+        transit = [*prefix, *suffix[1:]]
+        place, failure, _ = c._cartesian(transit[-1], place_virtual, obstacles,
+            seed=0, attachment=attachment, support_names=support_names, stage="place")
+        return transit, place, failure
     paths = []
     previous = extraction[-1]
     for stage, goal in (("transit", preplace_virtual), ("place", place_virtual)):
@@ -198,13 +235,17 @@ def recheck_current_release(segment, connector, payload_obstacles, placed):
             raise ValueError("cached receiving geometry changed; placement must be replanned")
     prediction = verify_release_prediction(segment["place"], segment["target"],
         obstacles=payload_obstacles, supports=supports,
-        policy=ReleasePolicy(maximum_drop_m=connector.budget.maximum_drop_m), require_current_environment=True)
+        policy=connector.budget.release_policy(), require_current_environment=True)
     direction = getattr(connector, "surface_directions_world", {}).get(prediction["landing_support"]["receiver_names"][0])
     return prediction, current_release_sweep(connector, placed, prediction,
         np.asarray(segment["path"])[segment["release_index"]], direction)
 
 
 def checked_departure(c, hint, start, placed, obstacles, direction, prediction):
+    if c.budget.proof_of_concept:
+        return c._departure(start, placed, obstacles, direction,
+            seed=int(hint["attempt_provenance"]["candidate_id"][:8], 16),
+            working_normal=c.physical_from_virtual(c.robot.fk(start))[:3, 2], release_prediction=prediction)
     path = _slice(hint, "withdrawal")
     path[0] = start.copy()
     sweep = current_release_sweep(c, placed, prediction, start, direction)

@@ -74,7 +74,7 @@ def ideal_transport_ids(policy, records):
 def begin_ideal_transport(box: OBB, *, receiver_name, receivers, directions,
                           time_s, policy, attachment_removed, top_contact_observed,
                           support_geometry_accepted, expected_target=None, actual_attachment_observed=False,
-                          maximum_drop_m=.05, reception_supports=None):
+                          maximum_drop_m=.05, reception_supports=None, release_policy=None):
     policy = transport_policy(policy)
     assumed = policy.get("reception_mode") == "ideal"
     region = None
@@ -83,7 +83,7 @@ def begin_ideal_transport(box: OBB, *, receiver_name, receivers, directions,
             raise ValueError("ideal reception requires the actually attached task target")
         from .release_motion import ideal_reception_region
         region = ideal_reception_region(box, reception_supports or [receivers[receiver_name]],
-                                        maximum_drop_m=maximum_drop_m)
+                                        maximum_drop_m=maximum_drop_m, policy=release_policy)
         if not region["accepted"]:
             raise ValueError("ideal reception region rejected")
     if (policy["mode"] != "ideal_outfeed" or not attachment_removed

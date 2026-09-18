@@ -122,6 +122,7 @@ _OFFICIAL_DISABLED_SELF_COLLISION_PAIRS = (
 
 def validate_layout_trajectory_stage_contract(
     segment: Mapping[str, Any],
+    *, historical_intent: bool = False,
 ) -> Mapping[str, Any]:
     """Reject an incomplete or internally inconsistent replay segment."""
 
@@ -274,7 +275,7 @@ def validate_layout_trajectory_stage_contract(
         np.asarray(place.get("actual_box_pose_world")),
         "place.actual_box_pose_world",
     )
-    if drop:
+    if drop and not historical_intent:
         verify_release_prediction(place, str(segment["target"]))
     if adaptive and segment.get("placement_semantics") != PLACEMENT_SEMANTICS:
         raise ValueError("adaptive trajectory requires current placement semantics")
@@ -317,6 +318,12 @@ class LayoutTrajectoryBudget:
     withdrawal_distance_m: float = 0.0  # optional historical comparison
     post_release_vertical_lift_m: float = 0.0
     maximum_drop_m: float = 0.05
+    ideal_release_min_height_m: float = 0.020
+    ideal_release_max_height_m: float = 0.050
+    ideal_release_height_reserve_m: float = 0.005
+    approach_runtime_clearance_reserve_m: float = 0.0
+    receiver_runtime_clearance_reserve_m: float = 0.0
+    departure_runtime_clearance_reserve_m: float = 0.0
     receiver_edge_reserve_m: float = 0.01
     extraction_scan_step_m: float = 0.01
     maximum_extraction_m: float = 0.80
@@ -328,6 +335,12 @@ class LayoutTrajectoryBudget:
     planning_wall_time_s: float | None = None
 
     def __post_init__(self) -> None:
+        for name in ("approach_runtime_clearance_reserve_m", "receiver_runtime_clearance_reserve_m",
+                     "departure_runtime_clearance_reserve_m"):
+            if not np.isfinite(getattr(self, name)) or getattr(self, name) < 0:
+                raise ValueError(f"{name} must be finite and nonnegative")
+        if self.proof_of_concept:
+            self.release_policy().ideal_heights()
         integer_names = (
             "grasp_branches",
             "task_pose_connection_attempts",
@@ -386,6 +399,17 @@ class LayoutTrajectoryBudget:
     @property
     def task_pose_batch_size(self):
         return self.task_pose_connection_attempts
+
+    def release_policy(self):
+        return ReleasePolicy(maximum_drop_m=self.maximum_drop_m,
+            ideal_release_min_height_m=self.ideal_release_min_height_m,
+            ideal_release_max_height_m=self.ideal_release_max_height_m,
+            ideal_release_height_reserve_m=self.ideal_release_height_reserve_m)
+
+    def execution_reserves(self):
+        return {name: getattr(self, name) for name in (
+            "approach_runtime_clearance_reserve_m", "receiver_runtime_clearance_reserve_m",
+            "departure_runtime_clearance_reserve_m", "extraction_runtime_clearance_reserve_m")}
 
     @property
     def task_complete_connection_attempt_limit(self):
@@ -931,6 +955,7 @@ class LayoutTrajectoryConnector:
         values = (self._request_generation, getattr(self, "_candidate_identity", None),
             self.validator_identity, id(self.robot), id(getattr(v, "mesh_robot", None)),
             self.collision_policy.to_mapping(), self.budget.proof_of_concept, self.post_landing_transport,
+            self.budget.execution_reserves(), self.budget.release_policy().to_mapping(),
             self.collision_margin_m, self.contact_tolerance_m, self.joint_margin_rad,
             self.maximum_jacobian_condition, self.official_radial_reach_m,
             self.radial_guard_tolerance_m, self.budget.edge_resolution_rad, dict(self.ik),
@@ -1089,13 +1114,17 @@ class LayoutTrajectoryConnector:
             "local_transit_outward_step_m": self.budget.local_transit_outward_step_m,
             "local_transit_outward_attempts": self.budget.local_transit_outward_attempts,
             "maximum_extraction_m": self.budget.maximum_extraction_m,
+            "planning_execution_reserves": self.budget.execution_reserves(),
+            "release_policy": self.budget.release_policy().to_mapping(),
             "extraction_runtime_clearance_reserve_m": (
                 self.budget.extraction_runtime_clearance_reserve_m
             ),
             "withdrawal_distance_m": self.budget.withdrawal_distance_m,
             "post_release_vertical_lift_m": self.budget.post_release_vertical_lift_m,
             "post_release_conveyor_escape_clearance_m": (
-                self.collision_policy.pair_clearance("external", self.collision_margin_m) + self.contact_tolerance_m
+                self.collision_policy.pair_clearance("external", self.collision_margin_m)
+                + self.budget.departure_runtime_clearance_reserve_m + self.contact_tolerance_m
+                + 2 * float(self.ik["position_tolerance_m"])
             ),
             "planning_wall_time_s": self.budget.planning_wall_time_s,
             "wall_clock_scope": "one_shared_first_carton_planning_request",
@@ -1192,6 +1221,7 @@ class LayoutTrajectoryConnector:
             cache_key = (
                 stage, q_array.tobytes(), attachment_key,
                 repr(self.collision_policy), self.collision_margin_m, self.contact_tolerance_m,
+                tuple(self.budget.execution_reserves().items()),
                 self.joint_margin_rad, self.maximum_jacobian_condition, self.official_radial_reach_m,
                 self.radial_guard_tolerance_m,
                 getattr(self.robot_state_validator, "nominal_cup_compression_m", None),
@@ -1280,6 +1310,26 @@ class LayoutTrajectoryConnector:
         if backend_failure is not None:
             return finish({**dict(backend_failure), "stage": stage})
 
+        # Scoped planning reserve, never a runtime tolerance or contact exemption.
+        # Receiver payload gaps are checked at every production state/edge sample.
+        # Legal cup/stack/support contact stages retain their existing permissions.
+        reserve_pairs = []
+        if payload is not None and stage == "transit":
+            reserve_pairs = [(payload, b, self.budget.receiver_runtime_clearance_reserve_m)
+                             for b in obstacles if b.category == "conveyor"]
+        if payload is None and stage == "residence" and target_contact is not None:
+            reserve_pairs = [(b, target_contact, self.budget.departure_runtime_clearance_reserve_m)
+                             for b in self.tool_collision_obbs_provider(q_array)]
+        for first, second, reserve in reserve_pairs:
+            if reserve <= 0:
+                continue
+            distance = obb_surface_distance(first, second)
+            required = self.collision_policy.pair_clearance("external", self.collision_margin_m) + reserve
+            if distance + 1e-9 < required:
+                return finish(dict(reason="PLANNING_EXECUTION_RESERVE", classification="PLANNING_RESERVE_INSUFFICIENT",
+                    stage=stage, pair=[first.name, second.name], surface_distance_m=distance,
+                    required_pair_clearance_m=required, execution_reserve_m=reserve,
+                    runtime_pair_clearance_m=required-reserve))
         if payload is None:
             return finish(None)
         if initial_proximity is not None and (
@@ -2130,6 +2180,9 @@ class LayoutTrajectoryConnector:
                 path.extend(part[1:])
             search = {"route": route, "parts": searches}
             released = failure is None and branch_tracker.fully_released
+            if released:
+                failure = self._extraction_reserve_failure(path[-1], attachment, obstacles)
+                released = failure is None
             if failure is None and not released:
                 failure = {"reason": "ACTUAL_EXTRACTION_CLEARANCE_NOT_REACHED", "stage": "extraction"}
             attempt = {
@@ -2155,6 +2208,29 @@ class LayoutTrajectoryConnector:
                     "selected_attempt": index,
                 }
         self._last_extraction_attempts = attempts
+
+    def _extraction_reserve_failure(self, q, attachment, obstacles):
+        required = max(self.collision_policy.pair_clearance("external", self.collision_margin_m)
+                       + self.contact_tolerance_m, self.collision_policy.free_space_clearance_m)
+        required += self.budget.extraction_runtime_clearance_reserve_m
+        payload = attachment.box_at(q)
+        short = [(b.name, obb_surface_distance(payload, b)) for b in obstacles
+                 if b.category == "carton" and b.name != payload.name
+                 and obb_surface_distance(payload, b) + 1e-9 < required]
+        return (dict(reason="EXTRACTION_EXECUTION_RESERVE_NOT_RETAINED", stage="extraction",
+                     required_clearance_m=required, pairs=short) if short else None)
+
+    def _approach_reserve_failure(self, q, target):
+        required = self.collision_policy.pair_clearance("external", self.collision_margin_m)
+        required += self.budget.approach_runtime_clearance_reserve_m
+        if self.budget.approach_runtime_clearance_reserve_m <= 0:
+            return None
+        for tool in self.tool_collision_obbs_provider(q):
+            gap = obb_surface_distance(tool, target)
+            if gap + 1e-9 < required:
+                return dict(reason="APPROACH_EXECUTION_RESERVE_NOT_RETAINED", stage="pregrasp",
+                    pair=[tool.name,target.name], surface_distance_m=gap, required_pair_clearance_m=required)
+        return None
 
     def _extraction(self, *args, **kwargs):
         # Compatibility for focused callers; production consumes all exits lazily.
@@ -2193,7 +2269,9 @@ class LayoutTrajectoryConnector:
         tool = list(self.tool_collision_obbs_provider(grasp_q))
         depth = max((float(np.ptp(b.corners() @ outward)) for b in tool), default=0.03)
         error = 2 * float(self.ik["position_tolerance_m"]) + self.contact_tolerance_m
-        terminal = max(self.collision_policy.pair_clearance("external", self.collision_margin_m) + error, min(depth / 4, self.budget.pregrasp_standoff_m))
+        terminal = max(self.collision_policy.pair_clearance("external", self.collision_margin_m)
+                       + self.budget.approach_runtime_clearance_reserve_m + error,
+                       min(depth / 4, self.budget.pregrasp_standoff_m))
         current_distance = float(np.linalg.norm(self.robot.fk(start)[:3, 3] - requested[:3, 3]))
         adaptive_distances = sorted({terminal, min(max(terminal, current_distance / 3), depth),
                                      self.budget.pregrasp_standoff_m})
@@ -2210,6 +2288,8 @@ class LayoutTrajectoryConnector:
                     [start, grasp_q], start, obstacles, ik_seed=seed + len(attempts) * 100,
                     connection_seed=seed + len(attempts) * 100 + 1, stage="pregrasp")
                 terminal_path = []
+                if failure is None and q is not None:
+                    failure = self._approach_reserve_failure(q, target)
                 if failure is None and q is not None:
                     terminal_path, failure, terminal_search = self._cartesian(q, requested, obstacles,
                         seed=seed + len(attempts) * 100 + 2, target_contact=target, stage="contact")
@@ -2400,7 +2480,9 @@ class LayoutTrajectoryConnector:
                 release_attempts, release_choices, transit_hint = [], [], None
                 upper_drop_goal = max(0., self.budget.maximum_drop_m - 2 * float(self.ik["position_tolerance_m"])
                                       - self.contact_tolerance_m)
-                for height in dict.fromkeys((0., self.budget.maximum_drop_m / 2, upper_drop_goal)):
+                heights = (self.budget.release_policy().ideal_heights() if self.budget.proof_of_concept
+                           else tuple(dict.fromkeys((0., self.budget.maximum_drop_m / 2, upper_drop_goal))))
+                for height in heights:
                     if self._deadline_reached():
                         break
                     remaining_wall = self._remaining_wall_time()
@@ -2686,7 +2768,9 @@ class LayoutTrajectoryConnector:
         tool = list(self.tool_collision_obbs_provider(start))
         if not tool:
             return [], {"reason": "POST_RELEASE_TOOL_ENVELOPE_UNAVAILABLE"}, {}
-        clearance = self.collision_policy.pair_clearance("external", self.collision_margin_m) + self.contact_tolerance_m
+        clearance = (self.collision_policy.pair_clearance("external", self.collision_margin_m)
+                     + self.budget.departure_runtime_clearance_reserve_m + self.contact_tolerance_m
+                     + 2 * float(self.ik["position_tolerance_m"]))
         # Sweep far enough to pass the entire tool, including a stalled carton.
         span = max(float(np.max(b.corners() @ direction)) for b in tool) - float(np.min(placed.corners() @ direction))
         flight_envelope = release_flight_envelope(placed, release_prediction)
@@ -2769,7 +2853,7 @@ class LayoutTrajectoryConnector:
                         break
             if failure is None:
                 for predicted in sweep:
-                    failure = self._state_failure(path[-1], [*obstacles, predicted], stage="residence")
+                    failure = self._state_failure(path[-1], [*obstacles, predicted], target_contact=predicted, stage="residence")
                     if failure is not None:
                         break
             attempts.append({"direction_world": vector.tolist(), "distance_m": distance,
@@ -2837,6 +2921,11 @@ class LayoutTrajectoryConnector:
             contact_q, physical_contact, rigid, attachment, selection, pregrasp, contact,
             support_release, extraction, released_tracker, payload_obstacles, placement,
             selected_supports, trace, seed, release_height=0., transit_hint=None, history_hint=None):
+        if self.budget.proof_of_concept:
+            policy = self.budget.release_policy()
+            policy.ideal_heights()
+            if not policy.ideal_release_min_height_m <= release_height <= policy.ideal_release_max_height_m:
+                return None, {"reason": "IDEAL_RELEASE_HEIGHT_OUT_OF_BOUNDS", "stage": "place"}, trace
         desired_box = placement.payload.world_from_local.copy()
         desired_box[2, 3] += release_height
         support_z = float(np.min(placement.payload.corners()[:, 2]))
@@ -2858,7 +2947,8 @@ class LayoutTrajectoryConnector:
         preplace_physical = desired_physical.copy()
         # Receiver approach and final working normal are independent.
         # Derive clearance from the unchanged margins and strict FK residual.
-        receiver_clearance = (self.collision_policy.pair_clearance("external", self.collision_margin_m) + self.contact_tolerance_m
+        receiver_clearance = (self.collision_policy.pair_clearance("external", self.collision_margin_m)
+                              + self.budget.receiver_runtime_clearance_reserve_m + self.contact_tolerance_m
                               + 2 * float(self.ik["position_tolerance_m"]))
         preplace_physical[2, 3] += max(0., receiver_clearance - release_height)
         preplace_virtual = self.virtual_from_physical(preplace_physical)
@@ -2925,7 +3015,7 @@ class LayoutTrajectoryConnector:
         release_mode = (IDEAL_RECEPTION_RELEASE if self.budget.proof_of_concept else
                         SHORT_DROP_RELEASE if release_height > 0 else SUPPORTED_RELEASE)
         release_prediction = predict_release(placed, selected_supports, mode=release_mode,
-            obstacles=payload_obstacles, policy=ReleasePolicy(maximum_drop_m=self.budget.maximum_drop_m),
+            obstacles=payload_obstacles, policy=self.budget.release_policy(),
             contact_tolerance_m=self.contact_tolerance_m,
             edge_tolerance_m=self.placement_policy.edge_tolerance_m)
         if not release_prediction["accepted"]:
@@ -2982,7 +3072,8 @@ class LayoutTrajectoryConnector:
         landing_pose = np.asarray(release_prediction["predicted_landing_pose_world"])
         landing_box = OBB(landing_pose[:3, 3], placed.half_extents, landing_pose[:3, :3], placed.name, placed.category)
         edge_reserve = receiver_footprint_reserve(landing_box, selected_supports, self.budget.receiver_edge_reserve_m,
-            contact_tolerance_m=(self.budget.maximum_drop_m if self.budget.proof_of_concept else self.contact_tolerance_m), edge_tolerance_m=self.placement_policy.edge_tolerance_m)
+            contact_tolerance_m=self.contact_tolerance_m, edge_tolerance_m=self.placement_policy.edge_tolerance_m,
+            ideal_region=self.budget.proof_of_concept)
         if not edge_reserve["supported"]:
             return None, {"reason": "RECEIVER_EDGE_RESERVE_UNAVAILABLE", "stage": "place",
                           "edge_reserve": edge_reserve}, trace
@@ -3027,6 +3118,7 @@ class LayoutTrajectoryConnector:
             "motion_semantics": MOTION_SEMANTICS,
             "placement_semantics": PLACEMENT_SEMANTICS,
             "approach": trace["stages"].get("approach", {}),
+            "planning_execution_reserves": self.budget.execution_reserves(),
             "target": target.name,
             "face": face,
             "path": [q.tolist() for q in full],

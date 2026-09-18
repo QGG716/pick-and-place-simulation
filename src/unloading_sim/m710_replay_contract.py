@@ -652,6 +652,8 @@ def verify_m710_replay_bundle(
             "departure": segment.get("post_release_safe_residence", {}),
             "release_mode": segment.get("place", {}).get("release_mode", "SUPPORTED_RELEASE"),
             "release_prediction": segment.get("place", {}).get("release_prediction"),
+            **({"planning_execution_reserves": segment["planning_execution_reserves"]}
+               if "planning_execution_reserves" in segment else {}),
         }
         for field, expected in expected_fields.items():
             if metadata.get(field) != expected:

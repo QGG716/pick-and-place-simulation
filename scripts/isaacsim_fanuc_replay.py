@@ -1212,6 +1212,7 @@ try:
     conveyor_surface_paths = {}
     conveyor_surface_enabled_attrs = {}
     conveyor_primitives = {}
+    receiver_top_owners = {}
     palette = dict(rendering_cfg.get("material_palette", {}))
     pbr_specs = dict(rendering_cfg.get("pbr_materials", {}))
 
@@ -1425,6 +1426,7 @@ try:
                     Gf.Vec3f(-0.5, 0.5, 0.5),
                 ]
             )
+            receiver_top_owners[str(top_collision.GetPath())] = prim_path
             top_collision.CreateFaceVertexCountsAttr([3, 3])
             top_collision.CreateFaceVertexIndicesAttr([0, 1, 2, 0, 2, 3])
             top_collision.CreateSubdivisionSchemeAttr().Set("none")
@@ -2108,6 +2110,7 @@ try:
     )
     post_landing_policy = transport_policy(metadata.get("post_landing_transport"))
     ideal_outfeed_mode = post_landing_policy["mode"] == "ideal_outfeed"
+    from unloading_sim.release_motion import ReleasePolicy
     ideal_reception_mode = post_landing_policy.get("reception_mode") == "ideal"
     if args.continuation_wait_seconds is None and not ideal_reception_mode:
         args.continuation_wait_seconds = 600.
@@ -2147,6 +2150,7 @@ try:
         PhysicalContactLedger, physical_support_contact_observed, robot_proximity_is_safety_relevant,
         premature_physical_conveyor_contacts, placement_support_window_start,
         classify_compliant_cup_contact, ZeroPointContactResolver, classify_poc_runtime_pair,
+        declared_receiver_top_contact,
     )
     active_contacts = ActiveContactPairIndex(active_contact_headers)
     contact_path_cache = ContactPathCache(PhysicsSchemaTools.intToSdfPath)
@@ -2260,12 +2264,13 @@ try:
                          or contact_runtime_context["attached"] and effective_collision_policy.allows_stack_planning_contact(contact_runtime_context["stage"]))):
                 reason = "APPROVED_TARGET_STACK_CONTACT_BEFORE_FREE_TRANSIT"
             receiver_paths = {f"/Validation/Scene/{_safe_prim_name(name)}" for name in metadata.get("selected_place_support_names", [metadata.get("place_surface")])}
-            if (reason is None and target_involved and other in receiver_paths
-                    and contact_runtime_context["stage"] == "place" and lower is not None
-                    and lower >= -float(metadata["actual_state_gates"]["support_maximum_penetration_m"])):
-                # Existing bounded support contact; the full support /
-                # ideal receiving-region audit still gates actual constraint removal.
-                reason = "DECLARED_PLACEMENT_RECEIVER_BOUNDED_SUPPORT_CONTACT"
+            if reason is None:
+                reason = declared_receiver_top_contact(
+                    actor0=actor0, actor1=actor1, collider0=collider0, collider1=collider1,
+                    target_path=target_carton_path, receiver_top_owners=receiver_top_owners,
+                    declared_receivers=receiver_paths, stage=contact_runtime_context["stage"],
+                    attached=contact_runtime_context["attached"], separation_m=lower,
+                    maximum_penetration_m=float(metadata["actual_state_gates"]["support_maximum_penetration_m"]))
             pair_evidence = classify_poc_runtime_pair(collider0=collider0, collider1=collider1,
                 minimum_separation_m=lower, policy=effective_collision_policy,
                 robot_link_by_collider=robot_link_by_collider, owned_tool_colliders=owned_tool_collider_paths,
@@ -3367,7 +3372,7 @@ try:
 
         def _actual_support_contact_observed():
             return physical_support_contact_observed(
-                physical_contact_ledger.active_headers, target_carton_path, release_support_paths)
+                physical_contact_ledger.active_headers, target_carton_path, release_support_paths, receiver_top_owners)
         conveyor_initial_direction_world = conveyor_directions_world.get(place_surface)
         conveyor_exclusive = bool(
             conveyor_cfg.get("exclusive_surface_drive_at_transfer", False)
@@ -3947,6 +3952,13 @@ try:
                         angular_velocity=release_angular_velocity_before_rad_s,
                         current_cartons=_capture_carton_states())
                     support_release_accepted = bool(actual_release_prediction["accepted"])
+                    if ideal_reception_mode:
+                        event_log.append({"event": "ideal_release_actual_height_check",
+                            "simulation_time_s": simulation_time, "trajectory_time_s": trajectory_time,
+                            "target": str(metadata["target"]), "accepted": support_release_accepted,
+                            "height_m": actual_release_prediction.get("height_m"),
+                            "reason": actual_release_prediction.get("reason"),
+                            "pose_world": actual_release_prediction.get("release_pose_world")})
                 else:
                     support_release_accepted = bool(
                         support_contact_audit.accepted and support_contact_report_observed)
@@ -3965,6 +3977,12 @@ try:
                         enabled_attr.Set(False)
                     stage.RemovePrim(grasp_joint_path)
                     grasp_joint = None
+                    if ideal_reception_mode:
+                        event_log.append({"event": "actual_constraint_removed",
+                            "simulation_time_s": simulation_time, "trajectory_time_s": trajectory_time,
+                            "target": str(metadata["target"]),
+                            "height_m": actual_release_prediction.get("height_m"),
+                            "height_sample_source": "SAME_PRE_REMOVAL_STATE_NO_INTERVENING_PHYSICS_STEP"})
                     cup_mask_change_log.append({
                         "simulation_time_s": simulation_time, "reason": "RELEASE_ALL_CUPS",
                         "previous_commanded_mask": list(commanded_cup_mask),
@@ -4500,7 +4518,7 @@ try:
                     support_surface_velocity_world_m_s=_actual_receiver_velocity(),
                     evaluate_stability=not ideal_outfeed_mode)
                 ideal_region_valid = False
-                if ideal_reception_mode and release_open_confirmed:
+                if ideal_reception_mode and release_open_confirmed and assumed_reception_state is None:
                     actual_release_prediction = audit_runtime_short_drop(metadata,
                         position=payload_center, rotation=landing_rotation,
                         linear_velocity=np.asarray(landing_linear.numpy())[0],
@@ -4537,6 +4555,8 @@ try:
                             support_geometry_accepted=actual_reception_audit.accepted,
                             expected_target=str(metadata["target"]), actual_attachment_observed=bool(grasp_enabled),
                             maximum_drop_m=float(metadata["release_prediction"]["policy"]["maximum_drop_m"]),
+                            release_policy=ReleasePolicy(
+                                **metadata["release_prediction"]["policy"]),
                             reception_supports=[receivers[n] for n in metadata["selected_place_support_names"]])
                         ideal_transport_records[actual_box.name] = record
                         ideal_transport_ids(post_landing_policy, ideal_transport_records)
@@ -4566,6 +4586,7 @@ try:
                         event = {"event": IDEAL_RECEPTION_ACCEPTED if ideal_reception_mode else LANDED, "carton_id": actual_box.name,
                             "time_s": session_time_offset_s + simulation_time,
                             "takeover_pose_world": record["takeover_pose_world"],
+                            "release_height_m": (record.get("reception_region") or {}).get("gap_m"),
                             "source": record["completion_source"], "model": record["model"],
                             "disabled_collider_paths": disabled_colliders}
                         session_transport_events.append(event)
@@ -5284,6 +5305,7 @@ try:
             ),
             "collision_policy": metadata.get("collision_policy"),
             "poc_pair_queries": runtime_pair_queries,
+            "receiver_top_owners": receiver_top_owners,
             "poc_pair_query_record_scope": "FIRST_200_CLASSIFICATIONS_PLUS_ALL_REJECTIONS_NOT_EVENT_COUNTS",
             "machine_collision_clearance_qualification_claimed": False,
             "first_unexpected_runtime_robot_contact": unexpected_robot_contact_events[0] if unexpected_robot_contact_events else None,
