@@ -136,7 +136,7 @@ def test_technical_failure_boundaries(tmp_path, monkeypatch, scenario, stage, er
     assert calls.count(('metric', modules[0])) == metric_attempts
 
 
-@pytest.mark.parametrize('missing,stage', [('sensor_rgb.png', 'rgb_hash'), ('metric_depth_m.npy', 'prepare_inputs')])
+@pytest.mark.parametrize('missing,stage', [('sensor_rgb.png', 'payload_validation'), ('metric_depth_m.npy', 'payload_validation')])
 def test_required_input_failure_is_a_reported_module(tmp_path, monkeypatch, missing, stage):
     capture, modules, calls, main, argv = prepare(tmp_path, monkeypatch)
     (capture/'FULL_STACK_NOMINAL/modules'/modules[0]/missing).unlink()
@@ -144,7 +144,7 @@ def test_required_input_failure_is_a_reported_module(tmp_path, monkeypatch, miss
     summary = report(capture)
     assert_counts(summary, completed=1, failed=1)
     row = summary['runs'][0]
-    assert row['failure_stage'] == stage and row['error_type'] == 'FileNotFoundError'
+    assert row['failure_stage'] == stage and row['error_type'] == 'CapturePayloadError'
     assert row['sam_attempts'] == row['metric_attempts'] == 0
     assert ('sam', modules[0]) not in calls
 

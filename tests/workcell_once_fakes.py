@@ -25,26 +25,32 @@ def write_json(path, payload):
 def capture_fixture(root, scenarios=("sam_error", "normal")):
     capture = root / "capture"
     capture.mkdir()
-    payload = json.loads((ROOT / "docs/validation/evidence/roof-mast-lit-20260916/manifest.json").read_text(encoding="utf-8"))
-    write_json(capture / "manifest.json", payload)
-    modules = [camera["module_id"] for camera in payload["cameras"]]
+    from ros2_ws.src.unloading_ros_bridge.test.isaac_joint_fixture import capture_fixture as bound_fixture
+    manifest, _, _ = bound_fixture(capture)
+    modules = [camera['module_id'] for camera in manifest.cameras]
     assert len(modules) == len(scenarios) == 2
-    write_json(capture / "test-control.json", dict(zip(modules, scenarios)))
-    models = root / "models.json"
-    write_json(models, {"sam": {"snapshot_path": "CPU_TEST_SUBSTITUTE"}})
-    for module in modules:
-        folder = capture / "FULL_STACK_NOMINAL/modules" / module
-        folder.mkdir(parents=True)
-        (folder / "sensor_rgb.png").write_bytes(b"CPU_IMAGE_SUBSTITUTE")
-        np.save(folder / "sensor_rgb.npy", np.zeros((8, 8, 3), dtype=np.uint8))
-        np.save(folder / "metric_depth_m.npy", np.ones((8, 8)))
-        np.savez(folder / "gt_instance_masks.npz", box=np.ones((8, 8), dtype=bool))
-        write_json(folder / "capture_metadata.json", {"capture_id": "test:" + module})
-        write_json(folder / "gt_annotations.json", {"objects": []})
+    write_json(capture / 'test-control.json', dict(zip(modules, scenarios)))
+    models = root / 'models.json'
+    write_json(models, {'sam': {'snapshot_path': 'CPU_TEST_SUBSTITUTE'}})
+    for index, module in enumerate(modules):
+        folder = capture / 'FULL_STACK_NOMINAL/modules' / module
+        _, _, binding = bound_fixture(folder, camera_index=index)
+        annotations = json.loads((folder/'gt_annotations.json').read_text(encoding='utf-8'))
+        object_id = manifest.objects[0]['simulation_object_id']
+        annotations['objects'] = [{'simulation_object_id': object_id, 'mask_key': object_id,
+            'visible': True, 'occluded': False, 'bbox_xyxy': [0, 0, 3, 2]}]
+        write_json(folder/'gt_annotations.json', annotations)
+        np.savez(folder/'gt_instance_masks.npz', **{object_id: np.ones((2, 3), dtype=bool)})
+        # Author a complete new synthetic acquisition before any fault injection.
+        binding['gt_snapshot_sha256'] = hashlib.sha256((folder/'gt_annotations.json').read_bytes()).hexdigest()
+        binding['instance_masks_sha256'] = hashlib.sha256((folder/'gt_instance_masks.npz').read_bytes()).hexdigest()
+        write_json(folder/'capture_binding.json', binding)
     return capture, models, modules
 
 
 def install(monkeypatch, capture):
+    monkeypatch.syspath_prepend(str(ROOT/'tools'))
+    from run_metric_small_matrix import oracle_proposals as production_proposals
     scenarios = json.loads((capture / "test-control.json").read_text(encoding="utf-8"))
     calls = []
 
@@ -63,12 +69,9 @@ def install(monkeypatch, capture):
     def digest(path):
         return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
-    def proposals(folder, camera):
+    def proposals(folder, camera, *, payload):
         record("proposals", folder.name)
-        payload = {"instances": [{'id': 1, 'bbox': [0, 0, 8, 8], 'label': 'box'}],
-                   "source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL"}
-        write_json(folder / "oracle_proposals.json", payload)
-        return {}, {}, payload
+        return production_proposals(folder, camera, payload=payload)
 
     class Runtime:
         moge_model = None
@@ -80,7 +83,7 @@ def install(monkeypatch, capture):
             self.output_root = args.output_root
             self.output_root.mkdir(parents=True)
 
-    def infer(runtime, folder, binding, camera, request_id):
+    def infer(runtime, folder, binding, camera, request_id, *, payload):
         record("sam", folder.name)
         if mode(folder) == "sam_error":
             raise RuntimeError("CPU_TEST_SAM_FAILURE")
@@ -99,13 +102,13 @@ def install(monkeypatch, capture):
         run = runtime.output_root / request_id
         run.mkdir()
         count = 0 if mode(folder) == 'empty' else 1
-        np.savez(run / "cargo_masks.npz", masks=np.ones((count, 8, 8), dtype=bool),
+        np.savez(run / "cargo_masks.npz", masks=np.ones((count, 2, 3), dtype=bool),
                  mask_ids=np.arange(1, count+1), labels=np.array(["box"] * count),
-                 boxes=np.tile([0, 0, 8, 8], (count, 1)), scores=np.full(count, .8),
+                 boxes=np.tile([0, 0, 3, 2], (count, 1)), scores=np.full(count, .8),
                  sources=np.full(count, 'CPU_TEST_SUBSTITUTE'))
-        records = [dict(instance_id=1, proposal_id=1, bbox=[0, 0, 8, 8], label='box',
+        records = [dict(instance_id=1, proposal_id=1, bbox=[0, 0, 3, 2], label='box',
                         boundary_source='CPU_TEST_SUBSTITUTE', validation_score=.8, sam_iou_score=.9,
-                        sam_prompt_stability=.99, mask_area=64)] if count else []
+                        sam_prompt_stability=.99, mask_area=6)] if count else []
         write_json(run/'cargo_instances.json', {
             'source': str(folder/'sensor_rgb.png'), 'box_source': str(folder/'oracle_proposals.json'),
             'instances': records, 'proposal_audit': [{'status': 'accepted', 'proposal_id': 1, 'instance_id': 1}] if count else [],
@@ -128,7 +131,7 @@ def install(monkeypatch, capture):
         if mode(folder) == 'corrupt_masks':
             (run / 'cargo_masks.npz').write_bytes(b'not an npz')
 
-    def artifacts(folder):
+    def artifacts(folder, *, payload):
         record("artifacts", folder.name)
         response = json.loads((folder / "mode_b1_worker_response.json").read_text(encoding="utf-8"))
         result = json.loads(Path(response["metrics_reference"]["path"]).read_text(encoding="utf-8"))["artifacts"]
@@ -136,7 +139,7 @@ def install(monkeypatch, capture):
         from unloading_perception.lineage import load_instance_lineage
         load_instance_lineage(Path(result['cargo_masks.npz']['path']), Path(result['cargo_instances.json']['path']),
                               json.loads((folder/'oracle_proposals.json').read_text(encoding='utf-8')), {'instances': []},
-                              sensor_epoch='test', module_id=folder.name, capture_id='test:' + folder.name,
+                              sensor_epoch=payload.metadata.sensor_epoch, module_id=folder.name, capture_id=payload.metadata.capture_id,
                               source_path=folder/'sensor_rgb.png', proposal_path=folder/'oracle_proposals.json')
         return result
 
@@ -176,7 +179,7 @@ def install(monkeypatch, capture):
 
     worker.parser = parser
     cv2 = ModuleType("cv2")
-    cv2.imread = lambda path: np.zeros((8, 8, 3), dtype=np.uint8)
+    cv2.imread = lambda path: np.zeros((2, 3, 3), dtype=np.uint8)
 
     def image_write(path, image):
         if mode(Path(path).parent) == 'image_write_failure':

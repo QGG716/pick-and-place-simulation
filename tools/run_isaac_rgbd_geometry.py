@@ -16,7 +16,6 @@ import subprocess
 import sys
 from time import perf_counter
 
-import cv2
 import numpy as np
 
 
@@ -35,6 +34,7 @@ from unloading_perception.observed_faces import (  # noqa: E402
 )
 from unloading_perception.fusion import ModuleFaceBatch, fuse_module_face_batches  # noqa: E402
 from unloading_perception.lineage import load_instance_lineage  # noqa: E402
+from unloading_perception.isaac_payload import CapturePayloadError, require_capture_payload, write_capture_snapshot
 from unloading_perception.final_geometry import validate_final_record  # noqa: E402
 from unloading_perception.rgbd import (  # noqa: E402
     CaptureMetadata, MetricPointMap, MetricPointMapSource, PointCloudFilterConfig,
@@ -62,7 +62,9 @@ def _scalar_mean(value) -> float | None:
     return None if array.size == 0 else float(np.mean(array))
 
 
-def _worker_artifacts(scene_dir: Path) -> dict:
+def _worker_artifacts(scene_dir: Path, *, payload=None) -> dict:
+    if payload is not None:
+        payload = require_capture_payload(scene_dir, payload.manifest, payload=payload)
     response = json.loads((scene_dir / "mode_b1_worker_response.json").read_text(encoding="utf-8").strip().splitlines()[-1])
     if response.get("status") != "COMPLETE":
         raise RuntimeError(f"SAM/2D worker response is incomplete for {scene_dir.name}")
@@ -72,6 +74,8 @@ def _worker_artifacts(scene_dir: Path) -> dict:
     metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
     if response["input_sha256"] != sha256(scene_dir / "sensor_rgb.png"):
         raise ValueError("cached SAM image hash mismatch")
+    if payload is not None and response['input_sha256'] != payload.binding.rgb_sha256:
+        raise ValueError('cached SAM image differs from original capture binding')
     if metrics["config"]["proposal_sha256"] != sha256(scene_dir / "oracle_proposals.json"):
         raise ValueError("cached SAM proposal hash mismatch")
     from unloading_perception.upstream_v4 import UPSTREAM_V4_SHA
@@ -84,10 +88,16 @@ def _worker_artifacts(scene_dir: Path) -> dict:
         item = artifacts[name]
         if sha256(Path(item["path"])) != item["sha256"]:
             raise ValueError(f"worker artifact digest mismatch: {name}")
-    metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text()))
+    metadata = payload.metadata if payload is not None else CaptureMetadata.from_dict(
+        json.loads((scene_dir / 'capture_metadata.json').read_text(encoding='utf-8')))
+    proposals = json.loads((scene_dir / 'oracle_proposals.json').read_text(encoding='utf-8'))
+    if payload is not None:
+        from run_metric_small_matrix import oracle_proposal_document
+        if proposals != oracle_proposal_document(payload):
+            raise ValueError('oracle proposals differ from verified capture annotations')
     load_instance_lineage(
         Path(artifacts["cargo_masks.npz"]["path"]), Path(artifacts["cargo_instances.json"]["path"]),
-        json.loads((scene_dir / "oracle_proposals.json").read_text()), {"instances": []},
+        proposals, {"instances": []},
         sensor_epoch=metadata.sensor_epoch, module_id=metadata.rgb_frame_id.removesuffix("_rgb_optical"),
         capture_id=metadata.capture_id, source_path=scene_dir / "sensor_rgb.png", proposal_path=scene_dir / "oracle_proposals.json",
     )
@@ -101,12 +111,10 @@ def _camera_for_frame(manifest: IsaacSceneManifest, frame_id: str) -> dict:
     return matches[0]
 
 
-def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: Path, config: dict) -> tuple[MetricPointMap, list[dict]]:
-    metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8")))
-    camera = next(item for item in manifest.cameras if str(item["frame_id"]) == metadata.rgb_frame_id)
-    rgb = np.load(scene_dir / "sensor_rgb.npy", allow_pickle=False)
-    depth_path = scene_dir / "metric_depth_m.npy"
-    depth = np.load(depth_path, allow_pickle=False)
+def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: Path, config: dict, *, payload=None) -> tuple[MetricPointMap, list[dict]]:
+    payload = require_capture_payload(scene_dir, manifest, payload=payload)
+    metadata, camera, rgb, depth = payload.metadata, payload.camera, payload.rgb, payload.depth
+    depth_identity = payload.binding.extensions['metric_depth_sha256']
     frame = register_rgbd(
         metadata=metadata, rgb=rgb, depth_optical_z_m=depth,
         rgb_K=camera["K"], depth_K=camera["K"], T_rgb_depth=camera["T_rgb_depth"],
@@ -114,10 +122,10 @@ def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: P
         depth_calibration_identity=metadata.calibration_identity,
         registration_mode=camera["registration_mode"],
     )
-    archive = np.load(masks_path, allow_pickle=False)
-    masks = archive["masks"].astype(bool)
-    labels = archive["labels"].astype(str)
-    ids = archive["mask_ids"].astype(int)
+    with np.load(masks_path, allow_pickle=False) as archive:
+        masks = archive["masks"].astype(bool)
+        labels = archive["labels"].astype(str)
+        ids = archive["mask_ids"].astype(int)
     filter_config = PointCloudFilterConfig(
         boundary_erosion_px=int(config["boundary_erosion_px"]),
         depth_percentile_low=float(config["depth_percentile_low"]),
@@ -138,7 +146,7 @@ def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: P
         try:
             filter_result = filter_registered_instance_depth(frame, mask, filter_config)
             item = masked_metric_pointmap(
-                frame, mask, depth_identity=sha256(depth_path),
+                frame, mask, depth_identity=depth_identity,
                 source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH, config=filter_config,
             )
             combined_points[item.valid_mask] = item.points_camera_xyz_m[item.valid_mask]
@@ -170,7 +178,7 @@ def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: P
         "metric_point_map_v1", MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,
         combined_points, depth, combined_valid, tuple(camera["K"]), str(camera["frame_id"]),
         (depth.shape[1], depth.shape[0]), metadata.capture_id, metadata.capture_center_time,
-        metadata.calibration_identity, sha256(depth_path),
+        metadata.calibration_identity, depth_identity,
         {
             "per_instance_filtering": audits,
             "metric_scale_validity": "VALID",
@@ -197,18 +205,19 @@ def _observation(
     masks_path: Path,
     proposals: dict,
     elapsed: float,
-    *, validate_geometry: bool = True,
+    *, validate_geometry: bool = True, payload=None, lineage_directory=None,
 ) -> tuple[PerceptionObservation, dict[str, np.ndarray], dict[str, tuple], tuple]:
-    metadata = CaptureMetadata.from_dict(json.loads((Path(proposals["_scene_dir"]) / "capture_metadata.json").read_text(encoding="utf-8")))
-    camera = next(item for item in manifest.cameras if str(item["frame_id"]) == metadata.rgb_frame_id)
+    scene_dir = Path(proposals['_scene_dir'])
+    payload = require_capture_payload(scene_dir, manifest, payload=payload)
+    metadata, camera = payload.metadata, payload.camera
     module_id = str(camera.get("module_id", metadata.rgb_frame_id.removesuffix("_rgb_optical")))
     if not np.allclose(metadata.T_W_C_at_capture, camera["T_W_C"], atol=1e-9, rtol=0):
         raise ValueError("CAPTURE_TF_DIFFERS_FROM_BOUND_MANIFEST")
-    scene_dir = Path(proposals["_scene_dir"])
+    lineage_directory = scene_dir if lineage_directory is None else Path(lineage_directory)
     lineage = load_instance_lineage(
         masks_path, masks_path.parent / "cargo_instances.json", proposals, geometry_payload,
         sensor_epoch=metadata.sensor_epoch, module_id=module_id, capture_id=metadata.capture_id,
-        source_path=scene_dir / "sensor_rgb.png", proposal_path=scene_dir / "oracle_proposals.json",
+        source_path=lineage_directory / "sensor_rgb.png", proposal_path=lineage_directory / "oracle_proposals.json",
     )
     masks_by_id = {item.identity: item.mask for item in lineage.values()}
     records = {int(item["mask_id"]): item for item in geometry_payload["instances"]}
@@ -216,7 +225,7 @@ def _observation(
     unknown = []
     hypothesis_groups = {}
     observed_face_sets = []
-    depth = np.load(scene_dir / "metric_depth_m.npy", allow_pickle=False) if validate_geometry else None
+    depth = payload.depth if validate_geometry else None
     for mask_id, item in sorted(lineage.items()):
         record = records.get(mask_id, {"mask_id": mask_id, "accepted": False})
         source_id = item.identity
@@ -348,8 +357,10 @@ def _observation(
         None, None, tuple(cargo), tuple(unknown),
         {
             "mode": "STAGED_RGBD", "role": "PRIMARY", "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+            "raw_image_automatic": False,
             "detector_metrics": "NOT_EVALUATED", "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
             "capture_id": metadata.capture_id, "absence_means_free_space": False,
+            "input_provenance": payload.input_provenance(),
             "module_binding": {"module_id": module_id, "capture_id": metadata.capture_id,
                                "calibration_identity": metadata.calibration_identity,
                                "T_W_C_at_capture": metadata.T_W_C_at_capture},
@@ -360,6 +371,7 @@ def _observation(
 
 
 def _top_view(path: Path, observation: PerceptionObservation) -> None:
+    import cv2
     image = np.full((900, 1100, 3), 245, dtype=np.uint8)
     x_min, x_max, y_min, y_max = -2.5, 1.0, -1.5, 1.5
     def pixel(x, y):
@@ -381,9 +393,22 @@ def _top_view(path: Path, observation: PerceptionObservation) -> None:
 def _run_secondary_module(
     *, scene: str, module_dir: Path, manifest: IsaacSceneManifest, artifacts: dict,
     config: dict, vision_root: Path, upstream_python: Path, timeout: float,
+    payload=None, output_directory=None,
 ) -> dict:
+    expected_module = module_dir.name if module_dir.name in {c['module_id'] for c in manifest.cameras} else manifest.cameras[0]['module_id']
+    payload = require_capture_payload(module_dir, manifest, payload=payload,
+        expected_module_id=expected_module, with_instance_masks=True)
+    lineage_directory = module_dir
+    proposals = json.loads((module_dir / 'oracle_proposals.json').read_text(encoding='utf-8'))
+    from run_metric_small_matrix import oracle_proposal_document
+    if proposals != oracle_proposal_document(payload):
+        raise ValueError('oracle proposals differ from verified capture annotations')
+    if payload.directory == payload.source_directory:
+        payload = write_capture_snapshot(payload, output_directory or module_dir/'geometry-run')
+        module_dir = payload.directory
+        (module_dir/'oracle_proposals.json').write_text(json.dumps(proposals, indent=2), encoding='utf-8')
     masks_path = Path(artifacts["cargo_masks.npz"]["path"])
-    pointmap, audits = _build_pointmap(module_dir, manifest, masks_path, config["vision"]["pointcloud_filter"])
+    pointmap, audits = _build_pointmap(module_dir, manifest, masks_path, config["vision"]["pointcloud_filter"], payload=payload)
     pointmap_path = module_dir / "registered_metric_pointmap.npz"
     pointmap.write_npz(pointmap_path)
     raw_json = module_dir / "rgbd_cuboids_baseline_raw.json"
@@ -395,50 +420,51 @@ def _run_secondary_module(
         "--relative-threshold", "0.003", "--seed", "17",
         "--json-output", str(raw_json), "--output", str(base_image),
     ]
+    write_json(module_dir/'geometry_input_provenance.json', {
+        'capture': payload.input_provenance(), 'external_geometry_command': base_command,
+        'derived_pointmap': {'path': str(pointmap_path), 'sha256': sha256(pointmap_path),
+            'parent_depth_sha256': payload.binding.extensions['metric_depth_sha256'],
+            'parent_rgb_sha256': payload.binding.rgb_sha256,
+            'gt_geometry_used_for_filtering': False}})
     started = perf_counter()
     completed = subprocess.run(base_command, cwd=vision_root, text=True, capture_output=True, timeout=timeout)
     if completed.returncode != 0:
         raise RuntimeError(f"registered RGB-D baseline failed for {scene}/{module_dir.name}: {completed.stderr[-1000:]}")
     from metric_depth_runner import run_metric_depth as run_metric_v4
-    metadata = CaptureMetadata.from_dict(json.loads((module_dir / "capture_metadata.json").read_text()))
-    camera = _camera_for_frame(manifest, metadata.rgb_frame_id)
+    metadata, camera = payload.metadata, payload.camera
     geometry_json = module_dir / "rgbd_cuboids.json"
     geometry_image = module_dir / "v4_validation/final_metric_faces_overlay.png"
     geometry = run_metric_v4(
-        raw=json.loads(raw_json.read_text()), source=module_dir / "sensor_rgb.png",
+        raw=json.loads(raw_json.read_text(encoding='utf-8')), source=module_dir / "sensor_rgb.png",
         masks=masks_path, pointmap=pointmap_path,
-        depth=np.load(module_dir / "metric_depth_m.npy", allow_pickle=False),
+        depth=payload.depth, rgb=payload.rgb,
         K=camera["K"], metadata=metadata, output=module_dir / "v4_validation",
         vision_root=vision_root, python=upstream_python, timeout=timeout,
     )
     elapsed = perf_counter() - started
     geometry["method"] = "registered_metric_depth+pinned_plane_extraction+depth_constrained_metric_faces"
     write_json(geometry_json, geometry)
-    proposals = json.loads((module_dir / "oracle_proposals.json").read_text(encoding="utf-8"))
     proposals["_scene_dir"] = str(module_dir)
     observation, predicted_masks, hypotheses, observed_sets = _observation(
-        scene, manifest, geometry, masks_path, proposals, elapsed,
+        scene, manifest, geometry, masks_path, proposals, elapsed, payload=payload, lineage_directory=lineage_directory,
     )
-    metadata = CaptureMetadata.from_dict(json.loads((module_dir / "capture_metadata.json").read_text(encoding="utf-8")))
-    truth_payload = json.loads((module_dir / "gt_annotations.json").read_text(encoding="utf-8"))
-    truth = ground_truth_observation(manifest, truth_payload["objects"], camera_frame_id=metadata.rgb_frame_id)
-    gt_archive = np.load(module_dir / "gt_instance_masks.npz", allow_pickle=False)
-    camera = next(item for item in manifest.cameras if item["frame_id"] == metadata.rgb_frame_id)
+    truth = ground_truth_observation(manifest, payload.annotations["objects"], camera_frame_id=metadata.rgb_frame_id)
     report = evaluate_observations(
-        truth, observation, ground_truth_masks={name: gt_archive[name] for name in gt_archive.files},
+        truth, observation, ground_truth_masks=payload.instance_masks,
         prediction_masks=predicted_masks, T_W_C=camera["T_W_C"],
     )
     report["mode"] = "STAGED_RGBD"
-    report["module_id"] = module_dir.name
+    report["module_id"] = camera['module_id']
     report["world_transform_evaluation"]["metric_scale_valid"] = True
     report["world_transform_evaluation"]["prediction_camera_frame"] = metadata.rgb_frame_id
     write_evaluation(module_dir / "mode_b_rgbd_evaluation.json", report)
     (module_dir / "mode_b_rgbd_observation.json").write_text(dumps(observation), encoding="utf-8")
     write_json(module_dir / "metric_pointmap_filter_audit.json", audits)
     return {
-        "module_id": module_dir.name, "elapsed_seconds": elapsed, "observation": observation,
+        "module_id": camera['module_id'], "elapsed_seconds": elapsed, "observation": observation,
         "observed_face_sets": observed_sets, "hypotheses": hypotheses, "report": report,
         "geometry_image": geometry_image, "predicted_masks": predicted_masks,
+        "metadata": metadata, "payload": payload, "module_directory": module_dir,
     }
 
 
@@ -450,13 +476,16 @@ def main() -> int:
     parser.add_argument("--upstream-python", required=True, type=Path)
     parser.add_argument("--timeout", type=float, default=1200.0)
     parser.add_argument("--comparison", action="store_true")
+    parser.add_argument("--output-directory", type=Path, help="new isolated run directory; never overwrite captures")
     args = parser.parse_args()
-    capture_root = args.capture_directory.resolve()
+    source_capture_root = args.capture_directory.resolve()
+    capture_root = (args.output_directory or source_capture_root / "rgbd-geometry-run").resolve()
+    capture_root.mkdir(parents=True, exist_ok=False)
     bundle_root = args.bundle_directory.resolve()
     vision_root = args.vision_root.resolve()
     index = json.loads((bundle_root / "index.json").read_text(encoding="utf-8"))
     config = json.loads(json.dumps(__import__("yaml").safe_load((ROOT / "configs/isaac/perception_validation.yaml").read_text(encoding="utf-8"))))
-    mode_c = json.loads((capture_root / "mode_c_moge_summary.json").read_text(encoding="utf-8")) if args.comparison else {"scenes": []}
+    mode_c = json.loads((source_capture_root / "mode_c_moge_summary.json").read_text(encoding="utf-8")) if args.comparison else {"scenes": []}
     mode_c_by_scene = {item["scene"]: item for item in mode_c["scenes"]}
     results = []
     ordered_records = sorted(
@@ -466,74 +495,37 @@ def main() -> int:
     calibration_passed = False
     for record in ordered_records:
         scene = record["scene"]
-        scene_dir = capture_root / scene
+        source_dir = source_capture_root / scene
         manifest = IsaacSceneManifest.from_dict(json.loads((bundle_root / record["path"]).read_text(encoding="utf-8")))
-        primary_metadata = CaptureMetadata.from_dict(json.loads((scene_dir / "capture_metadata.json").read_text(encoding="utf-8")))
-        primary_camera = _camera_for_frame(manifest, primary_metadata.rgb_frame_id)
-        artifacts = _worker_artifacts(scene_dir)
-        masks_path = Path(artifacts["cargo_masks.npz"]["path"])
-        pointmap, filter_audits = _build_pointmap(scene_dir, manifest, masks_path, config["vision"]["pointcloud_filter"])
-        pointmap_path = scene_dir / "registered_metric_pointmap.npz"
-        pointmap.write_npz(pointmap_path)
-        baseline_raw_json = scene_dir / "rgbd_cuboids_baseline_raw.json"
-        baseline_image = scene_dir / "rgbd_cuboids_baseline.png"
-        base_command = [
-            str(args.upstream_python), str(vision_root / "pipeline/geometry/recover_box_cuboids_3d.py"),
-            str(scene_dir / "sensor_rgb.png"), str(masks_path), str(pointmap_path),
-            "--faces-json", str(Path(artifacts["box_geometry_2d.json"]["path"])),
-            "--relative-threshold", "0.003", "--seed", "17",
-            "--json-output", str(baseline_raw_json), "--output", str(baseline_image),
-        ]
-        started = perf_counter()
-        completed = subprocess.run(base_command, cwd=vision_root, text=True, capture_output=True, timeout=args.timeout)
-        if completed.returncode != 0:
-            raise RuntimeError(f"registered RGB-D baseline recovery failed for {scene}: {completed.stderr[-1000:]}")
-        baseline = json.loads(baseline_raw_json.read_text(encoding="utf-8"))
-        from metric_depth_runner import run_metric_depth as run_metric_v4
-        geometry_json = scene_dir / "rgbd_cuboids.json"
-        geometry_image = scene_dir / "v4_validation/final_metric_faces_overlay.png"
-        geometry = run_metric_v4(
-            raw=baseline, source=scene_dir / "sensor_rgb.png", masks=masks_path,
-            pointmap=pointmap_path, depth=np.load(scene_dir / "metric_depth_m.npy", allow_pickle=False),
-            K=primary_camera["K"], metadata=primary_metadata, output=scene_dir / "v4_validation",
-            vision_root=vision_root, python=args.upstream_python, timeout=args.timeout,
-        )
-        elapsed = perf_counter() - started
-        geometry["method"] = "registered_metric_depth+pinned_plane_extraction+depth_constrained_metric_faces"
-        write_json(geometry_json, geometry)
-        proposals = json.loads((scene_dir / "oracle_proposals.json").read_text(encoding="utf-8"))
-        proposals["_scene_dir"] = str(scene_dir)
-        observation, predicted_masks, hypothesis_groups, upper_observed_sets = _observation(
-            scene, manifest, geometry, masks_path, proposals, elapsed,
-        )
-        truth_payload = json.loads((scene_dir / "gt_annotations.json").read_text(encoding="utf-8"))
-        truth = ground_truth_observation(manifest, truth_payload["objects"], camera_frame_id=primary_metadata.rgb_frame_id)
-        gt_archive = np.load(scene_dir / "gt_instance_masks.npz", allow_pickle=False)
-        report = evaluate_observations(
-            truth, observation,
-            ground_truth_masks={name: gt_archive[name] for name in gt_archive.files},
-            prediction_masks=predicted_masks, T_W_C=primary_camera["T_W_C"],
-        )
-        report["mode"] = "STAGED_RGBD"
-        report["world_transform_evaluation"]["metric_scale_valid"] = True
-        report["world_transform_evaluation"]["prediction_camera_frame"] = primary_metadata.rgb_frame_id
-        report["world_transform_evaluation"]["claim_boundary"] = (
-            "registered metric depth is evaluated in world using capture-time T_W_C; "
-            "this does not establish execution qualification"
-        )
-        write_evaluation(scene_dir / "mode_b_rgbd_evaluation.json", report)
-        (scene_dir / "mode_b_rgbd_observation.json").write_text(dumps(observation), encoding="utf-8")
-        write_json(scene_dir / "metric_pointmap_filter_audit.json", filter_audits)
+        primary_payload = require_capture_payload(source_dir, manifest,
+            expected_module_id=manifest.cameras[0]['module_id'], with_instance_masks=True)
+        artifacts = _worker_artifacts(source_dir, payload=primary_payload)
+        primary = _run_secondary_module(scene=scene, module_dir=source_dir, manifest=manifest,
+            artifacts=artifacts, config=config, vision_root=vision_root, upstream_python=args.upstream_python,
+            timeout=args.timeout, payload=primary_payload, output_directory=capture_root/scene)
+        scene_dir, primary_payload = primary['module_directory'], primary['payload']
+        primary_metadata, primary_camera = primary_payload.metadata, primary_payload.camera
+        report, observation = primary['report'], primary['observation']
+        predicted_masks, hypothesis_groups = primary['predicted_masks'], primary['hypotheses']
+        upper_observed_sets, elapsed = primary['observed_face_sets'], primary['elapsed_seconds']
+        geometry_image = primary['geometry_image']
+        report['world_transform_evaluation']['claim_boundary'] = (
+            'registered metric depth is evaluated in world using capture-time T_W_C; '
+            'this does not establish execution qualification')
+        write_evaluation(scene_dir / 'mode_b_rgbd_evaluation.json', report)
         secondary_results = []
         for module_camera in (
             camera for camera in manifest.cameras
             if str(camera["frame_id"]) != str(primary_camera["frame_id"])
         ):
-            module_dir = scene_dir / "modules" / str(module_camera["module_id"])
+            module_dir = source_dir / "modules" / str(module_camera["module_id"])
+            module_payload = require_capture_payload(module_dir, manifest,
+                expected_module_id=module_camera['module_id'], with_instance_masks=True)
             secondary_results.append(_run_secondary_module(
                 scene=scene, module_dir=module_dir, manifest=manifest,
-                artifacts=_worker_artifacts(module_dir), config=config, vision_root=vision_root,
-                upstream_python=args.upstream_python, timeout=args.timeout,
+                artifacts=_worker_artifacts(module_dir, payload=module_payload), config=config, vision_root=vision_root,
+                upstream_python=args.upstream_python, timeout=args.timeout, payload=module_payload,
+                output_directory=scene_dir/"modules"/module_camera["module_id"],
             ))
         upper_metadata = primary_metadata
         batches = [ModuleFaceBatch(
@@ -542,8 +534,7 @@ def main() -> int:
             tuple(item for item in upper_observed_sets if item.faces),
         )]
         for item in secondary_results:
-            module_dir = scene_dir / "modules" / item["module_id"]
-            metadata = CaptureMetadata.from_dict(json.loads((module_dir / "capture_metadata.json").read_text(encoding="utf-8")))
+            metadata = item["metadata"]
             batches.append(ModuleFaceBatch(
                 item["module_id"], metadata.sensor_epoch, metadata.frame_sequence,
                 metadata.capture_center_time, tuple(face_set for face_set in item["observed_face_sets"] if face_set.faces),
@@ -628,7 +619,8 @@ def main() -> int:
         elif not calibration_passed:
             raise RuntimeError("RGB-D full-stack evaluation cannot precede the calibration-box gate")
         if scene == "FULL_STACK_NOMINAL":
-            segmentation = cv2.imread(str(scene_dir / "sensor_rgb.png"))
+            import cv2
+            segmentation = primary_payload.rgb[..., ::-1].copy()
             layer = segmentation.copy()
             for mask_id, mask in predicted_masks.items():
                 color = tuple(int(value) for value in hashlib.sha256(mask_id.encode()).digest()[:3])
@@ -654,7 +646,8 @@ def main() -> int:
         "status": "PASS",
         "primary_mode": "STAGED_RGBD",
         "comparison_mode": "STAGED_MONOCULAR_MOGE" if args.comparison else "DISABLED",
-        "proposal_source": "ISAAC_GT_ORACLE_PROPOSAL",
+        "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+        "raw_image_automatic": False,
         "detector_metrics": "NOT_EVALUATED",
         "calibration_gate": "PASS",
         "scenes": results,
@@ -662,7 +655,7 @@ def main() -> int:
     }
     write_json(capture_root / "rgbd_vs_moge_summary.json", summary)
     domain_path = capture_root / "domain_summary.json"
-    domain = json.loads(domain_path.read_text(encoding="utf-8"))
+    domain = json.loads((source_capture_root / "domain_summary.json").read_text(encoding="utf-8"))
     domain["mode_b_staged_rgbd"] = "PASS"
     domain["mode_b_summary"] = str((capture_root / "rgbd_vs_moge_summary.json").resolve())
     write_json(domain_path, domain)
@@ -671,4 +664,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except CapturePayloadError as exc:
+        print(f'payload_validation: {exc}', file=sys.stderr, flush=True)
+        raise SystemExit(1)

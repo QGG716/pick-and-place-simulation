@@ -3,7 +3,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-import shutil
 import sys
 import tempfile
 import traceback
@@ -12,8 +11,6 @@ import uuid
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'src'), str(ROOT / 'packages/unloading_contracts/src')]
 COMPLETED = 'COMPLETED_WITH_ALGORITHM_RESULTS'
-INPUT_FILES = ('sensor_rgb.png', 'sensor_rgb.npy', 'metric_depth_m.npy',
-               'capture_metadata.json', 'gt_annotations.json', 'gt_instance_masks.npz')
 
 
 def _write_json(path, payload):
@@ -116,13 +113,12 @@ def _algorithm_counts(result, geometry, mask_count):
             'complete_cuboids_accepted': sum(record['accepted'] for record in records)}
 
 
-def evaluate_masks(folder, artifacts, output):
+def evaluate_masks(folder, artifacts, output, *, payload):
     """Post-hoc rendered-mask evaluation; nominal box planes are not scan truth."""
     import cv2
     import numpy as np
     from evaluate_carton_appearance_ab import contour, boundary_metrics
-    with np.load(folder / 'gt_instance_masks.npz', allow_pickle=False) as gt:
-        truth = {k: gt[k].astype(bool) for k in gt.files if gt[k].any()}
+    truth = {k: v for k, v in payload.instance_masks.items() if v.any()}
     with np.load(artifacts['cargo_masks.npz']['path'], allow_pickle=False) as prediction:
         masks, ids = prediction['masks'].astype(bool), prediction['mask_ids']
     gt_names = list(truth)
@@ -132,9 +128,7 @@ def evaluate_masks(folder, artifacts, output):
     intersections = intersections.reshape((len(masks),len(truth)))
     iou = intersections / np.maximum(1, pred_areas[:,None]+areas[None,:]-intersections)
     relation = (intersections>=50)&(intersections>=.1*areas[None,:])&(intersections>=.1*pred_areas[:,None])
-    rgb = cv2.imread(str(folder/'sensor_rgb.png'))
-    if rgb is None:
-        raise ValueError('RGB image cannot be decoded')
+    rgb = payload.rgb[..., ::-1].copy()  # OpenCV drawing boundary is BGR.
     overlay=rgb.copy();gt_overlay=rgb.copy()
     pred_edge=np.zeros(rgb.shape[:2],bool);gt_edge=pred_edge.copy()
     for identity,mask in zip(ids,masks):
@@ -207,6 +201,30 @@ def main(argv=None):
                 any(not isinstance(module, str) or not module or module in {'.', '..', 'sam-runs'}
                     or '/' in module or '\\' in module for module in modules)):
             raise ValueError('manifest requires nonempty, unique, safe module IDs')
+        from unloading_perception.isaac_payload import load_capture_payload, write_capture_snapshot
+        prepared = {}
+        for camera, row in zip(manifest.cameras, summary['runs']):
+            active = row
+            module = row['module']
+            source = a.capture/'FULL_STACK_NOMINAL/modules'/module
+            folder = output/module
+            row.update(status='RUNNING', artifact_directory=str(folder))
+            try:
+                checkpoint('payload_validation', row)
+                payload = load_capture_payload(source, manifest, expected_module_id=module, with_instance_masks=True)
+                row['rgb_sha256'] = payload.binding.rgb_sha256
+                checkpoint('module_directory', row)
+                prepared[module] = write_capture_snapshot(payload, folder)
+                row['input_provenance'] = prepared[module].input_provenance()
+                row.update(status='NOT_RUN', stage='inputs_ready')
+            except SummaryWriteError:
+                raise
+            except Exception as exc:
+                fail_row(row, exc)
+            checkpoint('inputs_checked')
+            active = None
+        if not prepared:
+            raise RuntimeError('no valid capture payloads; model runtime was not initialized')
         checkpoint('models')
         models = summary['model_manifest'] = _read_json(a.models)
         checkpoint('config')
@@ -215,34 +233,27 @@ def main(argv=None):
         checkpoint('dependencies')
         # Heavy optional imports happen only after a report and module roster exist.
         from run_metric_small_matrix import oracle_proposals, infer
-        from run_isaac_rgbd_geometry import _worker_artifacts, _run_secondary_module, sha256
+        from run_isaac_rgbd_geometry import _worker_artifacts, _run_secondary_module
         from vision_resident_worker import ResidentRuntime, parser as worker_parser
         checkpoint('runtime_initialize')
         runtime=ResidentRuntime(worker_parser().parse_args(['--upstream-root',str(a.vision),
             '--output-root',str(output/'sam-runs'),'--input-root',str(output),'--sam-model',models['sam']['snapshot_path']]))
         for camera, row in zip(manifest.cameras, summary['runs']):
+            if row['module'] not in prepared:
+                continue
             active = row
             module = row['module']
-            source = a.capture/'FULL_STACK_NOMINAL/modules'/module
             folder = output/module
+            payload = prepared[module]
             row.update(status='RUNNING', artifact_directory=str(folder))
             try:
-                checkpoint('module_directory', row)
-                folder.mkdir(exist_ok=False)
-                checkpoint('rgb_hash', row)
-                row['rgb_sha256'] = sha256(source/'sensor_rgb.png')
-                checkpoint('prepare_inputs', row)
-                # Only capture inputs enter a fresh directory. Never consume or
-                # overwrite cached SAM/geometry outputs in the capture directory.
-                for name in INPUT_FILES:
-                    shutil.copyfile(source/name, folder/name)
                 checkpoint('oracle_proposals', row)
-                binding, annotations, proposals = oracle_proposals(folder, camera)
+                binding, annotations, proposals = oracle_proposals(folder, camera, payload=payload)
                 row['proposal_count'] = len(proposals['instances'])
                 checkpoint('sam_inference', row)
                 request_id = summary['run_id'] + '-' + module
                 row['sam_attempts'] += 1
-                response = infer(runtime, folder, binding, camera, request_id)
+                response = infer(runtime, folder, binding, camera, request_id, payload=payload)
                 _check_technical_status(response, 'SAM inference')
                 checkpoint('worker_artifacts', row)
                 response = _read_json(folder/'mode_b1_worker_response.json')
@@ -252,12 +263,12 @@ def main(argv=None):
                 safe_request = ''.join(c for c in request_id if c.isalnum() or c in '-_')
                 if not metrics_path.parent.name.endswith(safe_request):
                     raise ValueError('SAM metrics belong to another request')
-                artifacts = _worker_artifacts(folder)
+                artifacts = _worker_artifacts(folder, payload=payload)
                 for name in ('cargo_masks.npz', 'cargo_instances.json', 'box_geometry_2d.json'):
                     _owned_file(artifacts[name]['path'], metrics_path.parent)
                 count = _mask_count(artifacts)
                 checkpoint('mask_evaluation', row)
-                row['mask_evaluation'] = evaluate_masks(folder, artifacts, folder)
+                row['mask_evaluation'] = evaluate_masks(folder, artifacts, folder, payload=payload)
                 if count == 0:
                     # The existing point-map builder requires at least one mask.
                     # A verified empty segmentation is a legal algorithm result.
@@ -270,7 +281,8 @@ def main(argv=None):
                     checkpoint('metric_geometry', row)
                     row['metric_attempts'] += 1
                     result = _run_secondary_module(scene='FULL_STACK_NOMINAL', module_dir=folder, manifest=manifest,
-                        artifacts=artifacts, config=config, vision_root=a.vision, upstream_python=Path(sys.executable), timeout=1200)
+                        artifacts=artifacts, config=config, vision_root=a.vision, upstream_python=Path(sys.executable), timeout=1200,
+                        payload=payload)
                     _check_technical_status(result, 'geometry')
                 checkpoint('geometry_result', row)
                 geometry = _read_json(_owned_file(folder/'rgbd_cuboids.json', folder))

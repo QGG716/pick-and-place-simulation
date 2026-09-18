@@ -12,24 +12,35 @@ sys.path[:0]=[str(ROOT/'src'),str(ROOT/'packages/unloading_contracts/src')]
 from diagnose_metric_calibration import load_extractor, evaluate
 from unloading_perception.metric_faces import extract_observation_labels,fit_metric_faces,MetricFitConfig
 from run_isaac_rgbd_geometry import _worker_artifacts,_run_secondary_module,IsaacSceneManifest,sha256
+from unloading_perception.isaac_payload import require_capture_payload, load_capture_payload
 
 
-def oracle_proposals(folder,camera):
-    binding=json.loads((folder/'capture_metadata.json').read_text())
-    annotations=json.loads((folder/'gt_annotations.json').read_text())
-    payload={'schema_version':'isaac_oracle_proposals_v1','coordinate_space':'source_image',
-             'source_size':camera['resolution'],'source':'ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL',
+def oracle_proposals(folder,camera, *, payload):
+    payload = require_capture_payload(folder, payload.manifest, payload=payload, expected_module_id=camera['module_id'])
+    proposals = oracle_proposal_document(payload)
+    (folder/'oracle_proposals.json').write_text(json.dumps(proposals,indent=2), encoding='utf-8')
+    return payload.metadata.to_dict(),payload.annotations,proposals
+
+
+def oracle_proposal_document(payload):
+    binding=payload.metadata.to_dict()
+    annotations=payload.annotations
+    camera=payload.camera
+    proposals={'schema_version':'isaac_oracle_proposals_v1','coordinate_space':'source_image',
+             'source_size':list(camera['resolution']),'source':'ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL',
              'raw_image_automatic':False,'simulation_epoch':binding['sensor_epoch'],
-             'frame_sequence':binding['frame_sequence'],'rgb_sha256':sha256(folder/'sensor_rgb.png'),
+             'frame_sequence':binding['frame_sequence'],'rgb_sha256':payload.binding.rgb_sha256,
              'instances':[{'id':i,'instance_id':i,'simulation_object_id':o['simulation_object_id'],
-                            'oracle_proposal_source_id':o['simulation_object_id'],'label':'box','bbox':o['bbox_xyxy'],
+                            'oracle_proposal_source_id':o['simulation_object_id'],'label':'box','bbox':list(o['bbox_xyxy']),
                             'visible':True,'occluded':o['occluded'],'proposal_source':'ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL'}
                            for i,o in enumerate((g for g in annotations['objects'] if g['visible']),1)]}
-    (folder/'oracle_proposals.json').write_text(json.dumps(payload,indent=2))
-    return binding,annotations,payload
+    return proposals
 
 
-def infer(runtime,folder,binding,camera,request_id):
+def infer(runtime,folder,binding,camera,request_id, *, payload):
+    payload = require_capture_payload(folder, payload.manifest, payload=payload, expected_module_id=camera['module_id'])
+    binding = payload.metadata.to_dict()
+    camera = payload.camera
     source,proposal=folder/'sensor_rgb.png',folder/'oracle_proposals.json'
     request={'schema_version':'1.1.0','op':'infer','request_id':request_id,'worker_epoch':'metric-small-scenes',
              'proposal_reference':{'uri':proposal.resolve().as_uri(),'sha256':sha256(proposal)},
@@ -37,10 +48,10 @@ def infer(runtime,folder,binding,camera,request_id):
                        'sequence':binding['frame_sequence'],'capture_time':binding['capture_center_time'],
                        'receive_time':binding['capture_center_time'],'clock_domain':binding['clock_domain'],
                        'frame_id':binding['rgb_frame_id'],'width':camera['resolution'][0],'height':camera['resolution'][1],
-                       'encoding':'rgb8','rgb_uri':source.resolve().as_uri(),'rgb_sha256':sha256(source)}}
+                       'encoding':'rgb8','rgb_uri':source.resolve().as_uri(),'rgb_sha256':payload.binding.rgb_sha256}}
     response=runtime.infer(request)
     if response['status']!='COMPLETE': raise RuntimeError(str(response))
-    (folder/'mode_b1_worker_response.json').write_text(json.dumps(response))
+    (folder/'mode_b1_worker_response.json').write_text(json.dumps(response), encoding='utf-8')
     assert runtime.moge_model is None and not any(k=='moge' or k.startswith('moge.') for k in sys.modules)
 
 
@@ -92,7 +103,8 @@ def main():
         for camera in manifest.cameras:
             folder=args.capture/entry['scene']/'modules'/camera['module_id']
             output=args.output/entry['scene']/camera['module_id']; output.mkdir(parents=True)
-            binding,annotations,proposals=oracle_proposals(folder,camera)
+            payload=load_capture_payload(folder,manifest,expected_module_id=camera['module_id'],with_instance_masks=True)
+            binding,annotations,proposals=oracle_proposals(folder,camera,payload=payload)
             truth={g['simulation_object_id']:g for g in annotations['objects'] if g['visible']}
             depth=np.load(folder/'metric_depth_m.npy'); oracle=np.load(folder/'gt_instance_masks.npz')
             row={'scene':entry['scene'],'module':camera['module_id'],'gt_visible_denominator':len(truth),'ORACLE_MASK_DIAGNOSTIC':[],'SAM_PAIRED':[]}
@@ -105,7 +117,7 @@ def main():
                 if not metrics['faces'] or any(f['plane_distance_m']>.005 or f['normal_error_degrees']>1 or f['boundary_outside_m']>.01 for f in metrics['faces']):
                     (output/'oracle_gate_failure.json').write_text(json.dumps(row,indent=2)); raise RuntimeError('ORACLE_GEOMETRY_GATE_FAILED')
             if runtime and not (folder/'mode_b1_worker_response.json').exists():
-                infer(runtime,folder,binding,camera,entry['scene']+'-'+camera['module_id'])
+                infer(runtime,folder,binding,camera,entry['scene']+'-'+camera['module_id'],payload=payload)
             artifacts=_worker_artifacts(folder); masks=Path(artifacts['cargo_masks.npz']['path'])
             result=_run_secondary_module(scene=entry['scene'],module_dir=folder,manifest=manifest,artifacts=artifacts,
                     config=yaml.safe_load((ROOT/'configs/isaac/perception_validation.yaml').read_text()),vision_root=args.vision,

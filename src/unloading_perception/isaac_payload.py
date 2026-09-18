@@ -3,15 +3,17 @@
 PNG is authoritative RGB. Hashes authenticate file bytes, not numpy values.
 Bindings detect accidental replacement/incomplete writes, not hostile edits.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 from io import BytesIO
 import json
 import os
 from pathlib import Path
 import tempfile
+from types import MappingProxyType
 
 import numpy as np
+from unloading_contracts import deep_freeze
 
 from .isaac_validation import IsaacCaptureBinding, IsaacSceneManifest, sha256_file
 from .rgbd import CaptureMetadata, RegisteredRgbdFrame
@@ -31,6 +33,20 @@ class VerifiedCapturePayload:
     rgb: np.ndarray
     depth: np.ndarray
     points: np.ndarray | None
+    directory: Path
+    source_directory: Path
+    raw_files: dict
+    instance_masks: dict | None
+
+    def input_provenance(self):
+        return {'source_directory': str(self.source_directory), 'input_directory': str(self.directory),
+            'capture_id': self.metadata.capture_id, 'module_id': self.camera['module_id'],
+            'sensor_epoch': self.metadata.sensor_epoch, 'frame_sequence': self.metadata.frame_sequence,
+            'original_binding': json.loads(self.raw_files['capture_binding.json']),
+            'consumed_files': {name: {'sha256': hashlib.sha256(raw).hexdigest(),
+                                     'path': str(self.directory/name)} for name, raw in self.raw_files.items()},
+            'rgb_authority': 'VERIFIED_PNG', 'original_rgb_npy_consumed': False,
+            'derived_inputs': {}}
 
 
 def camera_content_identity(info):
@@ -39,13 +55,15 @@ def camera_content_identity(info):
                                     allow_nan=False).encode()).hexdigest()
 
 
-def load_capture_payload(directory, manifest, *, with_pointcloud=False, binding_payload=None):
+def load_capture_payload(directory, manifest, *, with_pointcloud=False, with_instance_masks=False,
+                         expected_module_id=None, binding_payload=None):
     """Read each consumed file once, validate that buffer, then parse it.
 
     A supplied binding is reserved for acquisition finalization before its
     atomic publication; the replay adapter always reads the saved binding.
     """
-    directory = Path(directory)
+    directory = Path(directory).resolve()
+    raw_files = {}
     context = f'module=unknown capture={directory.name}'
 
     def fail(code, file, detail=''):
@@ -61,6 +79,7 @@ def load_capture_payload(directory, manifest, *, with_pointcloud=False, binding_
             fail('FILE_MISSING', file, type(exc).__name__)
         if bound and hashlib.sha256(raw).hexdigest() != expected:
             fail('HASH_MISMATCH', file)
+        raw_files[file] = raw
         return raw
 
     def parse(file, raw, parser):
@@ -70,12 +89,21 @@ def load_capture_payload(directory, manifest, *, with_pointcloud=False, binding_
             fail('FORMAT_INVALID', file, str(exc))
 
     if binding_payload is None:
+        if not (directory/'capture_binding.json').is_file():
+            fail('BINDING_MISSING', 'capture_binding.json')
         binding_payload = parse('capture_binding.json', read('capture_binding.json'), json.loads)
+    else:
+        raw_files['capture_binding.json'] = json.dumps(binding_payload, allow_nan=False).encode('utf-8')
     if not isinstance(binding_payload, dict):
         fail('FORMAT_INVALID', 'capture_binding.json', 'expected object')
     context = (f"module={binding_payload.get('module_id', 'legacy-camera')} "
                f"capture={binding_payload.get('capture_id', directory.name)} "
                f"epoch={binding_payload.get('simulation_epoch')} frame={binding_payload.get('frame_sequence')}")
+    for key in ('rgb_sha256', 'gt_snapshot_sha256', 'camera_calibration_identity'):
+        expected = binding_payload.get(key)
+        if (not isinstance(expected, str) or len(expected) != 64
+                or any(c not in '0123456789abcdef' for c in expected)):
+            fail('BINDING_MISSING', 'capture_binding.json', key)
     binding = parse('capture_binding.json', binding_payload, IsaacCaptureBinding.from_dict)
     if not isinstance(manifest, IsaacSceneManifest):
         try:
@@ -107,6 +135,8 @@ def load_capture_payload(directory, manifest, *, with_pointcloud=False, binding_
         fail('IDENTITY_MISMATCH', 'capture_metadata.json', 'RGB camera frame')
     camera = dict(cameras[0])
     module = camera['module_id']
+    if expected_module_id is not None and module != expected_module_id:
+        fail('IDENTITY_MISMATCH', 'capture_binding.json', f'expected_module={expected_module_id}')
     expected_id = f'{binding.simulation_epoch}:{module}:{binding.frame_sequence}'
     # Old compatibility roots used the explicit module_0_main alias. Their
     # hashed metadata + hashed calibration + GT manifest identity still bind
@@ -178,7 +208,66 @@ def load_capture_payload(directory, manifest, *, with_pointcloud=False, binding_
         if points.dtype.kind != 'f' or points.dtype.itemsize != 4 or points.ndim != 2 or points.shape[1] != 3:
             fail('FORMAT_INVALID', 'pointcloud_world_m.npz', 'expected Nx3 float32 xyz_m')
         points.setflags(write=False)
-    return VerifiedCapturePayload(manifest, binding, camera, annotations, metadata, frame.rgb, frame.depth_optical_z_m, points)
+    masks = None
+    if with_instance_masks:
+        def mask_archive(raw):
+            with np.load(BytesIO(raw), allow_pickle=False) as arrays:
+                names = [o['mask_key'] for o in annotations['objects'] if o.get('mask_key') is not None]
+                ids = [o['simulation_object_id'] for o in annotations['objects']]
+                if any((o.get('mask_key') is not None and o['mask_key'] != o['simulation_object_id'])
+                       or (o.get('visible') and o.get('mask_key') is None) for o in annotations['objects']):
+                    raise ValueError('mask key differs from object identity or visible object has no mask')
+                if (len(set(names)) != len(names) or len(set(ids)) != len(ids) or set(arrays.files) != set(names)
+                        or not set(ids).issubset({o['simulation_object_id'] for o in manifest.objects})):
+                    raise ValueError('mask keys/objects must match bound annotations one-to-one')
+                result = {}
+                for name in names:
+                    mask = arrays[name]
+                    if mask.shape != (height, width) or not np.isin(mask, (0, 1)).all():
+                        raise ValueError('expected binary masks at calibrated resolution')
+                    mask = mask.astype(bool)
+                    mask.setflags(write=False)
+                    result[name] = mask
+                return MappingProxyType(result)
+        masks = parse('gt_instance_masks.npz',
+            read('gt_instance_masks.npz', b.get('instance_masks_sha256'), bound=True), mask_archive)
+    binding = replace(binding, extensions=MappingProxyType(dict(binding.extensions)))
+    return VerifiedCapturePayload(manifest, binding, deep_freeze(camera), deep_freeze(annotations),
+        metadata, frame.rgb, frame.depth_optical_z_m, points, directory, directory,
+        MappingProxyType(raw_files), masks)
+
+
+def require_capture_payload(directory, manifest, *, payload=None, expected_module_id=None, with_instance_masks=False):
+    """Formal offline entries accept only the loader result for this exact source."""
+    if payload is None:
+        return load_capture_payload(directory, manifest, expected_module_id=expected_module_id,
+                                    with_instance_masks=with_instance_masks)
+    if (not isinstance(payload, VerifiedCapturePayload) or payload.directory != Path(directory).resolve()
+            or payload.manifest.manifest_fingerprint != manifest.manifest_fingerprint
+            or (expected_module_id is not None and payload.camera['module_id'] != expected_module_id)):
+        raise CapturePayloadError(f'IDENTITY_MISMATCH file=verified_payload directory={directory}')
+    if with_instance_masks and payload.instance_masks is None:
+        raise CapturePayloadError('BINDING_MISSING file=gt_instance_masks.npz evaluation payload required')
+    return payload
+
+
+def write_capture_snapshot(payload, directory):
+    """Copy the verified buffers into a new run; never re-read or rebind originals.
+
+    Exclusive creation prevents this code from replacing inputs on repeat runs.
+    This is not a security guarantee against hostile concurrent writers.
+    """
+    if not isinstance(payload, VerifiedCapturePayload):
+        raise TypeError('expected loader-produced VerifiedCapturePayload')
+    directory = Path(directory).resolve()
+    directory.mkdir(parents=True, exist_ok=False)
+    for name, raw in payload.raw_files.items():
+        with (directory/name).open('xb') as stream:
+            stream.write(raw)
+    snapshot = replace(payload, directory=directory)
+    with (directory/'input_provenance.json').open('x', encoding='utf-8') as stream:
+        json.dump(snapshot.input_provenance(), stream, indent=2, ensure_ascii=False, allow_nan=False)
+    return snapshot
 
 
 def begin_capture_write(directory):

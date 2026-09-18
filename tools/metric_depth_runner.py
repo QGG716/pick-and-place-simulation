@@ -8,7 +8,7 @@ from unloading_perception.metric_faces import extract_observation_labels, fit_me
 from unloading_perception.final_geometry import project
 
 
-def run_metric_depth(*, raw, source, masks, pointmap, depth, K, metadata, output, vision_root, python=None, timeout=None):
+def run_metric_depth(*, raw, source, masks, pointmap, depth, K, metadata, output, vision_root, python=None, timeout=None, rgb=None):
     from diagnose_metric_calibration import load_extractor
     output=Path(output); output.mkdir(parents=True,exist_ok=True)
     with np.load(pointmap,allow_pickle=False) as archive:
@@ -21,7 +21,7 @@ def run_metric_depth(*, raw, source, masks, pointmap, depth, K, metadata, output
             raise ValueError('POINTMAP_CAPTURE_CALIBRATION_MISMATCH')
     extractor=load_extractor(vision_root)
     config=MetricFitConfig(positive_infinity_is_no_hit=provenance['source']=='ISAAC_IDEAL_REGISTERED_DEPTH')
-    sam=json.loads((Path(masks).parent/'cargo_instances.json').read_text())
+    sam=json.loads((Path(masks).parent/'cargo_instances.json').read_text(encoding='utf-8'))
     entries=sam.get('instances',[])
     entries={int(v['instance_id']):v for v in entries}
     records=[]
@@ -35,10 +35,10 @@ def run_metric_depth(*, raw, source, masks, pointmap, depth, K, metadata, output
             records.append(record)
     result={'instances':records,'pointmap_source':'REGISTERED_METRIC_DEPTH','strategy':'DEPTH_CONSTRAINED_METRIC_FACES_V1',
             'legacy_comparison':'tools/metric_v4_runner.py','source':str(source)}
-    path=output/'validated_geometry.json'; path.write_text(json.dumps(result,indent=2))
-    image=cv2.imread(str(source))
+    path=output/'validated_geometry.json'; path.write_text(json.dumps(result,indent=2), encoding='utf-8')
+    image=cv2.imread(str(source)) if rgb is None else rgb[..., ::-1].copy()
     # Render only the final independent result persisted above.
-    for record in json.loads(path.read_text())['instances']:
+    for record in result['instances']:
         for face in record['camera_facing_faces']:
             polygon=project(face['corners_3d_m'],K).round().astype(np.int32)
             cv2.polylines(image,[polygon],True,(0,220,0),2)
