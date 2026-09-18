@@ -2165,6 +2165,10 @@ try:
     contact_runtime_context = {"stage": "settling", "attached": False, "actual_free_space": False,
                                "release_validation_pending": False}
     unexpected_robot_contact_events = []
+    from unloading_sim.stack_clearance import StackClearanceStep, copy_contact_points, paired_contact_key
+    from unloading_sim.isaac_collision_policy import verified_stack_cube_shapes
+    stack_clearance_step = None
+    stack_cube_shapes = None
     demonstration_contact_exemption_audit = {
         "requested_collider_basenames": list(
             args.demonstration_target_cup_contact_exemption
@@ -2187,7 +2191,7 @@ try:
                 contact_runtime_context["release_validation_pending"])
 
     def _classify_runtime_contact(record, actor0, actor1, collider0, collider1, separations, *, lost):
-        key = (*tuple(sorted((actor0, actor1))), *tuple(sorted((collider0, collider1))))
+        key = paired_contact_key(actor0, actor1, collider0, collider1)
         resolution = zero_point_contact_resolver.observe(key, separations, lost=lost, scope_token=_contact_scope_token())
         resolution_counts = record.setdefault("contact_data_resolution_counts", {})
         resolution_counts[resolution] = resolution_counts.get(resolution, 0) + 1
@@ -2327,7 +2331,7 @@ try:
             pair = tuple(sorted((actor0, actor1)))
             collider0 = contact_path_cache.resolve(header.collider0)
             collider1 = contact_path_cache.resolve(header.collider1)
-            contact_key = (*pair, *tuple(sorted((collider0, collider1))))
+            contact_key = paired_contact_key(actor0, actor1, collider0, collider1)
             event_type = header.type
             event_type_value = int(event_type)
             event_name = str(getattr(event_type, "name", event_type))
@@ -2348,7 +2352,7 @@ try:
                 },
             )
             record["event_count"] = int(record["event_count"]) + 1
-            collider_pair = sorted((collider0, collider1))
+            collider_pair = [contact_key[2], contact_key[3]]
             if collider_pair not in record["collider_pairs"]:
                 record["collider_pairs"].append(collider_pair)
             record["last_contact_time_s"] = contact_clock_s[0]
@@ -2397,7 +2401,13 @@ try:
                 time_s=contact_clock_s[0], record=record,
                 trajectory_time_s=contact_trajectory_clock_s[0],
             )
-            if robot_involved or (payload_involved and effective_collision_policy.poc_pair_clearance):
+            if (stack_clearance_step is not None
+                    and stack_clearance_step.contains_pair(actor0, actor1)):
+                stack_clearance_step.collect(actor0=actor0, actor1=actor1, collider0=collider0,
+                    collider1=collider1, event=event_name, points=copy_contact_points(header, contact_data))
+                record["minimum_separation_semantics"] = "CONTACT_POINT_NORMAL_SEPARATION_NOT_BOX_MINIMUM_DISTANCE"
+                record["stack_engineering_clearance_source"] = "DEFERRED_POST_STEP_VERIFIED_BOX_GEOMETRY"
+            elif robot_involved or (payload_involved and effective_collision_policy.poc_pair_clearance):
                 _classify_runtime_contact(record, actor0, actor1, collider0, collider1, event_separations,
                                           lost=event_type_value == int(ContactEventType.CONTACT_LOST))
         contact_callback_wall_s[0] += time.perf_counter() - callback_started
@@ -3069,6 +3079,10 @@ try:
             )
         return states
 
+    if effective_collision_policy.poc_pair_clearance:
+        stack_cube_shapes = verified_stack_cube_shapes(stage, dynamic_scene_records,
+            dynamic_scene_prim_paths, all_carton_bodies._physics_rigid_body_view)
+        (args.output / "stack_cube_shapes.json").write_text(json.dumps(stack_cube_shapes, indent=2), encoding="utf-8")
     session_output_root = args.output
     session_segment_index = 0
     session_time_offset_s = (float(archive_initialization["time_s"])
@@ -3239,6 +3253,14 @@ try:
                 [box for name, box in initial_actual_boxes.items() if name in stack_names],
                 effective_collision_policy,
             )
+        stack_clearance_step = None
+        if stack_cube_shapes is not None and stack_monitor is not None:
+            stack_clearance_step = StackClearanceStep(shapes=stack_cube_shapes,
+                target=str(metadata["target"]), neighbors=list(stack_monitor.initial_neighbors),
+                policy=effective_collision_policy, world_id=str(run_started_unix_s),
+                task_id=str(session_segment_index), maximum_wait_s=float(
+                    metadata["actual_state_gates"].get("maximum_free_transit_wait_s", 0.0)))
+            zero_point_contact_resolver.transfer_verified_stack_pending(stack_clearance_step)
         initial_target_center = None
         if target_body is not None:
             target_positions, _ = target_body.get_world_poses()
@@ -3580,9 +3602,11 @@ try:
                 if start_gate["reason"]:
                     runtime_stop_reason = start_gate["reason"]
                     break
+            hold_trajectory = hold_trajectory or bool(stack_clearance_step is not None and stack_clearance_step.hold)
             if stack_monitor is not None and grasp_enabled and not release_commanded and free_transit_gate is not None:
                 previous_event_count = len(free_transit_gate.events)
-                gate_result = free_transit_gate.evaluate(trajectory_time, simulation_time, stack_monitor.free_space_reached)
+                gate_result = free_transit_gate.evaluate(trajectory_time, simulation_time,
+                    stack_monitor.free_space_reached and not bool(stack_clearance_step is not None and stack_clearance_step.hold))
                 hold_trajectory = hold_trajectory or gate_result["hold"]
                 for event in free_transit_gate.events[previous_event_count:]:
                     event_log.append(event)
@@ -4134,12 +4158,34 @@ try:
             receiver_monitor_stride = min(args.render_every, max(1, int(physics_hz / 15)))
             monitor_receivers = (step + 1) % receiver_monitor_stride == 0 or step == physics_steps - 1
             _advance_ideal_bodies(physics_dt)
+            if stack_clearance_step is not None:
+                stack_clearance_step.begin_step(step=step, time_s=simulation_time,
+                    trajectory_time_s=trajectory_time, context=contact_runtime_context,
+                    states=_capture_carton_states())
             world.step(render=False, update_fabric=True)
             _verify_ideal_body_feedback()
             simulation_time = (step + 1) * physics_dt
             if conveyor_enabled:
                 _update_conveyor_visual_markers(physics_dt, apply_transforms=render)
-            if stack_monitor is not None and grasp_enabled and not release_commanded:
+            if stack_clearance_step is not None:
+                outcome = stack_clearance_step.finish_step(states=_capture_carton_states(),
+                    time_s=simulation_time, monitor=stack_monitor,
+                    commanded_motion=bool(grasp_enabled and not release_commanded and not hold_trajectory))
+                stack_observation = outcome["observation"]
+                hold_trajectory = hold_trajectory or outcome["hold"]
+                if render or not stack_observation["accepted"]:
+                    stack_monitor_history.append({"time_s": simulation_time, **stack_observation})
+                if stack_clearance_step.transitions and stack_clearance_step.transitions[-1]["step"] == step:
+                    event = {"event": "actual_stack_geometry_free_space_entered", **stack_clearance_step.transitions[-1]}
+                    event_log.append(event)
+                    print("FANUC_REPLAY_EVENT=" + json.dumps(event), flush=True)
+                if outcome["stop_reason"]:
+                    runtime_stop_reason = outcome["stop_reason"]
+                    event_log.append({"event": "actual_stack_clearance_stop", "reason": runtime_stop_reason,
+                                      "time_s": simulation_time, "step": step,
+                                      "nearest_neighbor": stack_clearance_step.last["nearest_neighbor"]})
+                    break
+            elif stack_monitor is not None and grasp_enabled and not release_commanded:
                 actual_stack_states = _capture_carton_states()
                 actual_boxes = {_state_obb(item).name: _state_obb(item) for item in actual_stack_states}
                 next_command = sample_joint_reference(timestamps, positions,
@@ -4816,6 +4862,9 @@ try:
                 raise RuntimeError("accelerated MP4 preview writer produced no output")
 
         final_carton_states = _capture_carton_states()
+        if stack_clearance_step is not None:
+            (args.output / "stack_clearance_steps.json").write_text(
+                json.dumps(stack_clearance_step.evidence(), indent=2), encoding="utf-8")
         (args.output / "actual_frame_states.json").write_text(json.dumps({
             "format": "isaac_actual_frame_states_v2", "joint_names": discovered_joint_names,
             "states": actual_frame_states, "capture_max_joint_delta_rad": capture_max_joint_delta_rad,
@@ -4887,6 +4936,9 @@ try:
 
         if zero_point_contact_resolver.pending_keys and runtime_stop_reason is None:
             runtime_stop_reason = "UNRESOLVED_ZERO_POINT_ROBOT_CONTACT_HEADER"
+        if stack_clearance_step is not None and stack_clearance_step.hold and runtime_stop_reason is None:
+            runtime_stop_reason = (stack_clearance_step.first_conflict["reason"] if stack_clearance_step.first_conflict
+                                   else "UNRESOLVED_STACK_CONTACT_AT_RUN_END")
         contact_records = [
             {"actor0": pair[0], "actor1": pair[1], **values}
             for pair, values in sorted(contact_pairs.items())
@@ -5376,6 +5428,14 @@ try:
             "cup_mask_change_log": cup_mask_change_log,
             "runtime_stop_reason": runtime_stop_reason,
             "actual_stack_contact_monitor": None if stack_monitor is None else stack_monitor.summary(),
+            "stack_clearance_semantics": None if stack_clearance_step is None else {
+                "source": "POST_STEP_VERIFIED_NATIVE_BOX_GEOMETRY", "counts": dict(stack_clearance_step.counts),
+                "shape_fingerprint": stack_clearance_step.shape_fingerprint,
+                "transitions": stack_clearance_step.transitions,
+                "first_evidence_conflict": stack_clearance_step.first_conflict,
+                "geometry_enter_gap_m": effective_collision_policy.free_space_clearance_m,
+                "geometry_maintain_gap_m": effective_collision_policy.required_pair_clearance_m,
+                "evidence_file": "stack_clearance_steps.json"},
             "actual_free_transit_gate": None if free_transit_gate is None else {
                 "maximum_wait_s": maximum_free_transit_wait_s,
                 "trajectory_boundary_s": free_transit_gate.boundary_time_s,
@@ -5951,6 +6011,9 @@ try:
         run_status_path.write_text(json.dumps({"status": "same_world_segment_started",
                                              "continuation_identity": continuation_identity}, indent=2), encoding="utf-8")
 except BaseException as exc:
+    if globals().get("stack_clearance_step") is not None:
+        (args.output / "stack_clearance_steps.json").write_text(
+            json.dumps(stack_clearance_step.evidence(), indent=2), encoding="utf-8")
     # SimulationApp.close() may terminate Kit before Python reports an uncaught
     # exception, so emit the traceback explicitly for unattended server runs.
     run_status_path.write_text(

@@ -81,6 +81,7 @@ EXECUTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/m710_execution.py",
     "src/unloading_sim/m710_official_dynamics.py",
     "src/unloading_sim/m710_replay_physics.py",
+    "src/unloading_sim/stack_clearance.py",
     "src/unloading_sim/m710_replay_contract.py",
     "src/unloading_sim/qualification.py",
     "scripts/export_isaac_fanuc_replay.py",

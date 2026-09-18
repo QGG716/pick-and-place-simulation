@@ -87,6 +87,18 @@ class ZeroPointContactResolver:
                 "grants_contact_permission": False,
                 "unresolved_scope_exit_or_run_end": "FAIL_CLOSED"}
 
+    def transfer_verified_stack_pending(self, destination):
+        """Explicitly move pending evidence to its new geometry adjudicator."""
+        import copy
+        moved = []
+        for key in tuple(self._pending):
+            if destination.contains_pair(key[0], key[1]):
+                moved.append({'key': list(key), 'original_scope': copy.deepcopy(self._pending[key])})
+                destination.pending[key] = 'STACK_CONTACT_POINTS_PENDING'
+                del self._pending[key]
+        destination.transferred_pending = moved
+        return moved
+
 
 class ContactPathCache:
     """Cache stable PhysX interned path IDs within one unchanged World."""
@@ -161,6 +173,50 @@ def physical_support_contact_observed(active_physical_headers, target_path, supp
 def robot_proximity_is_safety_relevant(record, robot_root_path):
     # Zero impulse or positive separation never bypasses the robot's margin.
     return any(str(record[name]).startswith(robot_root_path) for name in ("actor0", "actor1"))
+
+
+def verified_stack_cube_shapes(stage, records, paths, physics_view):
+    """Bind native box solids to the actual tensor actor order, once per world.
+
+    USD is used only for immutable authored collider geometry, never live poses.
+    No contact/rest offset is added to the box dimensions.
+    """
+    import numpy as np
+    from pxr import Gf, Usd, UsdGeom, UsdPhysics
+    if (list(physics_view.prim_paths) != list(paths) or physics_view.max_shapes != 1
+            or UsdGeom.GetStageMetersPerUnit(stage) != 1.0
+            or UsdGeom.GetStageUpAxis(stage) != UsdGeom.Tokens.z):
+        raise ValueError('stack native box actor order/units/shape count mismatch')
+    offsets = read_effective_collision_offsets(physics_view)['contact_offsets_m']
+    offsets = np.asarray(offsets).reshape(-1)
+    if len(offsets) != len(paths) or not np.isfinite(offsets).all() or np.any(offsets < 0):
+        raise ValueError('stack collider contact-generation offsets unavailable')
+    cache, result = UsdGeom.XformCache(), {}
+    for index, (record, path) in enumerate(zip(records, paths, strict=True)):
+        prim = stage.GetPrimAtPath(path)
+        colliders = [p for p in Usd.PrimRange(prim) if p.HasAPI(UsdPhysics.CollisionAPI)]
+        if (not prim.IsA(UsdGeom.Cube) or not prim.HasAPI(UsdPhysics.RigidBodyAPI)
+                or [str(p.GetPath()) for p in colliders] != [path]
+                or not UsdPhysics.CollisionAPI(prim).GetCollisionEnabledAttr().Get()):
+            raise ValueError('stack shape is not exactly one owned native Cube')
+        half = float(UsdGeom.Cube(prim).GetSizeAttr().Get()) / 2
+        world = cache.GetLocalToWorldTransform(prim)
+        local = world * world.RemoveScaleShear().GetInverse()
+        corners = np.array([local.Transform(Gf.Vec3d(x,y,z)) for x in (-half,half)
+                            for y in (-half,half) for z in (-half,half)])
+        lo, hi = corners.min(axis=0), corners.max(axis=0)
+        expected = np.asarray(record['size_m']) / 2
+        if (not np.isfinite(corners).all() or not np.allclose(hi-lo, 2*expected, atol=1e-6, rtol=0)
+                or not np.allclose((hi+lo)/2, 0, atol=1e-6, rtol=0)
+                or not np.allclose(np.abs(corners), expected, atol=1e-6, rtol=0)):
+            raise ValueError('stack Cube local scale/transform does not match the collision box')
+        name = str(record['name'])
+        result[name] = dict(name=name, actor=path, collider=path, source='VERIFIED_NATIVE_PHYSX_CUBE',
+            half_extents_m=((hi-lo)/2).tolist(), local_center_m=((hi+lo)/2).tolist(),
+            local_rotation=np.eye(3).tolist(), meters_per_unit=1., contact_offset_in_geometry=False,
+            contact_generation_offset_m=float(offsets[index]),
+            pose_source='CURRENT_PHYSX_RIGID_BODY_TENSOR', backend_shapes_per_actor=1)
+    return result
 
 
 def classify_poc_runtime_pair(*, collider0, collider1, minimum_separation_m, policy,

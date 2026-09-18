@@ -885,15 +885,27 @@ class ActualStackContactMonitor:
         self.first_free_space_time_s = None
         self.observations = 0
 
-    def observe(self, time_s, target, neighbors, *, commanded_motion):
+    def observe(self, time_s, target, neighbors, *, commanded_motion, geometry=None,
+                allow_free_space_transition=True):
         current = {item.name: item for item in neighbors}
         missing = set(self.initial_neighbors) - set(current)
         if missing:
             raise ValueError(f"actual stack state lost carton identities: {sorted(missing)}")
-        clearance = min((target.signed_distance_obb(current[name])
-                         for name in self.initial_neighbors), default=float("inf"))
-        penetration = max(0.0, -clearance)
-        if self.policy.poc_pair_clearance and clearance > 0:
+        if geometry is not None:
+            if (geometry['policy_fingerprint'] != self.policy.fingerprint
+                    or geometry['time_s'] != time_s
+                    or geometry['sample_phase'] != 'POST_WORLD_STEP_PHYSX_TENSOR'
+                    or geometry['boxes'].get(target.name) is not target
+                    or set(geometry['pairs']) != set(self.initial_neighbors)
+                    or any(geometry['boxes'].get(name) is not current[name] for name in self.initial_neighbors)):
+                raise ValueError('stack monitor geometry does not bind current measurement')
+            clearance = min((p['surface_distance_m'] for p in geometry['pairs'].values()), default=float('inf'))
+            penetration = max((p['sat_overlap_bound_m'] for p in geometry['pairs'].values()), default=0.)
+        else:
+            clearance = min((target.signed_distance_obb(current[name])
+                             for name in self.initial_neighbors), default=float("inf"))
+            penetration = max(0.0, -clearance)
+        if geometry is None and self.policy.poc_pair_clearance and clearance > 0:
             from .pair_clearance import obb_surface_distance
             clearance = min((obb_surface_distance(target, current[name])
                              for name in self.initial_neighbors), default=float("inf"))
@@ -906,7 +918,7 @@ class ActualStackContactMonitor:
         self.peak_neighbor_tilt_rad = max(self.peak_neighbor_tilt_rad, tilt)
         self.observations += 1
         previously_free = self.free_space_reached
-        if not self.free_space_reached and clearance >= self.policy.free_space_clearance_m:
+        if allow_free_space_transition and not self.free_space_reached and clearance >= self.policy.free_space_clearance_m:
             self.free_space_reached = True
             self.first_free_space_time_s = float(time_s)
         if penetration > self.policy.maximum_actual_penetration_m:

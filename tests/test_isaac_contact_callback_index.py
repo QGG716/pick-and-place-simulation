@@ -6,12 +6,14 @@ from enum import IntEnum
 from pathlib import Path
 import random
 import time
+import math
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from unloading_sim.isaac_collision_policy import ActiveContactPairIndex, ContactPathCache, ContactReportProbe, read_effective_collision_offsets, verify_effective_collision_offsets, verify_authored_collision_offsets, colliders_by_physical_body, expand_owned_tool_wrist_pairs, PhysicalContactLedger, physical_support_contact_observed, robot_proximity_is_safety_relevant, premature_physical_conveyor_contacts, placement_support_window_start
+from unloading_sim.stack_clearance import paired_contact_key
 
 
 class LegacyIndex:
@@ -70,7 +72,7 @@ def test_actual_callback_preserves_every_aggregate_and_impulse_against_legacy():
     for factory in (ActiveContactPairIndex, LegacyIndex):
         active = set()
         namespace = {
-            "time": time, "np": np, "ContactEventType": Event,
+            "time": time, "np": np, "math": math, "ContactEventType": Event,
             "root_prim_path": "/robot", "target_carton_path": "/target",
             "released_payload_path": None, "contact_pairs": {},
             "active_contact_headers": active, "active_contacts": factory(active),
@@ -81,6 +83,9 @@ def test_actual_callback_preserves_every_aggregate_and_impulse_against_legacy():
             "contact_trajectory_clock_s": [0.0],
             "contact_callback_header_count": [0],
             "_classify_runtime_contact": lambda *args, **kwargs: None,
+            "ideal_actor_paths": set(), "current_pair_separations": {},
+            "effective_collision_policy": SimpleNamespace(poc_pair_clearance=True),
+            "stack_clearance_step": None, "paired_contact_key": paired_contact_key,
         }
         exec(compiled, namespace)
         namespaces.append(namespace)
@@ -197,11 +202,12 @@ def test_nested_robot_links_assign_only_nearest_rigid_body_and_keep_both_wrist_f
 def test_physical_layer_rejects_20mm_support_but_keeps_robot_proximity_unsafe():
     ledger = PhysicalContactLedger(.003)
     key = ("/payload", "/receiver/TopCollision", "/payload", "/receiver/TopCollision")
+    receiver_top_owners = {"/receiver/TopCollision": "/receiver"}
     record = {}
     ledger.observe(
         key, [.020], lost=False, time_s=0., trajectory_time_s=0., record=record
     )
-    assert not physical_support_contact_observed(ledger.active_headers, "/payload", {"/receiver"})
+    assert not physical_support_contact_observed(ledger.active_headers, "/payload", {"/receiver"}, receiver_top_owners)
     assert record["physical_contact_observed"] is False
     assert premature_physical_conveyor_contacts([record], place_start_s=1., time_tolerance_s=.01) == []
     assert robot_proximity_is_safety_relevant({"actor0": "/robot/J6", "actor1": "/payload",
@@ -215,7 +221,8 @@ def test_physical_layer_rejects_20mm_support_but_keeps_robot_proximity_unsafe():
             trajectory_time_s=.5,
             record=record,
         )
-        assert physical_support_contact_observed(ledger.active_headers, "/payload", {"/receiver"})
+        assert physical_support_contact_observed(ledger.active_headers, "/payload", {"/receiver"}, receiver_top_owners)
+        assert not physical_support_contact_observed(ledger.active_headers, "/payload", {"/receiver"}, {})
     # Classification uses the trajectory clock, not a physical clock that may
     # include bounded waits.  Contact during PLACE is legal from its start.
     assert premature_physical_conveyor_contacts(
@@ -225,7 +232,7 @@ def test_physical_layer_rejects_20mm_support_but_keeps_robot_proximity_unsafe():
         [record], place_start_s=.52, time_tolerance_s=.01
     ) == [record]
     ledger.observe(key, [.02], lost=False, time_s=.6, record=record)
-    assert not physical_support_contact_observed(ledger.active_headers, "/payload", {"/receiver"})
+    assert not physical_support_contact_observed(ledger.active_headers, "/payload", {"/receiver"}, receiver_top_owners)
     assert record["physical_contact_observed"] is True  # historical evidence retained
 
 
