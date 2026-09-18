@@ -203,3 +203,24 @@ def test_real_runtime_callback_collects_stack_evidence_before_production_adjudic
     # must route this pair to the same production step adjudicator used in Isaac.
     assert len(g.contacts)==1 and ns['contact_pairs']
     assert not finish(g,m,.006)['hold'] and m.free_space_reached
+
+
+def test_real_runtime_action_conditions_respect_unresolved_production_hold():
+    tree=ast.parse(Path('scripts/isaacsim_fanuc_replay.py').read_text(encoding='utf-8'))
+    tests=[n.test for n in ast.walk(tree) if isinstance(n,ast.If)]
+    def condition(required):
+        found=[t for t in tests if required <= {n.id for n in ast.walk(t) if isinstance(n,ast.Name)}
+               and not any(isinstance(n,ast.Name) and n.id=='requested_duration' for n in ast.walk(t))]
+        assert len(found)==1
+        return compile(ast.Expression(found[0]),'production_action_condition','eval')
+    grasp=condition({'grasp_event_time','target_body','grasp_commanded'})
+    release=condition({'release_event_time','grasp_enabled','release_commanded'})
+    takeover=condition({'ideal_reception_mode','release_open_confirmed','assumed_reception_state'})
+    g,m=setup();start(g,m,.006);contact(g,[point(-.001)]);assert finish(g,m,.006)['hold']
+    ns=dict(stack_clearance_step=g,target_body=object(),grasp_enabled=True,grasp_commanded=False,release_commanded=False,
+            grasp_event_time=1.,release_event_time=1.,trajectory_time=2.,ideal_reception_mode=True,
+            release_open_confirmed=True,assumed_reception_state=None)
+    assert not eval(grasp,ns) and not eval(release,ns) and not eval(takeover,ns)
+
+    g.hold=False  # the same production branches open after a resolved step
+    assert eval(grasp,ns) and eval(release,ns) and eval(takeover,ns)

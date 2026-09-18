@@ -3682,6 +3682,7 @@ try:
             if (
                 target_body is not None
                 and not grasp_commanded
+                and not bool(stack_clearance_step is not None and stack_clearance_step.hold)
                 and grasp_event_time is not None
                 and trajectory_time >= float(grasp_event_time)
             ):
@@ -3951,6 +3952,7 @@ try:
             if (
                 grasp_enabled
                 and not release_commanded
+                and not bool(stack_clearance_step is not None and stack_clearance_step.hold)
                 and release_event_time is not None
                 and trajectory_time >= float(release_event_time)
             ):
@@ -4158,7 +4160,7 @@ try:
             receiver_monitor_stride = min(args.render_every, max(1, int(physics_hz / 15)))
             monitor_receivers = (step + 1) % receiver_monitor_stride == 0 or step == physics_steps - 1
             _advance_ideal_bodies(physics_dt)
-            if stack_clearance_step is not None:
+            if stack_clearance_step is not None and target_carton_path not in ideal_actor_paths:
                 stack_clearance_step.begin_step(step=step, time_s=simulation_time,
                     trajectory_time_s=trajectory_time, context=contact_runtime_context,
                     states=_capture_carton_states())
@@ -4167,7 +4169,7 @@ try:
             simulation_time = (step + 1) * physics_dt
             if conveyor_enabled:
                 _update_conveyor_visual_markers(physics_dt, apply_transforms=render)
-            if stack_clearance_step is not None:
+            if stack_clearance_step is not None and stack_clearance_step.open:
                 outcome = stack_clearance_step.finish_step(states=_capture_carton_states(),
                     time_s=simulation_time, monitor=stack_monitor,
                     commanded_motion=bool(grasp_enabled and not release_commanded and not hold_trajectory))
@@ -4613,7 +4615,8 @@ try:
                     support_surface_velocity_world_m_s=_actual_receiver_velocity(),
                     evaluate_stability=not ideal_outfeed_mode)
                 ideal_region_valid = False
-                if ideal_reception_mode and release_open_confirmed and assumed_reception_state is None:
+                if (ideal_reception_mode and release_open_confirmed and assumed_reception_state is None
+                        and not bool(stack_clearance_step is not None and stack_clearance_step.hold)):
                     ideal_takeover_audit = ideal_release_handoff.audit_takeover(metadata,
                         world_id=str(run_started_unix_s), task_id=str(session_segment_index),
                         receiver=place_surface, transport_policy=post_landing_policy,
@@ -5430,6 +5433,7 @@ try:
             "actual_stack_contact_monitor": None if stack_monitor is None else stack_monitor.summary(),
             "stack_clearance_semantics": None if stack_clearance_step is None else {
                 "source": "POST_STEP_VERIFIED_NATIVE_BOX_GEOMETRY", "counts": dict(stack_clearance_step.counts),
+                "physical_monitoring_ended_at_ideal_takeover": target_carton_path in ideal_actor_paths,
                 "shape_fingerprint": stack_clearance_step.shape_fingerprint,
                 "transitions": stack_clearance_step.transitions,
                 "first_evidence_conflict": stack_clearance_step.first_conflict,
