@@ -1,0 +1,80 @@
+{
+  "capture": {
+    "capture_id": "carton-assets-capture-f24f63a:module_0_upper:100",
+    "consumed_files": {
+      "camera_info.json": {
+        "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/camera_info.json",
+        "sha256": "06fa09c365c92a4a3e0fa19ca62b0d70270c76f5bea9fbf750376376bc92f44f"
+      },
+      "capture_binding.json": {
+        "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/capture_binding.json",
+        "sha256": "acd75102fe2e75215a108c54c3a436a6f7cef9b0fbdab3ec352c9fe72add607b"
+      },
+      "capture_metadata.json": {
+        "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/capture_metadata.json",
+        "sha256": "64c6b049ae405701ab02f948c273b26ff841f48c4e8b41cfa20f88f5881f80b3"
+      },
+      "gt_annotations.json": {
+        "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/gt_annotations.json",
+        "sha256": "e083c5e8181c67d03a3e8e0651d87fee70b937b416a5327d708c16ffdb2c967d"
+      },
+      "gt_instance_masks.npz": {
+        "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/gt_instance_masks.npz",
+        "sha256": "a69d074a8a0d40f8d1664a4981a53a9729137472e7665613b3d8a20562136d07"
+      },
+      "metric_depth_m.npy": {
+        "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/metric_depth_m.npy",
+        "sha256": "c51f27ab6bbab7f4ee4e6e8b67d3cec9d2b662855c819a4fe5bfea93ea7ab9cd"
+      },
+      "sensor_rgb.png": {
+        "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/sensor_rgb.png",
+        "sha256": "c4fbcfd5ce8505a7404d63d2ddeeefbf50db54d063ddd172a45dc585e4577c03"
+      }
+    },
+    "derived_inputs": {},
+    "frame_sequence": 100,
+    "input_directory": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper",
+    "module_id": "module_0_upper",
+    "original_binding": {
+      "camera_calibration_identity": "372d53029e85bd0e617ee1a2e523319c0d818ee4f47bc60f0d06f637ec7fe3b0",
+      "capture_metadata_sha256": "64c6b049ae405701ab02f948c273b26ff841f48c4e8b41cfa20f88f5881f80b3",
+      "frame_sequence": 100,
+      "gt_snapshot_sha256": "e083c5e8181c67d03a3e8e0651d87fee70b937b416a5327d708c16ffdb2c967d",
+      "instance_masks_sha256": "a69d074a8a0d40f8d1664a4981a53a9729137472e7665613b3d8a20562136d07",
+      "metric_depth_sha256": "c51f27ab6bbab7f4ee4e6e8b67d3cec9d2b662855c819a4fe5bfea93ea7ab9cd",
+      "module_id": "module_0_upper",
+      "rgb_sha256": "c4fbcfd5ce8505a7404d63d2ddeeefbf50db54d063ddd172a45dc585e4577c03",
+      "schema_version": "isaac_capture_binding_v1",
+      "simulation_epoch": "carton-assets-capture-f24f63a",
+      "simulation_time": 1.6666666666666667
+    },
+    "original_rgb_npy_consumed": false,
+    "rgb_authority": "VERIFIED_PNG",
+    "sensor_epoch": "carton-assets-capture-f24f63a",
+    "source_directory": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/capture-f24f63a/FULL_STACK_NOMINAL/modules/module_0_upper"
+  },
+  "derived_pointmap": {
+    "gt_geometry_used_for_filtering": false,
+    "parent_depth_sha256": "c51f27ab6bbab7f4ee4e6e8b67d3cec9d2b662855c819a4fe5bfea93ea7ab9cd",
+    "parent_rgb_sha256": "c4fbcfd5ce8505a7404d63d2ddeeefbf50db54d063ddd172a45dc585e4577c03",
+    "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/registered_metric_pointmap.npz",
+    "sha256": "90b6254d9071a2bb593fe029dad1276201651f6543a6b3af40efa014342234db"
+  },
+  "external_geometry_command": [
+    "/root/v05-gpu-venv/bin/python",
+    "/root/vision-fixed/pipeline/geometry/recover_box_cuboids_3d.py",
+    "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/sensor_rgb.png",
+    "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/sam-runs/carton-assets-capture-f24f63a-000100-80d4988224e04069bdee66eab0f5695f-module_0_upper/cargo_masks.npz",
+    "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/registered_metric_pointmap.npz",
+    "--faces-json",
+    "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/sam-runs/carton-assets-capture-f24f63a-000100-80d4988224e04069bdee66eab0f5695f-module_0_upper/box_geometry_2d.json",
+    "--relative-threshold",
+    "0.003",
+    "--seed",
+    "17",
+    "--json-output",
+    "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/rgbd_cuboids_baseline_raw.json",
+    "--output",
+    "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/rgbd_cuboids_baseline.png"
+  ]
+}

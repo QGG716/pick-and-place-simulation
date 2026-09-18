@@ -1,0 +1,144 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-09-18-16-03-59-181329-autodl-container-qlct8ugcxh-6f0e9741-44019
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [mock_state_publisher-1]: process started with pid [44020]
+[INFO] [perception_node-2]: process started with pid [44022]
+[INFO] [world_bridge_node-3]: process started with pid [44024]
+[world_bridge_node-3] [WARN] [1789718641.736193298] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718642.800679415] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718643.834765924] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718644.896833880] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718646.568502601] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718647.920960868] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718649.060813537] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718650.219305832] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718651.953912110] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718653.297809662] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718654.430394997] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718655.567791168] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718657.300713618] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718658.660700808] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718659.787608952] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718660.963703007] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718662.687214109] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718664.008352343] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718665.155001821] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718666.297030487] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[world_bridge_node-3] [WARN] [1789718668.044279283] [unloading_world_bridge]: display: ('03e2a790-23f1-473b-ba82-d270c79c56f3', 'frame-local', 0, 0, 'fusion-9aa52cf3a9a0de862db7'): no displayable geometry; HISTORICAL REPLAY / READ ONLY; candidate_eligible=False; association=UNASSOCIATED_RETAINED; geometry_validity=INVALID; representatives=0; raw source patches=0
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[perception_node-2] Traceback (most recent call last):
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/perception_node.py", line 138, in main
+[perception_node-2]     rclpy.spin(node)
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 229, in spin
+[perception_node-2]     executor.spin_once()
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 808, in spin_once
+[perception_node-2]     self._spin_once_impl(timeout_sec)
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 803, in _spin_once_impl
+[perception_node-2]     handler()
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/task.py", line 256, in __call__
+[perception_node-2]     self._execute_coroutine_step(self._handler)
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/task.py", line 272, in _execute_coroutine_step
+[perception_node-2]     result = coro.send(None)
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 488, in handler
+[perception_node-2]     await call_coroutine(entity, arg)
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 396, in _execute_timer
+[perception_node-2]     await await_or_execute(tmr.callback)
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 110, in await_or_execute
+[perception_node-2]     return callback(*args)
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/perception_node.py", line 104, in poll
+[perception_node-2]     self.publisher.publish(observation_to_msg(observation))
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/mapping.py", line 216, in observation_to_msg
+[perception_node-2]     message.cargo = [cargo_to_msg(item) for item in observation.cargo]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/mapping.py", line 216, in <listcomp>
+[perception_node-2]     message.cargo = [cargo_to_msg(item) for item in observation.cargo]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/mapping.py", line 152, in cargo_to_msg
+[perception_node-2]     message.observed_surfaces_json = json.dumps(to_wire(cargo.observed_surfaces), sort_keys=True, separators=(",", ":"))
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in to_wire
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in <listcomp>
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in to_wire
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in <dictcomp>
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in to_wire
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in <dictcomp>
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in to_wire
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in <listcomp>
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in to_wire
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in <dictcomp>
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in to_wire
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in <listcomp>
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in to_wire
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in <dictcomp>
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in to_wire
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in <listcomp>
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in to_wire
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 22, in <dictcomp>
+[perception_node-2]     return {str(key): to_wire(item) for key, item in value.items()}
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in to_wire
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 24, in <listcomp>
+[perception_node-2]     return [to_wire(item) for item in value]
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/packages/unloading_contracts/src/unloading_contracts/wire.py", line 13, in to_wire
+[perception_node-2]     def to_wire(value: Any) -> Any:
+[perception_node-2] KeyboardInterrupt
+[perception_node-2] 
+[perception_node-2] During handling of the above exception, another exception occurred:
+[perception_node-2] 
+[perception_node-2] Traceback (most recent call last):
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/humble/single/install/unloading_ros_bridge/lib/unloading_ros_bridge/perception_node", line 33, in <module>
+[perception_node-2]     sys.exit(load_entry_point('unloading-ros-bridge', 'console_scripts', 'perception_node')())
+[perception_node-2]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/perception_node.py", line 141, in main
+[perception_node-2]     rclpy.shutdown()
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 130, in shutdown
+[perception_node-2]     _shutdown(context=context)
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/utilities.py", line 58, in shutdown
+[perception_node-2]     return context.shutdown()
+[perception_node-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/context.py", line 102, in shutdown
+[perception_node-2]     self.__context.shutdown()
+[perception_node-2] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:241
+[mock_state_publisher-1] Traceback (most recent call last):
+[mock_state_publisher-1]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/mock_state_publisher.py", line 55, in main
+[mock_state_publisher-1]     rclpy.spin(node)
+[mock_state_publisher-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 229, in spin
+[mock_state_publisher-1]     executor.spin_once()
+[mock_state_publisher-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 808, in spin_once
+[mock_state_publisher-1]     self._spin_once_impl(timeout_sec)
+[mock_state_publisher-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 797, in _spin_once_impl
+[mock_state_publisher-1]     handler, entity, node = self.wait_for_ready_callbacks(timeout_sec=timeout_sec)
+[mock_state_publisher-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 780, in wait_for_ready_callbacks
+[mock_state_publisher-1]     return next(self._cb_iter)
+[mock_state_publisher-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 677, in _wait_for_ready_callbacks
+[mock_state_publisher-1]     wait_set.wait(timeout_nsec)
+[mock_state_publisher-1] KeyboardInterrupt
+[mock_state_publisher-1] 
+[mock_state_publisher-1] During handling of the above exception, another exception occurred:
+[mock_state_publisher-1] 
+[mock_state_publisher-1] Traceback (most recent call last):
+[mock_state_publisher-1]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/humble/single/install/unloading_ros_bridge/lib/unloading_ros_bridge/mock_state_publisher", line 33, in <module>
+[mock_state_publisher-1]     sys.exit(load_entry_point('unloading-ros-bridge', 'console_scripts', 'mock_state_publisher')())
+[mock_state_publisher-1]   File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/mock_state_publisher.py", line 58, in main
+[mock_state_publisher-1]     rclpy.shutdown()
+[mock_state_publisher-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 130, in shutdown
+[mock_state_publisher-1]     _shutdown(context=context)
+[mock_state_publisher-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/utilities.py", line 58, in shutdown
+[mock_state_publisher-1]     return context.shutdown()
+[mock_state_publisher-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/context.py", line 102, in shutdown
+[mock_state_publisher-1]     self.__context.shutdown()
+[mock_state_publisher-1] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:241
+[ERROR] [mock_state_publisher-1]: process has died [pid 44020, exit code 1, cmd '/root/autodl-tmp/v05-acceptance/single-handoff-20260918/humble/single/install/unloading_ros_bridge/lib/unloading_ros_bridge/mock_state_publisher --ros-args --params-file /tmp/launch_params_nl1pl2ln'].
+[ERROR] [perception_node-2]: process has died [pid 44022, exit code 1, cmd '/root/autodl-tmp/v05-acceptance/single-handoff-20260918/humble/single/install/unloading_ros_bridge/lib/unloading_ros_bridge/perception_node --ros-args --params-file /tmp/launch_params_nd79_105'].
+[INFO] [world_bridge_node-3]: process has finished cleanly [pid 44024]

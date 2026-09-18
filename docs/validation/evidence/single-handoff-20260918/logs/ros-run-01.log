@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/tools/probe_algorithm_replay.py", line 135, in <module>
+    print(json.dumps(probe(args.artifact.resolve(), args.artifact_sha256, args.output_directory, args.domain_id), indent=2))
+  File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/tools/probe_algorithm_replay.py", line 24, in probe
+    original, index = load_algorithm_artifact(artifact, digest)
+  File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/src/unloading_perception/algorithm_artifact.py", line 83, in load_algorithm_artifact
+    raw = _read_reference({'path': str(index_path), 'sha256': expected_sha256}, index_path.parent)
+  File "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/repo/src/unloading_perception/algorithm_artifact.py", line 76, in _read_reference
+    raise ValueError('ALGORITHM_ARTIFACT_HASH_MISMATCH: ' + path.name)
+ValueError: ALGORITHM_ARTIFACT_HASH_MISMATCH: algorithm_artifact.json

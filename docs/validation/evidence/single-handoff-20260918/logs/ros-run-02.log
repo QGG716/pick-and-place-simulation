@@ -1,0 +1,36 @@
+{
+  "status": "ACTUAL_DDS_READ_ONLY_HANDOFF_PASS",
+  "algorithm_run_id": "80d4988224e04069bdee66eab0f5695f",
+  "artifact": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/algorithm_artifact.json",
+  "artifact_sha256": "c91e80018c7b46b98bcf7b701da5faa2869e5b22f4e97993bc8721bd5ebc7b58",
+  "original_observation": {
+    "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/fused_algorithm_observation.json",
+    "sha256": "10325061e95ba204fb2c1e7eb42f4eb60e31b252c94005732f9993e9242fc7f8"
+  },
+  "original_epoch": "carton-assets-capture-f24f63a",
+  "original_sequence": 100,
+  "original_capture_time": 1.6666666666666667,
+  "original_clock_domain": "ros_sim_time",
+  "replay_session": "03e2a790-23f1-473b-ba82-d270c79c56f3",
+  "planning_admissible": false,
+  "blocking_reasons": [
+    "HISTORICAL_REPLAY_DISPLAY_ONLY",
+    "UNKNOWN_OR_UNTRANSFORMED_REGIONS",
+    "ROBOT_STATE_STALE_OR_TIME_JUMP"
+  ],
+  "cargo_count": 37,
+  "raw_surface_count": 71,
+  "marker_representative_count": 71,
+  "module_surface_counts": {
+    "module_0_upper": 23,
+    "module_1_lower": 48
+  },
+  "unknown_region_count": 121,
+  "perception_publishers": [
+    "unloading_perception"
+  ],
+  "execution_authorizations": 0,
+  "late_subscriber_pass": true,
+  "auxiliary_state": "DISPLAY_ONLY_MOCK_NOT_MEASURED_AT_CAPTURE",
+  "rviz_visual_check": false
+}

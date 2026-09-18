@@ -34,6 +34,7 @@ class PerceptionNode(Node):
         super().__init__("unloading_perception")
         self.declare_parameter("backend", "replay")
         self.declare_parameter("replay_path", "")
+        self.declare_parameter("artifact_sha256", "")
         self.declare_parameter("input_image", "")
         self.declare_parameter("input_width", 0)
         self.declare_parameter("input_height", 0)
@@ -54,13 +55,18 @@ class PerceptionNode(Node):
         self.worker_pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="cargo-gpu-worker")
         qos = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE)
         self.publisher = self.create_publisher(PerceptionObservation, "/unloading/perception", qos)
-        if self.mode == "replay":
+        if self.mode in ("replay", "algorithm_replay"):
             self.path = Path(str(self.get_parameter("replay_path").value)).resolve()
             if not self.path.is_file():
                 raise RuntimeError(f"replay_path does not exist: {self.path}")
-            self.backend = CargoJsonReplayBackend(str(self.get_parameter("upstream_commit").value))
-            # Pin one immutable file record for this session, including its exact bytes hash.
-            self.replay_record = self.backend.read(self.path, replay_epoch=self.epoch)
+            self.backend = None
+            if self.mode == 'algorithm_replay':
+                from unloading_perception.algorithm_artifact import algorithm_replay_record
+                self.replay_record = algorithm_replay_record(self.path,
+                    str(self.get_parameter('artifact_sha256').value), self.epoch)
+            else:
+                self.backend = CargoJsonReplayBackend(str(self.get_parameter("upstream_commit").value))
+                self.replay_record = self.backend.read(self.path, replay_epoch=self.epoch)
             self.replay_started = time.monotonic()
         elif self.mode == "pipeline":
             self.path = Path(str(self.get_parameter("input_image").value)).resolve()
@@ -86,11 +92,11 @@ class PerceptionNode(Node):
                 resident=bool(self.get_parameter("worker_resident").value),
             )
         else:
-            raise RuntimeError("backend must be exactly 'replay' or 'pipeline'; simulation truth is never an implicit fallback")
+            raise RuntimeError("backend must be replay, algorithm_replay or pipeline; simulation truth is never an implicit fallback")
         self.timer = self.create_timer(float(self.get_parameter("publish_period_seconds").value), self.poll)
 
     def poll(self) -> None:
-        if self.mode == "replay":
+        if self.mode in ("replay", "algorithm_replay"):
             now = self.get_clock().now().nanoseconds / 1e9
             observation = replay_publication(self.replay_record, sequence=self.sequence,
                 elapsed=time.monotonic() - self.replay_started, published_time=now,

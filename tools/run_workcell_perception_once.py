@@ -7,6 +7,7 @@ import sys
 import tempfile
 import traceback
 import uuid
+from time import perf_counter
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'src'), str(ROOT / 'packages/unloading_contracts/src')]
@@ -159,10 +160,12 @@ def evaluate_masks(folder, artifacts, output, *, payload):
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--capture',type=Path,required=True);p.add_argument('--vision',type=Path,required=True)
-    p.add_argument('--models',type=Path,required=True);a=p.parse_args(argv)
+    p.add_argument('--models',type=Path,required=True)
+    p.add_argument('--output-directory',type=Path,help='new isolated run directory; refuse overwrite')
+    a=p.parse_args(argv)
     try:
         a.capture, a.vision = a.capture.resolve(), a.vision.resolve()
-        output=a.capture/'perception-once'
+        output=(a.output_directory or a.capture/'perception-once').resolve()
         output.mkdir(exist_ok=False)
     except Exception as exc:
         print(f'output_directory: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
@@ -171,8 +174,18 @@ def main(argv=None):
                'expected_module_count': None, 'errors': [], 'stage': 'initial_summary'}
     runtime = active = interrupted = None
     interrupted_code = None
+    results = {}
+    stage_started = perf_counter()
 
     def checkpoint(stage, row=None):
+        nonlocal stage_started
+        now = perf_counter()
+        summary.setdefault('stage_seconds', {}).setdefault(summary['stage'], 0.)
+        summary['stage_seconds'][summary['stage']] += now - stage_started
+        if active is not None and active['status'] == 'RUNNING':
+            times = active.setdefault('stage_seconds', {})
+            times[active['stage']] = times.get(active['stage'], 0.) + now - stage_started
+        stage_started = now
         summary['stage'] = stage
         if row is not None:
             row['stage'] = stage
@@ -225,6 +238,12 @@ def main(argv=None):
             active = None
         if not prepared:
             raise RuntimeError('no valid capture payloads; model runtime was not initialized')
+        checkpoint('capture_group')
+        # Existing fusion contract checks epoch, sequence and capture skew before ML.
+        from unloading_perception.fusion import ModuleFaceBatch, fuse_module_face_batches
+        fuse_module_face_batches([ModuleFaceBatch(module, p.metadata.sensor_epoch,
+            p.metadata.frame_sequence, p.metadata.capture_center_time, ()) for module, p in prepared.items()],
+            expected_modules=modules)
         checkpoint('models')
         models = summary['model_manifest'] = _read_json(a.models)
         checkpoint('config')
@@ -275,7 +294,8 @@ def main(argv=None):
                     checkpoint('empty_segmentation_result', row)
                     _write_json(folder/'rgbd_cuboids.json', {'instances': [], 'reason': 'EMPTY_SEGMENTATION',
                                                          'run_id': summary['run_id']})
-                    result = {'observed_face_sets': ()}
+                    from unloading_perception.algorithm_artifact import empty_module_observation
+                    result = {'observed_face_sets': (), 'observation': empty_module_observation(payload)}
                     row['metric_not_run_reason'] = 'EMPTY_SEGMENTATION'
                 else:
                     checkpoint('metric_geometry', row)
@@ -287,6 +307,7 @@ def main(argv=None):
                 checkpoint('geometry_result', row)
                 geometry = _read_json(_owned_file(folder/'rgbd_cuboids.json', folder))
                 row.update(_algorithm_counts(result, geometry, count))
+                results[module] = result
                 row.update(status=COMPLETED, stage='completed')
             except SummaryWriteError:
                 raise
@@ -303,6 +324,14 @@ def main(argv=None):
         checkpoint('runtime_guard')
         if runtime.moge_model is not None:
             raise RuntimeError('unexpected MoGe model in SAM-only runtime')
+        if all(row['status'] == COMPLETED for row in summary['runs']):
+            checkpoint('algorithm_handoff')
+            from unloading_perception.algorithm_artifact import publish_algorithm_run
+            summary['algorithm_artifact'] = publish_algorithm_run(output, results, expected_modules=modules,
+                run_id=summary['run_id'], models=models, config=config, write_json=_write_json)
+            checkpoint('algorithm_handoff_finished')
+        else:
+            summary['handoff_not_run_reason'] = 'MISSING_CURRENT_RUN_MODULE'
     except (KeyboardInterrupt, SystemExit) as exc:
         interrupted = exc
         interrupted_code = (130 if isinstance(exc, KeyboardInterrupt) else

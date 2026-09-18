@@ -316,6 +316,9 @@ class WorldBridgeNode(Node):
         try:
             observation = observation_from_msg(message)
             metadata = validate_replay_observation(observation, require_publication=True)
+            if observation.provider == 'registered-rgbd-fused-algorithm':
+                from unloading_perception.algorithm_artifact import validate_algorithm_replay
+                validate_algorithm_replay(observation)
             identity = canonical_fingerprint({
                 'record': {k: v for k, v in metadata.items() if k not in (
                     'publication_sequence', 'session_elapsed_seconds', 'published_time', 'publication_clock_domain')},

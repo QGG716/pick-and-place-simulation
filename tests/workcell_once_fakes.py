@@ -161,7 +161,13 @@ def install(monkeypatch, capture):
             (folder / 'rgbd_cuboids.json').unlink()
         if mode(folder) == 'missing_face_sets':
             return {}
-        return {"observed_face_sets": (), "observation": SimpleNamespace(status="FAILED" if mode(folder) == 'observation_failed' else "PARTIAL")}
+        from dataclasses import replace
+        from unloading_contracts import ObservationStatus
+        from unloading_perception.algorithm_artifact import empty_module_observation
+        observation = empty_module_observation(kwargs['payload'])
+        if mode(folder) == 'observation_failed':
+            observation = replace(observation, status=ObservationStatus.FAILED, failure_code='CPU_TEST_FAILURE')
+        return {"observed_face_sets": (), "observation": observation}
 
     matrix = ModuleType("run_metric_small_matrix")
     matrix.oracle_proposals, matrix.infer = proposals, infer
