@@ -74,16 +74,27 @@ def ideal_transport_ids(policy, records):
 def begin_ideal_transport(box: OBB, *, receiver_name, receivers, directions,
                           time_s, policy, attachment_removed, top_contact_observed,
                           support_geometry_accepted, expected_target=None, actual_attachment_observed=False,
-                          maximum_drop_m=.05, reception_supports=None, release_policy=None):
+                          maximum_drop_m=.05, reception_supports=None, release_policy=None,
+                          released_handoff=None):
     policy = transport_policy(policy)
     assumed = policy.get("reception_mode") == "ideal"
     region = None
     if assumed:
         if box.name != expected_target or not actual_attachment_observed:
             raise ValueError("ideal reception requires the actually attached task target")
-        from .release_motion import ideal_reception_region
-        region = ideal_reception_region(box, reception_supports or [receivers[receiver_name]],
-                                        maximum_drop_m=maximum_drop_m, policy=release_policy)
+        if released_handoff is None:
+            raise ValueError("ideal takeover requires measured legal release evidence")
+        region = released_handoff.takeover_region(box, time_s=time_s, receiver=receiver_name, policy=policy)
+        if (maximum_drop_m != region["height_policy"]["maximum_drop_m"]
+                or release_policy is not None and release_policy.to_mapping() != region["height_policy"]):
+            raise ValueError("ideal takeover release policy differs from the receipt")
+        supports = reception_supports or [receivers[receiver_name]]
+        bound_supports = region["support"]["support_obbs"]
+        if len(supports) != len(bound_supports) or any(
+                not any(s.name == r["name"] and np.array_equal(s.world_from_local, r["pose_world"])
+                        and np.array_equal(s.half_extents, r["half_extents_m"]) for s in supports)
+                for r in bound_supports):
+            raise ValueError("ideal takeover receiver geometry differs from the receipt")
         if not region["accepted"]:
             raise ValueError("ideal reception region rejected")
     if (policy["mode"] != "ideal_outfeed" or not attachment_removed
@@ -91,6 +102,8 @@ def begin_ideal_transport(box: OBB, *, receiver_name, receivers, directions,
         raise ValueError("ideal takeover requires actual release and qualified first top contact")
     if receiver_name not in receivers:
         raise ValueError("unknown actual receiving conveyor")
+    if released_handoff is not None and released_handoff._record is not None:
+        return released_handoff._record
     longitudinal = next((b for name, b in receivers.items()
                          if np.allclose(directions[name], [-1., 0., 0.])), None)
     if longitudinal is None:
@@ -115,7 +128,7 @@ def begin_ideal_transport(box: OBB, *, receiver_name, receivers, directions,
     if exit_x >= box.center[0]:
         raise ValueError("output plane must be downstream of actual landing")
     route.append([exit_x, route[-1][1] if route else float(box.center[1]), float(box.center[2])])
-    return {"carton_id": box.name, "state": LANDED,
+    record = {"carton_id": box.name, "state": LANDED,
             "completion_source": RECEPTION_SOURCE if assumed else LANDING_SOURCE, "attachment_removed": True,
             "actual_attachment_observed": bool(actual_attachment_observed), "reception_region": region,
             "actual_top_contact_observed": bool(top_contact_observed), "receiver": receiver_name,
@@ -128,6 +141,10 @@ def begin_ideal_transport(box: OBB, *, receiver_name, receivers, directions,
             "model": ("SAME_BODY_BOUNDED_IDEAL_RECEPTION" if assumed else
                       "SAME_BODY_KINEMATIC_COLLISION_DISABLED_AFTER_ACTUAL_LANDING"),
             "post_landing_physics_qualified": False}
+    if released_handoff is not None:
+        record["release_handoff_evidence"] = released_handoff.evidence()
+        released_handoff._record = record
+    return record
 
 
 def advance_ideal_transport(record, *, dt_s, speed_m_s):

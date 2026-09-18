@@ -14,6 +14,7 @@ from unloading_sim.post_landing_transport import begin_ideal_transport, advance_
 from unloading_sim.serial_unloading import apply_actual_motion_state
 from unloading_sim.workcell_layout import canonical_digest
 from test_serial_unloading import actual, scene
+from ideal_handoff_fixture import measured_handoff
 
 
 @pytest.fixture
@@ -42,7 +43,8 @@ def ideal_state(scene, names):
             directions=strategy["surface_directions_world"], time_s=2.,
             policy=strategy["post_landing_transport"], attachment_removed=True,
             top_contact_observed=False, support_geometry_accepted=False,
-            expected_target=name, actual_attachment_observed=True)
+            expected_target=name, actual_attachment_observed=True,
+            released_handoff=measured_handoff(box,receiver,strategy["post_landing_transport"],2.))
         next(r for r in state["cartons"] if r["name"] == name)["position_m"] = center.tolist()
     state.update(receiver_transport_state=records, ideal_received_ids=list(names), processed_carton_ids=list(names))
     return state

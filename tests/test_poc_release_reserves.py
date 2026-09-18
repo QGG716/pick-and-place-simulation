@@ -16,6 +16,7 @@ from unloading_sim.planning_profile import DEFAULT_MOTION
 from test_adaptive_release_motion import deck, carton
 from test_poc_pair_clearance import policy
 from test_post_landing_transport import POLICY
+from ideal_handoff_fixture import measured_handoff
 
 
 @pytest.mark.parametrize("height,accepted", [(0,False),(.010,False),(.015,False),(.019999,False),
@@ -83,7 +84,8 @@ def test_approved_same_body_can_descend_below_twenty_without_a_second_release_ga
     p={**POLICY,'reception_mode':'ideal'}; box=carton(.025)
     record=begin_ideal_transport(box,receiver_name='belt',receivers={'belt':deck()},
         directions={'belt':[-1,0,0]},time_s=0,policy=p,attachment_removed=True,
-        top_contact_observed=False,support_geometry_accepted=False,expected_target='box',actual_attachment_observed=True)
+        top_contact_observed=False,support_geometry_accepted=False,expected_target='box',actual_attachment_observed=True,
+        released_handoff=measured_handoff(box,deck(),p,0))
     advance_ideal_transport(record,dt_s=.05,speed_m_s=.3)
     assert record['pose_world'][2][3]==pytest.approx(.760)
     assert record['reception_region']['gap_m']==pytest.approx(.025)

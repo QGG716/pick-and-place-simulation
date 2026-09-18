@@ -434,16 +434,28 @@ def payload_gravity_compensation(jacobian_world, tcp_position_world, payload_com
 def audit_runtime_short_drop(metadata, *, position, rotation, linear_velocity,
                              angular_velocity, current_cartons):
     """Recheck the real release state and current receiver occupancy."""
-    from .geometry import OBB
     from .release_motion import ReleasePolicy, SHORT_DROP_RELEASE, predict_release
-    primitives = {item["name"]: item for item in metadata["scene_primitives"]}
-    target = primitives[metadata["target"]]
     planned = metadata["release_prediction"]
     policy = ReleasePolicy(**planned["policy"])
     release_pose = np.asarray(planned["release_pose_world"], float)
     if (np.linalg.norm(np.asarray(position) - release_pose[:3, 3]) > 0.003
             or np.linalg.norm(np.asarray(rotation) - release_pose[:3, :3]) > 0.02):
         return {"accepted": False, "reason": "ACTUAL_RELEASE_REGION_MISMATCH"}
+    box, supports, obstacles = _runtime_release_geometry(metadata, position, rotation, current_cartons)
+    if box is None:
+        return obstacles
+    return predict_release(box, supports, mode=metadata.get("release_mode", SHORT_DROP_RELEASE),
+        linear_velocity=linear_velocity, angular_velocity=angular_velocity, obstacles=obstacles,
+        policy=policy, contact_tolerance_m=planned["landing_support"]["tolerance_m"],
+        edge_tolerance_m=planned["landing_support"]["edge_tolerance_m"])
+
+
+def _runtime_release_geometry(metadata, position, rotation, current_cartons):
+    from .geometry import OBB
+    from .release_motion import ReleasePolicy
+    primitives = {item["name"]: item for item in metadata["scene_primitives"]}
+    target = primitives[metadata["target"]]
+    policy = ReleasePolicy(**metadata["release_prediction"]["policy"])
     supports = [OBB(p["center_m"], np.asarray(p["size_m"]) / 2, p["rotation_matrix"], p["name"], "conveyor")
                 for p in primitives.values() if p["name"] in metadata["selected_place_support_names"]]
     actual = {p["name"]: p for p in current_cartons}
@@ -453,7 +465,7 @@ def audit_runtime_short_drop(metadata, *, position, rotation, linear_velocity,
             continue
         if primitive.get("dynamic"):
             if name not in actual:
-                return {"accepted": False, "reason": "ACTUAL_RELEASE_OBSTACLE_MISSING", "target": name}
+                return None, None, {"accepted": False, "reason": "ACTUAL_RELEASE_OBSTACLE_MISSING", "target": name}
             record = actual[name]
             from .serial_unloading import rotation_from_actual_quaternion
             pose_rotation = rotation_from_actual_quaternion(record["quaternion_wxyz"])
@@ -468,10 +480,139 @@ def audit_runtime_short_drop(metadata, *, position, rotation, linear_velocity,
             obstacles.append(OBB(primitive["center_m"], np.asarray(primitive["size_m"]) / 2,
                                  primitive["rotation_matrix"], name, primitive.get("category", "fixed")))
     box = OBB(position, np.asarray(target["size_m"]) / 2, rotation, target["name"], "carton")
-    return predict_release(box, supports, mode=metadata.get("release_mode", SHORT_DROP_RELEASE),
-        linear_velocity=linear_velocity, angular_velocity=angular_velocity, obstacles=obstacles,
-        policy=policy, contact_tolerance_m=planned["landing_support"]["tolerance_m"],
-        edge_tolerance_m=planned["landing_support"]["edge_tolerance_m"])
+    return box, supports, obstacles
+
+
+class IdealReleaseHandoff:
+    """One task's measured release receipt and bounded first-takeover gate.
+
+    Constructed by the runtime before removal, never from a serialized success
+    boolean. Evidence is copied on input/output; the original release audit is
+    retained separately from the falling body's current-state audit.
+    """
+
+    def __init__(self, metadata, *, world_id, task_id, receiver, transport_policy):
+        import copy
+        self._metadata = copy.deepcopy(metadata)
+        self._context = dict(world_id=str(world_id), task_id=str(task_id),
+            target=metadata["target"], receiver=receiver, transport_policy=copy.deepcopy(transport_policy))
+        if (not world_id or not str(task_id) or receiver not in metadata["selected_place_support_names"]
+                or metadata.get("release_mode") != "IDEAL_RECEPTION_RELEASE"
+                or transport_policy.get("reception_mode") != "ideal"):
+            raise ValueError("invalid ideal release handoff context")
+        self._release = self._removal = self._takeover = self._record = None
+
+    def evidence(self):
+        import copy
+        return copy.deepcopy(dict(context=self._context, release=self._release,
+                                  removal=self._removal, takeover=self._takeover))
+
+    def accept_release(self, *, time_s, **measurement):
+        import copy
+        if self._release is not None or not np.isfinite(time_s):
+            raise ValueError("release receipt cannot be replaced")
+        audit = audit_runtime_short_drop(self._metadata, **measurement)
+        if audit["accepted"]:
+            measurement = {k: v.tolist() if isinstance(v, np.ndarray) else v for k, v in measurement.items()}
+            self._release = copy.deepcopy(dict(time_s=float(time_s), measurement=measurement, audit=audit))
+        return audit
+
+    def confirm_independence(self, *, time_s, joint_present, translation_m, rotation_rad,
+                             minimum_translation_m, minimum_rotation_rad):
+        values = [time_s, translation_m, rotation_rad, minimum_translation_m, minimum_rotation_rad]
+        gates = self._metadata.get("actual_state_gates", {})
+        if (self._release is None or joint_present or not np.all(np.isfinite(values))
+                or min(values[1:]) < 0 or time_s <= self._release["time_s"]
+                or minimum_translation_m != gates.get("release_independence_translation_m", .002)
+                or minimum_rotation_rad != gates.get("release_independence_rotation_rad", .01)
+                or not (translation_m > minimum_translation_m or rotation_rad > minimum_rotation_rad)):
+            raise ValueError("ideal takeover requires measured constraint removal and independence")
+        self._removal = dict(time_s=float(time_s), joint_present=False,
+            relative_translation_m=float(translation_m), relative_rotation_rad=float(rotation_rad),
+            minimum_translation_m=float(minimum_translation_m), minimum_rotation_rad=float(minimum_rotation_rad))
+
+    def audit_takeover(self, metadata, *, world_id, task_id, receiver, transport_policy,
+                      target, time_s, joint_present, position, rotation, linear_velocity,
+                      angular_velocity, current_cartons):
+        import copy
+        from .geometry import OBB
+        from .release_motion import ReleasePolicy, flight_box, reception_footprint_audit
+        result = dict(accepted=False, reason="IDEAL_HANDOFF_MISSING_RELEASE_EVIDENCE")
+        def reject(reason):
+            result["reason"] = reason
+            self._takeover = copy.deepcopy(result)
+            return result
+        context = dict(world_id=str(world_id), task_id=str(task_id), target=target,
+                       receiver=receiver, transport_policy=transport_policy)
+        if context != self._context or metadata != self._metadata:
+            return reject("IDEAL_HANDOFF_CONTEXT_MISMATCH")
+        if self._release is None or self._removal is None or joint_present:
+            return reject("IDEAL_HANDOFF_MISSING_RELEASE_EVIDENCE")
+        policy = ReleasePolicy(**metadata["release_prediction"]["policy"])
+        elapsed = float(time_s) - self._release["time_s"]
+        result.update(time_s=float(time_s), elapsed_s=elapsed,
+                      actual_release_height_m=self._release["audit"]["height_m"])
+        if not np.isfinite(elapsed) or not 0 < elapsed <= policy.maximum_flight_s or time_s < self._removal["time_s"]:
+            return reject("IDEAL_HANDOFF_EXPIRED_OR_NONMONOTONIC")
+        try:
+            box, supports, obstacles = _runtime_release_geometry(metadata, position, rotation, current_cartons)
+            if box is None:
+                return reject(obstacles["reason"])
+            v, w = np.asarray(linear_velocity, float), np.asarray(angular_velocity, float)
+            flight_box(box, v, w, 0)  # finite shape/velocity validation
+            original = self._release["measurement"]
+            start = OBB(original["position"], box.half_extents, original["rotation"], box.name, box.category)
+            predicted = flight_box(start, original["linear_velocity"], original["angular_velocity"], elapsed, policy.gravity_m_s2)
+            position_error = float(np.linalg.norm(box.center - predicted.center))
+            position_limit = (policy.position_uncertainty_m + policy.velocity_uncertainty_m_s * elapsed
+                              + .5 * policy.gravity_m_s2 * elapsed * policy.prediction_step_s)
+            expected_v = np.asarray(original["linear_velocity"], float) - [0, 0, policy.gravity_m_s2 * elapsed]
+            velocity_error = float(np.linalg.norm(v - expected_v))
+            result.update(position_error_m=position_error, position_limit_m=position_limit,
+                          velocity_error_m_s=velocity_error, current_pose_world=box.world_from_local.tolist(),
+                          linear_velocity_m_s=v.tolist(), angular_velocity_rad_s=w.tolist())
+            if (position_error > position_limit or velocity_error > policy.velocity_uncertainty_m_s + policy.gravity_m_s2 * policy.prediction_step_s
+                    or np.linalg.norm(v) > policy.maximum_landing_speed_m_s
+                    or np.linalg.norm(w) > policy.maximum_angular_speed_rad_s
+                    or np.linalg.norm(box.rotation - start.rotation) > 2**.5 * policy.maximum_angular_speed_rad_s * elapsed + 1e-6):
+                return reject("IDEAL_HANDOFF_ABNORMAL_MOTION")
+            support = reception_footprint_audit(box, supports,
+                edge_tolerance_m=metadata["release_prediction"]["landing_support"]["edge_tolerance_m"])
+            gap = float(np.min(box.corners()[:, 2]) - support["support_z_m"])
+            result["first_takeover_height_m"] = gap
+            if not support["supported"] or gap < -1e-12:
+                return reject("IDEAL_HANDOFF_REGION_OR_PENETRATION")
+            landed_pose = box.world_from_local.copy()
+            landed_pose[2, 3] -= max(0., gap)
+            landed = OBB(landed_pose[:3, 3], box.half_extents, box.rotation, box.name, box.category)
+            # One conservative envelope covers release -> measurement -> ideal descent.
+            corners = np.vstack([start.corners(), box.corners(), landed.corners()])
+            lo, hi = corners.min(axis=0), corners.max(axis=0)
+            envelope = OBB((lo+hi)/2, (hi-lo)/2, np.eye(3), box.name, box.category)
+            for obstacle in obstacles:
+                if obstacle.name not in {s.name for s in supports} and envelope.intersects_obb(obstacle):
+                    result["pair"] = [box.name, obstacle.name]
+                    return reject("IDEAL_HANDOFF_ENVELOPE_COLLISION")
+            result.update(accepted=True, reason="LEGAL_RELEASE_TO_IDEAL_TAKEOVER",
+                reception_region=dict(accepted=True, reason="VALIDATED_POST_RELEASE_TRANSITION", support=support,
+                    height_policy=policy.to_mapping(),
+                    gap_m=gap, current_takeover_pose_world=box.world_from_local.tolist(),
+                    actual_release_pose_world=start.world_from_local.tolist(), reception_pose_world=landed_pose.tolist(),
+                    vertical_correction_m=-max(0., gap), physical_landing_qualified=False,
+                    actual_top_contact_observed=False))
+        except (ValueError, KeyError, TypeError):
+            return reject("IDEAL_HANDOFF_INVALID_MEASUREMENT")
+        self._takeover = copy.deepcopy(result)
+        return result
+
+    def takeover_region(self, box, *, time_s, receiver, policy):
+        import copy
+        if (not self._takeover or not self._takeover["accepted"] or box.name != self._context["target"]
+                or receiver != self._context["receiver"] or policy != self._context["transport_policy"]
+                or time_s != self._takeover["time_s"]
+                or not np.array_equal(box.world_from_local, self._takeover["current_pose_world"])):
+            raise ValueError("ideal takeover lacks the bound current-state handoff audit")
+        return copy.deepcopy(self._takeover["reception_region"])
 
 
 class BoundedFreeTransitGate:

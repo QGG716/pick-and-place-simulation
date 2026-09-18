@@ -17,6 +17,7 @@ from unloading_sim.release_motion import (
 from unloading_sim.contact_scheduler import ContactCandidateScheduler
 from unloading_sim.history_candidates import history_policy, HistorySource
 from test_serial_unloading import scene, actual
+from ideal_handoff_fixture import measured_handoff
 
 
 def objects():
@@ -92,7 +93,8 @@ def takeover(**overrides):
         support_geometry_accepted=False, expected_target="target", actual_attachment_observed=True)
     gates.update(overrides)
     return begin_ideal_transport(box, receiver_name="belt", receivers={"belt": receiver},
-        directions={"belt": [-1., 0, 0]}, time_s=0., policy=policy(), **gates)
+        directions={"belt": [-1., 0, 0]}, time_s=0., policy=policy(),
+        released_handoff=measured_handoff(box,receiver,policy(),0.), **gates)
 
 
 @pytest.mark.parametrize("gates", [{"attachment_removed": False}, {"expected_target": "other"},
@@ -158,7 +160,8 @@ def test_continuation_keeps_all_identities_but_does_not_regrasp_assumed_receptio
     record = begin_ideal_transport(box, receiver_name="receiver", receivers={"receiver": scene.receiver},
         directions={"receiver": [-1., 0, 0]}, time_s=0, policy=policy(), attachment_removed=True,
         top_contact_observed=False, support_geometry_accepted=False,
-        expected_target=name, actual_attachment_observed=True)
+        expected_target=name, actual_attachment_observed=True,
+        released_handoff=measured_handoff(box,scene.receiver,policy(),0.))
     state.update(receiver_transport_state={name: record}, ideal_received_ids=[name], processed_carton_ids=[name])
     item = next(item for item in state["cartons"] if item["name"] == name)
     item["position_m"] = box.center.tolist()

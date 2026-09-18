@@ -549,7 +549,7 @@ try:
     )
     from unloading_sim.m710_replay_physics import (
         audit_payload_support_contact,
-        audit_runtime_short_drop,
+        audit_runtime_short_drop, IdealReleaseHandoff,
         audit_surface_attachment_contact,
         select_active_conveyor_surfaces,
         replay_command_arrays,
@@ -3199,6 +3199,7 @@ try:
                 UsdShade.MaterialBindingAPI.Apply(cup_prim).Bind(active_rubber_material if active else rubber_material)
             (args.output / "initial_archive_replan_binding.json").write_text(
                 json.dumps(initial_archive_binding, indent=2), encoding="utf-8")
+    initial_highest_row = None
     while True:
         actual_frame_states = []
         capture_max_joint_delta_rad = 0.0
@@ -3217,6 +3218,22 @@ try:
             from unloading_sim.m710_replay_physics import ActualStackContactMonitor
             initial_actual_boxes = {_state_obb(item).name: _state_obb(item) for item in settled_carton_states}
             stack_names = set(metadata.get("stack_carton_names") or initial_actual_boxes)
+            if args.maximum_segments > 1 and archive_initialization is None:
+                if initial_highest_row is None:
+                    from unloading_sim.unloading_sequence import cluster_carton_rows
+                    rows = cluster_carton_rows([box for name, box in initial_actual_boxes.items() if name in stack_names])
+                    initial_highest_row = {"world_session_id": str(run_started_unix_s),
+                        "carton_ids": sorted(box.name for box in rows[0]),
+                        "initial_actual_q_rad": np.asarray(articulation.get_dof_positions().numpy())[0].tolist(),
+                        "initial_actual_cartons": settled_carton_states,
+                        "source": "NEW_WORLD_SETTLED_ACTUAL_HIGHEST_ROW",
+                        "historical_completion_events_imported": False}
+                    initial_highest_row["denominator"] = len(initial_highest_row["carton_ids"])
+                    args.maximum_segments = min(args.maximum_segments, initial_highest_row["denominator"])
+                    (session_output_root / "initial_highest_row.json").write_text(
+                        json.dumps(initial_highest_row, indent=2), encoding="utf-8")
+                if str(metadata["target"]) not in initial_highest_row["carton_ids"]:
+                    raise ValueError("next task is outside this world's initial highest row")
             stack_monitor = ActualStackContactMonitor(
                 initial_actual_boxes[str(metadata["target"])],
                 [box for name, box in initial_actual_boxes.items() if name in stack_names],
@@ -3402,6 +3419,10 @@ try:
         if not np.isfinite(conveyor_transport_audit_window_s) or conveyor_transport_audit_window_s <= 0.0:
             raise ValueError("conveyor transport audit window must be finite and positive")
         actual_release_prediction = None
+        ideal_takeover_audit = None
+        ideal_release_handoff = (IdealReleaseHandoff(metadata,
+            world_id=str(run_started_unix_s), task_id=str(session_segment_index),
+            receiver=place_surface, transport_policy=post_landing_policy) if ideal_reception_mode else None)
         actual_reception_audit = None
         actual_reception_state = None
         assumed_reception_state = None
@@ -3962,7 +3983,10 @@ try:
                 )
                 support_contact_report_observed = _actual_support_contact_observed()
                 if metadata.get("release_mode") in {"SHORT_DROP_RELEASE", "IDEAL_RECEPTION_RELEASE"}:
-                    actual_release_prediction = audit_runtime_short_drop(metadata,
+                    release_auditor = (lambda **kw: ideal_release_handoff.accept_release(
+                        time_s=session_time_offset_s + simulation_time, **kw)) if ideal_reception_mode else (
+                        lambda **kw: audit_runtime_short_drop(metadata, **kw))
+                    actual_release_prediction = release_auditor(
                         position=target_center_at_release,
                         rotation=_rotation_matrix_from_quaternion_wxyz(target_orientation_at_release),
                         linear_velocity=release_linear_velocity_before_m_s,
@@ -4342,6 +4366,14 @@ try:
                     )
                 )
                 if release_open_confirmed:
+                    if ideal_reception_mode:
+                        ideal_release_handoff.confirm_independence(
+                            time_s=session_time_offset_s + simulation_time,
+                            joint_present=stage.GetPrimAtPath(grasp_joint_path).IsValid(),
+                            translation_m=released_relative_position_delta_m,
+                            rotation_rad=released_relative_rotation_delta_rad,
+                            minimum_translation_m=float(actual_state_gates.get("release_independence_translation_m", .002)),
+                            minimum_rotation_rad=float(actual_state_gates.get("release_independence_rotation_rad", .01)))
                     release_executed = True
                     release_executed_time_s = simulation_time
                     release_velocity_sample_pending = True
@@ -4536,12 +4568,21 @@ try:
                     evaluate_stability=not ideal_outfeed_mode)
                 ideal_region_valid = False
                 if ideal_reception_mode and release_open_confirmed and assumed_reception_state is None:
-                    actual_release_prediction = audit_runtime_short_drop(metadata,
+                    ideal_takeover_audit = ideal_release_handoff.audit_takeover(metadata,
+                        world_id=str(run_started_unix_s), task_id=str(session_segment_index),
+                        receiver=place_surface, transport_policy=post_landing_policy,
+                        target=str(metadata["target"]), time_s=session_time_offset_s + simulation_time,
+                        joint_present=grasp_joint is not None or stage.GetPrimAtPath(grasp_joint_path).IsValid(),
                         position=payload_center, rotation=landing_rotation,
                         linear_velocity=np.asarray(landing_linear.numpy())[0],
                         angular_velocity=np.asarray(landing_angular.numpy())[0],
                         current_cartons=_capture_carton_states())
-                    ideal_region_valid = bool(actual_release_prediction["accepted"])
+                    ideal_region_valid = bool(ideal_takeover_audit["accepted"])
+                    if not ideal_region_valid:
+                        runtime_stop_reason = ideal_takeover_audit["reason"]
+                        event_log.append({"event": "ideal_takeover_rejected", **ideal_takeover_audit,
+                            "release_evidence": ideal_release_handoff.evidence()})
+                        break
                 if (target_landing_center is None and release_open_confirmed and
                         (ideal_region_valid if ideal_reception_mode else
                          actual_reception_audit.accepted and _actual_support_contact_observed())):
@@ -4554,7 +4595,8 @@ try:
                         "support": actual_reception_audit.to_dict()}
                     if ideal_reception_mode:
                         assumed_reception_state = {**reception_observation, "source": RECEPTION_SOURCE,
-                            "region": actual_release_prediction["reception_region"]}
+                            "region": ideal_takeover_audit["reception_region"],
+                            "release_handoff_evidence": ideal_release_handoff.evidence()}
                     else:
                         actual_reception_state = reception_observation
                         event_log.append({"event": "actual_receiver_reception", "carton_id": metadata["target"], **actual_reception_state})
@@ -4574,7 +4616,8 @@ try:
                             maximum_drop_m=float(metadata["release_prediction"]["policy"]["maximum_drop_m"]),
                             release_policy=ReleasePolicy(
                                 **metadata["release_prediction"]["policy"]),
-                            reception_supports=[receivers[n] for n in metadata["selected_place_support_names"]])
+                            reception_supports=[receivers[n] for n in metadata["selected_place_support_names"]],
+                            released_handoff=ideal_release_handoff)
                         ideal_transport_records[actual_box.name] = record
                         ideal_transport_ids(post_landing_policy, ideal_transport_records)
                         carton_prim = stage.GetPrimAtPath(target_carton_path)
@@ -4603,7 +4646,10 @@ try:
                         event = {"event": IDEAL_RECEPTION_ACCEPTED if ideal_reception_mode else LANDED, "carton_id": actual_box.name,
                             "time_s": session_time_offset_s + simulation_time,
                             "takeover_pose_world": record["takeover_pose_world"],
-                            "release_height_m": (record.get("reception_region") or {}).get("gap_m"),
+                            "release_height_m": (actual_release_prediction or {}).get("height_m"),
+                            "release_height_semantics": "ACTUAL_PRE_REMOVAL_LOWEST_CORNER_HEIGHT",
+                            "actual_release_height_m": (actual_release_prediction or {}).get("height_m"),
+                            "first_takeover_height_m": (record.get("reception_region") or {}).get("gap_m"),
                             "source": record["completion_source"], "model": record["model"],
                             "disabled_collider_paths": disabled_colliders}
                         session_transport_events.append(event)
@@ -5496,6 +5542,9 @@ try:
             "release_requires_actual_receiver_support": metadata.get("release_mode", "SUPPORTED_RELEASE") == "SUPPORTED_RELEASE",
             "release_mode": metadata.get("release_mode", "SUPPORTED_RELEASE"),
             "actual_release_prediction": actual_release_prediction,
+            "initial_highest_row_scope": initial_highest_row,
+            "ideal_takeover_audit": ideal_takeover_audit,
+            "ideal_release_handoff": ideal_release_handoff.evidence() if ideal_release_handoff else None,
             "actual_landing_state": actual_reception_state,
             "actual_reception_succeeded": actual_reception_state is not None,
             "final_receiver_support_audit": None if actual_reception_audit is None else actual_reception_audit.to_dict(),
