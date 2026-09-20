@@ -32,6 +32,14 @@ The user-selected default recording profile is 640x360 at 5 fps, normal time.
 Keep the existing live world and its recording profile until that run finishes.
 Lower rendering cadence must not lower physics or receiver-monitor cadence.
 
+September 20 persistent video preference: place runtime parameter panels at the
+bottom left and keep only target, phase/simulation time, attachment/cup state,
+and reception/outfeed counts. Clearly distinguish ideal reception from physical
+reception. Omit verbose planner, collision-policy, belt and waiting diagnostics
+from video panels; retain them in evidence. Apply this to all future recordings.
+Historical burned-in overlays remain part of original evidence. The requested
+16x 720P montage is a presentation derivative, not a new recording default.
+
 ## Architecture constraints
 - September 15 persistent user update, overriding the earlier flexible-cup neighbor rules: this round and future rounds do not reject flexible-cup contacts with named non-target stack cartons (`compliant_cup_neighbor_contact_mode=ignore`), in CPU and Isaac contact acceptance. Retain physical collider ownership, target identity, full target seal-ring and target compression checks. This does not exempt rigid inserts, the rigid tool, robot, floor, walls, conveyors, or unknown objects. Physical response is retained; this acceptance assumption does not claim neighbor-contact qualification.
 - Keep `geometry.py`, `robot.py`, `scene.py`, `ik.py`, `planner.py`, and `grasp.py` independently testable.

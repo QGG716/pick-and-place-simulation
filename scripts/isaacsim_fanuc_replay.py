@@ -770,7 +770,7 @@ try:
         draw = ImageDraw.Draw(overlay)
         body_font, small_font, _, _ = hud_fonts
         scale = image.height / 1080.0
-        left, top = int(22 * scale), int(20 * scale)
+        left, bottom = int(22 * scale), int(20 * scale)
         pad_x, pad_y = int(18 * scale), int(14 * scale)
         line_gap = int(7 * scale)
         measured = [draw.textbbox((0, 0), line, font=body_font) for line in lines]
@@ -782,6 +782,7 @@ try:
         footer_gap = int(10 * scale)
         footer_height = assumption_box[3] - assumption_box[1]
         panel_height += footer_gap + footer_height
+        top = max(0, image.height - bottom - panel_height)
         draw.rounded_rectangle(
             [left, top, left + panel_width, top + panel_height],
             radius=max(8, int(12 * scale)), fill=(8, 12, 18, 224),
@@ -4359,44 +4360,32 @@ try:
                                 "released": "已解除吸附", "attached": "箱体已吸附",
                                 "approaching": "接近目标",
                             }
-                            face_names = {"front": "正面", "side": "侧面", "top": "顶面"}
-                            belt_names = {
-                                "conveyor_transverse": "横向传送带",
-                                "conveyor_longitudinal": "纵向传送带",
-                            }
                             lines = [
-                                f"目标箱 {metadata.get('target')} · 行 {metadata.get('row_selection', {}).get('row_id', '派生')} · {face_names.get(str(gripper_cfg.get('target_face')), gripper_cfg.get('target_face'))}",
-                                f"阶段 {phase_names.get(display_phase, display_phase)} · 仿真 {session_time_offset_s + simulation_time:.2f} s",
-                                f"吸盘 {actual_cups}/72 · {'已释放' if release_open_confirmed else '已吸附' if grasp_joint is not None else '待吸附'} · {metadata.get('place_placement_family', 'N/A')} · 带速 {conveyor_speed_m_s:.2f} m/s",
-                                f"接收 {belt_names.get(place_surface, place_surface)} · 实际带速 {conveyor_speed_m_s if place_surface in active_conveyor_surfaces else 0.0:.2f} m/s",
-                                f"{metadata.get('approach', {}).get('selected_mode', 'legacy')} · {metadata.get('release_mode', 'SUPPORTED_RELEASE')} · 状态 {state_names[state_key]}",
-                                f"离带高度 {shown_height * 1000:.1f} mm · {departure_label} · 已等待 {post_release_wait_s:.2f} s",
+                                f"目标 {metadata.get('target')} · {phase_names.get(display_phase, display_phase)}",
+                                f"仿真 {session_time_offset_s + simulation_time:.2f} s · 吸盘 {actual_cups}/72 · {'已释放' if release_open_confirmed else '已吸附' if grasp_joint is not None else '待吸附'}",
                             ]
-                            assumption = "物理：保留箱间接触；仅免除 J5/J6 与自有吸具内部碰撞"
+                            assumption = "物理接收"
                         else:
                             lines = [
-                                f"Carton {metadata.get('target')} · row {metadata.get('row_selection', {}).get('row_id', 'derived')} · {gripper_cfg.get('target_face')}",
-                                f"Phase {display_phase} · simulation {session_time_offset_s + simulation_time:.2f} s",
-                                f"Active cups {actual_cups}/72 · {'released' if release_open_confirmed else 'attached' if grasp_joint is not None else 'open'} · {metadata.get('place_placement_family', 'N/A')} · belt {conveyor_speed_m_s:.2f} m/s",
-                                f"Receiver {place_surface} · actual belt {conveyor_speed_m_s if place_surface in active_conveyor_surfaces else 0.0:.2f} m/s",
-                                f"{metadata.get('approach', {}).get('selected_mode', 'legacy')} · {metadata.get('release_mode', 'SUPPORTED_RELEASE')} · {state_key.replace('_', ' ')}",
-                                f"Height {shown_height * 1000:.1f} mm · wait {post_release_wait_s:.2f} s · {'wait for separation' if release_commanded and np.linalg.norm(command_velocity) < 1e-6 else 'turn to next carton' if release_commanded else 'current carton'}",
+                                f"{metadata.get('target')} | {display_phase}",
+                                f"t={session_time_offset_s + simulation_time:.2f}s | cups {actual_cups}/72 | {'released' if release_open_confirmed else 'attached' if grasp_joint is not None else 'open'}",
                             ]
-                            assumption = "Physics: stack contact kept; only J5/J6-owned-tool internal pairs exempt"
+                            assumption = "Physical reception"
                         if ideal_outfeed_mode:
-                            assumption = ("落带前物理执行；落带后理想输送；后道倾覆/碰撞不评估"
-                                if hud_chinese_enabled else
-                                "Physical until landing; ideal outfeed afterwards; downstream tipping/collision not evaluated")
+                            assumption = ("物理接收 / 理想送出" if hud_chinese_enabled
+                                          else "Physical reception / ideal outfeed")
                             if ideal_reception_mode:
-                                assumption = ("真实抓取/搬运/释放；理想接收/送出；不声明后道物理资格"
-                                    if hud_chinese_enabled else
-                                    "Actual grasp/transport/release; ideal reception/outfeed; downstream physics not qualified")
+                                assumption = ("理想接收 / 理想送出" if hud_chinese_enabled
+                                              else "Ideal reception / ideal outfeed")
                             from unloading_sim.qualification import reception_counts
                             actual_received = (set(metadata.get("completed_carton_ids", []))
                                 | {n for n, r in ideal_transport_records.items()
                                    if r.get("completion_source") == LANDING_SOURCE})
                             counts = reception_counts(actual_received, ideal_transport_records)
-                            lines.append(f"Actual received {counts['actual_reception']} | ideal received {counts['ideal_reception']} | ideal outfed {counts['ideal_outfeed']}")
+                            lines.append(
+                                f"物理接收 {counts['actual_reception']} | 理想接收 {counts['ideal_reception']} | 理想送出 {counts['ideal_outfeed']}"
+                                if hud_chinese_enabled else
+                                f"Received: physical {counts['actual_reception']} / ideal {counts['ideal_reception']} | outfed {counts['ideal_outfeed']}")
                         status_color = ((72, 232, 150, 255) if conveyor_running
                                         else (255, 205, 92, 255) if state_key == "waiting_clearance"
                                         else (210, 220, 232, 255))
@@ -5617,11 +5606,11 @@ try:
                 "stopped_surface_phase_is_frozen": True,
             },
             "hud": {
-                "model": "measured_state_dark_panel_v1",
+                "model": "compact_bottom_left_v2",
                 "font_path": hud_font_path,
                 "chinese_enabled": hud_chinese_enabled,
                 "body_pixels_at_1080p": 28,
-                "line_count": 5,
+                "position": "bottom_left", "body_line_count": 3 if ideal_outfeed_mode else 2,
             },
             "target_carton_dynamic": target_carton_path is not None,
             "payload_constraint_commanded": grasp_commanded,

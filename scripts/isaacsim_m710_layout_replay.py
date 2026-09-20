@@ -339,16 +339,16 @@ try:
         if rgba.ndim != 3 or rgba.shape[2] < 3:
             raise RuntimeError(f"Isaac camera returned an invalid image for {view_name}: {rgba.shape}")
         bgr = cv2.cvtColor(rgba[:, :, :3].astype(np.uint8), cv2.COLOR_RGB2BGR)
-        cv2.rectangle(bgr, (0, 0), (args.width, 62), (18, 18, 18), -1)
+        cv2.rectangle(bgr, (0, args.height - 62), (args.width, args.height), (18, 18, 18), -1)
         cv2.putText(
             bgr,
-            f"Isaac Sim initialization replay {view_index}/3: {view_name}",
-            (24, 27), cv2.FONT_HERSHEY_SIMPLEX, 0.70, (242, 242, 242), 2, cv2.LINE_AA,
+            f"View {view_index}/3: {view_name}",
+            (24, args.height - 35), cv2.FONT_HERSHEY_SIMPLEX, 0.70, (242, 242, 242), 2, cv2.LINE_AA,
         )
         cv2.putText(
             bgr,
-            f"selected={contract['target']}  full stack=40  physical grasp=NOT EVALUATED",
-            (24, 52), cv2.FONT_HERSHEY_SIMPLEX, 0.58, (80, 210, 255), 1, cv2.LINE_AA,
+            f"{contract['target']} | grasp NOT EVALUATED",
+            (24, args.height - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.58, (80, 210, 255), 1, cv2.LINE_AA,
         )
         frame_path = args.output / f"{view_index:02d}_{view_name}.png"
         if not cv2.imwrite(str(frame_path), bgr):

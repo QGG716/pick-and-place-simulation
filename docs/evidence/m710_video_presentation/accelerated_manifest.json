@@ -1,0 +1,26 @@
+{
+  "schema": "accelerated_montage_v1",
+  "source": "five_successful_picks/five_successful_pick_place_3worlds.mp4",
+  "source_sha256": "924285a4698b3eb166bf498f009902c9615ebd0a554a2ed5b479390d3c041bff",
+  "video": "five_successful_pick_place_3worlds_16x_720p.mp4",
+  "sha256": "72fc7b2fcf6c415728b148e2b9e2aa97c2c9a3d7ab66489301bb49e459a25db6",
+  "bytes": 17380278,
+  "width": 1280,
+  "height": 720,
+  "fps": 80,
+  "decoded_frames": 3113,
+  "duration_seconds": 38.9125,
+  "playback_speed": 16,
+  "source_frames_omitted": 0,
+  "interpolated_frames": 0,
+  "aspect_ratio_preserved": true,
+  "pillarboxed": true,
+  "upscaled_from": [
+    640,
+    416
+  ],
+  "historical_burned_in_hud_preserved": true,
+  "same_world_continuous_trial": false,
+  "new_physics_execution": false,
+  "poster_sha256": "7b9f7509a2ec71d125a7aefe073eb2411cc311a20c3204d7ac000ba45c411a98"
+}

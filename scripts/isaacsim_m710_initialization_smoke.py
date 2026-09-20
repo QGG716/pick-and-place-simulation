@@ -354,9 +354,9 @@ def main():
             elif frame_count == 1:
                 second_scene_frame = scene_frame
             final_scene_frame = scene_frame
-            cv2.rectangle(bgr, (0, 0), (1920, 95), (18, 18, 18), -1)
-            cv2.putText(bgr, SCOPE, (24, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (80, 210, 255), 2)
-            cv2.putText(bgr, f"40 dynamic cartons | gravity settling | initial clearance={contract['initial_state_audit']['status']} | t={(step + 1)*dt:.2f}s", (24, 74), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (245, 245, 245), 2)
+            cv2.rectangle(bgr, (0, 985), (1120, 1080), (18, 18, 18), -1)
+            cv2.putText(bgr, "40 cartons | gravity settling", (24, 1020), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (80, 210, 255), 2)
+            cv2.putText(bgr, f"Clearance: {contract['initial_state_audit']['status']} | t={(step + 1)*dt:.2f}s", (24, 1059), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (245, 245, 245), 2)
             writer.write(bgr)
             if frame_count == 0:
                 if not cv2.imwrite(str(args.output / "initial.png"), bgr):

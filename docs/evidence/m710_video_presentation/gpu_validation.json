@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "compiled_files": [
+    "video_update/scripts/isaacsim_fanuc_replay.py",
+    "video_update/scripts/isaacsim_m710_initialization_smoke.py",
+    "video_update/scripts/isaacsim_m710_layout_replay.py",
+    "video_update/tools/build_m710_accelerated_montage.py"
+  ],
+  "hud_position_checks": [
+    {
+      "width": 640,
+      "height": 360,
+      "changed_bounds": [
+        7,
+        302,
+        197,
+        354
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "changed_bounds": [
+        14,
+        604,
+        414,
+        707
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "changed_bounds": [
+        22,
+        905,
+        612,
+        1060
+      ]
+    }
+  ],
+  "physics_executed": false
+}
