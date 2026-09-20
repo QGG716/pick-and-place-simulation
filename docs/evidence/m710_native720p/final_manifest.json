@@ -1,0 +1,70 @@
+{
+  "schema": "m710_native_recorded_state_render_v1",
+  "native_resolution": [
+    1280,
+    720
+  ],
+  "speed": 16,
+  "fps": 80,
+  "video_pixels_read_from_old_recording": false,
+  "new_physics_execution": false,
+  "same_world_continuous_trial": false,
+  "source_adapter_sha256": "1be3b83eea0d0ac5a4f389760850f24964f2a02ec891f90c81a2c3c26d444dc2",
+  "hud_source_sha256": "50c47f9feb60af4ad1285933b76780a92a7d5ab6dc1bb64cbc24e211d6dc6e5a",
+  "original_montage_manifest_sha256": "2a04c3c4d60ab600a7321e73c6ea729b48cce34702dba346d1aed9214f898b80",
+  "clips": [
+    {
+      "target": "carton_l07_c02",
+      "world_session_id": "1789722165.0576758",
+      "states_sha256": "532eef53af264bf0e25eb789bfc4f8e0b564e6b605f95f0eb16b131f9049f1b4",
+      "source_states": "/root/autodl-tmp/m710-final-row-20260918/delivery/segments/001_carton_l07_c02/actual_frame_states.json",
+      "frames": 511,
+      "start_frame": 0
+    },
+    {
+      "target": "carton_l07_c01",
+      "world_session_id": "1789726502.8089688",
+      "states_sha256": "d564021636f7a0aee75d657215c2edac7fd5cac008d8ea2a8ba970925d7d1699",
+      "source_states": "/root/autodl-tmp/m710-second-waiver-20260918/delivery/segments/001_carton_l07_c01/actual_frame_states.json",
+      "frames": 513,
+      "start_frame": 511
+    },
+    {
+      "target": "carton_l07_c03",
+      "world_session_id": "1789875150.9359868",
+      "states_sha256": "93db24c49e348f40beb39cd85b10aab71d553886f4ea4472e3e9f94c8760f6a7",
+      "source_states": "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/001_carton_l07_c03/actual_frame_states.json",
+      "frames": 808,
+      "start_frame": 1024
+    },
+    {
+      "target": "carton_l07_c04",
+      "world_session_id": "1789875150.9359868",
+      "states_sha256": "c36e09d750ea3152a681fe793b95f64dbf1f4e3534b0159bd3e49061650cfe1c",
+      "source_states": "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/002_carton_l07_c04/actual_frame_states.json",
+      "frames": 808,
+      "start_frame": 1832
+    },
+    {
+      "target": "carton_l07_c00",
+      "world_session_id": "1789875150.9359868",
+      "states_sha256": "bec8e85a54463ac57d9747ed9cea9b74802162d3f5bf2113db8d181b90b8ee04",
+      "source_states": "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/003_carton_l07_c00/actual_frame_states.json",
+      "frames": 473,
+      "start_frame": 2640
+    }
+  ],
+  "frames": 3113,
+  "max_fk_tcp_position_error_m": 1.571686771702239e-06,
+  "max_carton_usd_position_error_m": 0.0,
+  "max_link_usd_position_error_m": 0.0,
+  "note": "Measured-state visualization; geometry reconstructed from official URDF and recorded q. No new qualification.",
+  "status": "PASS",
+  "decoded_frames": 3113,
+  "duration_seconds": 38.9125,
+  "video": "five_successful_pick_place_native720p_16x.mp4",
+  "video_sha256": "0438989b44450aa9e510b660d0c6147db8cbfc297147272654a51b165945f8ee",
+  "video_bytes": 13827806,
+  "preview_only": false,
+  "wall_seconds": 180.7553018592298
+}

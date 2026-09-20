@@ -1,0 +1,7 @@
+{
+    "status":  "PASS",
+    "verified_file_count":  10,
+    "sha256_and_bytes_match":  true,
+    "native_preview_frames_visually_checked":  5,
+    "renderer_sha256":  "d3752697b2f0a4b0c50c4cb88006bc1440bb4ff9460e96400912eaaf2cf4ec8e"
+}

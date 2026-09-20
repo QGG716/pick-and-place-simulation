@@ -1,0 +1,54 @@
+{
+  "files": [
+    {
+      "path": "five_successful_pick_place_native720p_16x.mp4",
+      "bytes": 13827806,
+      "sha256": "0438989b44450aa9e510b660d0c6147db8cbfc297147272654a51b165945f8ee"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 2969,
+      "sha256": "4865af07af4f6e78b115eabd93e02fb460bde22146f5ed9dee1556a3fb4ff65b"
+    },
+    {
+      "path": "poster.png",
+      "bytes": 660045,
+      "sha256": "295a22a658a907c8c5fe64d330ae8e157c86d73d58a8237cb80a7f803661ef13"
+    },
+    {
+      "path": "index.html",
+      "bytes": 880,
+      "sha256": "69d533bfc2fa24a5b938b76b4a13ebb1ee322c6ea9ab7ed84f7513b1719e0462"
+    },
+    {
+      "path": "clip_01_0000.png",
+      "bytes": 658982,
+      "sha256": "feb983a133a8122771671b50764220233a63f1f18fbae145f2383e2a5ec9cbea"
+    },
+    {
+      "path": "clip_02_0000.png",
+      "bytes": 633391,
+      "sha256": "1ee6e512983b5f0c97df79d4da8e19f657a40af1e1bc824e8574bb66ebe0eb77"
+    },
+    {
+      "path": "clip_03_0000.png",
+      "bytes": 644243,
+      "sha256": "151ac6d6a05ce20f9b9b2be9980eaa891a69adb4ec0e1baa05a97682b0c9af9c"
+    },
+    {
+      "path": "clip_04_0000.png",
+      "bytes": 650947,
+      "sha256": "877cdc9bdf6b724145e3df8fea3e95100d2094f9c525965c443a82a64b19fd13"
+    },
+    {
+      "path": "clip_05_0000.png",
+      "bytes": 637365,
+      "sha256": "69c50b285ec826f5888b4ea9688504d9988de2448032a37b0d01cf4120f9f2be"
+    },
+    {
+      "path": "clip_01_0200.png",
+      "bytes": 660045,
+      "sha256": "295a22a658a907c8c5fe64d330ae8e157c86d73d58a8237cb80a7f803661ef13"
+    }
+  ]
+}
