@@ -1,0 +1,47 @@
+{
+  "world_session_id": "1789875150.9359868",
+  "runtime_commit": "ab3c63d07e1bfbd3be58ab7451903f1ade35fb1e",
+  "scope": [
+    "carton_l07_c00",
+    "carton_l07_c04"
+  ],
+  "planner_source_changes": {
+    "src/unloading_sim/geometry.py": {
+      "runtime_sha256": "793384532bf599bb7b7a4f1199bde36b9ad170b4b38f4989975ac4d911508c87",
+      "planner_sha256": "78f1deed2f8e0d9fc637cb7b5ee931947f13da72e7f0d68950e5688dcc59bf40"
+    },
+    "src/unloading_sim/pinocchio_backend.py": {
+      "runtime_sha256": "febe67199d3acf927240055b067d707c6cf92b784e1beae639ab0650fa34530a",
+      "planner_sha256": "3dcb8b4af6201f2319579aab9acd0611d0ad98c0a4f6ad784fe42f84e084c167"
+    }
+  },
+  "execution_implementation_unchanged": {
+    "src/unloading_sim/planning_profile.py": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee",
+    "src/unloading_sim/post_landing_transport.py": "1db1de76dcbcae6e0f45c811707f245f7fe9d21f662526270ff6210e8ace1223",
+    "src/unloading_sim/release_motion.py": "d714fa20c533fdc9c1c919fd1bb059c03527f35f7fbe4e6d19c776f425042422",
+    "src/unloading_sim/layout_trajectory.py": "54aeb445b3fcb8aa03f8786d72aec3516c9b8933f7e8125e696d629b2849a424",
+    "src/unloading_sim/serial_unloading.py": "e3451a69b770a513731cfdceb2bd5551cbb9a840440dcd8e0c21e187d6aec8be",
+    "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+    "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+    "src/unloading_sim/conveyor_placement.py": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503",
+    "src/unloading_sim/tool_geometry.py": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d",
+    "src/unloading_sim/isaac_collision_policy.py": "6433e4ac679ca3a161010a4a4a8c62865b5816f1195829b468e627b4ffe64359",
+    "src/unloading_sim/isaac_usd_cache.py": "28218069feb490a75fdc96271fca416c6dc0a00e34e2f9136e6f460e28dd0d5f",
+    "src/unloading_sim/asset_audit.py": "e3b31fab64ae9022cfb853d9dcddc22791bfc07af3151590140459d6ec85ed9e",
+    "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+    "src/unloading_sim/isaac_bridge.py": "f553ec5b473b6ecccfc170b2a22e1939ae65d9ea76003bf60e1e16797a97548d",
+    "src/unloading_sim/m710_dynamics.py": "33dea4bfa760bd9ba1c98c3c5ccbcfb37f75424640ab51056a86b806a2ae98f6",
+    "src/unloading_sim/m710_execution.py": "ac4ae107562579260ca27a0323cecb0e5fa24c69e289a23b1a6a17cd1412a876",
+    "src/unloading_sim/m710_official_dynamics.py": "f6b85afca8363821e0de7506652a9f3ff46fc74868007076e18718f7cf519c15",
+    "src/unloading_sim/m710_replay_physics.py": "b663b6fc65244d92d133c487fefd046a7967cd8e2ed7a1350bff26f7b6e96c5c",
+    "src/unloading_sim/stack_clearance.py": "61c19187eed4468f7e15a3802a19e85c880c2d87feb41b2a1f3ef05bbf0851e5",
+    "src/unloading_sim/m710_replay_contract.py": "7bd8d2ea91da9d139f6360e0826cc7f10623598e8dbd55c97d39263e2cea6137",
+    "src/unloading_sim/qualification.py": "f7a68f69362d5b0edf62e8ebb5ecb3a150d6a9c29d22621f1f42b9ad144ec291",
+    "scripts/export_isaac_fanuc_replay.py": "4f1d687bb5065a97a4e5a7d47b3607bacd7bcb01b0138917d28102172976b7d8",
+    "scripts/isaacsim_fanuc_replay.py": "9ecd6d9f1f5ce47b68e151f52f6a4d0464e39c259e8fe47a15cd77d09f23ecdb"
+  },
+  "collision_acceptance_changed": false,
+  "physical_runtime_changed": false,
+  "finite_iteration_limits_changed": false,
+  "dense_path_sampling_changed": false
+}

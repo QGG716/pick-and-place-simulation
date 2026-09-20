@@ -1,0 +1,17 @@
+{
+  "unix_time_s": 1789875325.8501678,
+  "authorization": "User requests simpler collision detection for last two cartons",
+  "scope": [
+    "carton_l07_c00",
+    "carton_l07_c04"
+  ],
+  "world_session_id": "1789875150.9359868",
+  "waiting_driver_pid": 17754,
+  "waiting_driver_suspended": false,
+  "world_process_unchanged": true,
+  "active_carton": "carton_l07_c03",
+  "waiting_driver_replaced": true,
+  "old_driver_exit": "INTENTIONAL_SIGKILL_OF_STOPPED_WAITING_HELPER_NO_CHILDREN",
+  "new_driver_pid": 23450,
+  "world_pid_unchanged": 17753
+}

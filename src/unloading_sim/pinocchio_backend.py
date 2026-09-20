@@ -91,6 +91,35 @@ def _local_geometry_vertices(geometry) -> np.ndarray | None:
     return vertices
 
 
+def _separated_from_local_box(local_bounds, rotation, translation, obstacles, clearance):
+    """Cheap enclosing-box face tests; only certify separation, never collision.
+
+    Official mesh triangles remain the narrow phase. Six normalized projection
+    axes can discard additional distant pairs whose world AABBs overlap. This
+    is a lower bound on surface distance, not a measured mesh distance.
+    """
+    if not obstacles:
+        return np.zeros(0, dtype=bool)
+    lower, upper = local_bounds
+    half = .5 * (upper - lower)
+    center = rotation @ (.5 * (lower + upper)) + translation
+    other_centers = np.asarray([box.center for box in obstacles])
+    other_rotations = np.asarray([box.rotation for box in obstacles])
+    other_halves = np.asarray([box.half_extents for box in obstacles])
+    own_axes = np.broadcast_to(rotation.T, (len(obstacles), 3, 3))
+    axes = np.concatenate((own_axes, other_rotations.transpose(0, 2, 1)), axis=1)
+    norms = np.linalg.norm(axes, axis=2)
+    axes = np.divide(axes, norms[:, :, None], out=np.zeros_like(axes),
+                     where=norms[:, :, None] > 1e-12)
+    own_radii = np.abs(axes @ rotation) @ half
+    other_radii = np.einsum('nki,ni->nk', np.abs(axes @ other_rotations), other_halves)
+    offsets = np.abs(np.einsum('nki,ni->nk', axes, other_centers-center))
+    gaps = offsets - own_radii - other_radii
+    pad = 128 * np.finfo(float).eps * (1 + offsets + own_radii + other_radii)
+    certified = np.isfinite(gaps) & (norms > 1e-12) & (gaps > clearance + pad + 1e-12)
+    return np.any(certified, axis=1)
+
+
 def _world_vertex_extrema(vertices, rotation, translation):
     """Plane extrema of every mesh triangle, outward-rounded in world axes.
 
@@ -275,6 +304,7 @@ class PinocchioHppFclBackend:
         self.geometry_revision = getattr(self, "geometry_revision", 0) + 1
         self._kinematics_key = self._geometry_key = None
         self._obstacle_cache = {}
+        self._clearance_motion_cache = {}
         self._geometry_local_aabbs = tuple(_local_geometry_aabb(item.geometry)
             for item in self.geometry_model.geometryObjects)
         self._geometry_local_vertices = tuple(_local_geometry_vertices(item.geometry)
@@ -380,8 +410,28 @@ class PinocchioHppFclBackend:
         return float(recorded)
 
     def _poc_pair_result(self, first, first_tf, second, second_tf, required, policy,
-                         pair, stage, proxy=False):
+                         pair, stage, proxy=False, poses=None, cache_identity=None):
         from .pair_clearance import classify_pair_distance
+        cache = getattr(self, "_clearance_motion_cache", None)
+        if cache is None:
+            cache = self._clearance_motion_cache = {}
+        key = (cache_identity if cache_identity is not None else (id(first), id(second)),
+               tuple(pair), getattr(self, "geometry_revision", 0))
+        reusable = poses is not None and getattr(self, "clearance_motion_cache_enabled", True)
+        previous = cache.get(key) if reusable else None
+        if previous is not None:
+            # Distance is 1-Lipschitz in each body's Hausdorff displacement.
+            # The Frobenius norm bounds rotation-induced point motion for the
+            # enclosing local sphere. Always compare to the last EXACT query;
+            # never refresh a certificate from another reused lower bound.
+            displacement = sum(float(np.linalg.norm(now[:3, 3]-old[:3, 3])
+                                     + radius*np.linalg.norm(now[:3, :3]-old[:3, :3]))
+                               for now, old, radius in zip(poses, previous[2], previous[3]))
+            lower_bound = previous[4] - displacement - 1e-9
+            if np.isfinite(lower_bound) and lower_bound > required + 1e-9:
+                counters = self.performance_counters = getattr(self, "performance_counters", {})
+                counters["rigid_motion_clearance_certificates"] = counters.get("rigid_motion_clearance_certificates", 0) + 1
+                return CollisionResult(False)
         try:
             contact = self.coal.CollisionResult()
             self.coal.collide(first, first_tf, second, second_tf, self.coal.CollisionRequest(), contact)
@@ -391,6 +441,15 @@ class PinocchioHppFclBackend:
                 distance = None
         except Exception:
             distance, intersects = None, None
+        if reusable and intersects is False and distance is not None and np.isfinite(distance) and distance > 0:
+            bounds = [_local_geometry_aabb(shape) for shape in (first, second)]
+            if all(bound is not None for bound in bounds):
+                radii = [float(np.linalg.norm(np.maximum(np.abs(bound[0]), np.abs(bound[1])))) for bound in bounds]
+                if len(cache) >= 2048:
+                    cache.clear()
+                # Strong references prevent object-ID reuse after cache eviction
+                # in the obstacle-shape provider. Geometry edits invalidate all.
+                cache[key] = (first, second, tuple(np.asarray(p).copy() for p in poses), radii, distance)
         evidence = classify_pair_distance(distance, required, intersection=intersects,
             proxy=proxy, stage=stage, pair=pair, policy=policy,
             query_method="COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
@@ -451,6 +510,11 @@ class PinocchioHppFclBackend:
                     | (lower - obstacle_upper > minimum_distance + 1e-12), axis=1,
                 )
                 near_indices = np.flatnonzero(~separated)
+                if len(near_indices):
+                    distant = _separated_from_local_box(
+                        local_bounds, placement[:3, :3], placement[:3, 3],
+                        [active_obstacles[i] for i in near_indices], minimum_distance)
+                    near_indices = near_indices[~distant]
             robot_tf = _transform(self.coal, placement[:3, :3], placement[:3, 3])
             for obstacle_index in near_indices:
                 obstacle = active_obstacles[obstacle_index]
@@ -468,7 +532,10 @@ class PinocchioHppFclBackend:
                 box, box_tf = obstacle_exact[obstacle_index]
                 if pair_policy is not None and pair_policy.poc_pair_clearance:
                     result = self._poc_pair_result(geometry_object.geometry, robot_tf, box, box_tf,
-                        minimum_distance, pair_policy, (link_name, obstacle.name), stage, proxy)
+                        minimum_distance, pair_policy, (link_name, obstacle.name), stage, proxy,
+                        poses=(placement, obstacle.world_from_local),
+                        cache_identity=("environment", geometry_index, obstacle.name,
+                                        obstacle.half_extents.tobytes()))
                     if result.in_collision:
                         result.evidence["colliders"] = [str(geometry_object.name), obstacle.name]
                         return result
@@ -555,7 +622,9 @@ class PinocchioHppFclBackend:
             second_tf = _transform(self.coal, second_pose[:3, :3], second_pose[:3, 3])
             if pair_policy is not None and pair_policy.poc_pair_clearance:
                 result = self._poc_pair_result(first.geometry, first_tf, second.geometry, second_tf,
-                    minimum_distance, pair_policy, (str(first.name), str(second.name)), stage)
+                    minimum_distance, pair_policy, (str(first.name), str(second.name)), stage,
+                    poses=(first_pose, second_pose),
+                    cache_identity=("self", int(pair.first), int(pair.second)))
                 if result.in_collision:
                     return result
                 continue

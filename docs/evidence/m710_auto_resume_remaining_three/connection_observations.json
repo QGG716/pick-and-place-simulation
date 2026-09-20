@@ -1,0 +1,12 @@
+[
+  {
+    "observed_utc": "2026-09-20T03:18:21.939872+00:00",
+    "event": "SSH_RECONNECTED_BACKGROUND_PLAN_RETAINED",
+    "orchestrator_pid": 1897,
+    "planner_pid": 1899,
+    "orchestrator_alive": true,
+    "planner_alive": true,
+    "new_world_started": false,
+    "action": "NO_RESTART_NO_SOURCE_CHANGE"
+  }
+]

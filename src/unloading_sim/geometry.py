@@ -14,6 +14,10 @@ from typing import Iterable
 import numpy as np
 
 _EPS = 1e-12
+_BOX_CORNER_SIGNS = np.array(
+    [[sx, sy, sz] for sx in (-1.0, 1.0) for sy in (-1.0, 1.0) for sz in (-1.0, 1.0)]
+)
+_BOX_CORNER_SIGNS.setflags(write=False)
 
 
 def normalize(v: np.ndarray) -> np.ndarray:
@@ -104,10 +108,7 @@ class OBB:
         return self.rotation @ np.asarray(point, dtype=float) + self.center
 
     def corners(self) -> np.ndarray:
-        signs = np.array(
-            [[sx, sy, sz] for sx in (-1.0, 1.0) for sy in (-1.0, 1.0) for sz in (-1.0, 1.0)]
-        )
-        local = signs * self.half_extents
+        local = _BOX_CORNER_SIGNS * self.half_extents
         return (self.rotation @ local.T).T + self.center
 
     def point_distance_squared(self, point_world: np.ndarray) -> float:
@@ -215,29 +216,18 @@ class OBB:
         collision margin or hidden axis padding.  It is therefore suitable
         for auditing whether an already-close pair is separating or worsening.
         """
-        delta = other.center - self.center
-        axes = [self.rotation[:, i] for i in range(3)]
-        axes.extend(other.rotation[:, i] for i in range(3))
-        for i in range(3):
-            for j in range(3):
-                axis = np.cross(self.rotation[:, i], other.rotation[:, j])
-                norm = float(np.linalg.norm(axis))
-                if norm > _EPS:
-                    axes.append(axis / norm)
-
-        best = -np.inf
-        for axis in axes:
-            # Rotation columns are expected to be orthonormal, but normalize
-            # every candidate so the result remains expressed in metres.
-            # Face axes are views of the frozen input rotations. Normalize a
-            # temporary vector; an in-place divide silently rewrites the scene
-            # and invalidates the production validation-context fingerprint.
-            axis = np.asarray(axis, dtype=float) / np.linalg.norm(axis)
-            radius_self = float(self.half_extents @ np.abs(self.rotation.T @ axis))
-            radius_other = float(other.half_extents @ np.abs(other.rotation.T @ axis))
-            gap = abs(float(delta @ axis)) - radius_self - radius_other
-            best = max(best, gap)
-        return float(best)
+        # Batch the same six face and nine edge-cross axes. This removes the
+        # per-axis Python loop without dropping axes, changing margins, or
+        # substituting SAT separation for Euclidean surface distance.
+        first_axes, second_axes = self.rotation.T, other.rotation.T
+        crossed = np.cross(first_axes[:, None, :], second_axes[None, :, :]).reshape(-1, 3)
+        norms = np.linalg.norm(crossed, axis=1)
+        axes = np.concatenate((first_axes, second_axes, crossed[norms > _EPS]))
+        axes = axes / np.linalg.norm(axes, axis=1)[:, None]
+        first_radii = np.abs(axes @ self.rotation) @ self.half_extents
+        second_radii = np.abs(axes @ other.rotation) @ other.half_extents
+        gaps = np.abs(axes @ (other.center - self.center)) - first_radii - second_radii
+        return float(np.max(gaps))
 
     def intersects_obb(self, other: "OBB", margin: float = 0.0) -> bool:
         a_axes = self.rotation

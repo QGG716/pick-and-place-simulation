@@ -1,0 +1,23 @@
+{
+  "user_instruction": "自动重开",
+  "authorized_at_observed_utc": "2026-09-20T01:18:52.156147+00:00",
+  "source_world": "1789726502.8089688",
+  "source_snapshot_sha256": "8030225e305d611bb3d832abafd63d8ef43bcfb8c619ab6fda6ac4e8b8b9136c",
+  "historical_completed_excluded": [
+    "carton_l07_c01",
+    "carton_l07_c02"
+  ],
+  "remaining_scope": [
+    "carton_l07_c00",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "denominator": 3,
+  "recording": {
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "physical_time_scale": 1
+  },
+  "waiver_target_not_in_remaining_scope": true
+}

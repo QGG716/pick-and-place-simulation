@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "scope": "432 observed pregrasp states including 384 dense samples; not a planning-time guarantee",
+  "queries": 432,
+  "same_failure_results": true,
+  "old_state_seconds": 5.4442469254136086,
+  "new_state_seconds": 4.5518936067819595,
+  "state_speedup": 1.196040021080922,
+  "elapsed_reduction_fraction": 0.16390757635664288,
+  "sat_speedup": 7.618290424227512,
+  "new_backend_counters": {
+    "geometry_update_seconds": 0.004793953150510788,
+    "geometry_update_calls": 1720,
+    "self_collision_seconds": 0.30849720910191536,
+    "self_collision_calls": 430,
+    "robot_environment_seconds": 1.700959749519825,
+    "robot_environment_calls": 1290,
+    "rigid_motion_clearance_certificates": 758
+  },
+  "tests": "45 passed in 1.96s",
+  "raw_profile_sha256": {
+    "collision_profile_repo.json": "3b0a5ecb2f35d7105fd1d0c8e77367ab91183454feb2d54909d6b4824ab3d446",
+    "collision_profile_planner_repo.json": "224d428d05c02d317ef1e1e546eec1cad1c9623d705bda8ef40f8932a644d3a1"
+  }
+}
