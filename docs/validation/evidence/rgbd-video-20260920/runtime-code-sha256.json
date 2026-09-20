@@ -1,0 +1,34 @@
+{
+  "note": "runtime sources stayed unchanged throughout demo-05; hashes collected at completion",
+  "base_commit": "4d0d5ecac77be41e90d6ce54e950669fbd6a7eda",
+  "files": {
+    "tools/run_rgbd_video_demo.py": {
+      "raw_sha256": "d5c0d1954d7155e8b86b9087ca50fcfbf2cee7aab960d0c0e0fb9a11771da718",
+      "lf_sha256": "d5c0d1954d7155e8b86b9087ca50fcfbf2cee7aab960d0c0e0fb9a11771da718"
+    },
+    "tools/workcell_video_worker.py": {
+      "raw_sha256": "a90ad31244c8dcb2f8d95aba3eeb17050848cb5eee76e37804bd95b9efb31752",
+      "lf_sha256": "a90ad31244c8dcb2f8d95aba3eeb17050848cb5eee76e37804bd95b9efb31752"
+    },
+    "tools/run_workcell_perception_once.py": {
+      "raw_sha256": "d7d7635260e7dd3780f960ad0986812a78d08fedc3576923646652710ecc0d70",
+      "lf_sha256": "d7d7635260e7dd3780f960ad0986812a78d08fedc3576923646652710ecc0d70"
+    },
+    "src/unloading_perception/metric_faces.py": {
+      "raw_sha256": "10bfaa578583eee486da38003ebb965f8d515e8dda4e52b8de2f37d9e6fe302d",
+      "lf_sha256": "2e126d25178c338503aa6a4259d3c48d22d4efbeb21bac093cb462f2666e9a01"
+    },
+    "src/unloading_perception/video_demo.py": {
+      "raw_sha256": "822a85e1f56725c1c622abc1fb2bd7c73d3e53b1126663bab5978b7361f5da31",
+      "lf_sha256": "822a85e1f56725c1c622abc1fb2bd7c73d3e53b1126663bab5978b7361f5da31"
+    },
+    "ros2_ws/src/unloading_ros_bridge/unloading_ros_bridge/video_demo_node.py": {
+      "raw_sha256": "3b7a034441b983697bdfb6f1a5d9d2dc52fe3f21b62ac01af4e2d8d2d69cfd99",
+      "lf_sha256": "e329c4577bcd090b0ed23b1e544f6d7a223d5c08bb57bf73f806201bb370c8a1"
+    },
+    "ros2_ws/src/unloading_bringup/rviz/rgbd_video_demo.rviz": {
+      "raw_sha256": "412b14ca0e884b0f7704881e9ba7817df0f249515a7c1c42f3e0e1936fb1d742",
+      "lf_sha256": "412b14ca0e884b0f7704881e9ba7817df0f249515a7c1c42f3e0e1936fb1d742"
+    }
+  }
+}

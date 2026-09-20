@@ -1,0 +1,695 @@
+{
+  "schema_version": "continuous_rgbd_recording_v1",
+  "mode": "RGB-D RECORDING",
+  "sensor_epoch": "carton-assets-recording-01",
+  "fps": 9.999999478459385,
+  "frames": [
+    {
+      "ordinal": 0,
+      "path": "frames/000000",
+      "frame_sequence": 32,
+      "source_time": 0.5333333611488342,
+      "manifest_sha256": "db07ab7dab1e5760d8f1a11c61707cde1b73c1fc8bb45dc634fdca71c8e42e65"
+    },
+    {
+      "ordinal": 1,
+      "path": "frames/000001",
+      "frame_sequence": 38,
+      "source_time": 0.6333333663642406,
+      "manifest_sha256": "f80da5a3f6b75d372658ff774bbf0230714d464f8a0d1ff58a006184c7621865"
+    },
+    {
+      "ordinal": 2,
+      "path": "frames/000002",
+      "frame_sequence": 44,
+      "source_time": 0.7333333715796471,
+      "manifest_sha256": "6ad784b3c112d4c9ff382a18122524d0ba62d5ba18536377eb138fa7090792a4"
+    },
+    {
+      "ordinal": 3,
+      "path": "frames/000003",
+      "frame_sequence": 50,
+      "source_time": 0.8333333767950535,
+      "manifest_sha256": "1458d2750de1e3814b21095228180e42a9e9fcca472c71f71cec2e8e264602d6"
+    },
+    {
+      "ordinal": 4,
+      "path": "frames/000004",
+      "frame_sequence": 56,
+      "source_time": 0.9333333820104599,
+      "manifest_sha256": "1a486e46eb7570c5b23652e5ffff94ffee2e769b715546f0eeb383d923b39600"
+    },
+    {
+      "ordinal": 5,
+      "path": "frames/000005",
+      "frame_sequence": 62,
+      "source_time": 1.0333333872258663,
+      "manifest_sha256": "a8a2a2d91643d53e0df303e4a71ecef6b878c8c9d317f5e617dfc5a032ab0c01"
+    },
+    {
+      "ordinal": 6,
+      "path": "frames/000006",
+      "frame_sequence": 68,
+      "source_time": 1.1333333924412727,
+      "manifest_sha256": "16d5f0f5843a7c7cd2d150f2b94f8d7bc54afb8e7ae9ed5fc484f64625acb760"
+    },
+    {
+      "ordinal": 7,
+      "path": "frames/000007",
+      "frame_sequence": 74,
+      "source_time": 1.2333333976566792,
+      "manifest_sha256": "46dd43f6af58b9f51c5b8c85879f174e1cd8ea23fcd5b653adba761de8245f5c"
+    },
+    {
+      "ordinal": 8,
+      "path": "frames/000008",
+      "frame_sequence": 80,
+      "source_time": 1.3333334028720856,
+      "manifest_sha256": "651701dd907a0c388655cc116f6dd68284c5f2e2b76f72955f834a7f18e31f79"
+    },
+    {
+      "ordinal": 9,
+      "path": "frames/000009",
+      "frame_sequence": 86,
+      "source_time": 1.433333408087492,
+      "manifest_sha256": "e6f1d02ce22161390e6df474a225d77f028e48b0c7b6e86b293cddf690014214"
+    },
+    {
+      "ordinal": 10,
+      "path": "frames/000010",
+      "frame_sequence": 92,
+      "source_time": 1.5333334133028984,
+      "manifest_sha256": "8e856b5b9286fe43a9f2c976061ed6a694d167497b9f29091f0355d0d6e86cf8"
+    },
+    {
+      "ordinal": 11,
+      "path": "frames/000011",
+      "frame_sequence": 98,
+      "source_time": 1.6333334185183048,
+      "manifest_sha256": "9edb82315a149da2d69402d097b316627c17633ef6423fa76e968c5fb4354297"
+    },
+    {
+      "ordinal": 12,
+      "path": "frames/000012",
+      "frame_sequence": 104,
+      "source_time": 1.7333334237337112,
+      "manifest_sha256": "f27dfb1d694d1fbeb7f38de57cfa4becb03ebdff6103c0ac0aaf67c199226be6"
+    },
+    {
+      "ordinal": 13,
+      "path": "frames/000013",
+      "frame_sequence": 110,
+      "source_time": 1.8333334289491177,
+      "manifest_sha256": "27181f5bba712887653798765f0d730ea1a38d942179a5a4df0c8f0e3b520618"
+    },
+    {
+      "ordinal": 14,
+      "path": "frames/000014",
+      "frame_sequence": 116,
+      "source_time": 1.933333434164524,
+      "manifest_sha256": "e4223085a1194091689a7caa4e3518eed0d6616711ebd1fffb4437a7e9793eb3"
+    },
+    {
+      "ordinal": 15,
+      "path": "frames/000015",
+      "frame_sequence": 122,
+      "source_time": 2.0333334393799305,
+      "manifest_sha256": "1807ce417f187ea10d8dc61fbfc35bc97bd3b3b275406ccd1625952439797b91"
+    },
+    {
+      "ordinal": 16,
+      "path": "frames/000016",
+      "frame_sequence": 128,
+      "source_time": 2.133333444595337,
+      "manifest_sha256": "cb5811a49b24ce40ecf23b7a0a8ace24f8b4440d31313af14875218ba5e24584"
+    },
+    {
+      "ordinal": 17,
+      "path": "frames/000017",
+      "frame_sequence": 134,
+      "source_time": 2.2333334498107433,
+      "manifest_sha256": "2faac6eb08b5d4b9fa195442553afc135f8968a0db13335dcff9c2008a87176a"
+    },
+    {
+      "ordinal": 18,
+      "path": "frames/000018",
+      "frame_sequence": 140,
+      "source_time": 2.3333334550261497,
+      "manifest_sha256": "09c3ef36641a6ba0680c1171af2a5e64634beee9b1f5c163f0c3ba5aa165d2c9"
+    },
+    {
+      "ordinal": 19,
+      "path": "frames/000019",
+      "frame_sequence": 146,
+      "source_time": 2.433333460241556,
+      "manifest_sha256": "a1d78de4504e014215bb47f2798229acd88579da67fd3898e2d2e84c27bad6ba"
+    },
+    {
+      "ordinal": 20,
+      "path": "frames/000020",
+      "frame_sequence": 152,
+      "source_time": 2.5333334654569626,
+      "manifest_sha256": "fd76819ce9d1aa17383311004a4539bd98f6ee17163e1ac8005e20738180365f"
+    },
+    {
+      "ordinal": 21,
+      "path": "frames/000021",
+      "frame_sequence": 158,
+      "source_time": 2.633333470672369,
+      "manifest_sha256": "904be069ae0c49475a7169156ef58e1507c1d77d0986a94556385133592c0644"
+    },
+    {
+      "ordinal": 22,
+      "path": "frames/000022",
+      "frame_sequence": 164,
+      "source_time": 2.7333334758877754,
+      "manifest_sha256": "2c2c9c00a71b7d509892af32fdf848337557b0161355194d91a552b58ca83adb"
+    },
+    {
+      "ordinal": 23,
+      "path": "frames/000023",
+      "frame_sequence": 170,
+      "source_time": 2.833333481103182,
+      "manifest_sha256": "eb835cf0114dff2bce48b88714abd1997c28a07d9c3652d80db108c751a8cf2c"
+    },
+    {
+      "ordinal": 24,
+      "path": "frames/000024",
+      "frame_sequence": 176,
+      "source_time": 2.9333334863185883,
+      "manifest_sha256": "3ea68888a6f8e48e5f4716cad1d4820461fec9c474a0f9c4048ceeab6501f8fe"
+    },
+    {
+      "ordinal": 25,
+      "path": "frames/000025",
+      "frame_sequence": 182,
+      "source_time": 3.0333334915339947,
+      "manifest_sha256": "5772646fe71962ecfbc92eeab00b63f61236f0d301d639624aa7df56c525d442"
+    },
+    {
+      "ordinal": 26,
+      "path": "frames/000026",
+      "frame_sequence": 188,
+      "source_time": 3.133333496749401,
+      "manifest_sha256": "ce4b6c4a367cf565609960ed9e086c29525e34b9f0c68fcc870c006844067344"
+    },
+    {
+      "ordinal": 27,
+      "path": "frames/000027",
+      "frame_sequence": 194,
+      "source_time": 3.2333335019648075,
+      "manifest_sha256": "873f8fca7a3256a66d211fe98f40b4d0dc2bd669ffebe22db6ae909cb88fb7fe"
+    },
+    {
+      "ordinal": 28,
+      "path": "frames/000028",
+      "frame_sequence": 200,
+      "source_time": 3.333333507180214,
+      "manifest_sha256": "520f77828fd537b47ad63d4dcfbe8459a8215a256de08e9dd1f7efd1b3770285"
+    },
+    {
+      "ordinal": 29,
+      "path": "frames/000029",
+      "frame_sequence": 206,
+      "source_time": 3.4333335123956203,
+      "manifest_sha256": "19cb709c69cdf2e184da3a2b7da558aeec0669acdcbcb3543a772891dd75b601"
+    },
+    {
+      "ordinal": 30,
+      "path": "frames/000030",
+      "frame_sequence": 212,
+      "source_time": 3.5333335176110268,
+      "manifest_sha256": "7d935ba7ecc05fb5259d896865c47d053f02b13b5f63e4bc2483e99b384cbd78"
+    },
+    {
+      "ordinal": 31,
+      "path": "frames/000031",
+      "frame_sequence": 218,
+      "source_time": 3.633333522826433,
+      "manifest_sha256": "a2464e3c1adab17102cd95715626bf68e1a6cf125c7f52e775fa9c9c71f1df47"
+    },
+    {
+      "ordinal": 32,
+      "path": "frames/000032",
+      "frame_sequence": 224,
+      "source_time": 3.7333335280418396,
+      "manifest_sha256": "01dfe16da1145d893c240437d1248a18789c159d94f2c8a11794b8cfd77d96c4"
+    },
+    {
+      "ordinal": 33,
+      "path": "frames/000033",
+      "frame_sequence": 230,
+      "source_time": 3.833333533257246,
+      "manifest_sha256": "e985981cc176afc0f08c366a170b70a4d3f7d5d79b26c7af1076a8690facf083"
+    },
+    {
+      "ordinal": 34,
+      "path": "frames/000034",
+      "frame_sequence": 236,
+      "source_time": 3.9333335384726524,
+      "manifest_sha256": "625d0a736b5716ba3675816b8a375d6aba9dd0f66461f10f82e3a1be2605f0ef"
+    },
+    {
+      "ordinal": 35,
+      "path": "frames/000035",
+      "frame_sequence": 242,
+      "source_time": 4.033333543688059,
+      "manifest_sha256": "bcbfa56e31920becd2db541752708e990c0720c7870de83dc87ea90c4c9e488d"
+    },
+    {
+      "ordinal": 36,
+      "path": "frames/000036",
+      "frame_sequence": 248,
+      "source_time": 4.133333548903465,
+      "manifest_sha256": "85aa492fcbed2dd32d1c157c82c498d5787212bdafcd9ca9c5f3b52222599992"
+    },
+    {
+      "ordinal": 37,
+      "path": "frames/000037",
+      "frame_sequence": 254,
+      "source_time": 4.233333554118872,
+      "manifest_sha256": "fe787d668544528c5a8778173385c99bd21bdd3f50f37c0271c8b1fc1ee86754"
+    },
+    {
+      "ordinal": 38,
+      "path": "frames/000038",
+      "frame_sequence": 260,
+      "source_time": 4.333333559334278,
+      "manifest_sha256": "32c0b95016131206b9d130e01449fc1003949d3cb4dd7956eb741e6e3402dd0a"
+    },
+    {
+      "ordinal": 39,
+      "path": "frames/000039",
+      "frame_sequence": 266,
+      "source_time": 4.4333335645496845,
+      "manifest_sha256": "03f095fdc9029ede81e1732addb220ae4e0ddeb3b6d82f194ae09b96fab4ef31"
+    },
+    {
+      "ordinal": 40,
+      "path": "frames/000040",
+      "frame_sequence": 272,
+      "source_time": 4.533333569765091,
+      "manifest_sha256": "03ce6f48757ebee12533014aa1d52de12decf53fc84b4cf973f7fad52817b94f"
+    },
+    {
+      "ordinal": 41,
+      "path": "frames/000041",
+      "frame_sequence": 278,
+      "source_time": 4.633333574980497,
+      "manifest_sha256": "b70ee07f80b70e00df65550e3902b79180aea058fa6fd33415d20cbd3c32442d"
+    },
+    {
+      "ordinal": 42,
+      "path": "frames/000042",
+      "frame_sequence": 284,
+      "source_time": 4.733333580195904,
+      "manifest_sha256": "ba707dc7e6ceb649160ddde7c94effc80815d104125fbb63e029da4589b8038a"
+    },
+    {
+      "ordinal": 43,
+      "path": "frames/000043",
+      "frame_sequence": 290,
+      "source_time": 4.83333358541131,
+      "manifest_sha256": "0a7d1cc098ec380a40b7b9ccd859b7d890a42c26ffba34b0a6c8787a85c20a2e"
+    },
+    {
+      "ordinal": 44,
+      "path": "frames/000044",
+      "frame_sequence": 296,
+      "source_time": 4.933333590626717,
+      "manifest_sha256": "372acb7886b3002bea2e2649cada9c39edc7f0e4563149ad70fd8bef250db53b"
+    },
+    {
+      "ordinal": 45,
+      "path": "frames/000045",
+      "frame_sequence": 302,
+      "source_time": 5.033333595842123,
+      "manifest_sha256": "d0750581e8b0343f8e4628a2b9e33b366277ee97b2f2439b3f605774a09512d5"
+    },
+    {
+      "ordinal": 46,
+      "path": "frames/000046",
+      "frame_sequence": 308,
+      "source_time": 5.1333336010575294,
+      "manifest_sha256": "c9ecb0a8a097ab2af99de7cd7da047e533447f2c06b80aa7b56123086f9bc4de"
+    },
+    {
+      "ordinal": 47,
+      "path": "frames/000047",
+      "frame_sequence": 314,
+      "source_time": 5.233333606272936,
+      "manifest_sha256": "b3003302fe3e49bdf699de397047475d9610c05e50637b26c8654b3baf25b468"
+    },
+    {
+      "ordinal": 48,
+      "path": "frames/000048",
+      "frame_sequence": 320,
+      "source_time": 5.333333611488342,
+      "manifest_sha256": "5e87c6d73fdd492603818c11927eecbfc4ae1b94926316d03fe9314fa8f81c60"
+    },
+    {
+      "ordinal": 49,
+      "path": "frames/000049",
+      "frame_sequence": 326,
+      "source_time": 5.433333616703749,
+      "manifest_sha256": "b1552709bc570b5405cb7e15186f52cff90e79ccc8d4c99512e46cb87d3ab98d"
+    },
+    {
+      "ordinal": 50,
+      "path": "frames/000050",
+      "frame_sequence": 332,
+      "source_time": 5.533333621919155,
+      "manifest_sha256": "e1548e2c1ffcfd7caa20241c1fba314cb84e3ea708e7c5b1429d05d105e5974a"
+    },
+    {
+      "ordinal": 51,
+      "path": "frames/000051",
+      "frame_sequence": 338,
+      "source_time": 5.6333336271345615,
+      "manifest_sha256": "181e45956804049dfa07fd8432352a77abfa2350f856526f6743790c1fb9855f"
+    },
+    {
+      "ordinal": 52,
+      "path": "frames/000052",
+      "frame_sequence": 344,
+      "source_time": 5.733333632349968,
+      "manifest_sha256": "1dd15a33a9892e5796050ab67b4266158e22cb42efe68cda5347fcd2b0cb5240"
+    },
+    {
+      "ordinal": 53,
+      "path": "frames/000053",
+      "frame_sequence": 350,
+      "source_time": 5.833333637565374,
+      "manifest_sha256": "11b915ceaa6280d6504804d7f7cd2977420c39eda13ff6446be401ed6ebd060e"
+    },
+    {
+      "ordinal": 54,
+      "path": "frames/000054",
+      "frame_sequence": 356,
+      "source_time": 5.933333642780781,
+      "manifest_sha256": "9883d3be187ba316dcc3fba128a26387f6fde0dc175a791addc1a72c2e04eb85"
+    },
+    {
+      "ordinal": 55,
+      "path": "frames/000055",
+      "frame_sequence": 362,
+      "source_time": 6.033333647996187,
+      "manifest_sha256": "5f59c0cc9558e3260b419aad53ad9d194ab4bd493190f204b9276d1752c78b63"
+    },
+    {
+      "ordinal": 56,
+      "path": "frames/000056",
+      "frame_sequence": 368,
+      "source_time": 6.133333653211594,
+      "manifest_sha256": "2eaecf0748fc7161f49c582953ca93b1677134a5f56dff687c5973be71b86112"
+    },
+    {
+      "ordinal": 57,
+      "path": "frames/000057",
+      "frame_sequence": 374,
+      "source_time": 6.233333658427,
+      "manifest_sha256": "cc487810498e1af4936eff671a89c6df6f5cab102f28cebb6134a7fbc5959377"
+    },
+    {
+      "ordinal": 58,
+      "path": "frames/000058",
+      "frame_sequence": 380,
+      "source_time": 6.3333336636424065,
+      "manifest_sha256": "cc6ed5db81a31dfe797d79c0c2daf49979ff4c6bf3b9b77e5efc4a9e142870e0"
+    },
+    {
+      "ordinal": 59,
+      "path": "frames/000059",
+      "frame_sequence": 386,
+      "source_time": 6.433333668857813,
+      "manifest_sha256": "6912af33a95b064ccd8a6c203cdce38c20431d1e0d1f5f3237869b41cb1d818b"
+    },
+    {
+      "ordinal": 60,
+      "path": "frames/000060",
+      "frame_sequence": 392,
+      "source_time": 6.533333674073219,
+      "manifest_sha256": "d98e04a40e125f9ae7af5c02951cdd21be73dc77296894c07a9f74fceef80df3"
+    },
+    {
+      "ordinal": 61,
+      "path": "frames/000061",
+      "frame_sequence": 398,
+      "source_time": 6.633333679288626,
+      "manifest_sha256": "8606bcd782563461beea9b4f94062131261de14f5eaf9bb197fdbf354b438e3c"
+    },
+    {
+      "ordinal": 62,
+      "path": "frames/000062",
+      "frame_sequence": 404,
+      "source_time": 6.733333684504032,
+      "manifest_sha256": "95eefb34707a6c163cc4771177e93714c0031abc7dfffeb40711e7efb054691a"
+    },
+    {
+      "ordinal": 63,
+      "path": "frames/000063",
+      "frame_sequence": 410,
+      "source_time": 6.8333336897194386,
+      "manifest_sha256": "025daf3cd1fc347c3fab86ed375fe9f2673ebdfa0127312f816998855622c155"
+    },
+    {
+      "ordinal": 64,
+      "path": "frames/000064",
+      "frame_sequence": 416,
+      "source_time": 6.933333694934845,
+      "manifest_sha256": "faa972c97e2cf46ae02d0cfb2b689d30d234cf1ccc90a02b1184580ce26f506d"
+    },
+    {
+      "ordinal": 65,
+      "path": "frames/000065",
+      "frame_sequence": 422,
+      "source_time": 7.033333700150251,
+      "manifest_sha256": "0d04bef60bb8fd864db6893cc68994a94c38be532c0342aae68c982bc6e5a011"
+    },
+    {
+      "ordinal": 66,
+      "path": "frames/000066",
+      "frame_sequence": 428,
+      "source_time": 7.133333705365658,
+      "manifest_sha256": "49a5eb66ce08dc33785a6281a1ab1cfcae8fb373edc45c0b0c9f00424d370c07"
+    },
+    {
+      "ordinal": 67,
+      "path": "frames/000067",
+      "frame_sequence": 434,
+      "source_time": 7.233333710581064,
+      "manifest_sha256": "9b6bed57c9c9a624af56b9d8e2525a8696a6205f74a1d839b34c863a43c79dd6"
+    },
+    {
+      "ordinal": 68,
+      "path": "frames/000068",
+      "frame_sequence": 440,
+      "source_time": 7.333333715796471,
+      "manifest_sha256": "0fec4bfe63069ee5ebb9439bd0f7d830ae24b2caf3fa374bbeacc8a41282a632"
+    },
+    {
+      "ordinal": 69,
+      "path": "frames/000069",
+      "frame_sequence": 446,
+      "source_time": 7.433333721011877,
+      "manifest_sha256": "6e4187d7985862b62792e55fe2e66b72325070266abbab4d6bdfab5c07f31f7b"
+    },
+    {
+      "ordinal": 70,
+      "path": "frames/000070",
+      "frame_sequence": 452,
+      "source_time": 7.5333337262272835,
+      "manifest_sha256": "cd68177c802cb6cf0df934cf878eb4db262261627b66ea3b0639bb657e59483a"
+    },
+    {
+      "ordinal": 71,
+      "path": "frames/000071",
+      "frame_sequence": 458,
+      "source_time": 7.63333373144269,
+      "manifest_sha256": "5058782d50956d4acb41d8721a43819d58e88269c6b25e79a169d73fe3f646cb"
+    },
+    {
+      "ordinal": 72,
+      "path": "frames/000072",
+      "frame_sequence": 464,
+      "source_time": 7.733333736658096,
+      "manifest_sha256": "09c2a36af52b949e3e0c44e45e2850313492b2b322917a7bc0e466b8ee19a6c6"
+    },
+    {
+      "ordinal": 73,
+      "path": "frames/000073",
+      "frame_sequence": 470,
+      "source_time": 7.833333741873503,
+      "manifest_sha256": "5782e2ff1f3b113bd8b1469453061ea652f51726ed9f51900b5be8e7bf399123"
+    },
+    {
+      "ordinal": 74,
+      "path": "frames/000074",
+      "frame_sequence": 476,
+      "source_time": 7.933333747088909,
+      "manifest_sha256": "db437910ef5eb564761102fa399f220ca6e324fc0fa4b95de0f4b750a4d4d98f"
+    },
+    {
+      "ordinal": 75,
+      "path": "frames/000075",
+      "frame_sequence": 482,
+      "source_time": 8.033333752304316,
+      "manifest_sha256": "4a832f11b8ae789ee7c84b8f480fa2d676c9392eb94539466f3556324abbcb94"
+    },
+    {
+      "ordinal": 76,
+      "path": "frames/000076",
+      "frame_sequence": 488,
+      "source_time": 8.133333757519722,
+      "manifest_sha256": "edb22a76f1ec32cc721d312b5d8c4d958fbf301e7eeeb184979b648f15f6d163"
+    },
+    {
+      "ordinal": 77,
+      "path": "frames/000077",
+      "frame_sequence": 494,
+      "source_time": 8.233333762735128,
+      "manifest_sha256": "420b2a12597d1b75a05fac0cd785f46dfdcc1e903f5aedf0c6f6077986bf5fe0"
+    },
+    {
+      "ordinal": 78,
+      "path": "frames/000078",
+      "frame_sequence": 500,
+      "source_time": 8.333333767950535,
+      "manifest_sha256": "620bf8d4a480af3b1d595494379a4c62718d90737d2ed4a3cf53946fa5f76151"
+    },
+    {
+      "ordinal": 79,
+      "path": "frames/000079",
+      "frame_sequence": 506,
+      "source_time": 8.433333773165941,
+      "manifest_sha256": "7f539dd7a9d448039de6984d621e6a4370edd3db469c9a218d57b62523a26a9e"
+    },
+    {
+      "ordinal": 80,
+      "path": "frames/000080",
+      "frame_sequence": 512,
+      "source_time": 8.533333778381348,
+      "manifest_sha256": "ea5dd90b7c85df45c0c415e2f426fecdf46d02e735f4e6801e25887256218a81"
+    },
+    {
+      "ordinal": 81,
+      "path": "frames/000081",
+      "frame_sequence": 518,
+      "source_time": 8.633333783596754,
+      "manifest_sha256": "f56b95e5fa35491ae0c3409c1ec9bcac9a9fe7300738fe6341fc4340ce938e7b"
+    },
+    {
+      "ordinal": 82,
+      "path": "frames/000082",
+      "frame_sequence": 524,
+      "source_time": 8.73333378881216,
+      "manifest_sha256": "e667f9c96d88c5af05b4e0ac94426c71d629e4e4bed7104b88745aad0f2d4842"
+    },
+    {
+      "ordinal": 83,
+      "path": "frames/000083",
+      "frame_sequence": 530,
+      "source_time": 8.833333794027567,
+      "manifest_sha256": "c81358ef0a35b4c7a9ac536d1a5f83faa5fcb42822bea11823a5438b7bc50a70"
+    },
+    {
+      "ordinal": 84,
+      "path": "frames/000084",
+      "frame_sequence": 536,
+      "source_time": 8.933333799242973,
+      "manifest_sha256": "a123efde60b2c6e865fa2e729a7f34d76c7d6ba6dfc62aad6434b0530fe727a9"
+    },
+    {
+      "ordinal": 85,
+      "path": "frames/000085",
+      "frame_sequence": 542,
+      "source_time": 9.03333380445838,
+      "manifest_sha256": "b11f166361d5c059b11d0f130fb60b3b5631bc5279e8ee3d899df82cdfa8f73e"
+    },
+    {
+      "ordinal": 86,
+      "path": "frames/000086",
+      "frame_sequence": 548,
+      "source_time": 9.133333809673786,
+      "manifest_sha256": "5ef33b3dd3fb9af72e0fe254e8e858b2203bfc4992ccc0edef83cc314aa4898e"
+    },
+    {
+      "ordinal": 87,
+      "path": "frames/000087",
+      "frame_sequence": 554,
+      "source_time": 9.233333814889193,
+      "manifest_sha256": "dc9319c275af4928d320f94346e8539184af07f63ab0323e86ff86c69bcd8719"
+    },
+    {
+      "ordinal": 88,
+      "path": "frames/000088",
+      "frame_sequence": 560,
+      "source_time": 9.333333820104599,
+      "manifest_sha256": "f3327b7271e35952a933ede77b6c8621abfd2d11b99394470ecb85d503dec514"
+    },
+    {
+      "ordinal": 89,
+      "path": "frames/000089",
+      "frame_sequence": 566,
+      "source_time": 9.433333825320005,
+      "manifest_sha256": "fb346af656309f60599d1251670ade495b919b27404cd5b9cb1b0876ed06b7c3"
+    },
+    {
+      "ordinal": 90,
+      "path": "frames/000090",
+      "frame_sequence": 572,
+      "source_time": 9.533333830535412,
+      "manifest_sha256": "dd25f49a817146ed1fe85a362689b4b7595fb8c00cb516f0094f5697d1ca03a8"
+    },
+    {
+      "ordinal": 91,
+      "path": "frames/000091",
+      "frame_sequence": 578,
+      "source_time": 9.633333835750818,
+      "manifest_sha256": "8f6e9e6fffe7c29e22774f27c51cbddc72c4778240e6abb5095fc35f339567c9"
+    },
+    {
+      "ordinal": 92,
+      "path": "frames/000092",
+      "frame_sequence": 584,
+      "source_time": 9.733333840966225,
+      "manifest_sha256": "307e6031e8778a984cafeffb8ffb5d8119ee37baac4182b84add4fda8af59f12"
+    },
+    {
+      "ordinal": 93,
+      "path": "frames/000093",
+      "frame_sequence": 590,
+      "source_time": 9.833333846181631,
+      "manifest_sha256": "4cfc544106070137aef4e14aaae45e256f91f56d1fca2be6c118b7c8cfdf0fa6"
+    },
+    {
+      "ordinal": 94,
+      "path": "frames/000094",
+      "frame_sequence": 596,
+      "source_time": 9.933333851397038,
+      "manifest_sha256": "4cac59407263cc138164a3f2a3538bef9e1f221bc324facd075ab05b94e8cace"
+    },
+    {
+      "ordinal": 95,
+      "path": "frames/000095",
+      "frame_sequence": 602,
+      "source_time": 10.033333856612444,
+      "manifest_sha256": "39a03ac2e47a00dd0cceb7aa98ce1df91cca45ed1da46a230e7ddc6ca7c57e09"
+    }
+  ],
+  "algorithm_resolution": [
+    2592,
+    1944
+  ],
+  "preview_resolution": [
+    640,
+    480
+  ],
+  "simulation_real_time_factor": 0.040374304330153044,
+  "rtf_measurement": "source first-to-last interval / filesystem wall interval from first manifest to last binding; excludes engine startup",
+  "capture_wall_seconds": 235.29818415641785,
+  "simulation_seconds": 9.50000049546361,
+  "source_warning": "Acquisition interrupted: 000096: CapturePayloadError: BINDING_MISSING file=capture_binding.json module=unknown capture=module_0_upper ",
+  "index_kind": "VERIFIED_CONTIGUOUS_PREFIX_OF_INTERRUPTED_NEW_ACQUISITION",
+  "original_bindings_modified": false
+}

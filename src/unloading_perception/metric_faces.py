@@ -373,6 +373,17 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
         origin = -g['offset']*g['normal']
         p = origin + np.array([[low[0],low[1]], [high[0],low[1]],
                                [high[0],high[1]], [low[0],high[1]]]) @ tangents
+        if np.any(p[:, 2] <= 0):
+            # The final validator already rejects this geometric candidate.
+            # Record it here as well, before project() can abort all instances.
+            # Preserve its mask/label/support and failed coordinates; no patch
+            # or complete cuboid is fabricated from contradictory evidence.
+            output.setdefault('patch_construction_rejections', []).append({
+                'status': 'REJECTED', 'stage': 'patch_construction',
+                'reason': 'FACE_BEHIND_CAMERA', 'label': g['label'],
+                'corners_3d_m': p.tolist(), 'plane_normal': g['normal'].tolist(),
+                'plane_offset_m': float(g['offset']), 'support': audit})
+            continue
         polygon = project(p, K)
         center_pixel = np.rint(project(p.mean(axis=0)[None],K)[0]).astype(int)
         distance=cv2.distanceTransform(region.astype(np.uint8),cv2.DIST_L2,5)
@@ -415,7 +426,8 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
         output['camera_facing_faces'].append(face)
     output['projected_camera_facing_face_count'] = len(output['camera_facing_faces'])
     output['depth_supported_face_count'] = len(output['camera_facing_faces'])
-    if axes is not None and len(output['camera_facing_faces']) >= 2 and not source_ambiguous:
+    if (axes is not None and len(output['camera_facing_faces']) >= 2 and not source_ambiguous
+            and not output.get('patch_construction_rejections')):
         _complete(output, groups, axes, all_boundary_points, depth, K, config, mask)
     return validate_metric_record(output, depth, mask, K, maximum_mean_m=config.maximum_mean_m,
                                   minimum_points=config.minimum_points)
@@ -428,7 +440,8 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
     output = deepcopy(record)
     if output.get('support_capture_binding') != _binding(depth, mask, K):
         raise ValueError('METRIC_SUPPORT_CAPTURE_BINDING_MISMATCH')
-    accepted, audits = [], []
+    accepted = []
+    audits = deepcopy(output.get('patch_construction_rejections', []))
     yy, xx = np.indices(np.asarray(depth).shape)
     holdout = (xx//8+yy//8)%4 == 0
     for face in output.get('camera_facing_faces',[]):

@@ -86,6 +86,7 @@ class FiniteReplayNode(Node):
         if initial['schema_version']!='finite_capture_progress_v1' or not 1<=len(initial['groups'])<=16:
             raise ValueError('invalid finite progress record')
         self.batch_id=initial['batch_id']
+        self.sequence_kind=initial.get('sequence_kind','INDEPENDENT_CAPTURE_GROUPS')
         self.task_ids=[r['task_id'] for r in initial['groups']]
         self.pool=ThreadPoolExecutor(max_workers=1,thread_name_prefix='artifact-file-validation')
         self.future=None
@@ -147,7 +148,7 @@ class FiniteReplayNode(Node):
             progress=read_json(self.progress)
             if progress['batch_id']!=self.batch_id: raise ValueError('batch identity changed')
             target=next((r for r in progress['groups'] if r['task_id']==progress['target_task']),None)
-            display=f"INDEPENDENT CAPTURE GROUPS / READ ONLY\ntarget={progress['target_task']} status={target['status'] if target else 'PENDING'}\nlast confirmed ROS group={progress['displayed_task']}"
+            display=f"{self.sequence_kind.replace('_',' ')} / READ ONLY\ntarget={progress['target_task']} status={target['status'] if target else 'PENDING'}\nlast confirmed ROS group={progress['displayed_task']}"
             if target and target.get('error'): display+='\nTARGET FAILED: '+target['error'][:400]
             self.status_publisher.publish(String(data=display))
             request=progress['delivery']

@@ -1,0 +1,178 @@
+{
+  "run": "demo-05",
+  "mode": "RGB-D RECORDING / ACTUAL RUNTIME ALGORITHMS",
+  "exit_code": 0,
+  "recording_duration_seconds": 845.0,
+  "screen_recording_fps": "10/1",
+  "original_video_sha256": "e2cd0d75ca6953bfd219be713a676019a815e3cf66aa1b6c3e72c6a6b7faeceb",
+  "screenshot_sha256": "fe47f807d4f907dc516d3b096fb27880be087619c413567bd93d19647bcd943e",
+  "input_fps": 8.636350094492823,
+  "new_result_frequency_hz": 0.002413649009337236,
+  "overwritten_pending_pairs": 94,
+  "source_frames": 96,
+  "source_simulation_seconds": 9.50000049546361,
+  "simulation_real_time_factor": 0.040374304330153044,
+  "rtf_measurement": "source first-to-last interval / filesystem wall interval from first manifest to last binding; excludes engine startup",
+  "source_warning": "Acquisition interrupted: 000096: CapturePayloadError: BINDING_MISSING file=capture_binding.json module=unknown capture=module_0_upper ",
+  "source_index_sha256": "1e2ade756e33b88d39c95e4e2f2374e7e590a59c011db19675425909f2239cfc",
+  "latency_basis": "same-host monotonic: frame presentation during playback to ROS receipt; not original simulation acquisition wall time",
+  "rows": [
+    {
+      "task": "video_00",
+      "source_frame": 32,
+      "source_time": 0.5333333611488342,
+      "input_presented_seconds_from_start": 0.0,
+      "queue_wait_seconds": 0.0,
+      "algorithm_wall_seconds": 451.3074520416558,
+      "sam_seconds": 28.945150177925825,
+      "geometry_seconds": 408.0599568672478,
+      "input_playback_to_ros_seconds": 467.82341880351305,
+      "ros_complete_seconds_from_input_start": 467.82341880351305,
+      "source_time_lag_at_completion": 9.50000049546361,
+      "resident_model_loads": 1,
+      "modules": [
+        {
+          "module": "module_0_upper",
+          "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+          "sam_attempts": 1,
+          "metric_attempts": 1,
+          "observed_faces": 23,
+          "instances_without_accepted_face": 0,
+          "complete_cuboids_accepted": 0,
+          "patch_construction_rejections": []
+        },
+        {
+          "module": "module_1_lower",
+          "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+          "sam_attempts": 1,
+          "metric_attempts": 1,
+          "observed_faces": 45,
+          "instances_without_accepted_face": 1,
+          "complete_cuboids_accepted": 0,
+          "patch_construction_rejections": []
+        }
+      ],
+      "ros": {
+        "objects": 37,
+        "raw_surfaces": 68,
+        "marker_representatives": 67,
+        "unknown_regions": 121,
+        "previous_marker_deletes": 0,
+        "world_publisher_epoch": "61db4f44-b82c-4994-ba24-97a0d4b98a41",
+        "mock_state_epoch": "e0b59375-1494-47e6-b660-8b6818363049",
+        "execution_authorizations": 0
+      }
+    },
+    {
+      "task": "video_01",
+      "source_frame": 602,
+      "source_time": 10.033333856612444,
+      "input_presented_seconds_from_start": 11.000017248094082,
+      "queue_wait_seconds": 458.18488009646535,
+      "algorithm_wall_seconds": 342.65403555333614,
+      "sam_seconds": 21.354108672589064,
+      "geometry_seconds": 313.0045738071203,
+      "input_playback_to_ros_seconds": 817.6208767853677,
+      "ros_complete_seconds_from_input_start": 828.6208940334618,
+      "source_time_lag_at_completion": 0.0,
+      "resident_model_loads": 1,
+      "modules": [
+        {
+          "module": "module_0_upper",
+          "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+          "sam_attempts": 1,
+          "metric_attempts": 1,
+          "observed_faces": 19,
+          "instances_without_accepted_face": 0,
+          "complete_cuboids_accepted": 0,
+          "patch_construction_rejections": [
+            {
+              "mask_id": 10,
+              "label": 2,
+              "reason": "FACE_BEHIND_CAMERA"
+            }
+          ]
+        },
+        {
+          "module": "module_1_lower",
+          "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+          "sam_attempts": 1,
+          "metric_attempts": 1,
+          "observed_faces": 41,
+          "instances_without_accepted_face": 0,
+          "complete_cuboids_accepted": 0,
+          "patch_construction_rejections": []
+        }
+      ],
+      "ros": {
+        "objects": 28,
+        "raw_surfaces": 60,
+        "marker_representatives": 60,
+        "unknown_regions": 92,
+        "previous_marker_deletes": 134,
+        "world_publisher_epoch": "61db4f44-b82c-4994-ba24-97a0d4b98a41",
+        "mock_state_epoch": "e0b59375-1494-47e6-b660-8b6818363049",
+        "execution_authorizations": 0
+      }
+    }
+  ],
+  "tests": {
+    "cpu_utf8": "646 passed, 1 deselected",
+    "cpu_default_windows": "645 passed, 1 failed (existing GBK read), 1 deselected",
+    "related_cpu": "68 passed",
+    "metric_cpu": "34 passed",
+    "humble": "72 passed"
+  },
+  "failed_runs_preserved": {
+    "demo-01": "FFmpeg parameter rejected before START",
+    "demo-02": "interpreter symlink bypassed GPU venv; no SAM calls",
+    "demo-03": "original FACE_BEHIND_CAMERA exception, one ROS result retained",
+    "demo-04": "existing rectangle fallback also invalid; that attempted repair was removed"
+  },
+  "preview_to_original_rgb_checks": [
+    {
+      "ordinal": 0,
+      "module": "module_0_upper",
+      "mean_absolute_jpeg_error": 0.8128656684027777,
+      "full_resolution": [
+        2592,
+        1944
+      ]
+    },
+    {
+      "ordinal": 0,
+      "module": "module_1_lower",
+      "mean_absolute_jpeg_error": 1.0386121961805554,
+      "full_resolution": [
+        2592,
+        1944
+      ]
+    },
+    {
+      "ordinal": 95,
+      "module": "module_0_upper",
+      "mean_absolute_jpeg_error": 0.41025716145833335,
+      "full_resolution": [
+        2592,
+        1944
+      ]
+    },
+    {
+      "ordinal": 95,
+      "module": "module_1_lower",
+      "mean_absolute_jpeg_error": 0.5617545572916667,
+      "full_resolution": [
+        2592,
+        1944
+      ]
+    }
+  ],
+  "exit_code_scope": "finite processing completed; GUI remains open until explicitly closed",
+  "accelerated_summary": {
+    "file": "demo-summary-16x.mp4",
+    "speed_multiplier": 16,
+    "duration_seconds": 52.8,
+    "sha256": "04fd5dd898d296992804945aba95e9f91e7d213a9e3ab9a673b9a48426832440",
+    "timeline": "entire original timeline accelerated uniformly, no waiting intervals removed; not real-time evidence"
+  }
+}

@@ -111,7 +111,9 @@ def _algorithm_counts(result, geometry, mask_count):
             raise ValueError('geometry instance lacks camera_facing_faces/accepted structure')
     return {'observed_faces': sum(len(item.faces) for item in sets),
             'instances_without_accepted_face': sum(not record['camera_facing_faces'] for record in records),
-            'complete_cuboids_accepted': sum(record['accepted'] for record in records)}
+            'complete_cuboids_accepted': sum(record['accepted'] for record in records),
+            'patch_construction_rejections': [dict(mask_id=record['mask_id'], label=row['label'], reason=row['reason'])
+                for record in records for row in record.get('patch_construction_rejections', [])]}
 
 
 def evaluate_masks(folder, artifacts, output, *, payload):
@@ -157,7 +159,7 @@ def evaluate_masks(folder, artifacts, output, *, payload):
     return summary
 
 
-def main(argv=None):
+def main(argv=None, *, runtime_factory=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--capture',type=Path,required=True);p.add_argument('--vision',type=Path,required=True)
     p.add_argument('--models',type=Path,required=True)
@@ -255,7 +257,7 @@ def main(argv=None):
         from run_isaac_rgbd_geometry import _worker_artifacts, _run_secondary_module
         from vision_resident_worker import ResidentRuntime, parser as worker_parser
         checkpoint('runtime_initialize')
-        runtime=ResidentRuntime(worker_parser().parse_args(['--upstream-root',str(a.vision),
+        runtime=(runtime_factory or ResidentRuntime)(worker_parser().parse_args(['--upstream-root',str(a.vision),
             '--output-root',str(output/'sam-runs'),'--input-root',str(output),'--sam-model',models['sam']['snapshot_path']]))
         for camera, row in zip(manifest.cameras, summary['runs']):
             if row['module'] not in prepared:

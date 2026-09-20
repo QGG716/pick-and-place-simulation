@@ -1,0 +1,399 @@
+{
+  "model_manifest": {
+    "manifest_version": 1,
+    "moge": {
+      "files": {
+        "model.pt": "79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc"
+      },
+      "model_path": "/root/autodl-tmp/huggingface/models--Ruicheng--moge-2-vits-normal/blobs/79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc",
+      "repository": "Ruicheng/moge-2-vits-normal",
+      "revision": "26b477f41595707c5db6770294c0d1721e8ed4ed"
+    },
+    "sam": {
+      "files": {
+        "config.json": "5ebd0d8643b486f3a716bf17c2a15531eb818b2b96ff0c6c5dcc88fa015161af",
+        "model.safetensors": "892c410e496344e527255ccdcb2cb7244a609acb5389c7c4fdba1288f861c579",
+        "preprocessor_config.json": "225545a743c654e3c495ec6f545a0eaba57c8ba3fbbd8483b3cb1c0fc58db517"
+      },
+      "repository": "facebook/sam-vit-base",
+      "revision": "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+      "snapshot_path": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f"
+    }
+  },
+  "runs": [
+    {
+      "module": "module_0_upper",
+      "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+      "stage": "completed",
+      "sam_attempts": 1,
+      "metric_attempts": 1,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+      "raw_image_automatic": false,
+      "planning_admissible": false,
+      "artifact_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_0_upper",
+      "stage_seconds": {
+        "pending": 0.00781693309545517,
+        "payload_validation": 0.4111511558294296,
+        "inputs_ready": 0.0015398338437080383,
+        "oracle_proposals": 0.0012726932764053345,
+        "sam_inference": 6.823151368647814,
+        "worker_artifacts": 0.7160163596272469,
+        "mask_evaluation": 0.7129172757267952,
+        "metric_geometry": 107.74275206401944
+      },
+      "rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+      "input_provenance": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_0_upper",
+        "capture_id": "carton-assets-recording-01:module_0_upper:602",
+        "module_id": "module_0_upper",
+        "sensor_epoch": "carton-assets-recording-01",
+        "frame_sequence": 602,
+        "original_binding": {
+          "module_id": "module_0_upper",
+          "instance_masks_sha256": "2de01d90d08139957418eadb7b3ba08f652630eecb7c596ae3b8dff7283b3860",
+          "robot_state": {
+            "schema_version": "isaac_robot_state_v1",
+            "source": "KINEMATIC_HOLD_READBACK",
+            "synthetic_fixture": false,
+            "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+            "robot_model_identity": "fanuc_m710id_70",
+            "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+            "simulation_epoch": "carton-assets-recording-01",
+            "frame_sequence": 602,
+            "sample_time": 10.033333856612444,
+            "clock_domain": "ros_sim_time",
+            "joint_names": [
+              "J1",
+              "J2",
+              "J3",
+              "J4",
+              "J5",
+              "J6"
+            ],
+            "position_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kinematic_hold": {
+              "render_without_physics_step": true,
+              "position_command_rad": [
+                -1.5707963705062866,
+                0.785456657409668,
+                0.649621844291687,
+                0.06722349673509598,
+                -1.2117502689361572,
+                -1.9415185451507568
+              ],
+              "velocity_command_rad_s": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+          "capture_id": "carton-assets-recording-01:module_0_upper:602",
+          "clock_domain": "ros_sim_time",
+          "metric_depth_dtype": "float32",
+          "metric_depth_unit": "m",
+          "metric_depth_semantics": "optical_z_m",
+          "metric_depth_sha256": "bfc49ab1579c425ce7088e4ec68083d5a2c3b6e559ba9b2243d13955b0879c33",
+          "capture_metadata_sha256": "95fec3fa30e0f8a334a5da1e15b7a92088b4773143a78ab9965e0b52437d0f47",
+          "schema_version": "isaac_capture_binding_v1",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 602,
+          "simulation_time": 10.033333856612444,
+          "rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+          "camera_calibration_identity": "181d0e2399fe7bd821eb19ce5b172e801fa903b8d3c471d4c57f56be4ff10146",
+          "gt_snapshot_sha256": "d50cd1ac9b8e3cff1946db0a6c8ecf5c6d7f78d3ccf89a81eddd4ffe869d5475"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "b43073f82cb33c5afc88725e1ddfb3b91509e1764cdc92a8d446fbbe4c9213ed",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_0_upper/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "95fec3fa30e0f8a334a5da1e15b7a92088b4773143a78ab9965e0b52437d0f47",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_0_upper/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "d50cd1ac9b8e3cff1946db0a6c8ecf5c6d7f78d3ccf89a81eddd4ffe869d5475",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_0_upper/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "f436a620874f9ffbbf62fd0b8ac8dc18cdf503cf6fff4d379aeecd51aec8c0e5",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_0_upper/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_0_upper/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "bfc49ab1579c425ce7088e4ec68083d5a2c3b6e559ba9b2243d13955b0879c33",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_0_upper/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "2de01d90d08139957418eadb7b3ba08f652630eecb7c596ae3b8dff7283b3860",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_0_upper/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      },
+      "proposal_count": 12,
+      "mask_evaluation": {
+        "visible_gt_objects": 12,
+        "sam_count": 12,
+        "merged_prediction_count": 0,
+        "split_or_duplicate_gt_count": 0,
+        "gt_below_best_iou_0_5": 0,
+        "gt_without_significant_prediction": 0,
+        "rendered_mask_boundary": {
+          "prediction_pixels": 13064,
+          "gt_visible_physical_edge_pixels": 12180,
+          "precision_2px": 0.5376607470912431,
+          "recall_2px": 0.7316091954022989,
+          "gt_to_prediction_mean_px": 1.7665287256240845
+        },
+        "boundary_reference": "ACTUAL_RENDERED_OBJECT_MASK_CONTOURS_INCLUDES_OCCLUSION_AND_CLIP_EDGES",
+        "exact_mesh_planes_corners": "NOT_EVALUATED",
+        "policy": {
+          "significant_pixels": 50,
+          "minimum_fraction_each_region": 0.1,
+          "best_iou_threshold": 0.5
+        }
+      },
+      "observed_faces": 19,
+      "instances_without_accepted_face": 0,
+      "complete_cuboids_accepted": 0,
+      "patch_construction_rejections": [
+        {
+          "mask_id": 10,
+          "label": 2,
+          "reason": "FACE_BEHIND_CAMERA"
+        }
+      ]
+    },
+    {
+      "module": "module_1_lower",
+      "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+      "stage": "completed",
+      "sam_attempts": 1,
+      "metric_attempts": 1,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+      "raw_image_automatic": false,
+      "planning_admissible": false,
+      "artifact_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_1_lower",
+      "stage_seconds": {
+        "pending": 0.0011996552348136902,
+        "payload_validation": 0.7078141309320927,
+        "inputs_ready": 0.0023898445069789886,
+        "oracle_proposals": 0.002066340297460556,
+        "sam_inference": 14.53095730394125,
+        "worker_artifacts": 1.4876242391765118,
+        "mask_evaluation": 1.508615281432867,
+        "metric_geometry": 205.26182174310088
+      },
+      "rgb_sha256": "01524015b8c3687664e4db7eca0e93fd2ebba690e428f3886e55055d43bf1501",
+      "input_provenance": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_1_lower",
+        "capture_id": "carton-assets-recording-01:module_1_lower:602",
+        "module_id": "module_1_lower",
+        "sensor_epoch": "carton-assets-recording-01",
+        "frame_sequence": 602,
+        "original_binding": {
+          "module_id": "module_1_lower",
+          "instance_masks_sha256": "6fe1886d8924cc2add82d3fb2cd35434b5fd6cd12fe31027c37a1a950edf5139",
+          "robot_state": {
+            "schema_version": "isaac_robot_state_v1",
+            "source": "KINEMATIC_HOLD_READBACK",
+            "synthetic_fixture": false,
+            "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+            "robot_model_identity": "fanuc_m710id_70",
+            "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+            "simulation_epoch": "carton-assets-recording-01",
+            "frame_sequence": 602,
+            "sample_time": 10.033333856612444,
+            "clock_domain": "ros_sim_time",
+            "joint_names": [
+              "J1",
+              "J2",
+              "J3",
+              "J4",
+              "J5",
+              "J6"
+            ],
+            "position_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kinematic_hold": {
+              "render_without_physics_step": true,
+              "position_command_rad": [
+                -1.5707963705062866,
+                0.785456657409668,
+                0.649621844291687,
+                0.06722349673509598,
+                -1.2117502689361572,
+                -1.9415185451507568
+              ],
+              "velocity_command_rad_s": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+          "capture_id": "carton-assets-recording-01:module_1_lower:602",
+          "clock_domain": "ros_sim_time",
+          "metric_depth_dtype": "float32",
+          "metric_depth_unit": "m",
+          "metric_depth_semantics": "optical_z_m",
+          "metric_depth_sha256": "fc2cfaeeb0ce162b1a468807ed8270fa4260275e1f3eae10c26954eb32d8fd27",
+          "capture_metadata_sha256": "7a302fc8a452e761b0f6b4bbaf7fc44353f2cf6dd7d7593484ce0dd49fffa91e",
+          "schema_version": "isaac_capture_binding_v1",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 602,
+          "simulation_time": 10.033333856612444,
+          "rgb_sha256": "01524015b8c3687664e4db7eca0e93fd2ebba690e428f3886e55055d43bf1501",
+          "camera_calibration_identity": "0c7fd06ae7cca85f729058fa518bdcad4176a19c60e787737462c3f31cd69057",
+          "gt_snapshot_sha256": "3d309846c14fda9c2c4c34ee7eb623ff36d5c8df20f49b7f1cfaea6ab572ee16"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "89e64b0c6be622f8d0840543f783baa4abfd5698c4b3babd803340e66711a6b9",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_1_lower/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "7a302fc8a452e761b0f6b4bbaf7fc44353f2cf6dd7d7593484ce0dd49fffa91e",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_1_lower/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "3d309846c14fda9c2c4c34ee7eb623ff36d5c8df20f49b7f1cfaea6ab572ee16",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_1_lower/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "a64d1fcd0be239285ca5a49f099e64ac9d285f5ace1bb58f27dc677f444f85f0",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_1_lower/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "01524015b8c3687664e4db7eca0e93fd2ebba690e428f3886e55055d43bf1501",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_1_lower/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "fc2cfaeeb0ce162b1a468807ed8270fa4260275e1f3eae10c26954eb32d8fd27",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_1_lower/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "6fe1886d8924cc2add82d3fb2cd35434b5fd6cd12fe31027c37a1a950edf5139",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/module_1_lower/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      },
+      "proposal_count": 24,
+      "mask_evaluation": {
+        "visible_gt_objects": 24,
+        "sam_count": 24,
+        "merged_prediction_count": 0,
+        "split_or_duplicate_gt_count": 0,
+        "gt_below_best_iou_0_5": 0,
+        "gt_without_significant_prediction": 0,
+        "rendered_mask_boundary": {
+          "prediction_pixels": 23156,
+          "gt_visible_physical_edge_pixels": 23521,
+          "precision_2px": 0.5848160304024875,
+          "recall_2px": 0.8016665958080014,
+          "gt_to_prediction_mean_px": 1.5210838317871094
+        },
+        "boundary_reference": "ACTUAL_RENDERED_OBJECT_MASK_CONTOURS_INCLUDES_OCCLUSION_AND_CLIP_EDGES",
+        "exact_mesh_planes_corners": "NOT_EVALUATED",
+        "policy": {
+          "significant_pixels": 50,
+          "minimum_fraction_each_region": 0.1,
+          "best_iou_threshold": 0.5
+        }
+      },
+      "observed_faces": 41,
+      "instances_without_accepted_face": 0,
+      "complete_cuboids_accepted": 0,
+      "patch_construction_rejections": []
+    }
+  ],
+  "run_id": "e3206e7863174dd689111eff8e5c0c3b",
+  "expected_module_count": 2,
+  "errors": [],
+  "stage": "algorithm_handoff_finished",
+  "stage_seconds": {
+    "initial_summary": 3.986060619354248e-06,
+    "run_identity": 0.001477111130952835,
+    "manifest": 0.00781693309545517,
+    "payload_validation": 1.1189652867615223,
+    "module_directory": 0.07817957922816277,
+    "inputs_checked": 0.003281526267528534,
+    "capture_group": 0.0014614872634410858,
+    "models": 0.0013489201664924622,
+    "config": 0.008307676762342453,
+    "dependencies": 0.0018664449453353882,
+    "runtime_initialize": 0.0015398338437080383,
+    "oracle_proposals": 0.0033390335738658905,
+    "sam_inference": 21.354108672589064,
+    "worker_artifacts": 2.2036405988037586,
+    "mask_evaluation": 2.2215325571596622,
+    "metric_geometry": 313.0045738071203,
+    "geometry_result": 0.1277717836201191,
+    "module_finished": 0.0046859681606292725,
+    "runtime_guard": 0.0013872645795345306,
+    "algorithm_handoff": 2.480037722736597
+  },
+  "module_counts": {
+    "expected": 2,
+    "completed": 2,
+    "failed": 0,
+    "not_run": 0,
+    "running": 0
+  },
+  "finalized": true,
+  "overall_status": "COMPLETED",
+  "exit_code": 0,
+  "algorithm_artifact": {
+    "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_01/algorithm/algorithm_artifact.json",
+    "sha256": "9e66def1ce5b1337a768bb48f4c030658526f608c921126ab94ecf157e1d2ffb"
+  }
+}

@@ -1,0 +1,393 @@
+{
+  "model_manifest": {
+    "manifest_version": 1,
+    "moge": {
+      "files": {
+        "model.pt": "79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc"
+      },
+      "model_path": "/root/autodl-tmp/huggingface/models--Ruicheng--moge-2-vits-normal/blobs/79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc",
+      "repository": "Ruicheng/moge-2-vits-normal",
+      "revision": "26b477f41595707c5db6770294c0d1721e8ed4ed"
+    },
+    "sam": {
+      "files": {
+        "config.json": "5ebd0d8643b486f3a716bf17c2a15531eb818b2b96ff0c6c5dcc88fa015161af",
+        "model.safetensors": "892c410e496344e527255ccdcb2cb7244a609acb5389c7c4fdba1288f861c579",
+        "preprocessor_config.json": "225545a743c654e3c495ec6f545a0eaba57c8ba3fbbd8483b3cb1c0fc58db517"
+      },
+      "repository": "facebook/sam-vit-base",
+      "revision": "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+      "snapshot_path": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f"
+    }
+  },
+  "runs": [
+    {
+      "module": "module_0_upper",
+      "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+      "stage": "completed",
+      "sam_attempts": 1,
+      "metric_attempts": 1,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+      "raw_image_automatic": false,
+      "planning_admissible": false,
+      "artifact_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_0_upper",
+      "stage_seconds": {
+        "pending": 0.008381631225347519,
+        "payload_validation": 0.6060422621667385,
+        "inputs_ready": 2.924290832132101,
+        "oracle_proposals": 0.001961294561624527,
+        "sam_inference": 9.53664019703865,
+        "worker_artifacts": 1.0751378498971462,
+        "mask_evaluation": 1.1663534976541996,
+        "metric_geometry": 144.6140352152288
+      },
+      "rgb_sha256": "961faed9467a4b727f03828b1d06c31e1cd24ac966df809930cf7b2e6bb4897a",
+      "input_provenance": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_0_upper",
+        "capture_id": "carton-assets-recording-01:module_0_upper:32",
+        "module_id": "module_0_upper",
+        "sensor_epoch": "carton-assets-recording-01",
+        "frame_sequence": 32,
+        "original_binding": {
+          "module_id": "module_0_upper",
+          "instance_masks_sha256": "33626d7bd54608eb7459c96cf3167639f5ccf37e33a088c6c3dfb3d09e053040",
+          "robot_state": {
+            "schema_version": "isaac_robot_state_v1",
+            "source": "KINEMATIC_HOLD_READBACK",
+            "synthetic_fixture": false,
+            "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+            "robot_model_identity": "fanuc_m710id_70",
+            "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+            "simulation_epoch": "carton-assets-recording-01",
+            "frame_sequence": 32,
+            "sample_time": 0.5333333611488342,
+            "clock_domain": "ros_sim_time",
+            "joint_names": [
+              "J1",
+              "J2",
+              "J3",
+              "J4",
+              "J5",
+              "J6"
+            ],
+            "position_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kinematic_hold": {
+              "render_without_physics_step": true,
+              "position_command_rad": [
+                -1.5707963705062866,
+                0.785456657409668,
+                0.649621844291687,
+                0.06722349673509598,
+                -1.2117502689361572,
+                -1.9415185451507568
+              ],
+              "velocity_command_rad_s": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+          "capture_id": "carton-assets-recording-01:module_0_upper:32",
+          "clock_domain": "ros_sim_time",
+          "metric_depth_dtype": "float32",
+          "metric_depth_unit": "m",
+          "metric_depth_semantics": "optical_z_m",
+          "metric_depth_sha256": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+          "capture_metadata_sha256": "d797fc4c4ffb3b5caf037edb794e506056e0498ac7db96bc0a74f4622f9ba335",
+          "schema_version": "isaac_capture_binding_v1",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 32,
+          "simulation_time": 0.5333333611488342,
+          "rgb_sha256": "961faed9467a4b727f03828b1d06c31e1cd24ac966df809930cf7b2e6bb4897a",
+          "camera_calibration_identity": "372d53029e85bd0e617ee1a2e523319c0d818ee4f47bc60f0d06f637ec7fe3b0",
+          "gt_snapshot_sha256": "a3718c71a45aab77b7fa82a8a7d12c95d6b1735a584dc7a5ff69339830ed394a"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "b60bb353b4418ad58694d03b905b559641dbb3496401c3e2343243ccd7d9ef45",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_0_upper/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "d797fc4c4ffb3b5caf037edb794e506056e0498ac7db96bc0a74f4622f9ba335",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_0_upper/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "a3718c71a45aab77b7fa82a8a7d12c95d6b1735a584dc7a5ff69339830ed394a",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_0_upper/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "06fa09c365c92a4a3e0fa19ca62b0d70270c76f5bea9fbf750376376bc92f44f",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_0_upper/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "961faed9467a4b727f03828b1d06c31e1cd24ac966df809930cf7b2e6bb4897a",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_0_upper/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_0_upper/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "33626d7bd54608eb7459c96cf3167639f5ccf37e33a088c6c3dfb3d09e053040",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_0_upper/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      },
+      "proposal_count": 16,
+      "mask_evaluation": {
+        "visible_gt_objects": 16,
+        "sam_count": 16,
+        "merged_prediction_count": 0,
+        "split_or_duplicate_gt_count": 0,
+        "gt_below_best_iou_0_5": 1,
+        "gt_without_significant_prediction": 0,
+        "rendered_mask_boundary": {
+          "prediction_pixels": 17116,
+          "gt_visible_physical_edge_pixels": 16667,
+          "precision_2px": 0.5085884552465529,
+          "recall_2px": 0.7403851922961541,
+          "gt_to_prediction_mean_px": 1.826433539390564
+        },
+        "boundary_reference": "ACTUAL_RENDERED_OBJECT_MASK_CONTOURS_INCLUDES_OCCLUSION_AND_CLIP_EDGES",
+        "exact_mesh_planes_corners": "NOT_EVALUATED",
+        "policy": {
+          "significant_pixels": 50,
+          "minimum_fraction_each_region": 0.1,
+          "best_iou_threshold": 0.5
+        }
+      },
+      "observed_faces": 23,
+      "instances_without_accepted_face": 0,
+      "complete_cuboids_accepted": 0,
+      "patch_construction_rejections": []
+    },
+    {
+      "module": "module_1_lower",
+      "status": "COMPLETED_WITH_ALGORITHM_RESULTS",
+      "stage": "completed",
+      "sam_attempts": 1,
+      "metric_attempts": 1,
+      "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
+      "raw_image_automatic": false,
+      "planning_admissible": false,
+      "artifact_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_1_lower",
+      "stage_seconds": {
+        "pending": 0.0017069466412067413,
+        "payload_validation": 0.9897417090833187,
+        "inputs_ready": 0.002382539212703705,
+        "oracle_proposals": 0.0019867345690727234,
+        "sam_inference": 19.408509980887175,
+        "worker_artifacts": 2.0446166321635246,
+        "mask_evaluation": 2.3388212397694588,
+        "metric_geometry": 263.445921652019
+      },
+      "rgb_sha256": "ff4c6c51be77292752d3afb4799e328fb09d255654fd5218e84f785414daa6fa",
+      "input_provenance": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_1_lower",
+        "capture_id": "carton-assets-recording-01:module_1_lower:32",
+        "module_id": "module_1_lower",
+        "sensor_epoch": "carton-assets-recording-01",
+        "frame_sequence": 32,
+        "original_binding": {
+          "module_id": "module_1_lower",
+          "instance_masks_sha256": "8e9918627af58b3146d35072b0020f63f009909ecedcce46de7ba96ffbfc00ff",
+          "robot_state": {
+            "schema_version": "isaac_robot_state_v1",
+            "source": "KINEMATIC_HOLD_READBACK",
+            "synthetic_fixture": false,
+            "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+            "robot_model_identity": "fanuc_m710id_70",
+            "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+            "simulation_epoch": "carton-assets-recording-01",
+            "frame_sequence": 32,
+            "sample_time": 0.5333333611488342,
+            "clock_domain": "ros_sim_time",
+            "joint_names": [
+              "J1",
+              "J2",
+              "J3",
+              "J4",
+              "J5",
+              "J6"
+            ],
+            "position_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kinematic_hold": {
+              "render_without_physics_step": true,
+              "position_command_rad": [
+                -1.5707963705062866,
+                0.785456657409668,
+                0.649621844291687,
+                0.06722349673509598,
+                -1.2117502689361572,
+                -1.9415185451507568
+              ],
+              "velocity_command_rad_s": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+          "capture_id": "carton-assets-recording-01:module_1_lower:32",
+          "clock_domain": "ros_sim_time",
+          "metric_depth_dtype": "float32",
+          "metric_depth_unit": "m",
+          "metric_depth_semantics": "optical_z_m",
+          "metric_depth_sha256": "67aec15192dfb1138c6b6016c54f0d8d28069a68012b813f369098d063cb60f4",
+          "capture_metadata_sha256": "37e440351a2c3e13126d19cb3860b1e9b0df0979cc626080886f43e0d66f3467",
+          "schema_version": "isaac_capture_binding_v1",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 32,
+          "simulation_time": 0.5333333611488342,
+          "rgb_sha256": "ff4c6c51be77292752d3afb4799e328fb09d255654fd5218e84f785414daa6fa",
+          "camera_calibration_identity": "e6318d1f0cd52b9c8a12ca8df80192da9f5a4cdf7602fcc7b5d0473cd5bf180b",
+          "gt_snapshot_sha256": "fc374aab3cb1f675b584ed6a1c34500b4f31ff72b8ca203b757c1387784dc8cd"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "fec3816c8d3b587467e104319d8312454bf66fae4fef60acf6271d8890d98bde",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_1_lower/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "37e440351a2c3e13126d19cb3860b1e9b0df0979cc626080886f43e0d66f3467",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_1_lower/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "fc374aab3cb1f675b584ed6a1c34500b4f31ff72b8ca203b757c1387784dc8cd",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_1_lower/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_1_lower/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "ff4c6c51be77292752d3afb4799e328fb09d255654fd5218e84f785414daa6fa",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_1_lower/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "67aec15192dfb1138c6b6016c54f0d8d28069a68012b813f369098d063cb60f4",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_1_lower/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "8e9918627af58b3146d35072b0020f63f009909ecedcce46de7ba96ffbfc00ff",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/module_1_lower/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      },
+      "proposal_count": 31,
+      "mask_evaluation": {
+        "visible_gt_objects": 31,
+        "sam_count": 31,
+        "merged_prediction_count": 0,
+        "split_or_duplicate_gt_count": 0,
+        "gt_below_best_iou_0_5": 1,
+        "gt_without_significant_prediction": 0,
+        "rendered_mask_boundary": {
+          "prediction_pixels": 29919,
+          "gt_visible_physical_edge_pixels": 31409,
+          "precision_2px": 0.6036966476152278,
+          "recall_2px": 0.8291890859307842,
+          "gt_to_prediction_mean_px": 1.4675103425979614
+        },
+        "boundary_reference": "ACTUAL_RENDERED_OBJECT_MASK_CONTOURS_INCLUDES_OCCLUSION_AND_CLIP_EDGES",
+        "exact_mesh_planes_corners": "NOT_EVALUATED",
+        "policy": {
+          "significant_pixels": 50,
+          "minimum_fraction_each_region": 0.1,
+          "best_iou_threshold": 0.5
+        }
+      },
+      "observed_faces": 45,
+      "instances_without_accepted_face": 1,
+      "complete_cuboids_accepted": 0,
+      "patch_construction_rejections": []
+    }
+  ],
+  "run_id": "1d96615218dd48beb2ac19011f2ab282",
+  "expected_module_count": 2,
+  "errors": [],
+  "stage": "algorithm_handoff_finished",
+  "stage_seconds": {
+    "initial_summary": 1.3969838619232178e-06,
+    "run_identity": 0.0013035275042057037,
+    "manifest": 0.008381631225347519,
+    "payload_validation": 1.5957839712500572,
+    "module_directory": 0.08525833487510681,
+    "inputs_checked": 0.003522627055644989,
+    "capture_group": 0.0013005547225475311,
+    "models": 0.001226235181093216,
+    "config": 0.007980741560459137,
+    "dependencies": 0.005005951970815659,
+    "runtime_initialize": 2.924290832132101,
+    "oracle_proposals": 0.00394802913069725,
+    "sam_inference": 28.945150177925825,
+    "worker_artifacts": 3.119754482060671,
+    "mask_evaluation": 3.5051747374236584,
+    "metric_geometry": 408.0599568672478,
+    "geometry_result": 0.24741555377840996,
+    "module_finished": 0.00469556450843811,
+    "runtime_guard": 0.0016440972685813904,
+    "algorithm_handoff": 2.7571759186685085
+  },
+  "module_counts": {
+    "expected": 2,
+    "completed": 2,
+    "failed": 0,
+    "not_run": 0,
+    "running": 0
+  },
+  "finalized": true,
+  "overall_status": "COMPLETED",
+  "exit_code": 0,
+  "algorithm_artifact": {
+    "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/demo-05/video_00/algorithm/algorithm_artifact.json",
+    "sha256": "3c6ead3bef629d8fb2b491392ba3023ff79b960135c7557bb81107d6b5f8407f"
+  }
+}

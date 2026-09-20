@@ -40,6 +40,8 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--carton-assets", type=Path, help="Pinned complete USD carton configuration; full-stack image review only")
     result.add_argument("--asset-cache", type=Path, help="External cache containing pinned carton dependencies")
     result.add_argument("--workcell-asset-cache", type=Path, help="Pinned official conveyor cache for derived workcell")
+    result.add_argument("--continuous-frames", type=int, default=0,
+                        help="New finite dual RGB-D recording at --fps; move the paired camera rig, keep scene assets unchanged")
     return result
 
 
@@ -76,6 +78,8 @@ def rgb_data(value):
 
 
 args = parser().parse_args()
+if args.continuous_frames and (not args.carton_assets or not 2 <= args.continuous_frames <= 300 or 60 % args.fps):
+    raise ValueError('continuous capture requires carton assets, 2..300 frames and an FPS dividing 60')
 if min(args.width, args.height, args.video_width, args.video_height, args.fps) <= 0 or args.seconds <= 0.0:
     raise ValueError("render dimensions, FPS and duration must be positive")
 args.output.mkdir(parents=True, exist_ok=not (args.appearance_ab or args.carton_assets))
@@ -520,6 +524,7 @@ try:
     closeup_annotator.attach(closeup_product)
 
     cameras = []
+    camera_handles = {}
     for scene_name, manifest in manifests:
         scene_cameras = []
         for camera_config in manifest.cameras:
@@ -537,6 +542,7 @@ try:
                 clipping_range=(float(camera_config["near_clip_m"]), float(camera_config["far_clip_m"])),
             )
             product = rep.create.render_product(camera, (args.width, args.height))
+            camera_handles[camera_config['module_id']] = camera
             rgb = rep.AnnotatorRegistry.get_annotator("rgb")
             depth = rep.AnnotatorRegistry.get_annotator("distance_to_image_plane")
             instance = rep.AnnotatorRegistry.get_annotator(
@@ -755,9 +761,11 @@ try:
         rgb_path = module_dir / "sensor_rgb.png"
         if not cv2.imwrite(str(rgb_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)):
             raise RuntimeError(f"RGB PNG write failed: {rgb_path}")
-        np.save(module_dir / "sensor_rgb.npy", rgb)
+        if not args.continuous_frames:
+            np.save(module_dir / "sensor_rgb.npy", rgb)
         np.save(module_dir / "metric_depth_m.npy", depth)
-        write_capture_pointcloud(module_dir, depth, camera)
+        if not args.continuous_frames:
+            write_capture_pointcloud(module_dir, depth, camera)
         finite = np.isfinite(depth) & (depth > 0.0)
         depth_visual = np.zeros_like(depth, dtype=np.uint8)
         if np.any(finite):
@@ -775,7 +783,7 @@ try:
         }
         (module_dir / "camera_info.json").write_text(json.dumps(camera_info, indent=2), encoding="utf-8")
         segmentation_info = instance_result.get("info", {})
-        if args.visibility_only or args.carton_assets:
+        if (args.visibility_only or args.carton_assets) and not args.continuous_frames:
             np.save(module_dir / "first_hit_instance_ids.npy", instance_ids)
         masks_by_object = {}
         identity = {}
@@ -838,7 +846,9 @@ try:
         )
         (module_dir / "capture_metadata.json").write_text(json.dumps(metadata.to_dict(), indent=2), encoding="utf-8")
         binding.update(instance_masks_sha256=masks_hash, robot_state=captured_robot_state(manifest))
-        binding = finalize_capture_binding(module_dir, manifest, camera, binding, with_pointcloud=True)
+        binding = finalize_capture_binding(module_dir, manifest, camera, binding, with_pointcloud=not args.continuous_frames)
+        if args.continuous_frames:
+            cv2.imwrite(str(module_dir/'preview_rgb.jpg'), cv2.resize(cv2.cvtColor(rgb,cv2.COLOR_RGB2BGR),(640,480)))
         (module_dir / "instance_segmentation_info.json").write_text(
             json.dumps(segmentation_info, indent=2, default=str), encoding="utf-8"
         )
@@ -862,6 +872,68 @@ try:
         (args.output/'manifest.json').write_text(json.dumps(payload,indent=2))
         apply_manifest(manifest,'FULL_STACK_NOMINAL')
         for _ in range(32): render_at_joint_command(command)
+        if args.continuous_frames:
+            # Newly acquired frames, never changes to archived capture identities.
+            from copy import deepcopy
+            from unloading_perception.finite_sequence import atomic_json
+            sequence={'schema_version':'continuous_rgbd_recording_v1','mode':'RGB-D RECORDING',
+                'sensor_epoch':payload['timing']['simulation_epoch'],'fps':args.fps,
+                'algorithm_resolution':[args.width,args.height],'preview_resolution':[640,480],
+                'source_bundle':str(args.bundle_directory.resolve()),'frames':[],
+                'camera_motion':'paired optical cameras translate 0.18 m in world +Y; no tracking or motion compensation',
+                'scene_changes':'NONE: existing geometry/materials/lights retained'}
+            camera_prims={module:handle.get_output_prims()['prims'][0] for module,handle in camera_handles.items()}
+            started=time.monotonic()
+            sim_started=world.current_time
+            for ordinal in range(args.continuous_frames):
+                current=deepcopy(payload)
+                shift=.18*ordinal/(args.continuous_frames-1)
+                for camera in current['cameras']:
+                    transform=np.asarray(camera['T_W_C'],dtype=float)
+                    transform[1,3]+=shift
+                    camera['T_W_C']=transform.tolist()
+                    camera['position_world_m']=transform[:3,3].tolist()
+                    # USD cameras look along -Z, optical frames along +Z with +Y down.
+                    usd=transform@np.diag([1.,-1.,-1.,1.])
+                    prim=camera_prims[camera['module_id']]
+                    if not hasattr(prim,'GetPath'): prim=stage.GetPrimAtPath(str(prim))
+                    UsdGeom.Xformable(prim).MakeMatrixXform().Set(Gf.Matrix4d(usd.T.tolist()))
+                for _ in range(60//args.fps):
+                    articulation.set_dof_positions(command[None,:])
+                    articulation.set_dof_velocities(zero_velocity[None,:])
+                    world.step(render=False)
+                render_at_joint_command(command)
+                current['timing'].update(simulation_time=float(world.current_time),simulation_frame=int(world.current_time_step_index))
+                current['provenance'].update(continuous_recording=True,camera_translation_y_m=shift,
+                    sensor_pose_authority='ACTUAL_RENDER_CAMERA_TRANSFORM; VIRTUAL_PAIRED_RIG_TRANSLATION')
+                current['dynamic_scene_fingerprint']=canonical_digest({'objects':current['objects'],
+                    'mechanisms':current['mechanisms'],'camera_calibration':tuple({k:c[k] for k in
+                    ('camera_id','frame_id','resolution','K','distortion_model','distortion','T_W_C','near_clip_m','far_clip_m')}
+                    for c in current['cameras'])})
+                current['world_fingerprint']=canonical_digest({'layout_fingerprint':current['layout']['layout_fingerprint'],
+                    'dynamic_scene_fingerprint':current['dynamic_scene_fingerprint'],'robot':current['robot']})
+                current.pop('manifest_fingerprint')
+                current['manifest_fingerprint']=canonical_digest(current)
+                frame_manifest=IsaacSceneManifest.from_dict(current)
+                folder=args.output/'frames'/f'{ordinal:06d}'
+                folder.mkdir(parents=True,exist_ok=False)
+                atomic_json(folder/'manifest.json',current)
+                for camera,(_,rgb,depth,instance) in zip(frame_manifest.cameras,cameras[0]):
+                    capture_module_artifacts(folder/'FULL_STACK_NOMINAL','FULL_STACK_NOMINAL',frame_manifest,
+                        camera,(rgb,depth,instance),bundle_scene_records['FULL_STACK_NOMINAL'])
+                sequence['frames'].append({'ordinal':ordinal,'path':str(folder.relative_to(args.output)),
+                    'frame_sequence':current['timing']['simulation_frame'],'source_time':current['timing']['simulation_time'],
+                    'manifest_sha256':sha256(folder/'manifest.json')})
+                atomic_json(args.output/'sequence-progress.json',{**sequence,'capture_complete':False,
+                    'capture_wall_seconds':time.monotonic()-started,'simulation_seconds':world.current_time-sim_started})
+                print('CONTINUOUS_RGBD_FRAME',ordinal,current['timing']['simulation_time'],flush=True)
+            sequence.update(capture_wall_seconds=time.monotonic()-started,
+                simulation_seconds=world.current_time-sim_started)
+            sequence['simulation_real_time_factor']=sequence['simulation_seconds']/sequence['capture_wall_seconds']
+            atomic_json(args.output/'sequence.json',sequence)
+            atomic_json(status_path,{'status':'CONTINUOUS_RGBD_CAPTURE_COMPLETE','frames':len(sequence['frames']),
+                'simulation_real_time_factor':sequence['simulation_real_time_factor'],'planning_admissible':False})
+            raise SystemExit(0)
         captures=[capture_module_artifacts(args.output/'FULL_STACK_NOMINAL','FULL_STACK_NOMINAL',manifest,c,(rgb,d,inst),bundle_scene_records['FULL_STACK_NOMINAL']) for c,rgb,d,inst in cameras[0]]
         cv2.imwrite(str(args.output/'overview.png'),cv2.cvtColor(np.asarray(rgb_data(overview_annotator.get_data()))[:,:,:3],cv2.COLOR_RGB2BGR))
         for name, annotator in detail_cameras:
