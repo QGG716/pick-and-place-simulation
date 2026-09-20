@@ -1,0 +1,203 @@
+{
+  "world_session_id": "1789875150.9359868",
+  "scope": [
+    "carton_l07_c00",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "full_cycles_completed": 3,
+  "denominator": 3,
+  "final_state_sha256": "cae9df9aa1444bcc3f130a3020834700f4cd5060b30a29e2f15d64dffe27c2c4",
+  "remaining_cartons": 35,
+  "actual_physical_reception_count": 0,
+  "segment003_runtime_stop_reason": null,
+  "segment003_replayed_simulation_seconds": 94.67083333333333,
+  "segment003_replay_wall_seconds": 1366.0851465426385,
+  "segment003_events": [
+    {
+      "event": "actual_attachment_capture",
+      "simulation_time_s": 10.795833333333333,
+      "trajectory_time_s": 10.69166666666638,
+      "target": "carton_l07_c00"
+    },
+    {
+      "event": "grasp_contact_attempt",
+      "simulation_time_s": 10.795833333333333,
+      "trajectory_time_s": 10.69166666666638,
+      "target": "carton_l07_c00"
+    },
+    {
+      "event": "actual_stack_geometry_free_space_entered",
+      "time_s": 34.32083333333333,
+      "clearance_m": 0.005275307064170449,
+      "nearest_neighbor": "carton_l06_c00"
+    },
+    {
+      "event": "actual_free_transit_gate_passed",
+      "time_s": 34.52916666666667
+    },
+    {
+      "event": "ideal_release_actual_height_check",
+      "simulation_time_s": 80.72916666666667,
+      "trajectory_time_s": 80.62455649846171,
+      "target": "carton_l07_c00"
+    },
+    {
+      "event": "actual_constraint_removed",
+      "simulation_time_s": 80.72916666666667,
+      "trajectory_time_s": 80.62455649846171,
+      "target": "carton_l07_c00"
+    },
+    {
+      "event": "release_region_attempt",
+      "simulation_time_s": 80.72916666666667,
+      "trajectory_time_s": 80.62455649846171
+    },
+    {
+      "event": "target_cup_release_clearance_started",
+      "time_s": 80.72916666666667
+    },
+    {
+      "event": "release_constraint_removal_confirmed",
+      "simulation_time_s": 80.75
+    },
+    {
+      "event": "IDEAL_RECEPTION_ACCEPTED",
+      "time_s": 609.3666666666667,
+      "carton_id": "carton_l07_c00",
+      "actual_release_height_m": 0.02428096304117089,
+      "first_takeover_height_m": 0.02236841497686126,
+      "source": "RECEPTION_ASSUMED"
+    },
+    {
+      "event": "target_cup_clearance_ended_by_assumed_reception",
+      "time_s": 80.75
+    }
+  ],
+  "ideal_outfed_ids": [
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "final_actual_capture": {
+    "world_session_id": "1789875150.9359868",
+    "target": "carton_l07_c00",
+    "phase": "withdrawal",
+    "task_time_s": 94.67083333333333,
+    "world_physics_time_s": 419.1000218577683,
+    "source": "CURRENT_PHYSX_ZERO_TIME_RENDER",
+    "image": "final_actual.png",
+    "physics_time_delta_s": 0.0,
+    "joint_max_delta_rad": 0.0,
+    "carton_state_unchanged": true,
+    "q_rad": [
+      -0.6894735097885132,
+      0.32989510893821716,
+      0.07198400795459747,
+      -3.1416685581207275,
+      1.3124679327011108,
+      0.6839533448219299
+    ]
+  },
+  "transport_events": [
+    {
+      "event": "IDEAL_RECEPTION_ACCEPTED",
+      "carton_id": "carton_l07_c03",
+      "time_s": 351.48333333333335,
+      "source": "RECEPTION_ASSUMED",
+      "actual_release_height_m": 0.024545983683337158,
+      "first_takeover_height_m": 0.022523714643130965
+    },
+    {
+      "event": "OUTFED_ASSUMED",
+      "carton_id": "carton_l07_c03",
+      "time_s": 361.53749999999087,
+      "source": "IDEAL_DOWNSTREAM_FULL_ENVELOPE_CROSSING",
+      "actual_full_envelope_max_x_m": -3.2009999960052484
+    },
+    {
+      "event": "IDEAL_RECEPTION_ACCEPTED",
+      "carton_id": "carton_l07_c04",
+      "time_s": 519.1,
+      "source": "RECEPTION_ASSUMED",
+      "actual_release_height_m": 0.024695939481298446,
+      "first_takeover_height_m": 0.02265659023625166
+    },
+    {
+      "event": "OUTFED_ASSUMED",
+      "carton_id": "carton_l07_c04",
+      "time_s": 529.1541666667947,
+      "source": "IDEAL_DOWNSTREAM_FULL_ENVELOPE_CROSSING",
+      "actual_full_envelope_max_x_m": -3.2009895992450206
+    },
+    {
+      "event": "IDEAL_RECEPTION_ACCEPTED",
+      "carton_id": "carton_l07_c00",
+      "time_s": 609.3666666666667,
+      "source": "RECEPTION_ASSUMED",
+      "actual_release_height_m": 0.02428096304117089,
+      "first_takeover_height_m": 0.02236841497686126
+    },
+    {
+      "event": "OUTFED_ASSUMED",
+      "carton_id": "carton_l07_c00",
+      "time_s": 619.4208333334614,
+      "source": "IDEAL_DOWNSTREAM_FULL_ENVELOPE_CROSSING",
+      "actual_full_envelope_max_x_m": -3.200354798760144
+    }
+  ],
+  "world_exit": [
+    {
+      "event": "OFFLINE_INITIAL_PLAN_STARTED",
+      "unix_time_s": 1789867252.3522296,
+      "source_commit": "ab3c63d07e1bfbd3be58ab7451903f1ade35fb1e",
+      "source_state_sha256": "8030225e305d611bb3d832abafd63d8ef43bcfb8c619ab6fda6ac4e8b8b9136c",
+      "new_world_started": false,
+      "command": [
+        "/root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python",
+        "tools/run_m710_contact_unloading.py",
+        "--actual-state",
+        "/root/autodl-tmp/m710-auto-resume-20260920/evidence/source_actual_state.json",
+        "--config",
+        "configs/validation/m710id70_handoff_continuation.yaml",
+        "--execution-config",
+        "configs/simulation/m710id70_handoff_continuation.yaml",
+        "--output",
+        "/root/autodl-tmp/m710-auto-resume-20260920/repo/outputs/initial_plan",
+        "--execution-bundle",
+        "/root/autodl-tmp/m710-auto-resume-20260920/repo/outputs/initial_plan/replay_bundle.json",
+        "--history-source",
+        "/root/autodl-tmp/m710-final-row-20260918/history_hints",
+        "--diagnostics"
+      ]
+    },
+    {
+      "event": "OFFLINE_INITIAL_PLAN_FINISHED",
+      "unix_time_s": 1789875150.6310697,
+      "returncode": 0,
+      "wall_seconds": 7898.278685133904
+    },
+    {
+      "event": "NEW_WORLD_PROCESS_STARTED",
+      "unix_time_s": 1789875150.6338878,
+      "pid": 17753
+    },
+    {
+      "event": "DRIVER_EXITED_WORLD_STILL_RETAINED",
+      "unix_time_s": 1789876247.785062,
+      "returncode": -9
+    },
+    {
+      "event": "WORLD_PROCESS_EXITED",
+      "unix_time_s": 1789884119.7752128,
+      "returncode": 0
+    },
+    {
+      "event": "CONTINUATION_DRIVER_EXITED",
+      "unix_time_s": 1789884119.7759984,
+      "returncode": -9
+    }
+  ]
+}

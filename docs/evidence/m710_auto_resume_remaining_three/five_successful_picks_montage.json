@@ -1,0 +1,107 @@
+{
+  "schema": "verified_five_successful_picks_montage_v1",
+  "clips": [
+    {
+      "target": "carton_l07_c02",
+      "world_session_id": "1789722165.0576758",
+      "source": "/root/autodl-tmp/m710-final-row-20260918/delivery/segments/001_carton_l07_c02/replay.mp4",
+      "source_sha256": "bac4daa2b8dd15af9c4db7a2ab79163073bbffc3a4788eee5b67b6117ec053af",
+      "expected_frames": 511,
+      "actual_release_height_m": 0.024585095972204485,
+      "start_frame": 0,
+      "frames": 511,
+      "start_seconds": 0.0,
+      "end_seconds": 102.2,
+      "duration_seconds": 102.2
+    },
+    {
+      "target": "carton_l07_c01",
+      "world_session_id": "1789726502.8089688",
+      "source": "/root/autodl-tmp/m710-second-waiver-20260918/delivery/segments/001_carton_l07_c01/replay.mp4",
+      "source_sha256": "6576b949f2ca35e2350af11f6cf56d040a0abdcfe0344ec5ea4dfa6e270a44f0",
+      "expected_frames": 513,
+      "actual_release_height_m": 0.024519702685114053,
+      "start_frame": 511,
+      "frames": 513,
+      "start_seconds": 102.2,
+      "end_seconds": 204.8,
+      "duration_seconds": 102.6
+    },
+    {
+      "target": "carton_l07_c03",
+      "world_session_id": "1789875150.9359868",
+      "source": "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/001_carton_l07_c03/replay.mp4",
+      "source_sha256": "6da5707de27b3961effe77b24ddd2e9e2ca9c8ef3416ac1965ef1fd0a978b2e9",
+      "expected_frames": 808,
+      "actual_release_height_m": 0.024545983683337158,
+      "start_frame": 1024,
+      "frames": 808,
+      "start_seconds": 204.8,
+      "end_seconds": 366.4,
+      "duration_seconds": 161.6
+    },
+    {
+      "target": "carton_l07_c04",
+      "world_session_id": "1789875150.9359868",
+      "source": "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/002_carton_l07_c04/replay.mp4",
+      "source_sha256": "01fb18f7161f1953279f40e70c031908c64c1d4e4c9698a5dc380ea4178963a8",
+      "expected_frames": 808,
+      "actual_release_height_m": 0.024695939481298446,
+      "start_frame": 1832,
+      "frames": 808,
+      "start_seconds": 366.4,
+      "end_seconds": 528.0,
+      "duration_seconds": 161.6
+    },
+    {
+      "target": "carton_l07_c00",
+      "world_session_id": "1789875150.9359868",
+      "source": "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/003_carton_l07_c00/replay.mp4",
+      "source_sha256": "979e8643951c42253441a0624e48fb4909d118eb297c20172109a84cc63ab957",
+      "expected_frames": 473,
+      "actual_release_height_m": 0.02428096304117089,
+      "start_frame": 2640,
+      "frames": 473,
+      "start_seconds": 528.0,
+      "end_seconds": 622.6,
+      "duration_seconds": 94.6
+    }
+  ],
+  "world_session_ids": [
+    "1789722165.0576758",
+    "1789726502.8089688",
+    "1789875150.9359868"
+  ],
+  "same_world_continuous_trial": false,
+  "new_physics_execution": false,
+  "source_frames_omitted": 0,
+  "inserted_frames": 0,
+  "playback_speed": 1.0,
+  "source_pixel_rectangle": [
+    0,
+    0,
+    640,
+    360
+  ],
+  "label_band_rectangle": [
+    0,
+    360,
+    640,
+    56
+  ],
+  "video": {
+    "path": "five_successful_pick_place_3worlds.mp4",
+    "sha256": "924285a4698b3eb166bf498f009902c9615ebd0a554a2ed5b479390d3c041bff",
+    "bytes": 23722560,
+    "width": 640,
+    "height": 416,
+    "fps": 5,
+    "frames": 3113,
+    "decoded_frames": 3113,
+    "duration_seconds": 622.6
+  },
+  "poster": {
+    "path": "poster.png",
+    "sha256": "f314eddacee1a0721adcec5c2f885e9978b76c0ea3c814764d5aef901303ce1c"
+  }
+}

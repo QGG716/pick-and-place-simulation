@@ -1,0 +1,72 @@
+﻿{
+    "status":  "PASS",
+    "worlds":  [
+                   "1789722165.0576758",
+                   "1789726502.8089688",
+                   "1789875150.9359868"
+               ],
+    "counts":  [
+                   "1/5",
+                   "1/4",
+                   "3/3"
+               ],
+    "original_delivery_files_verified":  320,
+    "original_videos":  6,
+    "playback_copies":  6,
+    "png_files":  115,
+    "extracted_event_frames":  59,
+    "additional_success_montage":  "../20260920_five_successful_picks/index.html",
+    "index_sha256":  "1b9368913685ee38a1c540f2dab9e324b92461b5a688afc2884347764249ca0f",
+    "references":  [
+                       {
+                           "relative_path":  "../20260920_five_successful_picks/index.html",
+                           "bytes":  1695,
+                           "sha256":  "f0c211fa5733b5fd744edef4b766b3e4af7d7e9d45b32a9adb7cb3d2bdab450b"
+                       },
+                       {
+                           "relative_path":  "../20260918_a0bba8c/segments/001_carton_l07_c02/replay_browser.mp4",
+                           "bytes":  3198991,
+                           "sha256":  "afc868738d28dd431097a1174352193b2279de535cd433b6512e9656af28df34"
+                       },
+                       {
+                           "relative_path":  "../20260918_a0bba8c/index.html",
+                           "bytes":  5902,
+                           "sha256":  "53160ae80d8e20dbabb21ae64ad63cde78ca54698b5ed2617c9d3880dc2016d6"
+                       },
+                       {
+                           "relative_path":  "../20260918_a0bba8c/segments/002_carton_l07_c01/replay_browser.mp4",
+                           "bytes":  1188849,
+                           "sha256":  "235e641872968fc9a874045329ba78a84ece2a7106321daf1ed33fc3b9199c77"
+                       },
+                       {
+                           "relative_path":  "../20260918_93db816/segments/001_carton_l07_c01/replay_browser.mp4",
+                           "bytes":  3337623,
+                           "sha256":  "3ff860d8fa3d5228d3a7731f8159b9d171f6e3d9605de38082a5ac4913d87016"
+                       },
+                       {
+                           "relative_path":  "../20260918_93db816/index.html",
+                           "bytes":  4219,
+                           "sha256":  "5a7e1d9f30c82402de356c9dba68f3ceac73c599e5ee34d302a27da48d895ae3"
+                       },
+                       {
+                           "relative_path":  "../20260920_ab3c63d/segments/001_carton_l07_c03/replay_browser.mp4",
+                           "bytes":  5138067,
+                           "sha256":  "f704924d640ad60e0069648888caa707432061ec4c522f868eb62d200265e992"
+                       },
+                       {
+                           "relative_path":  "../20260920_ab3c63d/index.html",
+                           "bytes":  9597,
+                           "sha256":  "28878c5c21faa2243fcb92bd73b6a26d93ed5e41706009b3c903d723d6675775"
+                       },
+                       {
+                           "relative_path":  "../20260920_ab3c63d/segments/002_carton_l07_c04/replay_browser.mp4",
+                           "bytes":  4562557,
+                           "sha256":  "0c078a020f8234154a5a62ba2acc8711046d2cbc8f84bfd2604e964cf41f9bc5"
+                       },
+                       {
+                           "relative_path":  "../20260920_ab3c63d/segments/003_carton_l07_c00/replay_browser.mp4",
+                           "bytes":  2692325,
+                           "sha256":  "56517431b8bc485970ffd8d7f8c4298939342c07cc2e0ddc7d4e02488eff719e"
+                       }
+                   ]
+}

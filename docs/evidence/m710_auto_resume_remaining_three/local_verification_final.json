@@ -1,0 +1,13 @@
+﻿{
+    "status":  "PASS",
+    "local_directory":  "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\outputs\\delivery\\20260920_ab3c63d",
+    "world_session_id":  "1789875150.9359868",
+    "files_verified":  132,
+    "videos":  6,
+    "original_videos":  3,
+    "png_files":  59,
+    "unique_png_images":  40,
+    "extracted_event_frames":  33,
+    "video_verification":  "Full server decode plus local byte count and SHA-256 equality",
+    "archive_sha256":  "458c96856557f810e9dedbf6c472c28c73b16af93189b4d9c74affc2a10d5264"
+}

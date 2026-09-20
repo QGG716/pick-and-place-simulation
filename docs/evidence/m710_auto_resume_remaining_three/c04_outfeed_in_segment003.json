@@ -1,0 +1,20 @@
+{
+  "world_session_id": "1789875150.9359868",
+  "recorded_during_segment": 3,
+  "source": "isaac_highest_row.log FANUC_REPLAY_EVENT",
+  "segment003_transport_time_offset_s": 528.6166666666667,
+  "segment003_event_time_s": 0.5375000001280341,
+  "event": {
+    "event": "OUTFED_ASSUMED",
+    "carton_id": "carton_l07_c04",
+    "time_s": 529.1541666667947,
+    "output_plane": {
+      "name": "trailer_opening_x",
+      "direction": "-X",
+      "x_m": -3.2
+    },
+    "full_envelope_max_x_m": -3.200989582069538,
+    "source": "IDEAL_DOWNSTREAM_FULL_ENVELOPE_CROSSING",
+    "actual_full_envelope_max_x_m": -3.2009895992450206
+  }
+}

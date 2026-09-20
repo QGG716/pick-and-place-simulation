@@ -1,0 +1,14 @@
+﻿{
+    "status":  "PASS",
+    "directory":  "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\outputs\\delivery\\20260920_five_successful_picks",
+    "video_sha256":  "924285a4698b3eb166bf498f009902c9615ebd0a554a2ed5b479390d3c041bff",
+    "video_bytes":  23722560,
+    "frames":  3113,
+    "fps":  5,
+    "duration_seconds":  622.6,
+    "source_clips":  5,
+    "worlds":  3,
+    "same_world_continuous_trial":  false,
+    "verification":  "All output frames decoded on server; local byte count, SHA256, poster decode and index references pass",
+    "archive_sha256":  "4ce34b30de6fb07f4f15cffe9d667e5a9a9dc2cc5d304b652b5203e7ec5b8988"
+}

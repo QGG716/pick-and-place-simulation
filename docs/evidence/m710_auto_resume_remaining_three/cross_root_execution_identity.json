@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "same_asset_audit": true,
+  "execution_source_files_equal": true,
+  "scope": "Directory portability only; new c04 bundle still requires independent live-runtime readback"
+}

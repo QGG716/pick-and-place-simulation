@@ -1,0 +1,42 @@
+[
+  {
+    "event": "LAST_TWO_DRIVER_READY",
+    "unix_time_s": 1789877697.273097,
+    "world_session_id": "1789875150.9359868",
+    "source_manifest": "last_two_planner_manifest.json"
+  },
+  {
+    "event": "OFFLINE_NEXT_PLAN_STARTED",
+    "unix_time_s": 1789877697.2772892,
+    "segment": 2,
+    "actual_state_sha256": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "physics_paused": true
+  },
+  {
+    "event": "OFFLINE_NEXT_PLAN_FINISHED",
+    "unix_time_s": 1789879469.3491106,
+    "segment": 2,
+    "returncode": 0,
+    "wall_seconds": 1772.0718385651708,
+    "request_path": "/root/autodl-tmp/m710-auto-resume-20260920/repo/outputs/highest_row_control/segment_002_request.json"
+  },
+  {
+    "event": "OFFLINE_NEXT_PLAN_STARTED",
+    "unix_time_s": 1789881941.7857392,
+    "segment": 3,
+    "actual_state_sha256": "a79f1ff80531b4891b8536ef0851044daa8edff54ce13f2417df6bd9e0c850c5",
+    "physics_paused": true
+  },
+  {
+    "event": "OFFLINE_NEXT_PLAN_FINISHED",
+    "unix_time_s": 1789882748.8527958,
+    "segment": 3,
+    "returncode": 0,
+    "wall_seconds": 807.0670862793922,
+    "request_path": "/root/autodl-tmp/m710-auto-resume-20260920/repo/outputs/highest_row_control/segment_003_request.json"
+  },
+  {
+    "event": "ALL_LAST_TWO_REQUESTS_PUBLISHED",
+    "unix_time_s": 1789882748.8531318
+  }
+]

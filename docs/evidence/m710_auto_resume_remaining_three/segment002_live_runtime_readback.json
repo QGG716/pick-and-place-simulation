@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "bundle_payload_sha256": "0124dd126e1eb2b94bad621e0434055d23fbd012930f325d1e834a8d022c4a2c",
+  "source_preflight_fingerprint": "a596a2fbeb7efed923c00707e5dafc0335a263c66e9cccf0a357e2e43bc1c8d0",
+  "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+}

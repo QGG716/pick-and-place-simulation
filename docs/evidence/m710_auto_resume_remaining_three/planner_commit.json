@@ -1,0 +1,19 @@
+{
+  "planner_commit": "725326ccc4406e165900cf9a375295713a0a49d8",
+  "runtime_commit": "ab3c63d07e1bfbd3be58ab7451903f1ade35fb1e",
+  "planner_source_changes": {
+    "src/unloading_sim/geometry.py": {
+      "runtime_sha256": "793384532bf599bb7b7a4f1199bde36b9ad170b4b38f4989975ac4d911508c87",
+      "planner_sha256": "78f1deed2f8e0d9fc637cb7b5ee931947f13da72e7f0d68950e5688dcc59bf40"
+    },
+    "src/unloading_sim/pinocchio_backend.py": {
+      "runtime_sha256": "febe67199d3acf927240055b067d707c6cf92b784e1beae639ab0650fa34530a",
+      "planner_sha256": "3dcb8b4af6201f2319579aab9acd0611d0ad98c0a4f6ad784fe42f84e084c167"
+    }
+  },
+  "execution_implementation_unchanged": true,
+  "scope": [
+    "carton_l07_c00",
+    "carton_l07_c04"
+  ]
+}

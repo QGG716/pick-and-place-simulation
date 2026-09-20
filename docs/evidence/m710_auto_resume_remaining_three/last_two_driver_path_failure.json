@@ -1,0 +1,8 @@
+[
+  {
+    "event": "LAST_TWO_DRIVER_READY",
+    "unix_time_s": 1789876247.3156216,
+    "world_session_id": "1789875150.9359868",
+    "source_manifest": "last_two_planner_manifest.json"
+  }
+]
