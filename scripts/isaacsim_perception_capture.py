@@ -42,6 +42,10 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--workcell-asset-cache", type=Path, help="Pinned official conveyor cache for derived workcell")
     result.add_argument("--continuous-frames", type=int, default=0,
                         help="New finite dual RGB-D recording at --fps; move the paired camera rig, keep scene assets unchanged")
+    result.add_argument("--seam-check-recording", type=Path,
+                        help="Capture only first/middle/last recorded camera poses, with new bindings and USD/first-hit evidence")
+    result.add_argument("--seam-inspection-light", action="store_true",
+                        help="Explicit local roof/right-wall inspection lighting; changes illumination, not geometry")
     return result
 
 
@@ -78,6 +82,10 @@ def rgb_data(value):
 
 
 args = parser().parse_args()
+if args.seam_check_recording and (not args.carton_assets or args.continuous_frames):
+    raise ValueError('seam check requires carton assets and cannot be a continuous recording')
+if args.seam_inspection_light and not args.carton_assets:
+    raise ValueError('seam inspection light requires the derived carton-asset capture path')
 if args.continuous_frames and (not args.carton_assets or not 2 <= args.continuous_frames <= 300 or 60 % args.fps):
     raise ValueError('continuous capture requires carton assets, 2..300 frames and an FPS dividing 60')
 if min(args.width, args.height, args.video_width, args.video_height, args.fps) <= 0 or args.seconds <= 0.0:
@@ -400,6 +408,11 @@ try:
     environment_sphere = UsdLux.SphereLight.Define(stage, "/PerceptionValidation/EnvironmentSphere")
     environment_sphere.CreateRadiusAttr(0.7)
     UsdGeom.XformCommonAPI(environment_sphere.GetPrim()).SetTranslate(Gf.Vec3d(-0.7, -1.8, 3.3))
+    if args.seam_inspection_light:
+        if not derived_environment:
+            raise ValueError('seam inspection light requires the full-roof derived environment')
+        from trailer_seam_check import add_inspection_light
+        add_inspection_light(stage, derived_environment['trailer'])
 
     def safe_name(index, name):
         return f"p_{index:03d}_" + "".join(character if character.isascii() and (character.isalnum() or character == "_") else "_" for character in str(name))
@@ -761,10 +774,10 @@ try:
         rgb_path = module_dir / "sensor_rgb.png"
         if not cv2.imwrite(str(rgb_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)):
             raise RuntimeError(f"RGB PNG write failed: {rgb_path}")
-        if not args.continuous_frames:
+        if not (args.continuous_frames or args.seam_check_recording):
             np.save(module_dir / "sensor_rgb.npy", rgb)
         np.save(module_dir / "metric_depth_m.npy", depth)
-        if not args.continuous_frames:
+        if not (args.continuous_frames or args.seam_check_recording):
             write_capture_pointcloud(module_dir, depth, camera)
         finite = np.isfinite(depth) & (depth > 0.0)
         depth_visual = np.zeros_like(depth, dtype=np.uint8)
@@ -846,7 +859,8 @@ try:
         )
         (module_dir / "capture_metadata.json").write_text(json.dumps(metadata.to_dict(), indent=2), encoding="utf-8")
         binding.update(instance_masks_sha256=masks_hash, robot_state=captured_robot_state(manifest))
-        binding = finalize_capture_binding(module_dir, manifest, camera, binding, with_pointcloud=not args.continuous_frames)
+        binding = finalize_capture_binding(module_dir, manifest, camera, binding,
+                                           with_pointcloud=not (args.continuous_frames or args.seam_check_recording))
         if args.continuous_frames:
             cv2.imwrite(str(module_dir/'preview_rgb.jpg'), cv2.resize(cv2.cvtColor(rgb,cv2.COLOR_RGB2BGR),(640,480)))
         (module_dir / "instance_segmentation_info.json").write_text(
@@ -867,11 +881,20 @@ try:
             'visual_scene_fingerprint':canonical_digest(usd_carton_records),
             'nominal_geometry_unchanged_relative_to_effective_bundle':True,'planning_admissible':False,
             'surface_truth':'NEW_RENDERED_DEPTH_AND_INSTANCE_MASKS; NOMINAL_CUBOID_IS_NOT_EXACT_MESH'}
+        if args.seam_inspection_light:
+            payload['provenance']['inspection_lighting'] = 'LOCAL_ROOF_RIGHT_WALL_INSPECTION_LIGHT; NOT_NOMINAL_LIGHTING'
         payload.pop('manifest_fingerprint');payload['manifest_fingerprint']=canonical_digest(payload)
         manifest=IsaacSceneManifest.from_dict(payload)
-        (args.output/'manifest.json').write_text(json.dumps(payload,indent=2))
+        (args.output/'manifest.json').write_text(json.dumps(payload,indent=2), encoding='utf-8')
         apply_manifest(manifest,'FULL_STACK_NOMINAL')
         for _ in range(32): render_at_joint_command(command)
+        if args.seam_check_recording:
+            from trailer_seam_check import capture_same_poses
+            capture_same_poses(
+                args, stage, payload, camera_handles, cameras[0], command,
+                world, render_at_joint_command, capture_module_artifacts,
+                bundle_scene_records['FULL_STACK_NOMINAL'])
+            raise SystemExit(0)
         if args.continuous_frames:
             # Newly acquired frames, never changes to archived capture identities.
             from copy import deepcopy
@@ -881,7 +904,8 @@ try:
                 'algorithm_resolution':[args.width,args.height],'preview_resolution':[640,480],
                 'source_bundle':str(args.bundle_directory.resolve()),'frames':[],
                 'camera_motion':'paired optical cameras translate 0.18 m in world +Y; no tracking or motion compensation',
-                'scene_changes':'NONE: existing geometry/materials/lights retained'}
+                'scene_changes':('LOCAL_ROOF_RIGHT_WALL_INSPECTION_LIGHT; geometry/materials/existing lights retained'
+                                 if args.seam_inspection_light else 'NONE: existing geometry/materials/lights retained')}
             camera_prims={module:handle.get_output_prims()['prims'][0] for module,handle in camera_handles.items()}
             started=time.monotonic()
             sim_started=world.current_time
@@ -939,6 +963,7 @@ try:
         for name, annotator in detail_cameras:
             cv2.imwrite(str(args.output/(name+'.png')),cv2.cvtColor(np.asarray(rgb_data(annotator.get_data()))[:,:,:3],cv2.COLOR_RGB2BGR))
         record={'status':'CAPTURED_PENDING_USER_IMAGE_REVIEW','planning_admissible':False,
+            'inspection_lighting':bool(args.seam_inspection_light),
             'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=project_root,text=True).strip(),
             'source_worktree':subprocess.check_output(['git','status','--short'],cwd=project_root,text=True),
             'cartons':usd_carton_records,'target_highlight':False,'mechanical_entities_omitted':[],

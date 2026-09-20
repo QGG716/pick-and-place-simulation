@@ -1,0 +1,79 @@
+{
+  "module_id": "module_0_upper",
+  "instance_masks_sha256": "42ea9e8ac9646d7d2c77befeb3ebf6a887bcc7e436b8dfc023944663af035f5e",
+  "robot_state": {
+    "schema_version": "isaac_robot_state_v1",
+    "source": "KINEMATIC_HOLD_READBACK",
+    "synthetic_fixture": false,
+    "manifest_fingerprint": "1c8e1ad0fe411bac975fc237ab27570b141aaf037aba5a6e0417bebe12c653d8",
+    "robot_model_identity": "fanuc_m710id_70",
+    "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+    "simulation_epoch": "carton-assets-seam-before-02",
+    "frame_sequence": 28,
+    "sample_time": 0.46666669100522995,
+    "clock_domain": "ros_sim_time",
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "position_rad": [
+      -1.5707963705062866,
+      0.785456657409668,
+      0.649621844291687,
+      0.06722349673509598,
+      -1.2117502689361572,
+      -1.9415185451507568
+    ],
+    "velocity_rad_s": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "kinematic_hold": {
+      "render_without_physics_step": true,
+      "position_command_rad": [
+        -1.5707963705062866,
+        0.785456657409668,
+        0.649621844291687,
+        0.06722349673509598,
+        -1.2117502689361572,
+        -1.9415185451507568
+      ],
+      "velocity_command_rad_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "manifest_fingerprint": "1c8e1ad0fe411bac975fc237ab27570b141aaf037aba5a6e0417bebe12c653d8",
+  "capture_id": "carton-assets-seam-before-02:module_0_upper:28",
+  "clock_domain": "ros_sim_time",
+  "metric_depth_dtype": "float32",
+  "metric_depth_unit": "m",
+  "metric_depth_semantics": "optical_z_m",
+  "metric_depth_sha256": "9f224868b8d42d00983a8d7c9d137cc1fc1bd8250f39de44c0a617968a6a8627",
+  "capture_metadata_sha256": "1dcbfd1ec59971dc709144474803fdbd55829c592e1108f438f3ff0df49cb99d",
+  "pointcloud_sha256": "010c68d5f79395b0e4974ec2b6e96bbc38673b2b7eab29319b3601b17fd73d10",
+  "pointcloud_array_key": "xyz_m",
+  "pointcloud_frame_id": "world",
+  "pointcloud_unit": "m",
+  "pointcloud_dtype": "float32",
+  "schema_version": "isaac_capture_binding_v1",
+  "simulation_epoch": "carton-assets-seam-before-02",
+  "frame_sequence": 28,
+  "simulation_time": 0.46666669100522995,
+  "rgb_sha256": "f424130186255ac19cf1a9259aadec75fd6d3cdd51c9f41a970bed28ebf33a51",
+  "camera_calibration_identity": "2d3f4e2b08063205152dd703516eea17f58257026dfd79ae006a80485340e186",
+  "gt_snapshot_sha256": "b0eec161230b03e604a2ed6703c9b15865707b281740bceaca3aaa7e98aa0e6c"
+}

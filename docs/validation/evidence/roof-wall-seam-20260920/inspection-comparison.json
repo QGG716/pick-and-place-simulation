@@ -1,0 +1,871 @@
+{
+  "source_original_recording": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01",
+  "baseline_capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/seam-before-02",
+  "inspection_capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/seam-inspection-07",
+  "same_usd_solids_and_parents": true,
+  "same_global_render_settings": true,
+  "same_original_lights": true,
+  "new_light_count": 1,
+  "source_code_lf_sha256": {
+    "scripts/isaacsim_perception_capture.py": "72ca48d44523d9831022f75d49da824369cdc5a9d8c9b6ba63dc1c50743a2927",
+    "scripts/trailer_seam_check.py": "2069111f83cb642e2be1b40a2718e0348cef2acc3fe09c034b7ce4d3db809659"
+  },
+  "inspection_usd_sha256": "3a64250aca95055d1ad23b5e9710a89d1fad1bdc013e17aab1a65888439d008c",
+  "frames": [
+    {
+      "source_frame": 32,
+      "module": "module_0_upper",
+      "whole_frame_depth_exactly_equal": true,
+      "whole_frame_first_hit_prim_exactly_equal": true,
+      "new_capture_id": "carton-assets-seam-inspection-07:module_0_upper:27",
+      "new_files_sha256": {
+        "sensor_rgb.png": "fa07cf4123910369502bd8a000d100c1da3b86eb3f30efc2d56bf9afdad310a0",
+        "metric_depth_m.npy": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+        "capture_binding.json": "f077d0655dc0aba3920075f325d55e1cab7bc501afbc46600938f6121ab6341c",
+        "first_hit_instance_ids.npy": "93e461b8596f5aed6713e6ed811e1742ba975def72733b26f8a239851a87400b"
+      },
+      "original_files_still_match_initial_audit": true,
+      "samples": [
+        {
+          "uv": [
+            1800,
+            750
+          ],
+          "original_rgb": [
+            3,
+            2,
+            1
+          ],
+          "same_pose_light_off_rgb": [
+            3,
+            2,
+            2
+          ],
+          "inspection_on_rgb": [
+            17,
+            13,
+            8
+          ],
+          "optical_z_m": 2.0688815116882324,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            1800,
+            806
+          ],
+          "original_rgb": [
+            2,
+            2,
+            1
+          ],
+          "same_pose_light_off_rgb": [
+            2,
+            2,
+            1
+          ],
+          "inspection_on_rgb": [
+            46,
+            37,
+            28
+          ],
+          "optical_z_m": 2.7542779445648193,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            1800,
+            812
+          ],
+          "original_rgb": [
+            14,
+            10,
+            7
+          ],
+          "same_pose_light_off_rgb": [
+            15,
+            11,
+            7
+          ],
+          "inspection_on_rgb": [
+            90,
+            74,
+            59
+          ],
+          "optical_z_m": 2.817972183227539,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "uv": [
+            2000,
+            742
+          ],
+          "original_rgb": [
+            4,
+            3,
+            2
+          ],
+          "same_pose_light_off_rgb": [
+            4,
+            3,
+            2
+          ],
+          "inspection_on_rgb": [
+            49,
+            39,
+            30
+          ],
+          "optical_z_m": 1.99532151222229,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2000,
+            748
+          ],
+          "original_rgb": [
+            25,
+            19,
+            14
+          ],
+          "same_pose_light_off_rgb": [
+            26,
+            20,
+            14
+          ],
+          "inspection_on_rgb": [
+            97,
+            80,
+            64
+          ],
+          "optical_z_m": 2.0179803371429443,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "uv": [
+            2300,
+            645
+          ],
+          "original_rgb": [
+            16,
+            12,
+            8
+          ],
+          "same_pose_light_off_rgb": [
+            18,
+            14,
+            10
+          ],
+          "inspection_on_rgb": [
+            61,
+            49,
+            38
+          ],
+          "optical_z_m": 1.3985904455184937,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2300,
+            651
+          ],
+          "original_rgb": [
+            51,
+            41,
+            31
+          ],
+          "same_pose_light_off_rgb": [
+            54,
+            44,
+            34
+          ],
+          "inspection_on_rgb": [
+            110,
+            93,
+            75
+          ],
+          "optical_z_m": 1.4152981042861938,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "uv": [
+            1600,
+            900
+          ],
+          "original_rgb": [
+            3,
+            2,
+            2
+          ],
+          "same_pose_light_off_rgb": [
+            3,
+            2,
+            2
+          ],
+          "inspection_on_rgb": [
+            15,
+            11,
+            8
+          ],
+          "optical_z_m": 4.668856143951416,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "uv": [
+            1350,
+            900
+          ],
+          "original_rgb": [
+            0,
+            0,
+            0
+          ],
+          "same_pose_light_off_rgb": [
+            0,
+            0,
+            0
+          ],
+          "inspection_on_rgb": [
+            0,
+            0,
+            0
+          ],
+          "optical_z_m": null,
+          "same_first_hit_prim": "BACKGROUND"
+        }
+      ]
+    },
+    {
+      "source_frame": 32,
+      "module": "module_1_lower",
+      "whole_frame_depth_exactly_equal": true,
+      "whole_frame_first_hit_prim_exactly_equal": true,
+      "new_capture_id": "carton-assets-seam-inspection-07:module_1_lower:27",
+      "new_files_sha256": {
+        "sensor_rgb.png": "a0ac6e8417f1179f9501da579368a0e82f1114b5fe4df20af820f4b70f5dc9ed",
+        "metric_depth_m.npy": "87eab3e6afec0bb1edfdf1322e0c612b571ae963214fc90ff2ebda4e55dc5c96",
+        "capture_binding.json": "e42d339e65e4cee68d3e159ec9ae739c8d3a4d966a9c03091a1304e1131ac348",
+        "first_hit_instance_ids.npy": "2b2834e178860ab87f6f2683820609cb82d352a51a5c4ebc110323445f2bbd25"
+      },
+      "original_files_still_match_initial_audit": true,
+      "samples": [
+        {
+          "uv": [
+            1800,
+            0
+          ],
+          "original_rgb": [
+            92,
+            62,
+            32
+          ],
+          "same_pose_light_off_rgb": [
+            93,
+            63,
+            32
+          ],
+          "inspection_on_rgb": [
+            94,
+            63,
+            33
+          ],
+          "optical_z_m": 1.144709587097168,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+        },
+        {
+          "uv": [
+            2300,
+            0
+          ],
+          "original_rgb": [
+            58,
+            33,
+            16
+          ],
+          "same_pose_light_off_rgb": [
+            61,
+            35,
+            16
+          ],
+          "inspection_on_rgb": [
+            62,
+            36,
+            17
+          ],
+          "optical_z_m": 1.1447097063064575,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+        }
+      ]
+    },
+    {
+      "source_frame": 320,
+      "module": "module_0_upper",
+      "whole_frame_depth_exactly_equal": true,
+      "whole_frame_first_hit_prim_exactly_equal": true,
+      "new_capture_id": "carton-assets-seam-inspection-07:module_0_upper:28",
+      "new_files_sha256": {
+        "sensor_rgb.png": "c36fc2411758aa1d4ed4a2f278881e0a31fef666e7016652458f93d8aa80a153",
+        "metric_depth_m.npy": "9f224868b8d42d00983a8d7c9d137cc1fc1bd8250f39de44c0a617968a6a8627",
+        "capture_binding.json": "5de5a4fe4d9f9d736115b1d98219f9d35b4672d916ac7552d57e155e1a66a920",
+        "first_hit_instance_ids.npy": "0d03b0970104afb415a63b84662ba3875aafdfdf3fc95691e795e16f39897350"
+      },
+      "original_files_still_match_initial_audit": true,
+      "samples": [
+        {
+          "uv": [
+            1800,
+            750
+          ],
+          "original_rgb": [
+            3,
+            2,
+            2
+          ],
+          "same_pose_light_off_rgb": [
+            3,
+            2,
+            2
+          ],
+          "inspection_on_rgb": [
+            10,
+            8,
+            5
+          ],
+          "optical_z_m": 2.0688815116882324,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            1800,
+            806
+          ],
+          "original_rgb": [
+            2,
+            1,
+            1
+          ],
+          "same_pose_light_off_rgb": [
+            2,
+            1,
+            1
+          ],
+          "inspection_on_rgb": [
+            51,
+            41,
+            31
+          ],
+          "optical_z_m": 2.7542779445648193,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            1800,
+            812
+          ],
+          "original_rgb": [
+            2,
+            2,
+            1
+          ],
+          "same_pose_light_off_rgb": [
+            2,
+            2,
+            1
+          ],
+          "inspection_on_rgb": [
+            45,
+            36,
+            27
+          ],
+          "optical_z_m": 2.8595376014709473,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2000,
+            742
+          ],
+          "original_rgb": [
+            4,
+            3,
+            2
+          ],
+          "same_pose_light_off_rgb": [
+            4,
+            3,
+            2
+          ],
+          "inspection_on_rgb": [
+            57,
+            46,
+            35
+          ],
+          "optical_z_m": 1.99532151222229,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2000,
+            748
+          ],
+          "original_rgb": [
+            4,
+            3,
+            2
+          ],
+          "same_pose_light_off_rgb": [
+            5,
+            3,
+            2
+          ],
+          "inspection_on_rgb": [
+            53,
+            42,
+            32
+          ],
+          "optical_z_m": 2.049987554550171,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2300,
+            645
+          ],
+          "original_rgb": [
+            18,
+            14,
+            9
+          ],
+          "same_pose_light_off_rgb": [
+            18,
+            13,
+            9
+          ],
+          "inspection_on_rgb": [
+            68,
+            55,
+            42
+          ],
+          "optical_z_m": 1.3985904455184937,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2300,
+            651
+          ],
+          "original_rgb": [
+            17,
+            13,
+            9
+          ],
+          "same_pose_light_off_rgb": [
+            18,
+            13,
+            9
+          ],
+          "inspection_on_rgb": [
+            64,
+            52,
+            40
+          ],
+          "optical_z_m": 1.4252300262451172,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            1600,
+            900
+          ],
+          "original_rgb": [
+            3,
+            2,
+            1
+          ],
+          "same_pose_light_off_rgb": [
+            3,
+            2,
+            2
+          ],
+          "inspection_on_rgb": [
+            8,
+            6,
+            4
+          ],
+          "optical_z_m": 4.847268104553223,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "uv": [
+            1350,
+            900
+          ],
+          "original_rgb": [
+            0,
+            0,
+            0
+          ],
+          "same_pose_light_off_rgb": [
+            0,
+            0,
+            0
+          ],
+          "inspection_on_rgb": [
+            0,
+            0,
+            0
+          ],
+          "optical_z_m": null,
+          "same_first_hit_prim": "BACKGROUND"
+        }
+      ]
+    },
+    {
+      "source_frame": 320,
+      "module": "module_1_lower",
+      "whole_frame_depth_exactly_equal": true,
+      "whole_frame_first_hit_prim_exactly_equal": true,
+      "new_capture_id": "carton-assets-seam-inspection-07:module_1_lower:28",
+      "new_files_sha256": {
+        "sensor_rgb.png": "0434a13e67a052f2b133afd96c70d0b04cefdb998d2a9c5de3aa90aba9ffce9b",
+        "metric_depth_m.npy": "17ca856e8145bac2738a4d6680b490351118348c7478c1358a4ea1df44d619d9",
+        "capture_binding.json": "a9530163fade799bee3679c9da563be6b0273af9274e2c431b2edad5cb90abd1",
+        "first_hit_instance_ids.npy": "0439b4cb373e8bc05506947d27e8ec2bc031251041e8b238e09a6e52294e6578"
+      },
+      "original_files_still_match_initial_audit": true,
+      "samples": [
+        {
+          "uv": [
+            1800,
+            0
+          ],
+          "original_rgb": [
+            139,
+            91,
+            48
+          ],
+          "same_pose_light_off_rgb": [
+            137,
+            92,
+            48
+          ],
+          "inspection_on_rgb": [
+            138,
+            92,
+            48
+          ],
+          "optical_z_m": 1.144709587097168,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+        },
+        {
+          "uv": [
+            2300,
+            0
+          ],
+          "original_rgb": [
+            71,
+            45,
+            23
+          ],
+          "same_pose_light_off_rgb": [
+            70,
+            43,
+            22
+          ],
+          "inspection_on_rgb": [
+            72,
+            45,
+            23
+          ],
+          "optical_z_m": 1.1447097063064575,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+        }
+      ]
+    },
+    {
+      "source_frame": 602,
+      "module": "module_0_upper",
+      "whole_frame_depth_exactly_equal": true,
+      "whole_frame_first_hit_prim_exactly_equal": true,
+      "new_capture_id": "carton-assets-seam-inspection-07:module_0_upper:29",
+      "new_files_sha256": {
+        "sensor_rgb.png": "8bb356831b5ec29c35713dfa13045655aa507b5e32a98c8efa5a3145ece165c7",
+        "metric_depth_m.npy": "63fd1b0d15e3822f71b57a657bb84ce00ea2e3084d5d3fd5f582a9c808c3c268",
+        "capture_binding.json": "740791ea1cf8f4393875fbd063379a83b091ce74cc791fb513b2b05afd55fbdf",
+        "first_hit_instance_ids.npy": "8e5a673fae011c45318f9a2d08e24df06b4cca6b18cadb3607fc5fe1b0e832ea"
+      },
+      "original_files_still_match_initial_audit": true,
+      "samples": [
+        {
+          "uv": [
+            1800,
+            750
+          ],
+          "original_rgb": [
+            3,
+            2,
+            2
+          ],
+          "same_pose_light_off_rgb": [
+            3,
+            2,
+            2
+          ],
+          "inspection_on_rgb": [
+            9,
+            7,
+            5
+          ],
+          "optical_z_m": 2.0688815116882324,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            1800,
+            806
+          ],
+          "original_rgb": [
+            2,
+            1,
+            1
+          ],
+          "same_pose_light_off_rgb": [
+            2,
+            1,
+            1
+          ],
+          "inspection_on_rgb": [
+            57,
+            46,
+            35
+          ],
+          "optical_z_m": 2.7542779445648193,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            1800,
+            812
+          ],
+          "original_rgb": [
+            2,
+            1,
+            1
+          ],
+          "same_pose_light_off_rgb": [
+            2,
+            1,
+            1
+          ],
+          "inspection_on_rgb": [
+            50,
+            40,
+            30
+          ],
+          "optical_z_m": 2.8595376014709473,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2000,
+            742
+          ],
+          "original_rgb": [
+            4,
+            3,
+            2
+          ],
+          "same_pose_light_off_rgb": [
+            4,
+            3,
+            2
+          ],
+          "inspection_on_rgb": [
+            63,
+            51,
+            39
+          ],
+          "optical_z_m": 1.99532151222229,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2000,
+            748
+          ],
+          "original_rgb": [
+            4,
+            3,
+            2
+          ],
+          "same_pose_light_off_rgb": [
+            4,
+            3,
+            2
+          ],
+          "inspection_on_rgb": [
+            57,
+            45,
+            34
+          ],
+          "optical_z_m": 2.049987554550171,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2300,
+            645
+          ],
+          "original_rgb": [
+            18,
+            14,
+            9
+          ],
+          "same_pose_light_off_rgb": [
+            18,
+            14,
+            9
+          ],
+          "inspection_on_rgb": [
+            75,
+            62,
+            48
+          ],
+          "optical_z_m": 1.3985904455184937,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            2300,
+            651
+          ],
+          "original_rgb": [
+            18,
+            13,
+            9
+          ],
+          "same_pose_light_off_rgb": [
+            17,
+            13,
+            9
+          ],
+          "inspection_on_rgb": [
+            71,
+            58,
+            45
+          ],
+          "optical_z_m": 1.4252300262451172,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "uv": [
+            1600,
+            900
+          ],
+          "original_rgb": [
+            3,
+            2,
+            1
+          ],
+          "same_pose_light_off_rgb": [
+            3,
+            2,
+            1
+          ],
+          "inspection_on_rgb": [
+            5,
+            4,
+            3
+          ],
+          "optical_z_m": 5.021963596343994,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "uv": [
+            1350,
+            900
+          ],
+          "original_rgb": [
+            0,
+            0,
+            0
+          ],
+          "same_pose_light_off_rgb": [
+            0,
+            0,
+            0
+          ],
+          "inspection_on_rgb": [
+            0,
+            0,
+            0
+          ],
+          "optical_z_m": 0.06499999761581421,
+          "same_first_hit_prim": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightLeftHousing"
+        }
+      ]
+    },
+    {
+      "source_frame": 602,
+      "module": "module_1_lower",
+      "whole_frame_depth_exactly_equal": true,
+      "whole_frame_first_hit_prim_exactly_equal": true,
+      "new_capture_id": "carton-assets-seam-inspection-07:module_1_lower:29",
+      "new_files_sha256": {
+        "sensor_rgb.png": "a8d4ccf293b8e29577bf4caac951cd9ec6e687716c62d806e2c2ddc0f0a77e8b",
+        "metric_depth_m.npy": "e36eb34cf364d8f22258ce9d884faef9f3f3faf939affaff9eb0fd640a769e34",
+        "capture_binding.json": "b79c9b32811632423db01ade283edf1b28d5b8cff4d54bf9c2d39348ca7de689",
+        "first_hit_instance_ids.npy": "381f455ce79d5f08339dc6cd027b491aedcc093179f7e2b411d87ef97bb97eea"
+      },
+      "original_files_still_match_initial_audit": true,
+      "samples": [
+        {
+          "uv": [
+            1800,
+            0
+          ],
+          "original_rgb": [
+            142,
+            97,
+            54
+          ],
+          "same_pose_light_off_rgb": [
+            146,
+            104,
+            61
+          ],
+          "inspection_on_rgb": [
+            146,
+            104,
+            60
+          ],
+          "optical_z_m": 1.144709587097168,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+        },
+        {
+          "uv": [
+            2300,
+            0
+          ],
+          "original_rgb": [
+            109,
+            75,
+            43
+          ],
+          "same_pose_light_off_rgb": [
+            106,
+            73,
+            42
+          ],
+          "inspection_on_rgb": [
+            106,
+            72,
+            42
+          ],
+          "optical_z_m": 1.1479518413543701,
+          "same_first_hit_prim": "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1485 @@
+{
+  "source_original_recording": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01",
+  "diagnostic_new_capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/seam-before-02",
+  "original_continuous_run_exported_usd": false,
+  "usd_evidence_scope": "Reconstructed using the original command bundle and unchanged scene builder; original sensor depths cross-checked against new first-hit IDs. Archived original in-memory stage is unavailable.",
+  "frames": [
+    {
+      "source_frame": 32,
+      "module": "module_0_upper",
+      "crop_xyxy": [
+        1550,
+        500,
+        2592,
+        1020
+      ],
+      "cameras_objects_robot_identical": true,
+      "new_epoch": "carton-assets-seam-before-02",
+      "original_epoch": "carton-assets-recording-01",
+      "source_files_sha256": {
+        "sensor_rgb.png": "961faed9467a4b727f03828b1d06c31e1cd24ac966df809930cf7b2e6bb4897a",
+        "metric_depth_m.npy": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+        "capture_binding.json": "b60bb353b4418ad58694d03b905b559641dbb3496401c3e2343243ccd7d9ef45"
+      },
+      "source_manifest_sha256": "db07ab7dab1e5760d8f1a11c61707cde1b73c1fc8bb45dc634fdca71c8e42e65",
+      "new_manifest_sha256": "12384b3d941faf66de7f37f0847c003e3a515e4e6d2c71dd77fcc168191c6e7f",
+      "new_files_sha256": {
+        "sensor_rgb.png": "b2a527a20de39298a6518bd600992edbdfa1628c0a547eeab57edeab167caacb",
+        "metric_depth_m.npy": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+        "first_hit_instance_ids.npy": "03821ba6820ea6a0f5027ec1d98d6cb903a9f1473eaf37a4aeca818d95823d7d"
+      },
+      "depth_finite_mask_equal": true,
+      "depth_abs_diff_p99_m": 0.0,
+      "depth_abs_diff_max_m": 0.0,
+      "rgb_crop_mean_abs_difference": 1.5096602933215217,
+      "roof_hit_pixels": 1284324,
+      "samples": [
+        {
+          "pixel_uv": [
+            1800,
+            750
+          ],
+          "original_rgb": [
+            3,
+            2,
+            1
+          ],
+          "new_rgb": [
+            3,
+            2,
+            2
+          ],
+          "original_optical_z_m": 2.0688815116882324,
+          "new_optical_z_m": 2.0688815116882324,
+          "world_m": [
+            0.7438815116882325,
+            -0.6449300015901533,
+            2.700351922692563
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            720
+          ],
+          "original_rgb": [
+            6,
+            4,
+            3
+          ],
+          "new_rgb": [
+            6,
+            4,
+            3
+          ],
+          "original_optical_z_m": 1.8176010847091675,
+          "new_optical_z_m": 1.8176010847091675,
+          "world_m": [
+            0.4926010847091675,
+            -0.9613356458686304,
+            2.699610914264951
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            600
+          ],
+          "original_rgb": [
+            31,
+            24,
+            17
+          ],
+          "new_rgb": [
+            33,
+            26,
+            19
+          ],
+          "original_optical_z_m": 1.2299928665161133,
+          "new_optical_z_m": 1.2299928665161133,
+          "world_m": [
+            -0.09500713348388667,
+            -0.40808174540673137,
+            2.699490104970804
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            1600,
+            900
+          ],
+          "original_rgb": [
+            3,
+            2,
+            2
+          ],
+          "new_rgb": [
+            3,
+            2,
+            2
+          ],
+          "original_optical_z_m": 4.668856143951416,
+          "new_optical_z_m": 4.668856143951416,
+          "world_m": [
+            3.343856143951416,
+            -1.1499991887435816,
+            2.6187951051367646
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2200,
+            750
+          ],
+          "original_rgb": [
+            45,
+            36,
+            28
+          ],
+          "new_rgb": [
+            48,
+            39,
+            30
+          ],
+          "original_optical_z_m": 1.5717711448669434,
+          "new_optical_z_m": 1.5717711448669434,
+          "world_m": [
+            0.2467711448669434,
+            -1.149999595961214,
+            2.6281834328000016
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            1350,
+            900
+          ],
+          "original_rgb": [
+            0,
+            0,
+            0
+          ],
+          "new_rgb": [
+            0,
+            0,
+            0
+          ],
+          "original_optical_z_m": null,
+          "new_optical_z_m": null,
+          "world_m": null,
+          "new_first_hit_id": 0,
+          "new_first_hit_prim": "BACKGROUND"
+        },
+        {
+          "pixel_uv": [
+            1450,
+            900
+          ],
+          "original_rgb": [
+            0,
+            0,
+            0
+          ],
+          "new_rgb": [
+            0,
+            0,
+            0
+          ],
+          "original_optical_z_m": null,
+          "new_optical_z_m": null,
+          "world_m": null,
+          "new_first_hit_id": 0,
+          "new_first_hit_prim": "BACKGROUND"
+        },
+        {
+          "pixel_uv": [
+            1800,
+            806
+          ],
+          "original_rgb": [
+            2,
+            2,
+            1
+          ],
+          "new_rgb": [
+            2,
+            2,
+            1
+          ],
+          "original_optical_z_m": 2.7542779445648193,
+          "new_optical_z_m": 2.7542779445648193,
+          "world_m": [
+            1.4292779445648194,
+            -1.1070541212175988,
+            2.698763012431563
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            1800,
+            812
+          ],
+          "original_rgb": [
+            14,
+            10,
+            7
+          ],
+          "new_rgb": [
+            15,
+            11,
+            7
+          ],
+          "original_optical_z_m": 2.817972183227539,
+          "new_optical_z_m": 2.817972183227539,
+          "world_m": [
+            1.492972183227539,
+            -1.1499995503961742,
+            2.694590309318792
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            742
+          ],
+          "original_rgb": [
+            4,
+            3,
+            2
+          ],
+          "new_rgb": [
+            4,
+            3,
+            2
+          ],
+          "original_optical_z_m": 1.99532151222229,
+          "new_optical_z_m": 1.99532151222229,
+          "world_m": [
+            0.6703215122222901,
+            -1.1286657080923133,
+            2.7001349990995327
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            748
+          ],
+          "original_rgb": [
+            25,
+            19,
+            14
+          ],
+          "new_rgb": [
+            26,
+            20,
+            14
+          ],
+          "original_optical_z_m": 2.0179803371429443,
+          "new_optical_z_m": 2.0179803371429443,
+          "world_m": [
+            0.6929803371429444,
+            -1.1499997924007064,
+            2.6956075519961717
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2300,
+            645
+          ],
+          "original_rgb": [
+            16,
+            12,
+            8
+          ],
+          "new_rgb": [
+            18,
+            14,
+            10
+          ],
+          "original_optical_z_m": 1.3985904455184937,
+          "new_optical_z_m": 1.3985904455184937,
+          "world_m": [
+            0.0735904455184937,
+            -1.12756994160201,
+            2.6992917942735266
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2300,
+            651
+          ],
+          "original_rgb": [
+            51,
+            41,
+            31
+          ],
+          "new_rgb": [
+            54,
+            44,
+            34
+          ],
+          "original_optical_z_m": 1.4152981042861938,
+          "new_optical_z_m": 1.4152981042861938,
+          "world_m": [
+            0.09029810428619389,
+            -1.149999522754445,
+            2.69730144911518
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2500,
+            581
+          ],
+          "original_rgb": [
+            19,
+            15,
+            10
+          ],
+          "new_rgb": [
+            19,
+            15,
+            10
+          ],
+          "original_optical_z_m": 1.1721868515014648,
+          "new_optical_z_m": 1.1721868515014648,
+          "world_m": [
+            -0.1528131484985351,
+            -1.1369451478704622,
+            2.7000122244239195
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2500,
+            587
+          ],
+          "original_rgb": [
+            57,
+            46,
+            35
+          ],
+          "new_rgb": [
+            57,
+            46,
+            35
+          ],
+          "original_optical_z_m": 1.1802964210510254,
+          "new_optical_z_m": 1.1802964210510254,
+          "world_m": [
+            -0.14470357894897456,
+            -1.149999647580351,
+            2.6974462524788265
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        }
+      ]
+    },
+    {
+      "source_frame": 32,
+      "module": "module_1_lower",
+      "crop_xyxy": [
+        1550,
+        0,
+        2592,
+        520
+      ],
+      "cameras_objects_robot_identical": true,
+      "new_epoch": "carton-assets-seam-before-02",
+      "original_epoch": "carton-assets-recording-01",
+      "source_files_sha256": {
+        "sensor_rgb.png": "ff4c6c51be77292752d3afb4799e328fb09d255654fd5218e84f785414daa6fa",
+        "metric_depth_m.npy": "67aec15192dfb1138c6b6016c54f0d8d28069a68012b813f369098d063cb60f4",
+        "capture_binding.json": "fec3816c8d3b587467e104319d8312454bf66fae4fef60acf6271d8890d98bde"
+      },
+      "source_manifest_sha256": "db07ab7dab1e5760d8f1a11c61707cde1b73c1fc8bb45dc634fdca71c8e42e65",
+      "new_manifest_sha256": "12384b3d941faf66de7f37f0847c003e3a515e4e6d2c71dd77fcc168191c6e7f",
+      "new_files_sha256": {
+        "sensor_rgb.png": "603c75d5ad1759d7e8138d308105962cf19982df61d8e5a91e8a3503cc186b7e",
+        "metric_depth_m.npy": "87eab3e6afec0bb1edfdf1322e0c612b571ae963214fc90ff2ebda4e55dc5c96",
+        "first_hit_instance_ids.npy": "cc50280132df5dd34c2f45fbcb4c8229351c428f9b68a9f2a4da545e1850e86d"
+      },
+      "depth_finite_mask_equal": true,
+      "depth_abs_diff_p99_m": 0.0,
+      "depth_abs_diff_max_m": 0.9115462303161621,
+      "rgb_crop_mean_abs_difference": 1.3248179044244304,
+      "roof_hit_pixels": 0,
+      "samples": [
+        {
+          "pixel_uv": [
+            1800,
+            0
+          ],
+          "original_rgb": [
+            92,
+            62,
+            32
+          ],
+          "new_rgb": [
+            93,
+            63,
+            32
+          ],
+          "original_optical_z_m": 1.144709587097168,
+          "new_optical_z_m": 1.144709587097168,
+          "world_m": [
+            -3.139286652897866e-05,
+            -0.0218130483203538,
+            1.922755598339692
+          ],
+          "new_first_hit_id": 95,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+        },
+        {
+          "pixel_uv": [
+            2300,
+            0
+          ],
+          "original_rgb": [
+            58,
+            33,
+            16
+          ],
+          "new_rgb": [
+            61,
+            35,
+            16
+          ],
+          "original_optical_z_m": 1.1447097063064575,
+          "new_optical_z_m": 1.1447097063064575,
+          "world_m": [
+            -3.12548851857386e-05,
+            -0.7867418984649781,
+            1.9227556288956715
+          ],
+          "new_first_hit_id": 60,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+        }
+      ]
+    },
+    {
+      "source_frame": 320,
+      "module": "module_0_upper",
+      "crop_xyxy": [
+        1550,
+        500,
+        2592,
+        1020
+      ],
+      "cameras_objects_robot_identical": true,
+      "new_epoch": "carton-assets-seam-before-02",
+      "original_epoch": "carton-assets-recording-01",
+      "source_files_sha256": {
+        "sensor_rgb.png": "d5d5d2aa3311ab28d3d6860789a09a95e10975bc073a31a3f1ac45241b1c4fe8",
+        "metric_depth_m.npy": "45c25df167589eab6ef1bec35bcbdf20e33d94d8b9105958476b6cc6fff94d8a",
+        "capture_binding.json": "027db0620829022def57e2fb7fd5684f3edc37fb72a591da4f1b3adb264c2ebb"
+      },
+      "source_manifest_sha256": "5e87c6d73fdd492603818c11927eecbfc4ae1b94926316d03fe9314fa8f81c60",
+      "new_manifest_sha256": "15c875b4bfffdfb2fc55e22d2fbf344366668c1a631a0cfd30ae62106101f8e1",
+      "new_files_sha256": {
+        "sensor_rgb.png": "f424130186255ac19cf1a9259aadec75fd6d3cdd51c9f41a970bed28ebf33a51",
+        "metric_depth_m.npy": "9f224868b8d42d00983a8d7c9d137cc1fc1bd8250f39de44c0a617968a6a8627",
+        "first_hit_instance_ids.npy": "9fb14798bb10e19ab47870fda37b95191aeea05c4e9628a82455ed7da4ae10f2"
+      },
+      "depth_finite_mask_equal": false,
+      "depth_abs_diff_p99_m": 0.01479947566986084,
+      "depth_abs_diff_max_m": 1.2391761541366577,
+      "rgb_crop_mean_abs_difference": 0.40258501894778287,
+      "roof_hit_pixels": 1238191,
+      "samples": [
+        {
+          "pixel_uv": [
+            1800,
+            750
+          ],
+          "original_rgb": [
+            3,
+            2,
+            2
+          ],
+          "new_rgb": [
+            3,
+            2,
+            2
+          ],
+          "original_optical_z_m": 2.0688815116882324,
+          "new_optical_z_m": 2.0688815116882324,
+          "world_m": [
+            0.7438815116882325,
+            -0.5723249595733466,
+            2.700351922692563
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            720
+          ],
+          "original_rgb": [
+            5,
+            4,
+            3
+          ],
+          "new_rgb": [
+            6,
+            4,
+            3
+          ],
+          "original_optical_z_m": 1.8176010847091675,
+          "new_optical_z_m": 1.8176010847091675,
+          "world_m": [
+            0.4926010847091675,
+            -0.8887306038518237,
+            2.699610914264951
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            600
+          ],
+          "original_rgb": [
+            36,
+            28,
+            20
+          ],
+          "new_rgb": [
+            37,
+            28,
+            20
+          ],
+          "original_optical_z_m": 1.2299928665161133,
+          "new_optical_z_m": 1.2299928665161133,
+          "world_m": [
+            -0.09500713348388667,
+            -0.33547670338992464,
+            2.699490104970804
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            1600,
+            900
+          ],
+          "original_rgb": [
+            3,
+            2,
+            1
+          ],
+          "new_rgb": [
+            3,
+            2,
+            2
+          ],
+          "original_optical_z_m": 4.8435516357421875,
+          "new_optical_z_m": 4.847268104553223,
+          "world_m": [
+            3.5185516357421873,
+            -1.1484867832196848,
+            2.6269818038301476
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2200,
+            750
+          ],
+          "original_rgb": [
+            48,
+            39,
+            30
+          ],
+          "new_rgb": [
+            49,
+            39,
+            30
+          ],
+          "original_optical_z_m": 1.6305824518203735,
+          "new_optical_z_m": 1.631833553314209,
+          "world_m": [
+            0.3055824518203736,
+            -1.148487257112035,
+            2.6367214225397384
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            1350,
+            900
+          ],
+          "original_rgb": [
+            0,
+            0,
+            0
+          ],
+          "new_rgb": [
+            0,
+            0,
+            0
+          ],
+          "original_optical_z_m": null,
+          "new_optical_z_m": null,
+          "world_m": null,
+          "new_first_hit_id": 0,
+          "new_first_hit_prim": "BACKGROUND"
+        },
+        {
+          "pixel_uv": [
+            1450,
+            900
+          ],
+          "original_rgb": [
+            0,
+            0,
+            0
+          ],
+          "new_rgb": [
+            0,
+            0,
+            0
+          ],
+          "original_optical_z_m": null,
+          "new_optical_z_m": null,
+          "world_m": null,
+          "new_first_hit_id": 0,
+          "new_first_hit_prim": "BACKGROUND"
+        },
+        {
+          "pixel_uv": [
+            1800,
+            812
+          ],
+          "original_rgb": [
+            2,
+            2,
+            1
+          ],
+          "new_rgb": [
+            2,
+            2,
+            1
+          ],
+          "original_optical_z_m": 2.8595376014709473,
+          "new_optical_z_m": 2.8595376014709473,
+          "world_m": [
+            1.5345376014709473,
+            -1.1054197232642256,
+            2.698935550726841
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            1800,
+            818
+          ],
+          "original_rgb": [
+            14,
+            10,
+            7
+          ],
+          "new_rgb": [
+            14,
+            10,
+            7
+          ],
+          "original_optical_z_m": 2.923412561416626,
+          "new_optical_z_m": 2.9256556034088135,
+          "world_m": [
+            1.598412561416626,
+            -1.1484870026010152,
+            2.6941166128114835
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            750
+          ],
+          "original_rgb": [
+            5,
+            3,
+            2
+          ],
+          "new_rgb": [
+            4,
+            3,
+            2
+          ],
+          "original_optical_z_m": 2.0688815116882324,
+          "new_optical_z_m": 2.0688815116882324,
+          "world_m": [
+            0.7438815116882325,
+            -1.1253200048023468,
+            2.700351922692563
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            756
+          ],
+          "original_rgb": [
+            25,
+            19,
+            14
+          ],
+          "new_rgb": [
+            26,
+            20,
+            15
+          ],
+          "original_optical_z_m": 2.09348726272583,
+          "new_optical_z_m": 2.0950934886932373,
+          "world_m": [
+            0.7684872627258301,
+            -1.1484871888441344,
+            2.6956913803266884
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2300,
+            657
+          ],
+          "original_rgb": [
+            18,
+            14,
+            9
+          ],
+          "new_rgb": [
+            18,
+            13,
+            9
+          ],
+          "original_optical_z_m": 1.4529045820236206,
+          "new_optical_z_m": 1.4529045820236206,
+          "world_m": [
+            0.12790458202362065,
+            -1.127880162543609,
+            2.6994875757859367
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2300,
+            663
+          ],
+          "original_rgb": [
+            54,
+            43,
+            33
+          ],
+          "new_rgb": [
+            56,
+            45,
+            35
+          ],
+          "original_optical_z_m": 1.468254566192627,
+          "new_optical_z_m": 1.4693812131881714,
+          "world_m": [
+            0.143254566192627,
+            -1.1484871021749665,
+            2.6968777130039876
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2500,
+            595
+          ],
+          "original_rgb": [
+            19,
+            14,
+            9
+          ],
+          "new_rgb": [
+            20,
+            15,
+            10
+          ],
+          "original_optical_z_m": 1.2166597843170166,
+          "new_optical_z_m": 1.2166597843170166,
+          "world_m": [
+            -0.10834021568298335,
+            -1.1359310682334014,
+            2.700230770514377
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2500,
+            601
+          ],
+          "original_rgb": [
+            56,
+            45,
+            35
+          ],
+          "new_rgb": [
+            55,
+            45,
+            34
+          ],
+          "original_optical_z_m": 1.2244596481323242,
+          "new_optical_z_m": 1.2253992557525635,
+          "world_m": [
+            -0.10054035186767574,
+            -1.148487014549889,
+            2.6973402875984966
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        }
+      ]
+    },
+    {
+      "source_frame": 320,
+      "module": "module_1_lower",
+      "crop_xyxy": [
+        1550,
+        0,
+        2592,
+        520
+      ],
+      "cameras_objects_robot_identical": true,
+      "new_epoch": "carton-assets-seam-before-02",
+      "original_epoch": "carton-assets-recording-01",
+      "source_files_sha256": {
+        "sensor_rgb.png": "c4f27f5b5d0812c25573528bfb49ea2aeefdb63292bd05037ff8fd737b11a29c",
+        "metric_depth_m.npy": "fd08de71d3e487b5b17153a410a04c9e220fb2984031d3451e57827c255bcddb",
+        "capture_binding.json": "1bcc9f44805460d861c03bf6df73092cf992cb422f164a015608cd61fb1e0491"
+      },
+      "source_manifest_sha256": "5e87c6d73fdd492603818c11927eecbfc4ae1b94926316d03fe9314fa8f81c60",
+      "new_manifest_sha256": "15c875b4bfffdfb2fc55e22d2fbf344366668c1a631a0cfd30ae62106101f8e1",
+      "new_files_sha256": {
+        "sensor_rgb.png": "904c94fe2a0995e17d5527dfc9add75e8dc72689eb30a9e78b7580a155ba33c4",
+        "metric_depth_m.npy": "17ca856e8145bac2738a4d6680b490351118348c7478c1358a4ea1df44d619d9",
+        "first_hit_instance_ids.npy": "b524478a81fe35b891943a5d189b724732066ece57116e34014f71e0c4c84146"
+      },
+      "depth_finite_mask_equal": true,
+      "depth_abs_diff_p99_m": 0.014861874282360077,
+      "depth_abs_diff_max_m": 0.8595899343490601,
+      "rgb_crop_mean_abs_difference": 1.8917841675279294,
+      "roof_hit_pixels": 0,
+      "samples": [
+        {
+          "pixel_uv": [
+            1800,
+            0
+          ],
+          "original_rgb": [
+            139,
+            91,
+            48
+          ],
+          "new_rgb": [
+            137,
+            92,
+            48
+          ],
+          "original_optical_z_m": 1.144709587097168,
+          "new_optical_z_m": 1.144709587097168,
+          "world_m": [
+            -3.139286652897866e-05,
+            0.05079199369645293,
+            1.922755598339692
+          ],
+          "new_first_hit_id": 95,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+        },
+        {
+          "pixel_uv": [
+            2300,
+            0
+          ],
+          "original_rgb": [
+            71,
+            45,
+            23
+          ],
+          "new_rgb": [
+            70,
+            43,
+            22
+          ],
+          "original_optical_z_m": 1.1447097063064575,
+          "new_optical_z_m": 1.1447097063064575,
+          "world_m": [
+            -3.12548851857386e-05,
+            -0.7141368564481714,
+            1.9227556288956715
+          ],
+          "new_first_hit_id": 60,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+        }
+      ]
+    },
+    {
+      "source_frame": 602,
+      "module": "module_0_upper",
+      "crop_xyxy": [
+        1550,
+        500,
+        2592,
+        1020
+      ],
+      "cameras_objects_robot_identical": true,
+      "new_epoch": "carton-assets-seam-before-02",
+      "original_epoch": "carton-assets-recording-01",
+      "source_files_sha256": {
+        "sensor_rgb.png": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+        "metric_depth_m.npy": "bfc49ab1579c425ce7088e4ec68083d5a2c3b6e559ba9b2243d13955b0879c33",
+        "capture_binding.json": "b43073f82cb33c5afc88725e1ddfb3b91509e1764cdc92a8d446fbbe4c9213ed"
+      },
+      "source_manifest_sha256": "39a03ac2e47a00dd0cceb7aa98ce1df91cca45ed1da46a230e7ddc6ca7c57e09",
+      "new_manifest_sha256": "564b589abceeb31d4fa1a3d81ea442bed30e2e16fc9159f2d67ed31857c873c9",
+      "new_files_sha256": {
+        "sensor_rgb.png": "355b698281a97a3832024efa2de8ef49a287b4121645560d7bbb69e801e16268",
+        "metric_depth_m.npy": "63fd1b0d15e3822f71b57a657bb84ce00ea2e3084d5d3fd5f582a9c808c3c268",
+        "first_hit_instance_ids.npy": "520a2161725e4f0ec839f9f1308149abd2e96ae357d73044e8d4000f9c8e88e9"
+      },
+      "depth_finite_mask_equal": false,
+      "depth_abs_diff_p99_m": 0.005227707326412201,
+      "depth_abs_diff_max_m": 5.231685638427734,
+      "rgb_crop_mean_abs_difference": 1.0948028938432008,
+      "roof_hit_pixels": 747913,
+      "samples": [
+        {
+          "pixel_uv": [
+            1800,
+            750
+          ],
+          "original_rgb": [
+            3,
+            2,
+            2
+          ],
+          "new_rgb": [
+            3,
+            2,
+            2
+          ],
+          "original_optical_z_m": 2.0688815116882324,
+          "new_optical_z_m": 2.0688815116882324,
+          "world_m": [
+            0.7438815116882325,
+            -0.5012325225985568,
+            2.700351922692563
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            720
+          ],
+          "original_rgb": [
+            5,
+            4,
+            3
+          ],
+          "new_rgb": [
+            5,
+            4,
+            3
+          ],
+          "original_optical_z_m": 1.8176010847091675,
+          "new_optical_z_m": 1.8176010847091675,
+          "world_m": [
+            0.4926010847091675,
+            -0.8176381668770338,
+            2.699610914264951
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            600
+          ],
+          "original_rgb": [
+            39,
+            30,
+            22
+          ],
+          "new_rgb": [
+            39,
+            30,
+            22
+          ],
+          "original_optical_z_m": 1.2299928665161133,
+          "new_optical_z_m": 1.2299928665161133,
+          "world_m": [
+            -0.09500713348388667,
+            -0.2643842664151348,
+            2.699490104970804
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            1600,
+            900
+          ],
+          "original_rgb": [
+            3,
+            2,
+            1
+          ],
+          "new_rgb": [
+            3,
+            2,
+            1
+          ],
+          "original_optical_z_m": 5.018246173858643,
+          "new_optical_z_m": 5.021963596343994,
+          "world_m": [
+            3.6932461738586424,
+            -1.1484865946383707,
+            2.6351684578317975
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2200,
+            750
+          ],
+          "original_rgb": [
+            47,
+            38,
+            29
+          ],
+          "new_rgb": [
+            48,
+            38,
+            29
+          ],
+          "original_optical_z_m": 1.6893932819366455,
+          "new_optical_z_m": 1.6906449794769287,
+          "world_m": [
+            0.36439328193664555,
+            -1.1484869468911816,
+            2.6452593430541684
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            1350,
+            900
+          ],
+          "original_rgb": [
+            0,
+            0,
+            0
+          ],
+          "new_rgb": [
+            0,
+            0,
+            0
+          ],
+          "original_optical_z_m": 0.06499999761581421,
+          "new_optical_z_m": 0.06499999761581421,
+          "world_m": [
+            -1.2600000023841857,
+            0.888963073312003,
+            2.403046074000516
+          ],
+          "new_first_hit_id": 55,
+          "new_first_hit_prim": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightLeftHousing"
+        },
+        {
+          "pixel_uv": [
+            1450,
+            900
+          ],
+          "original_rgb": [
+            0,
+            0,
+            0
+          ],
+          "new_rgb": [
+            0,
+            0,
+            0
+          ],
+          "original_optical_z_m": 0.06499999761581421,
+          "new_optical_z_m": 0.06499999761581421,
+          "world_m": [
+            -1.2600000023841857,
+            0.8802760904136661,
+            2.403046074000516
+          ],
+          "new_first_hit_id": 55,
+          "new_first_hit_prim": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightLeftHousing"
+        },
+        {
+          "pixel_uv": [
+            1800,
+            817
+          ],
+          "original_rgb": [
+            2,
+            2,
+            1
+          ],
+          "new_rgb": [
+            2,
+            2,
+            1
+          ],
+          "original_optical_z_m": 2.9731638431549072,
+          "new_optical_z_m": 2.9731638431549072,
+          "world_m": [
+            1.6481638431549073,
+            -1.1109390461207425,
+            2.701070631625242
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            1800,
+            823
+          ],
+          "original_rgb": [
+            13,
+            9,
+            6
+          ],
+          "new_rgb": [
+            13,
+            9,
+            6
+          ],
+          "original_optical_z_m": 3.0288524627685547,
+          "new_optical_z_m": 3.0310964584350586,
+          "world_m": [
+            1.7038524627685547,
+            -1.1484867383434976,
+            2.6947987515616276
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            758
+          ],
+          "original_rgb": [
+            4,
+            3,
+            2
+          ],
+          "new_rgb": [
+            4,
+            3,
+            2
+          ],
+          "original_optical_z_m": 2.1480748653411865,
+          "new_optical_z_m": 2.1480748653411865,
+          "world_m": [
+            0.8230748653411866,
+            -1.1287909085750494,
+            2.7005857306973198
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2000,
+            764
+          ],
+          "original_rgb": [
+            24,
+            18,
+            13
+          ],
+          "new_rgb": [
+            24,
+            18,
+            13
+          ],
+          "original_optical_z_m": 2.1689939498901367,
+          "new_optical_z_m": 2.170600652694702,
+          "world_m": [
+            0.8439939498901368,
+            -1.1484869658500627,
+            2.6949833537339245
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2300,
+            668
+          ],
+          "original_rgb": [
+            17,
+            13,
+            8
+          ],
+          "new_rgb": [
+            17,
+            12,
+            8
+          ],
+          "original_optical_z_m": 1.5116075277328491,
+          "new_optical_z_m": 1.5116075277328491,
+          "world_m": [
+            0.18660752773284917,
+            -1.13559484648139,
+            2.70068987786642
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2300,
+            674
+          ],
+          "original_rgb": [
+            51,
+            42,
+            32
+          ],
+          "new_rgb": [
+            51,
+            41,
+            32
+          ],
+          "original_optical_z_m": 1.521210789680481,
+          "new_optical_z_m": 1.522337555885315,
+          "world_m": [
+            0.196210789680481,
+            -1.148486966566995,
+            2.6966179536740356
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        },
+        {
+          "pixel_uv": [
+            2500,
+            608
+          ],
+          "original_rgb": [
+            18,
+            14,
+            9
+          ],
+          "new_rgb": [
+            19,
+            15,
+            10
+          ],
+          "original_optical_z_m": 1.2575557231903076,
+          "new_optical_z_m": 1.2575557231903076,
+          "world_m": [
+            -0.06744427680969234,
+            -1.1306714746536026,
+            2.6996075274207247
+          ],
+          "new_first_hit_id": 71,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_047_Roof"
+        },
+        {
+          "pixel_uv": [
+            2500,
+            614
+          ],
+          "original_rgb": [
+            54,
+            44,
+            34
+          ],
+          "new_rgb": [
+            54,
+            43,
+            33
+          ],
+          "original_optical_z_m": 1.268622875213623,
+          "new_optical_z_m": 1.2695626020431519,
+          "world_m": [
+            -0.05637712478637691,
+            -1.1484869865614442,
+            2.697255330645456
+          ],
+          "new_first_hit_id": 87,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_046_RightWall"
+        }
+      ]
+    },
+    {
+      "source_frame": 602,
+      "module": "module_1_lower",
+      "crop_xyxy": [
+        1550,
+        0,
+        2592,
+        520
+      ],
+      "cameras_objects_robot_identical": true,
+      "new_epoch": "carton-assets-seam-before-02",
+      "original_epoch": "carton-assets-recording-01",
+      "source_files_sha256": {
+        "sensor_rgb.png": "01524015b8c3687664e4db7eca0e93fd2ebba690e428f3886e55055d43bf1501",
+        "metric_depth_m.npy": "fc2cfaeeb0ce162b1a468807ed8270fa4260275e1f3eae10c26954eb32d8fd27",
+        "capture_binding.json": "89e64b0c6be622f8d0840543f783baa4abfd5698c4b3babd803340e66711a6b9"
+      },
+      "source_manifest_sha256": "39a03ac2e47a00dd0cceb7aa98ce1df91cca45ed1da46a230e7ddc6ca7c57e09",
+      "new_manifest_sha256": "564b589abceeb31d4fa1a3d81ea442bed30e2e16fc9159f2d67ed31857c873c9",
+      "new_files_sha256": {
+        "sensor_rgb.png": "6e6395f7fab8b7496da7a69b90ddb0f0c376a7f9aa5d3cac68b5d236bf29e578",
+        "metric_depth_m.npy": "e36eb34cf364d8f22258ce9d884faef9f3f3faf939affaff9eb0fd640a769e34",
+        "first_hit_instance_ids.npy": "9cb290bcbeabfaae61cd40187c451bd9f8080898a0a2fe231efe859ed14e6213"
+      },
+      "depth_finite_mask_equal": true,
+      "depth_abs_diff_p99_m": 0.024652540683746338,
+      "depth_abs_diff_max_m": 1.6089355945587158,
+      "rgb_crop_mean_abs_difference": 4.045953294945617,
+      "roof_hit_pixels": 0,
+      "samples": [
+        {
+          "pixel_uv": [
+            1800,
+            0
+          ],
+          "original_rgb": [
+            142,
+            97,
+            54
+          ],
+          "new_rgb": [
+            146,
+            104,
+            61
+          ],
+          "original_optical_z_m": 1.144709587097168,
+          "new_optical_z_m": 1.144709587097168,
+          "world_m": [
+            -3.139286652897866e-05,
+            0.12188443067124277,
+            1.922755598339692
+          ],
+          "new_first_hit_id": 95,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+        },
+        {
+          "pixel_uv": [
+            2300,
+            0
+          ],
+          "original_rgb": [
+            109,
+            75,
+            43
+          ],
+          "new_rgb": [
+            106,
+            73,
+            42
+          ],
+          "original_optical_z_m": 1.147350549697876,
+          "new_optical_z_m": 1.1479518413543701,
+          "world_m": [
+            0.003025445809405669,
+            -0.646589680481058,
+            1.9234325355041215
+          ],
+          "new_first_hit_id": 60,
+          "new_first_hit_prim": "/PerceptionValidation/Primitives/p_033_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+        }
+      ]
+    }
+  ],
+  "usd_snapshot_sha256": "32473e3d0fb4fc03ac32448a7e8e72bc95a75113f45ba2dd4bbcaf91362c26cc",
+  "bundle": {
+    "path": "/root/autodl-tmp/v05-acceptance/roof-mast-20260916/bundle-f24f63a",
+    "files_sha256": {
+      "index.json": "9d8b7f1912215da4f66d0be7b711ecfbd30cbd46afd4508080280c2aa2032293",
+      "effective_isaac_contract.json": "f40b1238e4be03b7bb9950b629eac276a227e5a40391f98e8b19d7268640a1f4",
+      "effective_scene_snapshot.json": "a2061b1ce500a78cd5ed251bde3a847b4a0074790957e7d2b746c8eedbd2b3f6",
+      "FULL_STACK_NOMINAL.manifest.json": "366406538edd5036c33ce6b37bfefe8c6a1b5e0621019c5b50fc8706115f6e5d"
+    },
+    "contract_fingerprint": "69d25f0766d55b06894e92bf5a6966f3df241c003b83c0ae5e9347e61b9c0bb9",
+    "environment_trailer": {
+      "door_world_x_m": null,
+      "inside_height_m": 2.7,
+      "inside_length_m": 9.6,
+      "inside_width_m": 2.3,
+      "local_x_range_m": [
+        -3.8,
+        4.0
+      ],
+      "longitudinal_status": "LOCAL_SECTION_ONLY_DOOR_DATUM_UNDEFINED",
+      "official_asset_status": "NOT_ADAPTED_NO_SUITABLE_VERIFIED_INTERIOR_IN_BOUNDED_SOURCE_SEARCH",
+      "visual_source": "ENGINEERING_PARAMETRIC_INTERIOR",
+      "wall_thickness_m": 0.06
+    },
+    "source_manifest_fingerprint_matches_bundle": true
+  }
+}

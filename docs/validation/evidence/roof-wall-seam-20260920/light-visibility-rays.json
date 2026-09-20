@@ -1,0 +1,255 @@
+[
+  {
+    "point": [
+      0.7438815,
+      -0.64493,
+      2.7
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightLeft",
+    "origin": [
+      -1.25,
+      0.9299999999999999,
+      2.4
+    ],
+    "hits": []
+  },
+  {
+    "point": [
+      0.7438815,
+      -0.64493,
+      2.7
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightRight",
+    "origin": [
+      -1.25,
+      0.5700000000000001,
+      2.4
+    ],
+    "hits": []
+  },
+  {
+    "point": [
+      0.7438815,
+      -0.64493,
+      2.7
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightLeft",
+    "origin": [
+      -1.2545230534410567,
+      0.9299999999999999,
+      1.6036896856683835
+    ],
+    "hits": [
+      [
+        0.6277623013618349,
+        "/PerceptionValidation/Primitives/p_040_carton_l07_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    ]
+  },
+  {
+    "point": [
+      0.7438815,
+      -0.64493,
+      2.7
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightRight",
+    "origin": [
+      -1.2545230534410567,
+      0.5700000000000001,
+      1.6036896856683835
+    ],
+    "hits": [
+      [
+        0.6325606702434972,
+        "/PerceptionValidation/Primitives/p_040_carton_l07_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ],
+      [
+        0.6502432214364348,
+        "/PerceptionValidation/Primitives/p_039_carton_l07_c01/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    ]
+  },
+  {
+    "point": [
+      0.7438815,
+      -0.64493,
+      2.7
+    ],
+    "light": "/PerceptionValidation/EnvironmentSphere",
+    "origin": [
+      -0.7,
+      -1.8,
+      3.3
+    ],
+    "hits": [
+      [
+        0.9000000011175873,
+        "/PerceptionValidation/Primitives/p_047_Roof"
+      ]
+    ]
+  },
+  {
+    "point": [
+      -0.095007,
+      -0.408082,
+      2.7
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightLeft",
+    "origin": [
+      -1.25,
+      0.9299999999999999,
+      2.4
+    ],
+    "hits": []
+  },
+  {
+    "point": [
+      -0.095007,
+      -0.408082,
+      2.7
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightRight",
+    "origin": [
+      -1.25,
+      0.5700000000000001,
+      2.4
+    ],
+    "hits": []
+  },
+  {
+    "point": [
+      -0.095007,
+      -0.408082,
+      2.7
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightLeft",
+    "origin": [
+      -1.2545230534410567,
+      0.9299999999999999,
+      1.6036896856683835
+    ],
+    "hits": []
+  },
+  {
+    "point": [
+      -0.095007,
+      -0.408082,
+      2.7
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightRight",
+    "origin": [
+      -1.2545230534410567,
+      0.5700000000000001,
+      1.6036896856683835
+    ],
+    "hits": []
+  },
+  {
+    "point": [
+      -0.095007,
+      -0.408082,
+      2.7
+    ],
+    "light": "/PerceptionValidation/EnvironmentSphere",
+    "origin": [
+      -0.7,
+      -1.8,
+      3.3
+    ],
+    "hits": [
+      [
+        0.9000000011175873,
+        "/PerceptionValidation/Primitives/p_047_Roof"
+      ]
+    ]
+  },
+  {
+    "point": [
+      3.343856,
+      -1.15,
+      2.618795
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightLeft",
+    "origin": [
+      -1.25,
+      0.9299999999999999,
+      2.4
+    ],
+    "hits": []
+  },
+  {
+    "point": [
+      3.343856,
+      -1.15,
+      2.618795
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule0Upper/FillLightRight",
+    "origin": [
+      -1.25,
+      0.5700000000000001,
+      2.4
+    ],
+    "hits": []
+  },
+  {
+    "point": [
+      3.343856,
+      -1.15,
+      2.618795
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightLeft",
+    "origin": [
+      -1.2545230534410567,
+      0.9299999999999999,
+      1.6036896856683835
+    ],
+    "hits": [
+      [
+        0.2728185360407258,
+        "/PerceptionValidation/Primitives/p_036_carton_l06_c03/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ],
+      [
+        0.35096153702873445,
+        "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    ]
+  },
+  {
+    "point": [
+      3.343856,
+      -1.15,
+      2.618795
+    ],
+    "light": "/PerceptionValidation/VisionRig/VisionFlange/Mast/PerceptionModule1Lower/FillLightRight",
+    "origin": [
+      -1.2545230534410567,
+      0.5700000000000001,
+      1.6036896856683835
+    ],
+    "hits": [
+      [
+        0.2728185360407258,
+        "/PerceptionValidation/Primitives/p_035_carton_l06_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    ]
+  },
+  {
+    "point": [
+      3.343856,
+      -1.15,
+      2.618795
+    ],
+    "light": "/PerceptionValidation/EnvironmentSphere",
+    "origin": [
+      -0.7,
+      -1.8,
+      3.3
+    ],
+    "hits": [
+      [
+        0.9076923087239265,
+        "/PerceptionValidation/Primitives/p_046_RightWall"
+      ]
+    ]
+  }
+]

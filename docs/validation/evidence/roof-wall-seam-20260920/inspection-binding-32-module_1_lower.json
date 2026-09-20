@@ -1,0 +1,74 @@
+{
+  "module_id": "module_1_lower",
+  "instance_masks_sha256": "dd4b2dadcf1b8131890e2af5db8a630620877e22f55e51267500a14724d156f1",
+  "robot_state": {
+    "schema_version": "isaac_robot_state_v1",
+    "source": "KINEMATIC_HOLD_READBACK",
+    "synthetic_fixture": false,
+    "manifest_fingerprint": "a67cf007f878894ca3663c1123cb0b0b7770a79fe4a082f0064fd3acda6f67c2",
+    "robot_model_identity": "fanuc_m710id_70",
+    "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+    "simulation_epoch": "carton-assets-seam-inspection-07",
+    "frame_sequence": 27,
+    "sample_time": 0.4500000234693289,
+    "clock_domain": "ros_sim_time",
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "position_rad": [
+      -1.5707963705062866,
+      0.785456657409668,
+      0.649621844291687,
+      0.06722349673509598,
+      -1.2117502689361572,
+      -1.9415185451507568
+    ],
+    "velocity_rad_s": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "kinematic_hold": {
+      "render_without_physics_step": true,
+      "position_command_rad": [
+        -1.5707963705062866,
+        0.785456657409668,
+        0.649621844291687,
+        0.06722349673509598,
+        -1.2117502689361572,
+        -1.9415185451507568
+      ],
+      "velocity_command_rad_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "manifest_fingerprint": "a67cf007f878894ca3663c1123cb0b0b7770a79fe4a082f0064fd3acda6f67c2",
+  "capture_id": "carton-assets-seam-inspection-07:module_1_lower:27",
+  "clock_domain": "ros_sim_time",
+  "metric_depth_dtype": "float32",
+  "metric_depth_unit": "m",
+  "metric_depth_semantics": "optical_z_m",
+  "metric_depth_sha256": "87eab3e6afec0bb1edfdf1322e0c612b571ae963214fc90ff2ebda4e55dc5c96",
+  "capture_metadata_sha256": "05f2a1ecc2d90e4f6ca7411bcb96fdd15605ac92c84a581f043ae9f44d6a5569",
+  "schema_version": "isaac_capture_binding_v1",
+  "simulation_epoch": "carton-assets-seam-inspection-07",
+  "frame_sequence": 27,
+  "simulation_time": 0.4500000234693289,
+  "rgb_sha256": "a0ac6e8417f1179f9501da579368a0e82f1114b5fe4df20af820f4b70f5dc9ed",
+  "camera_calibration_identity": "e6318d1f0cd52b9c8a12ca8df80192da9f5a4cdf7602fcc7b5d0473cd5bf180b",
+  "gt_snapshot_sha256": "5246c0ea86a5a45a2557ce0e9c93f849c69c1ad711423e0be327ce70a2188973"
+}
