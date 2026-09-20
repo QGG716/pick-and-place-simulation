@@ -81,8 +81,14 @@ def render(options):
         assert states["capture_max_carton_delta_m"] == 0
         initial = read(directory / "initial.png.json")
         assert initial["world_session_id"] == clip["world_session_id"]
+        bound_files={}
+        for filename in ("actual_frame_states.json","result.json","execution_events.json","actual_remaining_state.json"):
+            path=directory/filename
+            record=next(f for f in delivery["files"] if f["path"]==path.relative_to(delivery_root).as_posix())
+            assert sha(path)==record["sha256"]
+            bound_files[str(path)]=record["sha256"]
         inputs.append(dict(clip=clip, directory=directory, states=states,
-                           state_sha256=entry["sha256"], result=read(directory / "result.json")))
+                           state_sha256=entry["sha256"], result=read(directory / "result.json"),bound_files=bound_files))
     ns, source_hash = initialize_scene(options)
     np, rep = ns["np"], ns["rep"]
     Gf, UsdGeom, UsdShade = ns["Gf"], ns["UsdGeom"], ns["UsdShade"]
@@ -92,9 +98,26 @@ def render(options):
     from unloading_sim.robot import URDFRobot
     timeline = omni.timeline.get_timeline_interface()
     timeline.stop()
+    # Settle each stopped-time pose/UV update before capturing, without physics.
+    if options.visual_asset_config:
+        rep.settings.carb_settings('/rtx/post/motionblur/enabled', False)
     stage = ns["stage"]
     # All writes belong to an in-memory session layer, never the archived USD.
     stage.SetEditTarget(stage.GetSessionLayer())
+    visuals = None
+    schedules = None
+    if options.visual_asset_config:
+        from m710_visual_assets import apply_visual_assets
+        from m710_belt_visual import build_schedules, distance_at
+        visuals = apply_visual_assets(ns, options.visual_asset_config, options.visual_asset_cache)
+        schedules = build_schedules(inputs)
+        (options.output / "asset_manifest.json").write_text(json.dumps(visuals.report, indent=2))
+        (options.output / "belt_schedule.json").write_text(json.dumps([
+            {k:v for k,v in s.items() if k != "result"} for s in schedules], indent=2))
+    # Check source cadence before choosing the existing 5 -> 80 fps mapping.
+    for data in inputs:
+        times = np.asarray([s["time_s"] for s in data["states"]["states"]])
+        assert np.allclose(np.diff(times), 0.2, atol=1e-8)
     robot = URDFRobot.from_urdf(ns["urdf_path"], active_joint_names=inputs[0]["states"]["joint_names"],
         tip_link=ns["grasp_body_path"].rsplit("/", 1)[-1],
         base_position=ns["base_position"], base_rpy=ns["base_rpy"], tool_length=0.0)
@@ -122,17 +145,19 @@ def render(options):
     assert len(hud_funcs) == 2
     exec(compile(ast.Module(body=hud_funcs, type_ignores=[]), str(options.hud_source), "exec"), ns)
     ns["hud_fonts"] = ns["_load_hud_fonts"](720)
-    movie = options.output / "five_successful_pick_place_native720p_16x.mp4"
+    movie = options.output / ("top_row_five_cartons_assets_native720p_16x.mp4" if visuals else "five_successful_pick_place_native720p_16x.mp4")
     encoder = subprocess.Popen([str(options.ffmpeg), "-nostdin", "-v", "error", "-f", "rawvideo",
         "-pixel_format", "rgb24", "-video_size", "1280x720", "-framerate", "80", "-i", "pipe:0",
         "-an", "-c:v", "libx264", "-preset", "fast", "-threads", "2", "-crf", "18",
         "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(movie)], stdin=subprocess.PIPE)
     audit = dict(schema="m710_native_recorded_state_render_v1", native_resolution=[1280,720],
         speed=16, fps=80, video_pixels_read_from_old_recording=False,
-        new_physics_execution=False, same_world_continuous_trial=False,
+        visual_asset_swap=bool(visuals), source_worlds=manifest["world_session_ids"], new_physics_execution=False, same_world_continuous_trial=False,
+        visual_history_reset=bool(visuals), visual_settle_subframes=8 if visuals else 2,
         source_adapter_sha256=source_hash, hud_source_sha256=sha(options.hud_source),
         original_montage_manifest_sha256=sha(options.montage_manifest),
         clips=[], frames=0, max_fk_tcp_position_error_m=0.0,
+        minimum_frame_mean=255.,minimum_frame_std=255.,maximum_missing_material_pixel_fraction=0.,
         max_carton_usd_position_error_m=0.0, max_link_usd_position_error_m=0.0,
         note="Measured-state visualization; geometry reconstructed from official URDF and recorded q. No new qualification.")
     started = time.monotonic()
@@ -148,6 +173,7 @@ def render(options):
                 UsdShade.MaterialBindingAPI.Apply(prim).Bind(
                     ns["active_rubber_material"] if active else ns["rubber_material"])
             clip_start = audit["frames"]
+            saved_phases=set()
             states = saved["states"]
             if options.preview:
                 states = [states[len(states)//2]]
@@ -188,9 +214,24 @@ def render(options):
                     error = float(np.linalg.norm(got-frames[name][:3,3]))
                     assert error < 1e-8
                     audit["max_link_usd_position_error_m"] = max(audit["max_link_usd_position_error_m"],error)
-                rep.orchestrator.step(rt_subframes=2, pause_timeline=True, delta_time=0.0, wait_for_render=True)
+                if visuals:
+                    schedule = schedules[clip_index-1]
+                    phase = {name: initial + distance_at(data["result"], name, state["time_s"])
+                             for name, initial in schedule["initial_phase_m"].items()}
+                    visuals.update(phase)
+                if visuals:
+                    from m710_visual_review import render_updated_state
+                    render_updated_state(rep)
+                else:
+                    rep.orchestrator.step(rt_subframes=2, pause_timeline=True, delta_time=0.0, wait_for_render=True)
                 rgb = np.asarray(ns["rgb_annotator"].get_data())[:,:,:3].astype(np.uint8)
                 assert rgb.shape == (720,1280,3)
+                mean,std=float(rgb.mean()),float(rgb.std())
+                pink=float(np.mean((rgb[:,:,0]>220)&(rgb[:,:,2]>220)&(rgb[:,:,1]<80)))
+                assert mean>10 and std>10 and pink<.005, (mean,std,pink)
+                audit['minimum_frame_mean']=min(audit['minimum_frame_mean'],mean)
+                audit['minimum_frame_std']=min(audit['minimum_frame_std'],std)
+                audit['maximum_missing_material_pixel_fraction']=max(audit['maximum_missing_material_pixel_fraction'],pink)
                 attached = bool(state["attached"])
                 lines = [f"{clip['target']} | {state['stage']} | t={state['time_s']:.1f}s",
                     f"{'Attached' if attached else 'Open / released'} | cups {sum(mask) if attached else 0}/72",
@@ -200,6 +241,9 @@ def render(options):
                 encoder.stdin.write(rgb.tobytes())
                 if frame_index == 0 or (clip_index == 1 and frame_index == 200):
                     ns["Image"].fromarray(rgb).save(options.output / f"clip_{clip_index:02d}_{frame_index:04d}.png")
+                if state['stage'] not in saved_phases:
+                    ns['Image'].fromarray(rgb).save(options.output/f"key_{clip_index:02d}_{state['stage']}.png")
+                    saved_phases.add(state['stage'])
                 audit["frames"] += 1
                 if audit["frames"] % 50 == 0:
                     (options.output / "progress.json").write_text(json.dumps(dict(
@@ -208,6 +252,9 @@ def render(options):
             audit["clips"].append(dict(target=clip["target"], world_session_id=clip["world_session_id"],
                 states_sha256=data["state_sha256"], source_states=str(data["directory"] / "actual_frame_states.json"),
                 frames=audit["frames"]-clip_start, start_frame=clip_start))
+        if visuals and options.preview:
+            from m710_visual_review import render_review
+            render_review(ns, visuals, inputs, schedules, options)
         encoder.stdin.close()
         assert encoder.wait() == 0
         assert audit["frames"] == (5 if options.preview else 3113)
@@ -221,6 +268,9 @@ def render(options):
         audit.update(status="PASS", decoded_frames=decoded, duration_seconds=decoded/80,
             video=movie.name, video_sha256=sha(movie), video_bytes=movie.stat().st_size,
             preview_only=options.preview, wall_seconds=time.monotonic()-started)
+        for data in inputs:
+            assert all(sha(path)==expected for path,expected in data['bound_files'].items())
+        audit['immutable_record_files']={p:h for data in inputs for p,h in data['bound_files'].items()}
         (options.output / "manifest.json").write_text(json.dumps(audit,indent=2))
         print("RECORDED_RENDER_COMPLETE="+json.dumps(audit),flush=True)
     except BaseException:
@@ -241,5 +291,7 @@ if __name__ == "__main__":
                  "montage-manifest", "hud-source", "output", "ffmpeg"):
         parser.add_argument("--"+name,type=Path,required=True)
     parser.add_argument("--preview",action="store_true")
+    parser.add_argument("--visual-asset-config",type=Path)
+    parser.add_argument("--visual-asset-cache",type=Path)
     options=parser.parse_args()
     render(options)

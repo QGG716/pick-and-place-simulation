@@ -1,0 +1,432 @@
+{
+  "baseline_commit": "1dd8e0485fca294e625ca23e398a1ddef6124eac",
+  "source_commit": "cc64bbd49e4e113f44ee0750b6981a24e452ee1b",
+  "render": {
+    "schema": "m710_native_recorded_state_render_v1",
+    "native_resolution": [
+      1280,
+      720
+    ],
+    "speed": 16,
+    "fps": 80,
+    "video_pixels_read_from_old_recording": false,
+    "visual_asset_swap": true,
+    "source_worlds": [
+      "1789722165.0576758",
+      "1789726502.8089688",
+      "1789875150.9359868"
+    ],
+    "new_physics_execution": false,
+    "same_world_continuous_trial": false,
+    "visual_history_reset": true,
+    "visual_settle_subframes": 8,
+    "source_adapter_sha256": "1be3b83eea0d0ac5a4f389760850f24964f2a02ec891f90c81a2c3c26d444dc2",
+    "hud_source_sha256": "50c47f9feb60af4ad1285933b76780a92a7d5ab6dc1bb64cbc24e211d6dc6e5a",
+    "original_montage_manifest_sha256": "2a04c3c4d60ab600a7321e73c6ea729b48cce34702dba346d1aed9214f898b80",
+    "clips": [
+      {
+        "target": "carton_l07_c02",
+        "world_session_id": "1789722165.0576758",
+        "states_sha256": "532eef53af264bf0e25eb789bfc4f8e0b564e6b605f95f0eb16b131f9049f1b4",
+        "source_states": "/root/autodl-tmp/m710-final-row-20260918/delivery/segments/001_carton_l07_c02/actual_frame_states.json",
+        "frames": 511,
+        "start_frame": 0
+      },
+      {
+        "target": "carton_l07_c01",
+        "world_session_id": "1789726502.8089688",
+        "states_sha256": "d564021636f7a0aee75d657215c2edac7fd5cac008d8ea2a8ba970925d7d1699",
+        "source_states": "/root/autodl-tmp/m710-second-waiver-20260918/delivery/segments/001_carton_l07_c01/actual_frame_states.json",
+        "frames": 513,
+        "start_frame": 511
+      },
+      {
+        "target": "carton_l07_c03",
+        "world_session_id": "1789875150.9359868",
+        "states_sha256": "93db24c49e348f40beb39cd85b10aab71d553886f4ea4472e3e9f94c8760f6a7",
+        "source_states": "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/001_carton_l07_c03/actual_frame_states.json",
+        "frames": 808,
+        "start_frame": 1024
+      },
+      {
+        "target": "carton_l07_c04",
+        "world_session_id": "1789875150.9359868",
+        "states_sha256": "c36e09d750ea3152a681fe793b95f64dbf1f4e3534b0159bd3e49061650cfe1c",
+        "source_states": "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/002_carton_l07_c04/actual_frame_states.json",
+        "frames": 808,
+        "start_frame": 1832
+      },
+      {
+        "target": "carton_l07_c00",
+        "world_session_id": "1789875150.9359868",
+        "states_sha256": "bec8e85a54463ac57d9747ed9cea9b74802162d3f5bf2113db8d181b90b8ee04",
+        "source_states": "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/003_carton_l07_c00/actual_frame_states.json",
+        "frames": 473,
+        "start_frame": 2640
+      }
+    ],
+    "frames": 3113,
+    "max_fk_tcp_position_error_m": 1.571686771702239e-06,
+    "minimum_frame_mean": 163.8055002170139,
+    "minimum_frame_std": 67.3595807663699,
+    "maximum_missing_material_pixel_fraction": 0.0,
+    "max_carton_usd_position_error_m": 0.0,
+    "max_link_usd_position_error_m": 0.0,
+    "note": "Measured-state visualization; geometry reconstructed from official URDF and recorded q. No new qualification.",
+    "status": "PASS",
+    "decoded_frames": 3113,
+    "duration_seconds": 38.9125,
+    "video": "top_row_five_cartons_assets_native720p_16x.mp4",
+    "video_sha256": "78113075267b62be94110aff47f29adfb2215f7f924c97726569d48193e79a6d",
+    "video_bytes": 29128280,
+    "preview_only": false,
+    "wall_seconds": 483.5118507295847,
+    "immutable_record_files": {
+      "/root/autodl-tmp/m710-final-row-20260918/delivery/segments/001_carton_l07_c02/actual_frame_states.json": "532eef53af264bf0e25eb789bfc4f8e0b564e6b605f95f0eb16b131f9049f1b4",
+      "/root/autodl-tmp/m710-final-row-20260918/delivery/segments/001_carton_l07_c02/result.json": "8aae3c14ec1bc2f82cb1419fe52df9e9d787a762cbedc31aee3bd4b2ad4a98d1",
+      "/root/autodl-tmp/m710-final-row-20260918/delivery/segments/001_carton_l07_c02/execution_events.json": "ca30872e62ba01ccd23c7724702c8d5c266c049bff3e0eb937d14166c0d967d3",
+      "/root/autodl-tmp/m710-final-row-20260918/delivery/segments/001_carton_l07_c02/actual_remaining_state.json": "d12631d2415f83f6f6c6c42a8e3f35e3152e096346eb81b7e03f21bdd7629870",
+      "/root/autodl-tmp/m710-second-waiver-20260918/delivery/segments/001_carton_l07_c01/actual_frame_states.json": "d564021636f7a0aee75d657215c2edac7fd5cac008d8ea2a8ba970925d7d1699",
+      "/root/autodl-tmp/m710-second-waiver-20260918/delivery/segments/001_carton_l07_c01/result.json": "319111a5e3fe59504dddd4f7ab46e68216c8a810d429e6969f969e203ff5e500",
+      "/root/autodl-tmp/m710-second-waiver-20260918/delivery/segments/001_carton_l07_c01/execution_events.json": "2c6d37b45b2006c0f041470ecb93f08834eebe371af4b235c263192b65fedaec",
+      "/root/autodl-tmp/m710-second-waiver-20260918/delivery/segments/001_carton_l07_c01/actual_remaining_state.json": "8030225e305d611bb3d832abafd63d8ef43bcfb8c619ab6fda6ac4e8b8b9136c",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/001_carton_l07_c03/actual_frame_states.json": "93db24c49e348f40beb39cd85b10aab71d553886f4ea4472e3e9f94c8760f6a7",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/001_carton_l07_c03/result.json": "abc66b4e4b648d49e5403e72afc6e361029d19822b0bd376da3bb809f9ee341f",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/001_carton_l07_c03/execution_events.json": "bbe7dfa89cdd0c99dceeb36b284511e61a2c4c8b9b9a1752314033bad5cd9432",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/001_carton_l07_c03/actual_remaining_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/002_carton_l07_c04/actual_frame_states.json": "c36e09d750ea3152a681fe793b95f64dbf1f4e3534b0159bd3e49061650cfe1c",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/002_carton_l07_c04/result.json": "d168bc73f1cd3c9c2da0184514254beb74bbcfccc470e48bff502a3c3009bf39",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/002_carton_l07_c04/execution_events.json": "d70697bcbae00bae5f42acf604e043d530babb7a9a5a725330fd699132f487e2",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/002_carton_l07_c04/actual_remaining_state.json": "a79f1ff80531b4891b8536ef0851044daa8edff54ce13f2417df6bd9e0c850c5",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/003_carton_l07_c00/actual_frame_states.json": "bec8e85a54463ac57d9747ed9cea9b74802162d3f5bf2113db8d181b90b8ee04",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/003_carton_l07_c00/result.json": "a77a5ae28dda7bc1921e147355fdc21cbac3ef25dce1d7a87a1efb34b7b696a3",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/003_carton_l07_c00/execution_events.json": "4024c802b2979937327983dbdf5bd1df87c948cced858b0286fb7f0fa5cb231c",
+      "/root/autodl-tmp/m710-auto-resume-20260920/delivery/segments/003_carton_l07_c00/actual_remaining_state.json": "cae9df9aa1444bcc3f130a3020834700f4cd5060b30a29e2f15d64dffe27c2c4"
+    }
+  },
+  "local_verification": {
+    "status": "PASS",
+    "local_directory": "D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\outputs\\delivery\\20260920_164253_assets_720p_16x",
+    "sha_and_bytes_verified_files": 49,
+    "relative_links_verified": 42,
+    "images_decoded": 35,
+    "local_full_video_decode": {
+      "top_row_five_cartons_assets_native720p_16x.mp4": {
+        "status": "PASS",
+        "frames": 3113
+      },
+      "belt_motion_1x_visual_check.mp4": {
+        "status": "PASS",
+        "frames": 42
+      }
+    }
+  },
+  "original_invariance": {
+    "status": "PASS",
+    "original_prim_count": 503
+  },
+  "carton_mapping_count": 40,
+  "verified_carton_conveyor_dependencies": 44,
+  "chassis": {
+    "source": {
+      "relative_path": "iwhub/iw_hub_static.usd",
+      "sha256": "417cb5c86178769de584f06c9dbf1813697d8562ea26a811e13119ee32fc4dac",
+      "asset_root_api": "isaacsim.storage.native.get_assets_root_path",
+      "verified_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Robots/Idealworks/iwhub/iw_hub_static.usd",
+      "version": "NVIDIA Isaac Assets 6.0",
+      "subtree": "/iw_hub",
+      "adaptation": "uniform fit inside existing chassis envelope; retain fixed mounting support",
+      "license": "NVIDIA proprietary content; cached from official asset library, not redistributed"
+    },
+    "sha256": "417cb5c86178769de584f06c9dbf1813697d8562ea26a811e13119ee32fc4dac",
+    "source_bounds": [
+      [
+        -1.0332839734863342,
+        -0.3290387768428497,
+        -0.08106584079301397
+      ],
+      [
+        0.3975681979007675,
+        0.3300932705683465,
+        0.15013639223578876
+      ]
+    ],
+    "uniform_scale": 1.4676568565180363,
+    "adapted_size_m": [
+      2.1,
+      0.9673796687338134,
+      0.3393255425470031
+    ],
+    "mounting_gap_m": 0.2606744574529969,
+    "removed_source_apis": [
+      [
+        "/Validation/Scene/chassis/AssetVisual/Official/chassis/Collision",
+        "PhysicsMeshCollisionAPI"
+      ],
+      [
+        "/Validation/Scene/chassis/AssetVisual/Official/chassis/Collision_01",
+        "PhysicsMeshCollisionAPI"
+      ],
+      [
+        "/Validation/Scene/chassis/AssetVisual/Official/lift/Collision",
+        "PhysicsMeshCollisionAPI"
+      ],
+      [
+        "/Validation/Scene/chassis/AssetVisual/Official/left_swivel/Collision",
+        "PhysicsMeshCollisionAPI"
+      ],
+      [
+        "/Validation/Scene/chassis/AssetVisual/Official/right_swivel/Collision",
+        "PhysicsMeshCollisionAPI"
+      ],
+      [
+        "/Validation/Scene/chassis/AssetVisual/Official/left_caster/Collision",
+        "PhysicsMeshCollisionAPI"
+      ],
+      [
+        "/Validation/Scene/chassis/AssetVisual/Official/right_caster/Collision",
+        "PhysicsMeshCollisionAPI"
+      ]
+    ],
+    "audit": {
+      "meshes": [
+        {
+          "path": "/Validation/Scene/chassis/AssetVisual/Official/chassis/Body/Body/Mesh",
+          "points": 277878,
+          "uv_count": 1091334
+        },
+        {
+          "path": "/Validation/Scene/chassis/AssetVisual/Official/left_wheel/Left_Wheel/Left_Wheel/Mesh_002",
+          "points": 15925,
+          "uv_count": 62688
+        },
+        {
+          "path": "/Validation/Scene/chassis/AssetVisual/Official/right_wheel/Right_Wheel/Right_Wheel/Mesh_005",
+          "points": 15925,
+          "uv_count": 62688
+        },
+        {
+          "path": "/Validation/Scene/chassis/AssetVisual/Official/lift/Lift/Lift/Mesh_012",
+          "points": 78479,
+          "uv_count": 310144
+        },
+        {
+          "path": "/Validation/Scene/chassis/AssetVisual/Official/left_swivel/Left_Swivel/STR_Left_Swivel",
+          "points": 16,
+          "uv_count": 28
+        },
+        {
+          "path": "/Validation/Scene/chassis/AssetVisual/Official/right_swivel/Right_Swivel/STR_Right_Swivel",
+          "points": 16,
+          "uv_count": 28
+        },
+        {
+          "path": "/Validation/Scene/chassis/AssetVisual/Official/left_caster/Inner_Left_Wheel/STR_Inner_Left_Wheel",
+          "points": 162,
+          "uv_count": 234
+        },
+        {
+          "path": "/Validation/Scene/chassis/AssetVisual/Official/right_caster/Inner_Right_Wheel/STR_Inner_Right_Wheel",
+          "points": 162,
+          "uv_count": 234
+        }
+      ],
+      "dependencies": {
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_albedo.1002.png": "be95f89b5fb43a6aabd4a989b1efbf8acdeeaeadce85dc084667c434268453b9",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_albedo.1001.png": "aa87d61c6afc1ae0d360ac76cd7024d312ad77193cb6c501ce46a811f880cfc6",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_albedo.1003.png": "d79a246f53b70f183107b304d2c96896f41d9e1b22356af8c9b60ce4d9e3521e",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_albedo.1004.png": "c04263457e9e26e69445c1d348e4ea321aca2d6fe91005ed34cb78cb878dd61e",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_emissive.1001.png": "f109170bd78783b4c038040c1ac9f802d1683de858bc769ce92edf0cbda1163c",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_emissive.1003.png": "33d54003abdb2519fdd2eea1f0a7ba02ae34abc76d66dccae9965ad87b3024d9",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_emissive.1002.png": "33d54003abdb2519fdd2eea1f0a7ba02ae34abc76d66dccae9965ad87b3024d9",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_emissive.1004.png": "33d54003abdb2519fdd2eea1f0a7ba02ae34abc76d66dccae9965ad87b3024d9",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_normal.1002.png": "5ee6418cd52a50b87a31dc484c4d192e4c6b6562161d665fe1c8dd1d22f29960",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_normal.1001.png": "b3e53fb8f1e2fe64b0491ad49a4ac692273eabd71651fc7470de3be8bd99413f",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_normal.1003.png": "15871a93bc4dcf50c7e9442693ca7fe9ea622afab3be1310ffb1bab8c318fbcf",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_normal.1004.png": "4492a470ecedd8671f4627329961dc98cdd55f51bc19df338b63e78ff7484bef",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_orm.1004.png": "e8fdc8640fd1e03445744c369af41fd55276ea3e1ac45700cf07e55c5f5e445c",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_orm.1002.png": "05113ce7625da298e33536135885bab225cf00ccddf3d899de8f0b728abe33ff",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_orm.1001.png": "65cc6965b33815547d1002cd60b55c20cfe2fa88e187d2de1e426f6889168b35",
+        "/root/autodl-tmp/m710-visual-assets-20260920/cache/iwhub/HighResProps/Textures/STL_Robot_orm.1003.png": "932a3dc78e9f995d2b48dbcd753a4b71ec773ea9901efd8b8412749f16d6273b"
+      },
+      "no_physics_control_or_lights": true
+    },
+    "wheel_animation": false
+  },
+  "belt_checks": {
+    "conveyor_transverse": {
+      "world_displacement_for_0_2s_at_0_3m_s": [
+        0.0,
+        -0.05999999999999994,
+        0.0
+      ],
+      "other_belt_uv_unchanged": true,
+      "stopped_phase_exactly_held": true
+    },
+    "conveyor_longitudinal": {
+      "world_displacement_for_0_2s_at_0_3m_s": [
+        -0.05999999897820629,
+        0.0,
+        0.0
+      ],
+      "other_belt_uv_unchanged": true,
+      "stopped_phase_exactly_held": true
+    }
+  },
+  "belt_schedule": [
+    {
+      "initial_phase_m": {
+        "conveyor_transverse": 0.0,
+        "conveyor_longitudinal": 0.0
+      },
+      "duration_s": 102.375,
+      "final_phase_m": {
+        "conveyor_transverse": 30.00999999999083,
+        "conveyor_longitudinal": 30.71249999999019
+      },
+      "reconstruction_error_m": {
+        "conveyor_transverse": 9.169554004984093e-12,
+        "conveyor_longitudinal": 9.809042467168183e-12
+      },
+      "basis": "recorded speed/start/stop/active-surface history; verified against recorded final accumulators"
+    },
+    {
+      "initial_phase_m": {
+        "conveyor_transverse": 0.0,
+        "conveyor_longitudinal": 0.0
+      },
+      "duration_s": 102.71666666666667,
+      "final_phase_m": {
+        "conveyor_transverse": 23.321249999996912,
+        "conveyor_longitudinal": 30.814999999990096
+      },
+      "reconstruction_error_m": {
+        "conveyor_transverse": 3.0873081868776353e-12,
+        "conveyor_longitudinal": 9.901413022816996e-12
+      },
+      "basis": "recorded speed/start/stop/active-surface history; verified against recorded final accumulators"
+    },
+    {
+      "initial_phase_m": {
+        "conveyor_transverse": 0.0,
+        "conveyor_longitudinal": 0.0
+      },
+      "duration_s": 161.79166666666666,
+      "final_phase_m": {
+        "conveyor_transverse": 47.54624999997488,
+        "conveyor_longitudinal": 48.53749999997398
+      },
+      "reconstruction_error_m": {
+        "conveyor_transverse": 2.511058028176194e-11,
+        "conveyor_longitudinal": 2.6012969556177268e-11
+      },
+      "basis": "recorded speed/start/stop/active-surface history; verified against recorded final accumulators"
+    },
+    {
+      "initial_phase_m": {
+        "conveyor_transverse": 47.54624999997488,
+        "conveyor_longitudinal": 48.53749999997398
+      },
+      "duration_s": 161.73333333333332,
+      "final_phase_m": {
+        "conveyor_transverse": 94.85874999993186,
+        "conveyor_longitudinal": 97.05749999992986
+      },
+      "reconstruction_error_m": {
+        "conveyor_transverse": 4.303046807763167e-11,
+        "conveyor_longitudinal": 4.411049303598702e-11
+      },
+      "basis": "recorded speed/start/stop/active-surface history; verified against recorded final accumulators"
+    },
+    {
+      "initial_phase_m": {
+        "conveyor_transverse": 94.85874999993186,
+        "conveyor_longitudinal": 97.05749999992986
+      },
+      "duration_s": 94.67083333333333,
+      "final_phase_m": {
+        "conveyor_transverse": 123.25999999990603,
+        "conveyor_longitudinal": 125.45874999990403
+      },
+      "reconstruction_error_m": {
+        "conveyor_transverse": 2.5835333872237243e-11,
+        "conveyor_longitudinal": 2.5835333872237243e-11
+      },
+      "basis": "recorded speed/start/stop/active-surface history; verified against recorded final accumulators"
+    }
+  ],
+  "media_review": {
+    "status": "PASS",
+    "short_decoded_frames": 42,
+    "short_fps": 5,
+    "pairs": {
+      "running": {
+        "frames": [
+          0,
+          1
+        ],
+        "times_s": [
+          22.4,
+          22.599999999999998
+        ],
+        "phase_delta_m": {
+          "conveyor_transverse": 0.05999999999999961,
+          "conveyor_longitudinal": 0.05999999999999961
+        }
+      },
+      "transverse_stopped": {
+        "frames": [
+          10,
+          11
+        ],
+        "times_s": [
+          24.39999999999999,
+          24.59999999999999
+        ],
+        "phase_delta_m": {
+          "conveyor_transverse": 0.0,
+          "conveyor_longitudinal": 0.05999999999999961
+        }
+      },
+      "resumed": {
+        "frames": [
+          29,
+          30
+        ],
+        "times_s": [
+          48.60000000000002,
+          48.800000000000026
+        ],
+        "phase_delta_m": {
+          "conveyor_transverse": 0.060000000000001386,
+          "conveyor_longitudinal": 0.0600000000000005
+        }
+      }
+    },
+    "visual_review": "Stopped transverse splice marks hold while longitudinal marks travel; after resume both travel. Explicit DLSS history reset removes accumulated trails.",
+    "no_new_physics": true,
+    "main_video_frames_decoded": 3113
+  },
+  "directed_tests": "5 passed",
+  "visual_inspection": {
+    "main_video_frame_indices": [
+      40,
+      41,
+      511,
+      1024,
+      1832,
+      2640,
+      3112
+    ],
+    "short_frame_indices": [
+      0,
+      1,
+      10,
+      11,
+      29,
+      30
+    ],
+    "findings": "Correct native assets, source HUD, visible -Y/-X belt travel and transverse hold; no accumulated trails in final rendered frames. Final source carton visibility retained."
+  },
+  "large_assets_vendored": false
+}

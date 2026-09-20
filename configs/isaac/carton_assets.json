@@ -1,0 +1,132 @@
+{
+  "schema_version": "carton_usd_assets_v1",
+  "default_asset": "nvidia_cardbox_d04",
+  "object_overrides": {
+    "carton_l02_c02": "scan05",
+    "carton_l07_c04": "scan05"
+  },
+  "assets": [
+    {
+      "id": "nvidia_cardbox_d04",
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "bytes": 5056,
+      "max_anisotropy": 1.35
+    },
+    {
+      "id": "scan05",
+      "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+      "sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5",
+      "rotation_xyz_deg": [
+        87.33865923040798,
+        -2.658987267711984,
+        5.047898718582808
+      ],
+      "max_anisotropy": 1.35,
+      "axis_alignment": "Polar orthogonalization of area-weighted cardboard triangle normals within 18.2 degrees of source axes; then local X 90 degrees. No entity pose change."
+    }
+  ],
+  "dependencies": [
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/MI_LampCeilingA.mdl",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/MI_LampCeilingA.mdl",
+      "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d",
+      "bytes": 2605
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Base.mdl",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Base.mdl",
+      "sha256": "5ca22bdae198012f2fa285de0c1b6c7041c8c539c76671a19e471f021b99370d",
+      "bytes": 8281
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Function.mdl",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Function.mdl",
+      "sha256": "9217e09bfd17109af755e4a1910c8c6fa7fca3f859b9081ff28e75167795bd85",
+      "bytes": 46073
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/Alum_Anodized_roughness.png",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/Alum_Anodized_roughness.png",
+      "sha256": "78fbda4ad9fc3ceabd3286580b99829cb7bdad420cd9db37b24c91f641504d79",
+      "bytes": 46432193
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_D.png",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_D.png",
+      "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a",
+      "bytes": 5662826
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_N.png",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_N.png",
+      "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba",
+      "bytes": 4823660
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_ORM.png",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_ORM.png",
+      "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043",
+      "bytes": 2243369
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_D.png",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_D.png",
+      "sha256": "e1c2dce6aa3438248ad3c960cba22c4160d9a86c152a978f6f228b8a99770834",
+      "bytes": 6909181
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_N.png",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_N.png",
+      "sha256": "4ab1797de4aad446a31ee70f7e5ebe29afabafe4bda17d203c2a01e286f71fc7",
+      "bytes": 3999816
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "path": "Assets/Isaac/5.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "bytes": 5056
+    },
+    {
+      "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc",
+      "sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5",
+      "bytes": 8484518,
+      "archive": "scan-v0.1",
+      "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/BOX_30X17X22.usdc"
+    },
+    {
+      "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.001.jpg",
+      "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486",
+      "bytes": 4906893,
+      "archive": "scan-v0.1",
+      "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.001.jpg"
+    },
+    {
+      "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.002.jpg",
+      "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486",
+      "bytes": 4906893,
+      "archive": "scan-v0.1",
+      "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.002.jpg"
+    },
+    {
+      "path": "scans-v0.1/usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.jpg",
+      "sha256": "303cfcac64b6ff47d104d49edac9412187704023e2926c794912d188fc841486",
+      "bytes": 4906893,
+      "archive": "scan-v0.1",
+      "member": "usd-cardboard-box-assets/Collected_BOX_5.30X17X22_HIGH/SubUSDs/textures/BOX_5_u0_v0_diffuse.jpg"
+    }
+  ],
+  "archives": [
+    {
+      "id": "scan-v0.1",
+      "path": "scans-v0.1.zip",
+      "url": "https://github.com/1057822006-svg/usd-cardboard-box-assets/releases/download/v0.1/usd-cardboard-box-assets-v0.1-ready.zip",
+      "sha256": "b7931855ff2fa37c746182780bb7f126b64c156f1fe2bb431cfec1b632962001"
+    }
+  ],
+  "sources": {
+    "official": "NVIDIA Isaac Assets 5.0 / Simple_Warehouse; NVIDIA proprietary content, not Apache-2.0",
+    "scan": "1057822006-svg v0.1; README permits use/modification with attribution; recommended CC BY 4.0; raw package not redistributed"
+  }
+}

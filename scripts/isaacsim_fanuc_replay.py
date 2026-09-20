@@ -109,6 +109,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--height", default=None, type=int)
     parser.add_argument("--output-fps", default=None, type=float)
     parser.add_argument("--camera-mode", default=None)
+    parser.add_argument("--visual-asset-cache", type=Path, help="optional cached visual-only carton/conveyor/chassis upgrade")
     parser.add_argument(
         "--record-replay",
         action="store_true",
@@ -2475,6 +2476,12 @@ try:
     rgb_annotator.attach(render_product)
     depth_annotator.attach(render_product)
 
+    asset_visuals = None
+    if args.visual_asset_cache:
+        from m710_visual_assets import apply_visual_assets
+        asset_visuals = apply_visual_assets(globals(), args.project_root / "configs/isaac/m710_visual_assets.json", args.visual_asset_cache)
+        (args.output / "asset_manifest.json").write_text(json.dumps(asset_visuals.report, indent=2), encoding="utf-8")
+
     physics_dt = 1.0 / physics_hz
     # Author the exact initial joint state before PhysX first constructs the
     # articulation. The zero-delta bootstrap cannot sweep a default pose
@@ -3626,6 +3633,9 @@ try:
                     record["xform"].SetRotate(
                         rotation, UsdGeom.XformCommonAPI.RotationOrderXYZ
                     )
+
+            if apply_transforms and asset_visuals is not None:
+                asset_visuals.update(conveyor_visual_phase_m)
 
         rest_start_gate = RestStartGate() if metadata.get("joint_reference") else None
         rest_start_audit = []

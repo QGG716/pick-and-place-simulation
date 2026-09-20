@@ -1,0 +1,19 @@
+{
+  "schema": "m710_visual_asset_swap_v1",
+  "source_branch": "feat/v0.5-perception-ros2",
+  "source_commit": "cc64bbd49e4e113f44ee0750b6981a24e452ee1b",
+  "baseline_commit": "1dd8e0485fca294e625ca23e398a1ddef6124eac",
+  "cartons": "carton_assets.json",
+  "conveyors": "conveyor_assets.json",
+  "chassis": {
+    "relative_path": "iwhub/iw_hub_static.usd",
+    "sha256": "417cb5c86178769de584f06c9dbf1813697d8562ea26a811e13119ee32fc4dac",
+    "asset_root_api": "isaacsim.storage.native.get_assets_root_path",
+    "verified_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Robots/Idealworks/iwhub/iw_hub_static.usd",
+    "version": "NVIDIA Isaac Assets 6.0",
+    "subtree": "/iw_hub",
+    "adaptation": "uniform fit inside existing chassis envelope; retain fixed mounting support",
+    "license": "NVIDIA proprietary content; cached from official asset library, not redistributed"
+  },
+  "belt_splice_details": true
+}
