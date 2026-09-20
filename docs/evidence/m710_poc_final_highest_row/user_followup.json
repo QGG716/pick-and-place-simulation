@@ -1,0 +1,12 @@
+﻿{
+    "original_world":  "1789722165.0576758",
+    "original_result_preserved":  "1/5",
+    "waived_reason":  "ACTUAL_PAYLOAD_NOT_CLEAR_FOR_FREE_TRANSIT",
+    "waiver_target":  "carton_l07_c01",
+    "instruction":  "用户要求忽略第二箱该停止项，并从首箱完成快照建立新世界，重做第二箱及剩余四箱；两个世界分开计数",
+    "new_world":  "1789726502.8089688",
+    "new_source_commit":  "93db81684a7cb825fe5a9fd31a2f6a848c4341cc",
+    "new_denominator":  4,
+    "waiver_is_not_geometric_clearance_pass":  true,
+    "other_monitors_unchanged":  true
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "execution": "configs/simulation/m710id70_proof_of_concept.yaml",
+    "motion": "configs/validation/m710id70_proof_of_concept.yaml",
+    "paired": true
+  },
+  {
+    "execution": "configs/simulation/m710id70_handoff_continuation.yaml",
+    "motion": "configs/validation/m710id70_handoff_continuation.yaml",
+    "paired": true
+  }
+]

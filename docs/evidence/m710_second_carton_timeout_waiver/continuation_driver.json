@@ -1,0 +1,24 @@
+[
+  {
+    "event": "NEW_WORLD_REMAINING_ROW_BOUND",
+    "world": "1789726502.8089688",
+    "carton_ids": [
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "historical_completion_excluded": [
+      "carton_l07_c02"
+    ]
+  },
+  {
+    "event": "OFFLINE_NEXT_PLAN_STARTED",
+    "segment": 2,
+    "new_processed": [
+      "carton_l07_c01"
+    ],
+    "physics_paused": true,
+    "actual_state_sha256": "8030225e305d611bb3d832abafd63d8ef43bcfb8c619ab6fda6ac4e8b8b9136c"
+  }
+]

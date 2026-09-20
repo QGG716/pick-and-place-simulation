@@ -1,0 +1,296 @@
+{
+  "target": "carton_l07_c02",
+  "world_id": "1789722165.0576758",
+  "workflow_cycle_completed": true,
+  "runtime_stop_reason": null,
+  "counts": {
+    "actual_reception": 0,
+    "ideal_reception": 1,
+    "ideal_outfeed": 1,
+    "workflow_processed": 1,
+    "downstream_physical_qualification_claimed": false,
+    "actual_grasp": 1,
+    "actual_release": 1
+  },
+  "physics_seconds": 102.375,
+  "execution_wall_seconds": 1617.7097250670195,
+  "first_rendered_actual_state": {
+    "time_s": 0.2,
+    "trajectory_time_s": 0.09166666666666666,
+    "stage": "pregrasp",
+    "q_target_rad": [
+      -0.4737803041934967,
+      -0.46627330780029297,
+      -0.3544289767742157,
+      1.7851250171661377,
+      0.4858225882053375,
+      -3.3840372562408447
+    ],
+    "q_rad": [
+      -0.47377756237983704,
+      -0.4662889242172241,
+      -0.3544582426548004,
+      1.7851359844207764,
+      0.48582345247268677,
+      -3.3840742111206055
+    ],
+    "qd_rad_s": [
+      0.003513849340379238,
+      0.013626283966004848,
+      0.029492858797311783,
+      -0.0002773052838165313,
+      7.944445678731427e-05,
+      -0.036040809005498886
+    ],
+    "qd_target_rad_s": [
+      0.002359965074070804,
+      0.005107385745735809,
+      0.0040979872729019545,
+      -0.0009550734731857001,
+      -0.002501633688785491,
+      -0.035053603151838565
+    ],
+    "payload_gravity_feedforward_nm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "drive_position_target_rad": [
+      -0.4737803041934967,
+      -0.4622572958469391,
+      -0.34468990564346313,
+      1.783882737159729,
+      0.4848083257675171,
+      -3.383985757827759
+    ],
+    "tcp_target_world": [
+      [
+        0.9999999999906093,
+        -4.085018294100408e-06,
+        -1.4471789875051658e-06,
+        -0.2173604194551631
+      ],
+      [
+        -1.4516172067508597e-06,
+        -0.0010866716547738707,
+        -0.9999994095711294,
+        -1.0957481420125937e-05
+      ],
+      [
+        4.08344327379419e-06,
+        0.9999994095638394,
+        -0.0010866716606935626,
+        2.2500319963334867
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "tcp_actual_world": [
+      [
+        0.999999999906851,
+        1.3631599984068476e-05,
+        6.910825427429966e-07,
+        -0.2173670053877939
+      ],
+      [
+        7.063484888707448e-07,
+        -0.001119925721821513,
+        -0.9999993728827425,
+        -4.572015941330809e-06
+      ],
+      [
+        -1.363081747434136e-05,
+        0.9999993727900818,
+        -0.0011199257313458943,
+        2.2500044589014747
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "tcp_translation_error_m": 2.90251415123883e-05,
+    "tcp_rotation_error_rad": 3.773971413013934e-05,
+    "attached": false
+  },
+  "first_stack_observation": {
+    "time_s": 0.2,
+    "accepted": true,
+    "reason": null,
+    "minimum_stack_clearance_m": 5.550826011613275e-07,
+    "actual_penetration_m": null,
+    "sat_overlap_bound_m": 0.0,
+    "penetration_query_scope": "SAT_BOUND_NOT_MEASURED_DEPTH",
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "neighbor_displacement_m": 0.0,
+    "neighbor_tilt_rad": 1.4901161193847656e-08,
+    "free_space_reached": false,
+    "first_free_space_time_s": null
+  },
+  "stack_transitions": [
+    {
+      "step": 7163,
+      "time_s": 29.849999999999998,
+      "from_free": false,
+      "to_free": true,
+      "clearance_m": 0.005239972707731189,
+      "nearest_neighbor": "carton_l06_c02",
+      "shape_fingerprint": "e81a91d3432f74b9b26571542d222e02557623d2665d20e3bd0eb2aacd2c0666",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "contact_evidence_status": "RESOLVED",
+      "basis": "POST_STEP_VERIFIED_BOX_GEOMETRY"
+    }
+  ],
+  "first_conflict": null,
+  "confirmed_violation": null,
+  "active_issues": [],
+  "actual_release_height_m": 0.024585095972204485,
+  "qualification_check_details": {
+    "full_schedule_replayed": {
+      "status": "PASS",
+      "reason": "complete command schedule replayed"
+    },
+    "collision_scope_complete": {
+      "status": "PASS",
+      "reason": "robot self-collision and robot/payload scene contacts were monitored"
+    },
+    "unexpected_contacts_clear": {
+      "status": "PASS",
+      "reason": "no unexpected contacts",
+      "unexpected_contact_count": 0
+    },
+    "premature_payload_conveyor_contacts_clear": {
+      "status": "PASS",
+      "reason": "payload did not touch a conveyor before release",
+      "premature_payload_conveyor_contact_count": 0
+    },
+    "joint_tracking_within_limit": {
+      "status": "PASS",
+      "reason": "joint tracking is within limit",
+      "measured": 0.0009770989418029785,
+      "limit": 0.05,
+      "unit": "rad"
+    },
+    "joint_efforts_within_limit": {
+      "status": "NOT_EVALUATED",
+      "reason": "joint effort ratios are unavailable"
+    },
+    "payload_attachment_intact": {
+      "status": "PASS",
+      "reason": "payload remained attached through transport",
+      "peak_position_error_m": 1.2902498548924616e-05,
+      "position_tolerance_m": 0.02,
+      "peak_rotation_error_rad": 2.7522957023537212e-05,
+      "rotation_tolerance_rad": 0.1,
+      "payload_displacement_m": 3.939772723357001,
+      "minimum_payload_displacement_m": 0.02
+    },
+    "release_event_executed": {
+      "status": "PASS",
+      "reason": "release event executed"
+    },
+    "placement_within_tolerance": {
+      "status": "PASS",
+      "reason": "settled placement is within tolerance",
+      "measured": 0.02253116394954296,
+      "limit": 0.08,
+      "unit": "m"
+    },
+    "gripper_wrench_envelope_complete": {
+      "status": "NOT_APPLICABLE",
+      "reason": "ideal_independent_cups explicitly assumes holding capacity",
+      "suction_mode": "ideal_independent_cups"
+    },
+    "gripper_limits_from_configuration": {
+      "status": "NOT_APPLICABLE",
+      "reason": "vacuum force/break limits are outside the ideal-independent-cup mode",
+      "suction_mode": "ideal_independent_cups"
+    },
+    "gripper_limits_calibrated": {
+      "status": "NOT_APPLICABLE",
+      "reason": "no calibrated vacuum envelope is claimed in ideal-independent-cup mode",
+      "suction_mode": "ideal_independent_cups"
+    },
+    "production_release_adapter": {
+      "status": "PASS",
+      "reason": "the original payload was opened by the production release adapter"
+    },
+    "joint_positions_within_limits": {
+      "status": "PASS",
+      "reason": "measured joint positions stayed inside the official limits"
+    }
+  },
+  "events": [
+    {
+      "event": "actual_attachment_capture",
+      "simulation_time_s": 4.125,
+      "trajectory_time_s": 4.020833333333425,
+      "target": "carton_l07_c02"
+    },
+    {
+      "event": "grasp_contact_attempt",
+      "simulation_time_s": 4.125,
+      "trajectory_time_s": 4.020833333333425,
+      "accepted": true,
+      "target": "carton_l07_c02",
+      "actual_contact_count": 40
+    },
+    {
+      "event": "actual_stack_geometry_free_space_entered",
+      "time_s": 29.849999999999998
+    },
+    {
+      "event": "actual_free_transit_gate_passed",
+      "time_s": 30.8125,
+      "wait_elapsed_s": 0.0
+    },
+    {
+      "event": "ideal_release_actual_height_check",
+      "simulation_time_s": 89.20416666666667,
+      "trajectory_time_s": 89.09958038119812,
+      "target": "carton_l07_c02",
+      "accepted": true,
+      "height_m": 0.024585095972204485
+    },
+    {
+      "event": "actual_constraint_removed",
+      "simulation_time_s": 89.20416666666667,
+      "trajectory_time_s": 89.09958038119812,
+      "target": "carton_l07_c02",
+      "height_m": 0.024585095972204485
+    },
+    {
+      "event": "release_region_attempt",
+      "simulation_time_s": 89.20416666666667,
+      "trajectory_time_s": 89.09958038119812
+    },
+    {
+      "event": "target_cup_release_clearance_started",
+      "time_s": 89.20416666666667
+    },
+    {
+      "event": "release_constraint_removal_confirmed",
+      "simulation_time_s": 89.225
+    },
+    {
+      "event": "IDEAL_RECEPTION_ACCEPTED",
+      "carton_id": "carton_l07_c02",
+      "time_s": 89.225,
+      "actual_release_height_m": 0.024585095972204485,
+      "first_takeover_height_m": 0.022558263444656057
+    },
+    {
+      "event": "target_cup_clearance_ended_by_assumed_reception",
+      "time_s": 89.225
+    }
+  ]
+}

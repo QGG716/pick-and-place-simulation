@@ -1,0 +1,24 @@
+{
+  "status": "WORLD_AND_PLANNER_PROCESSES_ABSENT_ON_RECONNECT",
+  "observed_at_utc": "2026-09-20T01:11:41.095221+00:00",
+  "world_session_id": "1789726502.8089688",
+  "physical_completed": 1,
+  "denominator": 4,
+  "completed_here": [
+    "carton_l07_c01"
+  ],
+  "historical_excluded": [
+    "carton_l07_c02"
+  ],
+  "interrupted_planning_target": "carton_l07_c03",
+  "last_observed_planner_elapsed_s": 3336.5231169834733,
+  "planner_final_result_available": false,
+  "physical_segment_002_exists": false,
+  "continuation_request_exists": false,
+  "termination_reason": "UNKNOWN_NO_EXIT_RECORD",
+  "physical_failure_claimed": false,
+  "last_actual_state_sha256": "8030225e305d611bb3d832abafd63d8ef43bcfb8c619ab6fda6ac4e8b8b9136c",
+  "last_actual_state_attached": false,
+  "remaining_active_cartons": 38,
+  "new_world_required_for_physical_continuation": true
+}

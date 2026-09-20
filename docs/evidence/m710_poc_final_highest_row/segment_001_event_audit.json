@@ -1,0 +1,26 @@
+{
+  "accepted_grasps": 1,
+  "release_independence_events": 1,
+  "ideal_reception_events": 1,
+  "ideal_outfeed_events": 1,
+  "final_capture": {
+    "world_session_id": "1789722165.0576758",
+    "target": "carton_l07_c02",
+    "phase": "withdrawal",
+    "task_time_s": 102.375,
+    "world_physics_time_s": 103.27917205309495,
+    "source": "CURRENT_PHYSX_ZERO_TIME_RENDER",
+    "image": "final_actual.png",
+    "physics_time_delta_s": 0.0,
+    "joint_max_delta_rad": 0.0,
+    "carton_state_unchanged": true,
+    "q_rad": [
+      -0.5765301585197449,
+      0.16948139667510986,
+      -0.1261928826570511,
+      3.1417782306671143,
+      1.2745215892791748,
+      -5.7064409255981445
+    ]
+  }
+}

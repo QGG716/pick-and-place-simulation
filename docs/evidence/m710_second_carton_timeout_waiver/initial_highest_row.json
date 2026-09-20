@@ -1,0 +1,1238 @@
+{
+  "world_session_id": "1789726502.8089688",
+  "carton_ids": [
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "initial_actual_q_rad": [
+    -0.5765329003334045,
+    0.16952648758888245,
+    -0.12617835402488708,
+    3.141777276992798,
+    1.274532675743103,
+    -5.7064409255981445
+  ],
+  "initial_actual_cartons": [
+    {
+      "name": "carton_l00_c00",
+      "prim_path": "/Validation/Scene/carton_l00_c00",
+      "center_m": [
+        0.2999946177005768,
+        -0.8400049805641174,
+        0.15000057220458984
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        4.540041572909104e-06,
+        -5.370221515477169e-06,
+        -1.8684148983538762e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l00_c01",
+      "prim_path": "/Validation/Scene/carton_l00_c01",
+      "center_m": [
+        0.29999688267707825,
+        -0.4200029671192169,
+        0.15000061690807343
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        3.3909384455910185e-06,
+        -3.1594177016813774e-06,
+        -1.5850886825319321e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l00_c02",
+      "prim_path": "/Validation/Scene/carton_l00_c02",
+      "center_m": [
+        0.3000021278858185,
+        -8.700453690835275e-06,
+        0.15000124275684357
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        8.38888172438601e-06,
+        -6.325141839624848e-06,
+        -8.522032999280782e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l00_c03",
+      "prim_path": "/Validation/Scene/carton_l00_c03",
+      "center_m": [
+        0.2999943494796753,
+        0.4199962913990021,
+        0.15000034868717194
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        3.913059117621742e-06,
+        -5.0867683967226185e-06,
+        -7.046443073477349e-08
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l00_c04",
+      "prim_path": "/Validation/Scene/carton_l00_c04",
+      "center_m": [
+        0.2999957501888275,
+        0.8399967551231384,
+        0.15000060200691223
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        4.1579351091058925e-06,
+        -4.813431587535888e-06,
+        6.056768597773043e-08
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l01_c00",
+      "prim_path": "/Validation/Scene/carton_l01_c00",
+      "center_m": [
+        0.299985408782959,
+        -0.8400096297264099,
+        0.45000940561294556
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -2.7054522888647625e-06,
+        5.547673936234787e-06,
+        -8.158004334291036e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l01_c01",
+      "prim_path": "/Validation/Scene/carton_l01_c01",
+      "center_m": [
+        0.29999256134033203,
+        -0.420004665851593,
+        0.45000678300857544
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -2.789237214528839e-06,
+        4.006882136309287e-06,
+        -2.203390607746769e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l01_c02",
+      "prim_path": "/Validation/Scene/carton_l01_c02",
+      "center_m": [
+        0.3000358045101166,
+        -6.933443728485145e-06,
+        0.45001348853111267
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -5.1413489927654155e-06,
+        2.1231812752375845e-06,
+        -6.905442546667473e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l01_c03",
+      "prim_path": "/Validation/Scene/carton_l01_c03",
+      "center_m": [
+        0.2999908924102783,
+        0.4200001060962677,
+        0.45000797510147095
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -6.06851426709909e-06,
+        6.279592980718007e-06,
+        -8.326814793235826e-08
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l01_c04",
+      "prim_path": "/Validation/Scene/carton_l01_c04",
+      "center_m": [
+        0.299990713596344,
+        0.8399981260299683,
+        0.4500086009502411
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -6.828759978816379e-06,
+        7.389404345303774e-06,
+        3.5290983646518725e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l02_c00",
+      "prim_path": "/Validation/Scene/carton_l02_c00",
+      "center_m": [
+        0.2999855577945709,
+        -0.8400063514709473,
+        0.7500120997428894
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        1.3046012554696063e-06,
+        -1.4448170304603991e-06,
+        -7.706585165578872e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l02_c01",
+      "prim_path": "/Validation/Scene/carton_l02_c01",
+      "center_m": [
+        0.29999375343322754,
+        -0.4199998080730438,
+        0.7500103116035461
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -4.642264229914872e-06,
+        4.84302199765807e-06,
+        2.1760253332558932e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l02_c02",
+      "prim_path": "/Validation/Scene/carton_l02_c02",
+      "center_m": [
+        0.3000510334968567,
+        -1.2755717762047425e-06,
+        0.7500167489051819
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -6.690728469038731e-07,
+        -5.789519946119981e-06,
+        2.3992245701265347e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l02_c03",
+      "prim_path": "/Validation/Scene/carton_l02_c03",
+      "center_m": [
+        0.2999882102012634,
+        0.42000511288642883,
+        0.7500094771385193
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        9.032753496285295e-07,
+        -1.3251959671833902e-06,
+        6.765771587424751e-08
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l02_c04",
+      "prim_path": "/Validation/Scene/carton_l02_c04",
+      "center_m": [
+        0.2999890446662903,
+        0.8400043249130249,
+        0.75001060962677
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        6.800182177357783e-07,
+        -7.156686478992924e-07,
+        8.966032964963233e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l03_c00",
+      "prim_path": "/Validation/Scene/carton_l03_c00",
+      "center_m": [
+        0.29999786615371704,
+        -0.8399938941001892,
+        1.05001962184906
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -4.774179160449421e-06,
+        9.624783160688821e-06,
+        -1.116258317779284e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l03_c01",
+      "prim_path": "/Validation/Scene/carton_l03_c01",
+      "center_m": [
+        0.3000001907348633,
+        -0.4199894070625305,
+        1.0500115156173706
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        5.347906650854384e-08,
+        -6.110596473263286e-08,
+        2.705426425109181e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l03_c02",
+      "prim_path": "/Validation/Scene/carton_l03_c02",
+      "center_m": [
+        0.30005791783332825,
+        1.627639176149387e-05,
+        1.0500259399414062
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -1.3305898391990922e-05,
+        -1.0886441259572166e-06,
+        1.6441279058199143e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l03_c03",
+      "prim_path": "/Validation/Scene/carton_l03_c03",
+      "center_m": [
+        0.3000006079673767,
+        0.42001670598983765,
+        1.0500160455703735
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -8.014490049390588e-06,
+        1.0764729267975781e-05,
+        9.591240512918375e-08
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l03_c04",
+      "prim_path": "/Validation/Scene/carton_l03_c04",
+      "center_m": [
+        0.2999969720840454,
+        0.8400145769119263,
+        1.0500156879425049
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -2.0860172753600636e-06,
+        2.122482783306623e-06,
+        1.0550193110248074e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l04_c00",
+      "prim_path": "/Validation/Scene/carton_l04_c00",
+      "center_m": [
+        0.3000144958496094,
+        -0.8399853706359863,
+        1.3500213623046875
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        1.4839353070783545e-06,
+        2.901417929024319e-06,
+        -1.5177819250311586e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l04_c01",
+      "prim_path": "/Validation/Scene/carton_l04_c01",
+      "center_m": [
+        0.3000049889087677,
+        -0.4199824035167694,
+        1.350014567375183
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -1.7933408571479958e-06,
+        1.0484699259905028e-06,
+        1.047875883841698e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l04_c02",
+      "prim_path": "/Validation/Scene/carton_l04_c02",
+      "center_m": [
+        0.3001115620136261,
+        5.657318979501724e-05,
+        1.350034475326538
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -9.686560588306747e-06,
+        4.007573807029985e-06,
+        4.008936684840592e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l04_c03",
+      "prim_path": "/Validation/Scene/carton_l04_c03",
+      "center_m": [
+        0.3000234365463257,
+        0.4200323820114136,
+        1.3500169515609741
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -3.0118221729935613e-06,
+        5.183730991120683e-06,
+        -5.713543487217976e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l04_c04",
+      "prim_path": "/Validation/Scene/carton_l04_c04",
+      "center_m": [
+        0.3000105619430542,
+        0.840022623538971,
+        1.3500220775604248
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -8.871053978509735e-06,
+        1.4399150131794158e-05,
+        4.893084337709297e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l05_c00",
+      "prim_path": "/Validation/Scene/carton_l05_c00",
+      "center_m": [
+        0.3000430464744568,
+        -0.8399719595909119,
+        1.6500252485275269
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        9.050073686012183e-07,
+        4.964472736901371e-06,
+        -2.6164843802689575e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l05_c01",
+      "prim_path": "/Validation/Scene/carton_l05_c01",
+      "center_m": [
+        0.3000199496746063,
+        -0.4199693500995636,
+        1.650017261505127
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -3.091428425250342e-06,
+        1.8284736142959446e-06,
+        -2.1749318079855584e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l05_c02",
+      "prim_path": "/Validation/Scene/carton_l05_c02",
+      "center_m": [
+        0.300353467464447,
+        0.0001574007619637996,
+        1.6500346660614014
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -3.0115222671156516e-06,
+        4.30234109671801e-07,
+        9.216067155648489e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l05_c03",
+      "prim_path": "/Validation/Scene/carton_l05_c03",
+      "center_m": [
+        0.30004245042800903,
+        0.420046329498291,
+        1.6500203609466553
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -4.965120297129033e-06,
+        7.365437340922654e-06,
+        -1.086797283278429e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l05_c04",
+      "prim_path": "/Validation/Scene/carton_l05_c04",
+      "center_m": [
+        0.3000326454639435,
+        0.8400338292121887,
+        1.6500235795974731
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -3.8913649405003525e-06,
+        8.6664040281903e-06,
+        -1.4414892746117403e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l06_c00",
+      "prim_path": "/Validation/Scene/carton_l06_c00",
+      "center_m": [
+        0.3000880479812622,
+        -0.8399413228034973,
+        1.9500290155410767
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        5.426069265013211e-07,
+        7.397862646030262e-06,
+        -2.136135663022287e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l06_c01",
+      "prim_path": "/Validation/Scene/carton_l06_c01",
+      "center_m": [
+        0.30004429817199707,
+        -0.41995173692703247,
+        1.9500198364257812
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -4.2262536226189695e-06,
+        2.9823843306076014e-06,
+        -1.4396745200428995e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l06_c02",
+      "prim_path": "/Validation/Scene/carton_l06_c02",
+      "center_m": [
+        0.30036818981170654,
+        6.784460128983483e-05,
+        1.9500378370285034
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -5.018332558393013e-06,
+        2.3626434995094314e-06,
+        1.663860348344315e-05
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l06_c03",
+      "prim_path": "/Validation/Scene/carton_l06_c03",
+      "center_m": [
+        0.3000674843788147,
+        0.42006242275238037,
+        1.9500236511230469
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -6.991108421061654e-06,
+        9.635364222049247e-06,
+        -1.912900188472122e-06
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l06_c04",
+      "prim_path": "/Validation/Scene/carton_l06_c04",
+      "center_m": [
+        0.3000664710998535,
+        0.8400497436523438,
+        1.9500271081924438
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -6.026757546351291e-06,
+        1.4287317753769457e-05,
+        -7.334443239415123e-07
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l07_c00",
+      "prim_path": "/Validation/Scene/carton_l07_c00",
+      "center_m": [
+        0.29862990975379944,
+        -0.8400803208351135,
+        2.2500288486480713
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -7.951167049213836e-07,
+        7.716109394095838e-06,
+        7.20501338946633e-05
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l07_c01",
+      "prim_path": "/Validation/Scene/carton_l07_c01",
+      "center_m": [
+        0.2988244593143463,
+        -0.4201541244983673,
+        2.250020742416382
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -5.119553861732129e-06,
+        3.166064743709285e-06,
+        2.0107348973397166e-05
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l07_c03",
+      "prim_path": "/Validation/Scene/carton_l07_c03",
+      "center_m": [
+        0.29930806159973145,
+        0.4199576675891876,
+        2.2500226497650146
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -7.97737629909534e-06,
+        9.911561392073054e-06,
+        3.0589999369112775e-05
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    },
+    {
+      "name": "carton_l07_c04",
+      "prim_path": "/Validation/Scene/carton_l07_c04",
+      "center_m": [
+        0.2989422678947449,
+        0.8397985696792603,
+        2.250027656555176
+      ],
+      "quaternion_wxyz": [
+        1.0,
+        -7.439006822096417e-06,
+        1.4220338925952092e-05,
+        7.22177283023484e-05
+      ],
+      "linear_velocity_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_m": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "mass_kg": 42.5
+    }
+  ],
+  "source": "ARCHIVED_NEW_WORLD_SETTLED_REMAINING_HIGHEST_ROW",
+  "source_world_session_id": "1789722165.0576758",
+  "historical_counts_excluded": {
+    "actual_received": 0,
+    "ideal_received": 1,
+    "processed": 1,
+    "outfed": 1
+  },
+  "historical_completion_events_imported": false,
+  "denominator": 4
+}

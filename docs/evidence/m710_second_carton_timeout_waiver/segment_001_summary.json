@@ -1,0 +1,155 @@
+{
+  "world_session_id": "1789726502.8089688",
+  "target": "carton_l07_c01",
+  "historical_excluded": [
+    "carton_l07_c02"
+  ],
+  "new_world_completed": 1,
+  "new_world_denominator": 4,
+  "result": {
+    "workflow_cycle_completed": true,
+    "runtime_stop_reason": null,
+    "execution_counts": {
+      "actual_reception": 0,
+      "ideal_reception": 2,
+      "ideal_outfeed": 2,
+      "workflow_processed": 2,
+      "downstream_physical_qualification_claimed": false,
+      "actual_grasp": 1,
+      "actual_release": 1
+    },
+    "actual_release_prediction": {
+      "mode": "IDEAL_RECEPTION_RELEASE",
+      "accepted": true,
+      "reason": "IDEAL_RECEPTION_REGION_ACCEPTED",
+      "height_m": 0.024519702685114053,
+      "prediction_source": "BOUNDED_IDEAL_RECEPTION_REGION_NOT_PHYSICAL_LANDING"
+    },
+    "actual_free_transit_gate": {
+      "maximum_wait_s": 1.0,
+      "trajectory_boundary_s": 40.49036131512016,
+      "passed": true,
+      "events": [
+        {
+          "event": "actual_free_transit_gate_passed",
+          "time_s": 40.59583333333333,
+          "wait_elapsed_s": 0.0
+        }
+      ],
+      "timeout_waiver_authorized": true,
+      "timeout_waived": false,
+      "waiver_target": "carton_l07_c01",
+      "clearance_policy_changed": false
+    },
+    "replayed_simulation_seconds": 102.71666666666667,
+    "replay_wall_seconds": 1563.6552320830524,
+    "actual_stack_contact_monitor": {
+      "observations": 21462,
+      "box_box_physics_enabled": true,
+      "free_space_reached": true,
+      "first_free_space_time_s": 40.55,
+      "peak_actual_penetration_m": null,
+      "peak_sat_overlap_bound_m": 3.889217024849456e-06,
+      "peak_neighbor_displacement_m": 0.01417209395183881,
+      "peak_neighbor_tilt_rad": 0.02887671139727517,
+      "contact_force_channel": "NOT_USED_BY_GEOMETRIC_DISTURBANCE_MONITOR"
+    }
+  },
+  "events": [
+    {
+      "event": "actual_attachment_capture",
+      "simulation_time_s": 16.15,
+      "target": "carton_l07_c01"
+    },
+    {
+      "event": "grasp_contact_attempt",
+      "simulation_time_s": 16.15,
+      "accepted": true,
+      "target": "carton_l07_c01"
+    },
+    {
+      "event": "actual_stack_geometry_free_space_entered",
+      "step": 9731,
+      "time_s": 40.55,
+      "clearance_m": 0.005204228135046997,
+      "nearest_neighbor": "carton_l06_c01",
+      "contact_evidence_status": "RESOLVED"
+    },
+    {
+      "event": "actual_free_transit_gate_passed",
+      "time_s": 40.59583333333333,
+      "wait_elapsed_s": 0.0
+    },
+    {
+      "event": "ideal_release_actual_height_check",
+      "simulation_time_s": 89.40416666666667,
+      "target": "carton_l07_c01",
+      "accepted": true,
+      "height_m": 0.024519702685114053,
+      "reason": "IDEAL_RECEPTION_REGION_ACCEPTED"
+    },
+    {
+      "event": "actual_constraint_removed",
+      "simulation_time_s": 89.40416666666667,
+      "target": "carton_l07_c01",
+      "height_m": 0.024519702685114053
+    },
+    {
+      "event": "release_region_attempt",
+      "simulation_time_s": 89.40416666666667
+    },
+    {
+      "event": "target_cup_release_clearance_started",
+      "time_s": 89.40416666666667
+    },
+    {
+      "event": "release_constraint_removal_confirmed",
+      "simulation_time_s": 89.425
+    },
+    {
+      "event": "IDEAL_RECEPTION_ACCEPTED",
+      "carton_id": "carton_l07_c01",
+      "time_s": 191.8,
+      "first_takeover_height_m": 0.022512673069057687,
+      "source": "RECEPTION_ASSUMED"
+    },
+    {
+      "event": "target_cup_clearance_ended_by_assumed_reception",
+      "time_s": 89.425
+    }
+  ],
+  "transport": {
+    "actual_received_ids": [],
+    "ideal_received_ids": [
+      "carton_l07_c01",
+      "carton_l07_c02"
+    ],
+    "processed_carton_ids": [
+      "carton_l07_c01",
+      "carton_l07_c02"
+    ],
+    "ideal_outfed_ids": [
+      "carton_l07_c01",
+      "carton_l07_c02"
+    ]
+  },
+  "remaining_state_time_s": 205.09166666666667,
+  "raw_sources": {
+    "result.json": {
+      "path": "/root/autodl-tmp/m710-second-waiver-20260918/repo/outputs/isaac_highest_row/result.json",
+      "sha256": "319111a5e3fe59504dddd4f7ab46e68216c8a810d429e6969f969e203ff5e500"
+    },
+    "execution_events.json": {
+      "path": "/root/autodl-tmp/m710-second-waiver-20260918/repo/outputs/isaac_highest_row/execution_events.json",
+      "sha256": "2c6d37b45b2006c0f041470ecb93f08834eebe371af4b235c263192b65fedaec"
+    },
+    "ideal_transport_events.json": {
+      "path": "/root/autodl-tmp/m710-second-waiver-20260918/repo/outputs/isaac_highest_row/ideal_transport_events.json",
+      "sha256": "55a2662e4eb71e3c12692d5be7b8a711f9e9dac9b8088d560e980c5f43dcc7f3"
+    },
+    "actual_remaining_state.json": {
+      "path": "/root/autodl-tmp/m710-second-waiver-20260918/repo/outputs/isaac_highest_row/actual_remaining_state.json",
+      "sha256": "8030225e305d611bb3d832abafd63d8ef43bcfb8c619ab6fda6ac4e8b8b9136c"
+    }
+  }
+}

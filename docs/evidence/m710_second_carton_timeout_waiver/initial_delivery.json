@@ -1,0 +1,20 @@
+{
+  "status": "COMPLETE_PREFLIGHT_EXPORT_READBACK_PASS",
+  "source_commit": "93db81684a7cb825fe5a9fd31a2f6a848c4341cc",
+  "source_world": "1789722165.0576758",
+  "source_snapshot_sha256": "d12631d2415f83f6f6c6c42a8e3f35e3152e096346eb81b7e03f21bdd7629870",
+  "source_motion_sha256": "6dfbd0b13017bdf99cc30f8f981a5f6e2fe087f2d88e3e158b9470a63db83ec9",
+  "preflight_seconds": 0.2929393984377384,
+  "export_seconds": 0.35820916295051575,
+  "bundle_readback_seconds": 0.13958433642983437,
+  "bundle_readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "1b17eed07c40757d19b4e6791b3b2e7c27170dd121f4e5d5dd0b6e2fa6fcd8c8",
+    "source_preflight_fingerprint": "4e1deccebc3a5f1e1ead1b1ac87885d61fd35439bf407fe9eb25ab1903ce86e5",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "new_search_performed": false,
+  "simulation_execution_ready": true,
+  "waiver_target": "carton_l07_c01",
+  "historical_completions_not_new_results": true
+}

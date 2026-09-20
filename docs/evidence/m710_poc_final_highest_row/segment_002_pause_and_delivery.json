@@ -1,0 +1,39 @@
+{
+  "world_session_id": "1789722165.0576758",
+  "pause_wall_interval_s": 1321.92241849,
+  "pause_wall_basis": "READY_FILE_WRITTEN_TO_NEXT_SEGMENT_INITIAL_CAPTURE_METADATA_WRITTEN_INCLUDES_BINDING_AND_CAPTURE_OVERHEAD",
+  "physics_time_before_s": 103.27917205309495,
+  "physics_time_after_s": 103.27917205309495,
+  "physics_time_delta_s": 0.0,
+  "actual_q_unchanged": true,
+  "planning": {
+    "simulation_profile": {
+      "name": "proof_of_concept",
+      "ideal_suction": true,
+      "ideal_reception": true,
+      "ideal_outfeed": true,
+      "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+      "machine_qualification_claimed": false
+    },
+    "planning_seconds": 1319.2481823563576,
+    "serialization_seconds": 0.007593240588903427,
+    "preflight_seconds": 0.2968380078673363,
+    "export_seconds": 0.34832432866096497,
+    "isaac_executed": false,
+    "actual_state_sha256": "d12631d2415f83f6f6c6c42a8e3f35e3152e096346eb81b7e03f21bdd7629870",
+    "archived_or_live_state_not_modified": true,
+    "simulation_execution_ready": true,
+    "bundle_readback": {
+      "status": "PASS",
+      "bundle_payload_sha256": "c32f91a1bf89f8198ecfdc27484ee1e4b01fc9b656ccaf8149b2c9725d7e0988",
+      "source_preflight_fingerprint": "e3c159580669c807e752e6d2d8f6b51351082989b6c39a2c88bb2166b1672734",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+    },
+    "bundle_readback_seconds": 0.133238036185503,
+    "bundle_path": "/root/autodl-tmp/m710-final-row-20260918/repo/outputs/plan_002/replay_bundle.json",
+    "first_complete_feasible_result_seconds": 1319.2481823563576,
+    "first_exportable_result_seconds": 1320.657116830349,
+    "subsequent_optimization_seconds": 0.0,
+    "immutable_baseline_directory": "/root/autodl-tmp/m710-final-row-20260918/repo/outputs/plan_002/first_feasible"
+  }
+}

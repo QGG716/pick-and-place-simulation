@@ -1,0 +1,560 @@
+{
+  "world_session_id": "1789722165.0576758",
+  "target": "carton_l07_c01",
+  "runtime_stop_reason": "ACTUAL_PAYLOAD_NOT_CLEAR_FOR_FREE_TRANSIT",
+  "actual_free_transit_gate": {
+    "maximum_wait_s": 1.0,
+    "trajectory_boundary_s": 40.49036131512016,
+    "passed": false,
+    "events": [
+      {
+        "event": "actual_free_transit_wait_started",
+        "time_s": 40.61666666666667,
+        "trajectory_time_s": 40.49036131512016,
+        "maximum_wait_s": 1.0
+      },
+      {
+        "event": "actual_free_transit_wait_timeout",
+        "time_s": 41.61666666666667,
+        "wait_elapsed_s": 1.0,
+        "reason": "ACTUAL_PAYLOAD_NOT_CLEAR_FOR_FREE_TRANSIT"
+      }
+    ],
+    "clearance_policy_changed": false
+  },
+  "actual_stack_contact_monitor": {
+    "observations": 9988,
+    "box_box_physics_enabled": true,
+    "free_space_reached": false,
+    "first_free_space_time_s": null,
+    "peak_actual_penetration_m": null,
+    "peak_sat_overlap_bound_m": 3.7825391597801072e-06,
+    "peak_neighbor_displacement_m": 0.014703913085587354,
+    "peak_neighbor_tilt_rad": 0.030797910982497397,
+    "contact_force_channel": "NOT_USED_BY_GEOMETRIC_DISTURBANCE_MONITOR"
+  },
+  "stack_evidence_counts": {
+    "physical_steps": 9988,
+    "contact_headers": 16484,
+    "RESOLVED": 9988,
+    "headers_with_physical_response": 2768,
+    "headers_with_negative_point_separation": 2471,
+    "small_positive_point_separation_with_clear_box_geometry": 0
+  },
+  "transitions": [],
+  "first_conflict": null,
+  "confirmed_violation": null,
+  "active_issues": [],
+  "pending": [],
+  "last_actual_step": {
+    "step": 9987,
+    "time_s": 41.61666666666667,
+    "trajectory_time_s": 40.49036131512016,
+    "world_id": "1789722165.0576758",
+    "task_id": "1",
+    "target": "carton_l07_c01",
+    "context": {
+      "stage": "extraction",
+      "attached": true,
+      "actual_free_space": false,
+      "release_validation_pending": false
+    },
+    "pre_time_s": 41.6125,
+    "pre_sample_phase": "PRE_WORLD_STEP_PHYSX_TENSOR",
+    "post_sample_phase": "POST_WORLD_STEP_PHYSX_TENSOR",
+    "pre_states": {
+      "carton_l06_c01": {
+        "name": "carton_l06_c01",
+        "prim_path": "/Validation/Scene/carton_l06_c01",
+        "center_m": [
+          0.29575327038764954,
+          -0.41997286677360535,
+          1.9500573873519897
+        ],
+        "quaternion_wxyz": [
+          0.9999998807907104,
+          -9.275750016968232e-07,
+          -7.747536301394575e-07,
+          0.000530452758539468
+        ],
+        "linear_velocity_m_s": [
+          -0.0418177992105484,
+          -0.015593279153108597,
+          -0.07226527482271194
+        ],
+        "angular_velocity_rad_s": [
+          0.018766485154628754,
+          -0.07820911705493927,
+          0.0030698929913342
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "mass_kg": 42.5
+      },
+      "carton_l07_c01": {
+        "name": "carton_l07_c01",
+        "prim_path": "/Validation/Scene/carton_l07_c01",
+        "center_m": [
+          -0.3085488975048065,
+          -0.41980525851249695,
+          2.250671863555908
+        ],
+        "quaternion_wxyz": [
+          1.0,
+          9.821050480240956e-05,
+          -0.00022611905296798795,
+          2.8892052796436474e-05
+        ],
+        "linear_velocity_m_s": [
+          0.0006946023786440492,
+          -0.00015267367416527122,
+          0.02056446671485901
+        ],
+        "angular_velocity_rad_s": [
+          -0.006276046857237816,
+          -0.0008696321165189147,
+          0.00747879920527339
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "mass_kg": 42.5
+      }
+    },
+    "post_states": {
+      "carton_l06_c01": {
+        "name": "carton_l06_c01",
+        "prim_path": "/Validation/Scene/carton_l06_c01",
+        "center_m": [
+          0.29575684666633606,
+          -0.4199710488319397,
+          1.9500576257705688
+        ],
+        "quaternion_wxyz": [
+          0.9999998807907104,
+          -4.437297320691869e-06,
+          -2.473015285886504e-07,
+          0.0005278873140923679
+        ],
+        "linear_velocity_m_s": [
+          -0.04829879105091095,
+          -0.013518515974283218,
+          -0.07404880225658417
+        ],
+        "angular_velocity_rad_s": [
+          0.02327173389494419,
+          -0.07822885364294052,
+          0.0034581508953124285
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "mass_kg": 42.5
+      },
+      "carton_l07_c01": {
+        "name": "carton_l07_c01",
+        "prim_path": "/Validation/Scene/carton_l07_c01",
+        "center_m": [
+          -0.30854934453964233,
+          -0.4198051691055298,
+          2.2506723403930664
+        ],
+        "quaternion_wxyz": [
+          1.0,
+          9.899982251226902e-05,
+          -0.00022701206034980714,
+          3.023295539605897e-05
+        ],
+        "linear_velocity_m_s": [
+          0.0013688041362911463,
+          4.8771278670756146e-05,
+          0.020537059754133224
+        ],
+        "angular_velocity_rad_s": [
+          -0.007133369334042072,
+          0.0003085362841375172,
+          0.003497568890452385
+        ],
+        "size_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "mass_kg": 42.5
+      }
+    },
+    "pair_geometry": {
+      "carton_l06_c01": {
+        "surface_distance_m": 0.004116086504589163,
+        "intersection": false,
+        "sat_overlap_bound_m": 0.0
+      }
+    },
+    "contacts": [
+      {
+        "actor0": "/Validation/Scene/carton_l07_c01",
+        "actor1": "/Validation/Scene/carton_l06_c01",
+        "collider0": "/Validation/Scene/carton_l07_c01",
+        "collider1": "/Validation/Scene/carton_l06_c01",
+        "event": "CONTACT_PERSIST",
+        "points": [
+          {
+            "contact_point_separation_m": 0.0007909314590506256,
+            "position_m": [
+              -0.00445893406867981,
+              -0.2202909141778946,
+              2.1000566482543945
+            ],
+            "normal": [
+              -0.000321846833685413,
+              -0.00040989049011841416,
+              0.9999999403953552
+            ],
+            "impulse_ns": [
+              -0.0,
+              -0.0,
+              0.0
+            ],
+            "face_index0": 0,
+            "face_index1": 0
+          },
+          {
+            "contact_point_separation_m": 0.000713120331056416,
+            "position_m": [
+              -0.0012773573398590088,
+              -0.6198599934577942,
+              2.100057363510132
+            ],
+            "normal": [
+              -0.000321846833685413,
+              -0.00040989049011841416,
+              0.9999999403953552
+            ],
+            "impulse_ns": [
+              -0.0,
+              -0.0,
+              0.0
+            ],
+            "face_index0": 0,
+            "face_index1": 0
+          },
+          {
+            "contact_point_separation_m": 0.0007923174416646361,
+            "position_m": [
+              -0.0013836324214935303,
+              -0.22028765082359314,
+              2.1000566482543945
+            ],
+            "normal": [
+              -0.000321846833685413,
+              -0.00040989049011841416,
+              0.9999999403953552
+            ],
+            "impulse_ns": [
+              -0.0,
+              -0.0,
+              0.0
+            ],
+            "face_index0": 0,
+            "face_index1": 0
+          },
+          {
+            "contact_point_separation_m": 0.0007118833600543439,
+            "position_m": [
+              -0.004035055637359619,
+              -0.6198603510856628,
+              2.100057363510132
+            ],
+            "normal": [
+              -0.000321846833685413,
+              -0.00040989049011841416,
+              0.9999999403953552
+            ],
+            "impulse_ns": [
+              -0.0,
+              -0.0,
+              0.0
+            ],
+            "face_index0": 0,
+            "face_index1": 0
+          }
+        ],
+        "step": 9987,
+        "context": {
+          "stage": "extraction",
+          "attached": true,
+          "actual_free_space": false,
+          "release_validation_pending": false
+        },
+        "sample_phase": "CONTACT_GENERATION_WITHIN_WORLD_STEP_SUBTIME_NOT_EXPOSED",
+        "manifold_id": "NOT_EXPOSED_BY_INSTALLED_API",
+        "geometry": {
+          "surface_distance_m": 0.004116086504589163,
+          "intersection": false,
+          "sat_overlap_bound_m": 0.0
+        },
+        "evidence_reason": null,
+        "explanation": "LICENSED_STEP_CONTACT_CURRENT_GEOMETRY_DECIDES_EXIT",
+        "contact_response_observed": false,
+        "minimum_contact_point_separation_m": 0.0007118833600543439,
+        "engineering_distance_source": "CURRENT_VERIFIED_BOX_EUCLIDEAN",
+        "phase_contact_permission": "EXISTING_TARGET_STACK_STAGE"
+      }
+    ],
+    "nearest_neighbor": "carton_l06_c01",
+    "observation": {
+      "accepted": true,
+      "reason": null,
+      "minimum_stack_clearance_m": 0.004116086504589163,
+      "actual_penetration_m": null,
+      "sat_overlap_bound_m": 0.0,
+      "penetration_query_scope": "SAT_BOUND_NOT_MEASURED_DEPTH",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "neighbor_displacement_m": 0.008397211784483036,
+      "neighbor_tilt_rad": 2.794772668053667e-05,
+      "free_space_reached": false,
+      "first_free_space_time_s": null
+    },
+    "geometry_free_before": false,
+    "geometry_free_after": false,
+    "hold": false,
+    "evidence_status": "RESOLVED",
+    "stop_reason": null
+  },
+  "failure_capture": {
+    "world_session_id": "1789722165.0576758",
+    "target": "carton_l07_c01",
+    "phase": "extraction",
+    "task_time_s": 41.61666666666667,
+    "world_physics_time_s": 144.89584089023992,
+    "source": "CURRENT_PHYSX_ZERO_TIME_RENDER",
+    "image": "failure.png",
+    "physics_time_delta_s": 0.0,
+    "joint_max_delta_rad": 0.0,
+    "carton_state_unchanged": true,
+    "q_rad": [
+      -1.1727471351623535,
+      -0.3914666473865509,
+      -0.30722013115882874,
+      1.60635244846344,
+      1.1742969751358032,
+      -4.80417537689209
+    ]
+  },
+  "actual_counts": {
+    "grasp": 1,
+    "release": 0,
+    "physical_reception": 0,
+    "ideal_reception": 0,
+    "withdrawal": 0,
+    "ideal_outfeed": 0
+  },
+  "cumulative_counts_do_not_belong_to_second_carton": {
+    "actual_reception": 0,
+    "ideal_reception": 1,
+    "ideal_outfeed": 1,
+    "workflow_processed": 1,
+    "downstream_physical_qualification_claimed": false,
+    "actual_grasp": 1,
+    "actual_release": 0
+  },
+  "events": [
+    {
+      "event": "actual_attachment_capture",
+      "simulation_time_s": 16.170833333333334,
+      "trajectory_time_s": 16.045833333332745,
+      "target": "carton_l07_c01",
+      "physical_contact_pose_world": [
+        [
+          0.0006722840812000468,
+          4.342943069321216e-05,
+          0.9999997730739736,
+          -0.0011794992876579258
+        ],
+        [
+          -0.00015513625589625704,
+          -0.9999999870187781,
+          4.353373564363875e-05,
+          -0.4205174939547285
+        ],
+        [
+          0.9999997619834,
+          -0.00015516548772927133,
+          -0.0006722773349937043,
+          2.2490330347562444
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "actual_box_pose_world": [
+        [
+          0.9999999973013526,
+          -6.151804974946552e-05,
+          4.0159983716694264e-05,
+          0.29891180992126465
+        ],
+        [
+          6.151769484602805e-05,
+          0.9999999980687279,
+          8.838416032477686e-06,
+          -0.4201529622077942
+        ],
+        [
+          -4.01605273612516e-05,
+          -8.835945459002612e-06,
+          0.9999999991545291,
+          2.2500123977661133
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "physical_contact_from_box": [
+        [
+          0.0006321140179585596,
+          -0.0001640135565581006,
+          0.9999997867656877,
+          0.0011810528347613314
+        ],
+        [
+          -1.8082031943626276e-05,
+          -0.9999999863881656,
+          -0.0001640021593905981,
+          -0.00035165091082645095
+        ],
+        [
+          0.9999998000524343,
+          -1.7978360023990363e-05,
+          -0.0006321169750526975,
+          0.3000905985762687
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "joint_local_position0_m": [
+        0.6925905985762686,
+        -0.00035165091083519753,
+        -0.0011810528347580302
+      ],
+      "joint_local_quaternion0_wxyz": [
+        8.200393336202021e-05,
+        0.9999999466507847,
+        -9.015098472852593e-06,
+        -0.00031605776511424823
+      ],
+      "actual_contact_mask": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sample_source": "SAME_ATTACHMENT_STATE_NO_INTERVENING_PHYSICS_STEP"
+    },
+    {
+      "event": "grasp_contact_attempt",
+      "simulation_time_s": 16.170833333333334,
+      "trajectory_time_s": 16.045833333332745,
+      "accepted": true,
+      "target": "carton_l07_c01",
+      "actual_contact_count": 48
+    },
+    {
+      "event": "actual_free_transit_wait_started",
+      "time_s": 40.61666666666667,
+      "trajectory_time_s": 40.49036131512016,
+      "maximum_wait_s": 1.0
+    },
+    {
+      "event": "actual_free_transit_wait_timeout",
+      "time_s": 41.61666666666667,
+      "wait_elapsed_s": 1.0,
+      "reason": "ACTUAL_PAYLOAD_NOT_CLEAR_FOR_FREE_TRANSIT"
+    }
+  ]
+}

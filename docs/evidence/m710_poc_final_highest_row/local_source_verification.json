@@ -1,0 +1,9 @@
+﻿{
+    "source_commit":  "a0bba8c85d281b943f4e68e2f1e407a79dc0ae56",
+    "compared_files":  247,
+    "comparison":  "Exact committed Git blob bytes, ignoring local checkout line-ending conversion",
+    "mismatches":  [
+
+                   ],
+    "status":  "PASS"
+}

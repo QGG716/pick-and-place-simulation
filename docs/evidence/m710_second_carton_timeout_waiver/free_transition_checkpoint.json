@@ -1,0 +1,25 @@
+{
+  "world": "1789726502.8089688",
+  "target": "carton_l07_c01",
+  "timeout_waiver_triggered": false,
+  "events": [
+    {
+      "event": "actual_stack_geometry_free_space_entered",
+      "step": 9731,
+      "time_s": 40.55,
+      "from_free": false,
+      "to_free": true,
+      "clearance_m": 0.005204228135046997,
+      "nearest_neighbor": "carton_l06_c01",
+      "shape_fingerprint": "c9255cecc4e51878c49c7022e5b5430c4f3afe2aea8ccc4e07443d4b80a67c67",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "contact_evidence_status": "RESOLVED",
+      "basis": "POST_STEP_VERIFIED_BOX_GEOMETRY"
+    },
+    {
+      "event": "actual_free_transit_gate_passed",
+      "time_s": 40.59583333333333,
+      "wait_elapsed_s": 0.0
+    }
+  ]
+}

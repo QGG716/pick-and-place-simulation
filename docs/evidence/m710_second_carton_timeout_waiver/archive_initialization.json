@@ -1,0 +1,18 @@
+{
+  "world_scope": "NEW_WORLD_RECONSTRUCTED_FROM_ARCHIVED_ACTUAL_STATE",
+  "world_session_id": "1789722165.0576758",
+  "time_s": 102.375,
+  "actual_state_fingerprint": "8399a3dcc5a275ad719bb185d58875b5c00a6a3e143e80ec7c432021efb0a42c",
+  "historical_counts": {
+    "actual_received": 0,
+    "ideal_received": 1,
+    "processed": 1,
+    "outfed": 1
+  },
+  "active_ideal_transport_ids": [],
+  "raw_source": {
+    "path": "/root/autodl-tmp/m710-second-waiver-20260918/repo/outputs/isaac_highest_row/archive_initialization.json",
+    "sha256": "88824160bc2c43c168fec0838893b1197f2e3de04da88366371e9e6554dada38"
+  },
+  "summary_only": true
+}
