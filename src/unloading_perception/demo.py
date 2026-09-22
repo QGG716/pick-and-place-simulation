@@ -85,7 +85,8 @@ def _mock_execution(snapshot):
     ))
     accepted = gate.authorize(command, snapshot, epoch="synthetic-epoch", generation=1, now=1.0)
     gate.bind_goal(command.command_id, controller_id="synthetic-mock-controller", controller_epoch="synthetic-controller-epoch", goal_id="synthetic-goal-1")
-    cancel = gate.accept_cancel(command.command_id, event_time=1.5)
+    gate.request_cancel(command.command_id, goal_id="synthetic-goal-1", event_time=1.4)
+    cancel = gate.accept_cancel(command.command_id, goal_id="synthetic-goal-1", event_time=1.5)
     stopped = gate.confirm_stop(ControllerStopFact(
         "synthetic-mock-controller", "synthetic-controller-epoch", "synthetic-goal-1", 1,
         1.5, 2.0, "monotonic", trajectory.joint_names, points[0].positions,

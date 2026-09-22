@@ -1,5 +1,6 @@
 """Real Humble messages, DDS and /clock; no hardware, GPU or perception model."""
 from copy import deepcopy
+from itertools import count
 import os
 import time
 
@@ -13,12 +14,18 @@ from unloading_ros_bridge.execution_bridge_node import ExecutionBridgeNode
 from unloading_ros_bridge.common import float_to_time
 
 
+_graphs = count()
+
+
 @pytest.fixture
 def transport():
+    graph_id = next(_graphs)
     rclpy.init(args=['--ros-args', '-p', 'controller_epoch:=context-test-controller',
-                    '-p', 'use_sim_time:=true'], domain_id=110 + os.getpid() % 40)
+                    '-p', 'use_sim_time:=true', '-r',
+                    f'unloading_execution_bridge:__node:=context_execution_bridge_{graph_id}'],
+               domain_id=110 + os.getpid() % 40)
     bridge = ExecutionBridgeNode()
-    source = rclpy.create_node('context_test_source')
+    source = rclpy.create_node(f'context_test_source_{graph_id}')
     executor = SingleThreadedExecutor()
     executor.add_node(bridge)
     executor.add_node(source)
@@ -34,7 +41,9 @@ def transport():
             executor.spin_once(timeout_sec=.01)
             if predicate():
                 return
-        raise AssertionError('DDS condition not reached')
+        raise AssertionError(f'DDS condition not reached: clock_subscribers={clocks.get_subscription_count()}, '
+                             f'context_subscribers={contexts.get_subscription_count()}, '
+                             f'rosout_publishers={[p.node_name for p in source.get_publishers_info_by_topic("/rosout")]}')
 
     def advance(now):
         clocks.publish(Clock(clock=float_to_time(now)))

@@ -296,9 +296,21 @@ class ExecutionBridgeNode(Node):
         self._request_controller_cancel(command, handle)
 
     def _request_controller_cancel(self, command: ExecutionCommand, handle) -> None:
-        self.pending_cancel.discard(command.command_id)
-        if command.command_id in self.cancel_requested:
+        goal_id = self._goal_id_for(command.command_id)
+        if (self.gate.active_command != command or self.handles.get(command.command_id) is not handle
+                or not goal_id or bytes(handle.goal_id.uuid).hex() != goal_id):
+            self.get_logger().warning("ignoring cancel request for stale command/goal")
             return
+        if command.command_id in self.cancel_requested:
+            self.pending_cancel.discard(command.command_id)
+            return
+        try:
+            self.gate.request_cancel(command.command_id, goal_id=goal_id,
+                                     event_time=self._now(), clock_domain="ros")
+        except ValueError as exc:
+            self.get_logger().error(f"rejecting cancel request: {exc}")
+            return
+        self.pending_cancel.discard(command.command_id)
         self.cancel_requested.add(command.command_id)
         try:
             handle.cancel_goal_async().add_done_callback(lambda result: self.on_cancel_response(command, result))
@@ -306,6 +318,11 @@ class ExecutionBridgeNode(Node):
             self.publish_event(self.gate.mark_controller_unknown(command, str(exc), event_time=self._now(), clock_domain="ros"))
 
     def on_cancel_response(self, command: ExecutionCommand, future) -> None:
+        goal_id = self._goal_id_for(command.command_id)
+        if (self.gate.active_command != command or command.command_id not in self.cancel_requested
+                or not goal_id):
+            self.get_logger().warning("ignoring cancel response without matching active request")
+            return
         try:
             response = future.result()
         except Exception as exc:
@@ -314,19 +331,26 @@ class ExecutionBridgeNode(Node):
             except StaleCallbackError:
                 pass
             return
-        if not response.goals_canceling:
+        try:
+            matches_goal = any(bytes(info.goal_id.uuid).hex() == goal_id for info in response.goals_canceling)
+            accepted = response.return_code == 0 and matches_goal  # CancelGoal.ERROR_NONE
+        except (AttributeError, TypeError, ValueError):
+            accepted = False
+        if not accepted:
             self.reject(command, "CONTROLLER_CANCEL_REJECTED")
             return
-        buffered = self.buffered_stop_facts.get(self._goal_id_for(command.command_id), [])
-        accepted_time = min((fact.cancel_accepted_time for fact in buffered), default=self._now())
         try:
-            event = self.gate.accept_cancel(command.command_id, event_time=accepted_time, clock_domain="ros")
-        except (StaleCallbackError, StopNotReadyError):
-            self.get_logger().warning("ignoring stale cancel response")
+            event = self.gate.accept_cancel(command.command_id, goal_id=goal_id,
+                                            event_time=self._now(), clock_domain="ros")
+        except ValueError as exc:
+            self.get_logger().warning(f"ignoring invalid cancel response: {exc}")
             return
         self.publish_event(event)
-        for fact in self.buffered_stop_facts.pop(self._goal_id_for(command.command_id), []):
-            self._confirm_stop(fact)
+        for fact in self.buffered_stop_facts.pop(goal_id, []):
+            try:
+                self._confirm_stop(fact)
+            except ValueError as exc:
+                self.get_logger().error(f"rejecting buffered controller stop fact: {exc}")
 
     def _goal_id_for(self, command_id: str) -> str:
         return next((goal_id for goal_id, bound in self.goal_to_command.items() if bound == command_id), "")
@@ -359,12 +383,12 @@ class ExecutionBridgeNode(Node):
         try:
             fact = DomainStopFact(
                 message.controller_id, message.controller_epoch, message.goal_id,
-                int(message.sequence), time_to_float(message.cancel_accepted_time),
-                time_to_float(message.stopped_time), message.clock_domain,
+                int(message.sequence), state_time_to_float(message.cancel_accepted_time),
+                state_time_to_float(message.stopped_time), message.clock_domain,
                 tuple(message.joint_names), tuple(message.actual_positions),
                 tuple(message.actual_velocities), message.evidence_reference,
             )
-        except ValueError as exc:
+        except (ValueError, TypeError, AttributeError) as exc:
             self.get_logger().error(f"rejecting malformed controller stop fact: {exc}")
             return
         try:
@@ -374,8 +398,12 @@ class ExecutionBridgeNode(Node):
                 self.get_logger().error("rejecting stop fact for unknown goal")
                 return
             buffered = self.buffered_stop_facts.setdefault(fact.goal_id, [])
+            if fact in buffered:
+                return
             if len(buffered) < 8:
                 buffered.append(fact)
+            else:
+                self.get_logger().error("rejecting controller stop fact: pending stop buffer is full")
             while len(self.buffered_stop_facts) > 128:
                 self.buffered_stop_facts.pop(next(iter(self.buffered_stop_facts)))
         except ValueError as exc:

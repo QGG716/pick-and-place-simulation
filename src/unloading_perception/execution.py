@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from dataclasses import dataclass
+from math import isfinite
 from time import monotonic
 
 from unloading_contracts import (
@@ -47,14 +48,14 @@ class ExecutionGate:
         self.history_ttl_seconds = float(history_ttl_seconds)
         self._grants: OrderedDict[str, ExecutionGrant] = OrderedDict()
         self._history: OrderedDict[str, tuple[float, ExecutionEvent | None]] = OrderedDict()
-        self._stop_cache: OrderedDict[tuple[str, str, str, int], tuple[float, StopAcknowledgement]] = OrderedDict()
+        self._stop_cache: OrderedDict[tuple[str, str, str, int], tuple[float, ControllerStopFact, StopAcknowledgement]] = OrderedDict()
         self._active: ExecutionCommand | None = None
         self._goal_binding: tuple[str, str, str] | None = None
         self._reservation: SendReservation | None = None
         self._send_committed = False
         self._next_token = 1
         self._cancel_event: ExecutionEvent | None = None
-        self._cancel_accepted_time: float | None = None
+        self._cancel_requested_at: float | None = None
         self._cancel_clock_domain: str | None = None
         self._result_seen: set[str] = set()
         self._terminal_context: dict[str, ExecutionCommand] = {}
@@ -107,7 +108,7 @@ class ExecutionGate:
         self._next_token += 1
         self._active, self._reservation, self._send_committed = command, reservation, False
         self._goal_binding = self._cancel_event = None
-        self._cancel_accepted_time = self._cancel_clock_domain = None
+        self._cancel_requested_at = self._cancel_clock_domain = None
         self._grants.pop(command.command_id, None)
         return self._event(command, ExecutionEventKind.ACCEPTED, "SEND_RESERVED", current_time, clock_domain), reservation
 
@@ -189,18 +190,40 @@ class ExecutionGate:
             raise StaleCallbackError("controller uncertainty belongs to a stale command")
         return self._event(command, ExecutionEventKind.FAILED, "CONTROLLER_STATE_UNKNOWN:" + message, event_time, clock_domain)
 
-    def accept_cancel(self, command_id: str, *, event_time: float | None = None, clock_domain: str = "monotonic") -> ExecutionEvent:
+    def request_cancel(self, command_id: str, *, goal_id: str, event_time: float,
+                       clock_domain: str = "monotonic") -> None:
+        """Record the local send boundary for this bound goal, never a retry time."""
+        if self._active is None or self._active.command_id != command_id or not self._send_committed:
+            raise StaleCallbackError("cancel request does not match committed active command")
+        if self._goal_binding is None or self._goal_binding[2] != goal_id:
+            raise StaleCallbackError("cancel request goal identity mismatch")
+        if not isfinite(event_time) or event_time <= 0 or not clock_domain:
+            raise ValueError("cancel request time/clock is invalid")
+        if self._cancel_requested_at is not None:
+            if clock_domain != self._cancel_clock_domain:
+                raise ValueError("cancel request clock domain changed")
+            return
+        self._cancel_requested_at, self._cancel_clock_domain = float(event_time), clock_domain
+
+    def accept_cancel(self, command_id: str, *, goal_id: str, event_time: float | None = None,
+                      clock_domain: str = "monotonic") -> ExecutionEvent:
+        """Record verified response receipt, not the controller's source event time."""
         if self._active is None or self._active.command_id != command_id:
             raise StaleCallbackError("cancel does not match active command")
-        if self._goal_binding is None:
-            raise StopNotReadyError("cancel cannot be accepted before goal identity is bound")
+        if self._goal_binding is None or self._goal_binding[2] != goal_id:
+            raise StaleCallbackError("cancel response goal identity mismatch")
+        if self._cancel_requested_at is None:
+            raise StopNotReadyError("cancel response has no matching local request")
+        received_at = monotonic() if event_time is None else float(event_time)
+        if (not isfinite(received_at) or received_at < self._cancel_requested_at
+                or clock_domain != self._cancel_clock_domain):
+            raise ValueError("cancel response receipt time/clock is invalid")
         if self._cancel_event is not None:
             return self._cancel_event
-        self._cancel_accepted_time = monotonic() if event_time is None else float(event_time)
-        self._cancel_clock_domain = clock_domain
-        self._cancel_event = self._event(self._active, ExecutionEventKind.CANCEL_ACCEPTED,
-                                         "controller accepted cancel request; stop not yet confirmed",
-                                         self._cancel_accepted_time, clock_domain)
+        event = self._event(self._active, ExecutionEventKind.CANCEL_ACCEPTED,
+                            "controller accepted cancel request; response received; stop not yet confirmed",
+                            received_at, clock_domain)
+        self._cancel_event = event
         return self._cancel_event
 
     def complete(self, command_id: str, kind: ExecutionEventKind, message: str, *, event_time: float | None = None,
@@ -233,37 +256,57 @@ class ExecutionGate:
             self._clear_active()
         return event
 
-    def confirm_stop(self, fact: ControllerStopFact, *, now: float, max_age_seconds: float) -> StopAcknowledgement:
-        key = (fact.controller_id, fact.controller_epoch, fact.goal_id, fact.sequence)
-        self._prune(now)
-        cached = self._stop_cache.get(key)
-        if cached is not None:
-            return cached[1]
-        if self._active is None or self._cancel_accepted_time is None or self._goal_binding is None:
-            raise StopNotReadyError("stop cannot be confirmed before a matching accepted cancel")
-        if max_age_seconds <= 0.0:
-            raise ValueError("stop freshness threshold must be positive")
+    @staticmethod
+    def _validate_stop_time(fact: ControllerStopFact, *, now: float, max_age_seconds: float) -> None:
+        if not isfinite(max_age_seconds) or max_age_seconds <= 0.0:
+            raise ValueError("stop freshness threshold must be finite and positive")
+        if (not isfinite(now) or now <= 0 or fact.cancel_accepted_time <= 0
+                or fact.sample_time < fact.cancel_accepted_time
+                or now - fact.sample_time > max_age_seconds or now < fact.sample_time):
+            raise ValueError("stop fact is stale or has invalid/future source event times")
+
+    def validate_stop_fact(self, fact: ControllerStopFact, *, now: float, max_age_seconds: float) -> None:
+        """Validate before buffering or committing; response arrival is independent."""
+        self._validate_stop_time(fact, now=now, max_age_seconds=max_age_seconds)
+        if self._active is None or self._goal_binding is None or self._cancel_requested_at is None:
+            raise ValueError("stop fact has no matching active cancel request")
         controller_id, controller_epoch, goal_id = self._goal_binding
         if (fact.controller_id, fact.controller_epoch, fact.goal_id) != self._goal_binding:
             raise ValueError("stop fact controller/goal identity mismatch")
         if fact.clock_domain != self._cancel_clock_domain:
-            raise ValueError("stop fact clock domain does not match cancel response")
-        if fact.sample_time < self._cancel_accepted_time or now - fact.sample_time > max_age_seconds or now < fact.sample_time:
-            raise ValueError("stop fact is stale, pre-cancel, or from the future")
+            raise ValueError("stop fact clock domain does not match cancel request")
+        if fact.cancel_accepted_time < self._cancel_requested_at:
+            raise ValueError("stop fact predates the current cancel request")
+        if self._cancel_event is not None and fact.cancel_accepted_time > self._cancel_event.event_time:
+            raise ValueError("controller cancel acceptance is after response receipt")
         if fact.joint_names != self._active.trajectory.joint_names:
             raise ValueError("stop fact joint order mismatch")
         sequence_key = (controller_id, controller_epoch)
         if fact.sequence <= self._last_stop_sequence.get(sequence_key, -1):
             raise ValueError("out-of-order stop fact")
+        if sequence_key not in self._last_stop_sequence and len(self._last_stop_sequence) >= self.history_capacity:
+            raise ValueError("controller stop sequence history is full")
         if any(abs(value) > 1e-3 for value in fact.actual_velocities):
             raise ValueError("stop fact does not meet near-zero measured velocity criterion")
+
+    def confirm_stop(self, fact: ControllerStopFact, *, now: float, max_age_seconds: float) -> StopAcknowledgement:
+        self._validate_stop_time(fact, now=now, max_age_seconds=max_age_seconds)
+        key = (fact.controller_id, fact.controller_epoch, fact.goal_id, fact.sequence)
+        cached = self._stop_cache.get(key)
+        if cached is not None:
+            if fact != cached[1]:
+                raise ValueError("conflicting duplicate stop fact")
+            return cached[2]
+        self.validate_stop_fact(fact, now=now, max_age_seconds=max_age_seconds)
+        if self._cancel_event is None:
+            raise StopNotReadyError("stop cannot be confirmed before a matching accepted cancel")
         acknowledgement = StopAcknowledgement(self._active.command_id, self._active.plan_id, self._active.epoch,
             self._active.planning_generation, fact.sample_time, fact.clock_domain, fact.actual_positions,
             fact.actual_velocities, "measured_joint_velocity_below_1e-3_rad_s", fact.evidence_reference,
             fact.controller_id, fact.controller_epoch, fact.goal_id, fact.sequence)
         command_id = self._active.command_id
-        self._last_stop_sequence[sequence_key] = fact.sequence
-        self._stop_cache[key] = (float(now), acknowledgement)
+        self._last_stop_sequence[(fact.controller_id, fact.controller_epoch)] = fact.sequence
+        self._stop_cache[key] = (float(now), fact, acknowledgement)
         if command_id not in self._result_seen:
             self._terminal_context[command_id] = self._active
         self._remember(command_id, float(now), None)
@@ -279,7 +322,7 @@ class ExecutionGate:
     def _clear_active(self) -> None:
         self._active = self._goal_binding = self._reservation = None
         self._send_committed = False
-        self._cancel_event = self._cancel_accepted_time = self._cancel_clock_domain = None
+        self._cancel_event = self._cancel_requested_at = self._cancel_clock_domain = None
 
     @staticmethod
     def _event(command: ExecutionCommand, kind: ExecutionEventKind, message: str, event_time: float, clock_domain: str) -> ExecutionEvent:

@@ -235,7 +235,8 @@ def test_cancel_acceptance_is_not_stop_acknowledgement():
     gate.register_grant(grant(value))
     gate.authorize(value, snapshot, epoch="epoch-a", generation=2, now=1.0)
     gate.bind_goal("cmd-1", controller_id="mock", controller_epoch="controller-a", goal_id="goal-a")
-    event = gate.accept_cancel("cmd-1", event_time=2.0)
+    gate.request_cancel("cmd-1", goal_id="goal-a", event_time=1.9)
+    event = gate.accept_cancel("cmd-1", goal_id="goal-a", event_time=2.0)
     assert event.kind is ExecutionEventKind.CANCEL_ACCEPTED
     with pytest.raises(ValueError, match="identity mismatch"):
         gate.confirm_stop(ControllerStopFact("mock", "controller-a", "wrong", 1, 2.0, 3.0, "monotonic", ("j1", "j2"), (0.2, 0.3), (0.0, 0.0), "feedback-1"), now=3.0, max_age_seconds=1.0)
@@ -319,7 +320,8 @@ def test_late_result_and_duplicate_stop_do_not_touch_new_active_command():
     gate.register_grant(grant(first))
     gate.authorize(first, snapshot, epoch="epoch-a", generation=2, now=1.0)
     gate.bind_goal(first.command_id, controller_id="mock", controller_epoch="controller-a", goal_id="goal-old")
-    gate.accept_cancel(first.command_id, event_time=2.0)
+    gate.request_cancel(first.command_id, goal_id="goal-old", event_time=1.9)
+    gate.accept_cancel(first.command_id, goal_id="goal-old", event_time=2.0)
     fact = ControllerStopFact("mock", "controller-a", "goal-old", 1, 2.0, 2.1, "monotonic", ("j1", "j2"), (0.0, 0.0), (0.0, 0.0), "feedback-old")
     acknowledgement = gate.confirm_stop(fact, now=2.1, max_age_seconds=1.0)
     second = command(snapshot, command_id="cmd-new")
