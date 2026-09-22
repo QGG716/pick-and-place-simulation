@@ -30,6 +30,7 @@ def test_coarse_miss_is_reproduced_then_real_rrt_finds_checked_detour():
     assert result.success and result.iterations>0 and len(result.path)>2
     assert v.check_path(result.path).valid
     assert result.search_evidence['direct_rejected_continue_search']==1
+    assert result.search_evidence['direct_edge_validation']['failure']['pair']==['robot','thin']
     before=v.statistics['state_samples']
     assert not v.check_motion(a,b).valid
     assert v.statistics['state_samples']==before

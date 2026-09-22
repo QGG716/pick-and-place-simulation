@@ -82,6 +82,7 @@ class RRTConnectPlanner:
         self._restarts = 0
         self._direct_rejected = 0
         self._last_edge_result = None
+        self._direct_edge_result = None
         self._last_state_result = None
         self._rejected_candidates = set()
 
@@ -105,6 +106,7 @@ class RRTConnectPlanner:
             "termination": message.upper().replace(" ", "_"),
             "validation_status": "VALID" if success else "CANCELLED" if "cancel" in message else "INDETERMINATE" if message in {"maximum iterations reached", "time limit reached", "validation budget exhausted", "state evidence incomplete"} else "INVALID",
             "direct_rejected_continue_search": self._direct_rejected,
+            "direct_edge_validation": None if self._direct_edge_result is None else self._direct_edge_result.evidence(),
             "candidate_failures": self._candidate_failures,
             "bounded_tree_restarts": self._restarts,
             "motion_validation": None if self.motion_validator is None else dict(self.motion_validator.statistics),
@@ -232,7 +234,9 @@ class RRTConnectPlanner:
             return self._result(False, [], 0, self._interruption() or ('state evidence incomplete' if incomplete else "goal state is invalid"))
         if self._deadline_reached(deadline):
             return self._result(False, [], 0, "time limit reached")
-        if self._edge_valid(start, goal, deadline) and self._accept_candidate([start,goal]):
+        direct_valid = self._edge_valid(start, goal, deadline)
+        self._direct_edge_result = self._last_edge_result
+        if direct_valid and self._accept_candidate([start,goal]):
             return self._result(True, [start, goal], 0, "direct edge")
         self._direct_rejected += 1
         if self._deadline_reached(deadline):
