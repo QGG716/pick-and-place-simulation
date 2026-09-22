@@ -1,0 +1,27 @@
+{
+  "baseline_sha": "15b78519bb4232eecc905a154d5bf0c0d27d1a09",
+  "before_actual_pytest_result": "2 failed in 0.48s",
+  "before_command": "python -m pytest -q tests/test_depth_components_single_pass.py --basetemp=tmp/pytest-depth-before",
+  "production_function": "unloading_perception.rgbd._depth_continuous_components",
+  "cases": [
+    {
+      "case": "A",
+      "before_components": 100,
+      "before_pixel_memberships": 199,
+      "after_component_sizes": [
+        100
+      ],
+      "after_pixel_memberships": 100
+    },
+    {
+      "case": "B",
+      "before_components": 100,
+      "before_pixel_memberships": 198,
+      "after_component_sizes": [
+        50,
+        50
+      ],
+      "after_pixel_memberships": 100
+    }
+  ]
+}

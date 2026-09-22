@@ -1,0 +1,741 @@
+{
+  "all_preserved_outputs_equal": true,
+  "measurement_sha256": {
+    "baseline-run-01": "e7f1f86e81aeff40ece880bd316a088af17496adb4b78ab90b9e8a9efbe829e0",
+    "candidate-run-01": "b99fe62091292ef5ddb2ac350d7e7ad2c19411895e84fb05b275810e6c155304"
+  },
+  "modules": [
+    {
+      "instances": [
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 6,
+          "components_before": 699,
+          "mask_id": 1,
+          "memberships_after": 699,
+          "memberships_before": 1392,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 63260,
+          "mask_id": 2,
+          "memberships_after": 63260,
+          "memberships_before": 126519,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 62957,
+          "mask_id": 3,
+          "memberships_after": 62957,
+          "memberships_before": 125913,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 61720,
+          "mask_id": 4,
+          "memberships_after": 61720,
+          "memberships_before": 123439,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 60961,
+          "mask_id": 5,
+          "memberships_after": 60961,
+          "memberships_before": 121921,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 60740,
+          "mask_id": 6,
+          "memberships_after": 60740,
+          "memberships_before": 121479,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 74294,
+          "mask_id": 7,
+          "memberships_after": 74294,
+          "memberships_before": 148587,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 74745,
+          "mask_id": 8,
+          "memberships_after": 74745,
+          "memberships_before": 149489,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 73276,
+          "mask_id": 9,
+          "memberships_after": 73276,
+          "memberships_before": 146551,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 72383,
+          "mask_id": 10,
+          "memberships_after": 72383,
+          "memberships_before": 144765,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 73909,
+          "mask_id": 11,
+          "memberships_after": 73909,
+          "memberships_before": 147817,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 74624,
+          "mask_id": 12,
+          "memberships_after": 74624,
+          "memberships_before": 149247,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 74602,
+          "mask_id": 13,
+          "memberships_after": 74602,
+          "memberships_before": 149203,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 74090,
+          "mask_id": 14,
+          "memberships_after": 74090,
+          "memberships_before": 148179,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 72179,
+          "mask_id": 15,
+          "memberships_after": 72179,
+          "memberships_before": 144357,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 65270,
+          "mask_id": 16,
+          "memberships_after": 65270,
+          "memberships_before": 130539,
+          "status_reason_and_noncomponent_evidence_equal": true
+        }
+      ],
+      "module_id": "module_0_upper",
+      "pointmap_equal": {
+        "K": true,
+        "depth_optical_z_m": true,
+        "intrinsics": true,
+        "metadata_except_components_and_output_paths_equal": true,
+        "points": true,
+        "valid_mask": true
+      }
+    },
+    {
+      "instances": [
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 8,
+          "components_before": 346,
+          "mask_id": 1,
+          "memberships_after": 346,
+          "memberships_before": 684,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 28153,
+          "mask_id": 2,
+          "memberships_after": 28153,
+          "memberships_before": 56305,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 25913,
+          "mask_id": 3,
+          "memberships_after": 25913,
+          "memberships_before": 51825,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 26513,
+          "mask_id": 4,
+          "memberships_after": 26513,
+          "memberships_before": 53025,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 24597,
+          "mask_id": 5,
+          "memberships_after": 24597,
+          "memberships_before": 49193,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 24474,
+          "mask_id": 6,
+          "memberships_after": 24474,
+          "memberships_before": 48947,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 47208,
+          "mask_id": 7,
+          "memberships_after": 47208,
+          "memberships_before": 94415,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 49430,
+          "mask_id": 8,
+          "memberships_after": 49430,
+          "memberships_before": 98859,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 41469,
+          "mask_id": 9,
+          "memberships_after": 41469,
+          "memberships_before": 82937,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 44329,
+          "mask_id": 10,
+          "memberships_after": 44329,
+          "memberships_before": 88657,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 45079,
+          "mask_id": 11,
+          "memberships_after": 45079,
+          "memberships_before": 90157,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 58282,
+          "mask_id": 12,
+          "memberships_after": 58282,
+          "memberships_before": 116563,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 57661,
+          "mask_id": 13,
+          "memberships_after": 57661,
+          "memberships_before": 115321,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 57015,
+          "mask_id": 14,
+          "memberships_after": 57015,
+          "memberships_before": 114029,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 56002,
+          "mask_id": 15,
+          "memberships_after": 56002,
+          "memberships_before": 112003,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 55777,
+          "mask_id": 16,
+          "memberships_after": 55777,
+          "memberships_before": 111553,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 72571,
+          "mask_id": 17,
+          "memberships_after": 72571,
+          "memberships_before": 145141,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 72348,
+          "mask_id": 18,
+          "memberships_after": 72348,
+          "memberships_before": 144695,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 71234,
+          "mask_id": 19,
+          "memberships_after": 71234,
+          "memberships_before": 142467,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 70126,
+          "mask_id": 20,
+          "memberships_after": 70126,
+          "memberships_before": 140251,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 70028,
+          "mask_id": 21,
+          "memberships_after": 70028,
+          "memberships_before": 140055,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 92508,
+          "mask_id": 22,
+          "memberships_after": 92508,
+          "memberships_before": 185015,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 90785,
+          "mask_id": 23,
+          "memberships_after": 90785,
+          "memberships_before": 181569,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 90912,
+          "mask_id": 24,
+          "memberships_after": 90912,
+          "memberships_before": 181823,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 89370,
+          "mask_id": 25,
+          "memberships_after": 89370,
+          "memberships_before": 178739,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 88932,
+          "mask_id": 26,
+          "memberships_after": 88932,
+          "memberships_before": 177863,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 45829,
+          "mask_id": 27,
+          "memberships_after": 45829,
+          "memberships_before": 91657,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 45658,
+          "mask_id": 28,
+          "memberships_after": 45658,
+          "memberships_before": 91315,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 45160,
+          "mask_id": 29,
+          "memberships_after": 45160,
+          "memberships_before": 90319,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 44466,
+          "mask_id": 30,
+          "memberships_after": 44466,
+          "memberships_before": 88931,
+          "status_reason_and_noncomponent_evidence_equal": true
+        },
+        {
+          "arrays_equal": {
+            "filtered_mask": true,
+            "filtered_points_camera_xyz_m": true,
+            "raw_points_camera_xyz_m": true,
+            "raw_valid_mask": true,
+            "rejected_reason": true
+          },
+          "components_after": 1,
+          "components_before": 44460,
+          "mask_id": 31,
+          "memberships_after": 44460,
+          "memberships_before": 88919,
+          "status_reason_and_noncomponent_evidence_equal": true
+        }
+      ],
+      "module_id": "module_1_lower",
+      "pointmap_equal": {
+        "K": true,
+        "depth_optical_z_m": true,
+        "intrinsics": true,
+        "metadata_except_components_and_output_paths_equal": true,
+        "points": true,
+        "valid_mask": true
+      }
+    }
+  ],
+  "plan_sha256": "0cd745c80f6f27f054975a72c0003c17d69ad4c9ae0c3091bdd875163f07e7a7"
+}

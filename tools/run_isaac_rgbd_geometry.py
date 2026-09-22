@@ -38,7 +38,7 @@ from unloading_perception.isaac_payload import CapturePayloadError, require_capt
 from unloading_perception.final_geometry import validate_final_record  # noqa: E402
 from unloading_perception.rgbd import (  # noqa: E402
     CaptureMetadata, MetricPointMap, MetricPointMapSource, PointCloudFilterConfig,
-    filter_registered_instance_depth, hypotheses_from_geometry_record, masked_metric_pointmap, register_rgbd,
+    hypotheses_from_geometry_record, masked_metric_pointmap_with_filter, register_rgbd,
     transform_hypothesis_to_world,
 )
 from unloading_perception.upstream_v4 import (  # noqa: E402
@@ -144,8 +144,7 @@ def _build_pointmap(scene_dir: Path, manifest: IsaacSceneManifest, masks_path: P
         if label not in {"box", "cardboard_box"}:
             continue
         try:
-            filter_result = filter_registered_instance_depth(frame, mask, filter_config)
-            item = masked_metric_pointmap(
+            item, filter_result = masked_metric_pointmap_with_filter(
                 frame, mask, depth_identity=depth_identity,
                 source=MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH, config=filter_config,
             )
@@ -395,6 +394,7 @@ def _run_secondary_module(
     config: dict, vision_root: Path, upstream_python: Path, timeout: float,
     payload=None, output_directory=None,
 ) -> dict:
+    module_started = perf_counter()
     expected_module = module_dir.name if module_dir.name in {c['module_id'] for c in manifest.cameras} else manifest.cameras[0]['module_id']
     payload = require_capture_payload(module_dir, manifest, payload=payload,
         expected_module_id=expected_module, with_instance_masks=True)
@@ -408,9 +408,13 @@ def _run_secondary_module(
         module_dir = payload.directory
         (module_dir/'oracle_proposals.json').write_text(json.dumps(proposals, indent=2), encoding='utf-8')
     masks_path = Path(artifacts["cargo_masks.npz"]["path"])
+    pointmap_started = perf_counter()
     pointmap, audits = _build_pointmap(module_dir, manifest, masks_path, config["vision"]["pointcloud_filter"], payload=payload)
+    pointmap_build_seconds = perf_counter() - pointmap_started
     pointmap_path = module_dir / "registered_metric_pointmap.npz"
+    pointmap_write_started = perf_counter()
     pointmap.write_npz(pointmap_path)
+    pointmap_write_seconds = perf_counter() - pointmap_write_started
     raw_json = module_dir / "rgbd_cuboids_baseline_raw.json"
     base_image = module_dir / "rgbd_cuboids_baseline.png"
     base_command = [
@@ -460,8 +464,19 @@ def _run_secondary_module(
     write_evaluation(module_dir / "mode_b_rgbd_evaluation.json", report)
     (module_dir / "mode_b_rgbd_observation.json").write_text(dumps(observation), encoding="utf-8")
     write_json(module_dir / "metric_pointmap_filter_audit.json", audits)
+    # Keep elapsed_seconds as the historical geometry-only interval above.
+    # The additive total includes input validation, point maps, audits and evaluation,
+    # ending immediately before this small timing record is written.
+    timing = {
+        "pointmap_build_including_filter_audits": pointmap_build_seconds,
+        "pointmap_write": pointmap_write_seconds,
+        "legacy_geometry": elapsed,
+        "module_total_before_timing_record": perf_counter() - module_started,
+    }
+    write_json(module_dir / "rgbd_stage_timing.json", timing)
     return {
         "module_id": camera['module_id'], "elapsed_seconds": elapsed, "observation": observation,
+        "timing_seconds": timing,
         "observed_face_sets": observed_sets, "hypotheses": hypotheses, "report": report,
         "geometry_image": geometry_image, "predicted_masks": predicted_masks,
         "metadata": metadata, "payload": payload, "module_directory": module_dir,
@@ -572,9 +587,11 @@ def main() -> int:
             "ambiguous_instance_count": sum(len(items) > 1 for items in hypothesis_groups.values()),
             "elapsed_seconds": elapsed,
             "modules": {
-                batches[0].module_id: {"elapsed_seconds": elapsed, "observed_face_sets": len(batches[0].face_sets)},
+                batches[0].module_id: {"elapsed_seconds": elapsed, "timing_seconds": primary['timing_seconds'],
+                    "observed_face_sets": len(batches[0].face_sets)},
                 **{item["module_id"]: {
                     "elapsed_seconds": item["elapsed_seconds"],
+                    "timing_seconds": item["timing_seconds"],
                     "observed_face_sets": len(item["observed_face_sets"]),
                 } for item in secondary_results},
             },

@@ -1,0 +1,40 @@
+{
+  "aggregate": {
+    "baseline": {
+      "audit_pixel_memberships": 5432629,
+      "build_pointmap_wall_seconds": 164.63075893372297,
+      "component_records": 2716344,
+      "filter_calls": 94,
+      "output_bytes": 673928383
+    },
+    "candidate": {
+      "audit_pixel_memberships": 2716344,
+      "build_pointmap_wall_seconds": 41.8977884799242,
+      "component_records": 59,
+      "filter_calls": 47,
+      "output_bytes": 44446834
+    }
+  },
+  "archive_sha256": {
+    "baseline_measurements.json": "e7f1f86e81aeff40ece880bd316a088af17496adb4b78ab90b9e8a9efbe829e0",
+    "candidate_measurements.json": "b99fe62091292ef5ddb2ac350d7e7ad2c19411895e84fb05b275810e6c155304",
+    "comparison.json": "5cf59b3fd1aa359c9474ab6ad2b19a1697d9845d75e96b1649681cb69dc9e4e2",
+    "counterexamples.json": "4bba83237dc8cd26d76a4b0634c200d70efc0310620bba00a139fe58480af340",
+    "fixed_plan.json": "0cd745c80f6f27f054975a72c0003c17d69ad4c9ae0c3091bdd875163f07e7a7"
+  },
+  "baseline_sha": "15b78519bb4232eecc905a154d5bf0c0d27d1a09",
+  "benchmark_script_sha256": "9488c658b87f03d7a595bacdc742b55dc99acdd9e40931b38ebaafd1055cd7cf",
+  "code_verification": {
+    "src/unloading_perception/rgbd.py": {
+      "baseline_archive_bytes_verified": true,
+      "baseline_lf_normalized_matches_git_blob": true,
+      "candidate_matches_tested_workspace_bytes": true
+    },
+    "tools/run_isaac_rgbd_geometry.py": {
+      "baseline_archive_bytes_verified": true,
+      "baseline_lf_normalized_matches_git_blob": true,
+      "candidate_matches_tested_workspace_bytes": true
+    }
+  },
+  "comparison_script_sha256": "5aa3c4db7ad396599f010bb4063b6b139b9707d196da5a066e4db97f0fb1d6a5"
+}

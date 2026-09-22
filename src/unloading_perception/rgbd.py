@@ -380,6 +380,9 @@ def _depth_continuous_components(
     components: list[list[tuple[int, int]]] = []
     height, width = mask.shape
     for start_y, start_x in zip(*np.where(mask & ~seen)):
+        # np.where snapshots all starts before BFS mutates seen.
+        if seen[start_y, start_x]:
+            continue
         queue = deque([(int(start_y), int(start_x))])
         seen[start_y, start_x] = True
         component: list[tuple[int, int]] = []
@@ -497,10 +500,28 @@ def masked_metric_pointmap(
 ) -> MetricPointMap:
     """Lift a registered instance mask into optical-camera metric XYZ."""
 
+    pointmap, _ = masked_metric_pointmap_with_filter(
+        frame, instance_mask, depth_identity=depth_identity, source=source, config=config,
+    )
+    return pointmap
+
+
+def masked_metric_pointmap_with_filter(
+    frame: RegisteredRgbdFrame,
+    instance_mask: np.ndarray,
+    *,
+    depth_identity: str,
+    source: MetricPointMapSource = MetricPointMapSource.ISAAC_IDEAL_REGISTERED_DEPTH,
+    config: PointCloudFilterConfig = PointCloudFilterConfig(),
+) -> tuple[MetricPointMap, InstanceDepthFilterResult]:
+    """Return point map and audit masks from one filter invocation.
+
+    No caller-supplied filter result or cache: reuse is confined to this call's
+    registered frame, mask and configuration.
+    """
     filtered = filter_registered_instance_depth(frame, instance_mask, config)
     selected = filtered.retained_mask
     depth = frame.depth_optical_z_m
-    count = int(selected.sum())
     rows, columns = np.indices(depth.shape, dtype=np.float32)
     fx, fy, cx, cy = frame.K[0], frame.K[4], frame.K[2], frame.K[5]
     points = np.full((*depth.shape, 3), np.nan, dtype=np.float32)
@@ -513,11 +534,12 @@ def masked_metric_pointmap(
         "metric_scale_validity": "VALID" if source is not MetricPointMapSource.MOGE_MONOCULAR_ESTIMATE else "UNKNOWN",
         "depth_semantics": "optical_z_m",
     }
-    return MetricPointMap(
+    pointmap = MetricPointMap(
         "metric_point_map_v1", source, points, depth, selected, frame.K,
         frame.metadata.rgb_frame_id, (depth.shape[1], depth.shape[0]), frame.metadata.capture_id,
         frame.metadata.capture_center_time, frame.metadata.calibration_identity, depth_identity, evidence,
     )
+    return pointmap, filtered
 
 
 @dataclass(frozen=True)

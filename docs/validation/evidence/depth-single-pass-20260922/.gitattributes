@@ -1,0 +1,2 @@
+# Keep exact measurement bytes and SHA-256 bindings across Windows checkouts.
+*.json -text -diff

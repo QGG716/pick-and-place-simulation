@@ -1,0 +1,1109 @@
+{
+  "code_sha256": {
+    "src/unloading_perception/rgbd.py": "1384148c76da210f16fc5cf75dd56c280abd5038e1d912f584cd4b0ea3929c14",
+    "tools/run_isaac_rgbd_geometry.py": "a78f99339b991bd3a58c5d4163ab52fe326bf03ecbc3027c3c8dd6817a998829"
+  },
+  "environment_after": {
+    "cpu_count": 208,
+    "executable": "/usr/bin/python3",
+    "load_average": [
+      14.74267578125,
+      17.83642578125,
+      18.36328125
+    ],
+    "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+    "processes": [
+      "COMMAND         %CPU %MEM",
+      "python3          100  0.0",
+      "supervisord      1.9  0.0",
+      "autopanel        0.1  0.0",
+      "bash             0.0  0.0",
+      "sshd             0.0  0.0",
+      "proxy            0.0  0.0",
+      "tensorboard      0.0  0.0",
+      "jupyter-lab      0.0  0.0",
+      "proxy            0.0  0.0",
+      "server           0.0  0.0",
+      "sshd             0.0  0.0"
+    ],
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
+  },
+  "environment_before": {
+    "cpu_count": 208,
+    "executable": "/usr/bin/python3",
+    "load_average": [
+      17.50390625,
+      18.72021484375,
+      18.66015625
+    ],
+    "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+    "processes": [
+      "COMMAND         %CPU %MEM",
+      "python3         22.0  0.0",
+      "sshd             3.0  0.0",
+      "supervisord      1.9  0.0",
+      "autopanel        0.1  0.0",
+      "bash             0.0  0.0",
+      "sshd             0.0  0.0",
+      "proxy            0.0  0.0",
+      "tensorboard      0.0  0.0",
+      "jupyter-lab      0.0  0.0",
+      "proxy            0.0  0.0",
+      "server           0.0  0.0"
+    ],
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
+  },
+  "inputs_unchanged": true,
+  "label": "candidate",
+  "modules": [
+    {
+      "audit_array_generation_seconds": 1.2451729327440262,
+      "audit_json_write_seconds": 0.0007766857743263245,
+      "audit_npz_write_seconds": 8.037737537175417,
+      "audit_pixel_memberships": 1039709,
+      "audit_records": 16,
+      "build_pointmap_wall_seconds": 14.882467348128557,
+      "combined_pointmap_write_seconds": 0.7855486944317818,
+      "component_audit_records": 21,
+      "components": [
+        {
+          "count": 6,
+          "input_pixels": 699,
+          "pixel_memberships": 699,
+          "seconds": 0.016877196729183197
+        },
+        {
+          "count": 1,
+          "input_pixels": 63260,
+          "pixel_memberships": 63260,
+          "seconds": 0.10932780057191849
+        },
+        {
+          "count": 1,
+          "input_pixels": 62957,
+          "pixel_memberships": 62957,
+          "seconds": 0.09998178482055664
+        },
+        {
+          "count": 1,
+          "input_pixels": 61720,
+          "pixel_memberships": 61720,
+          "seconds": 0.10847556218504906
+        },
+        {
+          "count": 1,
+          "input_pixels": 60961,
+          "pixel_memberships": 60961,
+          "seconds": 0.09973908588290215
+        },
+        {
+          "count": 1,
+          "input_pixels": 60740,
+          "pixel_memberships": 60740,
+          "seconds": 0.09791117161512375
+        },
+        {
+          "count": 1,
+          "input_pixels": 74294,
+          "pixel_memberships": 74294,
+          "seconds": 0.12668971717357635
+        },
+        {
+          "count": 1,
+          "input_pixels": 74745,
+          "pixel_memberships": 74745,
+          "seconds": 0.12288869172334671
+        },
+        {
+          "count": 1,
+          "input_pixels": 73276,
+          "pixel_memberships": 73276,
+          "seconds": 0.11793939769268036
+        },
+        {
+          "count": 1,
+          "input_pixels": 72383,
+          "pixel_memberships": 72383,
+          "seconds": 0.11586383357644081
+        },
+        {
+          "count": 1,
+          "input_pixels": 73909,
+          "pixel_memberships": 73909,
+          "seconds": 0.13585447892546654
+        },
+        {
+          "count": 1,
+          "input_pixels": 74624,
+          "pixel_memberships": 74624,
+          "seconds": 0.1081908643245697
+        },
+        {
+          "count": 1,
+          "input_pixels": 74602,
+          "pixel_memberships": 74602,
+          "seconds": 0.11987697705626488
+        },
+        {
+          "count": 1,
+          "input_pixels": 74090,
+          "pixel_memberships": 74090,
+          "seconds": 0.11330458521842957
+        },
+        {
+          "count": 1,
+          "input_pixels": 72179,
+          "pixel_memberships": 72179,
+          "seconds": 0.1139015443623066
+        },
+        {
+          "count": 1,
+          "input_pixels": 65270,
+          "pixel_memberships": 65270,
+          "seconds": 0.10688583180308342
+        }
+      ],
+      "filter_calls": [
+        {
+          "post_components_including_audit_records_seconds": 0.028031200170516968,
+          "seconds": 0.06834453716874123,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05505678057670593,
+          "seconds": 0.18382692709565163,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05333501473069191,
+          "seconds": 0.17148206382989883,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04513629153370857,
+          "seconds": 0.172558706253767,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.045349664986133575,
+          "seconds": 0.163730226457119,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05924912914633751,
+          "seconds": 0.17551719769835472,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04795481264591217,
+          "seconds": 0.19324103370308876,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05502672120928764,
+          "seconds": 0.1960519291460514,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04942797124385834,
+          "seconds": 0.1881452165544033,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04962421953678131,
+          "seconds": 0.19205762445926666,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05074547603726387,
+          "seconds": 0.21034547314047813,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.055578649044036865,
+          "seconds": 0.18619834631681442,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05320345237851143,
+          "seconds": 0.1949126198887825,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05210866034030914,
+          "seconds": 0.18707964196801186,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04623805731534958,
+          "seconds": 0.18339471891522408,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.051256343722343445,
+          "seconds": 0.18322483077645302,
+          "status": "PASS"
+        }
+      ],
+      "mask_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "module_id": "module_0_upper",
+      "output_files": {
+        "module_0_upper/metric_pointmap_filter_audit.json": {
+          "bytes": 18037,
+          "sha256": "d3b47ec7a55a556a0d9959465fbc6f33406503b941bc18ee27252c2b0da7e64f"
+        },
+        "module_0_upper/pointcloud_filter/mask_0001.npz": {
+          "bytes": 147453,
+          "sha256": "70eee190b572d7d640f8c78778e6460de110227db7516ad57ad893580f11d780"
+        },
+        "module_0_upper/pointcloud_filter/mask_0002.npz": {
+          "bytes": 631406,
+          "sha256": "249ec3c4a345a460dfbfdc4062fa3d4a835c8c851851c19b31344167ab176d7e"
+        },
+        "module_0_upper/pointcloud_filter/mask_0003.npz": {
+          "bytes": 596283,
+          "sha256": "af2dff4e111fea63e18075f342fa548363fbb3573dcf8692fbfcc5d249fc85af"
+        },
+        "module_0_upper/pointcloud_filter/mask_0004.npz": {
+          "bytes": 598147,
+          "sha256": "edc2567171d5cd79c57e51f46262b6b9b75691e19bb15e27ba482cd9e3b0c8d1"
+        },
+        "module_0_upper/pointcloud_filter/mask_0005.npz": {
+          "bytes": 600761,
+          "sha256": "cb4a77b73b3d23f21694f084dfe1af8087eee6a7ec1200c89fd1d169494976d9"
+        },
+        "module_0_upper/pointcloud_filter/mask_0006.npz": {
+          "bytes": 585509,
+          "sha256": "2385cdf49b3cfdcc02aace4fad30f5007b678fe7481b16d829c094d73b8d1a04"
+        },
+        "module_0_upper/pointcloud_filter/mask_0007.npz": {
+          "bytes": 713228,
+          "sha256": "c048c8e22bf7a596b0f4210dda8f7143a63889c5d80b89829238857b837e9cef"
+        },
+        "module_0_upper/pointcloud_filter/mask_0008.npz": {
+          "bytes": 682616,
+          "sha256": "f8bc78e69db101ae89f4ddf0f6df343d4833c70df629225dd7c2859bf52f7a10"
+        },
+        "module_0_upper/pointcloud_filter/mask_0009.npz": {
+          "bytes": 683548,
+          "sha256": "8d115fe734b1bb34fdfe8ca069bae156a81cbc9e291b391cdd451e95551a7e8c"
+        },
+        "module_0_upper/pointcloud_filter/mask_0010.npz": {
+          "bytes": 686579,
+          "sha256": "1eddd925376cfd564a3b03b930650475689ceaf6415b41aa1c790fb15740245a"
+        },
+        "module_0_upper/pointcloud_filter/mask_0011.npz": {
+          "bytes": 687159,
+          "sha256": "cc0f6affcc3ca8de922339ccb543f27748c2c54ec5c31ca7cba25ef8e28a364c"
+        },
+        "module_0_upper/pointcloud_filter/mask_0012.npz": {
+          "bytes": 718288,
+          "sha256": "97c73cd935af2badc6f67a19f8767d6cd373ac7b5e4f06b47845dc8dc82a7836"
+        },
+        "module_0_upper/pointcloud_filter/mask_0013.npz": {
+          "bytes": 689891,
+          "sha256": "957db9c75c81dcaa850a507264046cf651d3839fb9e8ee8b5cc5b997acfb3ad0"
+        },
+        "module_0_upper/pointcloud_filter/mask_0014.npz": {
+          "bytes": 698131,
+          "sha256": "a188a85d9802d80c16fe0a3438101935639467346d8fae2fa4ae6269887779f1"
+        },
+        "module_0_upper/pointcloud_filter/mask_0015.npz": {
+          "bytes": 697862,
+          "sha256": "01d8cdfbf98a1d18eb5136ba4844d92b897168bcc260f033947eeb4c4206ab35"
+        },
+        "module_0_upper/pointcloud_filter/mask_0016.npz": {
+          "bytes": 1213787,
+          "sha256": "e0508a495444cecf74417daa86a959748408e3de43873ace49038c8cd82a024c"
+        },
+        "module_0_upper/registered_metric_pointmap.npz": {
+          "bytes": 5145918,
+          "sha256": "cd1c1e4a5817e61a064d4bd6551f4240b5be95e264e90d475026a8e9120c7d4a"
+        }
+      },
+      "pointmap_lifting_seconds": 1.9758610352873802,
+      "statuses": [
+        {
+          "mask_id": 1,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 2,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 3,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 4,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 5,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 6,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 7,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 8,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 9,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 10,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 11,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 12,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 13,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 14,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 15,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 16,
+          "reason": null,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "audit_array_generation_seconds": 2.2621058374643326,
+      "audit_json_write_seconds": 0.0011794045567512512,
+      "audit_npz_write_seconds": 15.170485761016607,
+      "audit_pixel_memberships": 1676635,
+      "audit_records": 31,
+      "build_pointmap_wall_seconds": 27.015321131795645,
+      "combined_pointmap_write_seconds": 0.9984341636300087,
+      "component_audit_records": 38,
+      "components": [
+        {
+          "count": 8,
+          "input_pixels": 346,
+          "pixel_memberships": 346,
+          "seconds": 0.013165250420570374
+        },
+        {
+          "count": 1,
+          "input_pixels": 28153,
+          "pixel_memberships": 28153,
+          "seconds": 0.04991461709141731
+        },
+        {
+          "count": 1,
+          "input_pixels": 25913,
+          "pixel_memberships": 25913,
+          "seconds": 0.05319301411509514
+        },
+        {
+          "count": 1,
+          "input_pixels": 26513,
+          "pixel_memberships": 26513,
+          "seconds": 0.051826220005750656
+        },
+        {
+          "count": 1,
+          "input_pixels": 24597,
+          "pixel_memberships": 24597,
+          "seconds": 0.05012303963303566
+        },
+        {
+          "count": 1,
+          "input_pixels": 24474,
+          "pixel_memberships": 24474,
+          "seconds": 0.04233742505311966
+        },
+        {
+          "count": 1,
+          "input_pixels": 47208,
+          "pixel_memberships": 47208,
+          "seconds": 0.07668547704815865
+        },
+        {
+          "count": 1,
+          "input_pixels": 49430,
+          "pixel_memberships": 49430,
+          "seconds": 0.08455366641283035
+        },
+        {
+          "count": 1,
+          "input_pixels": 41469,
+          "pixel_memberships": 41469,
+          "seconds": 0.0644017718732357
+        },
+        {
+          "count": 1,
+          "input_pixels": 44329,
+          "pixel_memberships": 44329,
+          "seconds": 0.07634942978620529
+        },
+        {
+          "count": 1,
+          "input_pixels": 45079,
+          "pixel_memberships": 45079,
+          "seconds": 0.07829004153609276
+        },
+        {
+          "count": 1,
+          "input_pixels": 58282,
+          "pixel_memberships": 58282,
+          "seconds": 0.09414396435022354
+        },
+        {
+          "count": 1,
+          "input_pixels": 57661,
+          "pixel_memberships": 57661,
+          "seconds": 0.09833109006285667
+        },
+        {
+          "count": 1,
+          "input_pixels": 57015,
+          "pixel_memberships": 57015,
+          "seconds": 0.08761263266205788
+        },
+        {
+          "count": 1,
+          "input_pixels": 56002,
+          "pixel_memberships": 56002,
+          "seconds": 0.08900652453303337
+        },
+        {
+          "count": 1,
+          "input_pixels": 55777,
+          "pixel_memberships": 55777,
+          "seconds": 0.09013117849826813
+        },
+        {
+          "count": 1,
+          "input_pixels": 72571,
+          "pixel_memberships": 72571,
+          "seconds": 0.11551878973841667
+        },
+        {
+          "count": 1,
+          "input_pixels": 72348,
+          "pixel_memberships": 72348,
+          "seconds": 0.11270171776413918
+        },
+        {
+          "count": 1,
+          "input_pixels": 71234,
+          "pixel_memberships": 71234,
+          "seconds": 0.1100970059633255
+        },
+        {
+          "count": 1,
+          "input_pixels": 70126,
+          "pixel_memberships": 70126,
+          "seconds": 0.1147904247045517
+        },
+        {
+          "count": 1,
+          "input_pixels": 70028,
+          "pixel_memberships": 70028,
+          "seconds": 0.10814520344138145
+        },
+        {
+          "count": 1,
+          "input_pixels": 92508,
+          "pixel_memberships": 92508,
+          "seconds": 0.13554826378822327
+        },
+        {
+          "count": 1,
+          "input_pixels": 90785,
+          "pixel_memberships": 90785,
+          "seconds": 0.14035029336810112
+        },
+        {
+          "count": 1,
+          "input_pixels": 90912,
+          "pixel_memberships": 90912,
+          "seconds": 0.14601080864667892
+        },
+        {
+          "count": 1,
+          "input_pixels": 89370,
+          "pixel_memberships": 89370,
+          "seconds": 0.13454830273985863
+        },
+        {
+          "count": 1,
+          "input_pixels": 88932,
+          "pixel_memberships": 88932,
+          "seconds": 0.13394419476389885
+        },
+        {
+          "count": 1,
+          "input_pixels": 45829,
+          "pixel_memberships": 45829,
+          "seconds": 0.06772597506642342
+        },
+        {
+          "count": 1,
+          "input_pixels": 45658,
+          "pixel_memberships": 45658,
+          "seconds": 0.06693469732999802
+        },
+        {
+          "count": 1,
+          "input_pixels": 45160,
+          "pixel_memberships": 45160,
+          "seconds": 0.06984629109501839
+        },
+        {
+          "count": 1,
+          "input_pixels": 44466,
+          "pixel_memberships": 44466,
+          "seconds": 0.06799635663628578
+        },
+        {
+          "count": 1,
+          "input_pixels": 44460,
+          "pixel_memberships": 44460,
+          "seconds": 0.06598616018891335
+        }
+      ],
+      "filter_calls": [
+        {
+          "post_components_including_audit_records_seconds": 0.032622333616018295,
+          "seconds": 0.08017706125974655,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.03919007256627083,
+          "seconds": 0.1068148985505104,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.03488687425851822,
+          "seconds": 0.10796254500746727,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04148445650935173,
+          "seconds": 0.11022858694195747,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.030009686946868896,
+          "seconds": 0.09774348884820938,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.041989170014858246,
+          "seconds": 0.10134968534111977,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.0432492271065712,
+          "seconds": 0.13978494331240654,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04406652972102165,
+          "seconds": 0.14588133618235588,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04139864444732666,
+          "seconds": 0.12492954358458519,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.03873992711305618,
+          "seconds": 0.1325288750231266,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04061874747276306,
+          "seconds": 0.13694144040346146,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.0425381138920784,
+          "seconds": 0.15493204817175865,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05164366215467453,
+          "seconds": 0.16829031705856323,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.050753772258758545,
+          "seconds": 0.1569695807993412,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04752416908740997,
+          "seconds": 0.15501195564866066,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.040224965661764145,
+          "seconds": 0.14764123037457466,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.0528191439807415,
+          "seconds": 0.18735869601368904,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04494892433285713,
+          "seconds": 0.17654844000935555,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04950384050607681,
+          "seconds": 0.17842715606093407,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.046153318136930466,
+          "seconds": 0.1788771115243435,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04835953190922737,
+          "seconds": 0.17452209070324898,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05888983607292175,
+          "seconds": 0.21393008157610893,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05891856923699379,
+          "seconds": 0.2185179740190506,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05791688337922096,
+          "seconds": 0.22223882004618645,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05536959692835808,
+          "seconds": 0.2093532457947731,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.05793032422661781,
+          "seconds": 0.21014605835080147,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.045939989387989044,
+          "seconds": 0.13092901930212975,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04373372346162796,
+          "seconds": 0.1278836578130722,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04680929705500603,
+          "seconds": 0.13485190272331238,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04659486189484596,
+          "seconds": 0.13181232661008835,
+          "status": "PASS"
+        },
+        {
+          "post_components_including_audit_records_seconds": 0.04651406779885292,
+          "seconds": 0.12978427857160568,
+          "status": "PASS"
+        }
+      ],
+      "mask_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "module_id": "module_1_lower",
+      "output_files": {
+        "module_1_lower/metric_pointmap_filter_audit.json": {
+          "bytes": 34355,
+          "sha256": "993d867be0a4f3c1e40fff617c41b5f29a893fd74aaf3d4f4551034f34449012"
+        },
+        "module_1_lower/pointcloud_filter/mask_0001.npz": {
+          "bytes": 142326,
+          "sha256": "42dba8924f9276036e4831220e527e11515a8da00de0a899a1b2be897eba62be"
+        },
+        "module_1_lower/pointcloud_filter/mask_0002.npz": {
+          "bytes": 391000,
+          "sha256": "9ed37cee3fc3d3bb01064fa0c079a97118a5f2b4fbdc3fb739ecba8e56d80a80"
+        },
+        "module_1_lower/pointcloud_filter/mask_0003.npz": {
+          "bytes": 369947,
+          "sha256": "2d55e98e2b149e030b00678e87275f6cef25d9a04f81824d4f89089c2bb86ade"
+        },
+        "module_1_lower/pointcloud_filter/mask_0004.npz": {
+          "bytes": 375747,
+          "sha256": "87824df6bd20dc06f1a4d16cca7b26a61c8f82a9a82b2ce9573fe79671da5e53"
+        },
+        "module_1_lower/pointcloud_filter/mask_0005.npz": {
+          "bytes": 363619,
+          "sha256": "13390eaeda40f44999dcc85727b205938207ccc086c9a075f637891e968e684a"
+        },
+        "module_1_lower/pointcloud_filter/mask_0006.npz": {
+          "bytes": 352360,
+          "sha256": "b77076abfb71410900ea09877148b7d47baaf9587d117bdf7f566754a0021e96"
+        },
+        "module_1_lower/pointcloud_filter/mask_0007.npz": {
+          "bytes": 556941,
+          "sha256": "d35b0708bbe42a1069ef9083255366a2e59f70f3a3b1bda9d03462facc9b4044"
+        },
+        "module_1_lower/pointcloud_filter/mask_0008.npz": {
+          "bytes": 576463,
+          "sha256": "f0b407203514d02631e849883d30674efb13cb5cb0c4a0b5862d5ff0e655df99"
+        },
+        "module_1_lower/pointcloud_filter/mask_0009.npz": {
+          "bytes": 808119,
+          "sha256": "574691867f817beabad88569edec6340bcf337c4dfe565028fcb9b0164db9004"
+        },
+        "module_1_lower/pointcloud_filter/mask_0010.npz": {
+          "bytes": 541909,
+          "sha256": "482583c65921dab20cf4401095e69bb9a45de09a95c1141e697d85dc6dfff338"
+        },
+        "module_1_lower/pointcloud_filter/mask_0011.npz": {
+          "bytes": 529490,
+          "sha256": "6b4d099ad2ee4ac67d5464d9403887829873f37f2e150b4ecfa4870329bc1273"
+        },
+        "module_1_lower/pointcloud_filter/mask_0012.npz": {
+          "bytes": 649348,
+          "sha256": "1e375497cd0113eda45df575c1d19c8732d4d28ae3de6d844370a4abd66a19ca"
+        },
+        "module_1_lower/pointcloud_filter/mask_0013.npz": {
+          "bytes": 625531,
+          "sha256": "d11b99aec0449d7f539a6bd168c69f68b170c2c25b1a8a24a91527d73f7ddd2c"
+        },
+        "module_1_lower/pointcloud_filter/mask_0014.npz": {
+          "bytes": 630688,
+          "sha256": "dadb9825dc2ecbd4204a739ffd3737c15e83674b72a2eb2b3940f182e5ebc1d2"
+        },
+        "module_1_lower/pointcloud_filter/mask_0015.npz": {
+          "bytes": 646469,
+          "sha256": "3e809604d1881bde805ec9376e4aabce2bcf0987253873305cf5283d3cec3583"
+        },
+        "module_1_lower/pointcloud_filter/mask_0016.npz": {
+          "bytes": 620366,
+          "sha256": "5d65769a078bfb34eb97c09355c2f7877a062b8900b1d18a034afe6bf1d670db"
+        },
+        "module_1_lower/pointcloud_filter/mask_0017.npz": {
+          "bytes": 770887,
+          "sha256": "3d99814e1ff948438bb6dce11e91712bb46a7b5beaf26f521e5b6edb8fdbf81f"
+        },
+        "module_1_lower/pointcloud_filter/mask_0018.npz": {
+          "bytes": 751193,
+          "sha256": "b754849be10999d296aae9bc360eec6e9e2d51e2aeb30b2a1a7e0458148e6573"
+        },
+        "module_1_lower/pointcloud_filter/mask_0019.npz": {
+          "bytes": 752977,
+          "sha256": "774a6f91743f08221e9b19a8ba8d32541dfc31743b25db0f188604f9812b682b"
+        },
+        "module_1_lower/pointcloud_filter/mask_0020.npz": {
+          "bytes": 772345,
+          "sha256": "32c7f0c016710a9f8c569f462286d2889361efa877cd7eabcdda5f5ca42c63e1"
+        },
+        "module_1_lower/pointcloud_filter/mask_0021.npz": {
+          "bytes": 747143,
+          "sha256": "8b0e55680e4f07aa7b649399426e1e3a045e86734f9b5abd828dc947a4c56b5a"
+        },
+        "module_1_lower/pointcloud_filter/mask_0022.npz": {
+          "bytes": 915748,
+          "sha256": "113d460202ba90b18258c09c7cebe8f11d431c1d3df9506034624c33acf48755"
+        },
+        "module_1_lower/pointcloud_filter/mask_0023.npz": {
+          "bytes": 879463,
+          "sha256": "4b9c055ef29942f1ae67b7b1ddcf5405e8bdb63d796c2f62bde9be42b5774fae"
+        },
+        "module_1_lower/pointcloud_filter/mask_0024.npz": {
+          "bytes": 898699,
+          "sha256": "83c79429072935fa07e394cf528bd7d3d7a7be3c801e1d2a0b0f48380a453eb2"
+        },
+        "module_1_lower/pointcloud_filter/mask_0025.npz": {
+          "bytes": 927706,
+          "sha256": "a892c97c773579b9645fe21a159f76652127d7d5ea8db41ac6301620a0531cd8"
+        },
+        "module_1_lower/pointcloud_filter/mask_0026.npz": {
+          "bytes": 900112,
+          "sha256": "637440cb8ddf2d3a90684873f2de83fcd5955afb964ea34999d1b6ad6dafad62"
+        },
+        "module_1_lower/pointcloud_filter/mask_0027.npz": {
+          "bytes": 525788,
+          "sha256": "8756f7b6c4fbdbddc2b2d90047d0cd52d2da3e274169291750085699152f311c"
+        },
+        "module_1_lower/pointcloud_filter/mask_0028.npz": {
+          "bytes": 515109,
+          "sha256": "c72af31eaf140cddfe7d71f1adf0a5698f27756ad64c539aaf0c962023efe866"
+        },
+        "module_1_lower/pointcloud_filter/mask_0029.npz": {
+          "bytes": 518332,
+          "sha256": "fb49422bd3175482a6a505d4a37d2b9378430b96eec05daaf026a61dab3cefdf"
+        },
+        "module_1_lower/pointcloud_filter/mask_0030.npz": {
+          "bytes": 528836,
+          "sha256": "80bafb36e3d332ced6afe2c767d45ade82fda3a7580cb49f8890417f46d06b57"
+        },
+        "module_1_lower/pointcloud_filter/mask_0031.npz": {
+          "bytes": 521838,
+          "sha256": "1fefafe725657c470832e0a3b79071da72b2a72c1bcd2d640f7d6b9ac37ea364"
+        },
+        "module_1_lower/registered_metric_pointmap.npz": {
+          "bytes": 9511377,
+          "sha256": "33ede5fe821718dd089b205d2a9d1b4c22de1f6602778a8cd6f2e7d047429957"
+        }
+      },
+      "pointmap_lifting_seconds": 3.596946384757757,
+      "statuses": [
+        {
+          "mask_id": 1,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 2,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 3,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 4,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 5,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 6,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 7,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 8,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 9,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 10,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 11,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 12,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 13,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 14,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 15,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 16,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 17,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 18,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 19,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 20,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 21,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 22,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 23,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 24,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 25,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 26,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 27,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 28,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 29,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 30,
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "mask_id": 31,
+          "reason": null,
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "numpy_version": "1.21.5",
+  "plan_sha256": "0cd745c80f6f27f054975a72c0003c17d69ad4c9ae0c3091bdd875163f07e7a7"
+}
