@@ -15,14 +15,14 @@ def write(path, value):
     path.write_text(json.dumps(value), encoding='utf-8')
 
 
-def fixture(tmp_path):
+def fixture(tmp_path, diagnostics=(True, False)):
     batches = batch_fixture(False)
     observations = module_observations(batches)
     specs = [{'module_id': b.module_id, 'mask_ids': list(range(1, len(b.face_sets)+1))} for b in batches]
     plan = {'modules': specs, 'config': {'vision': {'legacy_cuboid_diagnostic': True}}, 'model_manifest': {'test': 'SYNTHETIC'}}
     plan_path = tmp_path/'plan.json'; write(plan_path, plan)
     roots = [tmp_path/'on', tmp_path/'off']
-    for root, enabled in zip(roots, (True, False)):
+    for root, enabled in zip(roots, diagnostics):
         root.mkdir(); config = deepcopy(plan['config']); config['vision']['legacy_cuboid_diagnostic'] = enabled
         results, rows = {}, []
         for batch, original in zip(batches, observations):
@@ -72,3 +72,41 @@ def test_geometry_comparison_requires_complete_plan_and_exact_values(tmp_path, f
     assert main(['--before',str(a),'--after',str(b),'--plan',str(plan),'--output',str(out)]) == 1
     result=json.loads(out.read_text())
     assert not result['results_equal'] and (result.get('error') or result.get('differences'))
+
+
+def hotspot_fixture(tmp_path):
+    plan, a, b = fixture(tmp_path, (False, False))
+    spec = json.loads(plan.read_text())
+    for root, version in ((a, 'before'), (b, 'after')):
+        write(root/'function_timings.json', {'status': 'COMPLETED', 'heavy_profiler_enabled': False,
+            'instances': [{'module_id': m['module_id'], 'mask_id': i} for m in spec['modules'] for i in m['mask_ids']],
+            'environment_before': {'python': 'same'},
+            'production_sha256': {'hotspot.py': version, 'unchanged.py': 'same'}})
+    change = tmp_path/'change.json'
+    write(change, {'path': 'hotspot.py', 'before_sha256': 'before', 'after_sha256': 'after'})
+    return plan, a, b, change
+
+
+def test_both_diagnostics_off_requires_declared_single_hotspot_change(tmp_path):
+    plan, a, b, change = hotspot_fixture(tmp_path)
+    assert compare(a, b, plan, mode='hotspot-off', code_change=change)['results_equal']
+    # Original toggle mode must still reject A-off; its contract is unchanged.
+    with pytest.raises(ValueError, match='effective config mismatch'):
+        compare(a, b, plan)
+
+
+@pytest.mark.parametrize('failure', ['profiler', 'extra_code_change', 'environment', 'missing_timing_instance', 'coordinate'])
+def test_hotspot_mode_fails_closed_without_relaxing_geometry(tmp_path, failure):
+    plan, a, b, change = hotspot_fixture(tmp_path)
+    path = b/'function_timings.json'; value = json.loads(path.read_text())
+    if failure == 'profiler': value['heavy_profiler_enabled'] = True
+    elif failure == 'extra_code_change': value['production_sha256']['unchanged.py'] = 'unexpected'
+    elif failure == 'environment': value['environment_before']['python'] = 'different'
+    elif failure == 'missing_timing_instance': value['instances'].pop()
+    else:
+        p = b/'m0/rgbd_cuboids.json'; geometry = json.loads(p.read_text())
+        geometry['instances'][0]['camera_facing_faces'][0]['corners_3d_m'][0][0] += 1e-8
+        write(p, geometry)
+    write(path, value)
+    assert main(['--before',str(a),'--after',str(b),'--plan',str(plan),'--output',str(tmp_path/'result.json'),
+        '--mode','hotspot-off','--code-change',str(change)]) == 1

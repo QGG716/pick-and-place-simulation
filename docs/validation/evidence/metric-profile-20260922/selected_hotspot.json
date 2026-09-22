@@ -1,0 +1,18 @@
+{
+  "baseline_sha": "02a20ad856f9910d8c1e093e51c6502beff2a27b",
+  "before_sha256": "20b0597c5c61b258420c9d4e32a2bfb12788c81ad44dfce4894766b79b7e87bb",
+  "function": "observation_support",
+  "only_optimization": "Evaluate erosion and depth-neighbour discontinuity on selected support bounding rectangle plus one-pixel halo; preserve full-size outputs and fresh checks on every call. No caches and no validator removal.",
+  "path": "src/unloading_perception/metric_support.py",
+  "profile_measurement": {
+    "cumulative_seconds": 127.57705473200001,
+    "file": "/root/autodl-tmp/v05-acceptance/metric-profile-20260922/baseline-code/src/unloading_perception/metric_support.py",
+    "function": "observation_support",
+    "line": 32,
+    "primitive_calls": 660,
+    "self_seconds": 116.03520483800001,
+    "total_calls": 660
+  },
+  "profile_sha256": "a528b1f1b5b6ca9d9784ca596154927a9ada06f08f828419474471f1df160954",
+  "selected_before_production_edit": true
+}

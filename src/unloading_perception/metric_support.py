@@ -43,26 +43,38 @@ def observation_support(depth, instance_mask, face_mask, *, erosion_px=2,
         raise ValueError("support shape mismatch")
     selected = instance & face
     valid = np.isfinite(depth) & (depth > 0)
-    interior = _erode_mask(selected, erosion_px)
-    jumps = np.zeros(depth.shape, bool)
+    raw = selected & valid
+    retained = np.zeros(depth.shape, bool)
+    # Outside the selected bounding box the erosion input is identically false.
+    # One extra pixel includes every depth neighbour of every selected pixel;
+    # neighbours need not belong to this instance/face. No resampling or cache:
+    # all values are read afresh, including on independent final validation.
+    rows = np.flatnonzero(selected.any(axis=1))
+    columns = np.flatnonzero(selected.any(axis=0))
+    window = (slice(max(0, rows[0]-1), min(depth.shape[0], rows[-1]+2)),
+              slice(max(0, columns[0]-1), min(depth.shape[1], columns[-1]+2))) if len(rows) else (slice(0, 0), slice(0, 0))
+    local_selected, local_valid, local_depth = selected[window], valid[window], depth[window]
+    interior = _erode_mask(local_selected, erosion_px)
+    jumps = np.zeros(local_depth.shape, bool)
     for axis in (0, 1):
         a, b = [slice(None)]*2, [slice(None)]*2
         a[axis], b[axis] = slice(1, None), slice(None, -1)
         a, b = tuple(a), tuple(b)
-        difference = np.zeros(depth[a].shape, dtype=float)
-        np.subtract(depth[a], depth[b], out=difference, where=valid[a] & valid[b])
-        bad = (~valid[a] | ~valid[b] | (np.abs(difference) > discontinuity_m))
+        difference = np.zeros(local_depth[a].shape, dtype=float)
+        np.subtract(local_depth[a], local_depth[b], out=difference, where=local_valid[a] & local_valid[b])
+        bad = (~local_valid[a] | ~local_valid[b] | (np.abs(difference) > discontinuity_m))
         jumps[a] |= bad
         jumps[b] |= bad
-    retained = selected & valid & interior & ~jumps
-    return selected & valid, retained, {
+    local_retained = local_selected & local_valid & interior & ~jumps
+    retained[window] = local_retained
+    return raw, retained, {
         "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE",
         "candidate_plane_used_for_selection": False,
-        "selected_pixels": int(selected.sum()),
-        "excluded_invalid": int((selected & ~valid).sum()),
-        "excluded_boundary": int((selected & valid & ~interior).sum()),
-        "excluded_discontinuity": int((selected & valid & interior & jumps).sum()),
-        "retained_pixels": int(retained.sum()),
+        "selected_pixels": int(local_selected.sum()),
+        "excluded_invalid": int((local_selected & ~local_valid).sum()),
+        "excluded_boundary": int((local_selected & local_valid & ~interior).sum()),
+        "excluded_discontinuity": int((local_selected & local_valid & interior & jumps).sum()),
+        "retained_pixels": int(local_retained.sum()),
     }
 
 

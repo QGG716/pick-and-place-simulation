@@ -69,15 +69,18 @@ def differences(a, b, path, output):
         output.append(path + f': {str(a)[:100]} != {str(b)[:100]}')
 
 
-def compare(before, after, plan_path):
+def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=None):
+    if mode not in ('diagnostic-toggle', 'hotspot-off'):
+        raise ValueError('unknown comparison mode')
     before, after = Path(before).resolve(), Path(after).resolve()
+    diagnostic_flags = (True, False) if mode == 'diagnostic-toggle' else (False, False)
     plan = read(plan_path)
     modules = [r['module_id'] for r in plan['modules']]
     require_roster(plan['modules'], 'module_id', modules, 'fixed plan')
     result = {'plan_complete': True, 'results_equal': False, 'differences': [], 'modules': [],
-              'comparison_policy': __doc__, 'plan_sha256': sha(Path(plan_path))}
+              'comparison_policy': __doc__, 'mode': mode, 'plan_sha256': sha(Path(plan_path))}
     indexes, observations, summaries = [], [], []
-    for root, enabled in ((before, True), (after, False)):
+    for root, enabled in zip((before, after), diagnostic_flags):
         summary = read(root/'ab_summary.json')
         if summary['status'] != 'COMPLETED' or summary['plan_sha256'] != result['plan_sha256']:
             raise ValueError(f'{root.name}: run failed or plan identity differs')
@@ -96,11 +99,29 @@ def compare(before, after, plan_path):
         indexes.append(index); observations.append(to_wire(observation)); summaries.append(summary)
     if summaries[0]['code_sha256'] != summaries[1]['code_sha256']:
         raise ValueError('A/B production code differs')
+    if mode == 'hotspot-off':
+        change = read(code_change)
+        timed = [read(r/'function_timings.json') for r in (before, after)]
+        for root, measurement in zip((before, after), timed):
+            if measurement['heavy_profiler_enabled'] is not False or measurement['status'] != 'COMPLETED':
+                raise ValueError(f'{root.name}: performance run failed or heavy profiler enabled')
+            actual = [(r['module_id'], r['mask_id']) for r in measurement['instances']]
+            expected = [(m['module_id'], i) for m in plan['modules'] for i in m['mask_ids']]
+            require_roster([{'id': i} for i in actual], 'id', expected, root.name+'/timings')
+        a, b = (m['production_sha256'] for m in timed)
+        if a.keys() != b.keys() or [p for p in a if a[p] != b[p]] != [change['path']]:
+            raise ValueError('expected exactly the declared production hotspot file change')
+        if a[change['path']] != change['before_sha256'] or b[change['path']] != change['after_sha256']:
+            raise ValueError('declared hotspot code identity mismatch')
+        for key in ('python', 'executable', 'platform', 'numpy', 'scipy', 'opencv', 'affinity',
+                    'thread_environment', 'threadpools', '/sys/fs/cgroup/cpu.max'):
+            if timed[0]['environment_before'].get(key) != timed[1]['environment_before'].get(key):
+                raise ValueError(f'performance environment mismatch: {key}')
     for spec in plan['modules']:
         name = spec['module_id']
         geometry, obs = [], []
         counts = []
-        for root, enabled, summary in zip((before, after), (True, False), summaries):
+        for root, enabled, summary in zip((before, after), diagnostic_flags, summaries):
             row = next(m for m in summary['modules'] if m['module_id'] == name)
             require_roster([{'id': i} for i in row['mask_ids']], 'id', spec['mask_ids'], root.name+'/'+name+'/summary')
             diag = read(root/name/'legacy_cuboid_diagnostic.json')
@@ -141,9 +162,11 @@ def compare(before, after, plan_path):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('before', 'after', 'plan', 'output'): parser.add_argument('--'+name, type=Path, required=True)
+    parser.add_argument('--mode', choices=('diagnostic-toggle', 'hotspot-off'), default='diagnostic-toggle')
+    parser.add_argument('--code-change', type=Path, help='required for hotspot-off; one explicit old/new source SHA')
     args = parser.parse_args(argv)
     try:
-        result = compare(args.before, args.after, args.plan)
+        result = compare(args.before, args.after, args.plan, mode=args.mode, code_change=args.code_change)
     except Exception as exc:
         result = {'plan_complete': False, 'results_equal': False, 'error_type': type(exc).__name__, 'error': str(exc)}
     with args.output.open('x', encoding='utf-8') as stream: json.dump(result, stream, indent=2, sort_keys=True)

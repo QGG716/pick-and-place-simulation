@@ -18,6 +18,7 @@ def test_complete_geometry_chain_consumes_verified_snapshot_after_source_replace
     from unloading_perception.metric_faces import MetricFitConfig
     from unloading_perception.upstream_v4 import UPSTREAM_V4_SHA
     import run_isaac_rgbd_geometry as geometry
+    import metric_depth_runner
     from run_metric_small_matrix import oracle_proposals
     import diagnose_metric_calibration
 
@@ -48,28 +49,30 @@ def test_complete_geometry_chain_consumes_verified_snapshot_after_source_replace
     calls = []
     original_read = Path.read_bytes
 
-    def external_geometry_substitute(command, **kwargs):
-        # Only the external pinned executable is substituted; pointmap, metric
-        # strategy, final geometry validation, lineage and evaluation stay real.
-        calls.append(command)
-        assert Path(command[2]).parent != source
-        assert Path(command[2]).read_bytes() == payload.raw_files['sensor_rgb.png']
+    original_metric = metric_depth_runner.run_metric_depth
+    def replace_source_then_run_metric(**kwargs):
+        # The current default has no legacy subprocess. Replace source files at
+        # the real metric entry boundary; run metric/validation/lineage normally.
+        calls.append(kwargs['source'])
+        assert kwargs['source'].parent != source
+        assert kwargs['source'].read_bytes() == payload.raw_files['sensor_rgb.png']
         for name in payload.raw_files: (source/name).write_bytes(b'replaced after verification')
         def guarded_read(path):
             assert not (path.parent == source and path.name in payload.raw_files), 're-read original capture'
             return original_read(path)
         monkeypatch.setattr(Path, 'read_bytes', guarded_read)
-        write_json(Path(command[command.index('--json-output')+1]), {'instances': []})
-        return SimpleNamespace(returncode=0, stderr='')
+        return original_metric(**kwargs)
 
     def unused_extractor(*args):
         raise AssertionError('six-pixel fixture must not invoke a plane/model extractor')
-    monkeypatch.setattr(geometry.subprocess, 'run', external_geometry_substitute)
+    monkeypatch.setattr(metric_depth_runner, 'run_metric_depth', replace_source_then_run_metric)
+    monkeypatch.setattr(geometry.subprocess, 'run', lambda *a, **kw: (_ for _ in ()).throw(AssertionError('legacy diagnostic invoked')))
     monkeypatch.setattr(diagnose_metric_calibration, 'load_extractor', lambda _: unused_extractor)
     result = geometry._run_secondary_module(scene='synthetic', module_dir=source, manifest=manifest,
         artifacts=verified_artifacts, config={'vision': {'pointcloud_filter': FILTER}},
         vision_root=tmp_path, upstream_python=Path(sys.executable), timeout=1, payload=payload)
     assert len(calls) == 1
+    assert result['legacy_cuboid_diagnostic']['status'] == 'DISABLED'
     output = result['module_directory']
     record = json.loads((output/'rgbd_cuboids.json').read_text(encoding='utf-8'))['instances'][0]
     assert record['config'] == asdict(MetricFitConfig(positive_infinity_is_no_hit=True))
