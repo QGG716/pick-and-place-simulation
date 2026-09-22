@@ -1,0 +1,421 @@
+{
+  "branch": "feat/v0.5-feasibility-core",
+  "start_commit": "4f6e3037aceb47a525711e58360d98c8751fec6b",
+  "executed_source_commit": "9b90c6bf6b4528041df2bfd13ef07079a23d1d81",
+  "post_execution_source_hash_check": "PASS",
+  "run_status": {
+    "status": "complete",
+    "primary_runtime_stop_reason": null,
+    "started_unix_s": 1790070472.2478814,
+    "completed_unix_s": 1790072394.5035698,
+    "result_sha256": "70ed77652816b98a7091ac9982f9c07b1c91f6e12a33362e04c2560913f28c8e",
+    "result_format": "isaacsim_fanuc_replay_result_v2"
+  },
+  "physical_trials": 1,
+  "target": "carton_l07_c04",
+  "result": {
+    "target": "carton_l07_c04",
+    "simulation_execution_qualified": true,
+    "execution_qualified": true,
+    "machine_qualified": false,
+    "replayed_simulation_seconds": 162.25,
+    "replay_wall_seconds": 1888.7559794932604,
+    "physics_steps": 38940,
+    "physics_hz": 240.0,
+    "runtime_stop_reason": null,
+    "physical_cycle_completed": false,
+    "workflow_cycle_completed": true,
+    "payload_attachment_intact": true,
+    "payload_release_executed": true,
+    "payload_release_open_confirmed": true,
+    "actual_reception_succeeded": false,
+    "assumed_reception_state": {
+      "source": "RECEPTION_ASSUMED",
+      "time_s": 152.19583333333333,
+      "position_m": [
+        -0.3599613308906555,
+        -0.6100419163703918,
+        0.9226915836334229
+      ],
+      "region_accepted": true
+    },
+    "simulation_profile": {
+      "name": "proof_of_concept",
+      "ideal_suction": true,
+      "ideal_reception": true,
+      "ideal_outfeed": true,
+      "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+      "machine_qualification_claimed": false
+    },
+    "new_target_execution_counts": {
+      "target": "carton_l07_c04",
+      "actual_grasp": 1,
+      "actual_release": 1,
+      "actual_received": 0,
+      "ideal_received": 1,
+      "ideal_outfed": 1,
+      "workflow_completed": 1
+    },
+    "execution_counts": {
+      "actual_reception": 0,
+      "ideal_reception": 4,
+      "ideal_outfeed": 4,
+      "workflow_processed": 4,
+      "downstream_physical_qualification_claimed": false,
+      "actual_grasp": 1,
+      "actual_release": 1
+    },
+    "archive_initialization": {
+      "world_scope": "NEW_WORLD_RECONSTRUCTED_FROM_ARCHIVED_ACTUAL_STATE",
+      "source_world_session_id": "1789875150.9359868",
+      "new_world_session_id": "1790070472.2478814",
+      "source_actual_state_fingerprint": "6d9f6350eb92259e1f163e3721507fb7854ada35737221dd4a74489988eda716",
+      "historical_counts": {
+        "actual_received": 0,
+        "ideal_received": 3,
+        "processed": 3,
+        "outfed": 3
+      },
+      "initial_binding": {
+        "accepted": true,
+        "retained_carton_count": 37,
+        "recording_output_changed": false,
+        "world_session_id": "1790070472.2478814",
+        "scene_restored_or_teleported": false
+      },
+      "historical_events_counted_as_new_task_completion": false
+    },
+    "qualification_passed": false,
+    "drive_effort_output_qualified": false,
+    "qualification_check_details": {
+      "full_schedule_replayed": {
+        "status": "PASS",
+        "reason": "complete command schedule replayed"
+      },
+      "collision_scope_complete": {
+        "status": "PASS",
+        "reason": "robot self-collision and robot/payload scene contacts were monitored"
+      },
+      "unexpected_contacts_clear": {
+        "status": "PASS",
+        "reason": "no unexpected contacts",
+        "unexpected_contact_count": 0
+      },
+      "premature_payload_conveyor_contacts_clear": {
+        "status": "PASS",
+        "reason": "payload did not touch a conveyor before release",
+        "premature_payload_conveyor_contact_count": 0
+      },
+      "joint_tracking_within_limit": {
+        "status": "PASS",
+        "reason": "joint tracking is within limit",
+        "measured": 0.0015192851424217224,
+        "limit": 0.05,
+        "unit": "rad"
+      },
+      "joint_efforts_within_limit": {
+        "status": "NOT_EVALUATED",
+        "reason": "joint effort ratios are unavailable"
+      },
+      "payload_attachment_intact": {
+        "status": "PASS",
+        "reason": "payload remained attached through transport",
+        "peak_position_error_m": 1.6970394438515502e-05,
+        "position_tolerance_m": 0.02,
+        "peak_rotation_error_rad": 3.966673436188156e-05,
+        "rotation_tolerance_rad": 0.1,
+        "payload_displacement_m": 4.153319197888232,
+        "minimum_payload_displacement_m": 0.02
+      },
+      "release_event_executed": {
+        "status": "PASS",
+        "reason": "release event executed"
+      },
+      "placement_within_tolerance": {
+        "status": "PASS",
+        "reason": "settled placement is within tolerance",
+        "measured": 0.022688327826125874,
+        "limit": 0.08,
+        "unit": "m"
+      },
+      "gripper_wrench_envelope_complete": {
+        "status": "NOT_APPLICABLE",
+        "reason": "ideal_independent_cups explicitly assumes holding capacity",
+        "suction_mode": "ideal_independent_cups"
+      },
+      "gripper_limits_from_configuration": {
+        "status": "NOT_APPLICABLE",
+        "reason": "vacuum force/break limits are outside the ideal-independent-cup mode",
+        "suction_mode": "ideal_independent_cups"
+      },
+      "gripper_limits_calibrated": {
+        "status": "NOT_APPLICABLE",
+        "reason": "no calibrated vacuum envelope is claimed in ideal-independent-cup mode",
+        "suction_mode": "ideal_independent_cups"
+      },
+      "production_release_adapter": {
+        "status": "PASS",
+        "reason": "the original payload was opened by the production release adapter"
+      },
+      "joint_positions_within_limits": {
+        "status": "PASS",
+        "reason": "measured joint positions stayed inside the official limits"
+      }
+    }
+  },
+  "video": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "mpeg4",
+        "width": 640,
+        "height": 360,
+        "r_frame_rate": "5/1",
+        "avg_frame_rate": "5/1",
+        "duration": "162.200000",
+        "nb_frames": "811"
+      }
+    ],
+    "format": {
+      "duration": "162.200000",
+      "size": "5617243"
+    }
+  },
+  "tests": {
+    "directed_source_suite": "93 passed in 2.77s",
+    "reporting_corrections_separate_tree": "25 passed in 0.14s"
+  },
+  "planning_delivery": {
+    "simulation_profile": {
+      "name": "proof_of_concept",
+      "ideal_suction": true,
+      "ideal_reception": true,
+      "ideal_outfeed": true,
+      "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+      "machine_qualification_claimed": false
+    },
+    "planning_seconds": 1656.1679570935667,
+    "serialization_seconds": 0.011490967124700546,
+    "preflight_seconds": 0.34413234889507294,
+    "export_seconds": 0.4661487229168415,
+    "isaac_executed": false,
+    "actual_state_sha256": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "archived_or_live_state_not_modified": true,
+    "simulation_execution_ready": true,
+    "bundle_readback": {
+      "status": "PASS",
+      "bundle_payload_sha256": "06c2bd3714a3f0d1471a6ab440c7abf0a2c1b8d047a47f9457a9961736a19279",
+      "source_preflight_fingerprint": "95a093972830fa086edb367cc6365b124791f6686b995360ca6ee538089c439e",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+    },
+    "bundle_readback_seconds": 1.990137878805399,
+    "bundle_path": "/root/autodl-tmp/m710-validation-kernel-20260922/repo/outputs/kernel_single/replay_bundle.json",
+    "first_complete_feasible_result_seconds": 1656.1679570935667,
+    "first_exportable_result_seconds": 1659.453619081527,
+    "subsequent_optimization_seconds": 0.0,
+    "immutable_baseline_directory": "/root/autodl-tmp/m710-validation-kernel-20260922/repo/outputs/kernel_single/first_feasible"
+  },
+  "limitations": [
+    "Discrete legacy strict geometric guarantee; partial continuous pair certificates only.",
+    "Scalar Coal narrow phase and ordered stateful extraction remain.",
+    "Warm cache and early-invalid loaded-edge benchmarks regress.",
+    "POC ideal reception/outfeed is not measured downstream qualification.",
+    "Video overlay carries archived cumulative time/counts; use new_target_execution_counts for this world.",
+    "No repeated Isaac trial, full row, historical population or real-machine qualification."
+  ],
+  "runtime_feedback": {
+    "first_failure": null,
+    "last_valid_actual_state": {
+      "source_identity": {
+        "adapter_sha256": "9e08a15ec9606e09bb92733a355e297d3ce3c63cdc74bf41a9b5237f4d0270a1",
+        "physics_helpers_sha256": "f5e49444cb41d5318e018aa912e8641dfb9f197e47ae2d1e5e6a152bfdbf7bbd",
+        "qualification_sha256": "c6049ceb5e0e99ecfd41b5831100087b3aaf9c39ee4663c6d4fccd0656313bf4",
+        "execution_source_commit": "9b90c6bf6b4528041df2bfd13ef07079a23d1d81"
+      },
+      "world_session_id": "1790070472.2478814",
+      "target": "carton_l07_c04",
+      "task_segment": 0,
+      "stage": "withdrawal",
+      "observation_point": "after_physics",
+      "physical_step": 38940,
+      "simulation_time_s": 162.25,
+      "world_physics_time_s": 163.15417517581955,
+      "trajectory_time_s": 161.60439760548346,
+      "trajectory_time_basis": "last_issued_unbiased_zero_order_hold_reference",
+      "last_issued_command": {
+        "reference_q_rad": [
+          -0.7517382502555847,
+          0.3038468062877655,
+          -0.05248998478055,
+          -3.1415631771087646,
+          1.2144732475280762,
+          0.7519458532333374
+        ],
+        "reference_qd_rad_s": [
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0,
+          -0.0
+        ],
+        "drive_position_target_rad": [
+          -0.7517382502555847,
+          0.28992128372192383,
+          -0.042959265410900116,
+          -3.1416585445404053,
+          1.2144904136657715,
+          0.7519458532333374
+        ],
+        "trajectory_time_s": 161.60439760548346,
+        "simulation_time_s": 162.24583333333334
+      },
+      "read_errors": {},
+      "release_requested": true,
+      "constraint_removal_observed": true,
+      "release_independence_confirmed": true,
+      "unexpected_contact_count": 0,
+      "q_rad": [
+        -0.7517411708831787,
+        0.30389267206192017,
+        -0.052478283643722534,
+        -3.141576051712036,
+        1.214484691619873,
+        0.7519510388374329
+      ],
+      "qd_rad_s": [
+        -0.00045696523739024997,
+        -0.005664895288646221,
+        0.013228407129645348,
+        -0.001472828327678144,
+        0.010475324466824532,
+        0.00021751804160885513
+      ],
+      "reference_q_rad": [
+        -0.7517382502555847,
+        0.3038468062877655,
+        -0.05248998478055,
+        -3.1415631771087646,
+        1.2144732475280762,
+        0.7519458532333374
+      ],
+      "reference_qd_rad_s": [
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0,
+        -0.0
+      ],
+      "attached": false,
+      "legally_released": true,
+      "tracking_error_rad": [
+        2.9206275939941406e-06,
+        4.5865774154663086e-05,
+        1.1701136827468872e-05,
+        1.2874603271484375e-05,
+        1.1444091796875e-05,
+        5.185604095458984e-06
+      ]
+    },
+    "last_observation": {
+      "source_identity": {
+        "adapter_sha256": "9e08a15ec9606e09bb92733a355e297d3ce3c63cdc74bf41a9b5237f4d0270a1",
+        "physics_helpers_sha256": "f5e49444cb41d5318e018aa912e8641dfb9f197e47ae2d1e5e6a152bfdbf7bbd",
+        "qualification_sha256": "c6049ceb5e0e99ecfd41b5831100087b3aaf9c39ee4663c6d4fccd0656313bf4",
+        "execution_source_commit": "9b90c6bf6b4528041df2bfd13ef07079a23d1d81"
+      },
+      "world_session_id": "1790070472.2478814",
+      "target": "carton_l07_c04",
+      "task_segment": 0,
+      "stage": "withdrawal",
+      "observation_point": "after_physics",
+      "physical_step": 38940,
+      "simulation_time_s": 162.25,
+      "world_physics_time_s": 163.15417517581955,
+      "trajectory_time_s": 161.60439760548346,
+      "trajectory_time_basis": "last_issued_unbiased_zero_order_hold_reference",
+      "last_issued_command": {
+        "reference_q_rad": [
+          -0.7517382502555847,
+          0.3038468062877655,
+          -0.05248998478055,
+          -3.1415631771087646,
+          1.2144732475280762,
+          0.7519458532333374
+        ],
+        "reference_qd_rad_s": [
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0,
+          -0.0
+        ],
+        "drive_position_target_rad": [
+          -0.7517382502555847,
+          0.28992128372192383,
+          -0.042959265410900116,
+          -3.1416585445404053,
+          1.2144904136657715,
+          0.7519458532333374
+        ],
+        "trajectory_time_s": 161.60439760548346,
+        "simulation_time_s": 162.24583333333334
+      },
+      "read_errors": {},
+      "release_requested": true,
+      "constraint_removal_observed": true,
+      "release_independence_confirmed": true,
+      "unexpected_contact_count": 0,
+      "q_rad": [
+        -0.7517411708831787,
+        0.30389267206192017,
+        -0.052478283643722534,
+        -3.141576051712036,
+        1.214484691619873,
+        0.7519510388374329
+      ],
+      "qd_rad_s": [
+        -0.00045696523739024997,
+        -0.005664895288646221,
+        0.013228407129645348,
+        -0.001472828327678144,
+        0.010475324466824532,
+        0.00021751804160885513
+      ],
+      "reference_q_rad": [
+        -0.7517382502555847,
+        0.3038468062877655,
+        -0.05248998478055,
+        -3.1415631771087646,
+        1.2144732475280762,
+        0.7519458532333374
+      ],
+      "reference_qd_rad_s": [
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0,
+        -0.0
+      ],
+      "attached": false,
+      "legally_released": true,
+      "tracking_error_rad": [
+        2.9206275939941406e-06,
+        4.5865774154663086e-05,
+        1.1701136827468872e-05,
+        1.2874603271484375e-05,
+        1.1444091796875e-05,
+        5.185604095458984e-06
+      ]
+    },
+    "stop_handling": null
+  },
+  "process_exit_code": 0,
+  "post_execution_reporting_commits": [
+    "d1423c9",
+    "964d8ce"
+  ]
+}

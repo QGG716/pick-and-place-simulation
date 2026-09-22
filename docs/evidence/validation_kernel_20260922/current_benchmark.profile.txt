@@ -1,0 +1,43 @@
+         578830 function calls (577035 primitive calls) in 0.457 seconds
+
+   Ordered by: cumulative time
+   List reduced from 311 to 35 due to restriction <35>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        6    0.000    0.000    0.456    0.076 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:1422(_path_failure)
+        6    0.000    0.000    0.437    0.073 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/motion_validation.py:302(check_path)
+        6    0.000    0.000    0.436    0.073 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/motion_validation.py:230(check_motion)
+      5/3    0.000    0.000    0.417    0.139 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/motion_validation.py:252(interval)
+        4    0.000    0.000    0.396    0.099 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/motion_validation.py:180(check_states)
+        4    0.000    0.000    0.388    0.097 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:1019(batch)
+        4    0.000    0.000    0.388    0.097 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/validation_kernel.py:179(check_states)
+       45    0.000    0.000    0.289    0.006 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:1017(state)
+       45    0.000    0.000    0.288    0.006 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:1242(_state_failure)
+       45    0.001    0.000    0.288    0.006 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:1279(_checked_state_failure)
+       45    0.004    0.000    0.282    0.006 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:677(__call__)
+      270    0.002    0.000    0.273    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:599(_profile_call)
+      135    0.001    0.000    0.142    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/pinocchio_backend.py:661(collision_result)
+      360    0.001    0.000    0.139    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/pinocchio_backend.py:333(_profile_call)
+       45    0.014    0.000    0.113    0.003 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:636(_plane_failure)
+      135    0.031    0.000    0.113    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/pinocchio_backend.py:475(_environment_collision)
+       10    0.000    0.000    0.102    0.010 {built-in method builtins.next}
+        5    0.000    0.000    0.102    0.020 /root/miniconda3/lib/python3.12/contextlib.py:132(__enter__)
+       10    0.000    0.000    0.102    0.010 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/validation_kernel.py:163(scope)
+        5    0.011    0.002    0.102    0.020 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/validation_kernel.py:111(prepare_states)
+    12375    0.011    0.000    0.083    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/validation_kernel.py:148(<genexpr>)
+    12650    0.011    0.000    0.075    0.000 <string>:2(__init__)
+    12650    0.030    0.000    0.063    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/geometry.py:82(__post_init__)
+    37141    0.058    0.000    0.058    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+       24    0.001    0.000    0.053    0.002 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:960(_validation_context)
+       24    0.000    0.000    0.045    0.002 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/motion_validation.py:78(create)
+       45    0.004    0.000    0.036    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/pinocchio_backend.py:586(collision_world_axis_extrema)
+       18    0.000    0.000    0.035    0.002 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/motion_validation.py:172(_guard)
+       18    0.000    0.000    0.035    0.002 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:1036(<lambda>)
+       18    0.000    0.000    0.035    0.002 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/layout_trajectory.py:999(_context_identity)
+    10517    0.003    0.000    0.034    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/geometry.py:93(world_from_local)
+       24    0.001    0.000    0.032    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/motion_validation.py:66(__post_init__)
+    10517    0.013    0.000    0.031    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/geometry.py:55(make_transform)
+    13600    0.006    0.000    0.031    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2477(any)
+      315    0.008    0.000    0.030    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/repo/src/unloading_sim/pinocchio_backend.py:124(_world_vertex_extrema)
+
+

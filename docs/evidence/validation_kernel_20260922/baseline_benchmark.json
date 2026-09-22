@@ -1,0 +1,233 @@
+{
+  "python": "3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]",
+  "numpy": "2.3.2",
+  "pinocchio": "4.1.0",
+  "prepare_seconds": 0.442395206540823,
+  "mode": "PYTHON_SCALAR_REFERENCE",
+  "cases": [
+    {
+      "case": "open_direct",
+      "cache": "cold",
+      "seconds": 0.44224992394447327,
+      "failure": null,
+      "counts": {
+        "pin_forwardKinematics": 35,
+        "pin_computeFrameJacobian": 35,
+        "python_chain_fk": 70,
+        "pin_updateGeometryPlacements": 35,
+        "python_world_aabb": 8365,
+        "coal_collide": 1,
+        "coal_distance": 1
+      },
+      "samples": 35,
+      "motion": null
+    },
+    {
+      "case": "open_direct",
+      "cache": "warm",
+      "seconds": 0.0011341944336891174,
+      "failure": null,
+      "counts": {
+        "pin_forwardKinematics": 0,
+        "pin_computeFrameJacobian": 0,
+        "python_chain_fk": 0,
+        "pin_updateGeometryPlacements": 0,
+        "python_world_aabb": 0,
+        "coal_collide": 0,
+        "coal_distance": 0
+      },
+      "samples": 35,
+      "motion": null
+    },
+    {
+      "case": "layout_direct",
+      "cache": "cold",
+      "seconds": 0.07914744690060616,
+      "failure": null,
+      "counts": {
+        "pin_forwardKinematics": 5,
+        "pin_computeFrameJacobian": 5,
+        "python_chain_fk": 10,
+        "pin_updateGeometryPlacements": 5,
+        "python_world_aabb": 1313,
+        "coal_collide": 1,
+        "coal_distance": 1
+      },
+      "samples": 5,
+      "motion": null
+    },
+    {
+      "case": "layout_direct",
+      "cache": "warm",
+      "seconds": 0.0012790262699127197,
+      "failure": null,
+      "counts": {
+        "pin_forwardKinematics": 0,
+        "pin_computeFrameJacobian": 0,
+        "python_chain_fk": 0,
+        "pin_updateGeometryPlacements": 0,
+        "python_world_aabb": 0,
+        "coal_collide": 0,
+        "coal_distance": 0
+      },
+      "samples": 5,
+      "motion": null
+    },
+    {
+      "case": "loaded_near_stack",
+      "cache": "cold",
+      "seconds": 0.017960764467716217,
+      "failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "tool_compliant_bellows_0",
+          "carton_l07_c03"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "edge": 0,
+        "fraction": 0.0,
+        "q_rad": [
+          -0.35901958261242695,
+          -0.21005953163247132,
+          -0.1488362496014934,
+          1.7325125925312939,
+          0.36397880205562794,
+          -4.885213472402706
+        ]
+      },
+      "counts": {
+        "pin_forwardKinematics": 1,
+        "pin_computeFrameJacobian": 1,
+        "python_chain_fk": 2,
+        "pin_updateGeometryPlacements": 1,
+        "python_world_aabb": 301,
+        "coal_collide": 1,
+        "coal_distance": 1
+      },
+      "samples": 1,
+      "motion": null
+    },
+    {
+      "case": "loaded_near_stack",
+      "cache": "warm",
+      "seconds": 0.00034371763467788696,
+      "failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "tool_compliant_bellows_0",
+          "carton_l07_c03"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "edge": 0,
+        "fraction": 0.0,
+        "q_rad": [
+          -0.35901958261242695,
+          -0.21005953163247132,
+          -0.1488362496014934,
+          1.7325125925312939,
+          0.36397880205562794,
+          -4.885213472402706
+        ]
+      },
+      "counts": {
+        "pin_forwardKinematics": 0,
+        "pin_computeFrameJacobian": 0,
+        "python_chain_fk": 0,
+        "pin_updateGeometryPlacements": 0,
+        "python_world_aabb": 0,
+        "coal_collide": 0,
+        "coal_distance": 0
+      },
+      "samples": 1,
+      "motion": null
+    }
+  ],
+  "fk_512": {
+    "scalar_seconds": 0.04321957007050514,
+    "native_seconds": null
+  },
+  "kernel": null,
+  "mesh_counters": {
+    "geometry_update_seconds": 0.0010676681995391846,
+    "geometry_update_calls": 164,
+    "self_collision_seconds": 0.04252764955163002,
+    "self_collision_calls": 41,
+    "robot_environment_seconds": 0.22236056625843048,
+    "robot_environment_calls": 123,
+    "rigid_motion_clearance_certificates": 38
+  },
+  "exact_counters": {
+    "robot_fixed_including_self_seconds": 0.04825004190206528,
+    "robot_fixed_including_self_calls": 41,
+    "robot_tool_seconds": 0.21446717157959938,
+    "robot_tool_calls": 41,
+    "tool_fixed_broadphase_seconds": 0.003716345876455307,
+    "tool_fixed_broadphase_calls": 41,
+    "plane_bounds_seconds": 0.11010498180985451,
+    "plane_bounds_calls": 41,
+    "robot_dynamic_seconds": 0.007296144962310791,
+    "robot_dynamic_calls": 41,
+    "tool_dynamic_broadphase_seconds": 0.0056419409811496735,
+    "tool_dynamic_broadphase_calls": 41
+  },
+  "detour": [
+    {
+      "cache": "cold",
+      "search_success": true,
+      "strict_valid": false,
+      "seconds": 0.004592832177877426,
+      "first_strict_valid_seconds": null,
+      "evidence": {
+        "planning_iteration_budget": 600,
+        "planning_iterations_consumed": 0,
+        "extension_attempts": 0,
+        "state_validations": 4,
+        "edge_validation_calls": 1,
+        "edge_state_samples": 2,
+        "state_validation_budget": null,
+        "edge_validation_budget": null,
+        "termination": "DIRECT_EDGE"
+      }
+    },
+    {
+      "cache": "warm",
+      "search_success": true,
+      "strict_valid": false,
+      "seconds": 7.357820868492126e-05,
+      "first_strict_valid_seconds": null,
+      "evidence": {
+        "planning_iteration_budget": 600,
+        "planning_iterations_consumed": 0,
+        "extension_attempts": 0,
+        "state_validations": 4,
+        "edge_validation_calls": 1,
+        "edge_state_samples": 2,
+        "state_validation_budget": null,
+        "edge_validation_budget": null,
+        "termination": "DIRECT_EDGE"
+      }
+    }
+  ]
+}

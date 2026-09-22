@@ -1,0 +1,43 @@
+         604054 function calls (603966 primitive calls) in 0.543 seconds
+
+   Ordered by: cumulative time
+   List reduced from 234 to 35 due to restriction <35>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        6    0.001    0.000    0.542    0.090 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/layout_trajectory.py:1357(_path_failure)
+       82    0.000    0.000    0.541    0.007 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/layout_trajectory.py:1163(_state_failure)
+       82    0.002    0.000    0.541    0.007 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/layout_trajectory.py:1200(_checked_state_failure)
+       41    0.004    0.000    0.516    0.013 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/layout_trajectory.py:673(__call__)
+      246    0.002    0.000    0.390    0.002 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/layout_trajectory.py:598(_profile_call)
+      123    0.001    0.000    0.270    0.002 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/pinocchio_backend.py:635(collision_result)
+      328    0.001    0.000    0.266    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/pinocchio_backend.py:323(_profile_call)
+      123    0.028    0.000    0.222    0.002 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/pinocchio_backend.py:459(_environment_collision)
+    10190    0.008    0.000    0.178    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/tools/benchmark_validation_contract.py:29(wrapped)
+     9979    0.094    0.000    0.156    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/pinocchio_backend.py:62(_world_aabb)
+       41    0.013    0.000    0.109    0.003 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/layout_trajectory.py:632(_plane_failure)
+    11522    0.011    0.000    0.072    0.000 <string>:2(__init__)
+    51630    0.071    0.000    0.071    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+       41    0.008    0.000    0.063    0.002 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/layout_trajectory.py:621(_compliant_boxes)
+    21113    0.012    0.000    0.061    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3052(max)
+    11522    0.027    0.000    0.061    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/geometry.py:82(__post_init__)
+    21734    0.017    0.000    0.058    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:69(_wrapreduction)
+       41    0.017    0.000    0.057    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/robot.py:690(tool_collision_obbs)
+       41    0.009    0.000    0.042    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/pinocchio_backend.py:604(_self_clearance_failure)
+       41    0.010    0.000    0.035    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/robot.py:704(tool_compliant_collision_obbs)
+       41    0.003    0.000    0.033    0.001 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/pinocchio_backend.py:563(collision_world_axis_extrema)
+     9192    0.003    0.000    0.033    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/geometry.py:93(world_from_local)
+    12562    0.006    0.000    0.031    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2477(any)
+     9192    0.012    0.000    0.030    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/geometry.py:55(make_transform)
+    13242    0.012    0.000    0.028    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:89(_wrapreduction_any_all)
+      287    0.008    0.000    0.027    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/pinocchio_backend.py:123(_world_vertex_extrema)
+     8282    0.024    0.000    0.024    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/geometry.py:110(corners)
+    12967    0.016    0.000    0.023    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/lib/_twodim_base_impl.py:176(eye)
+     3037    0.007    0.000    0.015    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/pinocchio_backend.py:284(_matrix)
+       82    0.000    0.000    0.014    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/robot.py:637(fk)
+       82    0.000    0.000    0.013    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/robot.py:599(frames)
+     8282    0.002    0.000    0.013    0.000 {method 'min' of 'numpy.ndarray' objects}
+       82    0.004    0.000    0.013    0.000 /root/autodl-tmp/m710-validation-kernel-20260922/baseline/src/unloading_sim/robot.py:574(_frames_and_axes)
+     8282    0.002    0.000    0.013    0.000 {method 'max' of 'numpy.ndarray' objects}
+    64854    0.012    0.000    0.012    0.000 {built-in method numpy.asarray}
+
+

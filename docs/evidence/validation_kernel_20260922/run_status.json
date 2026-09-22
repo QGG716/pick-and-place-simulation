@@ -1,0 +1,8 @@
+{
+  "status": "complete",
+  "primary_runtime_stop_reason": null,
+  "started_unix_s": 1790070472.2478814,
+  "completed_unix_s": 1790072394.5035698,
+  "result_sha256": "70ed77652816b98a7091ac9982f9c07b1c91f6e12a33362e04c2560913f28c8e",
+  "result_format": "isaacsim_fanuc_replay_result_v2"
+}

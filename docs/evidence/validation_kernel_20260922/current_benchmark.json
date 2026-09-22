@@ -1,0 +1,665 @@
+{
+  "python": "3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]",
+  "numpy": "2.3.2",
+  "pinocchio": "4.1.0",
+  "prepare_seconds": 0.4483867287635803,
+  "mode": "NUMPY_NATIVE_BATCH_FK_AND_TRANSFORMS_SCALAR_COAL",
+  "cases": [
+    {
+      "case": "open_direct",
+      "cache": "cold",
+      "seconds": 0.2959948666393757,
+      "failure": null,
+      "counts": {
+        "pin_forwardKinematics": 0,
+        "python_world_aabb": 385,
+        "coal_collide": 1,
+        "coal_distance": 1
+      },
+      "samples": 35,
+      "motion": {
+        "status": "VALID",
+        "context_id": "12e2464fce593d5c15c26c1b878263b2c798903400311f48fbb91eb66354e57d",
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "failure": null,
+        "interval": null,
+        "checked": [
+          [
+            0,
+            "DISCRETE_LEGACY_STRICT"
+          ]
+        ],
+        "statistics": {},
+        "cache_hit": false,
+        "interval_certificate": false
+      }
+    },
+    {
+      "case": "open_direct",
+      "cache": "warm",
+      "seconds": 0.0031875446438789368,
+      "failure": null,
+      "counts": {
+        "pin_forwardKinematics": 0,
+        "python_world_aabb": 0,
+        "coal_collide": 0,
+        "coal_distance": 0
+      },
+      "samples": 0,
+      "motion": {
+        "status": "VALID",
+        "context_id": "12e2464fce593d5c15c26c1b878263b2c798903400311f48fbb91eb66354e57d",
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "failure": null,
+        "interval": null,
+        "checked": [
+          [
+            0,
+            "DISCRETE_LEGACY_STRICT"
+          ]
+        ],
+        "statistics": {},
+        "cache_hit": false,
+        "interval_certificate": false
+      }
+    },
+    {
+      "case": "layout_direct",
+      "cache": "cold",
+      "seconds": 0.06969092041254044,
+      "failure": null,
+      "counts": {
+        "pin_forwardKinematics": 0,
+        "python_world_aabb": 303,
+        "coal_collide": 1,
+        "coal_distance": 1
+      },
+      "samples": 5,
+      "motion": {
+        "status": "VALID",
+        "context_id": "b5fe663934833378dcbd28505f9f5663ddb0ee05517916f6271692189e4b2bcb",
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "failure": null,
+        "interval": null,
+        "checked": [
+          [
+            0,
+            "DISCRETE_LEGACY_STRICT"
+          ]
+        ],
+        "statistics": {},
+        "cache_hit": false,
+        "interval_certificate": false
+      }
+    },
+    {
+      "case": "layout_direct",
+      "cache": "warm",
+      "seconds": 0.004549432545900345,
+      "failure": null,
+      "counts": {
+        "pin_forwardKinematics": 0,
+        "python_world_aabb": 0,
+        "coal_collide": 0,
+        "coal_distance": 0
+      },
+      "samples": 0,
+      "motion": {
+        "status": "VALID",
+        "context_id": "b5fe663934833378dcbd28505f9f5663ddb0ee05517916f6271692189e4b2bcb",
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "failure": null,
+        "interval": null,
+        "checked": [
+          [
+            0,
+            "DISCRETE_LEGACY_STRICT"
+          ]
+        ],
+        "statistics": {},
+        "cache_hit": false,
+        "interval_certificate": false
+      }
+    },
+    {
+      "case": "loaded_near_stack",
+      "cache": "cold",
+      "seconds": 0.07734519243240356,
+      "failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "tool_compliant_bellows_0",
+          "carton_l07_c03"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "type": "GEOMETRY",
+        "fraction": 0.0,
+        "q_rad": [
+          -0.35901958261242695,
+          -0.21005953163247132,
+          -0.1488362496014934,
+          1.7325125925312939,
+          0.36397880205562794,
+          -4.885213472402706
+        ],
+        "motion_start": [
+          -0.35901958261242695,
+          -0.21005953163247132,
+          -0.1488362496014934,
+          1.7325125925312939,
+          0.36397880205562794,
+          -4.885213472402706
+        ],
+        "motion_end": [
+          -0.35801958261242695,
+          -0.21005953163247132,
+          -0.1488362496014934,
+          1.7325125925312939,
+          0.36397880205562794,
+          -4.885213472402706
+        ],
+        "edge": 0,
+        "validation": {
+          "status": "INVALID",
+          "context_id": "d2cd70770b6cf1847db6fca2b7021197f2d391ada2c138dec957596cafdbcc9f",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "PROXY_GEOMETRY_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "tool_compliant_bellows_0",
+              "carton_l07_c03"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              -0.35901958261242695,
+              -0.21005953163247132,
+              -0.1488362496014934,
+              1.7325125925312939,
+              0.36397880205562794,
+              -4.885213472402706
+            ],
+            "motion_start": [
+              -0.35901958261242695,
+              -0.21005953163247132,
+              -0.1488362496014934,
+              1.7325125925312939,
+              0.36397880205562794,
+              -4.885213472402706
+            ],
+            "motion_end": [
+              -0.35801958261242695,
+              -0.21005953163247132,
+              -0.1488362496014934,
+              1.7325125925312939,
+              0.36397880205562794,
+              -4.885213472402706
+            ],
+            "edge": 0
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.0,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 5,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.06184166669845581,
+            "edge_seconds": 0.06867817789316177,
+            "repeated_failed_edges": 0,
+            "batch_calls": 1,
+            "state_cache_hits": 0,
+            "state_cache_misses": 5,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        }
+      },
+      "counts": {
+        "pin_forwardKinematics": 0,
+        "python_world_aabb": 307,
+        "coal_collide": 1,
+        "coal_distance": 1
+      },
+      "samples": 5,
+      "motion": {
+        "status": "INVALID",
+        "context_id": "d2cd70770b6cf1847db6fca2b7021197f2d391ada2c138dec957596cafdbcc9f",
+        "guarantee": "NONE",
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "PROXY_GEOMETRY_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "tool_compliant_bellows_0",
+            "carton_l07_c03"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.0,
+          "q_rad": [
+            -0.35901958261242695,
+            -0.21005953163247132,
+            -0.1488362496014934,
+            1.7325125925312939,
+            0.36397880205562794,
+            -4.885213472402706
+          ],
+          "motion_start": [
+            -0.35901958261242695,
+            -0.21005953163247132,
+            -0.1488362496014934,
+            1.7325125925312939,
+            0.36397880205562794,
+            -4.885213472402706
+          ],
+          "motion_end": [
+            -0.35801958261242695,
+            -0.21005953163247132,
+            -0.1488362496014934,
+            1.7325125925312939,
+            0.36397880205562794,
+            -4.885213472402706
+          ],
+          "edge": 0
+        },
+        "interval": [
+          0.0,
+          1.0
+        ],
+        "checked": [
+          [
+            0.0,
+            0.0,
+            "OBSERVED_THROUGH_FAILURE"
+          ]
+        ],
+        "statistics": {
+          "state_samples": 5,
+          "edge_calls": 0,
+          "subdivisions": 0,
+          "certified_intervals": 0,
+          "pair_certificates": 0,
+          "state_seconds": 0.06184166669845581,
+          "edge_seconds": 0.06867817789316177,
+          "repeated_failed_edges": 0,
+          "batch_calls": 1,
+          "state_cache_hits": 0,
+          "state_cache_misses": 5,
+          "state_cache_evictions": 0,
+          "edge_cache_hits": 0,
+          "edge_cache_evictions": 0
+        },
+        "cache_hit": false,
+        "interval_certificate": false
+      }
+    },
+    {
+      "case": "loaded_near_stack",
+      "cache": "warm",
+      "seconds": 0.004773031920194626,
+      "failure": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "tool_compliant_bellows_0",
+          "carton_l07_c03"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "type": "GEOMETRY",
+        "fraction": 0.0,
+        "q_rad": [
+          -0.35901958261242695,
+          -0.21005953163247132,
+          -0.1488362496014934,
+          1.7325125925312939,
+          0.36397880205562794,
+          -4.885213472402706
+        ],
+        "motion_start": [
+          -0.35901958261242695,
+          -0.21005953163247132,
+          -0.1488362496014934,
+          1.7325125925312939,
+          0.36397880205562794,
+          -4.885213472402706
+        ],
+        "motion_end": [
+          -0.35801958261242695,
+          -0.21005953163247132,
+          -0.1488362496014934,
+          1.7325125925312939,
+          0.36397880205562794,
+          -4.885213472402706
+        ],
+        "edge": 0,
+        "validation": {
+          "status": "INVALID",
+          "context_id": "d2cd70770b6cf1847db6fca2b7021197f2d391ada2c138dec957596cafdbcc9f",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "RIGID_TOOL_COLLISION",
+            "classification": "PROXY_GEOMETRY_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "tool_compliant_bellows_0",
+              "carton_l07_c03"
+            ],
+            "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": false,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              -0.35901958261242695,
+              -0.21005953163247132,
+              -0.1488362496014934,
+              1.7325125925312939,
+              0.36397880205562794,
+              -4.885213472402706
+            ],
+            "motion_start": [
+              -0.35901958261242695,
+              -0.21005953163247132,
+              -0.1488362496014934,
+              1.7325125925312939,
+              0.36397880205562794,
+              -4.885213472402706
+            ],
+            "motion_end": [
+              -0.35801958261242695,
+              -0.21005953163247132,
+              -0.1488362496014934,
+              1.7325125925312939,
+              0.36397880205562794,
+              -4.885213472402706
+            ],
+            "edge": 0
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.0,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 5,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.06184166669845581,
+            "edge_seconds": 0.06867817789316177,
+            "repeated_failed_edges": 0,
+            "batch_calls": 1,
+            "state_cache_hits": 0,
+            "state_cache_misses": 5,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        }
+      },
+      "counts": {
+        "pin_forwardKinematics": 0,
+        "python_world_aabb": 0,
+        "coal_collide": 0,
+        "coal_distance": 0
+      },
+      "samples": 0,
+      "motion": {
+        "status": "INVALID",
+        "context_id": "d2cd70770b6cf1847db6fca2b7021197f2d391ada2c138dec957596cafdbcc9f",
+        "guarantee": "NONE",
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "PROXY_GEOMETRY_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "tool_compliant_bellows_0",
+            "carton_l07_c03"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.0,
+          "q_rad": [
+            -0.35901958261242695,
+            -0.21005953163247132,
+            -0.1488362496014934,
+            1.7325125925312939,
+            0.36397880205562794,
+            -4.885213472402706
+          ],
+          "motion_start": [
+            -0.35901958261242695,
+            -0.21005953163247132,
+            -0.1488362496014934,
+            1.7325125925312939,
+            0.36397880205562794,
+            -4.885213472402706
+          ],
+          "motion_end": [
+            -0.35801958261242695,
+            -0.21005953163247132,
+            -0.1488362496014934,
+            1.7325125925312939,
+            0.36397880205562794,
+            -4.885213472402706
+          ],
+          "edge": 0
+        },
+        "interval": [
+          0.0,
+          1.0
+        ],
+        "checked": [
+          [
+            0.0,
+            0.0,
+            "OBSERVED_THROUGH_FAILURE"
+          ]
+        ],
+        "statistics": {
+          "state_samples": 5,
+          "edge_calls": 0,
+          "subdivisions": 0,
+          "certified_intervals": 0,
+          "pair_certificates": 0,
+          "state_seconds": 0.06184166669845581,
+          "edge_seconds": 0.06867817789316177,
+          "repeated_failed_edges": 0,
+          "batch_calls": 1,
+          "state_cache_hits": 0,
+          "state_cache_misses": 5,
+          "state_cache_evictions": 0,
+          "edge_cache_hits": 0,
+          "edge_cache_evictions": 0
+        },
+        "cache_hit": true,
+        "interval_certificate": false
+      }
+    }
+  ],
+  "fk_512": {
+    "scalar_seconds": 0.04051274061203003,
+    "native_seconds": 0.0012632198631763458
+  },
+  "kernel": {
+    "fk_states": 45,
+    "native_batches": 5,
+    "native_array_operations": 395,
+    "kinematics_seconds": 0.10143084824085236,
+    "ordered_scalar_state_checks": 0
+  },
+  "mesh_counters": {
+    "geometry_update_seconds": 0.0037273243069648743,
+    "geometry_update_calls": 180,
+    "interval_pair_skips": 455,
+    "self_collision_seconds": 0.021527238190174103,
+    "self_collision_calls": 45,
+    "robot_environment_seconds": 0.11341357231140137,
+    "robot_environment_calls": 135,
+    "native_tool_aabb_hits": 9090,
+    "rigid_motion_clearance_certificates": 42
+  },
+  "exact_counters": {
+    "robot_fixed_including_self_seconds": 0.03163812682032585,
+    "robot_fixed_including_self_calls": 45,
+    "robot_tool_seconds": 0.10065282881259918,
+    "robot_tool_calls": 45,
+    "tool_fixed_broadphase_seconds": 0.0060100555419921875,
+    "tool_fixed_broadphase_calls": 45,
+    "plane_bounds_seconds": 0.11449647694826126,
+    "plane_bounds_calls": 45,
+    "robot_dynamic_seconds": 0.010401953011751175,
+    "robot_dynamic_calls": 45,
+    "tool_dynamic_broadphase_seconds": 0.00948052853345871,
+    "tool_dynamic_broadphase_calls": 45
+  },
+  "detour": [
+    {
+      "cache": "cold",
+      "search_success": true,
+      "strict_valid": true,
+      "seconds": 0.004783090204000473,
+      "first_strict_valid_seconds": 0.004783090204000473,
+      "evidence": {
+        "planning_iteration_budget": 600,
+        "planning_iterations_consumed": 2,
+        "extension_attempts": 11,
+        "state_validations": 2,
+        "edge_validation_calls": 12,
+        "edge_state_samples": 25,
+        "state_validation_budget": null,
+        "edge_validation_budget": null,
+        "termination": "CONNECTED",
+        "validation_status": "VALID",
+        "direct_rejected_continue_search": 1,
+        "candidate_failures": [],
+        "bounded_tree_restarts": 0,
+        "motion_validation": {
+          "state_samples": 27,
+          "edge_calls": 20,
+          "subdivisions": 0,
+          "certified_intervals": 0,
+          "pair_certificates": 0,
+          "state_seconds": 0.0003856644034385681,
+          "edge_seconds": 0.0008970014750957489,
+          "repeated_failed_edges": 0,
+          "batch_calls": 0
+        }
+      }
+    },
+    {
+      "cache": "warm",
+      "search_success": true,
+      "strict_valid": true,
+      "seconds": 0.0006281435489654541,
+      "first_strict_valid_seconds": 0.0006281435489654541,
+      "evidence": {
+        "planning_iteration_budget": 600,
+        "planning_iterations_consumed": 2,
+        "extension_attempts": 11,
+        "state_validations": 2,
+        "edge_validation_calls": 12,
+        "edge_state_samples": 25,
+        "state_validation_budget": null,
+        "edge_validation_budget": null,
+        "termination": "CONNECTED",
+        "validation_status": "VALID",
+        "direct_rejected_continue_search": 1,
+        "candidate_failures": [],
+        "bounded_tree_restarts": 0,
+        "motion_validation": {
+          "state_samples": 27,
+          "edge_calls": 40,
+          "subdivisions": 0,
+          "certified_intervals": 0,
+          "pair_certificates": 0,
+          "state_seconds": 0.000401914119720459,
+          "edge_seconds": 0.0008970014750957489,
+          "repeated_failed_edges": 2,
+          "batch_calls": 0
+        }
+      }
+    }
+  ]
+}
