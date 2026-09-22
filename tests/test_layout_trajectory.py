@@ -195,7 +195,7 @@ def test_grasp_branch_search_is_lazy_bounded_and_backtracks_to_alternative():
         lambda *args, **kwargs: None,
         flange_from_virtual_task_tcp=np.eye(4),
         flange_from_physical_contact=np.eye(4),
-        ik_policy={},
+        ik_policy={"position_tolerance_m": 1e-4},
         collision_margin_m=0.01,
         contact_tolerance_m=0.0002,
         joint_margin_rad=0.01,

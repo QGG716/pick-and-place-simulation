@@ -1,0 +1,96 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_grasp_branch_search_is_lazy_bounded_and_backtracks_to_alternative ____
+
+    def test_grasp_branch_search_is_lazy_bounded_and_backtracks_to_alternative():
+        connector = _ScriptedConnector(
+            _Robot(),
+            lambda *args, **kwargs: None,
+            flange_from_virtual_task_tcp=np.eye(4),
+            flange_from_physical_contact=np.eye(4),
+            ik_policy={},
+            collision_margin_m=0.01,
+            contact_tolerance_m=0.0002,
+            joint_margin_rad=0.01,
+            maximum_jacobian_condition=1e4,
+            validator_identity="synthetic_exact_validator",
+            execution_qualified=True,
+        )
+        candidates = [
+            {"candidate_id": index, "q_rad": [float(index), 0, 0, 0, 0, 0]}
+            for index in range(5)
+        ]
+>       outcome = connector.plan(
+            target=OBB([0, 0, 1], [0.3, 0.2, 0.15], np.eye(3), "target", "carton"),
+            face="top",
+            requested_virtual_contact=np.eye(4),
+            grasp_candidates=candidates,
+            home_q=np.zeros(6),
+            all_obstacles=[],
+            receiver=OBB([1, 0, 0.5], [0.5, 0.5, 0.1], np.eye(3), "receiver", "conveyor"),
+            support_names=[],
+            suction={},
+            seed=10,
+        )
+
+tests/test_layout_trajectory.py:210: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/unloading_sim/layout_trajectory.py:3207: in plan
+    result = self._plan_candidate(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/unloading_sim/layout_trajectory.py:3329: in _plan_candidate
+    "budget_policy": self.budget_evidence(),
+                     ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_layout_trajectory._ScriptedConnector object at 0x7f655edd2660>
+
+    def budget_evidence(self) -> dict[str, Any]:
+        return {
+            "task_pose_connection_attempts": self.budget.task_pose_connection_attempts,
+            "task_pose_batch_size": self.budget.task_pose_batch_size,
+            "task_complete_connection_attempt_limit": self.budget.task_complete_connection_attempt_limit,
+            "candidate_schedule": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+            "stage_wall_time_s": self.budget.stage_wall_time_s,
+            "postprocess_wall_time_s": self.budget.postprocess_wall_time_s,
+            "final_export_reserve_s": getattr(self, "_final_export_reserve_s", 0.),
+            "final_reserve_scope": "COMPLETE_TASK_VALIDATION_AND_IN_PROCESS_BINDING_ONLY",
+            "independent_preflight_export_in_request_budget": False,
+            "optional_continuation_reserve_s": 0. if self.budget.stage_wall_time_s is None else min(3., self.budget.stage_wall_time_s),
+            "deadline_boundary": "completion < deadline; new work requires now < deadline",
+            "task_pose_scope": "shared_by_one_task_across_faces_rolls_and_task_set_variants",
+            "grasp_branches_per_pose": self.budget.grasp_branches,
+            "stage_ik_candidates": self.budget.stage_ik_candidates,
+            "stage_connection_attempts": self.budget.stage_connection_attempts,
+            "stage_connection_iterations": self.budget.stage_connection_iterations,
+            "stage_connection_scope": "shared_across_lazy_ik_candidates_for_one_stage_endpoint",
+            "cartesian_policy": "one_continuation_seed_per_bounded_cartesian_sample",
+            "cartesian_max_samples_per_stage": self.budget.cartesian_max_samples_per_stage,
+            "extraction_direction_attempts": self.budget.extraction_direction_attempts,
+            "local_transit_cartesian_sample_budget": self.budget.local_transit_cartesian_sample_budget,
+            "local_transit_budget_scope": "shared_by_all_placement_candidates_of_one_grasp_prefix",
+            "local_transit_outward_step_m": self.budget.local_transit_outward_step_m,
+            "local_transit_outward_attempts": self.budget.local_transit_outward_attempts,
+            "maximum_extraction_m": self.budget.maximum_extraction_m,
+            "planning_execution_reserves": self.budget.execution_reserves(),
+            "release_policy": self.budget.release_policy().to_mapping(),
+            "extraction_runtime_clearance_reserve_m": (
+                self.budget.extraction_runtime_clearance_reserve_m
+            ),
+            "withdrawal_distance_m": self.budget.withdrawal_distance_m,
+            "post_release_vertical_lift_m": self.budget.post_release_vertical_lift_m,
+            "post_release_conveyor_escape_clearance_m": (
+                self.collision_policy.pair_clearance("external", self.collision_margin_m)
+                + self.budget.departure_runtime_clearance_reserve_m + self.contact_tolerance_m
+>               + 2 * float(self.ik["position_tolerance_m"])
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            ),
+            "planning_wall_time_s": self.budget.planning_wall_time_s,
+            "wall_clock_scope": "one_shared_first_carton_planning_request",
+        }
+E       KeyError: 'position_tolerance_m'
+
+src/unloading_sim/layout_trajectory.py:1127: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_layout_trajectory.py::test_grasp_branch_search_is_lazy_bounded_and_backtracks_to_alternative
+1 failed in 0.41s

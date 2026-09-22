@@ -1435,6 +1435,12 @@ class LayoutTrajectoryConnector:
                 "validation_level": "A_UNVERIFIED_GEOMETRY", "search_started": False}
         self.diagnostic_path_seed = int(seed)
         self.diagnostic_cartesian_sample = None
+        backend = getattr(self, "free_motion_backend", None)
+        if backend is not None and stage in {"pregrasp", "transit"}:
+            from .tesseract_ompl_backend import connect_free_motion
+            return connect_free_motion(self, backend, start, goal, obstacles,
+                seed=seed, iteration_budget=iteration_budget, attachment=attachment,
+                support_names=support_names, target_contact=target_contact, stage=stage)
         state = lambda q: self._state_failure(
             q,
             obstacles,

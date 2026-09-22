@@ -43,3 +43,10 @@ scripts/analyze_gripper_step.py binary
 # validated mixed-newline byte stream so a clean Linux checkout can reuse it.
 scripts/isaacsim_fanuc_replay.py binary
 src/unloading_sim/isaac_bridge.py binary
+
+# Keep the native source identity and raw experimental evidence portable.
+native/tesseract_ompl/*.cpp text eol=lf
+native/tesseract_ompl/CMakeLists.txt text eol=lf
+tools/build_tesseract_ompl.sh text eol=lf
+tests/fixtures/tesseract_ompl/** -text
+docs/validation/evidence/backend_tesseract_ompl_v0_1/** -text

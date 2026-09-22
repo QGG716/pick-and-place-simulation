@@ -95,6 +95,10 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/layout_trajectory.py",
     "src/unloading_sim/pinocchio_backend.py",
     "src/unloading_sim/planner.py",
+    "src/unloading_sim/planning_contract.py",
+    "src/unloading_sim/tesseract_scene.py",
+    "src/unloading_sim/tesseract_ompl_backend.py",
+    "native/tesseract_ompl/worker.cpp",
     "src/unloading_sim/robot.py",
     "src/unloading_sim/robot_load/model.py",
     "src/unloading_sim/robot_load/spatial.py",
@@ -1495,6 +1499,7 @@ def run_layout_single_carton_audit(
     row_state: RowUnloadingState | None = None,
     diagnostics=None,
     target_id: str | None = None,
+    free_motion_backend=None,
 ) -> dict[str, Any]:
     """Search the initial top layer and expose one replay-ready full segment.
 
@@ -1570,6 +1575,8 @@ def run_layout_single_carton_audit(
         else lightweight_robot
     )
     if trajectory_connector is not None:
+        if free_motion_backend is not None:
+            trajectory_connector.free_motion_backend = free_motion_backend
         trajectory_connector.start_planning_request(planning_request_started)
         trajectory_connector.progress_callback = progress_callback
         trajectory_connector.diagnostics = diagnostics

@@ -1,0 +1,186 @@
+{
+  "schema": "tesseract_ompl_directed_comparison_v1",
+  "cases": [
+    {
+      "name": "empty_direct",
+      "stage": "pregrasp",
+      "q_start": [
+        0.9862454453352169,
+        -0.6632776651139614,
+        -0.4577066564420566,
+        -1.705148906574704,
+        0.999911262836787,
+        -1.3257244752169774
+      ],
+      "q_goal": [
+        1.0078449601805017,
+        -0.6721570940265915,
+        -0.4616017450048917,
+        -1.7020305661821633,
+        1.0215182534836682,
+        -1.323195944226099
+      ],
+      "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+      "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+      "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "source_path_indices": [
+        78,
+        79
+      ],
+      "attachment": null,
+      "seed": 71070,
+      "budgets": {
+        "max_state_checks": 100000,
+        "legacy_iterations": 600,
+        "max_attempts": 2,
+        "wall_time_s": null
+      },
+      "export_s": 0.10752073302865028,
+      "results": [
+        {
+          "status": "VERIFIED",
+          "backend": "tesseract_ompl",
+          "candidate_found": true,
+          "exact_solution": true,
+          "native_validated": true,
+          "authority_validated": true,
+          "path": [
+            [
+              0.9862454453352169,
+              -0.6632776651139614,
+              -0.4577066564420566,
+              -1.705148906574704,
+              0.999911262836787,
+              -1.3257244752169774
+            ],
+            [
+              1.0078449601805017,
+              -0.6721570940265915,
+              -0.4616017450048917,
+              -1.7020305661821633,
+              1.0215182534836682,
+              -1.323195944226099
+            ]
+          ],
+          "diagnostics": {
+            "request_id": "empty_direct",
+            "seed": 71070,
+            "scene_revision": "5f9e06b478ed009dba1255b5f1a9fb1a1b86af8e367732fbc1bd3a23029078e0",
+            "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+            "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+            "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "attempts": [
+              {
+                "candidate_found": true,
+                "collision_object_count": 255,
+                "counters": {
+                  "collision_queries": 201,
+                  "edge_checks": 1,
+                  "state_checks": 201,
+                  "subdivision_samples": 199,
+                  "termination_checks": 201
+                },
+                "direct_valid": true,
+                "environment_reused": false,
+                "exact_solution": true,
+                "failure": null,
+                "native_validated": true,
+                "path": [
+                  [
+                    0.9862454453352169,
+                    -0.6632776651139614,
+                    -0.4577066564420566,
+                    -1.705148906574704,
+                    0.999911262836787,
+                    -1.3257244752169774
+                  ],
+                  [
+                    1.0078449601805017,
+                    -0.6721570940265915,
+                    -0.4616017450048917,
+                    -1.7020305661821633,
+                    1.0215182534836682,
+                    -1.323195944226099
+                  ]
+                ],
+                "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+                "status": "CANDIDATE",
+                "timings": {
+                  "direct_check_s": 0.49711198,
+                  "endpoint_check_s": 0.006169564,
+                  "environment_init_s": 0.228878014,
+                  "native_total_s": 0.73231228,
+                  "ompl_solve_s": 0.0,
+                  "path_conversion_s": 0.0,
+                  "worker_roundtrip_s_inclusive": 0.8481439612805843,
+                  "worker_cold_start_s": 0.04070211201906204
+                },
+                "versions": {
+                  "fcl": "0.7.0",
+                  "implementation": "native C++17 worker",
+                  "manager": "FCLDiscreteBVHManager",
+                  "ompl": "1.7.0",
+                  "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+                  "tesseract": "0.35.0",
+                  "tesseract_planning": null
+                },
+                "repeated_candidate": false
+              }
+            ],
+            "authority_rejections": 0,
+            "termination": "VERIFIED"
+          },
+          "timings": {
+            "input_validation_s": 0.050753653049468994,
+            "direct_check_s": 0.49711198,
+            "endpoint_check_s": 0.006169564,
+            "environment_init_s": 0.228878014,
+            "native_total_s": 0.73231228,
+            "ompl_solve_s": 0.0,
+            "path_conversion_s": 0.0,
+            "worker_roundtrip_s_inclusive": 0.8481439612805843,
+            "worker_cold_start_s": 0.04070211201906204,
+            "result_conversion_s": 0.0002554766833782196,
+            "authority_s": 2.5687366165220737,
+            "request_total_s": 3.5088846497237682
+          },
+          "counters": {
+            "state_checks": 201,
+            "collision_queries": 201,
+            "subdivision_samples": 199,
+            "edge_checks": 1,
+            "termination_checks": 201
+          },
+          "deliverable_stage_path": true,
+          "complete_task_executable": false,
+          "outer_wall_s": 3.511869829148054,
+          "request_plus_scene_export_s": 3.6193905621767044,
+          "path_length_joint_l2_rad": 0.03230378576681779,
+          "waypoints": 2
+        }
+      ]
+    }
+  ],
+  "setup_s": 0.5397148318588734,
+  "hardware": {
+    "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+    "processor": "x86_64",
+    "worker_threads": 1,
+    "authority_threads": 1
+  },
+  "sources": {
+    "../historical_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "../historical_segment.json": "cf306dd532c1d20a2a5132dabe0af7ae7bf1ba1de2e2b14fc9a1d3bda1ee81dd"
+  },
+  "scene_snapshot_fingerprint": "5f9e06b478ed009dba1255b5f1a9fb1a1b86af8e367732fbc1bd3a23029078e0",
+  "population": {
+    "active_cartons": 37,
+    "original_cartons": 40,
+    "source": "historical actual surviving world; no extra obstacle removal"
+  },
+  "isaac_run": false,
+  "p50": null,
+  "p95": null
+}

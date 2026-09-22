@@ -1,0 +1,12 @@
+{"event": "case_start", "case": "empty_direct", "backend": "tesseract_ompl"}
+{"event": "case_finish", "case": "empty_direct", "backend": "tesseract_ompl", "status": "VERIFIED", "timings": {"input_validation_s": 0.023815758526325226, "direct_check_s": 0.479665302, "endpoint_check_s": 0.005614936, "environment_init_s": 0.210961396, "native_total_s": 0.696408268, "ompl_solve_s": 0.0, "worker_roundtrip_s_inclusive": 0.8101257495582104, "worker_cold_start_s": 0.05081658065319061, "authority_s": 2.192726518958807, "request_total_s": 3.0783545523881912}}
+{"event": "case_start", "case": "empty_direct", "backend": "legacy"}
+{"event": "case_finish", "case": "empty_direct", "backend": "legacy", "status": "VERIFIED", "timings": {"legacy_search_s_inclusive": 0.037256870418787, "authority_s": 2.182548549026251, "request_total_s": 2.2281495593488216}}
+{"event": "case_start", "case": "empty_detour", "backend": "tesseract_ompl"}
+{"event": "case_finish", "case": "empty_detour", "backend": "tesseract_ompl", "status": "BUDGET_EXHAUSTED", "timings": {"input_validation_s": 0.0280471034348011, "direct_check_s": 20.613298319, "endpoint_check_s": 0.006251964, "environment_init_s": 0.0, "native_total_s": 313.649807014, "ompl_solve_s": 293.030032447, "worker_roundtrip_s_inclusive": 313.75272884592414, "worker_cold_start_s": 0.0, "request_total_s": 313.78100561350584}}
+{"event": "case_start", "case": "empty_detour", "backend": "legacy"}
+{"event": "case_finish", "case": "empty_detour", "backend": "legacy", "status": "VERIFIED", "timings": {"legacy_search_s_inclusive": 14.627716850489378, "authority_s": 372.1438502520323, "request_total_s": 386.7720283269882}}
+{"event": "case_start", "case": "loaded_free", "backend": "tesseract_ompl"}
+{"event": "case_finish", "case": "loaded_free", "backend": "tesseract_ompl", "status": "VERIFIED", "timings": {"input_validation_s": 0.027031436562538147, "direct_check_s": 0.494656816, "endpoint_check_s": 0.005468244, "environment_init_s": 0.290483787, "native_total_s": 0.790730572, "ompl_solve_s": 0.0, "worker_roundtrip_s_inclusive": 0.9274748079478741, "worker_cold_start_s": 0.0, "authority_s": 3.0550226494669914, "request_total_s": 4.01064620167017}}
+{"event": "case_start", "case": "loaded_free", "backend": "legacy"}
+{"event": "case_finish", "case": "loaded_free", "backend": "legacy", "status": "VERIFIED", "timings": {"legacy_search_s_inclusive": 0.04779487103223801, "authority_s": 2.9197657853364944, "request_total_s": 2.967746637761593}}

@@ -1,0 +1,131 @@
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system program_options 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: graph 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: graph 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: graph 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: graph 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0")  
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: graph 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0")  
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: graph 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system program_options 
+-- BULLET_LIB=LinearMath-float64 BULLET_LIB_ABS=/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libLinearMath-float64.so
+-- BULLET_LIB=Bullet3Common-float64 BULLET_LIB_ABS=/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBullet3Common-float64.so
+-- BULLET_LIB=BulletInverseDynamics-float64 BULLET_LIB_ABS=/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBulletInverseDynamics-float64.so
+-- BULLET_LIB=BulletCollision-float64 BULLET_LIB_ABS=/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBulletCollision-float64.so
+-- BULLET_LIB=BulletDynamics-float64 BULLET_LIB_ABS=/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBulletDynamics-float64.so
+-- BULLET_LIB=BulletSoftBody-float64 BULLET_LIB_ABS=/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBulletSoftBody-float64.so
+-- BULLET_LIBRARIES_ABS=/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libLinearMath-float64.so;/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBullet3Common-float64.so;/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBulletInverseDynamics-float64.so;/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBulletCollision-float64.so;/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBulletDynamics-float64.so;/root/autodl-tmp/tesseract-ompl-20260922/native/lib/libBulletSoftBody-float64.so
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- _assimp_TARGET_INCLUDE_DIR /root/autodl-tmp/tesseract-ompl-20260922/native/include
+-- Setting assimp IMPORTED_CONFIGURATIONS due to bug
+-- Found TinyXML2 via Config file: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/tinyxml2
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system filesystem serialization stacktrace_basic 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: filesystem 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: system program_options 
+-- Found Boost: /root/autodl-tmp/tesseract-ompl-20260922/native/lib/cmake/Boost-1.88.0/BoostConfig.cmake (found version "1.88.0") found components: serialization filesystem system 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /root/autodl-tmp/tesseract-ompl-20260922/build

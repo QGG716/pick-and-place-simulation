@@ -1,0 +1,12 @@
+{
+  "tool_depth_m": 0.14000398597070288,
+  "terminal_m": 0.03500099649267572,
+  "adaptive_distances_m": [
+    0.03500099649267572,
+    0.1,
+    0.14000398597070288
+  ],
+  "per_gate_connections": 3,
+  "maximum_approach_connections": 12,
+  "source": "read-only expansion of existing _approach candidate formulas; no search executed"
+}

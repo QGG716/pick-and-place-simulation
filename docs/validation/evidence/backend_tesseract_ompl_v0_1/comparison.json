@@ -1,0 +1,842 @@
+{
+  "schema": "tesseract_ompl_directed_comparison_v1",
+  "cases": [
+    {
+      "name": "empty_direct",
+      "stage": "pregrasp",
+      "q_start": [
+        0.9862454453352169,
+        -0.6632776651139614,
+        -0.4577066564420566,
+        -1.705148906574704,
+        0.999911262836787,
+        -1.3257244752169774
+      ],
+      "q_goal": [
+        1.0078449601805017,
+        -0.6721570940265915,
+        -0.4616017450048917,
+        -1.7020305661821633,
+        1.0215182534836682,
+        -1.323195944226099
+      ],
+      "scene_fingerprint": "1c44147b549f19b9895d1f991aa6abda28a3a1dcff84d5310ed8dcea7d550c83",
+      "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+      "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "source_path_indices": [
+        78,
+        79
+      ],
+      "attachment": null,
+      "seed": 71070,
+      "budgets": {
+        "max_state_checks": 100000,
+        "legacy_iterations": 600,
+        "max_attempts": 2,
+        "wall_time_s": null
+      },
+      "export_s": 0.10339350625872612,
+      "results": [
+        {
+          "status": "VERIFIED",
+          "backend": "tesseract_ompl",
+          "candidate_found": true,
+          "exact_solution": true,
+          "native_validated": true,
+          "authority_validated": true,
+          "path": [
+            [
+              0.9862454453352169,
+              -0.6632776651139614,
+              -0.4577066564420566,
+              -1.705148906574704,
+              0.999911262836787,
+              -1.3257244752169774
+            ],
+            [
+              1.0078449601805017,
+              -0.6721570940265915,
+              -0.4616017450048917,
+              -1.7020305661821633,
+              1.0215182534836682,
+              -1.323195944226099
+            ]
+          ],
+          "diagnostics": {
+            "request_id": "empty_direct",
+            "seed": 71070,
+            "scene_revision": "5f9e06b478ed009dba1255b5f1a9fb1a1b86af8e367732fbc1bd3a23029078e0",
+            "scene_fingerprint": "1c44147b549f19b9895d1f991aa6abda28a3a1dcff84d5310ed8dcea7d550c83",
+            "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+            "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "attempts": [
+              {
+                "candidate_found": true,
+                "counters": {
+                  "edge_checks": 1,
+                  "state_checks": 201,
+                  "subdivision_samples": 199,
+                  "termination_checks": 201
+                },
+                "direct_valid": true,
+                "environment_reused": false,
+                "exact_solution": true,
+                "failure": null,
+                "native_validated": true,
+                "path": [
+                  [
+                    0.9862454453352169,
+                    -0.6632776651139614,
+                    -0.4577066564420566,
+                    -1.705148906574704,
+                    0.999911262836787,
+                    -1.3257244752169774
+                  ],
+                  [
+                    1.0078449601805017,
+                    -0.6721570940265915,
+                    -0.4616017450048917,
+                    -1.7020305661821633,
+                    1.0215182534836682,
+                    -1.323195944226099
+                  ]
+                ],
+                "scene_fingerprint": "1c44147b549f19b9895d1f991aa6abda28a3a1dcff84d5310ed8dcea7d550c83",
+                "status": "CANDIDATE",
+                "timings": {
+                  "direct_check_s": 0.479665302,
+                  "endpoint_check_s": 0.005614936,
+                  "environment_init_s": 0.210961396,
+                  "native_total_s": 0.696408268,
+                  "ompl_solve_s": 0.0,
+                  "worker_roundtrip_s_inclusive": 0.8101257495582104,
+                  "worker_cold_start_s": 0.05081658065319061
+                },
+                "versions": {
+                  "implementation": "native C++17 worker",
+                  "manager": "FCLDiscreteBVHManager",
+                  "ompl": "1.7.0",
+                  "tesseract": "0.35.0",
+                  "tesseract_planning": "0.35.0 (installed; pipeline bypassed)"
+                },
+                "repeated_candidate": false
+              }
+            ],
+            "authority_rejections": 0,
+            "termination": "VERIFIED"
+          },
+          "timings": {
+            "input_validation_s": 0.023815758526325226,
+            "direct_check_s": 0.479665302,
+            "endpoint_check_s": 0.005614936,
+            "environment_init_s": 0.210961396,
+            "native_total_s": 0.696408268,
+            "ompl_solve_s": 0.0,
+            "worker_roundtrip_s_inclusive": 0.8101257495582104,
+            "worker_cold_start_s": 0.05081658065319061,
+            "authority_s": 2.192726518958807,
+            "request_total_s": 3.0783545523881912
+          },
+          "counters": {
+            "state_checks": 201,
+            "edge_checks": 1,
+            "subdivision_samples": 199
+          },
+          "deliverable_stage_path": true,
+          "complete_task_executable": false,
+          "outer_wall_s": 3.0784160532057285,
+          "path_length_joint_l2_rad": 0.03230378576681779,
+          "waypoints": 2
+        },
+        {
+          "status": "VERIFIED",
+          "backend": "legacy",
+          "candidate_found": true,
+          "exact_solution": true,
+          "native_validated": false,
+          "authority_validated": true,
+          "path": [
+            [
+              0.9862454453352169,
+              -0.6632776651139614,
+              -0.4577066564420566,
+              -1.705148906574704,
+              0.999911262836787,
+              -1.3257244752169774
+            ],
+            [
+              1.0078449601805017,
+              -0.6721570940265915,
+              -0.4616017450048917,
+              -1.7020305661821633,
+              1.0215182534836682,
+              -1.323195944226099
+            ]
+          ],
+          "diagnostics": {
+            "planning_iteration_budget": 600,
+            "planning_iterations_consumed": 0,
+            "extension_attempts": 0,
+            "state_validations": 4,
+            "edge_validation_calls": 1,
+            "edge_state_samples": 2,
+            "state_validation_budget": null,
+            "edge_validation_budget": null,
+            "termination": "DIRECT_EDGE",
+            "scene_fingerprint": "1c44147b549f19b9895d1f991aa6abda28a3a1dcff84d5310ed8dcea7d550c83",
+            "seed": 71070
+          },
+          "timings": {
+            "legacy_search_s_inclusive": 0.037256870418787,
+            "authority_s": 2.182548549026251,
+            "request_total_s": 2.2281495593488216
+          },
+          "counters": {},
+          "deliverable_stage_path": true,
+          "complete_task_executable": false,
+          "outer_wall_s": 2.228227410465479,
+          "path_length_joint_l2_rad": 0.03230378576681779,
+          "waypoints": 2
+        }
+      ]
+    },
+    {
+      "name": "empty_detour",
+      "stage": "pregrasp",
+      "q_start": [
+        0.9862454453352169,
+        -0.6632776651139614,
+        -0.4577066564420566,
+        -1.705148906574704,
+        0.999911262836787,
+        -1.3257244752169774
+      ],
+      "q_goal": [
+        -0.7828847461869272,
+        0.2662156820286623,
+        -0.2937091500866846,
+        -3.141559559423011,
+        1.010884687412613,
+        0.7830850480049029
+      ],
+      "scene_fingerprint": "1c44147b549f19b9895d1f991aa6abda28a3a1dcff84d5310ed8dcea7d550c83",
+      "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+      "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "source_path_indices": [
+        78,
+        208
+      ],
+      "attachment": null,
+      "seed": 71070,
+      "budgets": {
+        "max_state_checks": 100000,
+        "legacy_iterations": 600,
+        "max_attempts": 2,
+        "wall_time_s": null
+      },
+      "export_s": 0.11257263645529747,
+      "results": [
+        {
+          "status": "BUDGET_EXHAUSTED",
+          "backend": "tesseract_ompl",
+          "candidate_found": false,
+          "exact_solution": false,
+          "native_validated": false,
+          "authority_validated": false,
+          "path": [],
+          "diagnostics": {
+            "request_id": "empty_detour",
+            "seed": 71070,
+            "scene_revision": "5f9e06b478ed009dba1255b5f1a9fb1a1b86af8e367732fbc1bd3a23029078e0",
+            "scene_fingerprint": "1c44147b549f19b9895d1f991aa6abda28a3a1dcff84d5310ed8dcea7d550c83",
+            "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+            "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "attempts": [
+              {
+                "candidate_found": false,
+                "counters": {
+                  "edge_checks": 129,
+                  "state_checks": 100000,
+                  "subdivision_samples": 99893,
+                  "termination_checks": 100153
+                },
+                "direct_valid": false,
+                "environment_reused": true,
+                "exact_solution": false,
+                "failure": null,
+                "native_validated": false,
+                "ompl_status": "Approximate solution",
+                "path": [],
+                "scene_fingerprint": "1c44147b549f19b9895d1f991aa6abda28a3a1dcff84d5310ed8dcea7d550c83",
+                "status": "BUDGET_EXHAUSTED",
+                "timings": {
+                  "direct_check_s": 20.613298319,
+                  "endpoint_check_s": 0.006251964,
+                  "environment_init_s": 0.0,
+                  "native_total_s": 313.649807014,
+                  "ompl_solve_s": 293.030032447,
+                  "worker_roundtrip_s_inclusive": 313.75272884592414,
+                  "worker_cold_start_s": 0.0
+                },
+                "versions": {
+                  "implementation": "native C++17 worker",
+                  "manager": "FCLDiscreteBVHManager",
+                  "ompl": "1.7.0",
+                  "tesseract": "0.35.0",
+                  "tesseract_planning": "0.35.0 (installed; pipeline bypassed)"
+                }
+              }
+            ],
+            "authority_rejections": 0,
+            "termination": "BUDGET_EXHAUSTED"
+          },
+          "timings": {
+            "input_validation_s": 0.0280471034348011,
+            "direct_check_s": 20.613298319,
+            "endpoint_check_s": 0.006251964,
+            "environment_init_s": 0.0,
+            "native_total_s": 313.649807014,
+            "ompl_solve_s": 293.030032447,
+            "worker_roundtrip_s_inclusive": 313.75272884592414,
+            "worker_cold_start_s": 0.0,
+            "request_total_s": 313.78100561350584
+          },
+          "counters": {
+            "state_checks": 100000,
+            "edge_checks": 129,
+            "subdivision_samples": 99893
+          },
+          "deliverable_stage_path": false,
+          "complete_task_executable": false,
+          "outer_wall_s": 313.78111885115504
+        },
+        {
+          "status": "VERIFIED",
+          "backend": "legacy",
+          "candidate_found": true,
+          "exact_solution": true,
+          "native_validated": false,
+          "authority_validated": true,
+          "path": [
+            [
+              0.9862454453352169,
+              -0.6632776651139614,
+              -0.4577066564420566,
+              -1.705148906574704,
+              0.999911262836787,
+              -1.3257244752169774
+            ],
+            [
+              0.887452876491821,
+              -0.6124365797967404,
+              -0.4501693364106262,
+              -1.7766298834375718,
+              1.0003665987994788,
+              -1.203705362747967
+            ],
+            [
+              0.7886603076484252,
+              -0.5615954944795194,
+              -0.44263201637919575,
+              -1.8481108603004395,
+              1.0008219347621705,
+              -1.0816862502789566
+            ],
+            [
+              0.6898677388050294,
+              -0.5107544091622984,
+              -0.4350946963477653,
+              -1.9195918371633072,
+              1.0012772707248623,
+              -0.9596671378099462
+            ],
+            [
+              0.5910751699616336,
+              -0.45991332384507744,
+              -0.4275573763163349,
+              -1.9910728140261749,
+              1.001732606687554,
+              -0.8376480253409357
+            ],
+            [
+              0.49228260111823774,
+              -0.40907223852785646,
+              -0.42002005628490446,
+              -2.0625537908890426,
+              1.0021879426502458,
+              -0.7156289128719253
+            ],
+            [
+              0.3934900322748419,
+              -0.3582311532106355,
+              -0.41248273625347404,
+              -2.1340347677519103,
+              1.0026432786129376,
+              -0.5936098004029149
+            ],
+            [
+              0.2946974634314461,
+              -0.3073900678934145,
+              -0.4049454162220436,
+              -2.205515744614778,
+              1.0030986145756293,
+              -0.47159068793390446
+            ],
+            [
+              0.19590489458805027,
+              -0.2565489825761935,
+              -0.3974080961906132,
+              -2.2769967214776456,
+              1.003553950538321,
+              -0.34957157546489404
+            ],
+            [
+              0.09711232574465445,
+              -0.20570789725897257,
+              -0.38987077615918275,
+              -2.3484776983405133,
+              1.0040092865010128,
+              -0.22755246299588355
+            ],
+            [
+              0.09926530107020438,
+              -0.24497048573056562,
+              -0.2754137333388501,
+              -2.3042019291032543,
+              0.9717503469044576,
+              -0.10609293777395123
+            ],
+            [
+              0.11375290777315467,
+              -0.28908777241804073,
+              -0.2929047492178513,
+              -2.430022225712873,
+              0.9217465522297431,
+              0.0016415140512323345
+            ],
+            [
+              0.09433838458684321,
+              -0.2753212506831901,
+              -0.20302347933965764,
+              -2.500503437243281,
+              0.8547764283929257,
+              0.12123381241673177
+            ],
+            [
+              0.10341012448054088,
+              -0.2834113607149594,
+              -0.16482523118482723,
+              -2.366905125714931,
+              0.8688193732743374,
+              0.2341383488566311
+            ],
+            [
+              0.034244128030103654,
+              -0.26901970377271867,
+              -0.10229013299522588,
+              -2.4112421319920623,
+              0.8619445916427216,
+              0.38071690762902144
+            ],
+            [
+              -0.06580872462557033,
+              -0.2624332454232934,
+              -0.0614693126149316,
+              -2.423696441060177,
+              0.8333219273595422,
+              0.5210926147165418
+            ],
+            [
+              -0.05550533000843568,
+              -0.1785263121248493,
+              0.06514475369801356,
+              -2.4713825345403677,
+              0.8242539832491701,
+              0.603954872070085
+            ],
+            [
+              -0.1570942383202237,
+              -0.20704987761190602,
+              0.030235295046025165,
+              -2.509176061079506,
+              0.7365163209218941,
+              0.708459329284264
+            ],
+            [
+              -0.2692020033472621,
+              -0.13034760201653972,
+              -0.012698267166846397,
+              -2.415150036436466,
+              0.7563845134139979,
+              0.7620287309214994
+            ],
+            [
+              -0.40112414792535367,
+              -0.12412306308127047,
+              -0.0759131885621078,
+              -2.5059414075365822,
+              0.8077765664370414,
+              0.7532275708963113
+            ],
+            [
+              -0.5209522082020656,
+              -0.08127787650251905,
+              -0.06419744064246725,
+              -2.5936367797219306,
+              0.8918025060066187,
+              0.7169311470399713
+            ],
+            [
+              -0.5839105352994153,
+              0.0022459700976027314,
+              -0.11936306988054243,
+              -2.7253359640000725,
+              0.9204252001785731,
+              0.7328319548119197
+            ],
+            [
+              -0.6168346651525491,
+              0.06717284080206737,
+              -0.16317802437124126,
+              -2.658224633878915,
+              0.902320086589771,
+              0.7979761449474637
+            ],
+            [
+              -0.6632608626924783,
+              0.1587259885517869,
+              -0.22496133471116725,
+              -2.5635911877325563,
+              0.8767901307881729,
+              0.8898357340483006
+            ],
+            [
+              -0.7330492815375323,
+              0.2764243134977945,
+              -0.30380023607386814,
+              -2.5488567756498157,
+              0.869428035114121,
+              0.97462845295621
+            ],
+            [
+              -0.7935793509153998,
+              0.29487892858165105,
+              -0.3587684226080413,
+              -2.695257073627808,
+              0.8938393594325954,
+              0.9167918179457347
+            ],
+            [
+              -0.7905543651541843,
+              0.262654712159509,
+              -0.3509801650489765,
+              -2.8667669096339243,
+              0.91727492763999,
+              0.9532190423427267
+            ],
+            [
+              -0.8113305594551696,
+              0.2617991508215382,
+              -0.3205616688428096,
+              -3.0057779955029575,
+              1.0081963090729085,
+              0.8944691210018256
+            ],
+            [
+              -0.7828847461869272,
+              0.2662156820286623,
+              -0.2937091500866846,
+              -3.141559559423011,
+              1.010884687412613,
+              0.7830850480049029
+            ]
+          ],
+          "diagnostics": {
+            "planning_iteration_budget": 600,
+            "planning_iterations_consumed": 215,
+            "extension_attempts": 286,
+            "state_validations": 1192,
+            "edge_validation_calls": 287,
+            "edge_state_samples": 1190,
+            "state_validation_budget": null,
+            "edge_validation_budget": null,
+            "termination": "CONNECTED",
+            "scene_fingerprint": "1c44147b549f19b9895d1f991aa6abda28a3a1dcff84d5310ed8dcea7d550c83",
+            "seed": 71070
+          },
+          "timings": {
+            "legacy_search_s_inclusive": 14.627716850489378,
+            "authority_s": 372.1438502520323,
+            "request_total_s": 386.7720283269882
+          },
+          "counters": {},
+          "deliverable_stage_path": true,
+          "complete_task_executable": false,
+          "outer_wall_s": 386.77208663895726,
+          "path_length_joint_l2_rad": 4.987650845591373,
+          "waypoints": 29
+        }
+      ]
+    },
+    {
+      "name": "loaded_free",
+      "stage": "transit",
+      "q_start": [
+        0.9862454453352169,
+        -0.6632776651139614,
+        -0.4577066564420566,
+        -1.705148906574704,
+        0.999911262836787,
+        -1.3257244752169774
+      ],
+      "q_goal": [
+        1.0078449601805017,
+        -0.6721570940265915,
+        -0.4616017450048917,
+        -1.7020305661821633,
+        1.0215182534836682,
+        -1.323195944226099
+      ],
+      "scene_fingerprint": "11670aab432248d07eb91dca5c5feb8e645ddf056f1afdd7538b6d1813c9abe4",
+      "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+      "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "source_path_indices": [
+        78,
+        79
+      ],
+      "attachment": {
+        "name": "carton_l07_c04",
+        "parent": "backend_tcp",
+        "transform": [
+          [
+            1.988459354002856e-05,
+            1.1306031489785685e-06,
+            0.9999999998016624,
+            6.901438300177531e-05
+          ],
+          [
+            -5.079609177724686e-07,
+            -0.9999999999992318,
+            1.1306132497896762e-06,
+            -5.013856856217469e-05
+          ],
+          [
+            0.9999999998021725,
+            -5.079833994466443e-07,
+            -1.9884592965705408e-05,
+            0.2674859538559116
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "half_extents": [
+          0.3,
+          0.2,
+          0.15
+        ],
+        "category": "payload"
+      },
+      "seed": 71070,
+      "budgets": {
+        "max_state_checks": 100000,
+        "legacy_iterations": 600,
+        "max_attempts": 2,
+        "wall_time_s": null
+      },
+      "export_s": 0.10518643260002136,
+      "results": [
+        {
+          "status": "VERIFIED",
+          "backend": "tesseract_ompl",
+          "candidate_found": true,
+          "exact_solution": true,
+          "native_validated": true,
+          "authority_validated": true,
+          "path": [
+            [
+              0.9862454453352169,
+              -0.6632776651139614,
+              -0.4577066564420566,
+              -1.705148906574704,
+              0.999911262836787,
+              -1.3257244752169774
+            ],
+            [
+              1.0078449601805017,
+              -0.6721570940265915,
+              -0.4616017450048917,
+              -1.7020305661821633,
+              1.0215182534836682,
+              -1.323195944226099
+            ]
+          ],
+          "diagnostics": {
+            "request_id": "loaded_free",
+            "seed": 71070,
+            "scene_revision": "5f9e06b478ed009dba1255b5f1a9fb1a1b86af8e367732fbc1bd3a23029078e0",
+            "scene_fingerprint": "11670aab432248d07eb91dca5c5feb8e645ddf056f1afdd7538b6d1813c9abe4",
+            "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+            "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "attempts": [
+              {
+                "candidate_found": true,
+                "counters": {
+                  "edge_checks": 1,
+                  "state_checks": 201,
+                  "subdivision_samples": 199,
+                  "termination_checks": 201
+                },
+                "direct_valid": true,
+                "environment_reused": false,
+                "exact_solution": true,
+                "failure": null,
+                "native_validated": true,
+                "path": [
+                  [
+                    0.9862454453352169,
+                    -0.6632776651139614,
+                    -0.4577066564420566,
+                    -1.705148906574704,
+                    0.999911262836787,
+                    -1.3257244752169774
+                  ],
+                  [
+                    1.0078449601805017,
+                    -0.6721570940265915,
+                    -0.4616017450048917,
+                    -1.7020305661821633,
+                    1.0215182534836682,
+                    -1.323195944226099
+                  ]
+                ],
+                "scene_fingerprint": "11670aab432248d07eb91dca5c5feb8e645ddf056f1afdd7538b6d1813c9abe4",
+                "status": "CANDIDATE",
+                "timings": {
+                  "direct_check_s": 0.494656816,
+                  "endpoint_check_s": 0.005468244,
+                  "environment_init_s": 0.290483787,
+                  "native_total_s": 0.790730572,
+                  "ompl_solve_s": 0.0,
+                  "worker_roundtrip_s_inclusive": 0.9274748079478741,
+                  "worker_cold_start_s": 0.0
+                },
+                "versions": {
+                  "implementation": "native C++17 worker",
+                  "manager": "FCLDiscreteBVHManager",
+                  "ompl": "1.7.0",
+                  "tesseract": "0.35.0",
+                  "tesseract_planning": "0.35.0 (installed; pipeline bypassed)"
+                },
+                "repeated_candidate": false
+              }
+            ],
+            "authority_rejections": 0,
+            "termination": "VERIFIED"
+          },
+          "timings": {
+            "input_validation_s": 0.027031436562538147,
+            "direct_check_s": 0.494656816,
+            "endpoint_check_s": 0.005468244,
+            "environment_init_s": 0.290483787,
+            "native_total_s": 0.790730572,
+            "ompl_solve_s": 0.0,
+            "worker_roundtrip_s_inclusive": 0.9274748079478741,
+            "worker_cold_start_s": 0.0,
+            "authority_s": 3.0550226494669914,
+            "request_total_s": 4.01064620167017
+          },
+          "counters": {
+            "state_checks": 201,
+            "edge_checks": 1,
+            "subdivision_samples": 199
+          },
+          "deliverable_stage_path": true,
+          "complete_task_executable": false,
+          "outer_wall_s": 4.010718937963247,
+          "path_length_joint_l2_rad": 0.03230378576681779,
+          "waypoints": 2
+        },
+        {
+          "status": "VERIFIED",
+          "backend": "legacy",
+          "candidate_found": true,
+          "exact_solution": true,
+          "native_validated": false,
+          "authority_validated": true,
+          "path": [
+            [
+              0.9862454453352169,
+              -0.6632776651139614,
+              -0.4577066564420566,
+              -1.705148906574704,
+              0.999911262836787,
+              -1.3257244752169774
+            ],
+            [
+              1.0078449601805017,
+              -0.6721570940265915,
+              -0.4616017450048917,
+              -1.7020305661821633,
+              1.0215182534836682,
+              -1.323195944226099
+            ]
+          ],
+          "diagnostics": {
+            "planning_iteration_budget": 600,
+            "planning_iterations_consumed": 0,
+            "extension_attempts": 0,
+            "state_validations": 4,
+            "edge_validation_calls": 1,
+            "edge_state_samples": 2,
+            "state_validation_budget": null,
+            "edge_validation_budget": null,
+            "termination": "DIRECT_EDGE",
+            "scene_fingerprint": "11670aab432248d07eb91dca5c5feb8e645ddf056f1afdd7538b6d1813c9abe4",
+            "seed": 71070
+          },
+          "timings": {
+            "legacy_search_s_inclusive": 0.04779487103223801,
+            "authority_s": 2.9197657853364944,
+            "request_total_s": 2.967746637761593
+          },
+          "counters": {},
+          "deliverable_stage_path": true,
+          "complete_task_executable": false,
+          "outer_wall_s": 2.9678553864359856,
+          "path_length_joint_l2_rad": 0.03230378576681779,
+          "waypoints": 2
+        }
+      ]
+    }
+  ],
+  "setup_s": 0.5053610876202583,
+  "hardware": {
+    "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+    "processor": "x86_64",
+    "worker_threads": 1,
+    "authority_threads": 1
+  },
+  "sources": {
+    "../historical_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "../historical_segment.json": "cf306dd532c1d20a2a5132dabe0af7ae7bf1ba1de2e2b14fc9a1d3bda1ee81dd"
+  },
+  "scene_snapshot_fingerprint": "5f9e06b478ed009dba1255b5f1a9fb1a1b86af8e367732fbc1bd3a23029078e0",
+  "population": {
+    "active_cartons": 37,
+    "original_cartons": 40,
+    "source": "historical actual surviving world; no extra obstacle removal"
+  },
+  "isaac_run": false,
+  "p50": null,
+  "p95": null
+}

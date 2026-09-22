@@ -19,6 +19,7 @@ from unloading_sim.layout_single_carton import (  # noqa: E402
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--free-motion-backend", choices=["legacy", "tesseract_ompl"], default="legacy")
     parser.add_argument(
         "--config",
         type=Path,
@@ -34,12 +35,19 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    backend = None
     try:
-        result = run_layout_single_carton_audit(args.config, project_root=ROOT)
+        if args.free_motion_backend != "legacy":
+            from unloading_sim.tesseract_ompl_backend import create_free_motion_backend
+            backend = create_free_motion_backend(args.free_motion_backend)
+        result = run_layout_single_carton_audit(args.config, project_root=ROOT, free_motion_backend=backend)
         output = write_layout_single_carton_audit(result, args.output)
     except Exception as exc:
         print(json.dumps({"run_status": "FAIL", "reason": str(exc)}, ensure_ascii=False))
         return 1
+    finally:
+        if backend is not None:
+            backend.worker.close()
     print(
         json.dumps(
             {
