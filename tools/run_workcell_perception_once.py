@@ -161,6 +161,7 @@ def evaluate_masks(folder, artifacts, output, *, payload):
 
 def main(argv=None, *, runtime_factory=None):
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--legacy-cuboid-diagnostic', action=argparse.BooleanOptionalAction, default=None)
     p.add_argument('--capture',type=Path,required=True);p.add_argument('--vision',type=Path,required=True)
     p.add_argument('--models',type=Path,required=True)
     p.add_argument('--output-directory',type=Path,help='new isolated run directory; refuse overwrite')
@@ -251,6 +252,9 @@ def main(argv=None, *, runtime_factory=None):
         checkpoint('config')
         import yaml
         config = yaml.safe_load((ROOT/'configs/isaac/perception_validation.yaml').read_text(encoding='utf-8'))
+        if a.legacy_cuboid_diagnostic is not None:
+            config['vision']['legacy_cuboid_diagnostic'] = a.legacy_cuboid_diagnostic
+        summary['legacy_cuboid_diagnostic_requested'] = config['vision']['legacy_cuboid_diagnostic']
         checkpoint('dependencies')
         # Heavy optional imports happen only after a report and module roster exist.
         from run_metric_small_matrix import oracle_proposals, infer
@@ -306,6 +310,8 @@ def main(argv=None, *, runtime_factory=None):
                         artifacts=artifacts, config=config, vision_root=a.vision, upstream_python=Path(sys.executable), timeout=1200,
                         payload=payload)
                     _check_technical_status(result, 'geometry')
+                    row['legacy_cuboid_diagnostic'] = result.get('legacy_cuboid_diagnostic')
+                    row['geometry_timing_seconds'] = result.get('timing_seconds')
                 checkpoint('geometry_result', row)
                 geometry = _read_json(_owned_file(folder/'rgbd_cuboids.json', folder))
                 row.update(_algorithm_counts(result, geometry, count))
@@ -314,6 +320,9 @@ def main(argv=None, *, runtime_factory=None):
             except SummaryWriteError:
                 raise
             except Exception as exc:
+                diagnostic_path = folder/'legacy_cuboid_diagnostic.json'
+                if diagnostic_path.is_file():
+                    row['legacy_cuboid_diagnostic'] = _read_json(diagnostic_path)
                 fail_row(row, exc)
                 try:
                     (folder/'failure.txt').write_text(traceback.format_exc(), encoding='utf-8')

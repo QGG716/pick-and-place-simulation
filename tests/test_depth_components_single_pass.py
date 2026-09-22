@@ -165,7 +165,8 @@ def test_real_build_entry_preserves_all_rejected_failure(tmp_path, geometry, mon
         geometry._build_pointmap(tmp_path, manifest, path, FILTER)
 
 
-def test_secondary_timing_preserves_legacy_interval_and_adds_preprocessing(tmp_path, geometry, monkeypatch):
+@pytest.mark.parametrize('diagnostic', [True, False, None])
+def test_secondary_timing_preserves_legacy_interval_and_adds_preprocessing(tmp_path, geometry, monkeypatch, diagnostic):
     from run_metric_small_matrix import oracle_proposal_document
     from unloading_perception.isaac_payload import load_capture_payload
 
@@ -175,6 +176,7 @@ def test_secondary_timing_preserves_legacy_interval_and_adds_preprocessing(tmp_p
     masks = tmp_path / 'sam.npz'
     np.savez(masks, masks=np.ones((1, 2, 3), bool), labels=['box'], mask_ids=[1])
     clock = [0.]
+    calls = {'legacy': 0, 'metric': 0}
     monkeypatch.setattr(geometry, 'perf_counter', lambda: clock[0])
     build, write_npz = geometry._build_pointmap, rgbd.MetricPointMap.write_npz
 
@@ -187,17 +189,22 @@ def test_secondary_timing_preserves_legacy_interval_and_adds_preprocessing(tmp_p
         return write_npz(*a, **kw)
 
     def fake_external(command, **kwargs):
+        calls['legacy'] += 1
         clock[0] += 11
         Path(command[command.index('--json-output') + 1]).write_text('{}')
-        return SimpleNamespace(returncode=0)
+        Path(command[command.index('--output') + 1]).write_bytes(b'synthetic-image')
+        return SimpleNamespace(returncode=0, stdout='', stderr='')
 
     def fake_metric(**kwargs):
+        calls['metric'] += 1
+        assert 'raw' not in kwargs
         clock[0] += 13
         return {'instances': []}
 
     def fake_observation(*a, **kw):
         clock[0] += 5
-        return {}, {}, {}, ()
+        from unloading_perception.algorithm_artifact import empty_module_observation
+        return empty_module_observation(payload), {}, {}, ()
 
     def fake_evaluation(*a, **kw):
         clock[0] += 2
@@ -213,13 +220,25 @@ def test_secondary_timing_preserves_legacy_interval_and_adds_preprocessing(tmp_p
     monkeypatch.setattr(geometry, 'ground_truth_observation', lambda *a, **kw: {})
     monkeypatch.setattr(geometry, 'evaluate_observations', fake_evaluation)
     monkeypatch.setattr(geometry, 'write_evaluation', lambda *a: None)
+    vision_config = {'pointcloud_filter': FILTER}
+    if diagnostic is not None:
+        vision_config['legacy_cuboid_diagnostic'] = diagnostic
+    diagnostic = bool(diagnostic)
     result = geometry._run_secondary_module(scene='synthetic', module_dir=tmp_path, manifest=manifest,
         artifacts={'cargo_masks.npz': {'path': str(masks)}, 'box_geometry_2d.json': {'path': 'unused'}},
-        config={'vision': {'pointcloud_filter': FILTER}}, vision_root=tmp_path,
+        config={'vision': vision_config}, vision_root=tmp_path,
         upstream_python=Path(sys.executable), timeout=1, payload=payload,
         output_directory=tmp_path / 'new-run')
-    assert result['elapsed_seconds'] == 24
-    assert result['timing_seconds'] == {
+    assert calls == {'legacy': int(diagnostic), 'metric': 1}
+    assert result['elapsed_seconds'] == (24 if diagnostic else 13)
+    assert {k: result['timing_seconds'][k] for k in (
+        'pointmap_build_including_filter_audits', 'pointmap_write', 'legacy_geometry',
+        'module_total_before_timing_record')} == {
         'pointmap_build_including_filter_audits': 7, 'pointmap_write': 3,
-        'legacy_geometry': 24, 'module_total_before_timing_record': 41}
+        'legacy_geometry': 24 if diagnostic else 13, 'module_total_before_timing_record': 41 if diagnostic else 30}
+    assert result['legacy_cuboid_diagnostic']['status'] == ('COMPLETED' if diagnostic else 'DISABLED')
+    assert (tmp_path/'new-run/rgbd_cuboids_baseline_raw.json').exists() == diagnostic
+    assert (tmp_path/'new-run/rgbd_cuboids_baseline.png').exists() == diagnostic
+    provenance = json.loads((tmp_path/'new-run/geometry_input_provenance.json').read_text())
+    assert (provenance['external_geometry_command'] is not None) == diagnostic
     assert json.loads((tmp_path / 'new-run/rgbd_stage_timing.json').read_text()) == result['timing_seconds']

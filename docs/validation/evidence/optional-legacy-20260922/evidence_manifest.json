@@ -1,0 +1,489 @@
+{
+  "files": {
+    "A-diagnostic-on/ab_summary.json": {
+      "bytes": 12715,
+      "sha256": "8d1c1198b514bd9431deb6935eb16b145386c0dae96746a9a7e1b8d2a16f4fa7"
+    },
+    "A-diagnostic-on/algorithm_artifact.json": {
+      "bytes": 8025,
+      "sha256": "df39ecb3d986313c381d6bfa8eb8b12fde1778117700b5c339222be1689f98ca"
+    },
+    "A-diagnostic-on/effective_config.json": {
+      "bytes": 5335,
+      "sha256": "25c069db69f8feb564d7b9ad57e5166a909c2798dd8c94cbf7829ce5eb97b957"
+    },
+    "A-diagnostic-on/fused_algorithm_observation.json": {
+      "bytes": 7159201,
+      "sha256": "d9637e2b3479f2e5ce93a9fa54c843ba3927d6cefc88b8b371ff40c1d4c1da7a"
+    },
+    "A-diagnostic-on/fusion_result.json": {
+      "bytes": 6599981,
+      "sha256": "aee3e973a6eb84454ee4565a1f91fbaa9d25b1ec36c7644118735b8ecfcad811"
+    },
+    "A-diagnostic-on/module_0_upper/camera_info.json": {
+      "bytes": 903,
+      "sha256": "06fa09c365c92a4a3e0fa19ca62b0d70270c76f5bea9fbf750376376bc92f44f"
+    },
+    "A-diagnostic-on/module_0_upper/capture_binding.json": {
+      "bytes": 766,
+      "sha256": "acd75102fe2e75215a108c54c3a436a6f7cef9b0fbdab3ec352c9fe72add607b"
+    },
+    "A-diagnostic-on/module_0_upper/capture_metadata.json": {
+      "bytes": 1056,
+      "sha256": "64c6b049ae405701ab02f948c273b26ff841f48c4e8b41cfa20f88f5881f80b3"
+    },
+    "A-diagnostic-on/module_0_upper/geometry_input_provenance.json": {
+      "bytes": 6393,
+      "sha256": "4cfa2ef2057f1a99d113e5ffe35faad575f1f72dc806df8e833bf070806f9a65"
+    },
+    "A-diagnostic-on/module_0_upper/gt_annotations.json": {
+      "bytes": 45010,
+      "sha256": "e083c5e8181c67d03a3e8e0651d87fee70b937b416a5327d708c16ffdb2c967d"
+    },
+    "A-diagnostic-on/module_0_upper/input_provenance.json": {
+      "bytes": 3041,
+      "sha256": "671d0f45379eaa95635ae8ba8f673a4ffae5bbb154ea62243e255f7502586fce"
+    },
+    "A-diagnostic-on/module_0_upper/legacy_cuboid_diagnostic.json": {
+      "bytes": 1383,
+      "sha256": "1cc190358a9cfc5124bf53b1e7f6e77c87224f432bace1231e921dc4cc5b27e3"
+    },
+    "A-diagnostic-on/module_0_upper/metric_pointmap_filter_audit.json": {
+      "bytes": 17988,
+      "sha256": "a4f10f6b9b6d0bef5ff35a1ae44646b14bddfa5aca9adb590de1870bdc39cacf"
+    },
+    "A-diagnostic-on/module_0_upper/mode_b_rgbd_evaluation.json": {
+      "bytes": 17479,
+      "sha256": "e44565ed63526e3ce566ebb90ec5a39a50a521f38a3d7b2695f6e937d4a7e317"
+    },
+    "A-diagnostic-on/module_0_upper/mode_b_rgbd_observation.json": {
+      "bytes": 9249052,
+      "sha256": "3dd40b13817322fe783f979897d0f5fec4d25b0606f3419a8086933e2f6a6e67"
+    },
+    "A-diagnostic-on/module_0_upper/oracle_proposals.json": {
+      "bytes": 6376,
+      "sha256": "4ba9e2bec6bf3077161571f410c7d033ca734bbb1e2f97f01adb21f56d357994"
+    },
+    "A-diagnostic-on/module_0_upper/rgbd_cuboids.json": {
+      "bytes": 3631119,
+      "sha256": "1fbf21b4de97878430a681003e0d459b7882533501476912aafb362b86f97ebd"
+    },
+    "A-diagnostic-on/module_0_upper/rgbd_cuboids_baseline_raw.json": {
+      "bytes": 149655,
+      "sha256": "bd65c3b1d75b1a5aaca39bf3006c1f540210e2eb1bc41b62544aeb58c9f2d0b3"
+    },
+    "A-diagnostic-on/module_0_upper/rgbd_stage_timing.json": {
+      "bytes": 521,
+      "sha256": "74daf6864b49772a3bf181a898d8bc4c5108e0bc71e72055b2959a83cadb11b9"
+    },
+    "A-diagnostic-on/module_1_lower/camera_info.json": {
+      "bytes": 978,
+      "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+    },
+    "A-diagnostic-on/module_1_lower/capture_binding.json": {
+      "bytes": 766,
+      "sha256": "2d9ebf0cc58461911b0cfc41f19391dab1423bb523b33f7e60e467cb4369d752"
+    },
+    "A-diagnostic-on/module_1_lower/capture_metadata.json": {
+      "bytes": 1131,
+      "sha256": "71bf5277d5c18dba6b94121e3b227f2477139e635c6996cf4d41384a5f393e6d"
+    },
+    "A-diagnostic-on/module_1_lower/geometry_input_provenance.json": {
+      "bytes": 6393,
+      "sha256": "9d61019f2a313d24a1493e246813787c79e8b9b1eb4b18ef23f2eba1493b2c41"
+    },
+    "A-diagnostic-on/module_1_lower/gt_annotations.json": {
+      "bytes": 45032,
+      "sha256": "dc6cf21e04ca8580b0a18cd723a6cbd23eb46c70ff157b00a7a0a58724f76697"
+    },
+    "A-diagnostic-on/module_1_lower/input_provenance.json": {
+      "bytes": 3041,
+      "sha256": "8e26fb9ee5fd359bc4410d2802bca7c4a3445eee1b0927f33a281905b056ea4d"
+    },
+    "A-diagnostic-on/module_1_lower/legacy_cuboid_diagnostic.json": {
+      "bytes": 1383,
+      "sha256": "712210824cfb09e9282615852aa2bc7578c49fe337dc89859b6ae89129d013f0"
+    },
+    "A-diagnostic-on/module_1_lower/metric_pointmap_filter_audit.json": {
+      "bytes": 34261,
+      "sha256": "f076ef6355f6d1874b4741f94314fc47b26ef61131e8070fdfd70b900355d62f"
+    },
+    "A-diagnostic-on/module_1_lower/mode_b_rgbd_evaluation.json": {
+      "bytes": 31379,
+      "sha256": "b5b0e12408f990b8c9a02008b6fe8aca75a37843f5a2a230d35ed24fb6f11401"
+    },
+    "A-diagnostic-on/module_1_lower/mode_b_rgbd_observation.json": {
+      "bytes": 18651344,
+      "sha256": "bcf680c14bb0ee86c47082c46a2dba836a16e3a48e24db98509a37be8b1dab0b"
+    },
+    "A-diagnostic-on/module_1_lower/oracle_proposals.json": {
+      "bytes": 11961,
+      "sha256": "e1b7ceda462a884060a5622f65d50f15857f348ba54fe2a85a38bc2cc7151a50"
+    },
+    "A-diagnostic-on/module_1_lower/rgbd_cuboids.json": {
+      "bytes": 7147602,
+      "sha256": "a7b71f9a833b8125f041a8c495a8ff48f25fb1626d0e3f86053aefc4ee921dab"
+    },
+    "A-diagnostic-on/module_1_lower/rgbd_cuboids_baseline_raw.json": {
+      "bytes": 292101,
+      "sha256": "4714594e41476bab3fee63c0accb6e2732edf72b78e283b4efaf4833cbc3d920"
+    },
+    "A-diagnostic-on/module_1_lower/rgbd_stage_timing.json": {
+      "bytes": 522,
+      "sha256": "5e67da1f721fe53014866ffd7a9f7135a08238565c7cc7486e9b07c1c7c28032"
+    },
+    "B-diagnostic-off/ab_summary.json": {
+      "bytes": 9859,
+      "sha256": "346cca27e9c73ab076a3727776eecd129c8817d9466318aea5b1d6a3b0f55193"
+    },
+    "B-diagnostic-off/algorithm_artifact.json": {
+      "bytes": 8031,
+      "sha256": "c99bbcddff75d18e276e7659efef8f69c7c2e3cb7a0b80a88e86b43fcfb7e802"
+    },
+    "B-diagnostic-off/effective_config.json": {
+      "bytes": 5336,
+      "sha256": "b457903c7f06988fd2ee794e125d991abf89c70c99c2ebd6424457e501e57da5"
+    },
+    "B-diagnostic-off/fused_algorithm_observation.json": {
+      "bytes": 7159223,
+      "sha256": "9a2faf865111687f6b9e583010deac06484f9c86a6f7201cc7e030aa4495a8ff"
+    },
+    "B-diagnostic-off/fusion_result.json": {
+      "bytes": 6599981,
+      "sha256": "aee3e973a6eb84454ee4565a1f91fbaa9d25b1ec36c7644118735b8ecfcad811"
+    },
+    "B-diagnostic-off/module_0_upper/camera_info.json": {
+      "bytes": 903,
+      "sha256": "06fa09c365c92a4a3e0fa19ca62b0d70270c76f5bea9fbf750376376bc92f44f"
+    },
+    "B-diagnostic-off/module_0_upper/capture_binding.json": {
+      "bytes": 766,
+      "sha256": "acd75102fe2e75215a108c54c3a436a6f7cef9b0fbdab3ec352c9fe72add607b"
+    },
+    "B-diagnostic-off/module_0_upper/capture_metadata.json": {
+      "bytes": 1056,
+      "sha256": "64c6b049ae405701ab02f948c273b26ff841f48c4e8b41cfa20f88f5881f80b3"
+    },
+    "B-diagnostic-off/module_0_upper/geometry_input_provenance.json": {
+      "bytes": 3967,
+      "sha256": "7e28fce7750bb8c0f1d52d01b2af8b965b133e42f095081a8a95d954b03b9ab6"
+    },
+    "B-diagnostic-off/module_0_upper/gt_annotations.json": {
+      "bytes": 45010,
+      "sha256": "e083c5e8181c67d03a3e8e0651d87fee70b937b416a5327d708c16ffdb2c967d"
+    },
+    "B-diagnostic-off/module_0_upper/input_provenance.json": {
+      "bytes": 3049,
+      "sha256": "6b5b2173de30c656417b64b80fd1d0310dcf6639e58d83e42d21ff90aca8b6ce"
+    },
+    "B-diagnostic-off/module_0_upper/legacy_cuboid_diagnostic.json": {
+      "bytes": 83,
+      "sha256": "7eb99a64caf3514af48732cd5786318977afae749f65ae50159863c437fb464b"
+    },
+    "B-diagnostic-off/module_0_upper/metric_pointmap_filter_audit.json": {
+      "bytes": 18004,
+      "sha256": "aed2b88971841c0663f05cb15fcb20879e927a533850bf1e132ecb4ec3fbfb70"
+    },
+    "B-diagnostic-off/module_0_upper/mode_b_rgbd_evaluation.json": {
+      "bytes": 17480,
+      "sha256": "3f9ecb8b86b7da60be7233d47e78b4aa5bd3b8c0501209b293f4952e6ec205b9"
+    },
+    "B-diagnostic-off/module_0_upper/mode_b_rgbd_observation.json": {
+      "bytes": 9249061,
+      "sha256": "19424ce6d02af4abfdd54a4b161701b5f4076031081110e5897e15e940b155e7"
+    },
+    "B-diagnostic-off/module_0_upper/oracle_proposals.json": {
+      "bytes": 6376,
+      "sha256": "4ba9e2bec6bf3077161571f410c7d033ca734bbb1e2f97f01adb21f56d357994"
+    },
+    "B-diagnostic-off/module_0_upper/rgbd_cuboids.json": {
+      "bytes": 3631120,
+      "sha256": "b2d9790b3b949f2cc6a791f59134610c77b36b6a0a250f905ccd7c2b5cae164a"
+    },
+    "B-diagnostic-off/module_0_upper/rgbd_stage_timing.json": {
+      "bytes": 507,
+      "sha256": "61b478631b1f1bec688aa2cd2b6464a73a03774d7fb3675ce5121b51c2017b4e"
+    },
+    "B-diagnostic-off/module_1_lower/camera_info.json": {
+      "bytes": 978,
+      "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+    },
+    "B-diagnostic-off/module_1_lower/capture_binding.json": {
+      "bytes": 766,
+      "sha256": "2d9ebf0cc58461911b0cfc41f19391dab1423bb523b33f7e60e467cb4369d752"
+    },
+    "B-diagnostic-off/module_1_lower/capture_metadata.json": {
+      "bytes": 1131,
+      "sha256": "71bf5277d5c18dba6b94121e3b227f2477139e635c6996cf4d41384a5f393e6d"
+    },
+    "B-diagnostic-off/module_1_lower/geometry_input_provenance.json": {
+      "bytes": 3967,
+      "sha256": "cda0c35ddec73443fd15ffe23946d229501737d50e22b78f132a42bcc04455ce"
+    },
+    "B-diagnostic-off/module_1_lower/gt_annotations.json": {
+      "bytes": 45032,
+      "sha256": "dc6cf21e04ca8580b0a18cd723a6cbd23eb46c70ff157b00a7a0a58724f76697"
+    },
+    "B-diagnostic-off/module_1_lower/input_provenance.json": {
+      "bytes": 3049,
+      "sha256": "6f0848e3a4924a140cab673f6ea090c3b9ca6c3ef165e0afdb35ec8809bf386d"
+    },
+    "B-diagnostic-off/module_1_lower/legacy_cuboid_diagnostic.json": {
+      "bytes": 83,
+      "sha256": "7eb99a64caf3514af48732cd5786318977afae749f65ae50159863c437fb464b"
+    },
+    "B-diagnostic-off/module_1_lower/metric_pointmap_filter_audit.json": {
+      "bytes": 34292,
+      "sha256": "5d5bdc879a491aa43c7deb2acbbec109aac9565a94cfb4a2e1820270189f8409"
+    },
+    "B-diagnostic-off/module_1_lower/mode_b_rgbd_evaluation.json": {
+      "bytes": 31380,
+      "sha256": "2c10c84ce7639ef6c78a4e5e5fa7d640968db73130ce383095fff06d199a3421"
+    },
+    "B-diagnostic-off/module_1_lower/mode_b_rgbd_observation.json": {
+      "bytes": 18651353,
+      "sha256": "ec762c059df25409709ae154205cb60a4c2e650cd88d7906411f65b4ff16d189"
+    },
+    "B-diagnostic-off/module_1_lower/oracle_proposals.json": {
+      "bytes": 11961,
+      "sha256": "e1b7ceda462a884060a5622f65d50f15857f348ba54fe2a85a38bc2cc7151a50"
+    },
+    "B-diagnostic-off/module_1_lower/rgbd_cuboids.json": {
+      "bytes": 7147603,
+      "sha256": "3b73dc4e16894f58a6905566d924d1ccbe350e1e508669b69704565b6fd7f852"
+    },
+    "B-diagnostic-off/module_1_lower/rgbd_stage_timing.json": {
+      "bytes": 508,
+      "sha256": "f0819d3683f66bcccfa9c59dc7fdecbbad3f61fdb41d5ba22ec02f832a6bce3c"
+    },
+    "code.tar.gz": {
+      "bytes": 448590,
+      "sha256": "c2b4f07272c64c834dd1ec7cf21770348369ec5c497d0bbe8482852055ead994"
+    },
+    "comparison.json": {
+      "bytes": 8654,
+      "sha256": "e7ae931f099765e8d6291e684ae0645fe14fd37e8c6b2316e91111355bcf89df"
+    },
+    "fixed_plan.json": {
+      "bytes": 15931,
+      "sha256": "768695f6ad0a8ce5baaeaace4a76ea0a7babe0e4a3380c6ec6f1fd6d40cebda6"
+    }
+  },
+  "modules": [
+    {
+      "audit_records": 16,
+      "audit_statuses": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "module": "module_0_upper",
+      "no_face_records": [],
+      "npz_bytes": 15889648,
+      "npz_files": 18,
+      "run": "A-diagnostic-on"
+    },
+    {
+      "audit_records": 31,
+      "audit_statuses": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "module": "module_1_lower",
+      "no_face_records": [
+        {
+          "accepted": false,
+          "camera_facing_faces": [],
+          "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+          "config": {
+            "boundary_auxiliary_weight": 0.05,
+            "boundary_noise_scale_px": 2.0,
+            "erosion_px": 2,
+            "extraction_threshold_m": 0.003,
+            "maximum_fit_points": 12000,
+            "maximum_mean_m": 0.003,
+            "maximum_p95_m": 0.006,
+            "minimum_points": 50,
+            "normal_pair_tolerance_degrees": 10.0,
+            "plane_noise_scale_m": 0.001,
+            "positive_infinity_is_no_hit": true,
+            "seed": 17
+          },
+          "final_face_validation": [],
+          "frozen_support_regions": {},
+          "geometry_version": "DEPTH_METRIC_PATCHES_V1",
+          "mask_id": 1,
+          "method": "DEPTH_CONSTRAINED_METRIC_FACES_V1",
+          "observation_segmentation": {
+            "candidate_plane_used_for_selection": false,
+            "excluded_boundary": 320,
+            "excluded_discontinuity": 350,
+            "excluded_invalid": 0,
+            "retained_pixels": 0,
+            "selected_pixels": 670,
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE"
+          },
+          "source_ambiguous": false,
+          "support_capture_binding": {
+            "K_float64": "aea3a3965d0f56f4dc8b5bcaa059456983468e351ba8dc833abcbb4745521905",
+            "depth_float32": "3d8147b225f96a7905a242709d72eb55519e2772b7072a1a31d2a64692bc7806",
+            "instance_mask": "7eb1e3c0c89810daa534e5b353713e3ef5ac9e6afdb7b500e3622e9b5e043c9f"
+          }
+        }
+      ],
+      "npz_bytes": 28828937,
+      "npz_files": 33,
+      "run": "A-diagnostic-on"
+    },
+    {
+      "audit_records": 16,
+      "audit_statuses": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "module": "module_0_upper",
+      "no_face_records": [],
+      "npz_bytes": 15889651,
+      "npz_files": 18,
+      "run": "B-diagnostic-off"
+    },
+    {
+      "audit_records": 31,
+      "audit_statuses": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "module": "module_1_lower",
+      "no_face_records": [
+        {
+          "accepted": false,
+          "camera_facing_faces": [],
+          "complete_observability": "UNRESOLVED_PHYSICAL_BOUNDARIES",
+          "config": {
+            "boundary_auxiliary_weight": 0.05,
+            "boundary_noise_scale_px": 2.0,
+            "erosion_px": 2,
+            "extraction_threshold_m": 0.003,
+            "maximum_fit_points": 12000,
+            "maximum_mean_m": 0.003,
+            "maximum_p95_m": 0.006,
+            "minimum_points": 50,
+            "normal_pair_tolerance_degrees": 10.0,
+            "plane_noise_scale_m": 0.001,
+            "positive_infinity_is_no_hit": true,
+            "seed": 17
+          },
+          "final_face_validation": [],
+          "frozen_support_regions": {},
+          "geometry_version": "DEPTH_METRIC_PATCHES_V1",
+          "mask_id": 1,
+          "method": "DEPTH_CONSTRAINED_METRIC_FACES_V1",
+          "observation_segmentation": {
+            "candidate_plane_used_for_selection": false,
+            "excluded_boundary": 320,
+            "excluded_discontinuity": 350,
+            "excluded_invalid": 0,
+            "retained_pixels": 0,
+            "selected_pixels": 670,
+            "selection": "FROZEN_OBSERVATION_FACE_LABEL_INTERSECT_INSTANCE"
+          },
+          "source_ambiguous": false,
+          "support_capture_binding": {
+            "K_float64": "aea3a3965d0f56f4dc8b5bcaa059456983468e351ba8dc833abcbb4745521905",
+            "depth_float32": "3d8147b225f96a7905a242709d72eb55519e2772b7072a1a31d2a64692bc7806",
+            "instance_mask": "7eb1e3c0c89810daa534e5b353713e3ef5ac9e6afdb7b500e3622e9b5e043c9f"
+          }
+        }
+      ],
+      "npz_bytes": 28828939,
+      "npz_files": 33,
+      "run": "B-diagnostic-off"
+    }
+  ],
+  "root": "/root/autodl-tmp/v05-acceptance/optional-legacy-20260922"
+}

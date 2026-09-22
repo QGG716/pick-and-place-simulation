@@ -67,6 +67,8 @@ vision:
   registered_depth_source: ISAAC_IDEAL_REGISTERED_DEPTH
   depth_unavailable_fallback: DEPTH_UNAVAILABLE_MOGE
   fallback_scale_status: MONOCULAR_SCALE_UNVERIFIED
+  # Fixed-input metric-faces A/B passed; enable explicitly for legacy diagnostics.
+  legacy_cuboid_diagnostic: false
   pointcloud_filter:
     boundary_erosion_px: 2
     depth_percentile_low: 1.0

@@ -25,7 +25,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from unloading_contracts import (  # noqa: E402
     SCHEMA_VERSION, CargoObservation, EvidenceKind, ObservationStatus,
-    PerceptionObservation, ResourceReference, UnknownRegion, Validity, dumps,
+    PerceptionObservation, ResourceReference, UnknownRegion, Validity, dumps, canonical_fingerprint,
 )
 from unloading_perception.isaac_evaluation import evaluate_observations, write_evaluation  # noqa: E402
 from unloading_perception.isaac_validation import IsaacSceneManifest, ground_truth_observation, write_json  # noqa: E402
@@ -351,7 +351,9 @@ def _observation(
         SCHEMA_VERSION, f"rgbd-{scene}-{metadata.capture_id}", metadata.sensor_epoch,
         metadata.frame_sequence, metadata.capture_center_time, metadata.capture_center_time + elapsed,
         metadata.clock_domain, "staged-registered-rgbd-geometry", "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
-        "sam+pinned-plane-cuboid+registered-depth", metadata.calibration_identity,
+        ("sam+pinned-plane-extractor+depth-constrained-metric-faces"
+         if geometry_payload.get('strategy') == 'DEPTH_CONSTRAINED_METRIC_FACES_V1'
+         else "sam+pinned-plane-cuboid+registered-depth"), metadata.calibration_identity,
         ObservationStatus.COMPLETE if not unknown else ObservationStatus.PARTIAL,
         None, None, tuple(cargo), tuple(unknown),
         {
@@ -389,6 +391,36 @@ def _top_view(path: Path, observation: PerceptionObservation) -> None:
     cv2.imwrite(str(path), image)
 
 
+def _legacy_cuboid_diagnostic(command, *, directory, vision_root, timeout, enabled):
+    """Explicit diagnostics fail closed; persist genuine failure before raising."""
+    record = {'status': 'DISABLED', 'enabled': enabled, 'seconds': 0., 'command': command if enabled else None}
+    path = directory / 'legacy_cuboid_diagnostic.json'
+    if not enabled:
+        write_json(path, record)
+        return record
+    started = perf_counter()
+    try:
+        completed = subprocess.run(command, cwd=vision_root, text=True, capture_output=True, timeout=timeout)
+        record['returncode'] = completed.returncode
+        (directory / 'legacy_cuboid_diagnostic.log').write_text(completed.stdout + '\n' + completed.stderr, encoding='utf-8')
+        if completed.returncode != 0:
+            raise RuntimeError(f'legacy cuboid diagnostic failed: returncode={completed.returncode}: {completed.stderr[-1000:]}')
+        raw = directory / 'rgbd_cuboids_baseline_raw.json'
+        image = directory / 'rgbd_cuboids_baseline.png'
+        # Preserve the old JSON parsing check plus explicit image delivery.
+        value = json.loads(raw.read_text(encoding='utf-8'))
+        if not isinstance(value, dict) or not image.is_file():
+            raise ValueError('legacy diagnostic output missing or invalid')
+        record.update(status='COMPLETED', raw_sha256=sha256(raw), image_sha256=sha256(image))
+    except Exception as exc:
+        record.update(status='FAILED', error_type=type(exc).__name__, error=str(exc))
+        raise
+    finally:
+        record['seconds'] = perf_counter() - started
+        write_json(path, record)
+    return record
+
+
 def _run_secondary_module(
     *, scene: str, module_dir: Path, manifest: IsaacSceneManifest, artifacts: dict,
     config: dict, vision_root: Path, upstream_python: Path, timeout: float,
@@ -408,6 +440,10 @@ def _run_secondary_module(
         module_dir = payload.directory
         (module_dir/'oracle_proposals.json').write_text(json.dumps(proposals, indent=2), encoding='utf-8')
     masks_path = Path(artifacts["cargo_masks.npz"]["path"])
+    input_validation_seconds = perf_counter() - module_started
+    diagnostic_enabled = config['vision'].get('legacy_cuboid_diagnostic', False)
+    if not isinstance(diagnostic_enabled, bool):
+        raise ValueError('legacy_cuboid_diagnostic must be boolean')
     pointmap_started = perf_counter()
     pointmap, audits = _build_pointmap(module_dir, manifest, masks_path, config["vision"]["pointcloud_filter"], payload=payload)
     pointmap_build_seconds = perf_counter() - pointmap_started
@@ -425,33 +461,50 @@ def _run_secondary_module(
         "--json-output", str(raw_json), "--output", str(base_image),
     ]
     write_json(module_dir/'geometry_input_provenance.json', {
-        'capture': payload.input_provenance(), 'external_geometry_command': base_command,
+        'capture': payload.input_provenance(),
+        'external_geometry_command': base_command if diagnostic_enabled else None,
+        'legacy_cuboid_diagnostic': {'enabled': diagnostic_enabled, 'status': 'REQUESTED' if diagnostic_enabled else 'DISABLED'},
+        'final_geometry_strategy': 'DEPTH_CONSTRAINED_METRIC_FACES_V1',
+        'config_identity': canonical_fingerprint(config),
         'derived_pointmap': {'path': str(pointmap_path), 'sha256': sha256(pointmap_path),
             'parent_depth_sha256': payload.binding.extensions['metric_depth_sha256'],
             'parent_rgb_sha256': payload.binding.rgb_sha256,
             'gt_geometry_used_for_filtering': False}})
     started = perf_counter()
-    completed = subprocess.run(base_command, cwd=vision_root, text=True, capture_output=True, timeout=timeout)
-    if completed.returncode != 0:
-        raise RuntimeError(f"registered RGB-D baseline failed for {scene}/{module_dir.name}: {completed.stderr[-1000:]}")
+    try:
+        diagnostic = _legacy_cuboid_diagnostic(base_command, directory=module_dir,
+            vision_root=vision_root, timeout=timeout, enabled=diagnostic_enabled)
+    finally:
+        diagnostic_path = module_dir / 'legacy_cuboid_diagnostic.json'
+        if diagnostic_path.is_file():
+            provenance_path = module_dir / 'geometry_input_provenance.json'
+            provenance = json.loads(provenance_path.read_text(encoding='utf-8'))
+            provenance['legacy_cuboid_diagnostic'] = json.loads(diagnostic_path.read_text(encoding='utf-8'))
+            write_json(provenance_path, provenance)
     from metric_depth_runner import run_metric_depth as run_metric_v4
     metadata, camera = payload.metadata, payload.camera
     geometry_json = module_dir / "rgbd_cuboids.json"
     geometry_image = module_dir / "v4_validation/final_metric_faces_overlay.png"
+    final_started = perf_counter()
     geometry = run_metric_v4(
-        raw=json.loads(raw_json.read_text(encoding='utf-8')), source=module_dir / "sensor_rgb.png",
+        source=module_dir / "sensor_rgb.png",
         masks=masks_path, pointmap=pointmap_path,
         depth=payload.depth, rgb=payload.rgb,
         K=camera["K"], metadata=metadata, output=module_dir / "v4_validation",
         vision_root=vision_root, python=upstream_python, timeout=timeout,
     )
+    final_metric_seconds = perf_counter() - final_started
     elapsed = perf_counter() - started
+    conversion_started = perf_counter()
     geometry["method"] = "registered_metric_depth+pinned_plane_extraction+depth_constrained_metric_faces"
     write_json(geometry_json, geometry)
     proposals["_scene_dir"] = str(module_dir)
     observation, predicted_masks, hypotheses, observed_sets = _observation(
         scene, manifest, geometry, masks_path, proposals, elapsed, payload=payload, lineage_directory=lineage_directory,
     )
+    observation = replace(observation, config_identity=canonical_fingerprint(config))
+    observation_conversion_seconds = perf_counter() - conversion_started
+    evaluation_started = perf_counter()
     truth = ground_truth_observation(manifest, payload.annotations["objects"], camera_frame_id=metadata.rgb_frame_id)
     report = evaluate_observations(
         truth, observation, ground_truth_masks=payload.instance_masks,
@@ -463,20 +516,30 @@ def _run_secondary_module(
     report["world_transform_evaluation"]["prediction_camera_frame"] = metadata.rgb_frame_id
     write_evaluation(module_dir / "mode_b_rgbd_evaluation.json", report)
     (module_dir / "mode_b_rgbd_observation.json").write_text(dumps(observation), encoding="utf-8")
+    evaluation_write_seconds = perf_counter() - evaluation_started
+    audit_started = perf_counter()
     write_json(module_dir / "metric_pointmap_filter_audit.json", audits)
+    audit_json_write_seconds = perf_counter() - audit_started
     # Keep elapsed_seconds as the historical geometry-only interval above.
     # The additive total includes input validation, point maps, audits and evaluation,
     # ending immediately before this small timing record is written.
     timing = {
+        "input_validation_and_snapshot": input_validation_seconds,
         "pointmap_build_including_filter_audits": pointmap_build_seconds,
         "pointmap_write": pointmap_write_seconds,
         "legacy_geometry": elapsed,
+        "legacy_cuboid_diagnostic": diagnostic['seconds'],
+        "final_metric_faces": final_metric_seconds,
+        "final_validation_and_observation": observation_conversion_seconds,
+        "evaluation_and_observation_write": evaluation_write_seconds,
+        "filter_audit_json_write": audit_json_write_seconds,
         "module_total_before_timing_record": perf_counter() - module_started,
     }
     write_json(module_dir / "rgbd_stage_timing.json", timing)
     return {
         "module_id": camera['module_id'], "elapsed_seconds": elapsed, "observation": observation,
         "timing_seconds": timing,
+        "legacy_cuboid_diagnostic": diagnostic,
         "observed_face_sets": observed_sets, "hypotheses": hypotheses, "report": report,
         "geometry_image": geometry_image, "predicted_masks": predicted_masks,
         "metadata": metadata, "payload": payload, "module_directory": module_dir,
@@ -491,6 +554,7 @@ def main() -> int:
     parser.add_argument("--upstream-python", required=True, type=Path)
     parser.add_argument("--timeout", type=float, default=1200.0)
     parser.add_argument("--comparison", action="store_true")
+    parser.add_argument('--legacy-cuboid-diagnostic', action=argparse.BooleanOptionalAction, default=None)
     parser.add_argument("--output-directory", type=Path, help="new isolated run directory; never overwrite captures")
     args = parser.parse_args()
     source_capture_root = args.capture_directory.resolve()
@@ -500,6 +564,8 @@ def main() -> int:
     vision_root = args.vision_root.resolve()
     index = json.loads((bundle_root / "index.json").read_text(encoding="utf-8"))
     config = json.loads(json.dumps(__import__("yaml").safe_load((ROOT / "configs/isaac/perception_validation.yaml").read_text(encoding="utf-8"))))
+    if args.legacy_cuboid_diagnostic is not None:
+        config['vision']['legacy_cuboid_diagnostic'] = args.legacy_cuboid_diagnostic
     mode_c = json.loads((source_capture_root / "mode_c_moge_summary.json").read_text(encoding="utf-8")) if args.comparison else {"scenes": []}
     mode_c_by_scene = {item["scene"]: item for item in mode_c["scenes"]}
     results = []
@@ -588,10 +654,12 @@ def main() -> int:
             "elapsed_seconds": elapsed,
             "modules": {
                 batches[0].module_id: {"elapsed_seconds": elapsed, "timing_seconds": primary['timing_seconds'],
+                    "legacy_cuboid_diagnostic": primary['legacy_cuboid_diagnostic'],
                     "observed_face_sets": len(batches[0].face_sets)},
                 **{item["module_id"]: {
                     "elapsed_seconds": item["elapsed_seconds"],
                     "timing_seconds": item["timing_seconds"],
+                    "legacy_cuboid_diagnostic": item['legacy_cuboid_diagnostic'],
                     "observed_face_sets": len(item["observed_face_sets"]),
                 } for item in secondary_results},
             },

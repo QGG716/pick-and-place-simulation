@@ -8,7 +8,12 @@ from unloading_perception.metric_faces import extract_observation_labels, fit_me
 from unloading_perception.final_geometry import project
 
 
-def run_metric_depth(*, raw, source, masks, pointmap, depth, K, metadata, output, vision_root, python=None, timeout=None, rgb=None):
+def run_metric_depth(*, source, masks, pointmap, depth, K, metadata, output, vision_root, raw=None, python=None, timeout=None, rgb=None):
+    """Independent metric faces; raw is ignored for historical caller compatibility.
+
+    The pinned extractor is imported and SHA-checked on every invocation. No
+    legacy cuboid output, image or subprocess initialization is required.
+    """
     from diagnose_metric_calibration import load_extractor
     output=Path(output); output.mkdir(parents=True,exist_ok=True)
     with np.load(pointmap,allow_pickle=False) as archive:

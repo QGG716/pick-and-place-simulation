@@ -1,0 +1,313 @@
+{
+  "artifact": {
+    "path": "/root/autodl-tmp/v05-acceptance/optional-legacy-20260922/B-diagnostic-off/algorithm_artifact.json",
+    "sha256": "c99bbcddff75d18e276e7659efef8f69c7c2e3cb7a0b80a88e86b43fcfb7e802"
+  },
+  "artifact_load_validation_seconds": 0.26890361309051514,
+  "code_sha256": {
+    "src/unloading_perception/rgbd.py": "1384148c76da210f16fc5cf75dd56c280abd5038e1d912f584cd4b0ea3929c14",
+    "tools/metric_depth_runner.py": "0f67e0ba44370a6937accba48e953532e791f48959701452621b5d76cda68e50",
+    "tools/run_isaac_rgbd_geometry.py": "283799afac1c45e605a819130190485cc652f6e58a02f2ff4318ad3bae890ce5"
+  },
+  "diagnostic_enabled": false,
+  "effective_config": {
+    "comparison_mode": "STAGED_MONOCULAR_MOGE",
+    "detector_metrics": "NOT_EVALUATED",
+    "effective_scene_config": "configs/isaac/workcell_v2.yaml",
+    "historical_cameras": [
+      {
+        "acceptance_eligible": false,
+        "camera_id": "front_validation_camera",
+        "publish_rate_hz": 10.0,
+        "resolution_px": [
+          640,
+          480
+        ],
+        "status": "SUPERSEDED_BY_J1_MOUNTED_PERCEPTION_MAST_V2"
+      }
+    ],
+    "illumination": {
+      "comparison_modes": [
+        "LIGHT_OFF",
+        "LIGHT_ON_NOMINAL"
+      ],
+      "controlled_variables": [
+        "scene",
+        "camera_pose",
+        "exposure",
+        "proposal",
+        "depth"
+      ],
+      "geometry_status": "SIMULATION_LIGHT_PROXY"
+    },
+    "layout_bundle": {
+      "archived_snapshot_reference_commit": "f84578a3c9a91364b747560b994f2e6e9b5d65a2",
+      "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+      "isaac_contract": "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json",
+      "latest_layout_binding_status": "READ_ONLY_COMPATIBILITY_REFERENCE",
+      "official_robot_asset": {
+        "repository_path": "assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+        "sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+        "source_status": "LATEST_FEASIBILITY_OFFICIAL_URDF"
+      },
+      "robot_base_xyz_A_m": [
+        0.625,
+        0.0,
+        0.6
+      ],
+      "snapshot": "integration/isaac_scene_contract/m710id70_layout_v1/scene_snapshot.json"
+    },
+    "modes": [
+      "ISAAC_GT",
+      "STAGED_RGBD",
+      "STAGED_MONOCULAR_MOGE"
+    ],
+    "perturbations": {
+      "known_rotation_rpy_rad": [
+        0.0,
+        0.0,
+        0.17453292519943295
+      ],
+      "known_translation_m": [
+        0.05,
+        0.0,
+        0.0
+      ],
+      "occluder_size_xyz_m": [
+        0.18,
+        0.7,
+        0.9
+      ]
+    },
+    "primary_mode": "STAGED_RGBD",
+    "proposal_source": "ISAAC_GT_ORACLE_PROPOSAL",
+    "raw_image_automatic": false,
+    "rendering": {
+      "appearance_ab_entry": "scripts/isaacsim_perception_capture.py --appearance-ab",
+      "appearance_ab_scope": "FULL_STACK_NOMINAL_SAME_GEOMETRY_A_PLAIN_B_SHARED_PAPER_ATLAS",
+      "capture_trigger_hz": 2,
+      "carton_asset_config": "configs/isaac/carton_assets.json",
+      "carton_asset_entry": "scripts/isaacsim_perception_capture.py --carton-assets configs/isaac/carton_assets.json --asset-cache CACHE",
+      "carton_asset_review_policy": "RAW_IMAGES_FIRST_THEN_ONE_EXISTING_PIPELINE_RUN_PER_MODULE",
+      "full_resolution_px": [
+        2592,
+        1944
+      ],
+      "physics_hz": 60,
+      "renderer": "RaytracedLighting",
+      "sensor_acquisition_hz": 30,
+      "sensor_target_highlight": false,
+      "smoke_frames": 18,
+      "vision_processing_hz": 2,
+      "visual_demo_fps": 20,
+      "visual_demo_resolution_px": [
+        1280,
+        720
+      ],
+      "visual_demo_seconds": 12
+    },
+    "rig_id": "m710id70_j1_perception_mast_v5",
+    "ros": {
+      "topics": {
+        "clock": "/clock",
+        "gt_2d": "/isaac/ground_truth/detections_2d",
+        "gt_3d": "/isaac/ground_truth/detections_3d",
+        "joint_states": "/joint_states",
+        "modules": {
+          "module_0_upper": {
+            "camera_info": "/isaac/vision_mast/module_0_upper/camera_info",
+            "capture_metadata": "/isaac/vision_mast/module_0_upper/capture_metadata",
+            "depth": "/isaac/vision_mast/module_0_upper/depth",
+            "pointcloud": "/isaac/vision_mast/module_0_upper/pointcloud_on_demand",
+            "rgb": "/isaac/vision_mast/module_0_upper/rgb"
+          },
+          "module_1_lower": {
+            "camera_info": "/isaac/vision_mast/module_1_lower/camera_info",
+            "capture_metadata": "/isaac/vision_mast/module_1_lower/capture_metadata",
+            "depth": "/isaac/vision_mast/module_1_lower/depth",
+            "pointcloud": "/isaac/vision_mast/module_1_lower/pointcloud_on_demand",
+            "rgb": "/isaac/vision_mast/module_1_lower/rgb"
+          }
+        },
+        "tf": "/tf",
+        "tf_static": "/tf_static"
+      },
+      "use_sim_time": true
+    },
+    "scenes": [
+      "MECHANICAL_TOP_VIEW",
+      "J1_ROTATION_SWEEP",
+      "FULL_STACK_NOMINAL",
+      "DARK_LIGHT_OFF",
+      "DARK_LIGHT_ON",
+      "RGBD_CALIBRATION_BOX",
+      "PARTIAL_OCCLUSION",
+      "MOTION_TIMESTAMP_TEST"
+    ],
+    "schema_version": "isaac_perception_validation_v2",
+    "target_selection": {
+      "simulation_object_id": "carton_l07_c02",
+      "strategy": "manifest_stable_id"
+    },
+    "vision": {
+      "calibration_gate": {
+        "max_center_translation_error_m": 0.1,
+        "max_full_dimension_abs_error_m": 0.15,
+        "max_orientation_error_deg": 20.0
+      },
+      "depth_unavailable_fallback": "DEPTH_UNAVAILABLE_MOGE",
+      "fallback_scale_status": "MONOCULAR_SCALE_UNVERIFIED",
+      "keyframes": [
+        0,
+        50,
+        100
+      ],
+      "legacy_cuboid_diagnostic": false,
+      "pointcloud_filter": {
+        "boundary_erosion_px": 2,
+        "depth_percentile_high": 99.0,
+        "depth_percentile_low": 1.0,
+        "discontinuity_floor_m": 0.02,
+        "discontinuity_mad_scale": 6.0,
+        "local_depth_component_selection": true,
+        "minimum_component_points": 8,
+        "minimum_points": 50,
+        "retain_multiple_depth_components": true
+      },
+      "registered_depth_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
+      "resident_worker_timeout_s": 90.0
+    },
+    "vision_rig_config": "configs/isaac/perception_sensing_pose.yaml"
+  },
+  "executable": "/root/v05-gpu-venv/bin/python",
+  "final_input_hash_verification_seconds": 0.19304347783327103,
+  "fused_objects": 37,
+  "fusion_and_artifact_publication_seconds": 2.6845118775963783,
+  "initial_input_verification_seconds": 0.05491621792316437,
+  "load_after": [
+    38.3994140625,
+    39.263671875,
+    29.0439453125
+  ],
+  "load_before": [
+    20.732421875,
+    25.13916015625,
+    21.5458984375
+  ],
+  "modules": [
+    {
+      "accepted_complete_cuboids": 0,
+      "face_count": 23,
+      "input_load_binding_worker_verification_seconds": 1.565189503133297,
+      "instance_count": 16,
+      "instances_without_faces": 0,
+      "legacy_cuboid_diagnostic": {
+        "command": null,
+        "enabled": false,
+        "seconds": 0.0,
+        "status": "DISABLED"
+      },
+      "mask_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "module_id": "module_0_upper",
+      "status": "COMPLETED",
+      "timing_seconds": {
+        "evaluation_and_observation_write": 0.6053787507116795,
+        "filter_audit_json_write": 0.0006639398634433746,
+        "final_metric_faces": 61.30641258135438,
+        "final_validation_and_observation": 16.858722373843193,
+        "input_validation_and_snapshot": 0.030114196240901947,
+        "legacy_cuboid_diagnostic": 0.0,
+        "legacy_geometry": 61.32078316062689,
+        "module_total_before_timing_record": 95.06052984669805,
+        "pointmap_build_including_filter_audits": 15.410772919654846,
+        "pointmap_write": 0.8059042394161224
+      }
+    },
+    {
+      "accepted_complete_cuboids": 0,
+      "face_count": 48,
+      "input_load_binding_worker_verification_seconds": 2.9970699064433575,
+      "instance_count": 31,
+      "instances_without_faces": 1,
+      "legacy_cuboid_diagnostic": {
+        "command": null,
+        "enabled": false,
+        "seconds": 0.0,
+        "status": "DISABLED"
+      },
+      "mask_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "module_id": "module_1_lower",
+      "status": "COMPLETED",
+      "timing_seconds": {
+        "evaluation_and_observation_write": 1.2571585848927498,
+        "filter_audit_json_write": 0.0011286921799182892,
+        "final_metric_faces": 126.13646476715803,
+        "final_validation_and_observation": 31.925402712076902,
+        "input_validation_and_snapshot": 0.02933317795395851,
+        "legacy_cuboid_diagnostic": 0.0,
+        "legacy_geometry": 126.13747016340494,
+        "module_total_before_timing_record": 190.3002394735813,
+        "pointmap_build_including_filter_audits": 29.860925413668156,
+        "pointmap_write": 1.0658381767570972
+      }
+    }
+  ],
+  "numpy_version": "1.26.4",
+  "plan_sha256": "768695f6ad0a8ce5baaeaace4a76ea0a7babe0e4a3380c6ec6f1fd6d40cebda6",
+  "planning_admissible": false,
+  "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+  "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+  "raw_image_automatic": false,
+  "status": "COMPLETED",
+  "unknown_regions": 84,
+  "wall_seconds_before_summary_write": 293.19487470015883
+}

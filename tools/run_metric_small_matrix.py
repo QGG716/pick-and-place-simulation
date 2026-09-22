@@ -119,12 +119,16 @@ def main():
             if runtime and not (folder/'mode_b1_worker_response.json').exists():
                 infer(runtime,folder,binding,camera,entry['scene']+'-'+camera['module_id'],payload=payload)
             artifacts=_worker_artifacts(folder); masks=Path(artifacts['cargo_masks.npz']['path'])
+            paired_config=yaml.safe_load((ROOT/'configs/isaac/perception_validation.yaml').read_text())
+            # This paired historical strategy really consumes the legacy cuboid.
+            paired_config['vision']['legacy_cuboid_diagnostic']=True
             result=_run_secondary_module(scene=entry['scene'],module_dir=folder,manifest=manifest,artifacts=artifacts,
-                    config=yaml.safe_load((ROOT/'configs/isaac/perception_validation.yaml').read_text()),vision_root=args.vision,
+                    config=paired_config,vision_root=args.vision,
                     upstream_python=Path(sys.executable),timeout=1200)
-            new=json.loads((folder/'rgbd_cuboids.json').read_text())
-            old=run_metric_v4(raw=json.loads((folder/'rgbd_cuboids_baseline_raw.json').read_text()),source=folder/'sensor_rgb.png',masks=masks,
-                    pointmap=folder/'registered_metric_pointmap.npz',depth=depth,K=camera['K'],metadata=CaptureMetadata.from_dict(binding),
+            geometry_dir=result['module_directory']
+            new=json.loads((geometry_dir/'rgbd_cuboids.json').read_text())
+            old=run_metric_v4(raw=json.loads((geometry_dir/'rgbd_cuboids_baseline_raw.json').read_text()),source=geometry_dir/'sensor_rgb.png',masks=masks,
+                    pointmap=geometry_dir/'registered_metric_pointmap.npz',depth=depth,K=camera['K'],metadata=CaptureMetadata.from_dict(binding),
                     output=output/'legacy',vision_root=args.vision,python=sys.executable)
             lineage=load_instance_lineage(masks,masks.parent/'cargo_instances.json',proposals,new,sensor_epoch=binding['sensor_epoch'],
                     module_id=camera['module_id'],capture_id=binding['capture_id'],source_path=folder/'sensor_rgb.png',proposal_path=folder/'oracle_proposals.json')
