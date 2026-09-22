@@ -1,0 +1,120 @@
+{
+  "consistency": {
+    "passed": true,
+    "limits_passed": true,
+    "fk_errors": [
+      {
+        "state": 0,
+        "frame": "flange",
+        "position_m": 1.046475953669912e-07,
+        "quaternion_error": 2.984006843410282e-08
+      },
+      {
+        "state": 0,
+        "frame": "fanuc_flange",
+        "position_m": 1.046475953669912e-07,
+        "quaternion_error": 4.66994292187689e-08
+      },
+      {
+        "state": 0,
+        "frame": "tool0",
+        "position_m": 1.046475953669912e-07,
+        "quaternion_error": 4.6699429476328125e-08
+      },
+      {
+        "state": 0,
+        "frame": "held_carton",
+        "position_m": 8.838328047211519e-08,
+        "quaternion_error": 2.9825112351461816e-08
+      },
+      {
+        "state": 1,
+        "frame": "flange",
+        "position_m": 1.404537440796716e-07,
+        "quaternion_error": 6.316462950619042e-08
+      },
+      {
+        "state": 1,
+        "frame": "fanuc_flange",
+        "position_m": 1.404537440796716e-07,
+        "quaternion_error": 3.1555149853886216e-08
+      },
+      {
+        "state": 1,
+        "frame": "tool0",
+        "position_m": 1.404537440796716e-07,
+        "quaternion_error": 3.155515000654695e-08
+      },
+      {
+        "state": 1,
+        "frame": "held_carton",
+        "position_m": 1.5399139186023092e-07,
+        "quaternion_error": 6.514359737163386e-08
+      },
+      {
+        "state": 2,
+        "frame": "flange",
+        "position_m": 6.902215987647509e-08,
+        "quaternion_error": 8.342457761500036e-08
+      },
+      {
+        "state": 2,
+        "frame": "fanuc_flange",
+        "position_m": 6.902215987647509e-08,
+        "quaternion_error": 4.365521721689721e-08
+      },
+      {
+        "state": 2,
+        "frame": "tool0",
+        "position_m": 6.902215987647509e-08,
+        "quaternion_error": 4.3655217447284935e-08
+      },
+      {
+        "state": 2,
+        "frame": "held_carton",
+        "position_m": 4.692106125858686e-08,
+        "quaternion_error": 4.036747104242032e-08
+      }
+    ],
+    "collision_representation_equivalence_proven": false
+  },
+  "backend": {
+    "name": "curobo_v2",
+    "version": "0.8.0",
+    "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+    "import_path": "/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/__init__.py",
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+    "torch": "2.7.1+cu128",
+    "cuda_runtime": "12.8",
+    "warp": "1.17.0",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "capability": [
+      12,
+      0
+    ],
+    "configuration": {
+      "num_trajopt_seeds": 4,
+      "use_cuda_graph": true,
+      "self_collision_check": true,
+      "hard_environment_gap_m": 0.005,
+      "optimizer_activation_distance_m": 0.01,
+      "graph_config_sha256": "225d9e8f36d242df44e8d00893bb194f3ac9fb24a987bbe1252c9bf3e4af141f",
+      "metrics_config_sha256": "e500f1b9fb337b9c841c0fb498a04407188b2fd8313bff0d347d93f15996257b",
+      "dynamics_constraints_enabled": false
+    }
+  },
+  "source_sha256": {
+    "src/unloading_sim/stage_backend.py": "de8a6459b499dd05e6f4d5c92a3d157ce56d8c903e8076d29200e8223ecf7c2b",
+    "src/unloading_sim/stage_export.py": "cc31d66ab38b9e2c3a0cb9720a68e1c7a98014a5b38fa4af98cc8cc4f54997a4",
+    "src/unloading_sim/curobo_v2_backend.py": "d2c615ca317e4273bd592fc8a6a24f0652c55226483392c78c1b5eeacb3fe588",
+    "src/unloading_sim/curobo_transit.py": "e721cfa3b111115f825787b143e32b18617a3a368a5b9382d5ded6dd8fbebcfd",
+    "src/unloading_sim/layout_trajectory.py": "74f5ba67f62e11e10139d39735302fb3427839af3d397198ae498c313940b647",
+    "src/unloading_sim/layout_single_carton.py": "6ccbc5d17fb852860f936854167f8e63c7fdb55018420aa30080c3c100b0b03e",
+    "src/unloading_sim/m710_execution.py": "c6375b7f8701bf55530b9f105c964bf422ae0acbd4621e9a4470b7da39afd51b",
+    "tools/run_curobo_v2_transit.py": "2c570b2a1f37d59988c83d4fd94e9a8b32cbf143b4b1e0e85160aff09fe376ac",
+    "tools/probe_curobo_v2_collision.py": "02f29cdb30ff1dab65e8a9b54285aaa825b5c2c4882ff76f9dce66eeab8bf62d",
+    "tests/test_stage_backend.py": "c6b4bb3fe475100b8433d7ad618aeb462bc68d431b6eeeae232237ebd2bcabc3",
+    "tests/test_layout_trajectory.py": "d87d8bfa50b00db03235580d401c72da5125aa461fe2c3e678d467df332f6264"
+  },
+  "scope": "final source model audit; no new planning or physics trial"
+}

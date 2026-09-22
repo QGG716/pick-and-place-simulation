@@ -1,0 +1,8 @@
+fixture,backend,run,status,native_total_s_by_attempt,end_to_end_s,request_entry_to_result_s,authority_s,candidate_generated,authority_accepted,delivered,isaac_execution_completed
+business,curobo_v2,cold,RESOURCE_EXHAUSTED,"[2.18765380859375, null, null]",6.443383689969778,91.53818531706929,0.03357744589447975,False,False,False,False
+business,curobo_v2,warm,RESOURCE_EXHAUSTED,"[0.13512297058105469, null, null]",0.1438968926668167,0.1438968926668167,0.0005906075239181519,False,False,False,False
+business,existing_rrt_connect,cold,RESOURCE_EXHAUSTED,"[75.55289810150862, 63.10515044257045, 73.80611184611917]",212.4990527704358,213.17959076166153,0.034546054899692535,False,False,False,False
+synthetic_direct_unit,curobo_v2,cold,RESOURCE_EXHAUSTED,"[2.13179248046875, null, null]",6.145077705383301,88.27349199354649,0.03361549228429794,False,False,False,False
+synthetic_direct_unit,curobo_v2,warm,RESOURCE_EXHAUSTED,"[0.13657334899902343, null, null]",0.1452063024044037,0.1452063024044037,0.000513516366481781,False,False,False,False
+synthetic_direct_unit,existing_rrt_connect,cold,AUTHORITY_ACCEPTED,[0.055560555309057236],0.09019371122121811,0.7739552110433578,0.03437994420528412,True,True,False,False
+synthetic_direct_unit,existing_rrt_connect,warm,AUTHORITY_ACCEPTED,[0.004498865455389023],0.005700219422578812,0.005700219422578812,0.000993773341178894,True,True,False,False

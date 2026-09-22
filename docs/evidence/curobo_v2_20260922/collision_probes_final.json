@@ -1,0 +1,195 @@
+{
+  "kind": "synthetic_counterexamples_on_business_model",
+  "original_scene_fingerprint": "f32b273e1132f6a0f7f0bbdd03a58fdbdb6518fd73f522db33c9bd2e0233ca56",
+  "unmodified_start": null,
+  "payload_corner": [
+    {
+      "corner": [
+        -0.008501605832163805,
+        1.040002928804788,
+        2.400016930960681
+      ],
+      "robot_tool_failure": null,
+      "held_failure": {
+        "reason": "PAYLOAD_COLLISION",
+        "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "corner_probe_0"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": true,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      }
+    }
+  ],
+  "joint_out_of_range": {
+    "reason": "JOINT_LIMIT",
+    "stage": "transit"
+  },
+  "wrist_environment": {
+    "J5_link": {
+      "probe_center": [
+        -0.965102129736094,
+        0.8507522077379467,
+        2.2332965486493945
+      ],
+      "isolated_pair": {
+        "in_collision": true,
+        "reason": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "first_link": "J5_link",
+        "first_obstacle": "J5_link_environment_probe",
+        "evidence": {
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "J5_link",
+            "J5_link_environment_probe"
+          ],
+          "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+          "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "colliders": [
+            "J5_link_0",
+            "J5_link_environment_probe"
+          ]
+        }
+      },
+      "full_authority": {
+        "reason": "ROBOT_MESH_COLLISION",
+        "collision_kind": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "J4_link",
+          "J5_link_environment_probe"
+        ],
+        "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+        "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": true,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "colliders": [
+          "J4_link_0",
+          "J5_link_environment_probe"
+        ]
+      },
+      "isolation_is_diagnostic_only": true
+    },
+    "J6_link": {
+      "probe_center": [
+        -0.8356954975476878,
+        0.8397718007882995,
+        2.2499682503434895
+      ],
+      "isolated_pair": {
+        "in_collision": true,
+        "reason": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "first_link": "J6_link",
+        "first_obstacle": "J6_link_environment_probe",
+        "evidence": {
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "J6_link",
+            "J6_link_environment_probe"
+          ],
+          "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+          "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "colliders": [
+            "J6_link_0",
+            "J6_link_environment_probe"
+          ]
+        }
+      },
+      "full_authority": {
+        "reason": "ROBOT_MESH_COLLISION",
+        "collision_kind": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "J5_link",
+          "J6_link_environment_probe"
+        ],
+        "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+        "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": true,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "colliders": [
+          "J5_link_0",
+          "J6_link_environment_probe"
+        ]
+      },
+      "isolation_is_diagnostic_only": true
+    }
+  },
+  "direct_edge": {
+    "reason": "PAYLOAD_COLLISION",
+    "classification": "CLEARANCE_INSUFFICIENT",
+    "accepted": false,
+    "stage": "transit",
+    "pair": [
+      "carton_l07_c04",
+      "carton_l06_c04"
+    ],
+    "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+    "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+    "geometry_intersection_confirmed": false,
+    "original_cad_intersection_confirmed": false,
+    "surface_distance_m": 0.004967064876701348,
+    "required_pair_clearance_m": 0.005,
+    "numerical_gap_tolerance_m": 1e-09,
+    "contact_permission_source": null,
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "edge": 0,
+    "fraction": 0.002677441339694285,
+    "q_rad": [
+      0.9815087030251342,
+      -0.6607890012013509,
+      -0.45726756273893393,
+      -1.7089948118374174,
+      0.9999406435373843,
+      -1.3200782614219622
+    ]
+  },
+  "identity": {
+    "before": 45,
+    "attached": 44,
+    "released": 45,
+    "payload_id": "carton_l07_c04"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "status": "DEPENDENCY_UNAVAILABLE",
+  "backend": {
+    "name": "curobo_v2",
+    "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b"
+  },
+  "trajectory": null,
+  "error": {
+    "type": "TypeError",
+    "message": "argument of type 'RobotCostManagerCfg' is not iterable",
+    "traceback": "Traceback (most recent call last):\n  File \"/root/autodl-tmp/curobo-v2-20260922/repo/src/unloading_sim/curobo_v2_backend.py\", line 255, in main\n    worker=CuroboWorker(bundle,sys.argv[2])\n  File \"/root/autodl-tmp/curobo-v2-20260922/repo/src/unloading_sim/curobo_v2_backend.py\", line 154, in __init__\n    cfg = MotionPlannerCfg.create(robot={'robot_cfg':robot_cfg},scene_model=scene,\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/motion/motion_planner_cfg.py\", line 169, in create\n    trajopt_solver_config = TrajOptSolverCfg.create(\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/solver/solver_trajopt_cfg.py\", line 199, in create\n    core_cfg = create_solver_core_cfg(\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/solver/solver_core_cfg.py\", line 343, in create_solver_core_cfg\n    metrics_rollout_config = create_metrics_rollout_config(\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/solver/solver_core_cfg.py\", line 149, in create_metrics_rollout_config\n    metrics_rollout_config = RobotRolloutCfg.create_with_component_types(\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/rollout/rollout_robot_cfg.py\", line 111, in create_with_component_types\n    data_dict[config_key] = cost_manager_config_instance_type.create(\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/rollout/cost_manager/cost_manager_robot_cfg.py\", line 91, in create\n    if k in data_dict:\nTypeError: argument of type 'RobotCostManagerCfg' is not iterable\n"
+  },
+  "ipc_inclusive_s": 73.98838560655713
+}

@@ -1,0 +1,8 @@
+0 RESOURCE_EXHAUSTED {'authority_s': 0.03357744589447975, 'end_to_end_s': 6.443383689969778, 'request_entry_to_result_s': 91.53818531706929, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
+1 RESOURCE_EXHAUSTED {'authority_s': 0.0005906075239181519, 'end_to_end_s': 0.1438968926668167, 'request_entry_to_result_s': 0.1438968926668167, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
+0 RESOURCE_EXHAUSTED {'authority_s': 0.034546054899692535, 'end_to_end_s': 212.4990527704358, 'request_entry_to_result_s': 213.17959076166153, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
+0 RESOURCE_EXHAUSTED {'authority_s': 0.03361549228429794, 'end_to_end_s': 6.145077705383301, 'request_entry_to_result_s': 88.27349199354649, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
+1 RESOURCE_EXHAUSTED {'authority_s': 0.000513516366481781, 'end_to_end_s': 0.1452063024044037, 'request_entry_to_result_s': 0.1452063024044037, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
+0 AUTHORITY_ACCEPTED {'authority_s': 0.03437994420528412, 'end_to_end_s': 0.09019371122121811, 'request_entry_to_result_s': 0.7739552110433578, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
+1 AUTHORITY_ACCEPTED {'authority_s': 0.000993773341178894, 'end_to_end_s': 0.005700219422578812, 'request_entry_to_result_s': 0.005700219422578812, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
+ALL_DONE

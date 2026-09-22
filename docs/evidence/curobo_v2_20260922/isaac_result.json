@@ -1,0 +1,12 @@
+{
+  "status": "BLOCKED_PLANNING",
+  "physics_trials": 0,
+  "stage_replays": 0,
+  "complete_single_carton_executions": 0,
+  "video": null,
+  "reason": "No cuRobo candidate; conservative collision representation rejects authoritative legal endpoints. Model kinematics/inertials pass; collision equivalence not proven.",
+  "candidate_generated": false,
+  "authority_accepted": false,
+  "delivered": false,
+  "isaac_execution_completed": false
+}

@@ -1,0 +1,393 @@
+[
+  {
+    "schema_version": "unloading_stage_v1",
+    "request": {
+      "schema_version": "unloading_stage_v1",
+      "request_id": "carton_l07_c04-transit",
+      "stage": "TRANSIT",
+      "scene_revision": "f32b273e1132f6a0f7f0bbdd03a58fdbdb6518fd73f522db33c9bd2e0233ca56",
+      "scene_fingerprint": "f32b273e1132f6a0f7f0bbdd03a58fdbdb6518fd73f522db33c9bd2e0233ca56",
+      "robot_model_fingerprint": "c0941075bb11396962e9c638b0670c9ff93da8332a763e7434b29927ff392511",
+      "tool_fingerprint": "239c0eddd79eaea4be104f29ec335f9ff8cc0805af8788c9522d60aba81f5d3e",
+      "payload_fingerprint": "fc819991fb51dd6115042dbdfdcc6c6d4cf4e24700810f5d8a050543b1107211",
+      "collision_policy_fingerprint": "77cda26a6ae718488f9450ae9ea934649cea9b48c7ab60716942520459e86278",
+      "collision_policy": {
+        "schema": "m710_poc_pair_collision_policy_v4",
+        "wrist_tool_exempt_links": [
+          "J5_link",
+          "J6_link"
+        ],
+        "stack_contact_mode": "planner_relaxed_physics_checked",
+        "stack_contact_stages": [
+          "support-release",
+          "extraction"
+        ],
+        "maximum_planned_stack_penetration_m": 0.01,
+        "free_space_clearance_m": 0.0052,
+        "free_space_clearance_loss_tolerance_m": 0.0002,
+        "maximum_actual_penetration_m": 0.01,
+        "maximum_neighbor_displacement_m": 0.06,
+        "maximum_neighbor_tilt_rad": 0.2,
+        "progress_timeout_s": 3.0,
+        "minimum_progress_m": 0.002,
+        "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+        "compliant_cup_neighbor_contact_mode": "ignore",
+        "maximum_compliant_cup_additional_compression_m": 0.005,
+        "required_pair_clearance_m": 0.005,
+        "self_collision_clearance_m": 0.0,
+        "boundary_mode": "finite_frozen_scene_walls",
+        "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+        "box_box_physics_enabled": true
+      },
+      "joint_names": [
+        "J1",
+        "J2",
+        "J3",
+        "J4",
+        "J5",
+        "J6"
+      ],
+      "q_start": [
+        0.9862454453352169,
+        -0.6632776651139614,
+        -0.4577066564420566,
+        -1.705148906574704,
+        0.999911262836787,
+        -1.3257244752169774
+      ],
+      "q_goal": [
+        -0.7828847461869272,
+        0.2662156820286623,
+        -0.2937091500866846,
+        -3.141559559423011,
+        1.010884687412613,
+        0.7830850480049029
+      ],
+      "boundary_velocity": null,
+      "boundary_acceleration": null,
+      "limits": {
+        "lower": [
+          -3.2288591161895095,
+          -1.3089969389957472,
+          -1.4049900478554354,
+          -6.981317007977318,
+          -2.181661564992912,
+          -6.981317007977318
+        ],
+        "upper": [
+          3.2288591161895095,
+          2.6179938779914944,
+          3.5779249665883754,
+          6.981317007977318,
+          2.181661564992912,
+          6.981317007977318
+        ],
+        "velocity": [
+          3.141592653589793,
+          3.141592653589793,
+          3.141592653589793,
+          4.537856055185257,
+          4.537856055185257,
+          6.457718232379019
+        ],
+        "effort": [
+          8000.0,
+          10000.0,
+          5000.0,
+          2000.0,
+          1000.0,
+          900.0
+        ],
+        "acceleration": [
+          1.5,
+          1.5,
+          1.5,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "jerk": [
+          7.5,
+          7.5,
+          7.5,
+          15.0,
+          15.0,
+          20.0
+        ]
+      },
+      "transforms": {
+        "world_from_base": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.325
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.6
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "flange_from_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "flange_from_contact": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.2175
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "payload": {
+        "object_id": "carton_l07_c04",
+        "dimensions_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "mass_kg": 42.5,
+        "com_xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_tensor_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ],
+        "flange_from_object": [
+          [
+            0.999999999802,
+            -5.07983e-07,
+            -1.9884593e-05,
+            0.517485953856
+          ],
+          [
+            -5.07961e-07,
+            -0.999999999999,
+            1.130613e-06,
+            -5.0138569e-05
+          ],
+          [
+            -1.9884594e-05,
+            -1.130603e-06,
+            -0.999999999802,
+            -6.9014383e-05
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "seed": 716,
+      "resources": {
+        "attempts": 3,
+        "num_seeds": 4
+      },
+      "deadline_monotonic": null,
+      "cancellation_token": null,
+      "goal_tolerance_rad": 0.0001
+    },
+    "request_fingerprint": "3a973e75ea35761562b4e46d09fdad6ec43bf300c9a6fc13d9a89e820a04b269",
+    "status": "RESOURCE_EXHAUSTED",
+    "attempts": [
+      {
+        "backend": {
+          "name": "existing_rrt_connect",
+          "version": null,
+          "commit": null
+        },
+        "status": "BACKEND_NO_CANDIDATE",
+        "trajectory": null,
+        "error": {
+          "reason": "PATH_SEARCH_EXHAUSTED",
+          "stage": "transit",
+          "detail": "maximum iterations reached",
+          "iterations": 600
+        },
+        "evidence": {
+          "stage": "transit",
+          "seed": 716,
+          "iteration_budget": 600,
+          "success": false,
+          "search_success": false,
+          "planning_iteration_budget": 600,
+          "planning_iterations_consumed": 600,
+          "extension_attempts": 637,
+          "state_validations": 2021,
+          "edge_validation_calls": 638,
+          "edge_state_samples": 2019,
+          "state_validation_budget": null,
+          "edge_validation_budget": null,
+          "termination": "MAXIMUM_ITERATIONS_REACHED"
+        },
+        "timings": {
+          "native_total_s": 75.55289810150862
+        }
+      },
+      {
+        "backend": {
+          "name": "existing_rrt_connect",
+          "version": null,
+          "commit": null
+        },
+        "status": "BACKEND_NO_CANDIDATE",
+        "trajectory": null,
+        "error": {
+          "reason": "PATH_SEARCH_EXHAUSTED",
+          "stage": "transit",
+          "detail": "maximum iterations reached",
+          "iterations": 600
+        },
+        "evidence": {
+          "stage": "transit",
+          "seed": 717,
+          "iteration_budget": 600,
+          "success": false,
+          "search_success": false,
+          "planning_iteration_budget": 600,
+          "planning_iterations_consumed": 600,
+          "extension_attempts": 639,
+          "state_validations": 1482,
+          "edge_validation_calls": 640,
+          "edge_state_samples": 1480,
+          "state_validation_budget": null,
+          "edge_validation_budget": null,
+          "termination": "MAXIMUM_ITERATIONS_REACHED"
+        },
+        "timings": {
+          "native_total_s": 63.10515044257045
+        }
+      },
+      {
+        "backend": {
+          "name": "existing_rrt_connect",
+          "version": null,
+          "commit": null
+        },
+        "status": "BACKEND_NO_CANDIDATE",
+        "trajectory": null,
+        "error": {
+          "reason": "PATH_SEARCH_EXHAUSTED",
+          "stage": "transit",
+          "detail": "maximum iterations reached",
+          "iterations": 600
+        },
+        "evidence": {
+          "stage": "transit",
+          "seed": 718,
+          "iteration_budget": 600,
+          "success": false,
+          "search_success": false,
+          "planning_iteration_budget": 600,
+          "planning_iterations_consumed": 600,
+          "extension_attempts": 645,
+          "state_validations": 1729,
+          "edge_validation_calls": 646,
+          "edge_state_samples": 1727,
+          "state_validation_budget": null,
+          "edge_validation_budget": null,
+          "termination": "MAXIMUM_ITERATIONS_REACHED"
+        },
+        "timings": {
+          "native_total_s": 73.80611184611917
+        }
+      }
+    ],
+    "trajectory": null,
+    "candidate_generated": false,
+    "authority_accepted": false,
+    "delivered": false,
+    "isaac_execution_completed": false,
+    "fallback": false,
+    "actual_backend": {
+      "name": "existing_rrt_connect",
+      "version": null,
+      "commit": null
+    },
+    "timings": {
+      "authority_s": 0.034546054899692535,
+      "end_to_end_s": 212.4990527704358,
+      "request_entry_to_result_s": 213.17959076166153,
+      "handoff_s": null,
+      "timing_scope": "result only; no executable delivery when rejected"
+    },
+    "first_failure": null,
+    "cancellation_semantics": "drain_inflight_then_discard_no_kernel_interrupt",
+    "run_kind": "cold"
+  }
+]

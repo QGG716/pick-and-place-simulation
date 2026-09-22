@@ -1,0 +1,974 @@
+[
+  {
+    "schema_version": "unloading_stage_v1",
+    "request": {
+      "schema_version": "unloading_stage_v1",
+      "request_id": "carton_l07_c04-transit",
+      "stage": "TRANSIT",
+      "scene_revision": "f32b273e1132f6a0f7f0bbdd03a58fdbdb6518fd73f522db33c9bd2e0233ca56",
+      "scene_fingerprint": "f32b273e1132f6a0f7f0bbdd03a58fdbdb6518fd73f522db33c9bd2e0233ca56",
+      "robot_model_fingerprint": "c0941075bb11396962e9c638b0670c9ff93da8332a763e7434b29927ff392511",
+      "tool_fingerprint": "fa556f0a3f75b2bf419345216571e7f5e82de0de96afa8a2d4cc0a68e65766ca",
+      "payload_fingerprint": "fc819991fb51dd6115042dbdfdcc6c6d4cf4e24700810f5d8a050543b1107211",
+      "collision_policy_fingerprint": "77cda26a6ae718488f9450ae9ea934649cea9b48c7ab60716942520459e86278",
+      "collision_policy": {
+        "schema": "m710_poc_pair_collision_policy_v4",
+        "wrist_tool_exempt_links": [
+          "J5_link",
+          "J6_link"
+        ],
+        "stack_contact_mode": "planner_relaxed_physics_checked",
+        "stack_contact_stages": [
+          "support-release",
+          "extraction"
+        ],
+        "maximum_planned_stack_penetration_m": 0.01,
+        "free_space_clearance_m": 0.0052,
+        "free_space_clearance_loss_tolerance_m": 0.0002,
+        "maximum_actual_penetration_m": 0.01,
+        "maximum_neighbor_displacement_m": 0.06,
+        "maximum_neighbor_tilt_rad": 0.2,
+        "progress_timeout_s": 3.0,
+        "minimum_progress_m": 0.002,
+        "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+        "compliant_cup_neighbor_contact_mode": "ignore",
+        "maximum_compliant_cup_additional_compression_m": 0.005,
+        "required_pair_clearance_m": 0.005,
+        "self_collision_clearance_m": 0.0,
+        "boundary_mode": "finite_frozen_scene_walls",
+        "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+        "box_box_physics_enabled": true
+      },
+      "joint_names": [
+        "J1",
+        "J2",
+        "J3",
+        "J4",
+        "J5",
+        "J6"
+      ],
+      "q_start": [
+        -0.7828847461869272,
+        0.2662156820286623,
+        -0.2937091500866846,
+        -3.141559559423011,
+        1.010884687412613,
+        0.7830850480049029
+      ],
+      "q_goal": [
+        -0.7828847461869272,
+        0.2662156820286623,
+        -0.2927091500866846,
+        -3.141559559423011,
+        1.010884687412613,
+        0.7830850480049029
+      ],
+      "boundary_velocity": null,
+      "boundary_acceleration": null,
+      "limits": {
+        "lower": [
+          -3.2288591161895095,
+          -1.3089969389957472,
+          -1.4049900478554354,
+          -6.981317007977318,
+          -2.181661564992912,
+          -6.981317007977318
+        ],
+        "upper": [
+          3.2288591161895095,
+          2.6179938779914944,
+          3.5779249665883754,
+          6.981317007977318,
+          2.181661564992912,
+          6.981317007977318
+        ],
+        "velocity": [
+          3.141592653589793,
+          3.141592653589793,
+          3.141592653589793,
+          4.537856055185257,
+          4.537856055185257,
+          6.457718232379019
+        ],
+        "effort": [
+          8000.0,
+          10000.0,
+          5000.0,
+          2000.0,
+          1000.0,
+          900.0
+        ],
+        "acceleration": [
+          1.5,
+          1.5,
+          1.5,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "jerk": [
+          7.5,
+          7.5,
+          7.5,
+          15.0,
+          15.0,
+          20.0
+        ]
+      },
+      "transforms": {
+        "world_from_base": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.325
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.6
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "flange_from_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "flange_from_contact": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.2175
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "payload": {
+        "object_id": "carton_l07_c04",
+        "dimensions_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "mass_kg": 42.5,
+        "com_xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_tensor_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ],
+        "flange_from_object": [
+          [
+            0.999999999802,
+            -5.07983e-07,
+            -1.9884593e-05,
+            0.517485953856
+          ],
+          [
+            -5.07961e-07,
+            -0.999999999999,
+            1.130613e-06,
+            -5.0138569e-05
+          ],
+          [
+            -1.9884594e-05,
+            -1.130603e-06,
+            -0.999999999802,
+            -6.9014383e-05
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "seed": 716,
+      "resources": {
+        "attempts": 3,
+        "num_seeds": 4
+      },
+      "deadline_monotonic": null,
+      "cancellation_token": null,
+      "goal_tolerance_rad": 0.0001
+    },
+    "request_fingerprint": "0b8dfb97fe7362ec4602d023acfcfe3ef8a5849170ce91e63d78ab621d2afbd3",
+    "status": "RESOURCE_EXHAUSTED",
+    "attempts": [
+      {
+        "backend": {
+          "name": "curobo_v2",
+          "version": "0.8.0",
+          "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+          "import_path": "/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/__init__.py",
+          "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+          "torch": "2.7.1+cu128",
+          "cuda_runtime": "12.8",
+          "warp": "1.17.0",
+          "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+          "capability": [
+            12,
+            0
+          ],
+          "configuration": {
+            "num_trajopt_seeds": 4,
+            "use_cuda_graph": true,
+            "self_collision_check": true,
+            "hard_environment_gap_m": 0.005,
+            "optimizer_activation_distance_m": 0.01,
+            "graph_config_sha256": "225d9e8f36d242df44e8d00893bb194f3ac9fb24a987bbe1252c9bf3e4af141f",
+            "metrics_config_sha256": "e500f1b9fb337b9c841c0fb498a04407188b2fd8313bff0d347d93f15996257b",
+            "dynamics_constraints_enabled": false
+          }
+        },
+        "status": "BACKEND_NO_CANDIDATE",
+        "trajectory": null,
+        "graph_enabled": false,
+        "graph_observations": [],
+        "seeds": {
+          "optimizer": 716,
+          "graph": 716,
+          "attempt": 0
+        },
+        "timings": {
+          "initialization_s": 76.93415661156178,
+          "warmup_s": 3.9713640473783016,
+          "h2d_s": 0.00015318021178245544,
+          "solve_including_gpu_wait_s": 2.1329775415360928,
+          "gpu_event_s": 2.133025146484375,
+          "native_total_s": 2.13179248046875,
+          "native_solve_s": 1.163266845703125,
+          "worker_request_s": 6.104827005416155
+        },
+        "memory_bytes": {
+          "allocated": 2469109760,
+          "peak": 3241095680
+        },
+        "native_success": [
+          [
+            false
+          ]
+        ],
+        "native_status": "None",
+        "ipc_inclusive_s": 6.105500970035791
+      },
+      {
+        "backend": {
+          "name": "curobo_v2",
+          "version": "0.8.0",
+          "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+          "import_path": "/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/__init__.py",
+          "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+          "torch": "2.7.1+cu128",
+          "cuda_runtime": "12.8",
+          "warp": "1.17.0",
+          "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+          "capability": [
+            12,
+            0
+          ],
+          "configuration": {
+            "num_trajopt_seeds": 4,
+            "use_cuda_graph": true,
+            "self_collision_check": true,
+            "hard_environment_gap_m": 0.005,
+            "optimizer_activation_distance_m": 0.01,
+            "graph_config_sha256": "225d9e8f36d242df44e8d00893bb194f3ac9fb24a987bbe1252c9bf3e4af141f",
+            "metrics_config_sha256": "e500f1b9fb337b9c841c0fb498a04407188b2fd8313bff0d347d93f15996257b",
+            "dynamics_constraints_enabled": false
+          }
+        },
+        "status": "BACKEND_NO_CANDIDATE",
+        "trajectory": null,
+        "graph_enabled": true,
+        "graph_observations": [
+          {
+            "success": [
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "seeds": {
+          "optimizer": 716,
+          "graph": 716,
+          "attempt": 1
+        },
+        "timings": {
+          "initialization_s": 76.93415661156178,
+          "warmup_s": 3.9713640473783016,
+          "h2d_s": 0.00024161487817764282,
+          "solve_including_gpu_wait_s": 0.0023183710873126984,
+          "gpu_event_s": 0.002287328004837036,
+          "native_total_s": null,
+          "native_solve_s": null,
+          "worker_request_s": 0.002791035920381546
+        },
+        "memory_bytes": {
+          "allocated": 2468615680,
+          "peak": 3241095680
+        },
+        "ipc_inclusive_s": 0.0033026672899723053
+      },
+      {
+        "backend": {
+          "name": "curobo_v2",
+          "version": "0.8.0",
+          "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+          "import_path": "/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/__init__.py",
+          "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+          "torch": "2.7.1+cu128",
+          "cuda_runtime": "12.8",
+          "warp": "1.17.0",
+          "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+          "capability": [
+            12,
+            0
+          ],
+          "configuration": {
+            "num_trajopt_seeds": 4,
+            "use_cuda_graph": true,
+            "self_collision_check": true,
+            "hard_environment_gap_m": 0.005,
+            "optimizer_activation_distance_m": 0.01,
+            "graph_config_sha256": "225d9e8f36d242df44e8d00893bb194f3ac9fb24a987bbe1252c9bf3e4af141f",
+            "metrics_config_sha256": "e500f1b9fb337b9c841c0fb498a04407188b2fd8313bff0d347d93f15996257b",
+            "dynamics_constraints_enabled": false
+          }
+        },
+        "status": "BACKEND_NO_CANDIDATE",
+        "trajectory": null,
+        "graph_enabled": true,
+        "graph_observations": [
+          {
+            "success": [
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "seeds": {
+          "optimizer": 716,
+          "graph": 716,
+          "attempt": 2
+        },
+        "timings": {
+          "initialization_s": 76.93415661156178,
+          "warmup_s": 3.9713640473783016,
+          "h2d_s": 0.00012528151273727417,
+          "solve_including_gpu_wait_s": 0.0018719173967838287,
+          "gpu_event_s": 0.0018507519960403443,
+          "native_total_s": null,
+          "native_solve_s": null,
+          "worker_request_s": 0.0022098757326602936
+        },
+        "memory_bytes": {
+          "allocated": 2468615680,
+          "peak": 3241095680
+        },
+        "ipc_inclusive_s": 0.002379879355430603
+      }
+    ],
+    "trajectory": null,
+    "candidate_generated": false,
+    "authority_accepted": false,
+    "delivered": false,
+    "isaac_execution_completed": false,
+    "fallback": false,
+    "actual_backend": {
+      "name": "curobo_v2",
+      "version": "0.8.0",
+      "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+      "import_path": "/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/__init__.py",
+      "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+      "torch": "2.7.1+cu128",
+      "cuda_runtime": "12.8",
+      "warp": "1.17.0",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "capability": [
+        12,
+        0
+      ],
+      "configuration": {
+        "num_trajopt_seeds": 4,
+        "use_cuda_graph": true,
+        "self_collision_check": true,
+        "hard_environment_gap_m": 0.005,
+        "optimizer_activation_distance_m": 0.01,
+        "graph_config_sha256": "225d9e8f36d242df44e8d00893bb194f3ac9fb24a987bbe1252c9bf3e4af141f",
+        "metrics_config_sha256": "e500f1b9fb337b9c841c0fb498a04407188b2fd8313bff0d347d93f15996257b",
+        "dynamics_constraints_enabled": false
+      }
+    },
+    "timings": {
+      "authority_s": 0.03361549228429794,
+      "end_to_end_s": 6.145077705383301,
+      "request_entry_to_result_s": 88.27349199354649,
+      "handoff_s": null,
+      "timing_scope": "result only; no executable delivery when rejected"
+    },
+    "first_failure": null,
+    "cancellation_semantics": "drain_inflight_then_discard_no_kernel_interrupt",
+    "run_kind": "cold"
+  },
+  {
+    "schema_version": "unloading_stage_v1",
+    "request": {
+      "schema_version": "unloading_stage_v1",
+      "request_id": "carton_l07_c04-transit",
+      "stage": "TRANSIT",
+      "scene_revision": "f32b273e1132f6a0f7f0bbdd03a58fdbdb6518fd73f522db33c9bd2e0233ca56",
+      "scene_fingerprint": "f32b273e1132f6a0f7f0bbdd03a58fdbdb6518fd73f522db33c9bd2e0233ca56",
+      "robot_model_fingerprint": "c0941075bb11396962e9c638b0670c9ff93da8332a763e7434b29927ff392511",
+      "tool_fingerprint": "fa556f0a3f75b2bf419345216571e7f5e82de0de96afa8a2d4cc0a68e65766ca",
+      "payload_fingerprint": "fc819991fb51dd6115042dbdfdcc6c6d4cf4e24700810f5d8a050543b1107211",
+      "collision_policy_fingerprint": "77cda26a6ae718488f9450ae9ea934649cea9b48c7ab60716942520459e86278",
+      "collision_policy": {
+        "schema": "m710_poc_pair_collision_policy_v4",
+        "wrist_tool_exempt_links": [
+          "J5_link",
+          "J6_link"
+        ],
+        "stack_contact_mode": "planner_relaxed_physics_checked",
+        "stack_contact_stages": [
+          "support-release",
+          "extraction"
+        ],
+        "maximum_planned_stack_penetration_m": 0.01,
+        "free_space_clearance_m": 0.0052,
+        "free_space_clearance_loss_tolerance_m": 0.0002,
+        "maximum_actual_penetration_m": 0.01,
+        "maximum_neighbor_displacement_m": 0.06,
+        "maximum_neighbor_tilt_rad": 0.2,
+        "progress_timeout_s": 3.0,
+        "minimum_progress_m": 0.002,
+        "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+        "compliant_cup_neighbor_contact_mode": "ignore",
+        "maximum_compliant_cup_additional_compression_m": 0.005,
+        "required_pair_clearance_m": 0.005,
+        "self_collision_clearance_m": 0.0,
+        "boundary_mode": "finite_frozen_scene_walls",
+        "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+        "box_box_physics_enabled": true
+      },
+      "joint_names": [
+        "J1",
+        "J2",
+        "J3",
+        "J4",
+        "J5",
+        "J6"
+      ],
+      "q_start": [
+        -0.7828847461869272,
+        0.2662156820286623,
+        -0.2937091500866846,
+        -3.141559559423011,
+        1.010884687412613,
+        0.7830850480049029
+      ],
+      "q_goal": [
+        -0.7828847461869272,
+        0.2662156820286623,
+        -0.2927091500866846,
+        -3.141559559423011,
+        1.010884687412613,
+        0.7830850480049029
+      ],
+      "boundary_velocity": null,
+      "boundary_acceleration": null,
+      "limits": {
+        "lower": [
+          -3.2288591161895095,
+          -1.3089969389957472,
+          -1.4049900478554354,
+          -6.981317007977318,
+          -2.181661564992912,
+          -6.981317007977318
+        ],
+        "upper": [
+          3.2288591161895095,
+          2.6179938779914944,
+          3.5779249665883754,
+          6.981317007977318,
+          2.181661564992912,
+          6.981317007977318
+        ],
+        "velocity": [
+          3.141592653589793,
+          3.141592653589793,
+          3.141592653589793,
+          4.537856055185257,
+          4.537856055185257,
+          6.457718232379019
+        ],
+        "effort": [
+          8000.0,
+          10000.0,
+          5000.0,
+          2000.0,
+          1000.0,
+          900.0
+        ],
+        "acceleration": [
+          1.5,
+          1.5,
+          1.5,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "jerk": [
+          7.5,
+          7.5,
+          7.5,
+          15.0,
+          15.0,
+          20.0
+        ]
+      },
+      "transforms": {
+        "world_from_base": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.325
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.6
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "flange_from_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "flange_from_contact": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.2175
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "payload": {
+        "object_id": "carton_l07_c04",
+        "dimensions_m": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "mass_kg": 42.5,
+        "com_xyz_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_tensor_com_kg_m2": [
+          [
+            0.885416666666667,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.59375,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.841666666666667
+          ]
+        ],
+        "flange_from_object": [
+          [
+            0.999999999802,
+            -5.07983e-07,
+            -1.9884593e-05,
+            0.517485953856
+          ],
+          [
+            -5.07961e-07,
+            -0.999999999999,
+            1.130613e-06,
+            -5.0138569e-05
+          ],
+          [
+            -1.9884594e-05,
+            -1.130603e-06,
+            -0.999999999802,
+            -6.9014383e-05
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "seed": 716,
+      "resources": {
+        "attempts": 3,
+        "num_seeds": 4
+      },
+      "deadline_monotonic": null,
+      "cancellation_token": null,
+      "goal_tolerance_rad": 0.0001
+    },
+    "request_fingerprint": "0b8dfb97fe7362ec4602d023acfcfe3ef8a5849170ce91e63d78ab621d2afbd3",
+    "status": "RESOURCE_EXHAUSTED",
+    "attempts": [
+      {
+        "backend": {
+          "name": "curobo_v2",
+          "version": "0.8.0",
+          "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+          "import_path": "/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/__init__.py",
+          "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+          "torch": "2.7.1+cu128",
+          "cuda_runtime": "12.8",
+          "warp": "1.17.0",
+          "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+          "capability": [
+            12,
+            0
+          ],
+          "configuration": {
+            "num_trajopt_seeds": 4,
+            "use_cuda_graph": true,
+            "self_collision_check": true,
+            "hard_environment_gap_m": 0.005,
+            "optimizer_activation_distance_m": 0.01,
+            "graph_config_sha256": "225d9e8f36d242df44e8d00893bb194f3ac9fb24a987bbe1252c9bf3e4af141f",
+            "metrics_config_sha256": "e500f1b9fb337b9c841c0fb498a04407188b2fd8313bff0d347d93f15996257b",
+            "dynamics_constraints_enabled": false
+          }
+        },
+        "status": "BACKEND_NO_CANDIDATE",
+        "trajectory": null,
+        "graph_enabled": false,
+        "graph_observations": [],
+        "seeds": {
+          "optimizer": 716,
+          "graph": 716,
+          "attempt": 0
+        },
+        "timings": {
+          "initialization_s": 76.93415661156178,
+          "warmup_s": 3.9713640473783016,
+          "h2d_s": 0.0004055686295032501,
+          "solve_including_gpu_wait_s": 0.13794761896133423,
+          "gpu_event_s": 0.137911865234375,
+          "native_total_s": 0.13657334899902343,
+          "native_solve_s": 0.11512083435058594,
+          "worker_request_s": 0.13868427276611328
+        },
+        "memory_bytes": {
+          "allocated": 2469111808,
+          "peak": 3241100800
+        },
+        "native_success": [
+          [
+            false
+          ]
+        ],
+        "native_status": "None",
+        "ipc_inclusive_s": 0.13911952078342438
+      },
+      {
+        "backend": {
+          "name": "curobo_v2",
+          "version": "0.8.0",
+          "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+          "import_path": "/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/__init__.py",
+          "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+          "torch": "2.7.1+cu128",
+          "cuda_runtime": "12.8",
+          "warp": "1.17.0",
+          "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+          "capability": [
+            12,
+            0
+          ],
+          "configuration": {
+            "num_trajopt_seeds": 4,
+            "use_cuda_graph": true,
+            "self_collision_check": true,
+            "hard_environment_gap_m": 0.005,
+            "optimizer_activation_distance_m": 0.01,
+            "graph_config_sha256": "225d9e8f36d242df44e8d00893bb194f3ac9fb24a987bbe1252c9bf3e4af141f",
+            "metrics_config_sha256": "e500f1b9fb337b9c841c0fb498a04407188b2fd8313bff0d347d93f15996257b",
+            "dynamics_constraints_enabled": false
+          }
+        },
+        "status": "BACKEND_NO_CANDIDATE",
+        "trajectory": null,
+        "graph_enabled": true,
+        "graph_observations": [
+          {
+            "success": [
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "seeds": {
+          "optimizer": 716,
+          "graph": 716,
+          "attempt": 1
+        },
+        "timings": {
+          "initialization_s": 76.93415661156178,
+          "warmup_s": 3.9713640473783016,
+          "h2d_s": 0.00023435801267623901,
+          "solve_including_gpu_wait_s": 0.0021380186080932617,
+          "gpu_event_s": 0.0021090240478515627,
+          "native_total_s": null,
+          "native_solve_s": null,
+          "worker_request_s": 0.0026018135249614716
+        },
+        "memory_bytes": {
+          "allocated": 2468615680,
+          "peak": 3241100800
+        },
+        "ipc_inclusive_s": 0.003067348152399063
+      },
+      {
+        "backend": {
+          "name": "curobo_v2",
+          "version": "0.8.0",
+          "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+          "import_path": "/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/__init__.py",
+          "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+          "torch": "2.7.1+cu128",
+          "cuda_runtime": "12.8",
+          "warp": "1.17.0",
+          "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+          "capability": [
+            12,
+            0
+          ],
+          "configuration": {
+            "num_trajopt_seeds": 4,
+            "use_cuda_graph": true,
+            "self_collision_check": true,
+            "hard_environment_gap_m": 0.005,
+            "optimizer_activation_distance_m": 0.01,
+            "graph_config_sha256": "225d9e8f36d242df44e8d00893bb194f3ac9fb24a987bbe1252c9bf3e4af141f",
+            "metrics_config_sha256": "e500f1b9fb337b9c841c0fb498a04407188b2fd8313bff0d347d93f15996257b",
+            "dynamics_constraints_enabled": false
+          }
+        },
+        "status": "BACKEND_NO_CANDIDATE",
+        "trajectory": null,
+        "graph_enabled": true,
+        "graph_observations": [
+          {
+            "success": [
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "seeds": {
+          "optimizer": 716,
+          "graph": 716,
+          "attempt": 2
+        },
+        "timings": {
+          "initialization_s": 76.93415661156178,
+          "warmup_s": 3.9713640473783016,
+          "h2d_s": 0.00012204423546791077,
+          "solve_including_gpu_wait_s": 0.0017708763480186462,
+          "gpu_event_s": 0.0017507840394973754,
+          "native_total_s": null,
+          "native_solve_s": null,
+          "worker_request_s": 0.002087518572807312
+        },
+        "memory_bytes": {
+          "allocated": 2468615680,
+          "peak": 3241100800
+        },
+        "ipc_inclusive_s": 0.002234049141407013
+      }
+    ],
+    "trajectory": null,
+    "candidate_generated": false,
+    "authority_accepted": false,
+    "delivered": false,
+    "isaac_execution_completed": false,
+    "fallback": false,
+    "actual_backend": {
+      "name": "curobo_v2",
+      "version": "0.8.0",
+      "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+      "import_path": "/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/__init__.py",
+      "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+      "torch": "2.7.1+cu128",
+      "cuda_runtime": "12.8",
+      "warp": "1.17.0",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "capability": [
+        12,
+        0
+      ],
+      "configuration": {
+        "num_trajopt_seeds": 4,
+        "use_cuda_graph": true,
+        "self_collision_check": true,
+        "hard_environment_gap_m": 0.005,
+        "optimizer_activation_distance_m": 0.01,
+        "graph_config_sha256": "225d9e8f36d242df44e8d00893bb194f3ac9fb24a987bbe1252c9bf3e4af141f",
+        "metrics_config_sha256": "e500f1b9fb337b9c841c0fb498a04407188b2fd8313bff0d347d93f15996257b",
+        "dynamics_constraints_enabled": false
+      }
+    },
+    "timings": {
+      "authority_s": 0.000513516366481781,
+      "end_to_end_s": 0.1452063024044037,
+      "request_entry_to_result_s": 0.1452063024044037,
+      "handoff_s": null,
+      "timing_scope": "result only; no executable delivery when rejected"
+    },
+    "first_failure": null,
+    "cancellation_semantics": "drain_inflight_then_discard_no_kernel_interrupt",
+    "run_kind": "warm"
+  }
+]
