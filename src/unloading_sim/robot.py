@@ -604,6 +604,10 @@ class URDFRobot:
 
     def named_link_frames(self, q: np.ndarray) -> dict[str, np.ndarray]:
         """Return world transforms for every link on the parsed URDF chain."""
+        kernel = getattr(self, 'validation_kernel', None)
+        state = None if kernel is None else kernel.get(q)
+        if state is not None:
+            return dict(state.links)
         q = np.asarray(q, dtype=float)
         if q.shape != (self.dof,):
             raise ValueError(f"q must be shape ({self.dof},)")
@@ -635,6 +639,10 @@ class URDFRobot:
         }
 
     def fk(self, q: np.ndarray) -> np.ndarray:
+        kernel = getattr(self, 'validation_kernel', None)
+        state = None if kernel is None else kernel.get(q)
+        if state is not None:
+            return state.tcp
         return self.frames(q, include_tool=True)[-1]
 
     def geometric_jacobian(self, q: np.ndarray) -> np.ndarray:
@@ -689,6 +697,9 @@ class URDFRobot:
 
     def tool_collision_obbs(self, q: np.ndarray) -> list[OBB]:
         """Return audited rigid-tool subcomponents in the planner tool frame."""
+        kernel = getattr(self,'validation_kernel',None)
+        state = None if kernel is None else kernel.get(q)
+        if state is not None: return list(state.rigid)
         tool = self.fk(q)
         return [
             OBB(
@@ -703,7 +714,9 @@ class URDFRobot:
 
     def tool_compliant_collision_obbs(self, q: np.ndarray) -> list[OBB]:
         """Return conservative audited bellows bounds for swept-path proofs."""
-
+        kernel = getattr(self,'validation_kernel',None)
+        state = None if kernel is None else kernel.get(q)
+        if state is not None: return list(state.cups)
         tool = self.fk(q)
         rows = np.asarray(
             getattr(self, "tool_compliant_collision_local_boxes", np.empty((0, 6))),

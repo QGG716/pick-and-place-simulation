@@ -14,6 +14,7 @@ import numpy as np
 
 from .geometry import Capsule, OBB
 from .robot import CollisionResult
+from .motion_validation import LRU
 
 
 def _optional_imports():
@@ -303,8 +304,8 @@ class PinocchioHppFclBackend:
         """Call after changing the immutable model/geometry, never after a carton move."""
         self.geometry_revision = getattr(self, "geometry_revision", 0) + 1
         self._kinematics_key = self._geometry_key = None
-        self._obstacle_cache = {}
-        self._clearance_motion_cache = {}
+        self._obstacle_cache = LRU(512)
+        self._clearance_motion_cache = LRU(2048)
         self._geometry_local_aabbs = tuple(_local_geometry_aabb(item.geometry)
             for item in self.geometry_model.geometryObjects)
         self._geometry_local_vertices = tuple(_local_geometry_vertices(item.geometry)
@@ -312,9 +313,18 @@ class PinocchioHppFclBackend:
         self.geometry_data = self.pin.GeometryData(self.geometry_model)
 
     def _update_geometry(self, q):
+        kernel = getattr(self, 'validation_kernel', None)
+        state = None if kernel is None else kernel.get(q)
+        self._collision_kinematic_state = state
         key = (np.asarray(q, float).tobytes(), self.base_transform.tobytes(),
                getattr(self, "geometry_revision", 0))
         if getattr(self, "_geometry_key", None) == key:
+            return
+        if state is not None:
+            local = np.linalg.inv(self.base_transform) @ state.geometry
+            for i,pose in enumerate(local):
+                self.geometry_data.oMg[i] = self.pin.SE3(pose[:3,:3],pose[:3,3])
+            self._geometry_key = key
             return
         self.pin.updateGeometryPlacements(self.model, self.data, self.geometry_model, self.geometry_data, q)
         self._geometry_key = key
@@ -331,11 +341,17 @@ class PinocchioHppFclBackend:
             self.performance_counters[name + "_calls"] = self.performance_counters.get(name + "_calls", 0) + 1
 
     def fk(self, q: np.ndarray) -> np.ndarray:
+        kernel = getattr(self, 'validation_kernel', None)
+        state = None if kernel is None else kernel.get(q)
+        if state is not None: return state.tcp
         self._update(q)
         tip = self.base_transform @ self._matrix(self.data.oMf[self.tip_frame_id])
         return tip @ self.tip_from_tcp
 
     def geometric_jacobian(self, q: np.ndarray) -> np.ndarray:
+        kernel = getattr(self, 'validation_kernel', None)
+        state = None if kernel is None else kernel.get(q)
+        if state is not None: return state.jacobian
         q = np.asarray(q, dtype=float)
         self._update(q)
         jacobian = np.asarray(
@@ -364,7 +380,9 @@ class PinocchioHppFclBackend:
 
     def named_link_frames(self, q: np.ndarray) -> dict[str, np.ndarray]:
         """Return every URDF frame plus the explicit virtual TCP frame."""
-
+        kernel = getattr(self, 'validation_kernel', None)
+        state = None if kernel is None else kernel.get(q)
+        if state is not None: return dict(state.mesh_frames, virtual_task_tcp=state.tcp)
         self._update(q)
         result = {
             str(frame.name): self.base_transform @ self._matrix(self.data.oMf[index])
@@ -414,7 +432,7 @@ class PinocchioHppFclBackend:
         from .pair_clearance import classify_pair_distance
         cache = getattr(self, "_clearance_motion_cache", None)
         if cache is None:
-            cache = self._clearance_motion_cache = {}
+            cache = self._clearance_motion_cache = LRU(2048)
         key = (cache_identity if cache_identity is not None else (id(first), id(second)),
                tuple(pair), getattr(self, "geometry_revision", 0))
         reusable = poses is not None and getattr(self, "clearance_motion_cache_enabled", True)
@@ -445,11 +463,9 @@ class PinocchioHppFclBackend:
             bounds = [_local_geometry_aabb(shape) for shape in (first, second)]
             if all(bound is not None for bound in bounds):
                 radii = [float(np.linalg.norm(np.maximum(np.abs(bound[0]), np.abs(bound[1])))) for bound in bounds]
-                if len(cache) >= 2048:
-                    cache.clear()
                 # Strong references prevent object-ID reuse after cache eviction
                 # in the obstacle-shape provider. Geometry edits invalidate all.
-                cache[key] = (first, second, tuple(np.asarray(p).copy() for p in poses), radii, distance)
+                cache.put(key, (first, second, tuple(np.asarray(p).copy() for p in poses), radii, distance))
         evidence = classify_pair_distance(distance, required, intersection=intersects,
             proxy=proxy, stage=stage, pair=pair, policy=policy,
             query_method="COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
@@ -468,7 +484,7 @@ class PinocchioHppFclBackend:
         if not active_obstacles:
             return CollisionResult(False)
         if not hasattr(self, "_obstacle_cache"):
-            self._obstacle_cache = {}
+            self._obstacle_cache = LRU(512)
         entries = []
         for obstacle in active_obstacles:
             size_key = obstacle.half_extents.tobytes()
@@ -476,12 +492,16 @@ class PinocchioHppFclBackend:
             previous = self._obstacle_cache.get(obstacle.name)
             if previous is None or previous[0] != size_key or previous[1] != pose_key:
                 shape = (previous[3] if previous is not None and previous[0] == size_key else None)
+                state=getattr(self,'_collision_kinematic_state',None)
+                bounds=None if state is None else state.obstacle_aabbs.get(id(obstacle))
+                if bounds is None:
+                    bounds=_world_aabb((-obstacle.half_extents,obstacle.half_extents),obstacle.rotation,obstacle.center)
+                else:
+                    self.performance_counters['native_tool_aabb_hits']=self.performance_counters.get('native_tool_aabb_hits',0)+1
                 previous = [size_key, pose_key,
-                    _world_aabb((-obstacle.half_extents, obstacle.half_extents), obstacle.rotation, obstacle.center),
+                    bounds,
                     shape, None]
-                if len(self._obstacle_cache) >= 512:
-                    self._obstacle_cache.clear()
-                self._obstacle_cache[obstacle.name] = previous
+                self._obstacle_cache.put(obstacle.name, previous)
             entries.append(previous)
         obstacle_aabbs = [entry[2] for entry in entries]
         obstacle_lower = np.asarray([bounds[0] for bounds in obstacle_aabbs])
@@ -518,6 +538,9 @@ class PinocchioHppFclBackend:
             robot_tf = _transform(self.coal, placement[:3, :3], placement[:3, 3])
             for obstacle_index in near_indices:
                 obstacle = active_obstacles[obstacle_index]
+                if ('mesh',str(geometry_object.name),obstacle.name) in getattr(self,'_interval_pairs',()):
+                    self.performance_counters['interval_pair_skips'] = self.performance_counters.get('interval_pair_skips',0)+1
+                    continue
                 if (link_name, obstacle.name) in ignored_pairs or (
                     str(geometry_object.name), obstacle.name
                 ) in ignored_pairs:
@@ -605,6 +628,9 @@ class PinocchioHppFclBackend:
         for pair in self.geometry_model.collisionPairs:
             first = self.geometry_model.geometryObjects[int(pair.first)]
             second = self.geometry_model.geometryObjects[int(pair.second)]
+            if ('self',str(first.name),str(second.name)) in getattr(self,'_interval_pairs',()):
+                self.performance_counters['interval_pair_skips'] = self.performance_counters.get('interval_pair_skips',0)+1
+                continue
             first_pose = self.base_transform @ self._matrix(
                 self.geometry_data.oMg[int(pair.first)]
             )

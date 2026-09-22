@@ -63,6 +63,8 @@ DEFAULT_CONFIG_PATH = (
     / "m710id70_dynamic_execution_v1.yaml"
 )
 EXECUTION_IMPLEMENTATION_FILES = (
+    "src/unloading_sim/motion_validation.py",
+    "src/unloading_sim/validation_kernel.py",
     "src/unloading_sim/planning_profile.py",
     "src/unloading_sim/post_landing_transport.py",
     "src/unloading_sim/release_motion.py",

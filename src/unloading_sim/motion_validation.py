@@ -41,6 +41,10 @@ class LRU(OrderedDict):
             self.evictions += 1
         self[key] = value
 
+    def get(self, key, default=None):
+        hit,value=self.lookup(key)
+        return value if hit else default
+
 
 @dataclass(frozen=True)
 class ValidationContext:
