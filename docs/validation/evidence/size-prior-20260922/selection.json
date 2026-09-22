@@ -1,0 +1,13 @@
+{
+  "rule": "Before adaptation: first six fused source_instance_id values in lexicographic order; no filtering by geometry outcome or GT",
+  "artifact_sha256": "c91e80018c7b46b98bcf7b701da5faa2869e5b22f4e97993bc8721bd5ebc7b58",
+  "artifact_path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/algorithm_artifact.json",
+  "source_instance_ids": [
+    "fusion-0983d381278cea8cfac4",
+    "fusion-1148b5c2ee6ec2917b37",
+    "fusion-195907e7f03fb6450efe",
+    "fusion-1c8800b84990d4d84a27",
+    "fusion-23d2ea899ff42fa46fe9",
+    "fusion-23e1093828c52b5cfd0e"
+  ]
+}

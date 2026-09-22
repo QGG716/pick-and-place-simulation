@@ -1,0 +1,26 @@
+{
+  "actual_appearance_mesh_evaluated": false,
+  "adaptation_runs": 1,
+  "archived_sha256": {
+    "derived_geometry.json": "681ab3e24032c207634707327bfcef5782b2e52cf095ba480047a44f97e2c72b",
+    "nominal_evaluation.json": "4e50c3a1ee283a1816c8be26754849f4b3182f98fe06827bdb2495aebd49c02b",
+    "prior.json": "aa08ad5e404448ceea099bda3b1369e806b12cda285a513828deff0759509e54",
+    "selection.json": "8ed4df947da2b25c97f9ff76478fd3246a4871707eeb8761c5eb393a07d622b9"
+  },
+  "baseline_commit": "0fc381b0e5c5affb6f69c775092ab9eee7e48d34",
+  "branch": "feat/v0.5-perception-ros2",
+  "code_and_default_configuration_sha256": {
+    "configs/perception/nominal_size_prior_offline.json": "dbd0f6586f811b5c3cd9020d3457c31eb42a04feb014e73d2c70d2b7804d6545",
+    "src/unloading_perception/planning_geometry.py": "efcaa15be0537e268a67372cf2840275ca3601743ba807ac5eb6b3d3000a9416",
+    "tools/evaluate_size_prior_nominal.py": "6c068b5b73af25edfd51783f13975b3e6b53ffc2eb9f0cda80b13dace1cf7391"
+  },
+  "default_cpu_suite": "778 passed, 1 deselected in 121.90s",
+  "gt_evaluation_after_adaptation": true,
+  "inference_rerun": false,
+  "planning_or_execution_run": false,
+  "schema_version": "offline_geometry_validation_run_v1",
+  "selection_frozen_before_adaptation": true,
+  "server_output_directory": "derived-run-01",
+  "server_work_directory": "/root/autodl-tmp/v05-acceptance/size-prior-20260922",
+  "targeted_tests": "27 passed"
+}

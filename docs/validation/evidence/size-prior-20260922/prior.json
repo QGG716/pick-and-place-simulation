@@ -1,0 +1,53 @@
+{
+  "config_identity": "nominal-unordered-carton-offline-v1",
+  "enabled": true,
+  "environment_prior": {
+    "rotation_world_from_box_axes": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ],
+    "scope": "all selected cartons; no continuous orientation uncertainty is supported",
+    "source": "explicit experimental assumption: fixed world-aligned cuboid axes, not inferred from simulation poses"
+  },
+  "measurement_assumptions": {
+    "coordinate_error_bound_m": 0.002,
+    "normal_error_bound_rad": 0.01,
+    "source": "declared experimental bounds, not calibrated and not inferred from plane residual",
+    "support_semantics": "each retained patch vertex is within coordinate_error_bound_m per box axis of a point on one outward cuboid face"
+  },
+  "schema_version": "observed_size_prior_v1",
+  "size_prior": {
+    "axis_correspondence": "unknown",
+    "error_basis": "exact nominal cuboid experiment; zero size tolerance is NOT a measured bound for appearance meshes",
+    "full_dimensions_interval_m": [
+      [
+        0.6,
+        0.6
+      ],
+      [
+        0.4,
+        0.4
+      ],
+      [
+        0.3,
+        0.3
+      ]
+    ],
+    "scope": "all selected cartons, same nominal specification; no GT object assignment",
+    "source": "configs/validation/m710id70_v3.yaml:scene.box_sizes_m; A and B share the same unordered dimensions",
+    "specification_id": "nominal-600x400x300-unordered"
+  }
+}

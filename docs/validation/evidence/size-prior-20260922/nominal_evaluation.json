@@ -1,0 +1,401 @@
+{
+  "actual_mesh_conservatism_proven": false,
+  "derived_geometry": {
+    "path": "/root/autodl-tmp/v05-acceptance/size-prior-20260922/derived-run-01/derived_geometry.json",
+    "sha256": "681ab3e24032c207634707327bfcef5782b2e52cf095ba480047a44f97e2c72b"
+  },
+  "evaluation_inputs": {
+    "module_0_upper/capture_binding.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/capture_binding.json",
+      "sha256": "acd75102fe2e75215a108c54c3a436a6f7cef9b0fbdab3ec352c9fe72add607b"
+    },
+    "module_0_upper/gt_annotations.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/gt_annotations.json",
+      "sha256": "e083c5e8181c67d03a3e8e0651d87fee70b937b416a5327d708c16ffdb2c967d"
+    },
+    "module_0_upper/mask_evaluation.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_0_upper/mask_evaluation.json",
+      "sha256": "eb06d48f602c09fb01ebdf756dfae1ae87d9682dd9db2b1c3c0e2f9a3b25bc2f"
+    },
+    "module_1_lower/capture_binding.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_1_lower/capture_binding.json",
+      "sha256": "2d9ebf0cc58461911b0cfc41f19391dab1423bb523b33f7e60e467cb4369d752"
+    },
+    "module_1_lower/gt_annotations.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_1_lower/gt_annotations.json",
+      "sha256": "dc6cf21e04ca8580b0a18cd723a6cbd23eb46c70ff157b00a7a0a58724f76697"
+    },
+    "module_1_lower/mask_evaluation.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/single-handoff-20260918/algorithm-run-01/module_1_lower/mask_evaluation.json",
+      "sha256": "ca1e9286be7e3fcd960fa81d9c91cca5c5b4447833c64bb44358b047e85e3742"
+    }
+  },
+  "objects": [
+    {
+      "actual_appearance_mesh_coverage": "NOT_EVALUATED",
+      "annotation_geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED",
+      "evaluation_gt_object_id": "carton_l04_c03",
+      "evaluation_reference": "HISTORICAL_NOMINAL_CUBOID_ONLY",
+      "existing_mask_matches": [
+        [
+          "carton_l04_c03"
+        ]
+      ],
+      "max_outside_per_box_axis_m": [
+        -0.0019814240647806347,
+        -0.2164785859213555,
+        -0.3172633369967654
+      ],
+      "nominal_coverage_status": "COVERED",
+      "nominal_world_corners_m": [
+        [
+          0.0,
+          0.21999999999999997,
+          1.2
+        ],
+        [
+          0.0,
+          0.21999999999999997,
+          1.4999999999999998
+        ],
+        [
+          0.0,
+          0.62,
+          1.2
+        ],
+        [
+          0.0,
+          0.62,
+          1.4999999999999998
+        ],
+        [
+          0.6,
+          0.21999999999999997,
+          1.2
+        ],
+        [
+          0.6,
+          0.21999999999999997,
+          1.4999999999999998
+        ],
+        [
+          0.6,
+          0.62,
+          1.2
+        ],
+        [
+          0.6,
+          0.62,
+          1.4999999999999998
+        ]
+      ],
+      "source_instance_id": "fusion-0983d381278cea8cfac4"
+    },
+    {
+      "actual_appearance_mesh_coverage": "NOT_EVALUATED",
+      "annotation_geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED",
+      "evaluation_gt_object_id": "carton_l02_c04",
+      "evaluation_reference": "HISTORICAL_NOMINAL_CUBOID_ONLY",
+      "existing_mask_matches": [
+        [
+          "carton_l02_c04"
+        ]
+      ],
+      "max_outside_per_box_axis_m": [
+        -0.0019889731697276813,
+        -0.21736174525111118,
+        -0.3169358939086041
+      ],
+      "nominal_coverage_status": "COVERED",
+      "nominal_world_corners_m": [
+        [
+          0.0,
+          0.6399999999999999,
+          0.6
+        ],
+        [
+          0.0,
+          0.6399999999999999,
+          0.9
+        ],
+        [
+          0.0,
+          1.04,
+          0.6
+        ],
+        [
+          0.0,
+          1.04,
+          0.9
+        ],
+        [
+          0.6,
+          0.6399999999999999,
+          0.6
+        ],
+        [
+          0.6,
+          0.6399999999999999,
+          0.9
+        ],
+        [
+          0.6,
+          1.04,
+          0.6
+        ],
+        [
+          0.6,
+          1.04,
+          0.9
+        ]
+      ],
+      "source_instance_id": "fusion-1148b5c2ee6ec2917b37"
+    },
+    {
+      "actual_appearance_mesh_coverage": "NOT_EVALUATED",
+      "annotation_geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED",
+      "evaluation_gt_object_id": "carton_l04_c01",
+      "evaluation_reference": "HISTORICAL_NOMINAL_CUBOID_ONLY",
+      "existing_mask_matches": [
+        [
+          "carton_l04_c01"
+        ]
+      ],
+      "max_outside_per_box_axis_m": [
+        -0.001985298734751839,
+        -0.0019997262386756143,
+        -0.3204659305912486
+      ],
+      "nominal_coverage_status": "COVERED",
+      "nominal_world_corners_m": [
+        [
+          0.0,
+          -0.62,
+          1.2
+        ],
+        [
+          0.0,
+          -0.62,
+          1.4999999999999998
+        ],
+        [
+          0.0,
+          -0.21999999999999997,
+          1.2
+        ],
+        [
+          0.0,
+          -0.21999999999999997,
+          1.4999999999999998
+        ],
+        [
+          0.6,
+          -0.62,
+          1.2
+        ],
+        [
+          0.6,
+          -0.62,
+          1.4999999999999998
+        ],
+        [
+          0.6,
+          -0.21999999999999997,
+          1.2
+        ],
+        [
+          0.6,
+          -0.21999999999999997,
+          1.4999999999999998
+        ]
+      ],
+      "source_instance_id": "fusion-195907e7f03fb6450efe"
+    },
+    {
+      "actual_appearance_mesh_coverage": "NOT_EVALUATED",
+      "annotation_geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED",
+      "evaluation_gt_object_id": "carton_l06_c03",
+      "evaluation_reference": "HISTORICAL_NOMINAL_CUBOID_ONLY",
+      "existing_mask_matches": [
+        [
+          "carton_l06_c03"
+        ],
+        [
+          "carton_l06_c03"
+        ]
+      ],
+      "max_outside_per_box_axis_m": [
+        -0.0019716511776223244,
+        -0.21587458158541362,
+        -0.3168074254966906
+      ],
+      "nominal_coverage_status": "COVERED",
+      "nominal_world_corners_m": [
+        [
+          0.0,
+          0.21999999999999997,
+          1.7999999999999998
+        ],
+        [
+          0.0,
+          0.21999999999999997,
+          2.0999999999999996
+        ],
+        [
+          0.0,
+          0.62,
+          1.7999999999999998
+        ],
+        [
+          0.0,
+          0.62,
+          2.0999999999999996
+        ],
+        [
+          0.6,
+          0.21999999999999997,
+          1.7999999999999998
+        ],
+        [
+          0.6,
+          0.21999999999999997,
+          2.0999999999999996
+        ],
+        [
+          0.6,
+          0.62,
+          1.7999999999999998
+        ],
+        [
+          0.6,
+          0.62,
+          2.0999999999999996
+        ]
+      ],
+      "source_instance_id": "fusion-1c8800b84990d4d84a27"
+    },
+    {
+      "actual_appearance_mesh_coverage": "NOT_EVALUATED",
+      "annotation_geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED",
+      "evaluation_gt_object_id": "carton_l02_c03",
+      "evaluation_reference": "HISTORICAL_NOMINAL_CUBOID_ONLY",
+      "existing_mask_matches": [
+        [
+          "carton_l02_c03"
+        ]
+      ],
+      "max_outside_per_box_axis_m": [
+        -0.0019880543479630086,
+        -0.2162756863405063,
+        -0.319103376511232
+      ],
+      "nominal_coverage_status": "COVERED",
+      "nominal_world_corners_m": [
+        [
+          0.0,
+          0.21999999999999997,
+          0.6
+        ],
+        [
+          0.0,
+          0.21999999999999997,
+          0.9
+        ],
+        [
+          0.0,
+          0.62,
+          0.6
+        ],
+        [
+          0.0,
+          0.62,
+          0.9
+        ],
+        [
+          0.6,
+          0.21999999999999997,
+          0.6
+        ],
+        [
+          0.6,
+          0.21999999999999997,
+          0.9
+        ],
+        [
+          0.6,
+          0.62,
+          0.6
+        ],
+        [
+          0.6,
+          0.62,
+          0.9
+        ]
+      ],
+      "source_instance_id": "fusion-23d2ea899ff42fa46fe9"
+    },
+    {
+      "actual_appearance_mesh_coverage": "NOT_EVALUATED",
+      "annotation_geometry_truth_status": "NOMINAL_CUBOID_ONLY; EXACT_SURFACE_CORNERS_AND_PLANES_NOT_EVALUATED",
+      "evaluation_gt_object_id": "carton_l03_c02",
+      "evaluation_reference": "HISTORICAL_NOMINAL_CUBOID_ONLY",
+      "existing_mask_matches": [
+        [
+          "carton_l03_c02"
+        ]
+      ],
+      "max_outside_per_box_axis_m": [
+        -0.001961233374829674,
+        -0.21539331985350313,
+        -0.31644649550268855
+      ],
+      "nominal_coverage_status": "COVERED",
+      "nominal_world_corners_m": [
+        [
+          0.0,
+          -0.2,
+          0.8999999999999998
+        ],
+        [
+          0.0,
+          -0.2,
+          1.1999999999999997
+        ],
+        [
+          0.0,
+          0.2,
+          0.8999999999999998
+        ],
+        [
+          0.0,
+          0.2,
+          1.1999999999999997
+        ],
+        [
+          0.6,
+          -0.2,
+          0.8999999999999998
+        ],
+        [
+          0.6,
+          -0.2,
+          1.1999999999999997
+        ],
+        [
+          0.6,
+          0.2,
+          0.8999999999999998
+        ],
+        [
+          0.6,
+          0.2,
+          1.1999999999999997
+        ]
+      ],
+      "source_instance_id": "fusion-23e1093828c52b5cfd0e"
+    }
+  ],
+  "planning_admissible": false,
+  "policy": "Existing unique mask matches; no best-candidate selection; no adapter calls or parameter updates",
+  "schema_version": "size_prior_nominal_evaluation_v1"
+}

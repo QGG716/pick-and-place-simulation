@@ -1,0 +1,2 @@
+# Preserve the exact archived bytes referenced by SHA-256 evidence bindings.
+*.json -text -diff
