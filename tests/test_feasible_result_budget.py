@@ -9,6 +9,7 @@ import unloading_sim.layout_trajectory as lt
 import unloading_sim.planner as planning
 import unloading_sim.motion_quality as quality
 import unloading_sim.ik as ik_module
+import unloading_sim.motion_validation as validation_module
 from test_layout_trajectory import _Robot, _segment
 
 
@@ -22,7 +23,7 @@ class Clock:
 @pytest.fixture
 def clock(monkeypatch):
     value = Clock()
-    for module in (lt, planning, quality, ik_module):
+    for module in (lt, planning, quality, ik_module, validation_module):
         monkeypatch.setattr(module, "perf_counter", value, raising=False)
     return value
 
@@ -173,12 +174,16 @@ def test_retention_context_separates_permissions(clock, change):
     elif change == "scene":
         kwargs["obstacles"] = []
     elif change == "attachment":
-        kwargs["attachment"] = SimpleNamespace(rigid=SimpleNamespace(tcp_from_box=np.eye(4)))
+        from unloading_sim.validation_physics import RigidAttachment
+        kwargs["attachment"] = SimpleNamespace(rigid=RigidAttachment(np.eye(4),target.half_extents,target.name))
     elif change == "policy":
         c.collision_margin_m += .001
     else:
         c.start_planning_request(clock())
-    assert initial != c._context_identity(**kwargs)
+    # Semantic identity is stable across requests; request-owned evidence is reset.
+    assert (initial == c._context_identity(**kwargs)) == (change == 'request')
+    if change == 'request':
+        assert not c._motion_validators and not c._state_cache
 
 
 def test_context_change_during_optimization_fails_closed(clock, monkeypatch):

@@ -68,6 +68,16 @@ def run(case):
                                     [case.placed], seed=71070)
 
 
+def assert_restored_cache_is_equivalent_to_fresh(case):
+    # Complete semantic keys permit incremental retention across contact scopes.
+    # The restored permissions must give exactly the uncached verdict.
+    c=case.c
+    cached=c._state_failure(START_Q,case.scene.all_obstacles,stage='pregrasp')
+    c._state_cache.clear()
+    fresh=c._state_failure(START_Q,case.scene.all_obstacles,stage='pregrasp')
+    assert cached==fresh
+
+
 @pytest.mark.parametrize("neighbor_mode", ["check", "ignore"])
 def test_production_entry_connects_with_candidate_masks_and_restores_context(case, neighbor_mode):
     c, v = case.c, case.v
@@ -88,7 +98,7 @@ def test_production_entry_connects_with_candidate_masks_and_restores_context(cas
     assert sum(checks[0]["commanded_active_mask"]) == 40
     assert checks[0]["commanded_active_mask"] != saved[0]
     assert context(case) == saved
-    assert not c._state_cache
+    assert_restored_cache_is_equivalent_to_fresh(case)
     print("LOOKAHEAD", neighbor_mode, result["status"], result["joint_path_length_rad"])
 
 
@@ -155,7 +165,7 @@ def test_failure_timeout_and_exception_restore_mutable_context(case, monkeypatch
         if exit_mode == "timeout":
             assert result["attempts"][0]["failure"]["reason"] == "LOOKAHEAD_DEADLINE"
     assert context(case) == saved
-    assert not c._state_cache
+    assert_restored_cache_is_equivalent_to_fresh(case)
 
 
 def test_exhausted_budget_returns_none_without_touching_context(case):

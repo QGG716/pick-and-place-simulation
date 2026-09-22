@@ -12,6 +12,12 @@ from time import perf_counter
 import numpy as np
 
 
+def _numpy_json(value):
+    if isinstance(value,np.ndarray): return value.tolist()
+    if isinstance(value,np.generic): return value.item()
+    raise TypeError(f'unsupported context value: {type(value).__name__}')
+
+
 class Status(str, Enum):
     VALID = "VALID"
     INVALID = "INVALID"
@@ -71,7 +77,7 @@ class ValidationContext:
 
     @classmethod
     def create(cls, binding, **kwargs):
-        return cls(json.dumps(binding, sort_keys=True, allow_nan=False), **kwargs)
+        return cls(json.dumps(binding, sort_keys=True, allow_nan=False,default=_numpy_json), **kwargs)
 
     def samples(self, a, b):
         n = max(1, int(np.ceil(np.max(np.abs(b-a))/self.resolution_rad)))
