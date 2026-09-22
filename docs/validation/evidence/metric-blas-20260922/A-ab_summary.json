@@ -1,0 +1,324 @@
+{
+  "artifact": {
+    "path": "/root/autodl-tmp/v05-acceptance/metric-blas-20260922/A-inherit/algorithm_artifact.json",
+    "sha256": "937b3130209d3b7d576a2cf253ac393bf1e4c958f88407049ecf995098b0f363"
+  },
+  "artifact_load_validation_seconds": 0.2673149034380913,
+  "code_sha256": {
+    "src/unloading_perception/rgbd.py": "1384148c76da210f16fc5cf75dd56c280abd5038e1d912f584cd4b0ea3929c14",
+    "tools/metric_depth_runner.py": "0f67e0ba44370a6937accba48e953532e791f48959701452621b5d76cda68e50",
+    "tools/run_isaac_rgbd_geometry.py": "66bdf7d7f3df61c92fb455aacfdd95923baaf539ce7e2b182151afb3ee1b2df1"
+  },
+  "diagnostic_enabled": false,
+  "effective_config": {
+    "comparison_mode": "STAGED_MONOCULAR_MOGE",
+    "detector_metrics": "NOT_EVALUATED",
+    "effective_scene_config": "configs/isaac/workcell_v2.yaml",
+    "historical_cameras": [
+      {
+        "acceptance_eligible": false,
+        "camera_id": "front_validation_camera",
+        "publish_rate_hz": 10.0,
+        "resolution_px": [
+          640,
+          480
+        ],
+        "status": "SUPERSEDED_BY_J1_MOUNTED_PERCEPTION_MAST_V2"
+      }
+    ],
+    "illumination": {
+      "comparison_modes": [
+        "LIGHT_OFF",
+        "LIGHT_ON_NOMINAL"
+      ],
+      "controlled_variables": [
+        "scene",
+        "camera_pose",
+        "exposure",
+        "proposal",
+        "depth"
+      ],
+      "geometry_status": "SIMULATION_LIGHT_PROXY"
+    },
+    "layout_bundle": {
+      "archived_snapshot_reference_commit": "f84578a3c9a91364b747560b994f2e6e9b5d65a2",
+      "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+      "isaac_contract": "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json",
+      "latest_layout_binding_status": "READ_ONLY_COMPATIBILITY_REFERENCE",
+      "official_robot_asset": {
+        "repository_path": "assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+        "sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+        "source_status": "LATEST_FEASIBILITY_OFFICIAL_URDF"
+      },
+      "robot_base_xyz_A_m": [
+        0.625,
+        0.0,
+        0.6
+      ],
+      "snapshot": "integration/isaac_scene_contract/m710id70_layout_v1/scene_snapshot.json"
+    },
+    "metric_runtime_policy": {
+      "mechanism": "inherit",
+      "non_target_thread_settings": "unchanged",
+      "requested_blas_threads": null,
+      "schema_version": "metric_blas_policy_v1",
+      "scope": "standalone_metric_geometry_process",
+      "targets": [
+        "numpy",
+        "scipy"
+      ]
+    },
+    "modes": [
+      "ISAAC_GT",
+      "STAGED_RGBD",
+      "STAGED_MONOCULAR_MOGE"
+    ],
+    "perturbations": {
+      "known_rotation_rpy_rad": [
+        0.0,
+        0.0,
+        0.17453292519943295
+      ],
+      "known_translation_m": [
+        0.05,
+        0.0,
+        0.0
+      ],
+      "occluder_size_xyz_m": [
+        0.18,
+        0.7,
+        0.9
+      ]
+    },
+    "primary_mode": "STAGED_RGBD",
+    "proposal_source": "ISAAC_GT_ORACLE_PROPOSAL",
+    "raw_image_automatic": false,
+    "rendering": {
+      "appearance_ab_entry": "scripts/isaacsim_perception_capture.py --appearance-ab",
+      "appearance_ab_scope": "FULL_STACK_NOMINAL_SAME_GEOMETRY_A_PLAIN_B_SHARED_PAPER_ATLAS",
+      "capture_trigger_hz": 2,
+      "carton_asset_config": "configs/isaac/carton_assets.json",
+      "carton_asset_entry": "scripts/isaacsim_perception_capture.py --carton-assets configs/isaac/carton_assets.json --asset-cache CACHE",
+      "carton_asset_review_policy": "RAW_IMAGES_FIRST_THEN_ONE_EXISTING_PIPELINE_RUN_PER_MODULE",
+      "full_resolution_px": [
+        2592,
+        1944
+      ],
+      "physics_hz": 60,
+      "renderer": "RaytracedLighting",
+      "sensor_acquisition_hz": 30,
+      "sensor_target_highlight": false,
+      "smoke_frames": 18,
+      "vision_processing_hz": 2,
+      "visual_demo_fps": 20,
+      "visual_demo_resolution_px": [
+        1280,
+        720
+      ],
+      "visual_demo_seconds": 12
+    },
+    "rig_id": "m710id70_j1_perception_mast_v5",
+    "ros": {
+      "topics": {
+        "clock": "/clock",
+        "gt_2d": "/isaac/ground_truth/detections_2d",
+        "gt_3d": "/isaac/ground_truth/detections_3d",
+        "joint_states": "/joint_states",
+        "modules": {
+          "module_0_upper": {
+            "camera_info": "/isaac/vision_mast/module_0_upper/camera_info",
+            "capture_metadata": "/isaac/vision_mast/module_0_upper/capture_metadata",
+            "depth": "/isaac/vision_mast/module_0_upper/depth",
+            "pointcloud": "/isaac/vision_mast/module_0_upper/pointcloud_on_demand",
+            "rgb": "/isaac/vision_mast/module_0_upper/rgb"
+          },
+          "module_1_lower": {
+            "camera_info": "/isaac/vision_mast/module_1_lower/camera_info",
+            "capture_metadata": "/isaac/vision_mast/module_1_lower/capture_metadata",
+            "depth": "/isaac/vision_mast/module_1_lower/depth",
+            "pointcloud": "/isaac/vision_mast/module_1_lower/pointcloud_on_demand",
+            "rgb": "/isaac/vision_mast/module_1_lower/rgb"
+          }
+        },
+        "tf": "/tf",
+        "tf_static": "/tf_static"
+      },
+      "use_sim_time": true
+    },
+    "scenes": [
+      "MECHANICAL_TOP_VIEW",
+      "J1_ROTATION_SWEEP",
+      "FULL_STACK_NOMINAL",
+      "DARK_LIGHT_OFF",
+      "DARK_LIGHT_ON",
+      "RGBD_CALIBRATION_BOX",
+      "PARTIAL_OCCLUSION",
+      "MOTION_TIMESTAMP_TEST"
+    ],
+    "schema_version": "isaac_perception_validation_v2",
+    "target_selection": {
+      "simulation_object_id": "carton_l07_c02",
+      "strategy": "manifest_stable_id"
+    },
+    "vision": {
+      "calibration_gate": {
+        "max_center_translation_error_m": 0.1,
+        "max_full_dimension_abs_error_m": 0.15,
+        "max_orientation_error_deg": 20.0
+      },
+      "depth_unavailable_fallback": "DEPTH_UNAVAILABLE_MOGE",
+      "fallback_scale_status": "MONOCULAR_SCALE_UNVERIFIED",
+      "keyframes": [
+        0,
+        50,
+        100
+      ],
+      "legacy_cuboid_diagnostic": false,
+      "pointcloud_filter": {
+        "boundary_erosion_px": 2,
+        "depth_percentile_high": 99.0,
+        "depth_percentile_low": 1.0,
+        "discontinuity_floor_m": 0.02,
+        "discontinuity_mad_scale": 6.0,
+        "local_depth_component_selection": true,
+        "minimum_component_points": 8,
+        "minimum_points": 50,
+        "retain_multiple_depth_components": true
+      },
+      "registered_depth_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
+      "resident_worker_timeout_s": 90.0
+    },
+    "vision_rig_config": "configs/isaac/perception_sensing_pose.yaml"
+  },
+  "executable": "/root/v05-gpu-venv/bin/python",
+  "final_input_hash_verification_seconds": 0.03795643523335457,
+  "fused_objects": 37,
+  "fusion_and_artifact_publication_seconds": 2.6472808979451656,
+  "initial_input_verification_seconds": 0.06137742102146149,
+  "load_after": [
+    18.93505859375,
+    19.005859375,
+    20.00634765625
+  ],
+  "load_before": [
+    16.35205078125,
+    17.2216796875,
+    19.720703125
+  ],
+  "modules": [
+    {
+      "accepted_complete_cuboids": 0,
+      "face_count": 23,
+      "input_load_binding_worker_verification_seconds": 1.537218812853098,
+      "instance_count": 16,
+      "instances_without_faces": 0,
+      "legacy_cuboid_diagnostic": {
+        "command": null,
+        "enabled": false,
+        "seconds": 0.0,
+        "status": "DISABLED"
+      },
+      "mask_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "module_id": "module_0_upper",
+      "status": "COMPLETED",
+      "timing_seconds": {
+        "evaluation_and_observation_write": 0.6314766965806484,
+        "filter_audit_json_write": 0.000599198043346405,
+        "final_metric_faces": 32.733052995055914,
+        "final_validation_and_observation": 8.629881951957941,
+        "input_validation_and_snapshot": 0.04383983090519905,
+        "legacy_cuboid_diagnostic": 0.0,
+        "legacy_geometry": 32.73488776013255,
+        "module_total_before_timing_record": 58.3523916117847,
+        "pointmap_build_including_filter_audits": 15.497497510164976,
+        "pointmap_write": 0.7903436534106731
+      }
+    },
+    {
+      "accepted_complete_cuboids": 0,
+      "face_count": 48,
+      "input_load_binding_worker_verification_seconds": 2.685482081025839,
+      "instance_count": 31,
+      "instances_without_faces": 1,
+      "legacy_cuboid_diagnostic": {
+        "command": null,
+        "enabled": false,
+        "seconds": 0.0,
+        "status": "DISABLED"
+      },
+      "mask_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "module_id": "module_1_lower",
+      "status": "COMPLETED",
+      "timing_seconds": {
+        "evaluation_and_observation_write": 1.237272534519434,
+        "filter_audit_json_write": 0.0011336617171764374,
+        "final_metric_faces": 67.47863533720374,
+        "final_validation_and_observation": 16.996884413063526,
+        "input_validation_and_snapshot": 0.029220253229141235,
+        "legacy_cuboid_diagnostic": 0.0,
+        "legacy_geometry": 67.47972694411874,
+        "module_total_before_timing_record": 115.55224864557385,
+        "pointmap_build_including_filter_audits": 28.720514677464962,
+        "pointmap_write": 1.0579974055290222
+      }
+    }
+  ],
+  "numpy_version": "1.26.4",
+  "plan_sha256": "a7578fe294008dfda82b3181c4dd71477b8ce9adbdcf658e97661d8fd1664a0e",
+  "planning_admissible": false,
+  "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+  "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+  "raw_image_automatic": false,
+  "status": "COMPLETED",
+  "unknown_regions": 84,
+  "wall_seconds_before_summary_write": 181.194333024323
+}

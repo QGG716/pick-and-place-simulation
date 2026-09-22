@@ -33,23 +33,26 @@ def paths(value, root):
     return value
 
 
-def index_identity(value):
+def index_identity(value, *, thread_policy=False):
     value = deepcopy(value)
     value['run_id'] = '<RUN_ID>'
     value['config_identity'] = '<VERIFIED_CONFIG_IDENTITY>'
     value['config']['vision']['legacy_cuboid_diagnostic'] = '<DIAGNOSTIC_FLAG>'
+    if thread_policy:
+        value['config']['metric_runtime_policy']['requested_blas_threads'] = '<VERIFIED_THREAD_POLICY>'
+        value['config']['metric_runtime_policy']['mechanism'] = '<VERIFIED_THREAD_MECHANISM>'
     for ref in value['module_observations'].values(): ref['sha256'] = '<VERIFIED_AND_COMPARED_DOCUMENT>'
     value['fusion_result']['sha256'] = '<VERIFIED_AND_COMPARED_DOCUMENT>'
     if 'observation' in value: value['observation']['sha256'] = '<VERIFIED_AND_COMPARED_DOCUMENT>'
     return value
 
 
-def observation_identity(value):
+def observation_identity(value, *, thread_policy=False):
     value = deepcopy(value)
     value['processed_time'] = '<PROCESSING_TIME>'
     value['config_identity'] = '<VERIFIED_CONFIG_IDENTITY>'
     if 'algorithm_run' in value['coverage']:
-        value['coverage']['algorithm_run'] = index_identity(value['coverage']['algorithm_run'])
+        value['coverage']['algorithm_run'] = index_identity(value['coverage']['algorithm_run'], thread_policy=thread_policy)
     return value
 
 
@@ -70,17 +73,37 @@ def differences(a, b, path, output):
 
 
 def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=None):
-    if mode not in ('diagnostic-toggle', 'hotspot-off'):
+    if mode not in ('diagnostic-toggle', 'hotspot-off', 'blas-threads'):
         raise ValueError('unknown comparison mode')
     before, after = Path(before).resolve(), Path(after).resolve()
     diagnostic_flags = (True, False) if mode == 'diagnostic-toggle' else (False, False)
     plan = read(plan_path)
+    thread_mode = mode == 'blas-threads'
+    thread_reports = []
+    if thread_mode and plan.get('thread_policies') != [None, 1]:
+        raise ValueError('thread comparison requires frozen inherit/1 policies')
     modules = [r['module_id'] for r in plan['modules']]
     require_roster(plan['modules'], 'module_id', modules, 'fixed plan')
     result = {'plan_complete': True, 'results_equal': False, 'differences': [], 'modules': [],
               'comparison_policy': __doc__, 'mode': mode, 'plan_sha256': sha(Path(plan_path))}
     indexes, observations, summaries = [], [], []
-    for root, enabled in zip((before, after), diagnostic_flags):
+    for ordinal, (root, enabled) in enumerate(zip((before, after), diagnostic_flags)):
+        if thread_mode:
+            from metric_thread_policy import policy, verify_blas, verify_non_targets
+            runtime = policy((None, 1)[ordinal])
+            report = read(root/'thread_policy_report.json')
+            if report['status'] != 'COMPLETED' or report['policy'] != runtime:
+                raise ValueError(f'{root.name}: THREAD_POLICY_NOT_VERIFIED')
+            if report['policy_identity'] != canonical_fingerprint(runtime) or report['plan_sha256'] != result['plan_sha256']:
+                raise ValueError(f'{root.name}: thread policy identity mismatch')
+            for phase in ('before_geometry', 'after_geometry'):
+                verify_blas(report[phase]['blas'], runtime['requested_blas_threads'])
+                verify_non_targets(report['before_policy'], report[phase])
+                if report[phase]['pid'] != report['pid']:
+                    raise ValueError(f'{root.name}: thread evidence from another process')
+            if ordinal == 0 and (report['applied'] or report['before_policy']['blas'] != report['after_geometry']['blas']):
+                raise ValueError('inherited thread policy was changed')
+            thread_reports.append(report)
         summary = read(root/'ab_summary.json')
         if summary['status'] != 'COMPLETED' or summary['plan_sha256'] != result['plan_sha256']:
             raise ValueError(f'{root.name}: run failed or plan identity differs')
@@ -90,6 +113,9 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
             raise ValueError(f'{root.name}: artifact belongs to another run')
         observation, index = load_algorithm_artifact(ref['path'], ref['sha256'])
         expected = deepcopy(plan['config']); expected['vision']['legacy_cuboid_diagnostic'] = enabled
+        if thread_mode:
+            expected['metric_runtime_policy'] = runtime
+            if report['artifact'] != ref: raise ValueError('thread report artifact identity mismatch')
         if index['config'] != expected or index['config_identity'] != canonical_fingerprint(expected):
             raise ValueError(f'{root.name}: effective config mismatch')
         if index['run_id'] != root.name or observation.config_identity != canonical_fingerprint(expected):
@@ -99,8 +125,7 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
         indexes.append(index); observations.append(to_wire(observation)); summaries.append(summary)
     if summaries[0]['code_sha256'] != summaries[1]['code_sha256']:
         raise ValueError('A/B production code differs')
-    if mode == 'hotspot-off':
-        change = read(code_change)
+    if mode in ('hotspot-off', 'blas-threads'):
         timed = [read(r/'function_timings.json') for r in (before, after)]
         for root, measurement in zip((before, after), timed):
             if measurement['heavy_profiler_enabled'] is not False or measurement['status'] != 'COMPLETED':
@@ -109,12 +134,21 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
             expected = [(m['module_id'], i) for m in plan['modules'] for i in m['mask_ids']]
             require_roster([{'id': i} for i in actual], 'id', expected, root.name+'/timings')
         a, b = (m['production_sha256'] for m in timed)
-        if a.keys() != b.keys() or [p for p in a if a[p] != b[p]] != [change['path']]:
-            raise ValueError('expected exactly the declared production hotspot file change')
-        if a[change['path']] != change['before_sha256'] or b[change['path']] != change['after_sha256']:
-            raise ValueError('declared hotspot code identity mismatch')
+        if mode == 'hotspot-off':
+            change = read(code_change)
+            if a.keys() != b.keys() or [p for p in a if a[p] != b[p]] != [change['path']]:
+                raise ValueError('expected exactly the declared production hotspot file change')
+            if a[change['path']] != change['before_sha256'] or b[change['path']] != change['after_sha256']:
+                raise ValueError('declared hotspot code identity mismatch')
+        else:
+            if not a or a != b or thread_reports[0]['entry_code_sha256'] != thread_reports[1]['entry_code_sha256']:
+                raise ValueError('thread comparison requires identical production and entry code')
+            for key in ('blas', 'opencv_threads', 'thread_environment', 'affinity', 'python', 'numpy', 'scipy', 'opencv'):
+                if thread_reports[0]['before_policy'][key] != thread_reports[1]['before_policy'][key]:
+                    raise ValueError('different inherited configuration: '+key)
         for key in ('python', 'executable', 'platform', 'numpy', 'scipy', 'opencv', 'affinity',
                     'thread_environment', 'threadpools', '/sys/fs/cgroup/cpu.max'):
+            if thread_mode and key == 'threadpools': continue  # native pools verified above
             if timed[0]['environment_before'].get(key) != timed[1]['environment_before'].get(key):
                 raise ValueError(f'performance environment mismatch: {key}')
     for spec in plan['modules']:
@@ -140,7 +174,7 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
             if module_obs.processed_time != module_obs.capture_time + row['timing_seconds']['legacy_geometry']:
                 raise ValueError(f'{root.name}/{name}: processing interval mismatch')
             geometry.append(paths(final, root))
-            obs.append(paths(observation_identity(to_wire(module_obs)), root))
+            obs.append(paths(observation_identity(to_wire(module_obs), thread_policy=thread_mode), root))
             counts.append({'instances': len(final['instances']), 'faces': sum(len(r['camera_facing_faces']) for r in final['instances']),
                 'with_faces': sum(bool(r['camera_facing_faces']) for r in final['instances']),
                 'without_faces': sum(not r['camera_facing_faces'] for r in final['instances']),
@@ -151,9 +185,9 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
             'instances': [{'mask_id': r['mask_id'], 'faces': len(r['camera_facing_faces']), 'accepted_complete_cuboid': r['accepted'],
                 'final_record_exact_equal': r == s} for r, s in zip(geometry[0]['instances'], geometry[1]['instances'])]})
     for title, pair in (
-        ('index', [paths(index_identity(i), r) for i, r in zip(indexes, (before, after))]),
+        ('index', [paths(index_identity(i, thread_policy=thread_mode), r) for i, r in zip(indexes, (before, after))]),
         ('fusion', [paths(read(r/'fusion_result.json'), r) for r in (before, after)]),
-        ('fused_observation', [paths(observation_identity(o), r) for o, r in zip(observations, (before, after))])):
+        ('fused_observation', [paths(observation_identity(o, thread_policy=thread_mode), r) for o, r in zip(observations, (before, after))])):
         differences(*pair, title, result['differences'])
     result['results_equal'] = not result['differences']
     return result
@@ -162,7 +196,7 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('before', 'after', 'plan', 'output'): parser.add_argument('--'+name, type=Path, required=True)
-    parser.add_argument('--mode', choices=('diagnostic-toggle', 'hotspot-off'), default='diagnostic-toggle')
+    parser.add_argument('--mode', choices=('diagnostic-toggle', 'hotspot-off', 'blas-threads'), default='diagnostic-toggle')
     parser.add_argument('--code-change', type=Path, help='required for hotspot-off; one explicit old/new source SHA')
     args = parser.parse_args(argv)
     try:

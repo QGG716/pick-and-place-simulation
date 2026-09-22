@@ -15,15 +15,17 @@ def write(path, value):
     path.write_text(json.dumps(value), encoding='utf-8')
 
 
-def fixture(tmp_path, diagnostics=(True, False)):
+def fixture(tmp_path, diagnostics=(True, False), runtime_policies=None):
     batches = batch_fixture(False)
     observations = module_observations(batches)
     specs = [{'module_id': b.module_id, 'mask_ids': list(range(1, len(b.face_sets)+1))} for b in batches]
     plan = {'modules': specs, 'config': {'vision': {'legacy_cuboid_diagnostic': True}}, 'model_manifest': {'test': 'SYNTHETIC'}}
+    if runtime_policies is not None: plan['thread_policies'] = [None, 1]
     plan_path = tmp_path/'plan.json'; write(plan_path, plan)
     roots = [tmp_path/'on', tmp_path/'off']
-    for root, enabled in zip(roots, diagnostics):
+    for ordinal, (root, enabled) in enumerate(zip(roots, diagnostics)):
         root.mkdir(); config = deepcopy(plan['config']); config['vision']['legacy_cuboid_diagnostic'] = enabled
+        if runtime_policies is not None: config['metric_runtime_policy'] = runtime_policies[ordinal]
         results, rows = {}, []
         for batch, original in zip(batches, observations):
             folder = root/batch.module_id; folder.mkdir()
@@ -110,3 +112,49 @@ def test_hotspot_mode_fails_closed_without_relaxing_geometry(tmp_path, failure):
     write(path, value)
     assert main(['--before',str(a),'--after',str(b),'--plan',str(plan),'--output',str(tmp_path/'result.json'),
         '--mode','hotspot-off','--code-change',str(change)]) == 1
+
+
+def thread_fixture(tmp_path):
+    from tools.metric_thread_policy import policy
+    from test_metric_thread_policy import state
+    plan, a, b = fixture(tmp_path, (False, False), [policy(None), policy(1)])
+    spec = json.loads(plan.read_text())
+    for root, request in ((a, None), (b, 1)):
+        s = json.loads((root/'ab_summary.json').read_text())
+        original = {**state(), 'python': 'same', 'numpy': 'same', 'scipy': 'same', 'opencv': 'same'}
+        configured = deepcopy(original)
+        for row in configured['blas']: row['num_threads'] = request or 64
+        write(root/'thread_policy_report.json', {'status': 'COMPLETED', 'policy': policy(request),
+            'policy_identity': canonical_fingerprint(policy(request)), 'plan_sha256': sha(plan),
+            'pid': original['pid'], 'before_policy': original, 'before_geometry': configured, 'after_geometry': configured,
+            'applied': [], 'artifact': s['artifact'], 'entry_code_sha256': {'entry': 'same'}})
+        write(root/'function_timings.json', {'status': 'COMPLETED', 'heavy_profiler_enabled': False,
+            'instances': [{'module_id': m['module_id'], 'mask_id': i} for m in spec['modules'] for i in m['mask_ids']],
+            'environment_before': {'python': 'same'}, 'production_sha256': {'all_geometry': 'same'}})
+    return plan, a, b
+
+
+def test_thread_mode_requires_equal_code_and_true_policies(tmp_path):
+    plan, a, b = thread_fixture(tmp_path)
+    assert compare(a, b, plan, mode='blas-threads')['results_equal']
+
+
+@pytest.mark.parametrize('failure', ['module', 'instance', 'empty', 'file', 'hash', 'coordinate', 'thread', 'code'])
+def test_thread_mode_rejects_incomplete_or_changed_geometry_and_policy(tmp_path, failure):
+    plan, a, b = thread_fixture(tmp_path)
+    if failure in ('module', 'empty'):
+        for root in (a, b) if failure == 'empty' else (b,):
+            p=root/'ab_summary.json'; v=json.loads(p.read_text()); v['modules']=[] if failure == 'empty' else v['modules'][:-1]; write(p,v)
+    elif failure == 'file': (b/'m0/rgbd_cuboids.json').unlink()
+    elif failure == 'hash': (b/'fusion_result.json').write_text('{}')
+    elif failure == 'thread':
+        p=b/'thread_policy_report.json'; v=json.loads(p.read_text()); v['before_geometry']['blas'][0]['num_threads']=64; write(p,v)
+    elif failure == 'code':
+        p=b/'function_timings.json'; v=json.loads(p.read_text()); v['production_sha256']['all_geometry']='different'; write(p,v)
+    else:
+        p=b/'m0/rgbd_cuboids.json'; v=json.loads(p.read_text())
+        if failure == 'instance': v['instances'].pop()
+        else: v['instances'][0]['camera_facing_faces'][0]['corners_3d_m'][0][0] += 1e-8
+        write(p,v)
+    assert main(['--before',str(a),'--after',str(b),'--plan',str(plan),'--output',str(tmp_path/'result.json'),
+        '--mode','blas-threads']) == 1

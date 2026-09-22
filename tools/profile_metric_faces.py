@@ -156,7 +156,7 @@ def profile_rows(profile):
     return sorted(rows, key=lambda r: -r['cumulative_seconds'])
 
 
-def main(argv=None):
+def main(argv=None, *, runtime_policy=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--plan', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
@@ -169,7 +169,7 @@ def main(argv=None):
     timers.install()
     try:
         if profiler: profiler.enable()
-        status = delivery.run(SimpleNamespace(plan=args.plan, output=args.output, diagnostic='off'))
+        status = delivery.run(SimpleNamespace(plan=args.plan, output=args.output, diagnostic='off', runtime_policy=runtime_policy))
     finally:
         if profiler: profiler.disable()
         timers.restore()

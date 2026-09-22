@@ -1,0 +1,412 @@
+{
+  "files": {
+    "A-inherit/ab_summary.json": {
+      "bytes": 10159,
+      "sha256": "d79a234e5cb1d3653b2d6d7a9d077d826dc9903cc69bb9fd29625f63a0016644"
+    },
+    "A-inherit/algorithm_artifact.json": {
+      "bytes": 8297,
+      "sha256": "937b3130209d3b7d576a2cf253ac393bf1e4c958f88407049ecf995098b0f363"
+    },
+    "A-inherit/effective_config.json": {
+      "bytes": 5631,
+      "sha256": "2dd0f57323a3279792519504da8c1c646cdba69551f3314bdc2f66f5acf111c6"
+    },
+    "A-inherit/function_timings.json": {
+      "bytes": 375857,
+      "sha256": "9fa232cc0151c61123726aa98180a55aa3aa3470f1bb1e3b8c8d29bfd48e353d"
+    },
+    "A-inherit/fused_algorithm_observation.json": {
+      "bytes": 7159389,
+      "sha256": "743a3ce12d2735f543f7b8a5796d5711d907298cd6b41e824d575ec2ee4a3c9d"
+    },
+    "A-inherit/fusion_result.json": {
+      "bytes": 6599981,
+      "sha256": "aee3e973a6eb84454ee4565a1f91fbaa9d25b1ec36c7644118735b8ecfcad811"
+    },
+    "A-inherit/module_0_upper/camera_info.json": {
+      "bytes": 903,
+      "sha256": "06fa09c365c92a4a3e0fa19ca62b0d70270c76f5bea9fbf750376376bc92f44f"
+    },
+    "A-inherit/module_0_upper/capture_binding.json": {
+      "bytes": 766,
+      "sha256": "acd75102fe2e75215a108c54c3a436a6f7cef9b0fbdab3ec352c9fe72add607b"
+    },
+    "A-inherit/module_0_upper/capture_metadata.json": {
+      "bytes": 1056,
+      "sha256": "64c6b049ae405701ab02f948c273b26ff841f48c4e8b41cfa20f88f5881f80b3"
+    },
+    "A-inherit/module_0_upper/geometry_input_provenance.json": {
+      "bytes": 3868,
+      "sha256": "c8987985062a88183a8eb2a56324318cbbb23daceceae898ffdc018d68b74912"
+    },
+    "A-inherit/module_0_upper/gt_annotations.json": {
+      "bytes": 45010,
+      "sha256": "e083c5e8181c67d03a3e8e0651d87fee70b937b416a5327d708c16ffdb2c967d"
+    },
+    "A-inherit/module_0_upper/input_provenance.json": {
+      "bytes": 2961,
+      "sha256": "b3d1eab1430150156ea9373bbe5d0e78948fed2511d3d2ac18da12ef9c068969"
+    },
+    "A-inherit/module_0_upper/legacy_cuboid_diagnostic.json": {
+      "bytes": 83,
+      "sha256": "7eb99a64caf3514af48732cd5786318977afae749f65ae50159863c437fb464b"
+    },
+    "A-inherit/module_0_upper/metric_pointmap_filter_audit.json": {
+      "bytes": 17828,
+      "sha256": "9537392e604cb06cef5167a26843e83d815688844cb54de74e9bca39ead4b6e2"
+    },
+    "A-inherit/module_0_upper/mode_b_rgbd_evaluation.json": {
+      "bytes": 17481,
+      "sha256": "ab0754a66486e168fc0e5cc108f4e4b845b3e2badd0f3d73440b2e72508175ef"
+    },
+    "A-inherit/module_0_upper/mode_b_rgbd_observation.json": {
+      "bytes": 9248974,
+      "sha256": "b84506a25d9ae3e03dd5c439e61b1bed23fbdd7f83bfc24c554765d50118ccaa"
+    },
+    "A-inherit/module_0_upper/oracle_proposals.json": {
+      "bytes": 6376,
+      "sha256": "4ba9e2bec6bf3077161571f410c7d033ca734bbb1e2f97f01adb21f56d357994"
+    },
+    "A-inherit/module_0_upper/rgbd_cuboids.json": {
+      "bytes": 3631109,
+      "sha256": "3057e86b9b040595c7fe4cad393fcee0f1273096e5c52c949ef5549dc5a0389c"
+    },
+    "A-inherit/module_0_upper/rgbd_stage_timing.json": {
+      "bytes": 504,
+      "sha256": "19c8cec90cb3c0d04499f1fa62a81373cb763d6312d6e60fa758db9de4ea1dd3"
+    },
+    "A-inherit/module_1_lower/camera_info.json": {
+      "bytes": 978,
+      "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+    },
+    "A-inherit/module_1_lower/capture_binding.json": {
+      "bytes": 766,
+      "sha256": "2d9ebf0cc58461911b0cfc41f19391dab1423bb523b33f7e60e467cb4369d752"
+    },
+    "A-inherit/module_1_lower/capture_metadata.json": {
+      "bytes": 1131,
+      "sha256": "71bf5277d5c18dba6b94121e3b227f2477139e635c6996cf4d41384a5f393e6d"
+    },
+    "A-inherit/module_1_lower/geometry_input_provenance.json": {
+      "bytes": 3868,
+      "sha256": "a2b5d23f59e3c73a8e7615995a92c8d7dffbfe1a1490adb9f59fa82c4b69ff67"
+    },
+    "A-inherit/module_1_lower/gt_annotations.json": {
+      "bytes": 45032,
+      "sha256": "dc6cf21e04ca8580b0a18cd723a6cbd23eb46c70ff157b00a7a0a58724f76697"
+    },
+    "A-inherit/module_1_lower/input_provenance.json": {
+      "bytes": 2961,
+      "sha256": "d624ff7bf78631e6e694dcf3b3341650f81f7536b4771c1a4884a985037c0385"
+    },
+    "A-inherit/module_1_lower/legacy_cuboid_diagnostic.json": {
+      "bytes": 83,
+      "sha256": "7eb99a64caf3514af48732cd5786318977afae749f65ae50159863c437fb464b"
+    },
+    "A-inherit/module_1_lower/metric_pointmap_filter_audit.json": {
+      "bytes": 33951,
+      "sha256": "8dbc3ae339b10829f8b45ece187d1dd2a34587acdc2d4d96f9baff9d2ac6e93b"
+    },
+    "A-inherit/module_1_lower/mode_b_rgbd_evaluation.json": {
+      "bytes": 31378,
+      "sha256": "c298888604fc1da33da1f07812dc7c08c52ea82d5cf0c62b5344049b7251f70c"
+    },
+    "A-inherit/module_1_lower/mode_b_rgbd_observation.json": {
+      "bytes": 18651264,
+      "sha256": "4dce69dc51d76bc8540d0e1dcef067fd94d1a9779353b063fee58b996f5b9692"
+    },
+    "A-inherit/module_1_lower/oracle_proposals.json": {
+      "bytes": 11961,
+      "sha256": "e1b7ceda462a884060a5622f65d50f15857f348ba54fe2a85a38bc2cc7151a50"
+    },
+    "A-inherit/module_1_lower/rgbd_cuboids.json": {
+      "bytes": 7147592,
+      "sha256": "30643472dab8efe22fe8dd7fd5e234f43f5d6874d793ef6053bcf2bbbf48b247"
+    },
+    "A-inherit/module_1_lower/rgbd_stage_timing.json": {
+      "bytes": 507,
+      "sha256": "b1335bef7a8143d01ac1bc1adf76d9082e349dc1751421300e39c024cb25bb27"
+    },
+    "A-inherit/thread_policy_report.json": {
+      "bytes": 16892,
+      "sha256": "c123823415fbba62c7d6dc71a951a9c4d359c4a970dd8c12d61e69b69e7c9d99"
+    },
+    "B-blas-1/ab_summary.json": {
+      "bytes": 10184,
+      "sha256": "40c7acc7cee90bec1302578936a163ed1a1cb0649fe392419bf62469deaf0741"
+    },
+    "B-blas-1/algorithm_artifact.json": {
+      "bytes": 8309,
+      "sha256": "bd003d5d30079753d0fa2853e9138504fcca87b57d0b15a9ecc10cec56919424"
+    },
+    "B-blas-1/effective_config.json": {
+      "bytes": 5648,
+      "sha256": "e56796c424802996c0eccaae279cbee16fe7d27e8bc577608fe7d4ea01e6da44"
+    },
+    "B-blas-1/function_timings.json": {
+      "bytes": 376385,
+      "sha256": "06761b07cb08a706223b410a2d677a65aef1eea69ea9f86e67df6b02ce651706"
+    },
+    "B-blas-1/fused_algorithm_observation.json": {
+      "bytes": 7159386,
+      "sha256": "86b76f679eb3708d1dc620a77f2ff9ad506fe96378ea66bd402599251f14e7cb"
+    },
+    "B-blas-1/fusion_result.json": {
+      "bytes": 6599981,
+      "sha256": "aee3e973a6eb84454ee4565a1f91fbaa9d25b1ec36c7644118735b8ecfcad811"
+    },
+    "B-blas-1/module_0_upper/camera_info.json": {
+      "bytes": 903,
+      "sha256": "06fa09c365c92a4a3e0fa19ca62b0d70270c76f5bea9fbf750376376bc92f44f"
+    },
+    "B-blas-1/module_0_upper/capture_binding.json": {
+      "bytes": 766,
+      "sha256": "acd75102fe2e75215a108c54c3a436a6f7cef9b0fbdab3ec352c9fe72add607b"
+    },
+    "B-blas-1/module_0_upper/capture_metadata.json": {
+      "bytes": 1056,
+      "sha256": "64c6b049ae405701ab02f948c273b26ff841f48c4e8b41cfa20f88f5881f80b3"
+    },
+    "B-blas-1/module_0_upper/geometry_input_provenance.json": {
+      "bytes": 3859,
+      "sha256": "19ecc338be3fd783ffc2215cf71dceb4cbf02114943dca22cbd225530d096ba5"
+    },
+    "B-blas-1/module_0_upper/gt_annotations.json": {
+      "bytes": 45010,
+      "sha256": "e083c5e8181c67d03a3e8e0651d87fee70b937b416a5327d708c16ffdb2c967d"
+    },
+    "B-blas-1/module_0_upper/input_provenance.json": {
+      "bytes": 2953,
+      "sha256": "5fe92296d2e06dff622996dcf12e648b8fb767cbec9080c70006692473f2c62d"
+    },
+    "B-blas-1/module_0_upper/legacy_cuboid_diagnostic.json": {
+      "bytes": 83,
+      "sha256": "7eb99a64caf3514af48732cd5786318977afae749f65ae50159863c437fb464b"
+    },
+    "B-blas-1/module_0_upper/metric_pointmap_filter_audit.json": {
+      "bytes": 17812,
+      "sha256": "dd83ab33e47f6cae57154a8631163b77ad906e9db6f10d8c4104e11318d62eab"
+    },
+    "B-blas-1/module_0_upper/mode_b_rgbd_evaluation.json": {
+      "bytes": 17482,
+      "sha256": "14990d53389388b15eddae7e1cf90198e6bbe085c3126cb2e41119af7a2a9064"
+    },
+    "B-blas-1/module_0_upper/mode_b_rgbd_observation.json": {
+      "bytes": 9248966,
+      "sha256": "f1061a2eadb7daecc64a9d7f2035e75bc60b6285109043eb91916a3fd41a1648"
+    },
+    "B-blas-1/module_0_upper/oracle_proposals.json": {
+      "bytes": 6376,
+      "sha256": "4ba9e2bec6bf3077161571f410c7d033ca734bbb1e2f97f01adb21f56d357994"
+    },
+    "B-blas-1/module_0_upper/rgbd_cuboids.json": {
+      "bytes": 3631108,
+      "sha256": "548b9d3e8168ea432ac5996d50c742ea0ec0fa07f38660c376ffcc801aad8d85"
+    },
+    "B-blas-1/module_0_upper/rgbd_stage_timing.json": {
+      "bytes": 506,
+      "sha256": "5cda53e90cce963b63026c0998f0123956edcab355b8c87a72a723edbd99d5e5"
+    },
+    "B-blas-1/module_1_lower/camera_info.json": {
+      "bytes": 978,
+      "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3"
+    },
+    "B-blas-1/module_1_lower/capture_binding.json": {
+      "bytes": 766,
+      "sha256": "2d9ebf0cc58461911b0cfc41f19391dab1423bb523b33f7e60e467cb4369d752"
+    },
+    "B-blas-1/module_1_lower/capture_metadata.json": {
+      "bytes": 1131,
+      "sha256": "71bf5277d5c18dba6b94121e3b227f2477139e635c6996cf4d41384a5f393e6d"
+    },
+    "B-blas-1/module_1_lower/geometry_input_provenance.json": {
+      "bytes": 3859,
+      "sha256": "50514fa0faaaf3bb24da5501156fec228534a10eedaafa9a2c1e975529443109"
+    },
+    "B-blas-1/module_1_lower/gt_annotations.json": {
+      "bytes": 45032,
+      "sha256": "dc6cf21e04ca8580b0a18cd723a6cbd23eb46c70ff157b00a7a0a58724f76697"
+    },
+    "B-blas-1/module_1_lower/input_provenance.json": {
+      "bytes": 2953,
+      "sha256": "ad4410b14b08a35b38e0b7d95b798e833cf071088086baad4259230eb02143ac"
+    },
+    "B-blas-1/module_1_lower/legacy_cuboid_diagnostic.json": {
+      "bytes": 83,
+      "sha256": "7eb99a64caf3514af48732cd5786318977afae749f65ae50159863c437fb464b"
+    },
+    "B-blas-1/module_1_lower/metric_pointmap_filter_audit.json": {
+      "bytes": 33920,
+      "sha256": "5b28e0cb019b183c11e551c035c503904105ca35a60460e80b89dcdba10cf66d"
+    },
+    "B-blas-1/module_1_lower/mode_b_rgbd_evaluation.json": {
+      "bytes": 31378,
+      "sha256": "c00479c2f7ffd014a09fc735e1719320563443ab9b94990bfb3c31eb6d0d7948"
+    },
+    "B-blas-1/module_1_lower/mode_b_rgbd_observation.json": {
+      "bytes": 18651256,
+      "sha256": "5b6b41a1e2b80a386a539763f605cac228138e6d12553c1cf9a08379b985f59b"
+    },
+    "B-blas-1/module_1_lower/oracle_proposals.json": {
+      "bytes": 11961,
+      "sha256": "e1b7ceda462a884060a5622f65d50f15857f348ba54fe2a85a38bc2cc7151a50"
+    },
+    "B-blas-1/module_1_lower/rgbd_cuboids.json": {
+      "bytes": 7147591,
+      "sha256": "76a01f367166c0239def7f85f8002045e55866434881846b23211286a44c98f1"
+    },
+    "B-blas-1/module_1_lower/rgbd_stage_timing.json": {
+      "bytes": 507,
+      "sha256": "435dabfce6d6d5855cba2311ef68278fddec7b8f3d1026fdffec784512bb3b5e"
+    },
+    "B-blas-1/thread_policy_report.json": {
+      "bytes": 17305,
+      "sha256": "5827771752a5de2255fba961901ff8b23d00e30d2fd5136d43406c4196b53a5a"
+    },
+    "code.tar.gz": {
+      "bytes": 616883,
+      "sha256": "423fc3aa202af9a33e16460e80714a9c6194ceb65ac2d0bda8b28608d032821f"
+    },
+    "comparison.json": {
+      "bytes": 8906,
+      "sha256": "3904d8d9988cbf1f954704b0e8006e09bb9e71a22626eb7f0e3d2aab93b23c01"
+    },
+    "fixed_plan.json": {
+      "bytes": 16328,
+      "sha256": "a7578fe294008dfda82b3181c4dd71477b8ce9adbdcf658e97661d8fd1664a0e"
+    }
+  },
+  "modules": [
+    {
+      "audit_records": 16,
+      "audit_statuses": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "module": "module_0_upper",
+      "npz_bytes": 15889638,
+      "npz_count": 18,
+      "run": "A-inherit"
+    },
+    {
+      "audit_records": 31,
+      "audit_statuses": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "module": "module_1_lower",
+      "npz_bytes": 28828930,
+      "npz_count": 33,
+      "run": "A-inherit"
+    },
+    {
+      "audit_records": 16,
+      "audit_statuses": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "module": "module_0_upper",
+      "npz_bytes": 15889634,
+      "npz_count": 18,
+      "run": "B-blas-1"
+    },
+    {
+      "audit_records": 31,
+      "audit_statuses": [
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS",
+        "PASS"
+      ],
+      "module": "module_1_lower",
+      "npz_bytes": 28828926,
+      "npz_count": 33,
+      "run": "B-blas-1"
+    }
+  ]
+}

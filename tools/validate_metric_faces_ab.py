@@ -97,6 +97,8 @@ def run(args):
             raise ValueError('EXTRACTOR_FILE_CHANGED')
         config = deepcopy(plan['config'])
         config['vision']['legacy_cuboid_diagnostic'] = summary['diagnostic_enabled']
+        if getattr(args, 'runtime_policy', None) is not None:
+            config['metric_runtime_policy'] = args.runtime_policy
         summary['effective_config'] = config
         summary['code_sha256'] = {p: digest(ROOT/p) for p in ('tools/run_isaac_rgbd_geometry.py',
             'tools/metric_depth_runner.py', 'src/unloading_perception/rgbd.py')}
