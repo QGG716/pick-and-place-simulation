@@ -19,7 +19,8 @@ class PlanResult:
 
 
 class _Tree:
-    def __init__(self, root: np.ndarray) -> None:
+    def __init__(self, root: np.ndarray, reverse: bool = False) -> None:
+        self.reverse = reverse
         self.nodes = [np.asarray(root, dtype=float).copy()]
         self.parents = [-1]
 
@@ -53,6 +54,9 @@ class RRTConnectPlanner:
         goal_bias: float = 0.12,
         rng: np.random.Generator | None = None,
         diagnostic_context: bool = False,
+        motion_validator=None,
+        request_budget=None,
+        candidate_check=None,
     ) -> None:
         self.diagnostic_context = diagnostic_context
         self.sample_context = None
@@ -64,6 +68,9 @@ class RRTConnectPlanner:
         self.max_iterations = int(max_iterations)
         self.goal_bias = float(goal_bias)
         self.rng = rng or np.random.default_rng(0)
+        self.motion_validator = motion_validator
+        self.request_budget = request_budget
+        self.candidate_check = candidate_check
         self._reset_search_evidence()
 
     def _reset_search_evidence(self) -> None:
@@ -71,9 +78,18 @@ class RRTConnectPlanner:
         self._edge_validation_calls = 0
         self._edge_state_samples = 0
         self._extension_attempts = 0
+        self._candidate_failures = []
+        self._restarts = 0
+        self._direct_rejected = 0
+        self._last_edge_result = None
+        self._last_state_result = None
+        self._rejected_candidates = set()
 
     def _state_valid(self, q: np.ndarray) -> bool:
         self._state_validations += 1
+        if self.motion_validator is not None:
+            self._last_state_result = self.motion_validator.check_states([q],self._validation_budget())[0]
+            return self._last_state_result.valid
         return bool(self.is_state_valid(q))
 
     def _result(self, success: bool, path: list[np.ndarray], iterations: int, message: str) -> PlanResult:
@@ -87,7 +103,55 @@ class RRTConnectPlanner:
             "state_validation_budget": None,
             "edge_validation_budget": None,
             "termination": message.upper().replace(" ", "_"),
+            "validation_status": "VALID" if success else "CANCELLED" if "cancel" in message else "INDETERMINATE" if message in {"maximum iterations reached", "time limit reached", "validation budget exhausted", "state evidence incomplete"} else "INVALID",
+            "direct_rejected_continue_search": self._direct_rejected,
+            "candidate_failures": self._candidate_failures,
+            "bounded_tree_restarts": self._restarts,
+            "motion_validation": None if self.motion_validator is None else dict(self.motion_validator.statistics),
         })
+
+    def _validation_budget(self, deadline=None):
+        from .motion_validation import RequestBudget
+        if self.request_budget is None:
+            self.request_budget = RequestBudget(deadline=deadline)
+        elif deadline is not None:
+            old = self.request_budget.deadline
+            self.request_budget.deadline = deadline if old is None else min(old, deadline)
+        return self.request_budget
+
+    def _interruption(self):
+        from .motion_validation import Status
+        status = self.request_budget.status() if self.request_budget is not None else None
+        return "cancelled" if status == Status.CANCELLED else "validation budget exhausted" if status else None
+
+    def _accept_candidate(self, path):
+        from .motion_validation import Status
+        if self.motion_validator is not None:
+            result = self.motion_validator.check_path(path, self._validation_budget())
+            if not result.valid:
+                self._candidate_failures.append(result.evidence())
+                if result.status == Status.INVALID:
+                    index = result.failure.get('edge', 0)
+                    self.motion_validator.feedback_failure(path[index], path[index+1], result)
+                return False
+        if self.candidate_check is not None:
+            # Optional downstream geometric parameterization. Exact path blacklist,
+            # never a blacklist of its endpoints or neighboring configuration space.
+            key = tuple(np.asarray(q,float).tobytes() for q in path)
+            if key in self._rejected_candidates:
+                return False
+            result = self.candidate_check(path, self._validation_budget())
+            if not result.valid:
+                self._candidate_failures.append(result.evidence())
+                failure = result.failure or {}
+                if result.status == Status.INVALID and failure.get('type', 'GEOMETRY') == 'GEOMETRY':
+                    index = failure.get('edge', 0)
+                    if self.motion_validator is not None:
+                        self.motion_validator.feedback_failure(path[index],path[index+1],result,
+                            parameters=failure.get('motion_parameters'))
+                    self._rejected_candidates.add(key)
+                return False
+        return True
 
     @staticmethod
     def _deadline_reached(deadline: float | None) -> bool:
@@ -95,6 +159,10 @@ class RRTConnectPlanner:
 
     def _edge_valid(self, a: np.ndarray, b: np.ndarray, deadline: float | None = None) -> bool:
         self._edge_validation_calls += 1
+        if self.motion_validator is not None:
+            self._last_edge_result = self.motion_validator.check_motion(a,b,self._validation_budget(deadline))
+            self._edge_state_samples += self._last_edge_result.statistics.get('state_samples',0)
+            return self._last_edge_result.valid
         delta = b - a
         n = max(1, int(np.ceil(np.max(np.abs(delta)) / self.edge_resolution)))
         for i in range(1, n + 1):
@@ -117,13 +185,14 @@ class RRTConnectPlanner:
 
     def _extend(self, tree: _Tree, target: np.ndarray, deadline: float | None = None) -> tuple[str, int | None]:
         self._extension_attempts += 1
-        if self._deadline_reached(deadline):
+        if self._deadline_reached(deadline) or self._interruption():
             return "timeout", None
         nearest_idx = tree.nearest_index(target)
         nearest = tree.nodes[nearest_idx]
         new_q = self._steer(nearest, target)
-        if not self._edge_valid(nearest, new_q, deadline):
-            if self._deadline_reached(deadline):
+        a,b = (new_q,nearest) if tree.reverse else (nearest,new_q)
+        if not self._edge_valid(a, b, deadline):
+            if self._deadline_reached(deadline) or self._interruption():
                 return "timeout", None
             return "trapped", None
         new_idx = tree.add(new_q, nearest_idx)
@@ -146,26 +215,36 @@ class RRTConnectPlanner:
     def plan(self, start: np.ndarray, goal: np.ndarray, time_limit_seconds: float | None = None) -> PlanResult:
         self._reset_search_evidence()
         deadline = None if time_limit_seconds is None else perf_counter() + max(0.0, float(time_limit_seconds))
+        if self.motion_validator is not None:
+            budget = self._validation_budget(deadline)
+            deadline = budget.deadline
         start = np.asarray(start, dtype=float)
         goal = np.asarray(goal, dtype=float)
+        if self._interruption():
+            return self._result(False, [], 0, self._interruption())
         if self._deadline_reached(deadline):
             return self._result(False, [], 0, "time limit reached")
         if not self._state_valid(start):
-            return self._result(False, [], 0, "start state is invalid")
+            incomplete = self._last_state_result is not None and self._last_state_result.status.value != 'INVALID'
+            return self._result(False, [], 0, self._interruption() or ('state evidence incomplete' if incomplete else "start state is invalid"))
         if not self._state_valid(goal):
-            return self._result(False, [], 0, "goal state is invalid")
+            incomplete = self._last_state_result is not None and self._last_state_result.status.value != 'INVALID'
+            return self._result(False, [], 0, self._interruption() or ('state evidence incomplete' if incomplete else "goal state is invalid"))
         if self._deadline_reached(deadline):
             return self._result(False, [], 0, "time limit reached")
-        if self._edge_valid(start, goal, deadline):
+        if self._edge_valid(start, goal, deadline) and self._accept_candidate([start,goal]):
             return self._result(True, [start, goal], 0, "direct edge")
+        self._direct_rejected += 1
         if self._deadline_reached(deadline):
             return self._result(False, [], 0, "time limit reached")
 
         tree_a = _Tree(start)
-        tree_b = _Tree(goal)
+        tree_b = _Tree(goal, reverse=True)
         a_is_start = True
 
         for iteration in range(1, self.max_iterations + 1):
+            if self._interruption():
+                return self._result(False, [], iteration-1, self._interruption())
             if self._deadline_reached(deadline):
                 return self._result(False, [], iteration - 1, "time limit reached")
             if self.rng.random() < self.goal_bias:
@@ -175,12 +254,12 @@ class RRTConnectPlanner:
 
             status_a, idx_a = self._extend(tree_a, sample, deadline)
             if status_a == "timeout":
-                return self._result(False, [], iteration - 1, "time limit reached")
+                return self._result(False, [], iteration - 1, self._interruption() or "time limit reached")
             if status_a != "trapped" and idx_a is not None:
                 q_new = tree_a.nodes[idx_a]
                 status_b, idx_b = self._connect(tree_b, q_new, deadline)
                 if status_b == "timeout":
-                    return self._result(False, [], iteration, "time limit reached")
+                    return self._result(False, [], iteration, self._interruption() or "time limit reached")
                 if status_b == "reached" and idx_b is not None:
                     path_a = tree_a.path_to_root(idx_a)
                     path_b = tree_b.path_to_root(idx_b)
@@ -188,7 +267,15 @@ class RRTConnectPlanner:
                         path = path_a + list(reversed(path_b[:-1]))
                     else:
                         path = path_b + list(reversed(path_a[:-1]))
-                    return self._result(True, path, iteration, "connected")
+                    if self._accept_candidate(path):
+                        return self._result(True, path, iteration, "connected")
+                    # No dangling descendants: discard only this search tree.
+                    # The validator retains exact failed motions, and the shared
+                    # request deadline/check counter and iteration loop continue.
+                    self._restarts += 1
+                    tree_a,tree_b = _Tree(start),_Tree(goal,reverse=True)
+                    a_is_start = True
+                    continue
 
             tree_a, tree_b = tree_b, tree_a
             a_is_start = not a_is_start
@@ -199,6 +286,8 @@ class RRTConnectPlanner:
         """Return whether both endpoints and their interpolated edge are valid."""
         start = np.asarray(start, dtype=float)
         goal = np.asarray(goal, dtype=float)
+        if self.motion_validator is not None:
+            return self._edge_valid(start,goal)
         return bool(
             self.is_state_valid(start)
             and self.is_state_valid(goal)
@@ -255,7 +344,19 @@ class RRTConnectPlanner:
             a, b = result[i][1], result[j][1]
             n = max(1, int(np.ceil(np.max(np.abs(b-a)) / self.edge_resolution)))
             valid = True
-            for k in range(n+1):
+            if self.motion_validator is not None:
+                budget = self._validation_budget(deadline)
+                before = budget.checks
+                # The optimization allowance is nested inside, never resets the request.
+                previous_limit = budget.max_checks
+                budget.max_checks = min(previous_limit if previous_limit is not None else float('inf'),
+                                        budget.checks+state_budget-checked)
+                try:
+                    valid = self._edge_valid(a,b,deadline)
+                finally:
+                    budget.max_checks = previous_limit
+                checked += budget.checks-before
+            for k in range(0 if self.motion_validator is not None else n+1):
                 if checked >= state_budget or self._deadline_reached(deadline):
                     valid = False
                     termination = "POSTPROCESS_BUDGET_EXHAUSTED"
