@@ -2758,6 +2758,181 @@ try:
         last_drive_feedforward.update(robot_gravity_nm=robot_gravity, payload_gravity_nm=payload_gravity)
         return finite_gravity_compensated_drive_target(
             reference, robot_gravity + payload_gravity, stiffness, effort_limits).astype(np.float32)
+    def _capture_carton_states() -> list[dict[str, object]]:
+        states: list[dict[str, object]] = []
+        if all_carton_bodies is None:
+            return states
+        batch_positions, batch_orientations = all_carton_bodies.get_world_poses()
+        batch_linear, batch_angular = all_carton_bodies.get_velocities()
+        batch_positions, batch_orientations = np.asarray(batch_positions.numpy()), np.asarray(batch_orientations.numpy())
+        batch_linear, batch_angular = np.asarray(batch_linear.numpy()), np.asarray(batch_angular.numpy())
+        for body_index, (record, prim_path) in enumerate(zip(
+            dynamic_scene_records,
+            dynamic_scene_prim_paths,
+            strict=True,
+        )):
+            states.append(
+                {
+                    "name": str(record["name"]),
+                    "prim_path": str(prim_path),
+                    "center_m": batch_positions[body_index].tolist(),
+                    "quaternion_wxyz": batch_orientations[body_index].tolist(),
+                    "linear_velocity_m_s": batch_linear[body_index].tolist(),
+                    "angular_velocity_rad_s": batch_angular[body_index].tolist(),
+                    "size_m": list(record["size_m"]),
+                    "mass_kg": float(record["mass_kg"]),
+                }
+            )
+        return states
+
+    def _capture_delivery_snapshot(name, phase, task_time_s):
+        """Read the live world with a zero-time render, including before frame one."""
+        evidence = {"world_session_id": str(run_started_unix_s),
+                    "target": str(metadata["target"]), "phase": phase,
+                    "task_time_s": task_time_s, "world_physics_time_s": float(world.current_time),
+                    "source": "CURRENT_PHYSX_ZERO_TIME_RENDER", "image": name}
+        try:
+            before_q = np.asarray(articulation.get_dof_positions().numpy()).copy()
+            before_cartons = _capture_carton_states()
+            rep.orchestrator.step(rt_subframes=1, pause_timeline=False, delta_time=0.0, wait_for_render=True)
+            rgba = np.asarray(rgb_annotator.get_data())
+            if rgba.ndim != 3 or rgba.shape[:2] != (args.height, args.width) or rgba.shape[-1] < 3:
+                raise RuntimeError("delivery snapshot has no valid bound-size RGB")
+            evidence["physics_time_delta_s"] = float(world.current_time) - evidence["world_physics_time_s"]
+            evidence["joint_max_delta_rad"] = float(np.max(np.abs(
+                np.asarray(articulation.get_dof_positions().numpy()) - before_q)))
+            evidence["carton_state_unchanged"] = before_cartons == _capture_carton_states()
+            evidence["q_rad"] = before_q[0].tolist()
+            if (evidence["physics_time_delta_s"] != 0 or evidence["joint_max_delta_rad"] != 0
+                    or not evidence["carton_state_unchanged"]):
+                raise RuntimeError("zero-time capture changed the physical state")
+            if not cv2.imwrite(str(args.output / name), cv2.cvtColor(rgba[..., :3], cv2.COLOR_RGB2BGR)):
+                raise RuntimeError("delivery PNG write failed")
+        except BaseException as capture_error:
+            evidence["secondary_capture_error"] = str(capture_error)
+        try:
+            (args.output / (name + ".json")).write_text(json.dumps(evidence, indent=2), encoding="utf-8")
+        except BaseException as reporting_error:
+            print(f"FANUC_REPLAY_SECONDARY_REPORTING_ERROR={reporting_error}", flush=True)
+            return False
+        return "secondary_capture_error" not in evidence
+
+    from unloading_sim.m710_replay_physics import RuntimeFeedbackMonitor
+    qualification_policy = ReplayQualificationPolicy()
+    feedback_source_identity = {
+        "adapter_sha256": _sha256_path(Path(__file__)),
+        "physics_helpers_sha256": _sha256_path(project_root / "src/unloading_sim/m710_replay_physics.py"),
+        "qualification_sha256": _sha256_path(project_root / "src/unloading_sim/qualification.py"),
+        "execution_source_commit": os.environ.get("M710_EXECUTION_SOURCE_COMMIT"),
+    }
+
+    def _new_feedback_monitor():
+        return RuntimeFeedbackMonitor(discovered_joint_names,
+            np.asarray(metadata["joint_position_lower_limits_rad"], float)[command_order],
+            np.asarray(metadata["joint_position_upper_limits_rad"], float)[command_order],
+            velocity_limits.astype(float), qualification_policy)
+
+    def _persist_feedback_stop():
+        """Checkpoint before any stop/cleanup operation; never step or release."""
+        global runtime_stop_reason
+        runtime_stop_reason = feedback_monitor.first_failure["reason"]
+        feedback_monitor.persist(args.output / "runtime_feedback.json")
+        if feedback_monitor.stop_handling is not None:
+            return
+        handling = {"physics_steps_during_stop": 0, "constraint_release_attempted": False,
+                    "method": "finite_position_drive_hold_then_no_further_physics"}
+        try:
+            state = feedback_monitor.last_observation or {}
+            hold = np.asarray(state.get("q_rad"), float)
+            if hold.shape != initial.shape or not np.isfinite(hold).all():
+                hold = np.asarray((feedback_monitor.last_valid or {}).get("q_rad", initial), float)
+                handling["hold_source"] = "last_valid_actual_or_initial_reference"
+            else:
+                handling["hold_source"] = "current_actual_position"
+            # Reuse the last finite feedforward through the SAME capped drive.
+            # No new dynamics evaluation on potentially corrupt feedback.
+            gravity = last_drive_feedforward["robot_gravity_nm"] + last_drive_feedforward["payload_gravity_nm"]
+            target = finite_gravity_compensated_drive_target(hold, gravity, stiffness, effort_limits)
+            articulation.set_dof_position_targets(target.astype(np.float32)[None, :])
+            articulation.set_dof_velocity_targets(np.zeros_like(initial)[None, :])
+            handling.update(status="HOLD_COMMAND_ISSUED_NO_SETTLING_CLAIM", q_hold_rad=hold.tolist(),
+                            drive_target_rad=target.tolist())
+        except BaseException as error:
+            handling.update(status="HOLD_COMMAND_FAILED_NO_FURTHER_PHYSICS", error=str(error))
+        feedback_monitor.stop_handling = handling
+        feedback_monitor.persist(args.output / "runtime_feedback.json")
+
+    def _runtime_feedback_checkpoint(point, physical_step, simulation_time, reference, reference_velocity, reference_time):
+        """Production action barrier, used before actions and immediately after physics."""
+        read_errors = {}
+        def read_tensor(name, getter, width):
+            try:
+                value = np.asarray(getter().numpy(), dtype=float)
+                if value.shape != (1, width):
+                    raise ValueError(f"expected {(1,width)}, got {value.shape}")
+                return value[0]
+            except Exception as error:
+                read_errors[name] = str(error)
+                return None
+        q = read_tensor("q", articulation.get_dof_positions, len(initial))
+        qd = read_tensor("qd", articulation.get_dof_velocities, len(initial))
+        attached = False
+        try:
+            if ideal_independent_mode or args.gripper_model != "surface_gripper":
+                joint = stage.GetPrimAtPath(grasp_joint_path)
+                attached = bool(joint.IsValid() and joint.GetAttribute("physics:jointEnabled").Get())
+            else:
+                attached = any(surface_gripper_interface.get_gripper_status(p) == SurfaceGripperClosed
+                    and target_carton_path in list(surface_gripper_interface.get_gripped_objects(p))
+                    for p in surface_gripper_paths)
+        except Exception as error:
+            read_errors["attachment"] = str(error)
+            attached = None
+        body_pose = carton_pose = captured = None
+        if attached:
+            def read_pose(name, body):
+                try:
+                    p, q = body.get_world_poses()
+                    p, q = np.asarray(p.numpy(),float), np.asarray(q.numpy(),float)
+                    if p.shape != (1,3) or q.shape != (1,4): raise ValueError("invalid pose tensor dimensions")
+                    return np.r_[p[0], q[0]]
+                except Exception as error:
+                    read_errors[name] = str(error)
+                    return None
+            body_pose, carton_pose = read_pose("tool",grasp_body), read_pose("carton",target_body)
+            if ideal_independent_mode or args.gripper_model != "surface_gripper":
+                try:
+                    captured = np.r_[np.asarray(grasp_local_position), grasp_local_quaternion]
+                except Exception as error:
+                    read_errors["attachment_capture"] = str(error)
+                    captured = np.full(7, np.nan)
+        release_requested = bool(globals().get("release_commanded", False))
+        context = dict(source_identity=feedback_source_identity, world_session_id=str(run_started_unix_s),
+            target=str(metadata["target"]), task_segment=globals().get("session_segment_index", -1),
+            stage=contact_runtime_context.get("stage", "initialization"), observation_point=point,
+            physical_step=physical_step, simulation_time_s=simulation_time,
+            world_physics_time_s=float(world.current_time), trajectory_time_s=reference_time,
+            trajectory_time_basis="last_issued_unbiased_zero_order_hold_reference",
+            last_issued_command=last_issued_command, read_errors=read_errors,
+            release_requested=release_requested,
+            constraint_removal_observed=bool(release_requested and attached is False),
+            release_independence_confirmed=bool(globals().get("release_open_confirmed", False)),
+            unexpected_contact_count=len(unexpected_robot_contact_events))
+        accepted = feedback_monitor.observe(q=q, qd=qd, reference=reference, reference_velocity=reference_velocity,
+            attached=attached, legally_released=bool(release_requested and attached is False),
+            attachment_expected=bool(globals().get("grasp_enabled",False)),
+            body_pose=body_pose, carton_pose=carton_pose, captured_relative_pose=captured, context=context)
+        if accepted and unexpected_robot_contact_events:
+            accepted = feedback_monitor.latch([dict(reason="UNEXPECTED_ROBOT_OR_RIGID_TOOL_PROXIMITY",
+                contact=unexpected_robot_contact_events[0])], feedback_monitor.last_observation)
+        if not accepted:
+            _persist_feedback_stop()
+        return accepted
+
+    feedback_monitor = _new_feedback_monitor()
+    runtime_stop_reason = None
+    last_issued_command = dict(reference_q_rad=initial.tolist(), reference_qd_rad_s=np.zeros_like(initial).tolist(),
+                               drive_position_target_rad=initial.tolist(), trajectory_time_s=0., simulation_time_s=0.)
     settling_audit = {
         "status": "NOT_REQUIRED_LEGACY",
         "dynamic_body_count": len(dynamic_scene_bodies),
@@ -2795,12 +2970,21 @@ try:
             "maximum_steps": maximum_steps, "physics_dt_s": physics_dt,
             "reset_q_error_rad": reset_q_error_rad}), flush=True)
         for settle_step in range(maximum_steps):
+            if not _runtime_feedback_checkpoint("before_settling", settle_step, settle_step*physics_dt,
+                                                initial, np.zeros_like(initial), 0.):
+                raise RuntimeError(runtime_stop_reason)
             step_wall_started = time.perf_counter()
             contact_wall_before = contact_callback_wall_s[0]
             contact_headers_before = contact_callback_header_count[0]
-            articulation.set_dof_position_targets(_drive_target(initial)[None, :])
+            settling_target = _drive_target(initial)
+            articulation.set_dof_position_targets(settling_target[None, :])
+            last_issued_command = dict(reference_q_rad=initial.tolist(), reference_qd_rad_s=np.zeros_like(initial).tolist(),
+                drive_position_target_rad=settling_target.tolist(), trajectory_time_s=0., simulation_time_s=settle_step*physics_dt)
             drive_wall_finished = time.perf_counter()
             world.step(render=False, update_fabric=True)
+            if not _runtime_feedback_checkpoint("after_settling", settle_step+1, (settle_step+1)*physics_dt,
+                                                initial, np.zeros_like(initial), 0.):
+                raise RuntimeError(runtime_stop_reason)
             physics_wall_finished = time.perf_counter()
             carton_states = []
             linear_speeds = []
@@ -3053,73 +3237,20 @@ try:
                 "M-710 initial snapshot cartons failed the bounded settling/penetration gate"
             )
     else:
-        for _ in range(10):
+        for warmup_step in range(10):
+            if not _runtime_feedback_checkpoint("before_warmup", warmup_step, warmup_step*physics_dt,
+                                                initial, np.zeros_like(initial), 0.):
+                raise RuntimeError(runtime_stop_reason)
             world.step(render=False, update_fabric=True)
+            if not _runtime_feedback_checkpoint("after_warmup", warmup_step+1, (warmup_step+1)*physics_dt,
+                                                initial, np.zeros_like(initial), 0.):
+                raise RuntimeError(runtime_stop_reason)
 
     rep.orchestrator.step(rt_subframes=4, pause_timeline=False, delta_time=0.0, wait_for_render=True)
     rgb_annotator.get_data()
     capture_max_joint_delta_rad = 0.0
     capture_max_carton_delta_m = 0.0
     actual_frame_states = []
-
-    def _capture_carton_states() -> list[dict[str, object]]:
-        states: list[dict[str, object]] = []
-        if all_carton_bodies is None:
-            return states
-        batch_positions, batch_orientations = all_carton_bodies.get_world_poses()
-        batch_linear, batch_angular = all_carton_bodies.get_velocities()
-        batch_positions, batch_orientations = np.asarray(batch_positions.numpy()), np.asarray(batch_orientations.numpy())
-        batch_linear, batch_angular = np.asarray(batch_linear.numpy()), np.asarray(batch_angular.numpy())
-        for body_index, (record, prim_path) in enumerate(zip(
-            dynamic_scene_records,
-            dynamic_scene_prim_paths,
-            strict=True,
-        )):
-            states.append(
-                {
-                    "name": str(record["name"]),
-                    "prim_path": str(prim_path),
-                    "center_m": batch_positions[body_index].tolist(),
-                    "quaternion_wxyz": batch_orientations[body_index].tolist(),
-                    "linear_velocity_m_s": batch_linear[body_index].tolist(),
-                    "angular_velocity_rad_s": batch_angular[body_index].tolist(),
-                    "size_m": list(record["size_m"]),
-                    "mass_kg": float(record["mass_kg"]),
-                }
-            )
-        return states
-
-    def _capture_delivery_snapshot(name, phase, task_time_s):
-        """Read the live world with a zero-time render, including before frame one."""
-        evidence = {"world_session_id": str(run_started_unix_s),
-                    "target": str(metadata["target"]), "phase": phase,
-                    "task_time_s": task_time_s, "world_physics_time_s": float(world.current_time),
-                    "source": "CURRENT_PHYSX_ZERO_TIME_RENDER", "image": name}
-        try:
-            before_q = np.asarray(articulation.get_dof_positions().numpy()).copy()
-            before_cartons = _capture_carton_states()
-            rep.orchestrator.step(rt_subframes=1, pause_timeline=False, delta_time=0.0, wait_for_render=True)
-            rgba = np.asarray(rgb_annotator.get_data())
-            if rgba.ndim != 3 or rgba.shape[:2] != (args.height, args.width) or rgba.shape[-1] < 3:
-                raise RuntimeError("delivery snapshot has no valid bound-size RGB")
-            evidence["physics_time_delta_s"] = float(world.current_time) - evidence["world_physics_time_s"]
-            evidence["joint_max_delta_rad"] = float(np.max(np.abs(
-                np.asarray(articulation.get_dof_positions().numpy()) - before_q)))
-            evidence["carton_state_unchanged"] = before_cartons == _capture_carton_states()
-            evidence["q_rad"] = before_q[0].tolist()
-            if (evidence["physics_time_delta_s"] != 0 or evidence["joint_max_delta_rad"] != 0
-                    or not evidence["carton_state_unchanged"]):
-                raise RuntimeError("zero-time capture changed the physical state")
-            if not cv2.imwrite(str(args.output / name), cv2.cvtColor(rgba[..., :3], cv2.COLOR_RGB2BGR)):
-                raise RuntimeError("delivery PNG write failed")
-        except BaseException as capture_error:
-            evidence["secondary_capture_error"] = str(capture_error)
-        try:
-            (args.output / (name + ".json")).write_text(json.dumps(evidence, indent=2), encoding="utf-8")
-        except BaseException as reporting_error:
-            print(f"FANUC_REPLAY_SECONDARY_REPORTING_ERROR={reporting_error}", flush=True)
-            return False
-        return "secondary_capture_error" not in evidence
 
     if effective_collision_policy.poc_pair_clearance:
         stack_cube_shapes = verified_stack_cube_shapes(stage, dynamic_scene_records,
@@ -3263,6 +3394,7 @@ try:
         settled_carton_states = _capture_carton_states()
         stack_monitor = None
         runtime_stop_reason = None
+        feedback_monitor = _new_feedback_monitor()
         stack_monitor_history = []
         retained_receiver_history = []
         def _state_obb(item):
@@ -3640,9 +3772,15 @@ try:
         rest_start_gate = RestStartGate() if metadata.get("joint_reference") else None
         rest_start_audit = []
         comparison_fragment_completed = False
+        feedback_reference = positions[0, command_order].astype(np.float32)
+        feedback_reference_velocity = np.zeros_like(feedback_reference)
+        feedback_reference_time = 0.0
 
         for step in range(physics_steps):
             simulation_time = step * physics_dt
+            if not _runtime_feedback_checkpoint("before_actions", step, simulation_time,
+                    feedback_reference, feedback_reference_velocity, feedback_reference_time):
+                break
             hold_trajectory = False
             if rest_start_gate is not None and not rest_start_gate.passed:
                 actual_start_q = np.asarray(articulation.get_dof_positions().numpy(), dtype=float)[0]
@@ -4186,6 +4324,11 @@ try:
             drive_position_target = _drive_target(command)
             articulation.set_dof_position_targets(drive_position_target[None, :])
             articulation.set_dof_velocity_targets(command_velocity.astype(np.float32)[None, :])
+            feedback_reference, feedback_reference_velocity = command.copy(), command_velocity.copy()
+            feedback_reference_time = trajectory_time
+            last_issued_command = dict(reference_q_rad=command.tolist(), reference_qd_rad_s=command_velocity.tolist(),
+                drive_position_target_rad=drive_position_target.tolist(), trajectory_time_s=trajectory_time,
+                simulation_time_s=simulation_time)
             contact_runtime_context.update(
                 stage=resolve_actual_task_stage(metadata.get("stage_windows", []), trajectory_time,
                     grasp_commanded=grasp_commanded, grasp_event_time_s=grasp_event_time,
@@ -4218,8 +4361,11 @@ try:
                     states=_capture_carton_states(), world_id=str(run_started_unix_s),
                     task_id=str(session_segment_index))
             world.step(render=False, update_fabric=True)
-            _verify_ideal_body_feedback()
             simulation_time = (step + 1) * physics_dt
+            if not _runtime_feedback_checkpoint("after_physics", step+1, simulation_time,
+                    feedback_reference, feedback_reference_velocity, feedback_reference_time):
+                break
+            _verify_ideal_body_feedback()
             if conveyor_enabled:
                 _update_conveyor_visual_markers(physics_dt, apply_transforms=render)
             if stack_clearance_step is not None and stack_clearance_step.open:
@@ -4542,40 +4688,9 @@ try:
                     not in list(surface_gripper_interface.get_gripped_objects(path))
                     for path in surface_gripper_paths
                 )
-            if (
-                grasp_enabled
-                and not release_executed
-                and not release_commanded
-                and grasp_local_position is not None
-                and grasp_local_quaternion is not None
-            ):
-                body_positions, body_orientations = grasp_body.get_world_poses()
-                carton_positions, carton_orientations = target_body.get_world_poses()
-                body_position = np.asarray(body_positions.numpy(), dtype=float)[0]
-                carton_position = np.asarray(carton_positions.numpy(), dtype=float)[0]
-                body_quaternion = np.asarray(body_orientations.numpy(), dtype=float)[0]
-                carton_quaternion = np.asarray(carton_orientations.numpy(), dtype=float)[0]
-                body_rotation = Gf.Rotation(
-                    Gf.Quatd(float(body_quaternion[0]), Gf.Vec3d(*body_quaternion[1:].tolist()))
-                )
-                carton_rotation = Gf.Rotation(
-                    Gf.Quatd(float(carton_quaternion[0]), Gf.Vec3d(*carton_quaternion[1:].tolist()))
-                )
-                expected_carton_position = body_position + np.asarray(
-                    body_rotation.TransformDir(grasp_local_position), dtype=float
-                )
-                attachment_position_error = float(
-                    np.linalg.norm(expected_carton_position - carton_position)
-                )
-                body_quaternion /= np.linalg.norm(body_quaternion)
-                carton_quaternion /= np.linalg.norm(carton_quaternion)
-                expected_carton_quaternion = _quaternion_multiply_wxyz(
-                    body_quaternion, grasp_local_quaternion
-                )
-                attachment_rotation_delta = _quaternion_multiply_wxyz(
-                    _quaternion_conjugate_wxyz(expected_carton_quaternion), carton_quaternion
-                )
-                attachment_rotation_error = _quaternion_angle_wxyz(attachment_rotation_delta)
+            if "attachment_position_error_m" in feedback_monitor.last_observation:
+                attachment_position_error = feedback_monitor.last_observation["attachment_position_error_m"]
+                attachment_rotation_error = feedback_monitor.last_observation["attachment_rotation_error_rad"]
                 peak_payload_attachment_position_error_m = max(
                     peak_payload_attachment_position_error_m, attachment_position_error
                 )
@@ -4890,6 +5005,11 @@ try:
                                   "full_pick_place_cycle_claimed": False})
                 break
         replay_wall_s = time.perf_counter() - replay_started_at
+        if runtime_stop_reason is not None:
+            if feedback_monitor.first_failure is None:
+                feedback_monitor.latch([dict(reason=runtime_stop_reason)], feedback_monitor.last_observation or {})
+            _persist_feedback_stop()
+        feedback_monitor.persist(args.output / "runtime_feedback.json")
         if args.record_video:
             _capture_delivery_snapshot("failure.png" if runtime_stop_reason else "final_actual.png",
                                        contact_runtime_context["stage"], simulation_time)
@@ -4979,7 +5099,7 @@ try:
                 np.minimum(lower_margin, upper_margin), axis=0
             )
             joint_positions_within_limits = bool(
-                np.all(minimum_joint_position_margin_rad >= -1e-9)
+                np.all(minimum_joint_position_margin_rad >= -qualification_policy.joint_position_tolerance_rad)
             )
 
         if zero_point_contact_resolver.pending_keys and runtime_stop_reason is None:
@@ -5031,8 +5151,7 @@ try:
             record for record in (contact_records if effective_collision_policy.poc_pair_clearance else robot_contact_records)
             if record.get("unexpected_runtime_event_count", 0) > 0
         ]
-        tracking_error_limit_rad = 0.05
-        full_schedule_replayed = trajectory_time >= requested_duration - 1e-9
+        full_schedule_replayed = runtime_stop_reason is None and trajectory_time >= requested_duration - 1e-9
         target_final_center = None
         payload_displacement_m = None
         if target_body is not None:
@@ -5043,7 +5162,6 @@ try:
                 payload_displacement_m = float(
                     np.linalg.norm(target_final_center_array - initial_target_center)
                 )
-        qualification_policy = ReplayQualificationPolicy()
         tracking_error_limit_rad = qualification_policy.tracking_error_limit_rad
         attachment_position_tolerance_m = qualification_policy.attachment_position_tolerance_m
         attachment_rotation_tolerance_rad = qualification_policy.attachment_rotation_tolerance_rad
@@ -5207,14 +5325,14 @@ try:
                                         and actual_reception_audit is not None and actual_reception_audit.accepted
                                         and joint_positions_within_limits is True
                                         and float(np.max(peak_error)) <= tracking_error_limit_rad
-                                        and np.all(np.max(np.abs(measured_velocity_array), axis=0) <= velocity_limits + 1e-5))
+                                        and np.all(np.max(np.abs(measured_velocity_array), axis=0) <= velocity_limits + qualification_policy.joint_velocity_tolerance_rad_s))
         ideal_received_ids = sorted(n for n, r in ideal_transport_records.items()
                                     if r.get("completion_source") == RECEPTION_SOURCE)
         workflow_cycle_completed = bool(full_schedule_replayed and release_open_confirmed
             and not target_cup_release_gate.pending and payload_motion_verified and not unexpected_contacts
             and runtime_stop_reason is None and (physical_cycle_completed or assumed_reception_state is not None)
             and joint_positions_within_limits is True and float(np.max(peak_error)) <= tracking_error_limit_rad
-            and np.all(np.max(np.abs(measured_velocity_array), axis=0) <= velocity_limits + 1e-5))
+            and np.all(np.max(np.abs(measured_velocity_array), axis=0) <= velocity_limits + qualification_policy.joint_velocity_tolerance_rad_s))
         processed_carton_ids = sorted(set(completed_carton_ids) | set(ideal_received_ids))
         if physical_cycle_completed and str(metadata["target"]) not in completed_carton_ids:
             completed_carton_ids.append(str(metadata["target"]))
@@ -5475,6 +5593,7 @@ try:
             "zero_point_contact_resolution": zero_point_contact_resolver.snapshot(),
             "cup_mask_change_log": cup_mask_change_log,
             "runtime_stop_reason": runtime_stop_reason,
+            "runtime_feedback": feedback_monitor.evidence(),
             "actual_stack_contact_monitor": None if stack_monitor is None else stack_monitor.summary(),
             "stack_clearance_semantics": None if stack_clearance_step is None else {
                 "source": "POST_STEP_VERIFIED_NATIVE_BOX_GEOMETRY", "counts": dict(stack_clearance_step.counts),
@@ -5957,7 +6076,8 @@ try:
         run_status_path.write_text(
             json.dumps(
                 {
-                    "status": "complete",
+                    "status": "failed" if runtime_stop_reason else "complete",
+                    "primary_runtime_stop_reason": runtime_stop_reason,
                     "started_unix_s": run_started_unix_s,
                     "completed_unix_s": time.time(),
                     "result_sha256": _sha256_path(result_path),
@@ -6066,6 +6186,16 @@ try:
         run_status_path.write_text(json.dumps({"status": "same_world_segment_started",
                                              "continuation_identity": continuation_identity}, indent=2), encoding="utf-8")
 except BaseException as exc:
+    # Preserve the first observation before screenshot, telemetry or Kit cleanup.
+    if globals().get("feedback_monitor") is not None:
+        if feedback_monitor.first_failure is None and not isinstance(exc, DiagnosticSettlingComplete):
+            feedback_monitor.latch([dict(reason=globals().get("runtime_stop_reason") or "RUNTIME_EXCEPTION",
+                                         exception=str(exc))], feedback_monitor.last_observation or {})
+        if feedback_monitor.first_failure is not None:
+            try:
+                _persist_feedback_stop()
+            except BaseException as evidence_error:
+                print(f"FANUC_REPLAY_SECONDARY_EVIDENCE_ERROR={evidence_error}", flush=True)
     if globals().get("_capture_delivery_snapshot") is not None:
         try:
             _capture_delivery_snapshot("failure.png", globals().get("contact_runtime_context", {}).get("stage"),

@@ -14,6 +14,145 @@ from typing import Any, Mapping, Sequence
 import numpy as np
 
 
+class RuntimeFeedbackMonitor:
+    """Per-task, first-observation stop latch. No physics or drive side effects.
+
+    Reference is the zero-order-held trajectory command that produced the
+    observed step, never the gravity-biased drive target or next command time.
+    Attachment baseline belongs to actual constraint creation/closure.
+    """
+
+    def __init__(self, joint_names, lower, upper, velocity, policy):
+        from dataclasses import asdict
+        self.names = list(joint_names)
+        self.policy = policy
+        self.lower, self.upper, self.velocity = [np.asarray(v, float) for v in (lower, upper, velocity)]
+        if (not self.names or len(set(self.names)) != len(self.names)
+                or any(v.shape != (len(self.names),) or not np.isfinite(v).all()
+                       for v in (self.lower, self.upper, self.velocity))
+                or np.any(self.lower >= self.upper) or np.any(self.velocity <= 0)):
+            raise ValueError("invalid official feedback limits/joint order")
+        self.thresholds = dict(policy=asdict(policy), joint_names=self.names,
+            lower_rad=self.lower.tolist(), upper_rad=self.upper.tolist(), velocity_rad_s=self.velocity.tolist(),
+            source="ReplayQualificationPolicy and bound official joint limits; no debounce")
+        self.first_failure = None
+        self.last_valid = None
+        self.last_observation = None
+        self.attachment_baseline = None
+        self.attachment_released = False
+        self.observations = 0
+        self.stop_handling = None
+
+    @staticmethod
+    def _json(value):
+        """Keep invalid values explicit while emitting strict portable JSON."""
+        if isinstance(value, np.ndarray): return RuntimeFeedbackMonitor._json(value.tolist())
+        if isinstance(value, np.generic): return RuntimeFeedbackMonitor._json(value.item())
+        if isinstance(value, dict): return {str(k): RuntimeFeedbackMonitor._json(v) for k, v in value.items()}
+        if isinstance(value, (list, tuple)): return [RuntimeFeedbackMonitor._json(v) for v in value]
+        if isinstance(value, float) and not np.isfinite(value): return str(value)
+        return value
+
+    def latch(self, reasons, observation):
+        if self.first_failure is None:
+            import copy
+            self.first_failure = copy.deepcopy(self._json(dict(
+                reason=reasons[0]['reason'], violations=reasons, observation=observation)))
+        return False
+
+    def observe(self, *, q, qd, reference, reference_velocity, attached,
+                legally_released=False, body_pose=None, carton_pose=None,
+                captured_relative_pose=None, attachment_expected=False, context=None):
+        if self.first_failure is not None: return False
+        self.observations += 1
+        errors = []
+        observation = dict(context or {}, q_rad=q, qd_rad_s=qd,
+                           reference_q_rad=reference, reference_qd_rad_s=reference_velocity,
+                           attached=attached, legally_released=legally_released)
+        def vector(value, count, name):
+            try:
+                a = np.asarray(value, float)
+                if a.shape != (count,) or not np.isfinite(a).all(): raise ValueError()
+                return a
+            except (TypeError, ValueError):
+                errors.append(dict(reason="INVALID_ACTUAL_FEEDBACK", field=name,
+                                   expected_shape=[count], measured=self._json(value)))
+                return None
+        n = len(self.names)
+        q, qd = vector(q,n,'q_rad'), vector(qd,n,'qd_rad_s')
+        ref, refd = vector(reference,n,'reference_q_rad'), vector(reference_velocity,n,'reference_qd_rad_s')
+        if not isinstance(attached, (bool, np.bool_)) or not isinstance(legally_released, (bool, np.bool_)):
+            errors.append(dict(reason="INVALID_ACTUAL_FEEDBACK", field="attachment_lifecycle"))
+        def joint_error(reason, values, mask, **limits):
+            indices = np.flatnonzero(mask)
+            if indices.size:
+                errors.append(dict(reason=reason, joints=[self.names[i] for i in indices],
+                    indices=indices.tolist(), measured=values[indices].tolist(), **limits))
+        if q is not None:
+            tolerance = self.policy.joint_position_tolerance_rad
+            joint_error('ACTUAL_JOINT_POSITION_LIMIT', q,
+                        (q < self.lower-tolerance) | (q > self.upper+tolerance),
+                        lower=self.lower.tolist(), upper=self.upper.tolist(), tolerance_rad=tolerance)
+        if qd is not None:
+            tolerance = self.policy.joint_velocity_tolerance_rad_s
+            joint_error('ACTUAL_JOINT_VELOCITY_LIMIT', qd, np.abs(qd)>self.velocity+tolerance,
+                        limits_rad_s=self.velocity.tolist(), tolerance_rad_s=tolerance)
+        if q is not None and ref is not None:
+            delta = np.abs(q-ref)
+            observation['tracking_error_rad'] = delta
+            joint_error('ACTUAL_JOINT_TRACKING_ERROR', delta, delta>self.policy.tracking_error_limit_rad,
+                        limit_rad=self.policy.tracking_error_limit_rad)
+        if legally_released and not attached:
+            self.attachment_released = True
+        if (attachment_expected or self.attachment_baseline is not None) and not self.attachment_released and not attached:
+            errors.append(dict(reason='ACTUAL_ATTACHMENT_LOST'))
+        if attached:
+            def pose(value, name):
+                a=vector(value,7,name)
+                if a is not None and (not np.isfinite(np.linalg.norm(a[3:])) or np.linalg.norm(a[3:]) <= 1e-12):
+                    errors.append(dict(reason='INVALID_ACTUAL_FEEDBACK',field=name+'.quaternion'))
+                    return None
+                return a
+            body, carton = pose(body_pose,'body_pose'), pose(carton_pose,'carton_pose')
+            observation.update(body_pose=body_pose, carton_pose=carton_pose)
+            def mul(a,b):
+                return np.r_[a[0]*b[0]-a[1:]@b[1:], a[0]*b[1:]+b[0]*a[1:]+np.cross(a[1:],b[1:])]
+            if body is not None and carton is not None:
+                b=body[3:]/np.linalg.norm(body[3:]); c=carton[3:]/np.linalg.norm(carton[3:])
+                inverse=b*np.array([1,-1,-1,-1])
+                relative=np.r_[mul(mul(inverse,np.r_[0,carton[:3]-body[:3]]),b)[1:],mul(inverse,c)]
+                if self.attachment_baseline is None:
+                    baseline=pose(captured_relative_pose,'captured_attachment_pose') if captured_relative_pose is not None else relative
+                    if baseline is not None: self.attachment_baseline=baseline.copy()
+                if self.attachment_baseline is not None:
+                    baseline=self.attachment_baseline
+                    translation=float(np.linalg.norm(relative[:3]-baseline[:3]))
+                    angle=float(2*np.arccos(np.clip(abs(relative[3:]@(baseline[3:]/np.linalg.norm(baseline[3:]))),0,1)))
+                    observation.update(attachment_position_error_m=translation,attachment_rotation_error_rad=angle,
+                                       captured_relative_pose=baseline)
+                    for value,limit,reason in [(translation,self.policy.attachment_position_tolerance_m,'ACTUAL_ATTACHMENT_TRANSLATION'),
+                                               (angle,self.policy.attachment_rotation_tolerance_rad,'ACTUAL_ATTACHMENT_ROTATION')]:
+                        if value>limit: errors.append(dict(reason=reason,measured=value,limit=limit))
+        self.last_observation=self._json(observation)
+        if errors: return self.latch(errors,observation)
+        import copy
+        self.last_valid=copy.deepcopy(self.last_observation)
+        return True
+
+    def evidence(self):
+        return self._json(dict(schema='m710_runtime_feedback_v1', thresholds=self.thresholds,
+            observations=self.observations, first_failure=self.first_failure,
+            last_valid_actual_state=self.last_valid, last_observation=self.last_observation,
+            stop_handling=self.stop_handling))
+
+    def persist(self, path):
+        import json, os
+        from pathlib import Path
+        path=Path(path);temporary=path.with_suffix(path.suffix+'.tmp')
+        temporary.write_text(json.dumps(self.evidence(),indent=2,allow_nan=False),encoding='utf-8')
+        os.replace(temporary,path)
+
+
 def archived_replay_initialization(metadata):
     """Validate a bound archive context before constructing a *new* world.
 

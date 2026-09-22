@@ -229,7 +229,9 @@ def test_runtime_consumes_velocity_and_payload_ff_without_uncapped_effort_source
 def test_actual_runtime_classifier_does_not_hide_rigid_shape_in_an_allowed_actor_pair(poc, gap, rejected):
     from types import SimpleNamespace
     from unloading_sim.collision_policy import SimulationCollisionPolicy
-    from unloading_sim.isaac_collision_policy import classify_compliant_cup_contact, ZeroPointContactResolver, classify_poc_runtime_pair
+    from unloading_sim.isaac_collision_policy import (classify_compliant_cup_contact, ZeroPointContactResolver,
+        classify_poc_runtime_pair, declared_receiver_top_contact)
+    from unloading_sim.stack_clearance import paired_contact_key
     from unloading_sim.layout_single_carton import load_layout_motion_policy
     from unloading_sim.planning_profile import DEFAULT_MOTION
     import math
@@ -237,11 +239,14 @@ def test_actual_runtime_classifier_does_not_hide_rigid_shape_in_an_allowed_actor
     node = next(node for node in ast.walk(ast.parse(source))
                 if isinstance(node, ast.FunctionDef) and node.name == "_classify_runtime_contact")
     namespace = {"math": math, "args": SimpleNamespace(demonstration_target_cup_contact_exemption=False),
+                 "paired_contact_key": paired_contact_key,
+                 "declared_receiver_top_contact": declared_receiver_top_contact, "receiver_top_owners": {},
                  "classify_compliant_cup_contact": classify_compliant_cup_contact,
                  "zero_point_contact_resolver": ZeroPointContactResolver(),
                  "_contact_scope_token": lambda: ("contact", "/Validation/Scene/target", False, False, False),
                  "compliant_cup_index_by_path": {"/robot/J6/cup": 0}, "commanded_cup_mask": [False],
-                 "target_carton_path": "/Validation/Scene/target", "metadata": {"stack_carton_names": ["neighbor"]},
+                 "target_carton_path": "/Validation/Scene/target", "metadata": {"stack_carton_names": ["neighbor"],
+                     "selected_place_support_names": [], "actual_state_gates": {"support_maximum_penetration_m": .001}},
                  "_safe_prim_name": lambda name: name, "effective_collision_policy": SimulationCollisionPolicy(),
                  "gripper_cfg": {"physical_cup_compression_m": .01}, "contact_clock_s": [5.7],
                  "contact_runtime_context": {"stage": "contact", "attached": False, "actual_free_space": False,

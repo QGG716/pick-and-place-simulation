@@ -41,9 +41,14 @@ class ReplayQualificationPolicy:
     attachment_rotation_tolerance_rad: float = 0.10
     placement_tolerance_m: float = 0.08
     minimum_payload_displacement_m: float = 0.02
+    # Existing replay numeric allowances, shared by runtime and final checks.
+    joint_position_tolerance_rad: float = 1e-9
+    joint_velocity_tolerance_rad_s: float = 1e-5
 
     def __post_init__(self) -> None:
         values = {
+            "joint_position_tolerance_rad": self.joint_position_tolerance_rad,
+            "joint_velocity_tolerance_rad_s": self.joint_velocity_tolerance_rad_s,
             "tracking_error_limit_rad": self.tracking_error_limit_rad,
             "attachment_position_tolerance_m": self.attachment_position_tolerance_m,
             "attachment_rotation_tolerance_rad": self.attachment_rotation_tolerance_rad,
