@@ -1669,6 +1669,7 @@ class LayoutTrajectoryConnector:
         support_names: Sequence[str] = (),
         target_contact: OBB | None = None,
         stage: str,
+        fixed_endpoint_backend=None,
     ) -> tuple[np.ndarray | None, list[np.ndarray], Mapping[str, Any] | None, Mapping[str, Any]]:
         stream = self._ik_stream(
             pose,
@@ -1710,10 +1711,15 @@ class LayoutTrajectoryConnector:
                     break
                 finally:
                     self._statistics["trajectory_ik_wall_seconds"] += perf_counter() - ik_started
-                path, candidate_failure, connection = self._transit(
-                    start, candidate.q, obstacles, seed=connection_seed + index * 1009,
-                    iteration_budget=allocation, attachment=attachment,
-                    support_names=support_names, target_contact=target_contact, stage=stage)
+                if fixed_endpoint_backend is not None:
+                    path, candidate_failure, connection = fixed_endpoint_backend(
+                        self, start, candidate.q, obstacles, attachment,
+                        seed=connection_seed + index * 1009)
+                else:
+                    path, candidate_failure, connection = self._transit(
+                        start, candidate.q, obstacles, seed=connection_seed + index * 1009,
+                        iteration_budget=allocation, attachment=attachment,
+                        support_names=support_names, target_contact=target_contact, stage=stage)
             consumed = int(connection.get("planning_iterations_consumed", connection.get("iterations", 0)))
             remaining = max(0, remaining - consumed)
             if stage == "transit":
@@ -2954,42 +2960,53 @@ class LayoutTrajectoryConnector:
         preplace_virtual = self.virtual_from_physical(preplace_physical)
         transit = []
         place_virtual = self.virtual_from_physical(desired_physical)
-        if history_hint is not None:
-            from .history_adaptation import loaded_suffix
-            transit, history_place, failure = loaded_suffix(self, history_hint, extraction,
-                preplace_virtual, place_virtual, payload_obstacles, attachment, support_contact_names)
-            if failure is not None:
-                return None, failure, trace
-            local_evidence = {"source": "HISTORY_NODES_NEW_ATTACHMENT_FULL_EDGE_RECHECK"}
-        if history_hint is None and transit_hint:
-            suffix, reuse_failure, local_evidence = self._cartesian(
-                transit_hint[-1], preplace_virtual, payload_obstacles, seed=seed + 54,
-                attachment=attachment, stage="transit")
-            if reuse_failure is None:
-                transit = [*transit_hint, *suffix[1:]]
-                local_evidence = {"reused_verified_loaded_prefix": True, "suffix": local_evidence}
-        if not transit and getattr(self, "_local_transit_remaining", 0) > 0:
-            transit, local_failure, local_evidence = self._local_cartesian_transit(
-                extraction[-1], preplace_virtual, payload_obstacles, attachment, seed=seed + 55)
-            trace["stages"]["local_transit"] = local_evidence
-        if transit:
-            preplace_q, failure, evidence = transit[-1], None, local_evidence
-        else:
+        transit_backend = getattr(self, "transit_backend", None)
+        if transit_backend is not None:
+            # Existing receiving strategy chooses the pose and IK branches.
+            # Only its fixed-q connection is delegated; a CPU TRANSIT success
+            # is not a prerequisite and no CPU fallback is permitted.
             preplace_q, transit, failure, evidence = self._connect_pose(
-                preplace_virtual,
-                [extraction[-1], contact_q, home_q],
-                extraction[-1],
-                payload_obstacles,
-                ik_seed=seed + 60,
-                connection_seed=seed + 70,
-                attachment=attachment,
-                stage="transit",
-            )
+                preplace_virtual, [extraction[-1], contact_q, home_q],
+                extraction[-1], payload_obstacles, ik_seed=seed + 60,
+                connection_seed=seed + 70, attachment=attachment, stage="transit",
+                fixed_endpoint_backend=transit_backend)
+        else:
+            if history_hint is not None:
+                from .history_adaptation import loaded_suffix
+                transit, history_place, failure = loaded_suffix(self, history_hint, extraction,
+                    preplace_virtual, place_virtual, payload_obstacles, attachment, support_contact_names)
+                if failure is not None:
+                    return None, failure, trace
+                local_evidence = {"source": "HISTORY_NODES_NEW_ATTACHMENT_FULL_EDGE_RECHECK"}
+            if history_hint is None and transit_hint:
+                suffix, reuse_failure, local_evidence = self._cartesian(
+                    transit_hint[-1], preplace_virtual, payload_obstacles, seed=seed + 54,
+                    attachment=attachment, stage="transit")
+                if reuse_failure is None:
+                    transit = [*transit_hint, *suffix[1:]]
+                    local_evidence = {"reused_verified_loaded_prefix": True, "suffix": local_evidence}
+            if not transit and getattr(self, "_local_transit_remaining", 0) > 0:
+                transit, local_failure, local_evidence = self._local_cartesian_transit(
+                    extraction[-1], preplace_virtual, payload_obstacles, attachment, seed=seed + 55)
+                trace["stages"]["local_transit"] = local_evidence
+            if transit:
+                preplace_q, failure, evidence = transit[-1], None, local_evidence
+            else:
+                preplace_q, transit, failure, evidence = self._connect_pose(
+                    preplace_virtual,
+                    [extraction[-1], contact_q, home_q],
+                    extraction[-1],
+                    payload_obstacles,
+                    ik_seed=seed + 60,
+                    connection_seed=seed + 70,
+                    attachment=attachment,
+                    stage="transit",
+                )
         trace["stages"]["transit"] = evidence
         if preplace_q is None or failure is not None:
             return None, failure, trace
 
-        if history_hint is not None:
+        if history_hint is not None and transit_backend is None:
             place, failure, evidence = history_place, None, {"source": "CURRENT_ATTACHMENT_RECEIVER_IK_AND_EDGE_RECHECK"}
         else:
             place, failure, evidence = self._cartesian(
@@ -3115,6 +3132,7 @@ class LayoutTrajectoryConnector:
         release_retreat_index = stages["withdrawal"][1]
         segment: dict[str, Any] = {
             "schema": TRAJECTORY_SEGMENT_SCHEMA,
+            "transit_backend": deepcopy(trace["stages"].get("transit", {})),
             "motion_semantics": MOTION_SEMANTICS,
             "placement_semantics": PLACEMENT_SEMANTICS,
             "approach": trace["stages"].get("approach", {}),

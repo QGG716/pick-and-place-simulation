@@ -1,0 +1,45 @@
+{
+  "schema_version": "unloading_stage_fixture_v1",
+  "business": {
+    "kind": "full_business_TRANSIT",
+    "target": "carton_l07_c04",
+    "scene_fingerprint": "f32b273e1132f6a0f7f0bbdd03a58fdbdb6518fd73f522db33c9bd2e0233ca56",
+    "source_range": [
+      78,
+      208
+    ],
+    "q_start": [
+      0.9862454453352169,
+      -0.6632776651139614,
+      -0.4577066564420566,
+      -1.705148906574704,
+      0.999911262836787,
+      -1.3257244752169774
+    ],
+    "q_goal": [
+      -0.7828847461869272,
+      0.2662156820286623,
+      -0.2937091500866846,
+      -3.141559559423011,
+      1.010884687412613,
+      0.7830850480049029
+    ],
+    "historical_success_inherited": false
+  },
+  "direct_unit": {
+    "kind": "synthetic_not_business",
+    "source": "business q_goal",
+    "delta_q_rad": [
+      0,
+      0,
+      0.001,
+      0,
+      0,
+      0
+    ]
+  },
+  "files": {
+    "actual_remaining_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "source_motion.json": "4514c342791455f18e735d141f3146fb99db9de43a964e514e63b115c841f0e9"
+  }
+}

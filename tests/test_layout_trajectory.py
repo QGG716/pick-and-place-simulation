@@ -195,7 +195,7 @@ def test_grasp_branch_search_is_lazy_bounded_and_backtracks_to_alternative():
         lambda *args, **kwargs: None,
         flange_from_virtual_task_tcp=np.eye(4),
         flange_from_physical_contact=np.eye(4),
-        ik_policy={},
+        ik_policy={"position_tolerance_m": 0.001},
         collision_margin_m=0.01,
         contact_tolerance_m=0.0002,
         joint_margin_rad=0.01,
@@ -418,3 +418,23 @@ def test_exact_validator_never_uses_contact_as_a_rigid_tool_collision_waiver():
         "reason": "RIGID_TOOL_COLLISION",
         "pair": ["tool_rigid_0", "target"],
     }
+
+
+def test_explicit_fixed_endpoint_backend_does_not_require_cpu_transit():
+    # Mock control flow, not GPU or geometric evidence.
+    connector = _LazyConnectionConnector(
+        _Robot(), lambda *args, **kwargs: None,
+        flange_from_virtual_task_tcp=np.eye(4),flange_from_physical_contact=np.eye(4),
+        ik_policy={},collision_margin_m=.01,contact_tolerance_m=.0002,
+        joint_margin_rad=.01,maximum_jacobian_condition=1e4,
+        validator_identity="synthetic",execution_qualified=True)
+    connector._transit=lambda *a,**k: (_ for _ in ()).throw(AssertionError('CPU fallback called'))
+    calls=[]
+    def backend(c,start,goal,obstacles,attachment,*,seed):
+        calls.append((start.copy(),goal.copy(),seed))
+        return [],{'reason':'GPU_NO_CANDIDATE','stage':'transit'},{'planning_iterations_consumed':1}
+    selected,path,failure,evidence=connector._connect_pose(np.eye(4),[np.zeros(6)],np.zeros(6),[],
+        ik_seed=7,connection_seed=11,stage='transit',fixed_endpoint_backend=backend)
+    assert calls and selected is None and not path
+    assert all(np.array_equal(x[0],np.zeros(6)) for x in calls)
+    assert failure['reason']=='GPU_NO_CANDIDATE'
