@@ -860,3 +860,19 @@ def test_build_fanuc_replay_serializes_dynamic_conveyor_and_outfeed():
     assert metadata["conveyor"]["speed_m_s"] == pytest.approx(0.5)
     assert by_name["conveyor_outfeed"]["center_m"] == pytest.approx([-2.0, -0.75, 0.37])
     assert by_name["conveyor_outfeed"]["size_m"] == pytest.approx([3.0, 0.75, 0.12])
+
+
+def test_native_duration_floor_reaches_existing_replay_exporter():
+    plan = _plan()
+    segment = plan["segments"][0]
+    segment["native_backend"] = {
+        "name": "moveit2", "minimum_edge_seconds": [12., 15.],
+        "execution_timing": "native_edge_duration_floor_then_existing_C2_quintic_audit",
+        "stages": [{"planner_id": "PTP", "original_times": [0., 12., 27.]}],
+    }
+    bundle = build_fanuc_isaac_replay_bundle(plan, _config())
+    assert bundle.metadata["motion_duration_seconds"] >= 27.
+    assert bundle.metadata["timing_audit"]["within_limits"]
+    assert bundle.metadata["native_backend"] == segment["native_backend"]
+    np.testing.assert_array_equal(bundle.positions_rad[0], segment["path"][0])
+    np.testing.assert_array_equal(bundle.positions_rad[-1], segment["path"][-1])

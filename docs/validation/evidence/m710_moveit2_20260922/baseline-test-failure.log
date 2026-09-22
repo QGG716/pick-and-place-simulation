@@ -1,0 +1,18 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_grasp_branch_search_is_lazy_bounded_and_backtracks_to_alternative ____
+tests/test_layout_trajectory.py:210: in test_grasp_branch_search_is_lazy_bounded_and_backtracks_to_alternative
+    outcome = connector.plan(
+src/unloading_sim/layout_trajectory.py:3207: in plan
+    result = self._plan_candidate(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/unloading_sim/layout_trajectory.py:3329: in _plan_candidate
+    "budget_policy": self.budget_evidence(),
+                     ^^^^^^^^^^^^^^^^^^^^^^
+src/unloading_sim/layout_trajectory.py:1127: in budget_evidence
+    + 2 * float(self.ik["position_tolerance_m"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'position_tolerance_m'
+=========================== short test summary info ============================
+FAILED tests/test_layout_trajectory.py::test_grasp_branch_search_is_lazy_bounded_and_backtracks_to_alternative
+1 failed in 0.42s

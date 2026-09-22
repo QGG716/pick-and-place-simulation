@@ -1398,6 +1398,8 @@ def build_fanuc_isaac_replay_bundle(
         protected.add(int(approach_boundary))
     prefix_indices = collinear_indices(path[:release_index + 1], protected)
     prefix = time_parameterize_joint_path(path[prefix_indices], limits)
+    from .moveit2_timing import preserve_native_durations
+    prefix = preserve_native_durations(prefix, segment, prefix_indices)
     prefix = scale_timed_trajectory_window(
         prefix,
         prefix_indices.index(int(segment.get("grasp_index", 0))),
@@ -1416,6 +1418,7 @@ def build_fanuc_isaac_replay_bundle(
     if release_index < len(path) - 1:
         empty_indices = collinear_indices(path[release_index:], [i-release_index for i in protected if i >= release_index])
         empty = time_parameterize_joint_path(path[release_index:][empty_indices], empty_limits)
+        empty = preserve_native_durations(empty, segment, [release_index+i for i in empty_indices])
         empty_audit = empty.audit(empty_limits)
         source_motion_times = np.concatenate(
             (
@@ -2207,6 +2210,7 @@ def build_fanuc_isaac_replay_bundle(
         "receiver_transport_state": dict(plan.get("receiver_transport_state", {})),
         "initial_actual_state_context": copy.deepcopy(plan.get("initial_actual_state_context")),
         "trajectory_stage_ranges": dict(segment.get("stage_ranges", {})),
+        "native_backend": copy.deepcopy(segment.get("native_backend")),
         "free_transit_start_time_seconds": (
             float(replay_motion_times[segment["stage_ranges"]["extraction"][1]])
             + pre_grasp_settle_seconds + vacuum_establish_seconds

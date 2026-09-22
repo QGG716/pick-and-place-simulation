@@ -43,3 +43,6 @@ scripts/analyze_gripper_step.py binary
 # validated mixed-newline byte stream so a clean Linux checkout can reuse it.
 scripts/isaacsim_fanuc_replay.py binary
 src/unloading_sim/isaac_bridge.py binary
+
+# Shell entry points must remain runnable after a Windows checkout.
+ros2/m710_moveit_backend/** text eol=lf

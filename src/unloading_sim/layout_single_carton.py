@@ -93,6 +93,9 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/ik.py",
     "src/unloading_sim/layout_single_carton.py",
     "src/unloading_sim/layout_trajectory.py",
+    "src/unloading_sim/moveit2_backend.py",
+    "src/unloading_sim/moveit2_timing.py",
+    "ros2/m710_moveit_backend/src/worker.cpp",
     "src/unloading_sim/pinocchio_backend.py",
     "src/unloading_sim/planner.py",
     "src/unloading_sim/robot.py",
@@ -1495,6 +1498,8 @@ def run_layout_single_carton_audit(
     row_state: RowUnloadingState | None = None,
     diagnostics=None,
     target_id: str | None = None,
+    backend: str = "core",
+    moveit_command: str | None = None,
 ) -> dict[str, Any]:
     """Search the initial top layer and expose one replay-ready full segment.
 
@@ -1504,6 +1509,10 @@ def run_layout_single_carton_audit(
     the legacy proxy audit is never used to certify a complete path.
     """
     planning_request_started = perf_counter()
+    if backend not in {"core", "moveit2"}:
+        raise ValueError(f"unknown planning backend: {backend}")
+    if backend == "moveit2" and trajectory_connector is not None:
+        raise ValueError("moveit2 requires its own adapter construction")
     policy = (
         config_path
         if isinstance(config_path, LayoutMotionPolicy)
@@ -1564,6 +1573,14 @@ def run_layout_single_carton_audit(
             EXECUTION_GATE_REASON,
             {"status": "NOT_RUN", "failure_reason": EXECUTION_GATE_REASON},
         )
+    if backend == "moveit2":
+        if trajectory_connector is None:
+            raise RuntimeError("MOVEIT2_AUTHORITY_UNAVAILABLE: " + str(connector_build.failure_reason))
+        from .moveit2_backend import MoveItLayoutConnector
+        trajectory_connector = MoveItLayoutConnector.from_existing(trajectory_connector, scene, moveit_command)
+        connector_build = LayoutTrajectoryConnectorBuildResult(trajectory_connector, "AVAILABLE", None,
+            {**dict(connector_build.evidence), "planning_backend": "moveit2",
+             "native_startup": trajectory_connector.native_startup, "fk_checks": trajectory_connector.native_fk})
     robot = (
         trajectory_connector.robot
         if trajectory_connector is not None
@@ -2191,6 +2208,9 @@ def run_layout_single_carton_audit(
             else "NO_COMPLETE_LAYOUT_BOUND_PATH"
         ),
     }
+    if backend == "moveit2" and trajectory_connector is not None:
+        result["native_backend_evidence"] = list(trajectory_connector.native_evidence)
+        trajectory_connector.native.close()
     result["evidence_fingerprint"] = canonical_digest(result)
     return result
 

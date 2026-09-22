@@ -1,0 +1,1 @@
+Complete-task trials overlap on the 22-core server; do not derive speedup from these wall times. Fixed-motion main comparisons were sequential.

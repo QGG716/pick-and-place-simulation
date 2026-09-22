@@ -1,3 +1,11 @@
+# Optional MoveIt 2 backend experiment
+
+本分支为 `feat/v0.5-backend-moveit2-mtc-pilz`。真实 Humble C++ 常驻后端、MTC 阶段、Pilz PTP/LIN 和 OMPL RRTConnect 已接入；候选仍须通过原有权威验收。带载测试的三条 OMPL 候选因未满足 5 mm 净空而被拒绝；固定完整任务停在尚不支持的旋转偏移 TCP LIN 请求，Isaac 为 NOT_RUN，不能称为完整取放成功。
+
+普通入口支持 `python tools/run_m710id70_layout_single_carton.py --backend moveit2 --target carton_l07_c02`，默认 `--backend core` 保留原方式。环境、复现命令、语义边界与真实证据见 [开发/验证报告](docs/m710_moveit2_backend_20260922.md)。
+
+---
+
 # Trailer Unloading Geometric Simulator v0.5 feasibility core
 
 当前入口：固定布局 `m710id70_unloading_layout_v1`，官方 FANUC M-710iD/70，20 kg 工具、42.5 kg 箱体，`ideal_independent_cups` 和 `ideal_outfeed`。仅采用已批准的 J5/J6 自有工具碰撞例外和阶段限定的脱垛接触策略。

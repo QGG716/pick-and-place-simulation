@@ -1,0 +1,26 @@
+/work/worker.sh: line 4: /work/build/moveit/m710_moveit_worker: No such file or directory
+[37;1m2026-09-22 19:09:20.633 [31;1m[[37;1mRTPS_TRANSPORT_SHM[31;1m Error] [37mFailed to create segment 1c250cf9c2115b25: No such file or directory[34;1m -> Function [36mcompute_per_allocation_extra_size[m
+[37;1m2026-09-22 19:09:20.633 [31;1m[[37;1mRTPS_TRANSPORT_SHM[31;1m Error] [37mFailed to create Shared Memory Manager for domain fastrtps: No such file or directory[34;1m -> Function [36mcreate[m
+[37;1m2026-09-22 19:09:20.633 [31;1m[[37;1mRTPS_PARTICIPANT[31;1m Error] [37mUnable to Register SHM Transport. SHM Transport is not supported in the current platform.[34;1m -> Function [36mRTPSParticipantImpl[m
+[INFO] [1790075360.677847753] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.0288384 seconds
+[INFO] [1790075360.677920222] [moveit_robot_model.robot_model]: Loading robot model 'fanuc_m710id_70'...
+[INFO] [1790075360.677927494] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790075360.702108679] [moveit.pilz_industrial_motion_planner.joint_limits_aggregator]: Reading limits from namespace robot_description_planning
+[WARN] [1790075360.702259375] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075360.702378265] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075360.702436909] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075360.702490778] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075360.702543433] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075360.702600836] [m710_moveit_worker]: Failed loading deceleration limits
+[INFO] [1790075360.702793529] [moveit.pilz_industrial_motion_planner]: Available plugins: pilz_industrial_motion_planner/PlanningContextLoaderCIRC pilz_industrial_motion_planner/PlanningContextLoaderLIN pilz_industrial_motion_planner/PlanningContextLoaderPTP 
+[INFO] [1790075360.702798492] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderCIRC
+[INFO] [1790075360.703471023] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [CIRC]
+[INFO] [1790075360.703476986] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderLIN
+[INFO] [1790075360.703931745] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [LIN]
+[INFO] [1790075360.703936093] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderPTP
+[INFO] [1790075360.704356626] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [PTP]
+[INFO] [1790075360.704362347] [moveit.ros_planning.planning_pipeline]: Using planning interface 'Pilz Industrial Motion Planner'
+[INFO] [1790075360.711385408] [moveit.ros_planning.planning_pipeline]: Using planning interface 'OMPL'
+[INFO] [1790075360.787538579] [moveit.pilz_industrial_motion_planner.trajectory_generator_ptp]: Initialized Point-to-Point Trajectory Generator.
+[INFO] [1790075360.787579017] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Generating PTP trajectory...
+[INFO] [1790075361.262275573] [rclcpp]: signal_handler(SIGINT/SIGTERM)

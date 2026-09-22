@@ -1,0 +1,145 @@
+{
+  "schema": "m710_native_contract_checks_v1",
+  "scope": "scene bookkeeping only; artificial attachment is not a planning success",
+  "attached_diff": {
+    "attached_count": 1,
+    "base_attached_count": 0,
+    "permissions": [
+      true
+    ],
+    "request_id": "5",
+    "status": "SUCCESS",
+    "target_in_world": false,
+    "world_count": 47,
+    "transport_and_worker_s": 0.01773647591471672
+  },
+  "subsequent_candidate": {
+    "attached_count": 0,
+    "base_attached_count": 0,
+    "permissions": [
+      false
+    ],
+    "request_id": "6",
+    "status": "SUCCESS",
+    "target_in_world": false,
+    "world_count": 48,
+    "transport_and_worker_s": 0.004920262843370438
+  },
+  "fk": [
+    {
+      "q": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max_matrix_error": 2.220446049250313e-16,
+      "links": [
+        "base_link",
+        "J3_link",
+        "J6_link",
+        "flange",
+        "fanuc_flange",
+        "tool0"
+      ]
+    },
+    {
+      "q": [
+        0.2,
+        -0.3,
+        0.4,
+        0.5,
+        -0.6,
+        0.7
+      ],
+      "max_matrix_error": 2.220446049250313e-16,
+      "links": [
+        "base_link",
+        "J3_link",
+        "J6_link",
+        "flange",
+        "fanuc_flange",
+        "tool0"
+      ]
+    },
+    {
+      "q": [
+        -0.4,
+        0.2,
+        -0.35,
+        -0.6,
+        0.4,
+        -0.8
+      ],
+      "max_matrix_error": 2.220446049250313e-16,
+      "links": [
+        "base_link",
+        "J3_link",
+        "J6_link",
+        "flange",
+        "fanuc_flange",
+        "tool0"
+      ]
+    }
+  ],
+  "startup": {
+    "cold_start_s": 0.168909589,
+    "identity": {
+      "baseline_sha": "4f6e3037aceb47a525711e58360d98c8751fec6b",
+      "model_tool_fingerprint": "5a3539e46721e29b4146defe18ef65770c1213992b849537a2011b20009d5663",
+      "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+      "policy_scope": "native_intersection_candidates_plus_authoritative_pair_gap_contact_checks",
+      "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+      "scene_version": "m710id70_unloading_layout_v1",
+      "schema": "m710_native_stage_v1",
+      "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129"
+    },
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "pipelines": [
+      "pilz_industrial_motion_planner",
+      "ompl"
+    ],
+    "request_id": "1",
+    "seed": 71070,
+    "status": "READY",
+    "versions": {
+      "moveit": "2.5.10",
+      "mtc": "0.1.3",
+      "pilz": "2.5.10"
+    },
+    "transport_and_worker_s": 0.3849899508059025
+  },
+  "synthetic_mtc_state_transitions": {
+    "attached_objects": [],
+    "mtc_composition_s": 0.013827022,
+    "physical_execution": "NOT_RUN",
+    "request_id": "7",
+    "stage_count": 3,
+    "status": "SUCCESS",
+    "world_count": 48,
+    "transport_and_worker_s": 0.022601399570703506
+  },
+  "after_composition": {
+    "attached_count": 0,
+    "base_attached_count": 0,
+    "permissions": [
+      false
+    ],
+    "request_id": "8",
+    "status": "SUCCESS",
+    "target_in_world": false,
+    "world_count": 48,
+    "transport_and_worker_s": 0.006106041371822357
+  },
+  "invalid_start": "INVALID_START_BOUNDS",
+  "status": "PASS"
+}

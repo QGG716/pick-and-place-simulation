@@ -1,0 +1,21 @@
+empty_short PASS 0.4695426896214485
+empty_fixed_approach PASS 75.9221616871655
+Traceback (most recent call last):
+  File "/root/autodl-tmp/m710-moveit2-20260922/repo/tools/run_m710_moveit_integration.py", line 66, in main
+    values=c._transit(q0,q1,obstacles,seed=71070+index,iteration_budget=600,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-moveit2-20260922/repo/src/unloading_sim/moveit2_backend.py", line 285, in _transit
+    return self._native_plan(start,goal,obstacles,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-moveit2-20260922/repo/src/unloading_sim/moveit2_backend.py", line 266, in _native_plan
+    path=validate_native_result(raw,start,goal,self.native_joint_names)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-moveit2-20260922/repo/src/unloading_sim/moveit2_backend.py", line 188, in validate_native_result
+    if goal is not None and not np.allclose(path[-1], goal, atol=1e-6, rtol=0): raise ValueError("GOAL_CHANGED")
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: GOAL_CHANGED
+
+empty_short PASS 0.39172181487083435
+empty_fixed_approach PASS 78.87452147528529
+loaded_fixed_transit FAIL 62.042668633162975
+linear_fixed_orientation PASS 0.36899735406041145

@@ -77,6 +77,7 @@ EXECUTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/asset_audit.py",
     "src/unloading_sim/independent_cups.py",
     "src/unloading_sim/isaac_bridge.py",
+    "src/unloading_sim/moveit2_timing.py",
     "src/unloading_sim/m710_dynamics.py",
     "src/unloading_sim/m710_execution.py",
     "src/unloading_sim/m710_official_dynamics.py",
