@@ -243,7 +243,9 @@ class MotionValidator:
         hit, old = self.edges.lookup(key) if self.cache_states else (False, None)
         if hit:
             self.statistics['repeated_failed_edges'] += int(old.status == Status.INVALID)
-            return replace(old, cache_hit=True)
+            # Reused proof coverage is not new work performed by this call.
+            return replace(old, cache_hit=True, statistics=dict(state_samples=0,
+                edge_cache_hits=1, reused_proof_state_samples=old.statistics.get('state_samples',0)))
         n = self.context.samples(a,b)
         grid = np.linspace(0.,1.,n+1)
         checked = []

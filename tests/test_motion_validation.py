@@ -59,6 +59,7 @@ def test_context_and_exact_directional_parameter_cache(field):
     assert not v.check_motion([.1],[0],parameters={'duration':1}).cache_hit
     assert not v.check_motion([0],[.1],parameters={'duration':2}).cache_hit
     assert v.check_motion([0],[.1],parameters={'duration':1}).cache_hit
+    assert v.check_motion([0],[.1],parameters={'duration':1}).statistics['state_samples']==0
     assert replace(c,interpolation='spline').context_id!=c.context_id
 
 
