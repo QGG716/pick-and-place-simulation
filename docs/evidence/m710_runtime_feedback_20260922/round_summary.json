@@ -1,0 +1,356 @@
+{
+  "schema": "m710_runtime_feedback_round1_20260922",
+  "start_commit": "899305be42d266c5c5e319dcba5228072ed75961",
+  "execution_source_commit": "f44b564df58fe4e8172d4014f3d4524e89494025",
+  "branch": "feat/v0.5-feasibility-core",
+  "directed_tests": {
+    "passed": 99,
+    "seconds": 1.68,
+    "changed_module_py_compile": "PASS"
+  },
+  "preflight": {
+    "status": "PASS",
+    "preflight_fingerprint": "1614b24cfa08fa6c75f05a1f38bfcc6dc886df610be3b0dbb637462c910c59d8",
+    "execution_asset_fingerprint_sha256": "f3eb3ccecaa212815974b5cc94c7c7352d7861dde556c1e50673dba28c21f1cb",
+    "simulation_execution_ready": true,
+    "simulation_execution_qualified": true,
+    "input_binding_sha256": "828a5248a7560d91d7038557b61bed6a0a68e4e708cc347ff7f2411cd08e59cb"
+  },
+  "bundle_readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "d622520cf70adac180a08a5ba26aa009c91b12e9e28989c52108f841a0a16a35",
+    "source_preflight_fingerprint": "1614b24cfa08fa6c75f05a1f38bfcc6dc886df610be3b0dbb637462c910c59d8",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "isaac_runs": 1,
+  "world_session_id": "1790058027.8202078",
+  "target": "carton_l07_c04",
+  "result": "FAILED_RETAINED_NO_RETRY",
+  "first_failure": {
+    "reason": "STACK_CONTACT_ORIGIN_OR_CONTINUITY_UNRESOLVED",
+    "violations": [
+      {
+        "reason": "STACK_CONTACT_ORIGIN_OR_CONTINUITY_UNRESOLVED"
+      }
+    ],
+    "observation": {
+      "source_identity": {
+        "adapter_sha256": "9e08a15ec9606e09bb92733a355e297d3ce3c63cdc74bf41a9b5237f4d0270a1",
+        "physics_helpers_sha256": "f5e49444cb41d5318e018aa912e8641dfb9f197e47ae2d1e5e6a152bfdbf7bbd",
+        "qualification_sha256": "c6049ceb5e0e99ecfd41b5831100087b3aaf9c39ee4663c6d4fccd0656313bf4",
+        "execution_source_commit": "f44b564df58fe4e8172d4014f3d4524e89494025"
+      },
+      "world_session_id": "1790058027.8202078",
+      "target": "carton_l07_c04",
+      "task_segment": 0,
+      "stage": "extraction",
+      "observation_point": "after_physics",
+      "physical_step": 14864,
+      "simulation_time_s": 61.93333333333333,
+      "world_physics_time_s": 62.83750327723101,
+      "trajectory_time_s": 60.82500000002144,
+      "trajectory_time_basis": "last_issued_unbiased_zero_order_hold_reference",
+      "last_issued_command": {
+        "reference_q_rad": [
+          0.9820122718811035,
+          -0.6614285111427307,
+          -0.4568815529346466,
+          -1.7057045698165894,
+          0.995664656162262,
+          -1.3262672424316406
+        ],
+        "reference_qd_rad_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "drive_position_target_rad": [
+          0.9820122718811035,
+          -0.6572000980377197,
+          -0.43836015462875366,
+          -1.6940985918045044,
+          0.9902753829956055,
+          -1.3262518644332886
+        ],
+        "trajectory_time_s": 60.82500000002144,
+        "simulation_time_s": 61.92916666666667
+      },
+      "read_errors": {},
+      "release_requested": false,
+      "constraint_removal_observed": false,
+      "release_independence_confirmed": false,
+      "unexpected_contact_count": 0,
+      "q_rad": [
+        0.9820306897163391,
+        -0.6613820195198059,
+        -0.4571959972381592,
+        -1.705711007118225,
+        0.9956713318824768,
+        -1.3262544870376587
+      ],
+      "qd_rad_s": [
+        0.0024524820037186146,
+        0.013389271683990955,
+        0.027270622551441193,
+        -0.007209812290966511,
+        0.010388227179646492,
+        0.009082283824682236
+      ],
+      "reference_q_rad": [
+        0.9820122718811035,
+        -0.6614285111427307,
+        -0.4568815529346466,
+        -1.7057045698165894,
+        0.995664656162262,
+        -1.3262672424316406
+      ],
+      "reference_qd_rad_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "attached": true,
+      "legally_released": false,
+      "tracking_error_rad": [
+        1.8417835235595703e-05,
+        4.649162292480469e-05,
+        0.00031444430351257324,
+        6.4373016357421875e-06,
+        6.67572021484375e-06,
+        1.2755393981933594e-05
+      ],
+      "body_pose": [
+        -0.99784916639328,
+        0.8399152755737305,
+        2.249647617340088,
+        0.00016449391841888428,
+        1.0000001192092896,
+        0.00011502206325531006,
+        -0.00011372566223144531
+      ],
+      "carton_pose": [
+        -0.3053300082683563,
+        0.840072512626648,
+        2.2496957778930664,
+        1.0,
+        -0.00014970469055697322,
+        6.363093416439369e-05,
+        0.00012147887173341587
+      ],
+      "attachment_position_error_m": 9.54560885319408e-06,
+      "attachment_rotation_error_rad": 1.8264715011173599e-06,
+      "captured_relative_pose": [
+        0.692518919558395,
+        2.1435708979797074e-06,
+        -0.00021524330209582166,
+        1.5627532713108564e-05,
+        -0.9999999985932146,
+        6.176735885383886e-06,
+        5.0311023132585494e-05
+      ]
+    }
+  },
+  "last_valid_actual_state": {
+    "source_identity": {
+      "adapter_sha256": "9e08a15ec9606e09bb92733a355e297d3ce3c63cdc74bf41a9b5237f4d0270a1",
+      "physics_helpers_sha256": "f5e49444cb41d5318e018aa912e8641dfb9f197e47ae2d1e5e6a152bfdbf7bbd",
+      "qualification_sha256": "c6049ceb5e0e99ecfd41b5831100087b3aaf9c39ee4663c6d4fccd0656313bf4",
+      "execution_source_commit": "f44b564df58fe4e8172d4014f3d4524e89494025"
+    },
+    "world_session_id": "1790058027.8202078",
+    "target": "carton_l07_c04",
+    "task_segment": 0,
+    "stage": "extraction",
+    "observation_point": "after_physics",
+    "physical_step": 14864,
+    "simulation_time_s": 61.93333333333333,
+    "world_physics_time_s": 62.83750327723101,
+    "trajectory_time_s": 60.82500000002144,
+    "trajectory_time_basis": "last_issued_unbiased_zero_order_hold_reference",
+    "last_issued_command": {
+      "reference_q_rad": [
+        0.9820122718811035,
+        -0.6614285111427307,
+        -0.4568815529346466,
+        -1.7057045698165894,
+        0.995664656162262,
+        -1.3262672424316406
+      ],
+      "reference_qd_rad_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "drive_position_target_rad": [
+        0.9820122718811035,
+        -0.6572000980377197,
+        -0.43836015462875366,
+        -1.6940985918045044,
+        0.9902753829956055,
+        -1.3262518644332886
+      ],
+      "trajectory_time_s": 60.82500000002144,
+      "simulation_time_s": 61.92916666666667
+    },
+    "read_errors": {},
+    "release_requested": false,
+    "constraint_removal_observed": false,
+    "release_independence_confirmed": false,
+    "unexpected_contact_count": 0,
+    "q_rad": [
+      0.9820306897163391,
+      -0.6613820195198059,
+      -0.4571959972381592,
+      -1.705711007118225,
+      0.9956713318824768,
+      -1.3262544870376587
+    ],
+    "qd_rad_s": [
+      0.0024524820037186146,
+      0.013389271683990955,
+      0.027270622551441193,
+      -0.007209812290966511,
+      0.010388227179646492,
+      0.009082283824682236
+    ],
+    "reference_q_rad": [
+      0.9820122718811035,
+      -0.6614285111427307,
+      -0.4568815529346466,
+      -1.7057045698165894,
+      0.995664656162262,
+      -1.3262672424316406
+    ],
+    "reference_qd_rad_s": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "attached": true,
+    "legally_released": false,
+    "tracking_error_rad": [
+      1.8417835235595703e-05,
+      4.649162292480469e-05,
+      0.00031444430351257324,
+      6.4373016357421875e-06,
+      6.67572021484375e-06,
+      1.2755393981933594e-05
+    ],
+    "body_pose": [
+      -0.99784916639328,
+      0.8399152755737305,
+      2.249647617340088,
+      0.00016449391841888428,
+      1.0000001192092896,
+      0.00011502206325531006,
+      -0.00011372566223144531
+    ],
+    "carton_pose": [
+      -0.3053300082683563,
+      0.840072512626648,
+      2.2496957778930664,
+      1.0,
+      -0.00014970469055697322,
+      6.363093416439369e-05,
+      0.00012147887173341587
+    ],
+    "attachment_position_error_m": 9.54560885319408e-06,
+    "attachment_rotation_error_rad": 1.8264715011173599e-06,
+    "captured_relative_pose": [
+      0.692518919558395,
+      2.1435708979797074e-06,
+      -0.00021524330209582166,
+      1.5627532713108564e-05,
+      -0.9999999985932146,
+      6.176735885383886e-06,
+      5.0311023132585494e-05
+    ]
+  },
+  "stop_handling": {
+    "physics_steps_during_stop": 0,
+    "constraint_release_attempted": false,
+    "method": "finite_position_drive_hold_then_no_further_physics",
+    "hold_source": "current_actual_position",
+    "status": "HOLD_COMMAND_ISSUED_NO_SETTLING_CLAIM",
+    "q_hold_rad": [
+      0.9820306897163391,
+      -0.6613820195198059,
+      -0.4571959972381592,
+      -1.705711007118225,
+      0.9956713318824768,
+      -1.3262544870376587
+    ],
+    "drive_target_rad": [
+      0.982030689707192,
+      -0.6571535939221138,
+      -0.4386746092211447,
+      -1.6941049877303993,
+      0.9902820548601157,
+      -1.3262391387571988
+    ]
+  },
+  "workflow_cycle_completed": false,
+  "physical_cycle_completed": false,
+  "historical_initial_processed_ids": [
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03"
+  ],
+  "new_world_counts": {
+    "actual_grasp": 1,
+    "actual_release": 0,
+    "actual_reception": 0,
+    "ideal_reception": 0,
+    "ideal_outfeed": 0,
+    "workflow_completed": 0
+  },
+  "historical_counts_not_new_world_results": true,
+  "legacy_telemetry_peak_tracking_error_rad": 0.0015192851424217224,
+  "legacy_telemetry_peak_attachment_translation_m": 1.7655136114391727e-05,
+  "legacy_telemetry_peak_attachment_rotation_rad": 3.7297282011363025e-05,
+  "video": {
+    "width": 640,
+    "height": 360,
+    "fps": 5.0,
+    "frames": 309,
+    "duration_s": 61.8,
+    "first_frame_decodes": true,
+    "last_frame_decodes": true
+  },
+  "failure_snapshot": {
+    "world_session_id": "1790058027.8202078",
+    "target": "carton_l07_c04",
+    "phase": "extraction",
+    "task_time_s": 61.93333333333333,
+    "world_physics_time_s": 62.83750327723101,
+    "source": "CURRENT_PHYSX_ZERO_TIME_RENDER",
+    "image": "failure.png",
+    "physics_time_delta_s": 0.0,
+    "joint_max_delta_rad": 0.0,
+    "carton_state_unchanged": true,
+    "q_rad": [
+      0.9820306897163391,
+      -0.6613820195198059,
+      -0.4571959972381592,
+      -1.705711007118225,
+      0.9956713318824768,
+      -1.3262544870376587
+    ]
+  },
+  "server_work_root": "/root/autodl-tmp/m710-runtime-feedback-20260922",
+  "physics_output": "/root/autodl-tmp/m710-runtime-feedback-20260922/repo/outputs/isaac_runtime_feedback_single",
+  "remaining_issue": "Existing STACK_CONTACT_ORIGIN_OR_CONTINUITY_UNRESOLVED gate on carton_l06_c04 / carton_l07_c04; retained without policy change or another physical trial. New joint/attachment numeric gates did not fail in this trial; their injected stop behavior is covered by production-loop directed tests.",
+  "scope": "Single carton in one new world; no row or machine qualification; actual drive output torque remains unevaluated."
+}

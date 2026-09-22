@@ -1,0 +1,20 @@
+{
+  "world_session_id": "1790058027.8202078",
+  "target": "carton_l07_c04",
+  "phase": "extraction",
+  "task_time_s": 61.93333333333333,
+  "world_physics_time_s": 62.83750327723101,
+  "source": "CURRENT_PHYSX_ZERO_TIME_RENDER",
+  "image": "failure.png",
+  "physics_time_delta_s": 0.0,
+  "joint_max_delta_rad": 0.0,
+  "carton_state_unchanged": true,
+  "q_rad": [
+    0.9820306897163391,
+    -0.6613820195198059,
+    -0.4571959972381592,
+    -1.705711007118225,
+    0.9956713318824768,
+    -1.3262544870376587
+  ]
+}

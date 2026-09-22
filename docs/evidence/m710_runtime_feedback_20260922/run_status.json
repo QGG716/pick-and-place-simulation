@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "primary_runtime_stop_reason": "STACK_CONTACT_ORIGIN_OR_CONTINUITY_UNRESOLVED",
+  "started_unix_s": 1790058027.8202078,
+  "completed_unix_s": 1790058929.323783,
+  "result_sha256": "9257d8eb97314789c5997fc324474040462af1cb2aa4a394e8bc5b6271fc0652",
+  "result_format": "isaacsim_fanuc_replay_result_v2"
+}
