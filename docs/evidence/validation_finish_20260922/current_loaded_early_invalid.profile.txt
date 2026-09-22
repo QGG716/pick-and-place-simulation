@@ -1,0 +1,53 @@
+         45729 function calls (39519 primitive calls) in 0.028 seconds
+
+   Ordered by: cumulative time
+   List reduced from 313 to 45 due to restriction <45>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.028    0.028 /root/autodl-tmp/m710-validation-finish-20260922/current/tools/benchmark_validation_finish.py:68(observe)
+        1    0.000    0.000    0.024    0.024 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:303(check_motion)
+        1    0.000    0.000    0.022    0.022 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:327(interval)
+        1    0.000    0.000    0.022    0.022 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:221(check_states)
+        1    0.000    0.000    0.020    0.020 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1118(prefix)
+        1    0.000    0.000    0.020    0.020 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/validation_kernel.py:245(check_prefix)
+        1    0.000    0.000    0.018    0.018 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1099(state)
+        1    0.000    0.000    0.018    0.018 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1339(_state_failure)
+        1    0.000    0.000    0.018    0.018 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1376(_checked_state_failure)
+        1    0.000    0.000    0.016    0.016 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:686(__call__)
+        6    0.000    0.000    0.009    0.002 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:600(_profile_call)
+        3    0.000    0.000    0.006    0.002 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pinocchio_backend.py:661(collision_result)
+        8    0.000    0.000    0.006    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pinocchio_backend.py:333(_profile_call)
+        3    0.001    0.000    0.005    0.002 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pinocchio_backend.py:475(_environment_collision)
+       63    0.001    0.000    0.005    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/geometry.py:205(signed_distance_obb)
+        6    0.000    0.000    0.005    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:213(_guard)
+       18    0.000    0.000    0.005    0.000 {built-in method builtins.any}
+ 3850/231    0.003    0.000    0.005    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:28(exact_snapshot)
+        6    0.000    0.000    0.005    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1131(<lambda>)
+        6    0.000    0.000    0.005    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:54(current)
+      204    0.000    0.000    0.005    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:58(<genexpr>)
+        1    0.000    0.000    0.004    0.004 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1070(_motion_validator)
+3367/1127    0.001    0.000    0.003    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:36(<genexpr>)
+       69    0.001    0.000    0.003    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py:1556(cross)
+        1    0.000    0.000    0.003    0.003 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:969(_validation_context)
+        1    0.000    0.000    0.002    0.002 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:117(create)
+      204    0.000    0.000    0.002    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/validation_kernel.py:45(__getitem__)
+      207    0.000    0.000    0.002    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py:1482(moveaxis)
+       96    0.001    0.000    0.002    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pinocchio_backend.py:63(_world_aabb)
+        6    0.000    0.000    0.002    0.000 /root/miniconda3/lib/python3.12/json/__init__.py:183(dumps)
+        6    0.000    0.000    0.002    0.000 /root/miniconda3/lib/python3.12/json/encoder.py:183(encode)
+        2    0.000    0.000    0.002    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:255(interrupted)
+        6    0.002    0.000    0.002    0.000 /root/miniconda3/lib/python3.12/json/encoder.py:205(iterencode)
+        1    0.000    0.000    0.002    0.002 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pinocchio_backend.py:627(_self_clearance_failure)
+        2    0.000    0.000    0.002    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:76(possible_inflated_obb_pairs)
+        1    0.000    0.000    0.002    0.002 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:105(__post_init__)
+      789    0.002    0.000    0.002    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      203    0.000    0.000    0.001    0.000 <string>:2(__init__)
+        1    0.000    0.000    0.001    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:637(_plane_failure)
+        1    0.000    0.000    0.001    0.001 /root/miniconda3/lib/python3.12/contextlib.py:132(__enter__)
+        2    0.000    0.000    0.001    0.001 {built-in method builtins.next}
+        2    0.000    0.000    0.001    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/validation_kernel.py:221(scope)
+        1    0.000    0.000    0.001    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/robot.py:698(tool_collision_obbs)
+        1    0.000    0.000    0.001    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/validation_kernel.py:157(prepare_states)
+      342    0.000    0.000    0.001    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:69(_wrapreduction)
+
+

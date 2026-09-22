@@ -1,0 +1,53 @@
+         895540 function calls (849204 primitive calls) in 0.866 seconds
+
+   Ordered by: cumulative time
+   List reduced from 312 to 45 due to restriction <45>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.867    0.867 /root/autodl-tmp/m710-validation-finish-20260922/current/tools/benchmark_validation_finish.py:68(observe)
+        1    0.000    0.000    0.862    0.862 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:303(check_motion)
+        1    0.000    0.000    0.861    0.861 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:327(interval)
+        1    0.000    0.000    0.860    0.860 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:221(check_states)
+        3    0.000    0.000    0.855    0.285 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1118(prefix)
+        3    0.000    0.000    0.855    0.285 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/validation_kernel.py:245(check_prefix)
+       15    0.000    0.000    0.838    0.056 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1099(state)
+       15    0.000    0.000    0.838    0.056 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1339(_state_failure)
+       15    0.001    0.000    0.838    0.056 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1376(_checked_state_failure)
+       15    0.006    0.000    0.813    0.054 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:686(__call__)
+     2040    0.018    0.000    0.592    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pair_clearance.py:82(obb_pair_failure)
+     1005    0.005    0.000    0.565    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pair_clearance.py:74(obb_pair_evidence)
+     1035    0.261    0.000    0.517    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pair_clearance.py:6(obb_surface_distance)
+     1935    0.040    0.000    0.166    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/geometry.py:205(signed_distance_obb)
+       90    0.000    0.000    0.128    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:600(_profile_call)
+     1953    0.037    0.000    0.095    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py:1556(cross)
+       45    0.000    0.000    0.082    0.002 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pinocchio_backend.py:661(collision_result)
+      120    0.001    0.000    0.081    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pinocchio_backend.py:333(_profile_call)
+    23903    0.021    0.000    0.076    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:69(_wrapreduction)
+    33939    0.067    0.000    0.067    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+       45    0.016    0.000    0.063    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pinocchio_backend.py:475(_environment_collision)
+     1007    0.004    0.000    0.058    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/pair_clearance.py:50(classify_pair_distance)
+    12527    0.010    0.000    0.058    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2338(sum)
+     1008    0.003    0.000    0.054    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/collision_policy.py:79(fingerprint)
+     5859    0.015    0.000    0.051    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py:1482(moveaxis)
+     1009    0.001    0.000    0.030    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/collision_policy.py:92(_data)
+    11718    0.019    0.000    0.030    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py:1420(normalize_axis_tuple)
+     1011    0.001    0.000    0.029    0.000 /root/miniconda3/lib/python3.12/dataclasses.py:1301(asdict)
+23231/1011    0.016    0.000    0.027    0.000 /root/miniconda3/lib/python3.12/dataclasses.py:1325(_asdict_inner)
+     3060    0.006    0.000    0.027    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/validation_kernel.py:45(__getitem__)
+       30    0.007    0.000    0.025    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:76(possible_inflated_obb_pairs)
+    57872    0.024    0.000    0.024    0.000 {built-in method numpy.asarray}
+     7365    0.005    0.000    0.023    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3190(min)
+     4079    0.013    0.000    0.023    0.000 /root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py:2622(norm)
+     1011    0.002    0.000    0.021    0.000 /root/miniconda3/lib/python3.12/json/__init__.py:183(dumps)
+       15    0.003    0.000    0.020    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:637(_plane_failure)
+     3045    0.003    0.000    0.019    0.000 <string>:2(__init__)
+       24    0.000    0.000    0.019    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:213(_guard)
+      108    0.000    0.000    0.019    0.000 {built-in method builtins.any}
+       24    0.000    0.000    0.019    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/layout_trajectory.py:1131(<lambda>)
+       24    0.000    0.000    0.019    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:54(current)
+      816    0.001    0.000    0.019    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:58(<genexpr>)
+     1011    0.002    0.000    0.018    0.000 /root/miniconda3/lib/python3.12/json/encoder.py:183(encode)
+       15    0.000    0.000    0.018    0.001 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/robot.py:698(tool_collision_obbs)
+13750/825    0.010    0.000    0.017    0.000 /root/autodl-tmp/m710-validation-finish-20260922/current/src/unloading_sim/motion_validation.py:28(exact_snapshot)
+
+

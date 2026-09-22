@@ -1,0 +1,4115 @@
+{
+  "baseline": "720fafc6a65765dab849cf75ac873969c2f3aafc",
+  "python": "3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]",
+  "numpy": "2.3.2",
+  "setup_seconds": 0.4991697631776333,
+  "source_files": {
+    "src/unloading_sim/__init__.py": "033630bfe9b686f61e75a1fdb6a62a56e87b962b3498e9eeec2c181820a59c34",
+    "src/unloading_sim/asset_audit.py": "e3b31fab64ae9022cfb853d9dcddc22791bfc07af3151590140459d6ec85ed9e",
+    "src/unloading_sim/base_optimization.py": "dc3b5ea0570513e7d8340dddb212c127bf6be19fd4a882d7140f850548278416",
+    "src/unloading_sim/benchmark.py": "2e249b67cbafebcc994efe2ebe0f289aaaf54695ed7d36c1c5a9adce28f85e32",
+    "src/unloading_sim/calibration.py": "d84786579ceb3fab779807f16d5d6f0dadeeb068f5613a342ec037158fad97d6",
+    "src/unloading_sim/collision_backend.py": "46bc97fb7ac9cfd4bdd7e9da81f307e6099796fb127d6c40c6306b84d457db76",
+    "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+    "src/unloading_sim/contact_scheduler.py": "7ab9a8bf8e6e9d961d599846ab00d87b30c1bc2c0d5079ed090c3caee270a427",
+    "src/unloading_sim/conveyor_placement.py": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503",
+    "src/unloading_sim/cycle.py": "6fcff97449429954f447e24649c300cc489c991d77300b8ac92a73650ff2ac44",
+    "src/unloading_sim/demo.py": "057a15ca21370b8eb65f701736737a289e51fd16ffe877e31661bc192fd54a2a",
+    "src/unloading_sim/depalletizing.py": "aef4ff69219ca4ff27d1da9cd3b7f7567b5de5c4b0f59310b44b821f070f59e3",
+    "src/unloading_sim/dynamics.py": "d17c78a34d83eeb409b7ead17e2c90027c5736b09bfbd28bffc349b3208a8533",
+    "src/unloading_sim/fanuc_m710id70.py": "f60871dccd361c6d6a6da32ef55b0f67f02f1a76f9f18268fe4783bae8b7eff3",
+    "src/unloading_sim/geometry.py": "78f1deed2f8e0d9fc637cb7b5ee931947f13da72e7f0d68950e5688dcc59bf40",
+    "src/unloading_sim/grasp.py": "4f5856d1c36f78ad8c58c0df7f23e7c280a83a7c84bdefe2a6a3461026b50a60",
+    "src/unloading_sim/history_adaptation.py": "9358f7098cd3b2858d9312b30d918f594fdb19c8000b95105c648ab63e3fcbc6",
+    "src/unloading_sim/history_candidates.py": "b801bb46c2128bcb681c079f37dc46f7674dc373f948f0d4e7aca364068f311a",
+    "src/unloading_sim/identity.py": "f16a2d8f9668dbb6e8e4e649713754e3e08cf57089856cec1f9488a884ed198d",
+    "src/unloading_sim/ik.py": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5",
+    "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+    "src/unloading_sim/isaac_bridge.py": "f553ec5b473b6ecccfc170b2a22e1939ae65d9ea76003bf60e1e16797a97548d",
+    "src/unloading_sim/isaac_collision_policy.py": "6433e4ac679ca3a161010a4a4a8c62865b5816f1195829b468e627b4ffe64359",
+    "src/unloading_sim/isaac_layout_replay.py": "aa1f2d22b0c65a28f3bcb48dbd32c41841a25bb32751fbf66c8943e71f522ec7",
+    "src/unloading_sim/isaac_usd_cache.py": "28218069feb490a75fdc96271fca416c6dc0a00e34e2f9136e6f460e28dd0d5f",
+    "src/unloading_sim/layout_single_carton.py": "c4b8f03fe9ab64d374034fb386f2b6e951b68dc172d0bbc60368357394091f3e",
+    "src/unloading_sim/layout_trajectory.py": "b59fe20049679046756e4fc28057777c26302295fb49f87364a2d6ab59c6514b",
+    "src/unloading_sim/m710_dynamics.py": "33dea4bfa760bd9ba1c98c3c5ccbcfb37f75424640ab51056a86b806a2ae98f6",
+    "src/unloading_sim/m710_execution.py": "952e0adcb8eb6c658e97efda11341047d04faa38153c210469b935bc6424a324",
+    "src/unloading_sim/m710_initialization_diagnostic.py": "eafae77e5b40d8dd6be4db11c467b8101fa691309405fcf335b3a2951dc9ba65",
+    "src/unloading_sim/m710_official_dynamics.py": "f6b85afca8363821e0de7506652a9f3ff46fc74868007076e18718f7cf519c15",
+    "src/unloading_sim/m710_replay_contract.py": "7bd8d2ea91da9d139f6360e0826cc7f10623598e8dbd55c97d39263e2cea6137",
+    "src/unloading_sim/m710_replay_physics.py": "f5e49444cb41d5318e018aa912e8641dfb9f197e47ae2d1e5e6a152bfdbf7bbd",
+    "src/unloading_sim/motion_quality.py": "cb8ab84a9b747b3dd0709d1e0a3ad5a8e2a42e1d78e6816d82c90f01ec7e0d82",
+    "src/unloading_sim/motion_validation.py": "bd110d351b61550e1bedcd3ad3b9df86279a3e79d49b73a70edebef01d4089ab",
+    "src/unloading_sim/online_unload.py": "c9ad7f4ca02ce360819b4a2246ae410a4e9d6c7f343adaced8e8b2845a4e18be",
+    "src/unloading_sim/online_unload_fanuc.py": "28857ae5c834c6288bf5578976045628bc9734355c4de7d378476c89ee69d5e7",
+    "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+    "src/unloading_sim/perception.py": "fa1c4e22e6a4d4f9aaec9e59de3a2a593f20a4c2689aae0dc860f1c228f82cb5",
+    "src/unloading_sim/pinocchio_backend.py": "699de06e0eb467a4e33076bde649fbcc2f7844c93d27b01795060935800ab4a2",
+    "src/unloading_sim/planner.py": "754c3e8d3b12acd0e28753ab0000037e148dcbeb156ca35bf4d6575edfe130ec",
+    "src/unloading_sim/planning_profile.py": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee",
+    "src/unloading_sim/post_landing_transport.py": "1db1de76dcbcae6e0f45c811707f245f7fe9d21f662526270ff6210e8ace1223",
+    "src/unloading_sim/pybullet_kuka_kr50.py": "e116d6c5a32fa8bb9b5a8634c6267df3eafd8c674e3f770b70dfb41710d532df",
+    "src/unloading_sim/pybullet_online_fanuc.py": "48607914f4ee323bab922568486a399956a1a333368488a3ade0e54923426244",
+    "src/unloading_sim/pybullet_online_kuka.py": "018de4962a62e3fc4b391d9f9ce4a87073418bb508a9d7a4ee76169ac30e567e",
+    "src/unloading_sim/pybullet_rm65.py": "a0b4b1e404b76c23ebea0ccd6da62224c36816b91b05bea0910834198caec4d6",
+    "src/unloading_sim/pybullet_sim.py": "fc3ed4fad3fd58e786331b44d6b67ec6b71ca890162032df753ed19a5ee1d0bf",
+    "src/unloading_sim/qualification.py": "c6049ceb5e0e99ecfd41b5831100087b3aaf9c39ee4663c6d4fccd0656313bf4",
+    "src/unloading_sim/reachability.py": "0f96a7fe3f31f3ea4564307dc86e7a2861ad561c59555d2c25fe712abb4b5911",
+    "src/unloading_sim/realtime_planner.py": "104369c55ce2e6dce4f039cead42912f367606e86ff6ffb0c30d11ff59ae2448",
+    "src/unloading_sim/release_motion.py": "d714fa20c533fdc9c1c919fd1bb059c03527f35f7fbe4e6d19c776f425042422",
+    "src/unloading_sim/reporting.py": "702212a9b9d93f8972caeed592eaecdbe6647bc3b64cefa16a7de253aad59676",
+    "src/unloading_sim/robot.py": "5069f0064bebda6b02ad772b3fd5d9e8db15c9b68146123ef32e75268c0d03d6",
+    "src/unloading_sim/robot_load/__init__.py": "177820cad0717e8e8f73ad73474a283f453caf82ac58146764d45458769d4b0b",
+    "src/unloading_sim/robot_load/model.py": "6fd02fe472b4c142689f12420b145e7a41ea837ebe449d2bcee00e87379f8979",
+    "src/unloading_sim/robot_load/spatial.py": "2d56858234b59e5ef239a39b8fd7d924e4c4148f4b72d17d582819306a10d363",
+    "src/unloading_sim/robot_load/task.py": "6ca40eb357be668ece73fbdf5540ee9efb5c364df60cf53f79c9c62e331df363",
+    "src/unloading_sim/robot_load/vendor/__init__.py": "9f374546b75551186e1049e0d963be3294babb6f6cacc28dc294b3b3f4047ae0",
+    "src/unloading_sim/robot_load/vendor/fanuc_wrist_load.py": "8fe915961101958abe98848d8b10ff31357e3cd959888a08fcda5bd340b8c230",
+    "src/unloading_sim/robustness.py": "d4b65bb719622187daf3707c22eeef9effe9f7f423efdc1d5f572cc0bef2fa4d",
+    "src/unloading_sim/scene.py": "6178c10ab83b561613399d5fd710a165cfe49762550b769780b249578e91017a",
+    "src/unloading_sim/search_diagnostics.py": "4ecb355246a00c4caf67c6f2800124024ccc5cc890773f88b21b4abc8d84b5d3",
+    "src/unloading_sim/serial_unloading.py": "e3451a69b770a513731cfdceb2bd5551cbb9a840440dcd8e0c21e187d6aec8be",
+    "src/unloading_sim/stability.py": "2c1211af93c6e368c9d57120ee312b2687123fef31614ff47571e1e4ecfdd8c7",
+    "src/unloading_sim/stack_clearance.py": "61c19187eed4468f7e15a3802a19e85c880c2d87feb41b2a1f3ef05bbf0851e5",
+    "src/unloading_sim/support.py": "c752893bb3f94a620d2921b6c2a93d1bb34c1102f1521cdba8d1b72e703ae4cf",
+    "src/unloading_sim/timing.py": "9e8951093f357b2eba05d8670bbf21b93be1f17016d08e4a4bc889eafebc13a9",
+    "src/unloading_sim/tool_geometry.py": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d",
+    "src/unloading_sim/trajectory.py": "73eee06bf3dac43f2893f6f7a1ca96ea42499f5a31504ee7b04f95de6cb9b650",
+    "src/unloading_sim/trajectory_cache.py": "135d8bcc4ecbd0d620f939f349245323d1b431a4f3d6e30ec68c9dc989e8956a",
+    "src/unloading_sim/unloading_sequence.py": "1881b114d280286ffaaf22d9ad306040bcf435dd64efad0a4d3b41fcee6ae915",
+    "src/unloading_sim/validation_config.py": "e8919bd3490f8d0a05a7a8ff738043d60ce031f24420919a34f0769076958915",
+    "src/unloading_sim/validation_kernel.py": "f3c6de1746dd352050d0a024608f5274413afff184b2ce62fc3b5d2fa8041202",
+    "src/unloading_sim/validation_motion.py": "5d79a2a7ee8897249db52ede23f48529356a89ddaacf1539003944c382d52d0e",
+    "src/unloading_sim/validation_physics.py": "770cbc4acc32d58eb8fc4f422d18d03b56c3a4eb54f4f1cae380d4e8939e7ab8",
+    "src/unloading_sim/validation_receiver.py": "d489384f51d48ac5584ca5251db02c6bad28f07cc08462eeaa8d0a734e7b7c1f",
+    "src/unloading_sim/validation_scenes.py": "211e7dd8ced2470c089d738fc78fb7174dcb85b39abf2982ea8501d009d27822",
+    "src/unloading_sim/visualization.py": "519360c22700ac9a6254264555aa4dfc8be80d6462f2296d1aa79a98946faac4",
+    "src/unloading_sim/workcell_layout.py": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2",
+    "src/unloading_sim/wrist_transfer.py": "325ca2f61f220c68f26fc9d4cbaafdb2bc6d3d6075a600f4c8e378dd25c30c69"
+  },
+  "inputs": {
+    "/root/autodl-tmp/m710-validation-kernel-20260922/delivery/planning/motion.json": "e5fe909900bac61e9a0a381324bacbd496fc82b75d87025592cb26928b790715",
+    "/root/autodl-tmp/m710-validation-kernel-20260922/delivery/inputs/actual_remaining_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a"
+  },
+  "history_fragments": [
+    {
+      "name": "history_extract_start",
+      "original_edge": [
+        38,
+        39
+      ],
+      "fraction": [
+        0.0,
+        0.08629848320898534
+      ],
+      "start": [
+        0.48403005541115457,
+        -0.15354426468059104,
+        -0.12427669080619967,
+        -1.6264917415724245,
+        0.4846300627195182,
+        -1.5078751222538813
+      ],
+      "end": [
+        0.4846023882511827,
+        -0.15478475702894706,
+        -0.12534627595953993,
+        -1.6267342620376293,
+        0.4852109440831156,
+        -1.507580934424408
+      ],
+      "stage": "extraction"
+    },
+    {
+      "name": "history_extract_middle",
+      "original_edge": [
+        58,
+        59
+      ],
+      "fraction": [
+        0.0,
+        0.07629876640736849
+      ],
+      "start": [
+        0.6567783192150214,
+        -0.4278473396679077,
+        -0.3306099825039783,
+        -1.6961665867765525,
+        0.662672263898795,
+        -1.4122823095922465
+      ],
+      "end": [
+        0.6576515648222727,
+        -0.428824775718835,
+        -0.33122761592116734,
+        -1.696392395447306,
+        0.6635797213281708,
+        -1.4118838907677433
+      ],
+      "stage": "extraction"
+    },
+    {
+      "name": "history_loaded_transit",
+      "original_edge": [
+        120,
+        121
+      ],
+      "fraction": [
+        0.0,
+        0.02791052126933565
+      ],
+      "start": [
+        0.2852001240202842,
+        -0.9867735040732164,
+        -0.6768188848505374,
+        -2.7710173381150174,
+        0.7856620198936871,
+        -0.38822518703988596
+      ],
+      "end": [
+        0.2841727701484625,
+        -0.9867781513095438,
+        -0.6769291324739249,
+        -2.7723978024058673,
+        0.7855666884652592,
+        -0.38684323149070027
+      ],
+      "stage": "transit"
+    }
+  ],
+  "cases": [
+    {
+      "case": "open_direct",
+      "timing_seconds": {
+        "cold": [
+          0.1549689993262291,
+          0.15860163047909737,
+          0.14884725585579872
+        ],
+        "warm": [
+          0.00025776028633117676,
+          0.00025135278701782227,
+          0.00025206059217453003
+        ]
+      },
+      "median_seconds": {
+        "cold": 0.1549689993262291,
+        "warm": 0.00025206059217453003
+      },
+      "observed": {
+        "cold": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 35,
+          "fk_prepared": 35,
+          "expensive_states": 35,
+          "state_dispatches": 35,
+          "state_cache_hits": 0,
+          "edge_cache_hit": false,
+          "validation": {
+            "status": "VALID",
+            "context_id": "e83064e57038e475e5cf3556f2beb9fbcfd18548d25878141b3f4926449ce63b",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                0.5,
+                "DISCRETE_LEGACY_STRICT"
+              ],
+              [
+                0.5,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 35,
+              "edge_calls": 0,
+              "subdivisions": 1,
+              "certified_intervals": 0,
+              "pair_certificates": 4236,
+              "state_seconds": 0.13932572305202484,
+              "edge_seconds": 0.1470310464501381,
+              "repeated_failed_edges": 0,
+              "batch_calls": 7,
+              "skipped_suffix_states": 0,
+              "state_cache_reuses": 1,
+              "state_cache_hits": 1,
+              "state_cache_misses": 35,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 35,
+            "native_batches": 7,
+            "native_array_operations": 553,
+            "kinematics_seconds": 0.007400434464216232,
+            "ordered_scalar_state_checks": 35,
+            "tool_obb_constructions": 7070,
+            "tool_template_preparations": 1,
+            "tool_transform_constructions": 7070
+          },
+          "context_delta": {
+            "full_context_builds": 1,
+            "full_context_seconds": 0.0016248635947704315,
+            "light_guard_calls": 55,
+            "light_guard_seconds": 0.006376054137945175,
+            "prepared_context_hits": 0
+          }
+        },
+        "warm": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 35,
+          "fk_prepared": 0,
+          "expensive_states": 0,
+          "state_dispatches": 0,
+          "state_cache_hits": 0,
+          "edge_cache_hit": true,
+          "validation": {
+            "status": "VALID",
+            "context_id": "e83064e57038e475e5cf3556f2beb9fbcfd18548d25878141b3f4926449ce63b",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                0.5,
+                "DISCRETE_LEGACY_STRICT"
+              ],
+              [
+                0.5,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 0,
+              "edge_cache_hits": 1,
+              "reused_proof_state_samples": 35
+            },
+            "cache_hit": true,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 0,
+            "native_batches": 0,
+            "native_array_operations": 0,
+            "kinematics_seconds": 0.0,
+            "ordered_scalar_state_checks": 0,
+            "tool_obb_constructions": 0,
+            "tool_template_preparations": 0,
+            "tool_transform_constructions": 0
+          },
+          "context_delta": {
+            "full_context_builds": 0,
+            "full_context_seconds": 0.0,
+            "light_guard_calls": 2,
+            "light_guard_seconds": 0.00018564239144325256,
+            "prepared_context_hits": 1
+          }
+        }
+      },
+      "profile_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3,
+        "obb_constructions": 7070,
+        "transform_constructions": 7070,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "profile_cumulative_seconds": {
+        "context_builds": 0.0017325160000000001,
+        "json_serializations": 0.001046197,
+        "sha256_calls": 3.09e-05,
+        "obb_constructions": 0.038566767,
+        "transform_constructions": 0.022982252,
+        "exact_collision": 0,
+        "exact_distance": 0
+      },
+      "profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 35,
+        "fk_prepared": 35,
+        "expensive_states": 35,
+        "state_dispatches": 35,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "e83064e57038e475e5cf3556f2beb9fbcfd18548d25878141b3f4926449ce63b",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              0.5,
+              "DISCRETE_LEGACY_STRICT"
+            ],
+            [
+              0.5,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 35,
+            "edge_calls": 0,
+            "subdivisions": 1,
+            "certified_intervals": 0,
+            "pair_certificates": 4236,
+            "state_seconds": 0.26555677503347397,
+            "edge_seconds": 0.2800789922475815,
+            "repeated_failed_edges": 0,
+            "batch_calls": 7,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 1,
+            "state_cache_hits": 1,
+            "state_cache_misses": 35,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 35,
+          "native_batches": 7,
+          "native_array_operations": 553,
+          "kinematics_seconds": 0.011530302464962006,
+          "ordered_scalar_state_checks": 35,
+          "tool_obb_constructions": 7070,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 7070
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0017305351793766022,
+          "light_guard_calls": 55,
+          "light_guard_seconds": 0.023108098655939102,
+          "prepared_context_hits": 0
+        }
+      },
+      "warm_profile_counts": {
+        "context_builds": 0,
+        "json_serializations": 1,
+        "sha256_calls": 0
+      },
+      "warm_profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 35,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "VALID",
+          "context_id": "e83064e57038e475e5cf3556f2beb9fbcfd18548d25878141b3f4926449ce63b",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              0.5,
+              "DISCRETE_LEGACY_STRICT"
+            ],
+            [
+              0.5,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 35
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.0007913224399089813,
+          "prepared_context_hits": 1
+        }
+      },
+      "hotspots": [
+        {
+          "file": "benchmark_validation_finish.py",
+          "line": 68,
+          "function": "observe",
+          "calls": 1,
+          "self_seconds": 3.3342e-05,
+          "cumulative_seconds": 0.28240393
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 303,
+          "function": "check_motion",
+          "calls": 1,
+          "self_seconds": 5.6416e-05,
+          "cumulative_seconds": 0.280104159
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 327,
+          "function": "interval",
+          "calls": 1,
+          "self_seconds": 0.000121676,
+          "cumulative_seconds": 0.279123137
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 221,
+          "function": "check_states",
+          "calls": 2,
+          "self_seconds": 0.000265156,
+          "cumulative_seconds": 0.265558626
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1118,
+          "function": "prefix",
+          "calls": 7,
+          "self_seconds": 1.1900000000000001e-05,
+          "cumulative_seconds": 0.25877361800000004
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 245,
+          "function": "check_prefix",
+          "calls": 7,
+          "self_seconds": 0.00010310400000000001,
+          "cumulative_seconds": 0.25876016500000004
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1099,
+          "function": "state",
+          "calls": 35,
+          "self_seconds": 8.5875e-05,
+          "cumulative_seconds": 0.23167445900000003
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1339,
+          "function": "_state_failure",
+          "calls": 35,
+          "self_seconds": 0.00013049600000000002,
+          "cumulative_seconds": 0.23158858400000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1376,
+          "function": "_checked_state_failure",
+          "calls": 35,
+          "self_seconds": 0.001192766,
+          "cumulative_seconds": 0.23144908800000003
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 686,
+          "function": "__call__",
+          "calls": 35,
+          "self_seconds": 0.0030213930000000003,
+          "cumulative_seconds": 0.22606278000000002
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 600,
+          "function": "_profile_call",
+          "calls": 210,
+          "self_seconds": 0.0009760410000000001,
+          "cumulative_seconds": 0.156505528
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 661,
+          "function": "collision_result",
+          "calls": 105,
+          "self_seconds": 0.0007264270000000001,
+          "cumulative_seconds": 0.11002740500000001
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 333,
+          "function": "_profile_call",
+          "calls": 280,
+          "self_seconds": 0.000998049,
+          "cumulative_seconds": 0.107268107
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 475,
+          "function": "_environment_collision",
+          "calls": 105,
+          "self_seconds": 0.023099347000000003,
+          "cumulative_seconds": 0.091492431
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 45,
+          "function": "__getitem__",
+          "calls": 7344,
+          "self_seconds": 0.012999703000000001,
+          "cumulative_seconds": 0.063630008
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 637,
+          "function": "_plane_failure",
+          "calls": 35,
+          "self_seconds": 0.006282052000000001,
+          "cumulative_seconds": 0.045319294
+        },
+        {
+          "file": "<string>",
+          "line": 2,
+          "function": "__init__",
+          "calls": 7070,
+          "self_seconds": 0.006655884000000001,
+          "cumulative_seconds": 0.045222651
+        },
+        {
+          "file": "robot.py",
+          "line": 698,
+          "function": "tool_collision_obbs",
+          "calls": 36,
+          "self_seconds": 0.0011324450000000002,
+          "cumulative_seconds": 0.042509402
+        },
+        {
+          "file": "geometry.py",
+          "line": 82,
+          "function": "__post_init__",
+          "calls": 7070,
+          "self_seconds": 0.017711199,
+          "cumulative_seconds": 0.038566767
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 17,
+          "function": "world_from_local",
+          "calls": 7272,
+          "self_seconds": 0.007286794,
+          "cumulative_seconds": 0.035277793
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 586,
+          "function": "collision_world_axis_extrema",
+          "calls": 35,
+          "self_seconds": 0.0028536760000000003,
+          "cumulative_seconds": 0.029381404000000003
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+          "calls": 11228,
+          "self_seconds": 0.028058329000000003,
+          "cumulative_seconds": 0.028058329000000003
+        },
+        {
+          "file": "geometry.py",
+          "line": 93,
+          "function": "world_from_local",
+          "calls": 7070,
+          "self_seconds": 0.002029673,
+          "cumulative_seconds": 0.025011925
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 124,
+          "function": "_world_vertex_extrema",
+          "calls": 245,
+          "self_seconds": 0.006730884,
+          "cumulative_seconds": 0.023942255000000003
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 213,
+          "function": "_guard",
+          "calls": 55,
+          "self_seconds": 6.5531e-05,
+          "cumulative_seconds": 0.023323508
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1131,
+          "function": "<lambda>",
+          "calls": 55,
+          "self_seconds": 3.614e-05,
+          "cumulative_seconds": 0.023179632000000002
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 54,
+          "function": "current",
+          "calls": 55,
+          "self_seconds": 0.00013337600000000002,
+          "cumulative_seconds": 0.023143492
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.any>",
+          "calls": 147,
+          "self_seconds": 0.000357517,
+          "cumulative_seconds": 0.023131813
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 623,
+          "function": "_compliant_boxes",
+          "calls": 36,
+          "self_seconds": 0.000505717,
+          "cumulative_seconds": 0.022986295
+        },
+        {
+          "file": "geometry.py",
+          "line": 55,
+          "function": "make_transform",
+          "calls": 7070,
+          "self_seconds": 0.008996307,
+          "cumulative_seconds": 0.022982252
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 58,
+          "function": "<genexpr>",
+          "calls": 1815,
+          "self_seconds": 0.00182847,
+          "cumulative_seconds": 0.022722485
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 28,
+          "function": "exact_snapshot",
+          "calls": 1792,
+          "self_seconds": 0.010605633000000001,
+          "cumulative_seconds": 0.019374443
+        },
+        {
+          "file": "fromnumeric.py",
+          "line": 2477,
+          "function": "any",
+          "calls": 7631,
+          "self_seconds": 0.0036371090000000003,
+          "cumulative_seconds": 0.019354473
+        },
+        {
+          "file": "fromnumeric.py",
+          "line": 69,
+          "function": "_wrapreduction",
+          "calls": 2502,
+          "self_seconds": 0.002303795,
+          "cumulative_seconds": 0.018948586
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 255,
+          "function": "interrupted",
+          "calls": 42,
+          "self_seconds": 9.7682e-05,
+          "cumulative_seconds": 0.018320205000000003
+        }
+      ]
+    },
+    {
+      "case": "very_short_valid",
+      "timing_seconds": {
+        "cold": [
+          0.027298681437969208,
+          0.02683970332145691,
+          0.0264507457613945
+        ],
+        "warm": [
+          0.0004606284201145172,
+          0.0004936009645462036,
+          0.0005403012037277222
+        ]
+      },
+      "median_seconds": {
+        "cold": 0.02683970332145691,
+        "warm": 0.0004936009645462036
+      },
+      "observed": {
+        "cold": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 3,
+          "fk_prepared": 3,
+          "expensive_states": 3,
+          "state_dispatches": 3,
+          "state_cache_hits": 0,
+          "edge_cache_hit": false,
+          "validation": {
+            "status": "VALID",
+            "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 3,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.02280009165406227,
+              "edge_seconds": 0.023510582745075226,
+              "repeated_failed_edges": 0,
+              "batch_calls": 2,
+              "skipped_suffix_states": 0,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 3,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 3,
+            "native_batches": 2,
+            "native_array_operations": 158,
+            "kinematics_seconds": 0.0014921166002750397,
+            "ordered_scalar_state_checks": 3,
+            "tool_obb_constructions": 606,
+            "tool_template_preparations": 1,
+            "tool_transform_constructions": 606
+          },
+          "context_delta": {
+            "full_context_builds": 1,
+            "full_context_seconds": 0.002678539603948593,
+            "light_guard_calls": 10,
+            "light_guard_seconds": 0.002141673117876053,
+            "prepared_context_hits": 0
+          }
+        },
+        "warm": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 3,
+          "fk_prepared": 0,
+          "expensive_states": 0,
+          "state_dispatches": 0,
+          "state_cache_hits": 0,
+          "edge_cache_hit": true,
+          "validation": {
+            "status": "VALID",
+            "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 0,
+              "edge_cache_hits": 1,
+              "reused_proof_state_samples": 3
+            },
+            "cache_hit": true,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 0,
+            "native_batches": 0,
+            "native_array_operations": 0,
+            "kinematics_seconds": 0.0,
+            "ordered_scalar_state_checks": 0,
+            "tool_obb_constructions": 0,
+            "tool_template_preparations": 0,
+            "tool_transform_constructions": 0
+          },
+          "context_delta": {
+            "full_context_builds": 0,
+            "full_context_seconds": 0.0,
+            "light_guard_calls": 2,
+            "light_guard_seconds": 0.0004639960825443268,
+            "prepared_context_hits": 1
+          }
+        }
+      },
+      "profile_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3,
+        "obb_constructions": 606,
+        "transform_constructions": 810,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "profile_cumulative_seconds": {
+        "context_builds": 0.003022463,
+        "json_serializations": 0.001742187,
+        "sha256_calls": 3.6219e-05,
+        "obb_constructions": 0.0033678880000000003,
+        "transform_constructions": 0.0026729690000000003,
+        "exact_collision": 0,
+        "exact_distance": 0
+      },
+      "profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 3,
+        "fk_prepared": 3,
+        "expensive_states": 3,
+        "state_dispatches": 3,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 3,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.04016810655593872,
+            "edge_seconds": 0.04261614382266998,
+            "repeated_failed_edges": 0,
+            "batch_calls": 2,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 3,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 3,
+          "native_batches": 2,
+          "native_array_operations": 158,
+          "kinematics_seconds": 0.002396821975708008,
+          "ordered_scalar_state_checks": 3,
+          "tool_obb_constructions": 606,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 606
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0030204541981220245,
+          "light_guard_calls": 10,
+          "light_guard_seconds": 0.007681131362915039,
+          "prepared_context_hits": 0
+        }
+      },
+      "warm_profile_counts": {
+        "context_builds": 0,
+        "json_serializations": 1,
+        "sha256_calls": 0
+      },
+      "warm_profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 3,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "VALID",
+          "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 3
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.0014963746070861816,
+          "prepared_context_hits": 1
+        }
+      },
+      "hotspots": [
+        {
+          "file": "benchmark_validation_finish.py",
+          "line": 68,
+          "function": "observe",
+          "calls": 1,
+          "self_seconds": 3.0909000000000005e-05,
+          "cumulative_seconds": 0.046604688000000005
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 303,
+          "function": "check_motion",
+          "calls": 1,
+          "self_seconds": 4.4224e-05,
+          "cumulative_seconds": 0.042643322000000004
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 327,
+          "function": "interval",
+          "calls": 1,
+          "self_seconds": 3.1453000000000005e-05,
+          "cumulative_seconds": 0.040943351
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 221,
+          "function": "check_states",
+          "calls": 1,
+          "self_seconds": 5.4702000000000006e-05,
+          "cumulative_seconds": 0.040168873
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1118,
+          "function": "prefix",
+          "calls": 2,
+          "self_seconds": 4.222e-06,
+          "cumulative_seconds": 0.036980731
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 245,
+          "function": "check_prefix",
+          "calls": 2,
+          "self_seconds": 1.8486000000000002e-05,
+          "cumulative_seconds": 0.036976164
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1099,
+          "function": "state",
+          "calls": 3,
+          "self_seconds": 9.562000000000001e-06,
+          "cumulative_seconds": 0.032050594
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1339,
+          "function": "_state_failure",
+          "calls": 3,
+          "self_seconds": 1.7834000000000002e-05,
+          "cumulative_seconds": 0.032041032000000004
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1376,
+          "function": "_checked_state_failure",
+          "calls": 3,
+          "self_seconds": 0.00012969200000000002,
+          "cumulative_seconds": 0.032022319
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 686,
+          "function": "__call__",
+          "calls": 3,
+          "self_seconds": 0.000312422,
+          "cumulative_seconds": 0.03149701
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 600,
+          "function": "_profile_call",
+          "calls": 18,
+          "self_seconds": 9.883300000000001e-05,
+          "cumulative_seconds": 0.025113331000000003
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 661,
+          "function": "collision_result",
+          "calls": 9,
+          "self_seconds": 7.029100000000001e-05,
+          "cumulative_seconds": 0.01663583
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 333,
+          "function": "_profile_call",
+          "calls": 24,
+          "self_seconds": 0.00011213000000000001,
+          "cumulative_seconds": 0.016378994
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 475,
+          "function": "_environment_collision",
+          "calls": 9,
+          "self_seconds": 0.0030067830000000003,
+          "cumulative_seconds": 0.012255
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 213,
+          "function": "_guard",
+          "calls": 10,
+          "self_seconds": 1.2990000000000001e-05,
+          "cumulative_seconds": 0.007730341000000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1131,
+          "function": "<lambda>",
+          "calls": 10,
+          "self_seconds": 7.279e-06,
+          "cumulative_seconds": 0.007695123000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.any>",
+          "calls": 32,
+          "self_seconds": 7.1433e-05,
+          "cumulative_seconds": 0.0076905590000000005
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 54,
+          "function": "current",
+          "calls": 10,
+          "self_seconds": 2.6499e-05,
+          "cumulative_seconds": 0.007687844
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 58,
+          "function": "<genexpr>",
+          "calls": 330,
+          "self_seconds": 0.000436057,
+          "cumulative_seconds": 0.007606939
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 28,
+          "function": "exact_snapshot",
+          "calls": 352,
+          "self_seconds": 0.0041544730000000005,
+          "cumulative_seconds": 0.007322674
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 45,
+          "function": "__getitem__",
+          "calls": 612,
+          "self_seconds": 0.001132971,
+          "cumulative_seconds": 0.005551767
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 36,
+          "function": "<genexpr>",
+          "calls": 1716,
+          "self_seconds": 0.000997561,
+          "cumulative_seconds": 0.00526655
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 76,
+          "function": "possible_inflated_obb_pairs",
+          "calls": 6,
+          "self_seconds": 0.000791748,
+          "cumulative_seconds": 0.0044547020000000005
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 255,
+          "function": "interrupted",
+          "calls": 5,
+          "self_seconds": 1.3635e-05,
+          "cumulative_seconds": 0.003990053
+        },
+        {
+          "file": "<string>",
+          "line": 2,
+          "function": "__init__",
+          "calls": 606,
+          "self_seconds": 0.0005765830000000001,
+          "cumulative_seconds": 0.003944471000000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 637,
+          "function": "_plane_failure",
+          "calls": 3,
+          "self_seconds": 0.000525383,
+          "cumulative_seconds": 0.003907197
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1070,
+          "function": "_motion_validator",
+          "calls": 1,
+          "self_seconds": 6.1288e-05,
+          "cumulative_seconds": 0.003885603
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 627,
+          "function": "_self_clearance_failure",
+          "calls": 3,
+          "self_seconds": 0.000757699,
+          "cumulative_seconds": 0.0036814860000000003
+        },
+        {
+          "file": "robot.py",
+          "line": 698,
+          "function": "tool_collision_obbs",
+          "calls": 3,
+          "self_seconds": 8.040300000000001e-05,
+          "cumulative_seconds": 0.003667683
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 63,
+          "function": "_world_aabb",
+          "calls": 198,
+          "self_seconds": 0.002148061,
+          "cumulative_seconds": 0.003560511
+        },
+        {
+          "file": "geometry.py",
+          "line": 82,
+          "function": "__post_init__",
+          "calls": 606,
+          "self_seconds": 0.001537011,
+          "cumulative_seconds": 0.0033678880000000003
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+          "calls": 1343,
+          "self_seconds": 0.0032204070000000002,
+          "cumulative_seconds": 0.0032204070000000002
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 81,
+          "function": "arrays",
+          "calls": 12,
+          "self_seconds": 0.002817782,
+          "cumulative_seconds": 0.0031437830000000003
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 969,
+          "function": "_validation_context",
+          "calls": 1,
+          "self_seconds": 5.5414e-05,
+          "cumulative_seconds": 0.003022463
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 17,
+          "function": "world_from_local",
+          "calls": 606,
+          "self_seconds": 0.0006088760000000001,
+          "cumulative_seconds": 0.002990546
+        }
+      ]
+    },
+    {
+      "case": "loaded_early_invalid",
+      "timing_seconds": {
+        "cold": [
+          0.017142489552497864,
+          0.015938080847263336,
+          0.015429198741912842
+        ],
+        "warm": [
+          0.00043990835547447205,
+          0.00041023269295692444,
+          0.00041346997022628784
+        ]
+      },
+      "median_seconds": {
+        "cold": 0.015938080847263336,
+        "warm": 0.00041346997022628784
+      },
+      "observed": {
+        "cold": {
+          "status": "INVALID",
+          "failure": {
+            "reason": "PAYLOAD_COLLISION",
+            "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": true,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_start": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_end": [
+              0.48503005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "first_failure_sample": 0
+          },
+          "guarantee": "NONE",
+          "strict_grid_samples": 5,
+          "fk_prepared": 1,
+          "expensive_states": 1,
+          "state_dispatches": 1,
+          "state_cache_hits": 0,
+          "edge_cache_hit": false,
+          "validation": {
+            "status": "INVALID",
+            "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+            "guarantee": "NONE",
+            "failure": {
+              "reason": "PAYLOAD_COLLISION",
+              "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+              "accepted": false,
+              "stage": "transit",
+              "pair": [
+                "carton_l07_c04",
+                "carton_l06_c04"
+              ],
+              "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+              "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+              "geometry_intersection_confirmed": true,
+              "original_cad_intersection_confirmed": true,
+              "surface_distance_m": 0.0,
+              "required_pair_clearance_m": 0.005,
+              "numerical_gap_tolerance_m": 1e-09,
+              "contact_permission_source": null,
+              "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+              "type": "GEOMETRY",
+              "fraction": 0.0,
+              "q_rad": [
+                0.48403005541115457,
+                -0.15354426468059104,
+                -0.12427669080619967,
+                -1.6264917415724245,
+                0.4846300627195182,
+                -1.5078751222538813
+              ],
+              "motion_start": [
+                0.48403005541115457,
+                -0.15354426468059104,
+                -0.12427669080619967,
+                -1.6264917415724245,
+                0.4846300627195182,
+                -1.5078751222538813
+              ],
+              "motion_end": [
+                0.48503005541115457,
+                -0.15354426468059104,
+                -0.12427669080619967,
+                -1.6264917415724245,
+                0.4846300627195182,
+                -1.5078751222538813
+              ],
+              "first_failure_sample": 0
+            },
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "checked": [
+              [
+                0.0,
+                0.0,
+                "OBSERVED_THROUGH_FAILURE"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 1,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.012013588100671768,
+              "edge_seconds": 0.012678422033786774,
+              "repeated_failed_edges": 0,
+              "batch_calls": 1,
+              "skipped_suffix_states": 4,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 1,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 1,
+            "native_batches": 1,
+            "native_array_operations": 79,
+            "kinematics_seconds": 0.0006628707051277161,
+            "ordered_scalar_state_checks": 1,
+            "tool_obb_constructions": 202,
+            "tool_template_preparations": 1,
+            "tool_transform_constructions": 202
+          },
+          "context_delta": {
+            "full_context_builds": 1,
+            "full_context_seconds": 0.0025051645934581757,
+            "light_guard_calls": 6,
+            "light_guard_seconds": 0.0011638849973678589,
+            "prepared_context_hits": 0
+          }
+        },
+        "warm": {
+          "status": "INVALID",
+          "failure": {
+            "reason": "PAYLOAD_COLLISION",
+            "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": true,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_start": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_end": [
+              0.48503005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "first_failure_sample": 0
+          },
+          "guarantee": "NONE",
+          "strict_grid_samples": 5,
+          "fk_prepared": 0,
+          "expensive_states": 0,
+          "state_dispatches": 0,
+          "state_cache_hits": 0,
+          "edge_cache_hit": true,
+          "validation": {
+            "status": "INVALID",
+            "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+            "guarantee": "NONE",
+            "failure": {
+              "reason": "PAYLOAD_COLLISION",
+              "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+              "accepted": false,
+              "stage": "transit",
+              "pair": [
+                "carton_l07_c04",
+                "carton_l06_c04"
+              ],
+              "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+              "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+              "geometry_intersection_confirmed": true,
+              "original_cad_intersection_confirmed": true,
+              "surface_distance_m": 0.0,
+              "required_pair_clearance_m": 0.005,
+              "numerical_gap_tolerance_m": 1e-09,
+              "contact_permission_source": null,
+              "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+              "type": "GEOMETRY",
+              "fraction": 0.0,
+              "q_rad": [
+                0.48403005541115457,
+                -0.15354426468059104,
+                -0.12427669080619967,
+                -1.6264917415724245,
+                0.4846300627195182,
+                -1.5078751222538813
+              ],
+              "motion_start": [
+                0.48403005541115457,
+                -0.15354426468059104,
+                -0.12427669080619967,
+                -1.6264917415724245,
+                0.4846300627195182,
+                -1.5078751222538813
+              ],
+              "motion_end": [
+                0.48503005541115457,
+                -0.15354426468059104,
+                -0.12427669080619967,
+                -1.6264917415724245,
+                0.4846300627195182,
+                -1.5078751222538813
+              ],
+              "first_failure_sample": 0
+            },
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "checked": [
+              [
+                0.0,
+                0.0,
+                "OBSERVED_THROUGH_FAILURE"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 0,
+              "edge_cache_hits": 1,
+              "reused_proof_state_samples": 1
+            },
+            "cache_hit": true,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 0,
+            "native_batches": 0,
+            "native_array_operations": 0,
+            "kinematics_seconds": 0.0,
+            "ordered_scalar_state_checks": 0,
+            "tool_obb_constructions": 0,
+            "tool_template_preparations": 0,
+            "tool_transform_constructions": 0
+          },
+          "context_delta": {
+            "full_context_builds": 0,
+            "full_context_seconds": 0.0,
+            "light_guard_calls": 2,
+            "light_guard_seconds": 0.00035273656249046326,
+            "prepared_context_hits": 1
+          }
+        }
+      },
+      "profile_counts": {
+        "context_builds": 1,
+        "json_serializations": 6,
+        "sha256_calls": 4,
+        "obb_constructions": 203,
+        "transform_constructions": 299,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "profile_cumulative_seconds": {
+        "context_builds": 0.0027683440000000003,
+        "json_serializations": 0.001626919,
+        "sha256_calls": 3.754e-05,
+        "obb_constructions": 0.00109209,
+        "transform_constructions": 0.0009651350000000001,
+        "exact_collision": 0,
+        "exact_distance": 0
+      },
+      "profile_result": {
+        "status": "INVALID",
+        "failure": {
+          "reason": "PAYLOAD_COLLISION",
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "carton_l07_c04",
+            "carton_l06_c04"
+          ],
+          "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.0,
+          "q_rad": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_start": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_end": [
+            0.48503005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "first_failure_sample": 0
+        },
+        "guarantee": "NONE",
+        "strict_grid_samples": 5,
+        "fk_prepared": 1,
+        "expensive_states": 1,
+        "state_dispatches": 1,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "INVALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "PAYLOAD_COLLISION",
+            "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": true,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_start": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_end": [
+              0.48503005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "first_failure_sample": 0
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.0,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 1,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.021542537957429886,
+            "edge_seconds": 0.024014752358198166,
+            "repeated_failed_edges": 0,
+            "batch_calls": 1,
+            "skipped_suffix_states": 4,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 1,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 1,
+          "native_batches": 1,
+          "native_array_operations": 79,
+          "kinematics_seconds": 0.0011638514697551727,
+          "ordered_scalar_state_checks": 1,
+          "tool_obb_constructions": 202,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 202
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0027664154767990112,
+          "light_guard_calls": 6,
+          "light_guard_seconds": 0.0045851245522499084,
+          "prepared_context_hits": 0
+        }
+      },
+      "warm_profile_counts": {
+        "context_builds": 0,
+        "json_serializations": 1,
+        "sha256_calls": 0
+      },
+      "warm_profile_result": {
+        "status": "INVALID",
+        "failure": {
+          "reason": "PAYLOAD_COLLISION",
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "carton_l07_c04",
+            "carton_l06_c04"
+          ],
+          "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.0,
+          "q_rad": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_start": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_end": [
+            0.48503005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "first_failure_sample": 0
+        },
+        "guarantee": "NONE",
+        "strict_grid_samples": 5,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "INVALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "PAYLOAD_COLLISION",
+            "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": true,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_start": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_end": [
+              0.48503005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "first_failure_sample": 0
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.0,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 1
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.0015857778489589691,
+          "prepared_context_hits": 1
+        }
+      },
+      "hotspots": [
+        {
+          "file": "benchmark_validation_finish.py",
+          "line": 68,
+          "function": "observe",
+          "calls": 1,
+          "self_seconds": 2.7349000000000002e-05,
+          "cumulative_seconds": 0.027662615
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 303,
+          "function": "check_motion",
+          "calls": 1,
+          "self_seconds": 4.0339e-05,
+          "cumulative_seconds": 0.024035694
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 327,
+          "function": "interval",
+          "calls": 1,
+          "self_seconds": 3.6872e-05,
+          "cumulative_seconds": 0.022369129
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 221,
+          "function": "check_states",
+          "calls": 1,
+          "self_seconds": 2.7389e-05,
+          "cumulative_seconds": 0.021543481
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1118,
+          "function": "prefix",
+          "calls": 1,
+          "self_seconds": 2.5360000000000004e-06,
+          "cumulative_seconds": 0.019957723
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 245,
+          "function": "check_prefix",
+          "calls": 1,
+          "self_seconds": 9.977000000000001e-06,
+          "cumulative_seconds": 0.019954947
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1099,
+          "function": "state",
+          "calls": 1,
+          "self_seconds": 4.022000000000001e-06,
+          "cumulative_seconds": 0.017922254000000002
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1339,
+          "function": "_state_failure",
+          "calls": 1,
+          "self_seconds": 1.1118000000000001e-05,
+          "cumulative_seconds": 0.017918232000000003
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1376,
+          "function": "_checked_state_failure",
+          "calls": 1,
+          "self_seconds": 0.000109104,
+          "cumulative_seconds": 0.017906867
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 686,
+          "function": "__call__",
+          "calls": 1,
+          "self_seconds": 0.00024377300000000003,
+          "cumulative_seconds": 0.015981409000000002
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 600,
+          "function": "_profile_call",
+          "calls": 6,
+          "self_seconds": 3.9159e-05,
+          "cumulative_seconds": 0.00933609
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 661,
+          "function": "collision_result",
+          "calls": 3,
+          "self_seconds": 2.4920000000000002e-05,
+          "cumulative_seconds": 0.006468911000000001
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 333,
+          "function": "_profile_call",
+          "calls": 8,
+          "self_seconds": 4.6084e-05,
+          "cumulative_seconds": 0.006382840000000001
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 475,
+          "function": "_environment_collision",
+          "calls": 3,
+          "self_seconds": 0.001110532,
+          "cumulative_seconds": 0.004693517
+        },
+        {
+          "file": "geometry.py",
+          "line": 205,
+          "function": "signed_distance_obb",
+          "calls": 63,
+          "self_seconds": 0.001076509,
+          "cumulative_seconds": 0.004665161
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 213,
+          "function": "_guard",
+          "calls": 6,
+          "self_seconds": 8.359e-06,
+          "cumulative_seconds": 0.004618622
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.any>",
+          "calls": 18,
+          "self_seconds": 4.5246e-05,
+          "cumulative_seconds": 0.004594913
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 28,
+          "function": "exact_snapshot",
+          "calls": 231,
+          "self_seconds": 0.002605071,
+          "cumulative_seconds": 0.004594175000000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1131,
+          "function": "<lambda>",
+          "calls": 6,
+          "self_seconds": 4.787e-06,
+          "cumulative_seconds": 0.004594164
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 54,
+          "function": "current",
+          "calls": 6,
+          "self_seconds": 1.5057000000000002e-05,
+          "cumulative_seconds": 0.004589377
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 58,
+          "function": "<genexpr>",
+          "calls": 204,
+          "self_seconds": 0.000262437,
+          "cumulative_seconds": 0.004539539
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1070,
+          "function": "_motion_validator",
+          "calls": 1,
+          "self_seconds": 5.8183e-05,
+          "cumulative_seconds": 0.0035599240000000003
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 36,
+          "function": "<genexpr>",
+          "calls": 1127,
+          "self_seconds": 0.0006233500000000001,
+          "cumulative_seconds": 0.003304866
+        },
+        {
+          "file": "numeric.py",
+          "line": 1556,
+          "function": "cross",
+          "calls": 69,
+          "self_seconds": 0.0010868820000000002,
+          "cumulative_seconds": 0.002955067
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 969,
+          "function": "_validation_context",
+          "calls": 1,
+          "self_seconds": 4.5937000000000004e-05,
+          "cumulative_seconds": 0.0027683440000000003
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 117,
+          "function": "create",
+          "calls": 1,
+          "self_seconds": 3.5320000000000002e-06,
+          "cumulative_seconds": 0.00232393
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 45,
+          "function": "__getitem__",
+          "calls": 204,
+          "self_seconds": 0.000377792,
+          "cumulative_seconds": 0.001810863
+        },
+        {
+          "file": "numeric.py",
+          "line": 1482,
+          "function": "moveaxis",
+          "calls": 207,
+          "self_seconds": 0.00044138200000000004,
+          "cumulative_seconds": 0.00166375
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 63,
+          "function": "_world_aabb",
+          "calls": 96,
+          "self_seconds": 0.000995756,
+          "cumulative_seconds": 0.00165992
+        },
+        {
+          "file": "__init__.py",
+          "line": 183,
+          "function": "dumps",
+          "calls": 6,
+          "self_seconds": 1.8451e-05,
+          "cumulative_seconds": 0.001626919
+        },
+        {
+          "file": "encoder.py",
+          "line": 183,
+          "function": "encode",
+          "calls": 6,
+          "self_seconds": 1.4945000000000002e-05,
+          "cumulative_seconds": 0.001605258
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 255,
+          "function": "interrupted",
+          "calls": 2,
+          "self_seconds": 6.0940000000000004e-06,
+          "cumulative_seconds": 0.001604556
+        },
+        {
+          "file": "encoder.py",
+          "line": 205,
+          "function": "iterencode",
+          "calls": 6,
+          "self_seconds": 0.0015854670000000001,
+          "cumulative_seconds": 0.0015854670000000001
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 627,
+          "function": "_self_clearance_failure",
+          "calls": 1,
+          "self_seconds": 0.000269498,
+          "cumulative_seconds": 0.0015453230000000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 76,
+          "function": "possible_inflated_obb_pairs",
+          "calls": 2,
+          "self_seconds": 0.00032176700000000004,
+          "cumulative_seconds": 0.001543389
+        }
+      ]
+    },
+    {
+      "case": "history_extract_start",
+      "timing_seconds": {
+        "cold": [
+          0.33966929465532303,
+          0.3388179540634155,
+          0.3505004718899727
+        ],
+        "warm": [
+          0.2608824335038662,
+          0.2709265798330307,
+          0.25641924515366554
+        ]
+      },
+      "median_seconds": {
+        "cold": 0.33966929465532303,
+        "warm": 0.2608824335038662
+      },
+      "observed": {
+        "cold": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 15,
+          "fk_prepared": 15,
+          "expensive_states": 15,
+          "state_dispatches": 15,
+          "state_cache_hits": 0,
+          "edge_cache_hit": false,
+          "validation": {
+            "status": "VALID",
+            "context_id": "45ceaf50d1586146d07523f4d9670d36ef3591a2665181068a867468eeeb1893",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 15,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.3462020456790924,
+              "edge_seconds": 0.3469772972166538,
+              "repeated_failed_edges": 0,
+              "batch_calls": 3,
+              "skipped_suffix_states": 0,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 0,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 15,
+            "native_batches": 3,
+            "native_array_operations": 237,
+            "kinematics_seconds": 0.0035056322813034058,
+            "ordered_scalar_state_checks": 15,
+            "tool_obb_constructions": 3030,
+            "tool_template_preparations": 1,
+            "tool_transform_constructions": 3030
+          },
+          "context_delta": {
+            "full_context_builds": 1,
+            "full_context_seconds": 0.003052167594432831,
+            "light_guard_calls": 24,
+            "light_guard_seconds": 0.005636550486087799,
+            "prepared_context_hits": 0
+          }
+        },
+        "warm": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 15,
+          "fk_prepared": 0,
+          "expensive_states": 15,
+          "state_dispatches": 15,
+          "state_cache_hits": 0,
+          "edge_cache_hit": false,
+          "validation": {
+            "status": "VALID",
+            "context_id": "45ceaf50d1586146d07523f4d9670d36ef3591a2665181068a867468eeeb1893",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 15,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.2524731233716011,
+              "edge_seconds": 0.25319673120975494,
+              "repeated_failed_edges": 0,
+              "batch_calls": 3,
+              "skipped_suffix_states": 0,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 0,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 0,
+            "native_batches": 0,
+            "native_array_operations": 0,
+            "kinematics_seconds": 0.0,
+            "ordered_scalar_state_checks": 15,
+            "tool_obb_constructions": 0,
+            "tool_template_preparations": 0,
+            "tool_transform_constructions": 0
+          },
+          "context_delta": {
+            "full_context_builds": 1,
+            "full_context_seconds": 0.0027757585048675537,
+            "light_guard_calls": 24,
+            "light_guard_seconds": 0.005203559994697571,
+            "prepared_context_hits": 0
+          }
+        }
+      },
+      "profile_counts": {
+        "context_builds": 1,
+        "json_serializations": 6,
+        "sha256_calls": 4,
+        "obb_constructions": 3045,
+        "transform_constructions": 3870,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "profile_cumulative_seconds": {
+        "context_builds": 0.0030524750000000002,
+        "json_serializations": 0.0017998150000000002,
+        "sha256_calls": 3.966e-05,
+        "obb_constructions": 0.016458894,
+        "transform_constructions": 0.012954149000000002,
+        "exact_collision": 0,
+        "exact_distance": 0
+      },
+      "profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 15,
+        "expensive_states": 15,
+        "state_dispatches": 15,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "45ceaf50d1586146d07523f4d9670d36ef3591a2665181068a867468eeeb1893",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 15,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.5377841368317604,
+            "edge_seconds": 0.5402742326259613,
+            "repeated_failed_edges": 0,
+            "batch_calls": 3,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 0,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 15,
+          "native_batches": 3,
+          "native_array_operations": 237,
+          "kinematics_seconds": 0.0048802681267261505,
+          "ordered_scalar_state_checks": 15,
+          "tool_obb_constructions": 3030,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 3030
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0030491799116134644,
+          "light_guard_calls": 24,
+          "light_guard_seconds": 0.018861714750528336,
+          "prepared_context_hits": 0
+        }
+      },
+      "warm_profile_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3
+      },
+      "warm_profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 0,
+        "expensive_states": 15,
+        "state_dispatches": 15,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "45ceaf50d1586146d07523f4d9670d36ef3591a2665181068a867468eeeb1893",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 15,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.41153737530112267,
+            "edge_seconds": 0.4138835594058037,
+            "repeated_failed_edges": 0,
+            "batch_calls": 3,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 0,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 15,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.003162786364555359,
+          "light_guard_calls": 24,
+          "light_guard_seconds": 0.018777459859848022,
+          "prepared_context_hits": 0
+        }
+      },
+      "hotspots": [
+        {
+          "file": "benchmark_validation_finish.py",
+          "line": 68,
+          "function": "observe",
+          "calls": 1,
+          "self_seconds": 3.6124e-05,
+          "cumulative_seconds": 0.544518118
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 303,
+          "function": "check_motion",
+          "calls": 1,
+          "self_seconds": 4.8906e-05,
+          "cumulative_seconds": 0.54030126
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 327,
+          "function": "interval",
+          "calls": 1,
+          "self_seconds": 4.131e-05,
+          "cumulative_seconds": 0.538583146
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 221,
+          "function": "check_states",
+          "calls": 1,
+          "self_seconds": 0.000108368,
+          "cumulative_seconds": 0.537784928
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1118,
+          "function": "prefix",
+          "calls": 3,
+          "self_seconds": 7.650000000000001e-06,
+          "cumulative_seconds": 0.532885009
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 245,
+          "function": "check_prefix",
+          "calls": 3,
+          "self_seconds": 5.4706e-05,
+          "cumulative_seconds": 0.532876569
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1099,
+          "function": "state",
+          "calls": 15,
+          "self_seconds": 5.2043e-05,
+          "cumulative_seconds": 0.515511731
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1339,
+          "function": "_state_failure",
+          "calls": 15,
+          "self_seconds": 6.778100000000001e-05,
+          "cumulative_seconds": 0.5154596880000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1376,
+          "function": "_checked_state_failure",
+          "calls": 15,
+          "self_seconds": 0.000555357,
+          "cumulative_seconds": 0.5153867200000001
+        },
+        {
+          "file": "collision_policy.py",
+          "line": 141,
+          "function": "state_failure",
+          "calls": 15,
+          "self_seconds": 0.0005338550000000001,
+          "cumulative_seconds": 0.28979408100000004
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.all>",
+          "calls": 31,
+          "self_seconds": 0.00017033800000000002,
+          "cumulative_seconds": 0.251626923
+        },
+        {
+          "file": "collision_policy.py",
+          "line": 129,
+          "function": "_update_released",
+          "calls": 15,
+          "self_seconds": 4.4041e-05,
+          "cumulative_seconds": 0.251619353
+        },
+        {
+          "file": "collision_policy.py",
+          "line": 131,
+          "function": "<genexpr>",
+          "calls": 525,
+          "self_seconds": 0.002092657,
+          "cumulative_seconds": 0.251432511
+        },
+        {
+          "file": "pair_clearance.py",
+          "line": 6,
+          "function": "obb_surface_distance",
+          "calls": 525,
+          "self_seconds": 0.1268589,
+          "cumulative_seconds": 0.249212329
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 686,
+          "function": "__call__",
+          "calls": 15,
+          "self_seconds": 0.0033764010000000002,
+          "cumulative_seconds": 0.22247192100000002
+        },
+        {
+          "file": "geometry.py",
+          "line": 205,
+          "function": "signed_distance_obb",
+          "calls": 1965,
+          "self_seconds": 0.035725539,
+          "cumulative_seconds": 0.15016420900000002
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 600,
+          "function": "_profile_call",
+          "calls": 90,
+          "self_seconds": 0.0004906120000000001,
+          "cumulative_seconds": 0.12335006400000001
+        },
+        {
+          "file": "numeric.py",
+          "line": 1556,
+          "function": "cross",
+          "calls": 1983,
+          "self_seconds": 0.03317971,
+          "cumulative_seconds": 0.08645287600000001
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 661,
+          "function": "collision_result",
+          "calls": 45,
+          "self_seconds": 0.000331309,
+          "cumulative_seconds": 0.078725683
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 333,
+          "function": "_profile_call",
+          "calls": 120,
+          "self_seconds": 0.000519007,
+          "cumulative_seconds": 0.07752010200000001
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 475,
+          "function": "_environment_collision",
+          "calls": 45,
+          "self_seconds": 0.015369457000000001,
+          "cumulative_seconds": 0.05993082500000001
+        },
+        {
+          "file": "numeric.py",
+          "line": 1482,
+          "function": "moveaxis",
+          "calls": 5949,
+          "self_seconds": 0.013244710000000002,
+          "cumulative_seconds": 0.04710665
+        },
+        {
+          "file": "fromnumeric.py",
+          "line": 69,
+          "function": "_wrapreduction",
+          "calls": 14186,
+          "self_seconds": 0.012648330000000001,
+          "cumulative_seconds": 0.045302269000000006
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+          "calls": 22281,
+          "self_seconds": 0.042929411,
+          "cumulative_seconds": 0.042929411
+        },
+        {
+          "file": "numeric.py",
+          "line": 1420,
+          "function": "normalize_axis_tuple",
+          "calls": 11898,
+          "self_seconds": 0.017811111,
+          "cumulative_seconds": 0.028256915
+        },
+        {
+          "file": "fromnumeric.py",
+          "line": 2338,
+          "function": "sum",
+          "calls": 6371,
+          "self_seconds": 0.005103115,
+          "cumulative_seconds": 0.028014495
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 45,
+          "function": "__getitem__",
+          "calls": 3060,
+          "self_seconds": 0.005655747,
+          "cumulative_seconds": 0.027038180000000002
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 76,
+          "function": "possible_inflated_obb_pairs",
+          "calls": 30,
+          "self_seconds": 0.005385664,
+          "cumulative_seconds": 0.024229422
+        },
+        {
+          "file": "_linalg.py",
+          "line": 2622,
+          "function": "norm",
+          "calls": 4051,
+          "self_seconds": 0.011838164,
+          "cumulative_seconds": 0.020215433
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 637,
+          "function": "_plane_failure",
+          "calls": 15,
+          "self_seconds": 0.0027879180000000003,
+          "cumulative_seconds": 0.019819996000000003
+        },
+        {
+          "file": "<string>",
+          "line": 2,
+          "function": "__init__",
+          "calls": 3045,
+          "self_seconds": 0.0028557350000000003,
+          "cumulative_seconds": 0.019314629
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 213,
+          "function": "_guard",
+          "calls": 24,
+          "self_seconds": 3.3449000000000004e-05,
+          "cumulative_seconds": 0.018970331
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1131,
+          "function": "<lambda>",
+          "calls": 24,
+          "self_seconds": 1.7440000000000002e-05,
+          "cumulative_seconds": 0.018897848000000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.any>",
+          "calls": 78,
+          "self_seconds": 0.00018173,
+          "cumulative_seconds": 0.018895252
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 54,
+          "function": "current",
+          "calls": 24,
+          "self_seconds": 6.6476e-05,
+          "cumulative_seconds": 0.018880408
+        }
+      ]
+    },
+    {
+      "case": "history_extract_middle",
+      "timing_seconds": {
+        "cold": [
+          0.35085246711969376,
+          0.3370324373245239,
+          0.34059542044997215
+        ],
+        "warm": [
+          0.2566252797842026,
+          0.26005419716238976,
+          0.2568545900285244
+        ]
+      },
+      "median_seconds": {
+        "cold": 0.34059542044997215,
+        "warm": 0.2568545900285244
+      },
+      "observed": {
+        "cold": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 15,
+          "fk_prepared": 15,
+          "expensive_states": 15,
+          "state_dispatches": 15,
+          "state_cache_hits": 0,
+          "edge_cache_hit": false,
+          "validation": {
+            "status": "VALID",
+            "context_id": "45ceaf50d1586146d07523f4d9670d36ef3591a2665181068a867468eeeb1893",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 15,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.33651356399059296,
+              "edge_seconds": 0.33723916858434677,
+              "repeated_failed_edges": 0,
+              "batch_calls": 3,
+              "skipped_suffix_states": 0,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 0,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 15,
+            "native_batches": 3,
+            "native_array_operations": 237,
+            "kinematics_seconds": 0.0032414160668849945,
+            "ordered_scalar_state_checks": 15,
+            "tool_obb_constructions": 3030,
+            "tool_template_preparations": 1,
+            "tool_transform_constructions": 3030
+          },
+          "context_delta": {
+            "full_context_builds": 1,
+            "full_context_seconds": 0.002894897013902664,
+            "light_guard_calls": 24,
+            "light_guard_seconds": 0.006507672369480133,
+            "prepared_context_hits": 0
+          }
+        },
+        "warm": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 15,
+          "fk_prepared": 0,
+          "expensive_states": 15,
+          "state_dispatches": 15,
+          "state_cache_hits": 0,
+          "edge_cache_hit": false,
+          "validation": {
+            "status": "VALID",
+            "context_id": "45ceaf50d1586146d07523f4d9670d36ef3591a2665181068a867468eeeb1893",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 15,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.252696018666029,
+              "edge_seconds": 0.25343577563762665,
+              "repeated_failed_edges": 0,
+              "batch_calls": 3,
+              "skipped_suffix_states": 0,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 0,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 0,
+            "native_batches": 0,
+            "native_array_operations": 0,
+            "kinematics_seconds": 0.0,
+            "ordered_scalar_state_checks": 15,
+            "tool_obb_constructions": 0,
+            "tool_template_preparations": 0,
+            "tool_transform_constructions": 0
+          },
+          "context_delta": {
+            "full_context_builds": 1,
+            "full_context_seconds": 0.0029681771993637085,
+            "light_guard_calls": 24,
+            "light_guard_seconds": 0.005207613110542297,
+            "prepared_context_hits": 0
+          }
+        }
+      },
+      "profile_counts": {
+        "context_builds": 1,
+        "json_serializations": 6,
+        "sha256_calls": 4,
+        "obb_constructions": 3045,
+        "transform_constructions": 3870,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "profile_cumulative_seconds": {
+        "context_builds": 0.0030705740000000004,
+        "json_serializations": 0.0017748070000000002,
+        "sha256_calls": 4.1787000000000005e-05,
+        "obb_constructions": 0.016593206000000003,
+        "transform_constructions": 0.012477436000000001,
+        "exact_collision": 0,
+        "exact_distance": 0
+      },
+      "profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 15,
+        "expensive_states": 15,
+        "state_dispatches": 15,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "45ceaf50d1586146d07523f4d9670d36ef3591a2665181068a867468eeeb1893",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 15,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.5289036072790623,
+            "edge_seconds": 0.5313689410686493,
+            "repeated_failed_edges": 0,
+            "batch_calls": 3,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 0,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 15,
+          "native_batches": 3,
+          "native_array_operations": 237,
+          "kinematics_seconds": 0.004654388874769211,
+          "ordered_scalar_state_checks": 15,
+          "tool_obb_constructions": 3030,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 3030
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.00306648388504982,
+          "light_guard_calls": 24,
+          "light_guard_seconds": 0.018342576920986176,
+          "prepared_context_hits": 0
+        }
+      },
+      "warm_profile_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3
+      },
+      "warm_profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 0,
+        "expensive_states": 15,
+        "state_dispatches": 15,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "45ceaf50d1586146d07523f4d9670d36ef3591a2665181068a867468eeeb1893",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 15,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.40546849742531776,
+            "edge_seconds": 0.407924372702837,
+            "repeated_failed_edges": 0,
+            "batch_calls": 3,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 0,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 15,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0029709674417972565,
+          "light_guard_calls": 24,
+          "light_guard_seconds": 0.018726743757724762,
+          "prepared_context_hits": 0
+        }
+      },
+      "hotspots": [
+        {
+          "file": "benchmark_validation_finish.py",
+          "line": 68,
+          "function": "observe",
+          "calls": 1,
+          "self_seconds": 3.8046e-05,
+          "cumulative_seconds": 0.535661807
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 303,
+          "function": "check_motion",
+          "calls": 1,
+          "self_seconds": 4.8915e-05,
+          "cumulative_seconds": 0.5313947250000001
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 327,
+          "function": "interval",
+          "calls": 1,
+          "self_seconds": 3.7862000000000004e-05,
+          "cumulative_seconds": 0.5296939380000001
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 221,
+          "function": "check_states",
+          "calls": 1,
+          "self_seconds": 9.703600000000001e-05,
+          "cumulative_seconds": 0.528904461
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1118,
+          "function": "prefix",
+          "calls": 3,
+          "self_seconds": 5.8020000000000005e-06,
+          "cumulative_seconds": 0.524266348
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 245,
+          "function": "check_prefix",
+          "calls": 3,
+          "self_seconds": 5.3362e-05,
+          "cumulative_seconds": 0.524259922
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1099,
+          "function": "state",
+          "calls": 15,
+          "self_seconds": 4.8610000000000004e-05,
+          "cumulative_seconds": 0.507386656
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1339,
+          "function": "_state_failure",
+          "calls": 15,
+          "self_seconds": 6.710100000000001e-05,
+          "cumulative_seconds": 0.507338046
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1376,
+          "function": "_checked_state_failure",
+          "calls": 15,
+          "self_seconds": 0.0005470820000000001,
+          "cumulative_seconds": 0.5072660480000001
+        },
+        {
+          "file": "collision_policy.py",
+          "line": 141,
+          "function": "state_failure",
+          "calls": 15,
+          "self_seconds": 0.000551402,
+          "cumulative_seconds": 0.28866224
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.all>",
+          "calls": 31,
+          "self_seconds": 0.000169967,
+          "cumulative_seconds": 0.24972503000000001
+        },
+        {
+          "file": "collision_policy.py",
+          "line": 129,
+          "function": "_update_released",
+          "calls": 15,
+          "self_seconds": 4.3706000000000005e-05,
+          "cumulative_seconds": 0.249718915
+        },
+        {
+          "file": "collision_policy.py",
+          "line": 131,
+          "function": "<genexpr>",
+          "calls": 525,
+          "self_seconds": 0.002057644,
+          "cumulative_seconds": 0.24953387000000002
+        },
+        {
+          "file": "pair_clearance.py",
+          "line": 6,
+          "function": "obb_surface_distance",
+          "calls": 525,
+          "self_seconds": 0.12531488400000002,
+          "cumulative_seconds": 0.24734854900000003
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 686,
+          "function": "__call__",
+          "calls": 15,
+          "self_seconds": 0.003222234,
+          "cumulative_seconds": 0.21554051800000001
+        },
+        {
+          "file": "geometry.py",
+          "line": 205,
+          "function": "signed_distance_obb",
+          "calls": 1965,
+          "self_seconds": 0.035566481000000004,
+          "cumulative_seconds": 0.14943046100000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 600,
+          "function": "_profile_call",
+          "calls": 90,
+          "self_seconds": 0.00045870100000000005,
+          "cumulative_seconds": 0.11861296600000001
+        },
+        {
+          "file": "numeric.py",
+          "line": 1556,
+          "function": "cross",
+          "calls": 1983,
+          "self_seconds": 0.033012997,
+          "cumulative_seconds": 0.08601397200000001
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 661,
+          "function": "collision_result",
+          "calls": 45,
+          "self_seconds": 0.000320636,
+          "cumulative_seconds": 0.076175135
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 333,
+          "function": "_profile_call",
+          "calls": 120,
+          "self_seconds": 0.00050007,
+          "cumulative_seconds": 0.075004411
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 475,
+          "function": "_environment_collision",
+          "calls": 45,
+          "self_seconds": 0.014761391,
+          "cumulative_seconds": 0.057798599000000006
+        },
+        {
+          "file": "numeric.py",
+          "line": 1482,
+          "function": "moveaxis",
+          "calls": 5949,
+          "self_seconds": 0.013180817000000001,
+          "cumulative_seconds": 0.046864100000000006
+        },
+        {
+          "file": "fromnumeric.py",
+          "line": 69,
+          "function": "_wrapreduction",
+          "calls": 14034,
+          "self_seconds": 0.012505792,
+          "cumulative_seconds": 0.044622479
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+          "calls": 22129,
+          "self_seconds": 0.042114749,
+          "cumulative_seconds": 0.042114749
+        },
+        {
+          "file": "numeric.py",
+          "line": 1420,
+          "function": "normalize_axis_tuple",
+          "calls": 11898,
+          "self_seconds": 0.017718013,
+          "cumulative_seconds": 0.028120914
+        },
+        {
+          "file": "fromnumeric.py",
+          "line": 2338,
+          "function": "sum",
+          "calls": 6275,
+          "self_seconds": 0.005050227,
+          "cumulative_seconds": 0.027741027
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 45,
+          "function": "__getitem__",
+          "calls": 3060,
+          "self_seconds": 0.005535799,
+          "cumulative_seconds": 0.026991273000000003
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 76,
+          "function": "possible_inflated_obb_pairs",
+          "calls": 30,
+          "self_seconds": 0.004747447,
+          "cumulative_seconds": 0.022926387000000003
+        },
+        {
+          "file": "_linalg.py",
+          "line": 2622,
+          "function": "norm",
+          "calls": 4051,
+          "self_seconds": 0.01176842,
+          "cumulative_seconds": 0.020094933000000002
+        },
+        {
+          "file": "<string>",
+          "line": 2,
+          "function": "__init__",
+          "calls": 3045,
+          "self_seconds": 0.002799666,
+          "cumulative_seconds": 0.019392872000000002
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 637,
+          "function": "_plane_failure",
+          "calls": 15,
+          "self_seconds": 0.0026023260000000003,
+          "cumulative_seconds": 0.018971663
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 213,
+          "function": "_guard",
+          "calls": 24,
+          "self_seconds": 3.1736e-05,
+          "cumulative_seconds": 0.018445549000000002
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1131,
+          "function": "<lambda>",
+          "calls": 24,
+          "self_seconds": 1.6739e-05,
+          "cumulative_seconds": 0.018375977
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.any>",
+          "calls": 78,
+          "self_seconds": 0.000179666,
+          "cumulative_seconds": 0.018372754
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 54,
+          "function": "current",
+          "calls": 24,
+          "self_seconds": 6.1525e-05,
+          "cumulative_seconds": 0.018359238
+        }
+      ]
+    },
+    {
+      "case": "history_loaded_transit",
+      "timing_seconds": {
+        "cold": [
+          0.5527464710175991,
+          0.5467840917408466,
+          0.5484951958060265
+        ],
+        "warm": [
+          0.00044800713658332825,
+          0.0004457607865333557,
+          0.0004165284335613251
+        ]
+      },
+      "median_seconds": {
+        "cold": 0.5484951958060265,
+        "warm": 0.0004457607865333557
+      },
+      "observed": {
+        "cold": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 15,
+          "fk_prepared": 15,
+          "expensive_states": 15,
+          "state_dispatches": 15,
+          "state_cache_hits": 0,
+          "edge_cache_hit": false,
+          "validation": {
+            "status": "VALID",
+            "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 15,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.544808492064476,
+              "edge_seconds": 0.545500073581934,
+              "repeated_failed_edges": 0,
+              "batch_calls": 3,
+              "skipped_suffix_states": 0,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 15,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 15,
+            "native_batches": 3,
+            "native_array_operations": 237,
+            "kinematics_seconds": 0.0033274926245212555,
+            "ordered_scalar_state_checks": 15,
+            "tool_obb_constructions": 3030,
+            "tool_template_preparations": 1,
+            "tool_transform_constructions": 3030
+          },
+          "context_delta": {
+            "full_context_builds": 1,
+            "full_context_seconds": 0.002674233168363571,
+            "light_guard_calls": 24,
+            "light_guard_seconds": 0.005615841597318649,
+            "prepared_context_hits": 0
+          }
+        },
+        "warm": {
+          "status": "VALID",
+          "failure": null,
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "strict_grid_samples": 15,
+          "fk_prepared": 0,
+          "expensive_states": 0,
+          "state_dispatches": 0,
+          "state_cache_hits": 0,
+          "edge_cache_hit": true,
+          "validation": {
+            "status": "VALID",
+            "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+            "guarantee": "DISCRETE_LEGACY_STRICT",
+            "failure": null,
+            "interval": null,
+            "checked": [
+              [
+                0.0,
+                1.0,
+                "DISCRETE_LEGACY_STRICT"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 0,
+              "edge_cache_hits": 1,
+              "reused_proof_state_samples": 15
+            },
+            "cache_hit": true,
+            "interval_certificate": false
+          },
+          "kernel_delta": {
+            "fk_states": 0,
+            "native_batches": 0,
+            "native_array_operations": 0,
+            "kinematics_seconds": 0.0,
+            "ordered_scalar_state_checks": 0,
+            "tool_obb_constructions": 0,
+            "tool_template_preparations": 0,
+            "tool_transform_constructions": 0
+          },
+          "context_delta": {
+            "full_context_builds": 0,
+            "full_context_seconds": 0.0,
+            "light_guard_calls": 2,
+            "light_guard_seconds": 0.0003481172025203705,
+            "prepared_context_hits": 1
+          }
+        }
+      },
+      "profile_counts": {
+        "context_builds": 1,
+        "json_serializations": 1011,
+        "sha256_calls": 1009,
+        "obb_constructions": 3045,
+        "transform_constructions": 3869,
+        "exact_collision": 2,
+        "exact_distance": 2
+      },
+      "profile_cumulative_seconds": {
+        "context_builds": 0.0031890770000000002,
+        "json_serializations": 0.021150516,
+        "sha256_calls": 0.001218071,
+        "obb_constructions": 0.016345086,
+        "transform_constructions": 0.012812959,
+        "exact_collision": 0,
+        "exact_distance": 0
+      },
+      "profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 15,
+        "expensive_states": 15,
+        "state_dispatches": 15,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 15,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.8598898872733116,
+            "edge_seconds": 0.8623995371162891,
+            "repeated_failed_edges": 0,
+            "batch_calls": 3,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 15,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 15,
+          "native_batches": 3,
+          "native_array_operations": 237,
+          "kinematics_seconds": 0.004628170281648636,
+          "ordered_scalar_state_checks": 15,
+          "tool_obb_constructions": 3030,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 3030
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.003185667097568512,
+          "light_guard_calls": 24,
+          "light_guard_seconds": 0.01884346455335617,
+          "prepared_context_hits": 0
+        }
+      },
+      "warm_profile_counts": {
+        "context_builds": 0,
+        "json_serializations": 1,
+        "sha256_calls": 0
+      },
+      "warm_profile_result": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "VALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 15
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.0015503056347370148,
+          "prepared_context_hits": 1
+        }
+      },
+      "hotspots": [
+        {
+          "file": "benchmark_validation_finish.py",
+          "line": 68,
+          "function": "observe",
+          "calls": 1,
+          "self_seconds": 3.4906e-05,
+          "cumulative_seconds": 0.8666000490000001
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 303,
+          "function": "check_motion",
+          "calls": 1,
+          "self_seconds": 5.2103000000000006e-05,
+          "cumulative_seconds": 0.8624287190000001
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 327,
+          "function": "interval",
+          "calls": 1,
+          "self_seconds": 4.0019000000000004e-05,
+          "cumulative_seconds": 0.8607135600000001
+        },
+        {
+          "file": "motion_validation.py",
+          "line": 221,
+          "function": "check_states",
+          "calls": 1,
+          "self_seconds": 0.000120798,
+          "cumulative_seconds": 0.8598907520000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1118,
+          "function": "prefix",
+          "calls": 3,
+          "self_seconds": 6.355e-06,
+          "cumulative_seconds": 0.854960413
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 245,
+          "function": "check_prefix",
+          "calls": 3,
+          "self_seconds": 5.7075000000000005e-05,
+          "cumulative_seconds": 0.8549534160000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1099,
+          "function": "state",
+          "calls": 15,
+          "self_seconds": 4.8537000000000006e-05,
+          "cumulative_seconds": 0.837872908
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1339,
+          "function": "_state_failure",
+          "calls": 15,
+          "self_seconds": 8.5431e-05,
+          "cumulative_seconds": 0.8378243710000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 1376,
+          "function": "_checked_state_failure",
+          "calls": 15,
+          "self_seconds": 0.001227859,
+          "cumulative_seconds": 0.8377344120000001
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 686,
+          "function": "__call__",
+          "calls": 15,
+          "self_seconds": 0.005894587000000001,
+          "cumulative_seconds": 0.812930661
+        },
+        {
+          "file": "pair_clearance.py",
+          "line": 82,
+          "function": "obb_pair_failure",
+          "calls": 2040,
+          "self_seconds": 0.018239043,
+          "cumulative_seconds": 0.5920903750000001
+        },
+        {
+          "file": "pair_clearance.py",
+          "line": 74,
+          "function": "obb_pair_evidence",
+          "calls": 1005,
+          "self_seconds": 0.0049150980000000006,
+          "cumulative_seconds": 0.5652735160000001
+        },
+        {
+          "file": "pair_clearance.py",
+          "line": 6,
+          "function": "obb_surface_distance",
+          "calls": 1035,
+          "self_seconds": 0.26141905000000004,
+          "cumulative_seconds": 0.516982108
+        },
+        {
+          "file": "geometry.py",
+          "line": 205,
+          "function": "signed_distance_obb",
+          "calls": 1935,
+          "self_seconds": 0.040309735,
+          "cumulative_seconds": 0.165600449
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 600,
+          "function": "_profile_call",
+          "calls": 90,
+          "self_seconds": 0.00047436500000000003,
+          "cumulative_seconds": 0.127524626
+        },
+        {
+          "file": "numeric.py",
+          "line": 1556,
+          "function": "cross",
+          "calls": 1953,
+          "self_seconds": 0.036661946,
+          "cumulative_seconds": 0.09452014
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 661,
+          "function": "collision_result",
+          "calls": 45,
+          "self_seconds": 0.000328051,
+          "cumulative_seconds": 0.08244311900000001
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 333,
+          "function": "_profile_call",
+          "calls": 120,
+          "self_seconds": 0.0005265290000000001,
+          "cumulative_seconds": 0.081256058
+        },
+        {
+          "file": "fromnumeric.py",
+          "line": 69,
+          "function": "_wrapreduction",
+          "calls": 23903,
+          "self_seconds": 0.021447102000000003,
+          "cumulative_seconds": 0.076489347
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+          "calls": 33939,
+          "self_seconds": 0.06722844800000001,
+          "cumulative_seconds": 0.06722844800000001
+        },
+        {
+          "file": "pinocchio_backend.py",
+          "line": 475,
+          "function": "_environment_collision",
+          "calls": 45,
+          "self_seconds": 0.015518078000000001,
+          "cumulative_seconds": 0.062653741
+        },
+        {
+          "file": "pair_clearance.py",
+          "line": 50,
+          "function": "classify_pair_distance",
+          "calls": 1007,
+          "self_seconds": 0.0035751330000000003,
+          "cumulative_seconds": 0.05762579600000001
+        },
+        {
+          "file": "fromnumeric.py",
+          "line": 2338,
+          "function": "sum",
+          "calls": 12527,
+          "self_seconds": 0.010496795000000001,
+          "cumulative_seconds": 0.057549089000000005
+        },
+        {
+          "file": "collision_policy.py",
+          "line": 79,
+          "function": "fingerprint",
+          "calls": 1008,
+          "self_seconds": 0.0025699480000000003,
+          "cumulative_seconds": 0.054126577
+        },
+        {
+          "file": "numeric.py",
+          "line": 1482,
+          "function": "moveaxis",
+          "calls": 5859,
+          "self_seconds": 0.014560349,
+          "cumulative_seconds": 0.050719661000000006
+        },
+        {
+          "file": "collision_policy.py",
+          "line": 92,
+          "function": "_data",
+          "calls": 1009,
+          "self_seconds": 0.000837321,
+          "cumulative_seconds": 0.029922089000000002
+        },
+        {
+          "file": "numeric.py",
+          "line": 1420,
+          "function": "normalize_axis_tuple",
+          "calls": 11718,
+          "self_seconds": 0.018710288000000002,
+          "cumulative_seconds": 0.029861017000000004
+        },
+        {
+          "file": "dataclasses.py",
+          "line": 1301,
+          "function": "asdict",
+          "calls": 1011,
+          "self_seconds": 0.0007543160000000001,
+          "cumulative_seconds": 0.02889647
+        },
+        {
+          "file": "dataclasses.py",
+          "line": 1325,
+          "function": "_asdict_inner",
+          "calls": 1011,
+          "self_seconds": 0.01604626,
+          "cumulative_seconds": 0.027463335000000002
+        },
+        {
+          "file": "validation_kernel.py",
+          "line": 45,
+          "function": "__getitem__",
+          "calls": 3060,
+          "self_seconds": 0.0056897530000000005,
+          "cumulative_seconds": 0.026963956
+        },
+        {
+          "file": "layout_trajectory.py",
+          "line": 76,
+          "function": "possible_inflated_obb_pairs",
+          "calls": 30,
+          "self_seconds": 0.006518787000000001,
+          "cumulative_seconds": 0.025018461000000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method numpy.asarray>",
+          "calls": 57872,
+          "self_seconds": 0.024405259000000002,
+          "cumulative_seconds": 0.024405259000000002
+        },
+        {
+          "file": "fromnumeric.py",
+          "line": 3190,
+          "function": "min",
+          "calls": 7365,
+          "self_seconds": 0.004720163,
+          "cumulative_seconds": 0.022748648
+        },
+        {
+          "file": "_linalg.py",
+          "line": 2622,
+          "function": "norm",
+          "calls": 4079,
+          "self_seconds": 0.013313094000000001,
+          "cumulative_seconds": 0.022657567
+        },
+        {
+          "file": "__init__.py",
+          "line": 183,
+          "function": "dumps",
+          "calls": 1011,
+          "self_seconds": 0.002477314,
+          "cumulative_seconds": 0.021150516
+        }
+      ]
+    }
+  ],
+  "middle_obstacle": {
+    "times": [
+      0.0005117245018482208,
+      0.0003807172179222107,
+      0.0003673434257507324
+    ],
+    "median_seconds": 0.0003807172179222107,
+    "runs": [
+      {
+        "result": {
+          "status": "INVALID",
+          "context_id": "aed6b3c39443b60e5730db33f828bda57a6e84cb62139a3096c0bd416dc20092",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "POINT_OBSTACLE",
+            "pair": [
+              "point",
+              "thin_middle"
+            ],
+            "type": "GEOMETRY",
+            "fraction": 0.2421875,
+            "q_rad": [
+              0.2421875
+            ],
+            "motion_start": [
+              0.0
+            ],
+            "motion_end": [
+              1.0
+            ],
+            "first_failure_sample": 31
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.2421875,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 32,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.0003702901303768158,
+            "edge_seconds": 0.0004937499761581421,
+            "repeated_failed_edges": 0,
+            "batch_calls": 0,
+            "skipped_suffix_states": 97,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 33,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "actual_checks": 32,
+        "first_failed_sample": 31,
+        "extra_checks_after_failure": 0
+      },
+      {
+        "result": {
+          "status": "INVALID",
+          "context_id": "aed6b3c39443b60e5730db33f828bda57a6e84cb62139a3096c0bd416dc20092",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "POINT_OBSTACLE",
+            "pair": [
+              "point",
+              "thin_middle"
+            ],
+            "type": "GEOMETRY",
+            "fraction": 0.2421875,
+            "q_rad": [
+              0.2421875
+            ],
+            "motion_start": [
+              0.0
+            ],
+            "motion_end": [
+              1.0
+            ],
+            "first_failure_sample": 31
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.2421875,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 32,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.0003022216260433197,
+            "edge_seconds": 0.00037102773785591125,
+            "repeated_failed_edges": 0,
+            "batch_calls": 0,
+            "skipped_suffix_states": 97,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 66,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "actual_checks": 32,
+        "first_failed_sample": 31,
+        "extra_checks_after_failure": 0
+      },
+      {
+        "result": {
+          "status": "INVALID",
+          "context_id": "aed6b3c39443b60e5730db33f828bda57a6e84cb62139a3096c0bd416dc20092",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "POINT_OBSTACLE",
+            "pair": [
+              "point",
+              "thin_middle"
+            ],
+            "type": "GEOMETRY",
+            "fraction": 0.2421875,
+            "q_rad": [
+              0.2421875
+            ],
+            "motion_start": [
+              0.0
+            ],
+            "motion_end": [
+              1.0
+            ],
+            "first_failure_sample": 31
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.2421875,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 32,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.00029689446091651917,
+            "edge_seconds": 0.00035773590207099915,
+            "repeated_failed_edges": 0,
+            "batch_calls": 0,
+            "skipped_suffix_states": 97,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 99,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "actual_checks": 32,
+        "first_failed_sample": 31,
+        "extra_checks_after_failure": 0
+      }
+    ]
+  },
+  "memory": {
+    "python_retained_bytes": 9061338,
+    "python_peak_bytes": 9437280,
+    "process_max_rss_kib": 136824,
+    "cache_sizes": {
+      "fk": 35,
+      "connector_states": 35,
+      "geometry": 35,
+      "static": 35
+    }
+  },
+  "note": "CPU fragment revalidation only; no new candidate search, no historical fingerprint rewrite, no Isaac."
+}

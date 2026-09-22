@@ -1,0 +1,736 @@
+{
+  "baseline_commit": "720fafc6a65765dab849cf75ac873969c2f3aafc",
+  "tested_source_commit": "20a6c6d0fcf2f0b490ee2f4081d63e36c8f6e4ae",
+  "tests": "117 passed in 3.32s",
+  "input_and_verdict_comparison": "PASS",
+  "post_measurement_source_hash_check": "PASS",
+  "isaac_executed": false,
+  "isaac_reason": "CPU planning-validation optimization; official geometry differential and bound historical CPU fragments only. No physics or replay implementation changed.",
+  "rows": [
+    {
+      "case": "open_direct",
+      "baseline_seconds": {
+        "cold": 0.19280213862657547,
+        "warm": 0.0031460896134376526
+      },
+      "current_seconds": {
+        "cold": 0.1549689993262291,
+        "warm": 0.00025206059217453003
+      },
+      "baseline_counts": {
+        "context_builds": 8,
+        "json_serializations": 26,
+        "sha256_calls": 17,
+        "obb_constructions": 9835,
+        "transform_constructions": 7272,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3,
+        "obb_constructions": 7070,
+        "transform_constructions": 7070,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "baseline_warm_counts": {
+        "context_builds": 2,
+        "json_serializations": 7,
+        "sha256_calls": 4
+      },
+      "current_warm_counts": {
+        "context_builds": 0,
+        "json_serializations": 1,
+        "sha256_calls": 0
+      },
+      "expensive_states": [
+        35,
+        35
+      ],
+      "fk_prepared": [
+        35,
+        35
+      ],
+      "context": {
+        "full_context_builds": 1,
+        "full_context_seconds": 0.0017305351793766022,
+        "light_guard_calls": 55,
+        "light_guard_seconds": 0.023108098655939102,
+        "prepared_context_hits": 0
+      }
+    },
+    {
+      "case": "very_short_valid",
+      "baseline_seconds": {
+        "cold": 0.03772297874093056,
+        "warm": 0.005075432360172272
+      },
+      "current_seconds": {
+        "cold": 0.02683970332145691,
+        "warm": 0.0004936009645462036
+      },
+      "baseline_counts": {
+        "context_builds": 5,
+        "json_serializations": 17,
+        "sha256_calls": 11,
+        "obb_constructions": 843,
+        "transform_constructions": 990,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3,
+        "obb_constructions": 606,
+        "transform_constructions": 810,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "baseline_warm_counts": {
+        "context_builds": 2,
+        "json_serializations": 7,
+        "sha256_calls": 4
+      },
+      "current_warm_counts": {
+        "context_builds": 0,
+        "json_serializations": 1,
+        "sha256_calls": 0
+      },
+      "expensive_states": [
+        3,
+        3
+      ],
+      "fk_prepared": [
+        3,
+        3
+      ],
+      "context": {
+        "full_context_builds": 1,
+        "full_context_seconds": 0.0030204541981220245,
+        "light_guard_calls": 10,
+        "light_guard_seconds": 0.007681131362915039,
+        "prepared_context_hits": 0
+      }
+    },
+    {
+      "case": "loaded_early_invalid",
+      "baseline_seconds": {
+        "cold": 0.07101510092616081,
+        "warm": 0.005076732486486435
+      },
+      "current_seconds": {
+        "cold": 0.015938080847263336,
+        "warm": 0.00041346997022628784
+      },
+      "baseline_counts": {
+        "context_builds": 5,
+        "json_serializations": 22,
+        "sha256_calls": 16,
+        "obb_constructions": 1410,
+        "transform_constructions": 1495,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 6,
+        "sha256_calls": 4,
+        "obb_constructions": 203,
+        "transform_constructions": 299,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "baseline_warm_counts": {
+        "context_builds": 2,
+        "json_serializations": 7,
+        "sha256_calls": 4
+      },
+      "current_warm_counts": {
+        "context_builds": 0,
+        "json_serializations": 1,
+        "sha256_calls": 0
+      },
+      "expensive_states": [
+        5,
+        1
+      ],
+      "fk_prepared": [
+        5,
+        1
+      ],
+      "context": {
+        "full_context_builds": 1,
+        "full_context_seconds": 0.0027664154767990112,
+        "light_guard_calls": 6,
+        "light_guard_seconds": 0.0045851245522499084,
+        "prepared_context_hits": 0
+      }
+    },
+    {
+      "case": "history_extract_start",
+      "baseline_seconds": {
+        "cold": 0.41035232320427895,
+        "warm": 0.2678142637014389
+      },
+      "current_seconds": {
+        "cold": 0.33966929465532303,
+        "warm": 0.2608824335038662
+      },
+      "baseline_counts": {
+        "context_builds": 5,
+        "json_serializations": 18,
+        "sha256_calls": 12,
+        "obb_constructions": 4230,
+        "transform_constructions": 4046,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 6,
+        "sha256_calls": 4,
+        "obb_constructions": 3045,
+        "transform_constructions": 3870,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "baseline_warm_counts": {
+        "context_builds": 5,
+        "json_serializations": 17,
+        "sha256_calls": 11
+      },
+      "current_warm_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3
+      },
+      "expensive_states": [
+        15,
+        15
+      ],
+      "fk_prepared": [
+        0,
+        15
+      ],
+      "context": {
+        "full_context_builds": 1,
+        "full_context_seconds": 0.0030491799116134644,
+        "light_guard_calls": 24,
+        "light_guard_seconds": 0.018861714750528336,
+        "prepared_context_hits": 0
+      }
+    },
+    {
+      "case": "history_extract_middle",
+      "baseline_seconds": {
+        "cold": 0.4052961841225624,
+        "warm": 0.26320069283246994
+      },
+      "current_seconds": {
+        "cold": 0.34059542044997215,
+        "warm": 0.2568545900285244
+      },
+      "baseline_counts": {
+        "context_builds": 5,
+        "json_serializations": 18,
+        "sha256_calls": 12,
+        "obb_constructions": 4230,
+        "transform_constructions": 4046,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 6,
+        "sha256_calls": 4,
+        "obb_constructions": 3045,
+        "transform_constructions": 3870,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "baseline_warm_counts": {
+        "context_builds": 5,
+        "json_serializations": 17,
+        "sha256_calls": 11
+      },
+      "current_warm_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3
+      },
+      "expensive_states": [
+        15,
+        15
+      ],
+      "fk_prepared": [
+        0,
+        15
+      ],
+      "context": {
+        "full_context_builds": 1,
+        "full_context_seconds": 0.00306648388504982,
+        "light_guard_calls": 24,
+        "light_guard_seconds": 0.018342576920986176,
+        "prepared_context_hits": 0
+      }
+    },
+    {
+      "case": "history_loaded_transit",
+      "baseline_seconds": {
+        "cold": 0.5583842620253563,
+        "warm": 0.005110066384077072
+      },
+      "current_seconds": {
+        "cold": 0.5484951958060265,
+        "warm": 0.0004457607865333557
+      },
+      "baseline_counts": {
+        "context_builds": 5,
+        "json_serializations": 1023,
+        "sha256_calls": 1017,
+        "obb_constructions": 4230,
+        "transform_constructions": 4045,
+        "exact_collision": 2,
+        "exact_distance": 2
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 1011,
+        "sha256_calls": 1009,
+        "obb_constructions": 3045,
+        "transform_constructions": 3869,
+        "exact_collision": 2,
+        "exact_distance": 2
+      },
+      "baseline_warm_counts": {
+        "context_builds": 2,
+        "json_serializations": 7,
+        "sha256_calls": 4
+      },
+      "current_warm_counts": {
+        "context_builds": 0,
+        "json_serializations": 1,
+        "sha256_calls": 0
+      },
+      "expensive_states": [
+        15,
+        15
+      ],
+      "fk_prepared": [
+        15,
+        15
+      ],
+      "context": {
+        "full_context_builds": 1,
+        "full_context_seconds": 0.003185667097568512,
+        "light_guard_calls": 24,
+        "light_guard_seconds": 0.01884346455335617,
+        "prepared_context_hits": 0
+      }
+    }
+  ],
+  "middle_obstacle": {
+    "baseline": {
+      "times": [
+        0.0011289417743682861,
+        0.0009673498570919037,
+        0.0009687654674053192
+      ],
+      "median_seconds": 0.0009687654674053192,
+      "runs": [
+        {
+          "result": {
+            "status": "INVALID",
+            "context_id": "aed6b3c39443b60e5730db33f828bda57a6e84cb62139a3096c0bd416dc20092",
+            "guarantee": "NONE",
+            "failure": {
+              "reason": "POINT_OBSTACLE",
+              "pair": [
+                "point",
+                "thin_middle"
+              ],
+              "type": "GEOMETRY",
+              "fraction": 0.2421875,
+              "q_rad": [
+                0.2421875
+              ],
+              "motion_start": [
+                0.0
+              ],
+              "motion_end": [
+                1.0
+              ]
+            },
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "checked": [
+              [
+                0.0,
+                0.2421875,
+                "OBSERVED_THROUGH_FAILURE"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 129,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.0009910836815834045,
+              "edge_seconds": 0.0011122077703475952,
+              "repeated_failed_edges": 0,
+              "batch_calls": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 129,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "actual_checks": 129,
+          "first_failed_sample": 31,
+          "extra_checks_after_failure": 97
+        },
+        {
+          "result": {
+            "status": "INVALID",
+            "context_id": "aed6b3c39443b60e5730db33f828bda57a6e84cb62139a3096c0bd416dc20092",
+            "guarantee": "NONE",
+            "failure": {
+              "reason": "POINT_OBSTACLE",
+              "pair": [
+                "point",
+                "thin_middle"
+              ],
+              "type": "GEOMETRY",
+              "fraction": 0.2421875,
+              "q_rad": [
+                0.2421875
+              ],
+              "motion_start": [
+                0.0
+              ],
+              "motion_end": [
+                1.0
+              ]
+            },
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "checked": [
+              [
+                0.0,
+                0.2421875,
+                "OBSERVED_THROUGH_FAILURE"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 129,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.0008898824453353882,
+              "edge_seconds": 0.0009568445384502411,
+              "repeated_failed_edges": 0,
+              "batch_calls": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 258,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "actual_checks": 129,
+          "first_failed_sample": 31,
+          "extra_checks_after_failure": 97
+        },
+        {
+          "result": {
+            "status": "INVALID",
+            "context_id": "aed6b3c39443b60e5730db33f828bda57a6e84cb62139a3096c0bd416dc20092",
+            "guarantee": "NONE",
+            "failure": {
+              "reason": "POINT_OBSTACLE",
+              "pair": [
+                "point",
+                "thin_middle"
+              ],
+              "type": "GEOMETRY",
+              "fraction": 0.2421875,
+              "q_rad": [
+                0.2421875
+              ],
+              "motion_start": [
+                0.0
+              ],
+              "motion_end": [
+                1.0
+              ]
+            },
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "checked": [
+              [
+                0.0,
+                0.2421875,
+                "OBSERVED_THROUGH_FAILURE"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 129,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.0009002313017845154,
+              "edge_seconds": 0.0009600333869457245,
+              "repeated_failed_edges": 0,
+              "batch_calls": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 387,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "actual_checks": 129,
+          "first_failed_sample": 31,
+          "extra_checks_after_failure": 97
+        }
+      ]
+    },
+    "current": {
+      "times": [
+        0.0005117245018482208,
+        0.0003807172179222107,
+        0.0003673434257507324
+      ],
+      "median_seconds": 0.0003807172179222107,
+      "runs": [
+        {
+          "result": {
+            "status": "INVALID",
+            "context_id": "aed6b3c39443b60e5730db33f828bda57a6e84cb62139a3096c0bd416dc20092",
+            "guarantee": "NONE",
+            "failure": {
+              "reason": "POINT_OBSTACLE",
+              "pair": [
+                "point",
+                "thin_middle"
+              ],
+              "type": "GEOMETRY",
+              "fraction": 0.2421875,
+              "q_rad": [
+                0.2421875
+              ],
+              "motion_start": [
+                0.0
+              ],
+              "motion_end": [
+                1.0
+              ],
+              "first_failure_sample": 31
+            },
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "checked": [
+              [
+                0.0,
+                0.2421875,
+                "OBSERVED_THROUGH_FAILURE"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 32,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.0003702901303768158,
+              "edge_seconds": 0.0004937499761581421,
+              "repeated_failed_edges": 0,
+              "batch_calls": 0,
+              "skipped_suffix_states": 97,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 33,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "actual_checks": 32,
+          "first_failed_sample": 31,
+          "extra_checks_after_failure": 0
+        },
+        {
+          "result": {
+            "status": "INVALID",
+            "context_id": "aed6b3c39443b60e5730db33f828bda57a6e84cb62139a3096c0bd416dc20092",
+            "guarantee": "NONE",
+            "failure": {
+              "reason": "POINT_OBSTACLE",
+              "pair": [
+                "point",
+                "thin_middle"
+              ],
+              "type": "GEOMETRY",
+              "fraction": 0.2421875,
+              "q_rad": [
+                0.2421875
+              ],
+              "motion_start": [
+                0.0
+              ],
+              "motion_end": [
+                1.0
+              ],
+              "first_failure_sample": 31
+            },
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "checked": [
+              [
+                0.0,
+                0.2421875,
+                "OBSERVED_THROUGH_FAILURE"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 32,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.0003022216260433197,
+              "edge_seconds": 0.00037102773785591125,
+              "repeated_failed_edges": 0,
+              "batch_calls": 0,
+              "skipped_suffix_states": 97,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 66,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "actual_checks": 32,
+          "first_failed_sample": 31,
+          "extra_checks_after_failure": 0
+        },
+        {
+          "result": {
+            "status": "INVALID",
+            "context_id": "aed6b3c39443b60e5730db33f828bda57a6e84cb62139a3096c0bd416dc20092",
+            "guarantee": "NONE",
+            "failure": {
+              "reason": "POINT_OBSTACLE",
+              "pair": [
+                "point",
+                "thin_middle"
+              ],
+              "type": "GEOMETRY",
+              "fraction": 0.2421875,
+              "q_rad": [
+                0.2421875
+              ],
+              "motion_start": [
+                0.0
+              ],
+              "motion_end": [
+                1.0
+              ],
+              "first_failure_sample": 31
+            },
+            "interval": [
+              0.0,
+              1.0
+            ],
+            "checked": [
+              [
+                0.0,
+                0.2421875,
+                "OBSERVED_THROUGH_FAILURE"
+              ]
+            ],
+            "statistics": {
+              "state_samples": 32,
+              "edge_calls": 0,
+              "subdivisions": 0,
+              "certified_intervals": 0,
+              "pair_certificates": 0,
+              "state_seconds": 0.00029689446091651917,
+              "edge_seconds": 0.00035773590207099915,
+              "repeated_failed_edges": 0,
+              "batch_calls": 0,
+              "skipped_suffix_states": 97,
+              "state_cache_reuses": 0,
+              "state_cache_hits": 0,
+              "state_cache_misses": 99,
+              "state_cache_evictions": 0,
+              "edge_cache_hits": 0,
+              "edge_cache_evictions": 0
+            },
+            "cache_hit": false,
+            "interval_certificate": false
+          },
+          "actual_checks": 32,
+          "first_failed_sample": 31,
+          "extra_checks_after_failure": 0
+        }
+      ]
+    }
+  },
+  "memory": {
+    "baseline": {
+      "python_retained_bytes": 9251563,
+      "python_peak_bytes": 9635225,
+      "process_max_rss_kib": 140088,
+      "cache_sizes": {
+        "fk": 35,
+        "connector_states": 35,
+        "geometry": 35,
+        "static": 35
+      }
+    },
+    "current": {
+      "python_retained_bytes": 9061338,
+      "python_peak_bytes": 9437280,
+      "process_max_rss_kib": 136824,
+      "cache_sizes": {
+        "fk": 35,
+        "connector_states": 35,
+        "geometry": 35,
+        "static": 35
+      }
+    }
+  },
+  "setup_seconds": {
+    "baseline": 0.5119855627417564,
+    "current": 0.4991697631776333
+  }
+}
