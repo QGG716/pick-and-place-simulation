@@ -9,7 +9,50 @@ from dataclasses import dataclass
 from time import perf_counter
 import numpy as np
 from .motion_validation import LRU
-from .geometry import OBB
+from .geometry import OBB, _BOX_CORNER_SIGNS
+
+
+class PreparedToolOBB(OBB):
+    """Compatibility OBB with one immutable transform per immutable state."""
+    @property
+    def world_from_local(self):
+        pose=getattr(self,'_prepared_transform',None)
+        if pose is None:
+            pose=super().world_from_local
+            pose.setflags(write=False)
+            object.__setattr__(self,'_prepared_transform',pose)
+            self._kernel_statistics['tool_transform_constructions'] += 1
+        return pose
+
+
+class LazyToolBoxes:
+    """Immutable state-owned arrays; materialize only requested compatibility OBBs."""
+    def __init__(self, centers, halves, rotation, names, lower, upper, bounds, statistics):
+        self.centers,self.halves,self.rotation,self.names=centers,halves,rotation,names
+        self.lower,self.upper,self.bounds,self.statistics=lower,upper,bounds,statistics
+        self.boxes={}
+        self._plane_bounds=None
+
+    def __len__(self): return len(self.names)
+
+    def plane_bounds(self):
+        if self._plane_bounds is None:
+            local=self.halves[:,None,:]*_BOX_CORNER_SIGNS
+            corners=(self.rotation @ local.transpose(0,2,1)).transpose(0,2,1)+self.centers[:,None,:]
+            self._plane_bounds=(corners.min(1),corners.max(1))
+        return self._plane_bounds
+
+    def __getitem__(self,index):
+        if isinstance(index,slice): return [self[i] for i in range(*index.indices(len(self)))]
+        if index < 0: index += len(self)
+        if not 0 <= index < len(self): raise IndexError(index)
+        if index not in self.boxes:
+            box=PreparedToolOBB(self.centers[index],self.halves[index],self.rotation,self.names[index],'robot')
+            object.__setattr__(box,'_kernel_statistics',self.statistics)
+            self.boxes[index]=box
+            self.bounds[id(box)]=(self.lower[index],self.upper[index])
+            self.statistics['tool_obb_constructions'] += 1
+        return self.boxes[index]
 
 
 @dataclass(frozen=True)
@@ -100,7 +143,10 @@ class ValidationKernel:
         self.cache = LRU(4096)
         self.active = {}
         self.statistics = dict(fk_states=0,native_batches=0,native_array_operations=0,
-                               kinematics_seconds=0.,ordered_scalar_state_checks=0)
+                               kinematics_seconds=0.,ordered_scalar_state_checks=0,
+                               tool_obb_constructions=0,tool_template_preparations=0,
+                               tool_transform_constructions=0)
+        self._tool_template_key=None
         self.context_id = None
         urdf.validation_kernel = mesh.validation_kernel = self
 
@@ -132,24 +178,36 @@ class ValidationKernel:
         # tool centers, extents and outward rounding now run as native arrays.
         rigid_rows=np.asarray(self.urdf.tool_collision_local_boxes)
         cup_rows=np.asarray(self.urdf.tool_compliant_collision_local_boxes)
-        compressed=cup_rows.copy()
         compression=self.connector.robot_state_validator.nominal_cup_compression_m
-        compressed[:,2]-=compression/2;compressed[:,5]-=compression
-        rows=np.concatenate([rigid_rows,cup_rows,compressed])
+        template_key=(rigid_rows.tobytes(),cup_rows.tobytes(),compression)
+        if template_key != self._tool_template_key:
+            compressed=cup_rows.copy()
+            compressed[:,2]-=compression/2;compressed[:,5]-=compression
+            rows=np.concatenate([rigid_rows,cup_rows,compressed])
+            halves=rows[:,3:]/2
+            nr,nc=len(rigid_rows),len(cup_rows)
+            names=tuple([f'tool_rigid_{i}' for i in range(nr)]+[f'tool_compliant_bellows_{i}' for i in range(nc)]*2)
+            rows.setflags(write=False);halves.setflags(write=False)
+            self._tool_template=(rows,halves,names,nr,nc)
+            self._tool_template_key=template_key
+            self.statistics['tool_template_preparations'] += 1
+        rows,halves,names,nr,nc=self._tool_template
         centers=np.einsum('nij,kj->nki',tcp[:,:3,:3],rows[:,:3])+tcp[:,None,:3,3]
-        halves=rows[:,3:]/2
         world_half=np.einsum('nij,kj->nki',np.abs(tcp[:,:3,:3]),halves)
         pad=32*np.finfo(float).eps*(1+np.max(np.abs(centers),axis=2)+np.max(world_half,axis=2))
         lower=np.nextafter(centers-world_half-pad[:,:,None],-np.inf)
         upper=np.nextafter(centers+world_half+pad[:,:,None],np.inf)
-        nr,nc=len(rigid_rows),len(cup_rows)
-        names=[f'tool_rigid_{i}' for i in range(nr)]+[f'tool_compliant_bellows_{i}' for i in range(nc)]*2
+        for array in (centers,lower,upper): array.setflags(write=False)
+        for array in (tcp,jac,geometry,*links.values(),*joints.values(),*frames.values()):
+            array.setflags(write=False)
         for i,key in enumerate(missing):
-            boxes=tuple(OBB(centers[i,j],halves[j],tcp[i,:3,:3],name,'robot') for j,name in enumerate(names))
-            bounds={id(box):(lower[i,j],upper[i,j]) for j,box in enumerate(boxes)}
+            bounds={}
+            groups=[LazyToolBoxes(centers[i,s],halves[s],tcp[i,:3,:3],names[s],
+                lower[i,s],upper[i,s],bounds,self.statistics)
+                for s in (slice(0,nr),slice(nr,nr+nc),slice(nr+nc,None))]
             state = KinematicState({k:v[i] for k,v in links.items()},
                 {k:v[i] for k,v in joints.items()},tcp[i],jac[i],geometry[i],
-                {k:v[i] for k,v in frames.items()},boxes[:nr],boxes[nr:nr+nc],boxes[nr+nc:],bounds)
+                {k:v[i] for k,v in frames.items()},*groups,bounds)
             # The records are owned by this bounded cache and never mutated.
             for value in [state.tcp,state.jacobian,state.geometry,*state.links.values(),*state.mesh_frames.values()]:
                 value.setflags(write=False)
@@ -178,7 +236,22 @@ class ValidationKernel:
 
     def check_states(self, states, scalar, proof=None):
         with self.scope(states,proof):
-            return [scalar(q) for q in states]
+            result=[]
+            for q in states:
+                result.append(scalar(q))
+                self.statistics['ordered_scalar_state_checks'] += 1
+            return result
+
+    def check_prefix(self, states, scalar, proof=None, interrupted=lambda: None):
+        result=[]
+        with self.scope(states,proof):
+            for q in states:
+                if interrupted(): break
+                failure=scalar(q)
+                self.statistics['ordered_scalar_state_checks'] += 1
+                result.append(failure)
+                if failure is not None: break
+        return result
 
     def prepare_context(self, context, obstacles, **options):
         # Only the explicit POC Euclidean surface-distance policy is certified.

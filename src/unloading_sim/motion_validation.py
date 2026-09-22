@@ -25,6 +25,45 @@ class Status(str, Enum):
     CANCELLED = "CANCELLED"
 
 
+def exact_snapshot(value):
+    """Detached binary comparison token, not JSON or a semantic hash.
+
+    Mutable arrays/containers are copied into bytes/tuples. Frozen policy and
+    budget records contain only immutable fields and can be compared directly.
+    """
+    if isinstance(value,np.ndarray): return (value.dtype.str,value.shape,value.tobytes())
+    if isinstance(value,dict): return tuple((k,exact_snapshot(v)) for k,v in sorted(value.items()))
+    if isinstance(value,(list,tuple)): return tuple(exact_snapshot(v) for v in value)
+    if isinstance(value,(set,frozenset)): return frozenset(exact_snapshot(v) for v in value)
+    return value
+
+
+class ContextLease:
+    """Sticky generation lease with conservative checks of mutable dependencies.
+
+    Prepared readers avoid rebuilding policy mappings, transforms, JSON and SHA.
+    Byte checks remain necessary for existing externally writable NumPy arrays.
+    A lease that ever observes mutation cannot become valid again after restore.
+    """
+    def __init__(self, readers, statistics, invalidate=lambda: None):
+        self.readers = readers
+        self.snapshot = tuple(exact_snapshot(read()) for read in readers)
+        self.statistics, self.invalidate = statistics,invalidate
+        self.generation = 0
+
+    def current(self):
+        started = perf_counter()
+        self.statistics['light_guard_calls'] += 1
+        try:
+            if not self.generation and any(exact_snapshot(read()) != old
+                    for read,old in zip(self.readers,self.snapshot)):
+                self.generation += 1
+                self.invalidate()
+            return not self.generation
+        finally:
+            self.statistics['light_guard_seconds'] += perf_counter()-started
+
+
 class LRU(OrderedDict):
     def __init__(self, capacity=4096):
         super().__init__()
@@ -147,17 +186,19 @@ class RequestBudget:
 
 class MotionValidator:
     def __init__(self, context, check_state, *, check_states=None, context_current=None,
-                 interval_proof=None, cache_capacity=4096, cache_states=True):
+                 interval_proof=None, cache_capacity=4096, cache_states=True, check_prefix=None):
         self.context = context
         self.scalar = check_state
         self.batch = check_states
+        self.prefix = check_prefix
         self.context_current = context_current
         self.interval_proof = interval_proof
         self.states, self.edges = LRU(cache_capacity), LRU(cache_capacity)
         self.cache_states = cache_states
         self.statistics = dict(state_samples=0, edge_calls=0, subdivisions=0,
             certified_intervals=0, pair_certificates=0, state_seconds=0., edge_seconds=0.,
-            repeated_failed_edges=0, batch_calls=0)
+            repeated_failed_edges=0, batch_calls=0, skipped_suffix_states=0,
+            state_cache_reuses=0)
 
     def _result(self, status, failure=None, **kwargs):
         if failure is not None and 'type' not in failure:
@@ -177,16 +218,23 @@ class MotionValidator:
             return self._result(status, dict(reason=status.value, type="BUDGET_OR_CANCEL"))
         return None
 
-    def check_states(self, states, budget=None, *, proof=None):
+    def check_states(self, states, budget=None, *, proof=None, stop_on_failure=False):
+        """All results by default; explicit prefix mode returns only observed states.
+
+        Prefix batches start with one state, then at most eight. Kinematics can
+        prepare that bounded lookahead; scalar collision/tracker work stops at
+        the first non-valid result. Unobserved suffixes are never cached.
+        """
         budget = budget or RequestBudget()
         started = perf_counter()
         output = []
-        # Native kernels accept bounded chunks; cancellation is checked between chunks.
-        for first in range(0, len(states), 32):
+        first = 0
+        while first < len(states):
             stop = self._guard(budget)
             if stop:
-                output.extend([stop]*(len(states)-first)); break
-            chunk = states[first:first+32]
+                output.extend([stop]*(1 if stop_on_failure else len(states)-first)); break
+            size = (1 if first == 0 else 8) if stop_on_failure else 32
+            chunk = states[first:first+size]
             results, missing, indices, keys = [None]*len(chunk), [], [], []
             for i, q in enumerate(chunk):
                 q = np.asarray(q, float)
@@ -194,19 +242,43 @@ class MotionValidator:
                 hit, old = self.states.lookup(key) if self.cache_states else (False, None)
                 if hit:
                     results[i] = replace(old, cache_hit=True)
+                    if stop_on_failure and not old.valid:
+                        results = results[:i+1]
+                        break
                 else:
                     missing.append(q); indices.append(i); keys.append(key)
             if missing:
                 remaining = budget.available()
                 if remaining is not None and len(missing) > remaining:
                     missing, indices, keys = missing[:remaining], indices[:remaining], keys[:remaining]
-                self.statistics['batch_calls'] += int(self.batch is not None)
-                failures = (self.batch(missing, proof=proof) if self.batch is not None else
-                            [self.scalar(q) for q in missing])
-                if len(failures) != len(missing):
+                self.statistics['batch_calls'] += int(self.batch is not None or self.prefix is not None)
+                def interrupted():
+                    stale = self._guard(RequestBudget())
+                    status = budget.interrupted()
+                    return stale or (self._result(status,dict(reason='VALIDATION_INTERRUPTED')) if status else None)
+                if stop_on_failure:
+                    if self.prefix is not None:
+                        failures = self.prefix(missing, proof=proof, interrupted=interrupted)
+                    else:
+                        failures = []
+                        for q in missing:
+                            if interrupted(): break
+                            failure = self.scalar(q)
+                            failures.append(failure)
+                            if failure is not None and not (isinstance(failure,ValidationResult) and failure.valid): break
+                else:
+                    failures = (self.batch(missing, proof=proof) if self.batch is not None else
+                                [self.scalar(q) for q in missing])
+                if len(failures) > len(missing) or (not stop_on_failure and len(failures) != len(missing)):
                     raise RuntimeError("validation batch output dimension mismatch")
-                budget.consume(len(missing))
-                self.statistics['state_samples'] += len(missing)
+                budget.consume(len(failures))
+                self.statistics['state_samples'] += len(failures)
+                # Check the lease *before* publishing or caching completed batch work.
+                stale = interrupted()
+                if stale:
+                    self.states.clear(); self.edges.clear()
+                    output.extend([stale]*(1 if stop_on_failure else len(states)-first))
+                    break
                 for i, key, failure in zip(indices, keys, failures):
                     if isinstance(failure, ValidationResult):
                         result = failure
@@ -218,12 +290,13 @@ class MotionValidator:
                     results[i] = result
                     if self.cache_states and result.status in {Status.VALID, Status.INVALID}:
                         self.states.put(key, result)
-            # A call finishing after its deadline does not certify the remaining motion.
-            if budget.interrupted():
-                stop = self._result(budget.interrupted(),
-                                    dict(reason="VALIDATION_INTERRUPTED", type="BUDGET_OR_CANCEL"))
-                results = [r if r is not None and r.status == Status.INVALID else stop for r in results]
-            output.extend(r or self._result(Status.INDETERMINATE, dict(reason="VALIDATION_WORK_BUDGET")) for r in results)
+            for result in results:
+                result = result or self._result(Status.INDETERMINATE, dict(reason="VALIDATION_WORK_BUDGET"))
+                self.statistics['state_cache_reuses'] += int(result.cache_hit)
+                output.append(result)
+                if stop_on_failure and not result.valid: break
+            if stop_on_failure and output and not output[-1].valid: break
+            first += len(chunk)
         self.statistics['state_seconds'] += perf_counter()-started
         return output
 
@@ -275,12 +348,14 @@ class MotionValidator:
                 return interval(mid, hi, depth+1,proof) if result.valid else result
             fractions = grid[lo:hi+1]
             values = a[None,:]+fractions[:,None]*(b-a)[None,:]
-            results = self.check_states(values, budget, proof=proof)
+            results = self.check_states(values, budget, proof=proof, stop_on_failure=True)
             for fraction, q, result in zip(fractions, values, results):
                 if not result.valid:
                     checked.append((lo/n,float(fraction),'OBSERVED_THROUGH_FAILURE'))
                     failure = dict(result.failure or {}, fraction=float(fraction), q_rad=q.tolist(),
-                                   motion_start=a.tolist(), motion_end=b.tolist())
+                                   motion_start=a.tolist(), motion_end=b.tolist(),
+                                   first_failure_sample=int(round(float(fraction)*n)))
+                    self.statistics['skipped_suffix_states'] += n-int(round(float(fraction)*n))
                     return replace(result, failure=failure, interval=(lo/n,hi/n))
             checked.append((lo/n,hi/n,'DISCRETE_LEGACY_STRICT'))
             if continuous:
@@ -290,7 +365,7 @@ class MotionValidator:
         result = interval(0,n,0)
         stop = self._guard(RequestBudget(cancelled=lambda: budget.interrupted() == Status.CANCELLED))
         if budget.interrupted(): stop = self._result(budget.interrupted(),dict(reason='VALIDATION_INTERRUPTED'))
-        if stop and result.valid: result = stop
+        if stop: result = stop
         self.statistics['edge_seconds'] += perf_counter()-started
         stats={k:self.statistics[k]-before[k] for k in before}
         stats.update(state_cache_hits=self.states.hits,state_cache_misses=self.states.misses,

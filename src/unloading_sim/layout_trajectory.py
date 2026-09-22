@@ -42,7 +42,7 @@ from .ik import iter_ik_solutions, pose_error, solve_ik_multistart
 from .release_motion import release_flight_envelope
 from .motion_quality import path_quality, QualityDeadline, quality_improves
 from .planner import RRTConnectPlanner
-from .motion_validation import ValidationContext, MotionValidator, RequestBudget, LRU
+from .motion_validation import ValidationContext, MotionValidator, RequestBudget, LRU, ContextLease, Status
 from .pinocchio_backend import PinocchioHppFclBackend
 from .validation_physics import (
     InitialProximityTracker,
@@ -582,6 +582,7 @@ class ExactM710LayoutStateValidator:
         if not self.base_support_obstacle_name or not self.tool_mount_link_name:
             raise ValueError("fixed-contact pair names must be non-empty")
         zero = np.zeros(int(mesh_robot.dof), dtype=float)
+        self._plane_robot_names = tuple(b.name for b in robot_world_boxes(zero))
         tool_boxes = list(tool_transform_robot.tool_all_physical_obbs(zero))
         self.required_tool_names = frozenset(box.name for box in tool_boxes)
         if not tool_boxes or len(self.required_tool_names) != len(tool_boxes):
@@ -638,14 +639,22 @@ class ExactM710LayoutStateValidator:
     ) -> Mapping[str, Any] | None:
         robot_bounds_provider = getattr(self.mesh_robot, "collision_world_axis_extrema", None)
         robot_bounds = robot_bounds_provider(q) if robot_bounds_provider is not None else {}
-        robot_boxes = list(self.robot_world_boxes(q))
-        body_bounds = [(box.name, *(
-            (np.asarray(robot_bounds[box.name]["lower_m"]), np.asarray(robot_bounds[box.name]["upper_m"]))
-            if box.name in robot_bounds else (box.corners().min(axis=0), box.corners().max(axis=0))))
-            for box in robot_boxes]
+        if robot_bounds_provider is not None and all(n in robot_bounds for n in self._plane_robot_names):
+            body_bounds=[(n,np.asarray(robot_bounds[n]['lower_m']),np.asarray(robot_bounds[n]['upper_m']))
+                         for n in self._plane_robot_names]
+        else:
+            body_bounds=[(b.name,b.corners().min(0),b.corners().max(0)) for b in self.robot_world_boxes(q)]
+        kernel=getattr(self.tool_transform_robot,'validation_kernel',None)
+        state=None if kernel is None else kernel.get(q)
         cached = self._geometry_cache.get(np.asarray(q, float).tobytes())
-        bodies = ([*cached[0], *cached[1]] if cached is not None else
-                  [*self.tool_transform_robot.tool_collision_obbs(q), *self._compliant_boxes(q)])
+        if state is not None and hasattr(state.rigid,'plane_bounds'):
+            for group in (state.rigid,state.compressed_cups):
+                lower,upper=group.plane_bounds()
+                body_bounds.extend(zip(group.names,lower,upper))
+            bodies=[]
+        else:
+            bodies = ([*cached[0], *cached[1]] if cached is not None else
+                      [*self.tool_transform_robot.tool_collision_obbs(q), *self._compliant_boxes(q)])
         if payload is not None:
             bodies.append(payload)
         for body in bodies:
@@ -960,6 +969,7 @@ class LayoutTrajectoryConnector:
     def _validation_context(self, obstacles, *, attachment=None, support_names=(),
                             target_contact=None, stage, initial_proximity=None, proximity_initial=None):
         """Immutable semantic identity; no process object IDs or rounded joints."""
+        started = perf_counter()
         def box(value):
             return None if value is None else (value.name, value.category,
                 value.world_from_local.tolist(), value.half_extents.tolist())
@@ -984,6 +994,7 @@ class LayoutTrajectoryConnector:
             [getattr(v,k,None) for k in ('floor_z_m','right_wall_y_m','left_wall_y_m',
                 'base_support_obstacle_name','tool_mount_link_name')],
             getattr(v, "nominal_cup_compression_m", None),
+            getattr(v,"collision_margin_m",None),repr(getattr(v,'collision_policy',None)),
             None if getattr(v, "commanded_cup_mask", None) is None else list(v.commanded_cup_mask),
             getattr(v, "contact_target_name", None), sorted(getattr(v, "stack_carton_names", ())),
             sorted(self.stack_carton_names or ()), [box(b) for b in obstacles], box(target_contact),
@@ -993,13 +1004,79 @@ class LayoutTrajectoryConnector:
                 np.asarray(getattr(attachment,'flange_from_physical_contact',self.flange_from_physical_contact)).tolist()),
             list(support_names), stage, proximity_initial,
             dict(surface_gap_epsilon_m=1e-9,interval_outward_padding_m=1e-9))
-        return ValidationContext.create(values, resolution_rad=self.budget.edge_resolution_rad,
-                                        poc_dense_grid=self.collision_policy.poc_pair_clearance)
+        result = ValidationContext.create(values, resolution_rad=self.budget.edge_resolution_rad,
+                                          poc_dense_grid=self.collision_policy.poc_pair_clearance)
+        stats = self._context_statistics()
+        stats['full_context_builds'] += 1
+        stats['full_context_seconds'] += perf_counter()-started
+        return result
+
+    def _context_statistics(self):
+        if not hasattr(self,'context_statistics'):
+            self.context_statistics = dict(full_context_builds=0,full_context_seconds=0.,
+                light_guard_calls=0,light_guard_seconds=0.,prepared_context_hits=0)
+        return self.context_statistics
+
+    def _context_readers(self, obstacles, options):
+        # These getters read existing mutable dependencies, not reconstructed
+        # policy mappings or 4x4 OBB transforms. Frozen policy/budget records are
+        # immutable; external arrays retain conservative byte comparisons.
+        readers = [lambda name=name: getattr(self,name,None) for name in (
+            '_request_generation','validator_identity','collision_policy','budget',
+            'post_landing_transport','collision_margin_m','contact_tolerance_m',
+            'joint_margin_rad','maximum_jacobian_condition','official_radial_reach_m',
+            'radial_guard_tolerance_m','ik','flange_from_virtual_task_tcp',
+            'flange_from_physical_contact','stack_carton_names')]
+        def robot_values(robot):
+            return tuple(getattr(robot,k,None) for k in (
+                'base_transform','tip_from_tcp','joint_limits','geometry_revision',
+                'tool_collision_local_boxes','tool_compliant_collision_local_boxes'))
+        readers.extend([lambda: robot_values(self.robot),
+            lambda: robot_values(getattr(self.robot_state_validator,'tool_transform_robot',None)),
+            lambda: tuple((j.name,j.joint_type,j.parent,j.child,j.origin,j.axis) for j in
+                getattr(getattr(self.robot_state_validator,'tool_transform_robot',None),'joints',()))])
+        readers.extend(lambda name=name: getattr(self.robot_state_validator,name,None) for name in (
+            'floor_z_m','right_wall_y_m','left_wall_y_m','base_support_obstacle_name',
+            'tool_mount_link_name','nominal_cup_compression_m','commanded_cup_mask',
+            'contact_target_name','stack_carton_names','collision_policy','collision_margin_m'))
+        def box(b):
+            return None if b is None else (b.name,b.category,b.center,b.rotation,b.half_extents)
+        readers.append(lambda: tuple(box(b) for b in obstacles))
+        readers.append(lambda: box(options.get('target_contact')))
+        attachment=options.get('attachment')
+        if attachment is not None:
+            readers.append(lambda: (attachment.rigid.name,attachment.rigid.half_extents,
+                attachment.rigid.tcp_from_box,
+                getattr(attachment,'flange_from_virtual_task_tcp',self.flange_from_virtual_task_tcp),
+                getattr(attachment,'flange_from_physical_contact',self.flange_from_physical_contact)))
+        readers.append(lambda: options.get('support_names',()))
+        return readers
+
+    def _invalidate_validation_work(self):
+        self._state_cache.clear()
+        # Also retire backend FK/placement memoization when a mutable model or
+        # transform dependency changes without a geometry revision increment.
+        for name in ('_kinematics_key','_geometry_key'):
+            if hasattr(self.robot,name): setattr(self.robot,name,None)
+        v=self.robot_state_validator
+        for name in ('_geometry_cache','_static_cache'):
+            if hasattr(v,name): getattr(v,name).clear()
+        kernel=getattr(self,'validation_kernel',None)
+        if kernel is not None: kernel.cache.clear()
 
     def _context_identity(self, obstacles, **kwargs):
         return self._validation_context(obstacles, **kwargs).context_id
 
     def _motion_validator(self, obstacles, **kwargs):
+        stateful = kwargs.get('initial_proximity') is not None
+        selector = (tuple(id(b) for b in obstacles),kwargs.get('stage'),
+            id(kwargs.get('attachment')),id(kwargs.get('target_contact')),
+            tuple(kwargs.get('support_names',())),getattr(self,'_request_generation',0))
+        if not hasattr(self,'_prepared_contexts'): self._prepared_contexts=LRU(128)
+        hit, prepared = self._prepared_contexts.lookup(selector) if not stateful else (False,None)
+        if hit and prepared.context_current() == prepared.context.context_id:
+            self._context_statistics()['prepared_context_hits'] += 1
+            return prepared
         context_kwargs=dict(kwargs)
         tracker=kwargs.get('initial_proximity')
         if tracker is not None:
@@ -1010,9 +1087,12 @@ class LayoutTrajectoryConnector:
         context = self._validation_context(obstacles, **context_kwargs)
         if not hasattr(self, '_motion_validators'):
             self._motion_validators = LRU(128)
-        stateful = kwargs.get('initial_proximity') is not None
         hit, validator = self._motion_validators.lookup(context.context_id) if not stateful else (False,None)
-        if hit: return validator
+        if hit and validator.context_current() == context.context_id:
+            self._prepared_contexts.put(selector,validator)
+            return validator
+        lease = ContextLease(self._context_readers(obstacles,kwargs),self._context_statistics(),
+                             self._invalidate_validation_work)
         options = dict(kwargs, validation_context_id=context.context_id)
         def state(q):
             return self._state_failure(q, obstacles, **options)
@@ -1020,25 +1100,40 @@ class LayoutTrajectoryConnector:
             kernel = getattr(self, 'validation_kernel', None)
             if stateful:
                 # Preserve ordered tracker observations and its first failure.
-                result=[]
-                failure=None
+                result=[];observed=0
                 for q in states:
-                    if failure is None: failure=state(q)
-                    result.append(failure)
+                    if result and result[-1] is not None:
+                        result.append(validator._result(Status.INDETERMINATE,dict(reason='TRACKER_SUFFIX_UNOBSERVED')))
+                    else:
+                        result.append(state(q));observed+=1
                 if kernel is not None:
-                    kernel.statistics['ordered_scalar_state_checks'] += len(states)
+                    kernel.statistics['ordered_scalar_state_checks'] += observed
                 return result
             if kernel is None:
                 return [state(q) for q in states]
             kernel.context_id = context.context_id
             return kernel.check_states(states, state, proof=proof)
+        def prefix(states, proof=None, interrupted=lambda: None):
+            kernel = getattr(self,'validation_kernel',None)
+            if kernel is not None:
+                kernel.context_id=context.context_id
+                return kernel.check_prefix(states,state,proof=proof,interrupted=interrupted)
+            result=[]
+            for q in states:
+                if interrupted(): break
+                failure=state(q);result.append(failure)
+                if failure is not None: break
+            return result
         validator = MotionValidator(context, state, check_states=batch,
-            context_current=lambda: self._context_identity(obstacles, **context_kwargs),
+            check_prefix=prefix,
+            context_current=lambda: context.context_id if lease.current() else None,
             cache_states=not stateful)
         kernel = getattr(self,'validation_kernel',None)
         if kernel is not None and not stateful:
             validator.interval_proof = kernel.prepare_context(context, obstacles, **kwargs)
-        if not stateful: self._motion_validators.put(context.context_id,validator)
+        if not stateful:
+            self._motion_validators.put(context.context_id,validator)
+            self._prepared_contexts.put(selector,validator)
         return validator
 
     def _validation_request(self, deadline=None):

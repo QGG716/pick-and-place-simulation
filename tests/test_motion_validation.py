@@ -136,5 +136,6 @@ def test_lru_is_incremental_and_parent_cancellation_checked_after_native_batch()
     assert list(cache)==[1,3] and cache.evictions==1
     cancelled=[False];parent=RequestBudget(cancelled=lambda:cancelled[0])
     def batch(q,proof=None):cancelled[0]=True;return [None]*len(q)
-    v=MotionValidator(ValidationContext.create({},resolution_rad=.1),lambda q:None,check_states=batch)
+    v=MotionValidator(ValidationContext.create({},resolution_rad=.1),lambda q:None,check_states=batch,
+        check_prefix=lambda q,proof=None,interrupted=None:batch(q,proof))
     assert v.check_motion([0],[1],RequestBudget(parent=parent)).status==Status.CANCELLED
