@@ -167,7 +167,7 @@ class TestBridgeIntegration(unittest.TestCase):
         trajectory = TimedJointTrajectory(tuple(f"joint_{i}" for i in range(1, 7)), points, PlanArtifactKind.TIME_PARAMETERIZED_TRAJECTORY, "mock-validator@1", "synthetic-robot-v1", "synthetic_metric_v1")
         command = ExecutionCommand("cmd-integration", "plan-integration", "request-integration", "session-integration", "execution-epoch", 4, None, world.fingerprint, "synthetic-robot-v1", "synthetic_metric_v1", "mock-validator@1", 4, trajectory)
 
-        context_pub.publish(ExecutionContext(schema_version="1.1.0", session_id=command.session_id, epoch=command.epoch, planning_generation=command.planning_generation, allowed_plan_id=command.plan_id, predecessor_plan_id="", observed_time=self.node.get_clock().now().to_msg(), clock_domain="ros"))
+        context_pub.publish(ExecutionContext(schema_version="1.2.0", publisher_epoch="integration-context", publisher_sequence=0, publisher_restart=True, session_id=command.session_id, epoch=command.epoch, planning_generation=command.planning_generation, allowed_plan_id=command.plan_id, predecessor_plan_id="", observed_time=self.node.get_clock().now().to_msg(), clock_domain="ros"))
         expiry = self.node.get_clock().now().nanoseconds / 1e9 + 10.0
         expiry_msg = self.node.get_clock().now().to_msg()
         expiry_msg.sec, expiry_msg.nanosec = int(expiry), int((expiry - int(expiry)) * 1e9)

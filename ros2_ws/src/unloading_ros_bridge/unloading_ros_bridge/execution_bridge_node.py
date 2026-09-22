@@ -28,8 +28,11 @@ from unloading_perception.execution import (
     StopNotReadyError,
 )
 from unloading_perception.scene import SourceEpochGuard
+from unloading_perception.execution_context import (
+    ExecutionContextGuard, context_source_error, positive_age_limit,
+)
 
-from .common import float_to_time, require_humble_python310, time_to_float
+from .common import float_to_time, require_humble_python310, state_time_to_float, time_to_float
 from .mapping import snapshot_from_msg
 
 
@@ -45,6 +48,9 @@ class ExecutionBridgeNode(Node):
         self.declare_parameter("stop_fact_max_age_seconds", 1.0)
         self.declare_parameter("world_receive_max_age_seconds", 1.0)
         self.declare_parameter("context_receive_max_age_seconds", 1.0)
+        self.declare_parameter("context_source_max_age_seconds", 1.0)
+        for name in ("context_receive_max_age_seconds", "context_source_max_age_seconds"):
+            positive_age_limit(self.get_parameter(name).value, name)
         self.declare_parameter("robot_state_max_age_seconds", 0.5)
         self.declare_parameter("mechanism_state_max_age_seconds", 2.0)
         if bool(self.get_parameter("enable_hardware").value):
@@ -64,6 +70,7 @@ class ExecutionBridgeNode(Node):
         self.world_source = SourceEpochGuard()
         self.current_context = None
         self.current_context_received_at = None
+        self.context_guard = ExecutionContextGuard()
         self.command_messages = {}
         self.handles = {}
         self.goal_to_command = {}
@@ -118,25 +125,21 @@ class ExecutionBridgeNode(Node):
         self.current_mechanism_sample_time = time_to_float(message.mechanism_sample_time)
 
     def on_context(self, message: ExecutionContext) -> None:
-        if message.schema_version != "1.1.0" or message.clock_domain != "ros" or not message.session_id or not message.epoch:
-            self.get_logger().error("rejecting invalid execution context")
-            return
-        observed = time_to_float(message.observed_time)
         now = self._now()
-        if observed <= 0.0 or observed > now:
-            self.get_logger().error("rejecting execution context with invalid observed time")
-            return
-        previous = self.current_context
-        if previous is not None and (
-            message.session_id == previous.session_id and message.epoch == previous.epoch
-            and int(message.planning_generation) < int(previous.planning_generation)
-        ):
-            self.get_logger().error("rejecting stale execution context generation")
+        try:
+            observed = state_time_to_float(message.observed_time)
+            positive_age_limit(self.get_parameter("context_receive_max_age_seconds").value,
+                               "context_receive_max_age_seconds")
+            revoke = self.context_guard.accept(
+                message, observed=observed, now=now,
+                max_age_seconds=self.get_parameter("context_source_max_age_seconds").value)
+        except (ValueError, TypeError, AttributeError) as exc:
+            self.get_logger().error(f"rejecting execution context: {exc}")
             return
         self.current_context = message
-        self.current_context_received_at = self._now()
-        if previous is not None and (previous.session_id, previous.epoch, previous.planning_generation, previous.allowed_plan_id) != (message.session_id, message.epoch, message.planning_generation, message.allowed_plan_id):
-            self.gate.revoke_all(now=self._now(), clock_domain="ros")
+        self.current_context_received_at = now
+        if revoke:
+            self.gate.revoke_all(now=now, clock_domain="ros")
 
     def on_grant(self, message: ExecutionGrant) -> None:
         try:
@@ -223,7 +226,18 @@ class ExecutionBridgeNode(Node):
         now = self._now()
         if self.current_world_received_at is None or now - self.current_world_received_at > float(self.get_parameter("world_receive_max_age_seconds").value) or now < self.current_world_received_at:
             return "WORLD_PUBLISHER_STALE_OR_TIME_JUMP"
-        if self.current_context_received_at is None or now - self.current_context_received_at > float(self.get_parameter("context_receive_max_age_seconds").value) or now < self.current_context_received_at:
+        try:
+            receive_limit = positive_age_limit(self.get_parameter("context_receive_max_age_seconds").value,
+                                               "context_receive_max_age_seconds")
+            source_error = context_source_error(
+                state_time_to_float(self.current_context.observed_time), now=now,
+                clock_domain=self.current_context.clock_domain,
+                max_age_seconds=self.get_parameter("context_source_max_age_seconds").value)
+        except (ValueError, TypeError, AttributeError) as exc:
+            return f"EXECUTION_CONTEXT_INVALID:{exc}"
+        if source_error is not None:
+            return source_error
+        if self.current_context_received_at is None or now - self.current_context_received_at > receive_limit or now < self.current_context_received_at:
             return "EXECUTION_CONTEXT_STALE_OR_TIME_JUMP"
         if self.current_robot_sample_time is None or self.current_robot_sample_time <= 0.0 or now - self.current_robot_sample_time > float(self.get_parameter("robot_state_max_age_seconds").value) or now < self.current_robot_sample_time:
             return "ROBOT_STATE_STALE_OR_TIME_JUMP"

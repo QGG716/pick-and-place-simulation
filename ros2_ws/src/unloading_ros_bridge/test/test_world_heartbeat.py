@@ -105,7 +105,8 @@ class SyntheticInputs:
                 message.sequence += 100  # newer transport sequence cannot repair an old sample
                 message.source_restart = False
             self.mechanisms.publish(message)
-        self.contexts.publish(ExecutionContext(schema_version='1.1.0', session_id='synthetic-session',
+        self.contexts.publish(ExecutionContext(schema_version='1.2.0', publisher_epoch='synthetic-context',
+            publisher_sequence=self.sample_cycle, publisher_restart=False, session_id='synthetic-session',
             epoch='synthetic-execution', planning_generation=1, allowed_plan_id='synthetic-plan',
             observed_time=stamp, clock_domain='ros'))
         if self.refresh_perception and (self.last_capture is None or self.now() - self.last_capture >= .3):
