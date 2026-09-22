@@ -165,3 +165,17 @@ def test_lazy_geometry_is_readonly_and_matches_plane_boundaries(official_scene):
     _=second.rigid[0]
     np.testing.assert_array_equal(first.rigid[0].center,original)
     assert first.rigid[0] is first.rigid[0]
+
+
+def test_production_mutation_during_context_preparation_is_not_published(official_scene,monkeypatch):
+    scene,c=official_scene;c.start_planning_request()
+    obstacles=list(scene.all_obstacles);center=obstacles[-1].center;old=center.copy()
+    prepare=c._validation_context
+    def mutate(*args,**kwargs):
+        context=prepare(*args,**kwargs);center[0]+=.001;return context
+    monkeypatch.setattr(c,'_validation_context',mutate)
+    try:
+        validator=c._motion_validator(obstacles,stage='pregrasp')
+        assert validator.check_motion(START_Q,START_Q+.000001).status==Status.INDETERMINATE
+        assert not validator.states and not validator.edges
+    finally:np.copyto(center,old)

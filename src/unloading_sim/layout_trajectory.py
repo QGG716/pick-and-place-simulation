@@ -1084,6 +1084,10 @@ class LayoutTrajectoryConnector:
                 evidence=deepcopy(tracker.evidence()),
                 margin_m=getattr(tracker,'margin_m',None),tolerance_m=getattr(tracker,'tolerance_m',None),
                 last_pose=None if not hasattr(tracker,'last_box') else tracker.last_box.world_from_local.tolist())
+        # Capture dependency generation before serialization too: a mutation
+        # during preparation must not bind a new lease to an old context hash.
+        lease = ContextLease(self._context_readers(obstacles,kwargs),self._context_statistics(),
+                             self._invalidate_validation_work)
         context = self._validation_context(obstacles, **context_kwargs)
         if not hasattr(self, '_motion_validators'):
             self._motion_validators = LRU(128)
@@ -1091,8 +1095,6 @@ class LayoutTrajectoryConnector:
         if hit and validator.context_current() == context.context_id:
             self._prepared_contexts.put(selector,validator)
             return validator
-        lease = ContextLease(self._context_readers(obstacles,kwargs),self._context_statistics(),
-                             self._invalidate_validation_work)
         options = dict(kwargs, validation_context_id=context.context_id)
         def state(q):
             return self._state_failure(q, obstacles, **options)
