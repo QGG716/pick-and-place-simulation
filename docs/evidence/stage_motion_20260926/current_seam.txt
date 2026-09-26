@@ -1,0 +1,44 @@
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+_ test_same_height_seam_descent_uses_both_real_decks_and_full_bottom_support[0.0] _
+tests\test_conveyor_seam_contact.py:55: in test_same_height_seam_descent_uses_both_real_decks_and_full_bottom_support
+    assert result.segment["place"]["load_bearing_support_names"] == ["long-support"]
+E   AssertionError: assert ['cross-suppo...long-support'] == ['long-support']
+E
+E     At index 0 diff: 'cross-support' != 'long-support'
+E     Left contains one more item: 'long-support'
+E     Use -v to get more diff
+_ test_same_height_seam_descent_uses_both_real_decks_and_full_bottom_support[0.0001] _
+tests\test_conveyor_seam_contact.py:55: in test_same_height_seam_descent_uses_both_real_decks_and_full_bottom_support
+    assert result.segment["place"]["load_bearing_support_names"] == ["long-support"]
+E   AssertionError: assert ['cross-suppo...long-support'] == ['long-support']
+E
+E     At index 0 diff: 'cross-support' != 'long-support'
+E     Left contains one more item: 'long-support'
+E     Use -v to get more diff
+____ test_actual_descent_beyond_existing_contact_tolerance_cannot_release _____
+tests\test_conveyor_seam_contact.py:75: in test_actual_descent_beyond_existing_contact_tolerance_cannot_release
+    assert any(failure["pair"][1] == "long-support" for failure in failures)
+E   assert False
+E    +  where False = any(<generator object test_actual_descent_beyond_existing_contact_tolerance_cannot_release.<locals>.<genexpr> at 0x000001A9E0D1FAC0>)
+_ test_seam_support_does_not_waive_robot_or_rigid_tool_engineering_margin[tool-RIGID_TOOL_COLLISION] _
+tests\test_conveyor_seam_contact.py:111: in test_seam_support_does_not_waive_robot_or_rigid_tool_engineering_margin
+    validator = ExactM710LayoutStateValidator(backend, tool_provider,
+src\unloading_sim\layout_trajectory.py:590: in __init__
+    tool_boxes = list(tool_transform_robot.tool_all_physical_obbs(zero))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'ToolProvider' object has no attribute 'tool_all_physical_obbs'
+_ test_seam_support_does_not_waive_robot_or_rigid_tool_engineering_margin[robot-ROBOT_MESH_COLLISION] _
+tests\test_conveyor_seam_contact.py:111: in test_seam_support_does_not_waive_robot_or_rigid_tool_engineering_margin
+    validator = ExactM710LayoutStateValidator(backend, tool_provider,
+src\unloading_sim\layout_trajectory.py:590: in __init__
+    tool_boxes = list(tool_transform_robot.tool_all_physical_obbs(zero))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'ToolProvider' object has no attribute 'tool_all_physical_obbs'
+=========================== short test summary info ===========================
+FAILED tests/test_conveyor_seam_contact.py::test_same_height_seam_descent_uses_both_real_decks_and_full_bottom_support[0.0]
+FAILED tests/test_conveyor_seam_contact.py::test_same_height_seam_descent_uses_both_real_decks_and_full_bottom_support[0.0001]
+FAILED tests/test_conveyor_seam_contact.py::test_actual_descent_beyond_existing_contact_tolerance_cannot_release
+FAILED tests/test_conveyor_seam_contact.py::test_seam_support_does_not_waive_robot_or_rigid_tool_engineering_margin[tool-RIGID_TOOL_COLLISION]
+FAILED tests/test_conveyor_seam_contact.py::test_seam_support_does_not_waive_robot_or_rigid_tool_engineering_margin[robot-ROBOT_MESH_COLLISION]
+5 failed in 2.36s

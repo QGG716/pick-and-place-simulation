@@ -1,0 +1,10 @@
+{
+  "inputs": {
+    "outputs\\delivery\\20260922_validation_kernel\\delivery\\planning\\motion.json": "e5fe909900bac61e9a0a381324bacbd496fc82b75d87025592cb26928b790715",
+    "outputs\\delivery\\20260922_validation_kernel\\delivery\\inputs\\actual_remaining_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "configs\\validation\\m710id70_handoff_continuation.yaml": "2c163170e8492d5e96a3ff498343dd0357baeadc0bb22acf628316f36f9f2f71",
+    "configs\\validation\\m710id70_layout_v1_single_carton.yaml": "c7272e86cda9d208143ca20ec603b5ea12faaba0768fac91ccb7bd9f963e63a2"
+  },
+  "historical_nodes": "edge 120; fraction min(1,0.004/sum(abs(delta_q)))",
+  "evidence_rewritten": false
+}

@@ -1,0 +1,18 @@
+{
+  "status": "CANCELLED_OFFLINE_PROBE_WITHOUT_RESULT",
+  "reason": "Short-validation scope: manually stopped one ongoing candidate probe; no production deadline or budget changed",
+  "process_id": 21988,
+  "command_line": "\"D:\\code\\simulation\\pick-and-place-simulation-v0.5-feasibility-core\\.conda-cpu\\python.exe\" tools/validate_stage_motion_single_carton.py --history outputs/delivery/20260922_validation_kernel/delivery --output outputs/stage_motion_20260926/new_single_carton.json",
+  "started": "2026-09-26T15:41:30.2240606+08:00",
+  "ended": "2026-09-26T15:53:12.1778597+08:00",
+  "cpu_seconds": 664.640625,
+  "complete_plan": false,
+  "exported": false,
+  "preflight_executed": false,
+  "isaac_executed": false,
+  "automatic_retry": false,
+  "source_caveat": "Pre-commit development probe; subsequent source changes mean this is not final-commit full-cycle validation. See single_carton_precommit_checkpoint.json.",
+  "termination_confirmed": "taskkill acknowledged termination of the verified process after Stop-Process failed",
+  "final_source_validation_claimed": false,
+  "ended_timestamp_kind": "STOP_REQUEST_TIMESTAMP; exact process exit timestamp not retained"
+}

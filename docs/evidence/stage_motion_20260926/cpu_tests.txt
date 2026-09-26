@@ -1,0 +1,15 @@
+........................................................................ [ 21%]
+........................................................................ [ 43%]
+...............................................................ss....... [ 65%]
+.......................................................................s [ 87%]
+ssssssssssss...sssssss..................                                 [100%]
+=========================== short test summary info ===========================
+SKIPPED [2] tests\test_wrist_transfer_quality.py:197: requires the documented archived input copies on the GPU server
+SKIPPED [7] tests\test_default_history_adaptation.py:80: requires the documented archived input copies on the GPU server
+SKIPPED [1] tests\test_default_history_adaptation.py:101: requires the documented archived input copies on the GPU server
+SKIPPED [5] tests\test_default_history_adaptation.py:117: requires the documented archived input copies on the GPU server
+SKIPPED [4] tests\test_default_history_adaptation.py:228: requires the documented archived input copies on the GPU server
+SKIPPED [1] tests\test_default_history_adaptation.py:288: requires the documented archived input copies on the GPU server
+SKIPPED [1] tests\test_default_history_adaptation.py:299: requires the documented archived input copies on the GPU server
+SKIPPED [1] tests\test_default_history_adaptation.py:328: requires the documented archived input copies on the GPU server
+306 passed, 22 skipped in 129.54s (0:02:09)
