@@ -1939,6 +1939,8 @@ class LayoutTrajectoryConnector:
                 if candidate_failure and candidate_failure.get('reason') == 'DIRECT_CONNECTION_REJECTED':
                     deferred.append((index, candidate))
             for index, candidate in deferred:
+                if feasible:
+                    return  # A checked connection never needs optional candidate/RRT work.
                 yield index, candidate, True
 
         for index, candidate, fallback in scheduled_candidates():

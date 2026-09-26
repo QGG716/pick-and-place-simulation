@@ -308,3 +308,22 @@ def test_production_plan_does_not_restart_a_cancelled_or_stale_branch(monkeypatc
         all_obstacles=[target],receiver=target,support_names=(),suction={},seed=7)
     assert not result.success and len(calls)==1
     assert result.failure==failure
+
+
+def test_optional_comparison_cannot_expand_rrt_after_a_valid_direct(monkeypatch):
+    c=connector();c.budget=replace(c.budget,proof_of_concept=False)
+    goals=[GOAL+np.array([0.,.4,0.,0.,0.,0.]),GOAL]
+    class Stream:
+        index=0
+        def __next__(self):
+            if self.index==len(goals):raise StopIteration
+            q=goals[self.index];self.index+=1
+            return SimpleNamespace(q=q,position_error=0.,orientation_error=0.,search_evidence={})
+        def evidence(self):return dict(seeds_attempted=self.index)
+    stream=Stream();monkeypatch.setattr(c,'_ik_stream',lambda *a,**k:stream)
+    monkeypatch.setattr(RRTConnectPlanner,'plan',lambda *a,**k:pytest.fail('valid direct already retained'))
+    q,path,failure,trace=c._connect_pose(c.robot.fk(goals[0]),[START],START,[obstacle()],
+        purpose='FREE_APPROACH',stage='pregrasp',ik_seed=1,connection_seed=2)
+    assert failure is None and trace['selected_method']=='JOINT_DIRECT'
+    assert not trace['rrt_called'] and len(trace['attempts'])==2
+    np.testing.assert_array_equal(q,goals[0])
