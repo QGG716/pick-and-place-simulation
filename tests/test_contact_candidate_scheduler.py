@@ -158,9 +158,9 @@ def test_real_audit_entry_dispatches_pose_and_actual_path_seed(actual_scene, mon
         from unloading_sim import layout_trajectory
         original_planner = layout_trajectory.RRTConnectPlanner
         class RecordingPlanner(original_planner):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
+            def plan(self, *args, **kwargs):
                 rng_states.append(deepcopy(self.rng.bit_generator.state))
+                return super().plan(*args, **kwargs)
         monkeypatch.setattr(layout_trajectory, "RRTConnectPlanner", RecordingPlanner)
     first_target = []
     def pool(_scene, target, faces):
@@ -186,8 +186,8 @@ def test_real_audit_entry_dispatches_pose_and_actual_path_seed(actual_scene, mon
         if mode == "retry":
             # A zero-distance connection isolates RNG delivery into the real
             # RRT constructor without claiming a pick/place success.
-            _, failure, _ = c._transit(kw["home_q"], kw["home_q"], kw["all_obstacles"],
-                                      seed=kw["seed"], iteration_budget=1, stage="pregrasp")
+            _, failure, _ = c._rrt_transit(kw["home_q"], kw["home_q"], kw["all_obstacles"],
+                                      seed=kw["seed"], iteration_budget=1, stage="pregrasp", purpose="FREE_APPROACH")
             assert failure is None
         if mode == "tail_success":
             from test_layout_trajectory import _segment

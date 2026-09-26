@@ -108,7 +108,7 @@ def test_endpoint_candidate_really_connects_and_completes_or_retains(clock, monk
         q = np.asarray(args["grasp_q"])
         cups = c._contact_selection(q, target, "top", suction)
         path, failure, evidence = c._transit(start, q, [target], seed=args["seed"],
-            iteration_budget=10, stage="pregrasp")
+            iteration_budget=10, stage="pregrasp", purpose="FREE_APPROACH")
         calls.append((q.copy(), failure))
         if failure:
             return None, failure, evidence

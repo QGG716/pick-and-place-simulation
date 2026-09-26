@@ -43,6 +43,9 @@ from .release_motion import release_flight_envelope
 from .motion_quality import path_quality, QualityDeadline, quality_improves
 from .planner import RRTConnectPlanner
 from .motion_validation import ValidationContext, MotionValidator, RequestBudget, LRU, ContextLease, Status
+from .stage_motion_policy import (MotionPurpose, GenerationMethod, require_purpose,
+                                  free_connection_prefix, interrupts_generation, VerifiedTemplate,
+                                  motion_subsegments, validate_motion_subsegments)
 from .pinocchio_backend import PinocchioHppFclBackend
 from .validation_physics import (
     InitialProximityTracker,
@@ -174,6 +177,7 @@ def validate_layout_trajectory_stage_contract(
     ]
     if segment.get("events") != expected_events:
         raise ValueError("trajectory events must exactly match the three ordered stage endpoints")
+    validate_motion_subsegments(segment)
     contact = segment.get("contact")
     if not isinstance(contact, Mapping):
         raise ValueError("trajectory contact evidence is missing")
@@ -1550,19 +1554,76 @@ class LayoutTrajectoryConnector:
             return None
         return dict(result.failure or {}, validation=result.evidence(), stage=stage)
 
-    def _transit(
+    def _transit(self, start, goal, obstacles, *, purpose, seed, iteration_budget,
+                 attachment=None, support_names=(), target_contact=None, stage,
+                 candidates=(), allow_rrt=True):
+        purpose = require_purpose(purpose, free=True)
+        if target_contact is not None or support_names:
+            raise ValueError('free motion cannot carry local contact/support permissions')
+        if (purpose == MotionPurpose.FREE_LOADED_TRANSFER) != (attachment is not None):
+            raise ValueError('motion purpose and attachment disagree')
+        validator = self._motion_validator(obstacles, attachment=attachment,
+            support_names=support_names, target_contact=target_contact, stage=stage)
+        before = dict(self._statistics)
+        request = self._validation_request()
+        path, result, evidence = free_connection_prefix(start, goal, validator,
+            request, purpose=purpose, candidates=candidates)
+        evidence.update(stage=stage, loaded=attachment is not None,
+                        target=None if attachment is None else attachment.rigid.name)
+        if path:
+            retained = self._remember_path(path, validator.context.context_id, stage,
+                                           'B_STRICT_LOCAL_CONNECTION')
+            evidence.update(success=True, validation_level=retained['validation_level'],
+                            validation_completed_monotonic=retained['completed_monotonic'])
+            # Optional unloaded simplification retains the already checked result.
+            if attachment is None and stage == 'pregrasp':
+                path, simplify = self._improve_free_path(path, obstacles)
+                evidence.update(simplification=simplify, fallback_to_verified=not simplify.get('adopted', False))
+            if validator.context_current() != validator.context.context_id:
+                evidence.update(success=False, validation_completed=False,
+                                validation_status='INDETERMINATE')
+                return [], dict(reason='VALIDATION_CONTEXT_CHANGED', stage=stage), evidence
+            evidence['expensive_states'] = self._statistics['state_validations']-before['state_validations']
+            return path, None, evidence
+        if not evidence['continue_to_candidates_or_rrt']:
+            return [], dict(result.failure or {}, stage=stage, validation=result.evidence()), evidence
+        if not allow_rrt:
+            evidence['rrt_reason'] = 'DEFERRED_UNTIL_OTHER_IK_DIRECT_CONNECTIONS'
+            return [], dict(reason='DIRECT_CONNECTION_REJECTED', stage=stage,
+                            validation=result.evidence()), evidence
+        path, failure, search = self._rrt_transit(start, goal, obstacles, purpose=purpose,
+            seed=seed, iteration_budget=iteration_budget, attachment=attachment,
+            support_names=support_names, target_contact=target_contact, stage=stage,
+            motion_validator=validator, request_budget=request)
+        evidence['attempts'].append(dict(method=GenerationMethod.RRT_CONNECT.value,
+                                         failure=failure, search=search))
+        evidence.update(search)
+        evidence.update(purpose=purpose.value, rrt_constructed=True, rrt_called=True,
+            rrt_expanded=search.get('extension_attempts', 0) > 0,
+            selected_method=GenerationMethod.RRT_CONNECT.value if failure is None else None,
+            validation_completed=failure is None,
+            validation_status=('VALID' if failure is None else
+                (failure.get('validation') or {}).get('status', 'INVALID')),
+            expensive_states=self._statistics['state_validations']-before['state_validations'])
+        return path, failure, evidence
+
+    def _rrt_transit(
         self,
         start: np.ndarray,
         goal: np.ndarray,
         obstacles: Sequence[OBB],
         *,
+        purpose,
         seed: int,
         iteration_budget: int,
         attachment: PhysicalContactAttachment | None = None,
         support_names: Sequence[str] = (),
         target_contact: OBB | None = None,
         stage: str,
+        motion_validator=None,
+        request_budget=None,
     ) -> tuple[list[np.ndarray], Mapping[str, Any] | None, Mapping[str, Any]]:
+        require_purpose(purpose, free=True)
         if self._deadline_reached():
             return [], {"reason": "STAGE_CONNECTION_DEADLINE", "stage": stage}, {
                 "stage": stage, "planning_iterations_consumed": 0,
@@ -1582,7 +1643,7 @@ class LayoutTrajectoryConnector:
         if callback is not None:
             callback({"event": "connection_started", "stage": stage,
                       "iteration_budget": int(iteration_budget), "seed": int(seed)})
-        motion_validator = self._motion_validator(obstacles, attachment=attachment,
+        motion_validator = motion_validator or self._motion_validator(obstacles, attachment=attachment,
             support_names=support_names, target_contact=target_contact, stage=stage)
         planner = RRTConnectPlanner(
             np.asarray(self.robot.joint_limits)[:, 0],
@@ -1593,7 +1654,7 @@ class LayoutTrajectoryConnector:
             max_iterations=int(iteration_budget),
             goal_bias=self.budget.rrt_goal_bias,
             rng=np.random.default_rng(seed),
-            motion_validator=motion_validator, request_budget=self._validation_request(),
+            motion_validator=motion_validator, request_budget=request_budget or self._validation_request(),
             diagnostic_context=getattr(self, "diagnostics", None) is not None,
         )
         connection_started = perf_counter()
@@ -1620,6 +1681,9 @@ class LayoutTrajectoryConnector:
             **dict(result.search_evidence),
         }
         if not result.success:
+            uncertain = result.search_evidence.get('validation_failure')
+            if uncertain is not None:
+                return [], dict(uncertain.get('failure') or {}, validation=uncertain, stage=stage), evidence
             return [], {
                 "reason": "STAGE_CONNECTION_DEADLINE" if "time limit" in result.message else "PATH_SEARCH_EXHAUSTED",
                 "stage": stage,
@@ -1629,6 +1693,8 @@ class LayoutTrajectoryConnector:
         context = lambda: self._context_identity(obstacles, attachment=attachment,
             support_names=support_names, target_contact=target_contact, stage=stage)
         identity = context()
+        if motion_validator.context_current() != identity:
+            return [], dict(reason='VALIDATION_CONTEXT_CHANGED', stage=stage), evidence
         evidence["validation_level"] = "A_UNVERIFIED_GEOMETRY"
         # Same strict contract and exact motion keys in search and final verification.
         failure = self._path_failure(
@@ -1802,13 +1868,27 @@ class LayoutTrajectoryConnector:
         start: np.ndarray,
         obstacles: Sequence[OBB],
         *,
+        purpose,
         ik_seed: int,
         connection_seed: int,
         attachment: PhysicalContactAttachment | None = None,
         support_names: Sequence[str] = (),
         target_contact: OBB | None = None,
         stage: str,
+        candidate_factory=None,
     ) -> tuple[np.ndarray | None, list[np.ndarray], Mapping[str, Any] | None, Mapping[str, Any]]:
+        purpose = require_purpose(purpose, free=True)
+        began = perf_counter()
+        work_before = dict(self._statistics)
+        initial_validator = self._motion_validator(obstacles, attachment=attachment,
+            support_names=support_names, target_contact=target_contact, stage=stage)
+        initial_state = initial_validator.check_states([start], self._validation_request())[0]
+        if not initial_state.valid:
+            return None, [], dict(initial_state.failure or {}, validation=initial_state.evidence(), stage=stage), {
+                'stage': stage, 'purpose': purpose.value, 'attempts': [],
+                'validation_status': initial_state.status.value, 'endpoint_ik_streams': 0,
+                'termination': (initial_state.failure or {}).get('reason', initial_state.status.value)}
+        endpoint_checks = []
         stream = self._ik_stream(
             pose,
             seeds,
@@ -1818,6 +1898,7 @@ class LayoutTrajectoryConnector:
             support_names=support_names,
             target_contact=target_contact,
             stage=stage,
+            endpoint_checks=endpoint_checks,
         )
         attempts: list[dict[str, Any]] = []
         remaining = (min(getattr(self, "_placement_remaining", self.budget.stage_connection_iterations),
@@ -1829,10 +1910,39 @@ class LayoutTrajectoryConnector:
         feasible = []
         improvement_deadline = None
         improvement_started = None
-        initial_context = self._context_identity(obstacles, attachment=attachment,
-            support_names=support_names, target_contact=target_contact, stage=stage)
-        for index in range(self.budget.stage_connection_attempts):
-            if remaining <= 0 or self._deadline_reached():
+        initial_context = initial_validator.context.context_id
+        deferred = []
+        def scheduled_candidates():
+            nonlocal failure
+            # Keep IK lazy and finite. Every yielded valid endpoint gets its
+            # cheap direct attempt before any endpoint can spend the RRT pool.
+            for index in range(self.budget.stage_connection_attempts):
+                checked = initial_validator.check_states([start], self._validation_request())[0]
+                if not checked.valid:
+                    failure = dict(checked.failure or {}, validation=checked.evidence(), stage=stage)
+                    return
+                if self._deadline_reached() or (feasible and improvement_deadline is not None
+                                                and perf_counter() >= improvement_deadline):
+                    return
+                ik_started = perf_counter()
+                try:
+                    candidate = next(stream)
+                except StopIteration:
+                    return_from_stream = True
+                else:
+                    return_from_stream = False
+                finally:
+                    self._statistics['trajectory_ik_wall_seconds'] += perf_counter()-ik_started
+                if return_from_stream:
+                    break
+                yield index, candidate, False
+                if candidate_failure and candidate_failure.get('reason') == 'DIRECT_CONNECTION_REJECTED':
+                    deferred.append((index, candidate))
+            for index, candidate in deferred:
+                yield index, candidate, True
+
+        for index, candidate, fallback in scheduled_candidates():
+            if (fallback and remaining <= 0) or self._deadline_reached():
                 break
             if feasible and improvement_deadline is not None and perf_counter() >= improvement_deadline:
                 break
@@ -1842,17 +1952,12 @@ class LayoutTrajectoryConnector:
             slots = self.budget.stage_connection_attempts - index
             allocation = max(1, int(np.ceil(remaining / slots)))
             with self._budget_scope(improvement_deadline if feasible else self._deadline_monotonic):
-                ik_started = perf_counter()
-                try:
-                    candidate = next(stream)
-                except StopIteration:
-                    break
-                finally:
-                    self._statistics["trajectory_ik_wall_seconds"] += perf_counter() - ik_started
                 path, candidate_failure, connection = self._transit(
                     start, candidate.q, obstacles, seed=connection_seed + index * 1009,
                     iteration_budget=allocation, attachment=attachment,
-                    support_names=support_names, target_contact=target_contact, stage=stage)
+                    support_names=support_names, target_contact=target_contact, stage=stage,
+                    purpose=purpose, allow_rrt=fallback,
+                    candidates=(() if not fallback or candidate_factory is None else candidate_factory(candidate.q)))
             consumed = int(connection.get("planning_iterations_consumed", connection.get("iterations", 0)))
             remaining = max(0, remaining - consumed)
             if stage == "transit":
@@ -1867,6 +1972,7 @@ class LayoutTrajectoryConnector:
             attempts.append(
                 {
                     "candidate_index": index,
+                    "pass": "CANDIDATES_THEN_RRT" if fallback else "JOINT_DIRECT",
                     "candidate_id": candidate.search_evidence.get("candidate_id"),
                     "q_rad": candidate.q.tolist(),
                     "position_error_m": float(candidate.position_error),
@@ -1890,6 +1996,9 @@ class LayoutTrajectoryConnector:
                     break
             elif not feasible:
                 failure = candidate_failure
+                if (connection.get('validation_status') in ('INDETERMINATE', 'CANCELLED')
+                        or connection.get('invalid_endpoint') == 'start'):
+                    break
         if feasible:
             # Unknown is not zero or optimal. Without both scores keep baseline.
             best = feasible[0]
@@ -1898,8 +2007,7 @@ class LayoutTrajectoryConnector:
                     best = item
             _, selected, selected_path = best
             failure = None
-            if initial_context != self._context_identity(obstacles, attachment=attachment,
-                    support_names=support_names, target_contact=target_contact, stage=stage):
+            if initial_context != initial_validator.context_current():
                 selected, selected_path = None, []
                 failure = {"reason": "VALIDATION_CONTEXT_CHANGED", "stage": stage}
         stream_evidence = stream.evidence()
@@ -1911,14 +2019,18 @@ class LayoutTrajectoryConnector:
         elif remaining <= 0 and not attempts:
             termination = "SHARED_CONNECTION_BUDGET_EXHAUSTED"
             failure = {"reason": termination, "stage": stage}
-        elif failure is not None and failure.get("reason") == "VALIDATION_CONTEXT_CHANGED":
-            termination = "VALIDATION_CONTEXT_CHANGED"
+        elif interrupts_generation(failure):
+            termination = failure['reason']
         elif self._deadline_reached():
             termination = "STAGE_IK_DEADLINE"
             failure = {"reason": termination, "stage": stage}
         elif not attempts:
-            termination = "NO_VALID_IK"
-            failure = {"reason": f"{stage.upper()}_NO_IK", "stage": stage}
+            uncertain = next((item['failure'] for item in endpoint_checks
+                if item.get('failure') and (interrupts_generation(item['failure'])
+                    or item['failure'].get('classification') == 'UNKNOWN')), None)
+            termination = 'INCOMPLETE_ENDPOINT_VALIDATION' if uncertain else 'NO_VALID_IK'
+            failure = (dict(uncertain, stage=stage, validation=dict(status='INDETERMINATE'))
+                if uncertain else dict(reason=f'{stage.upper()}_NO_IK', stage=stage))
         elif remaining <= 0:
             termination = "SHARED_CONNECTION_BUDGET_EXHAUSTED"
         elif len(attempts) >= self.budget.stage_connection_attempts:
@@ -1927,6 +2039,25 @@ class LayoutTrajectoryConnector:
             termination = "IK_STREAM_EXHAUSTED"
         return selected, selected_path, failure, {
             "stage": stage,
+            "purpose": purpose.value,
+            "endpoint_ik_streams": 1,
+            "endpoint_ik_seed_attempts": int(stream_evidence.get('seeds_attempted', 0)),
+            "endpoint_checks": endpoint_checks,
+            "selected_method": next((a['connection'].get('selected_method') for a in attempts
+                if a['failure'] is None and selected is not None and np.array_equal(a['q_rad'], selected)), None),
+            "validation_context": initial_context,
+            "guarantee": initial_validator.context.guarantee,
+            "validation_completed": selected is not None,
+            "elapsed_seconds": perf_counter()-began,
+            "cartesian_samples": self._statistics['cartesian_samples']-work_before['cartesian_samples'],
+            "along_path_ik_calls": self._statistics['cartesian_samples']-work_before['cartesian_samples'],
+            "expensive_states": self._statistics['state_validations']-work_before['state_validations'],
+            "state_cache_reuses": self._statistics['state_cache_hits']-work_before['state_cache_hits'],
+            "rrt_constructed": any(a['connection'].get('rrt_constructed', False) for a in attempts),
+            "rrt_called": any(a['connection'].get('rrt_called', False) for a in attempts),
+            "rrt_expanded": any(a['connection'].get('rrt_expanded', False) for a in attempts),
+            "extension_attempts": sum(a['connection'].get('extension_attempts', 0) for a in attempts),
+            "planning_iterations_consumed": sum(a['connection'].get('planning_iterations_consumed', 0) for a in attempts),
             "shared_connection_iteration_budget": self.budget.stage_connection_iterations,
             "remaining_connection_iterations": remaining,
             "attempts": attempts,
@@ -1947,7 +2078,30 @@ class LayoutTrajectoryConnector:
             },
         }
 
-    def _cartesian(
+    def _cartesian(self, start, destination, obstacles, *, purpose, **kwargs):
+        purpose = require_purpose(purpose)
+        before = dict(self._statistics)
+        started = perf_counter()
+        path, failure, evidence = self._cartesian_process(start, destination, obstacles, **kwargs)
+        evidence.update(purpose=purpose.value,
+            selected_method=(GenerationMethod.LOCAL_CARTESIAN_CANDIDATE.value if purpose in
+                (MotionPurpose.FREE_APPROACH, MotionPurpose.FREE_LOADED_TRANSFER) else
+                GenerationMethod.PROCESS_WAYPOINT_CANDIDATE.value),
+            loaded=kwargs.get('attachment') is not None, validation_completed=failure is None,
+            elapsed_seconds=perf_counter()-started, rrt_constructed=False, rrt_called=False,
+            rrt_expanded=False, extension_attempts=0, planning_iterations_consumed=0,
+            endpoint_ik_calls=0, along_path_ik_calls=self._statistics['ik_calls']-before['ik_calls'],
+            cartesian_samples=self._statistics['cartesian_samples']-before['cartesian_samples'],
+            expensive_states=self._statistics['state_validations']-before['state_validations'],
+            state_cache_reuses=self._statistics['state_cache_hits']-before['state_cache_hits'])
+        if self._statistics['edge_validation_calls'] > before['edge_validation_calls']:
+            evidence['validation_context'] = self.last_motion_validation.get('context_id')
+            evidence['guarantee'] = self.last_motion_validation.get('guarantee')
+            evidence['validation_contexts'] = list(dict.fromkeys(s['validation_context']
+                for s in evidence.get('samples', []) if s.get('validation_context')))
+        return path, failure, evidence
+
+    def _cartesian_process(
         self,
         start: np.ndarray,
         destination: np.ndarray,
@@ -1987,6 +2141,12 @@ class LayoutTrajectoryConnector:
         path = [np.asarray(start, dtype=float)]
         samples: list[dict[str, Any]] = []
         for index in range(1, count + 1):
+            interrupted = self._validation_request().status()
+            if interrupted is not None:
+                failure = dict(reason=('VALIDATION_CANCELLED' if interrupted == Status.CANCELLED
+                                       else 'VALIDATION_WORK_BUDGET_OR_DEADLINE'), stage=stage,
+                               validation=dict(status=interrupted.value))
+                return path, failure, dict(stage=stage, samples=samples)
             if self._deadline_reached():
                 return path, {"reason": "PLANNING_WALL_CLOCK_DEADLINE", "stage": stage}, {
                     "stage": stage, "samples": samples, "termination": "PLANNING_WALL_CLOCK_DEADLINE"
@@ -2068,6 +2228,8 @@ class LayoutTrajectoryConnector:
                 initial_proximity=initial_proximity,
                 stage=stage,
             )
+            sample['validation_context'] = self.last_motion_validation.get('context_id')
+            sample['guarantee'] = self.last_motion_validation.get('guarantee')
             if failure is not None:
                 return path, failure, {"stage": stage, "samples": samples}
             path.append(ik.q.copy())
@@ -2200,6 +2362,7 @@ class LayoutTrajectoryConnector:
             support_names=names,
             initial_proximity=tracker,
             stage="support-release",
+            purpose=MotionPurpose.SUPPORT_RELEASE_PROCESS,
         )
         evidence = {
             "stage": "support-release",
@@ -2310,7 +2473,7 @@ class LayoutTrajectoryConnector:
             for goal in goals:
                 part, failure, search = self._cartesian(path[-1], goal, obstacles,
                     seed=seed + index * 101 + len(searches), attachment=attachment,
-                    initial_proximity=branch_tracker, stage="extraction")
+                    initial_proximity=branch_tracker, stage="extraction", purpose=MotionPurpose.EXTRACTION_PROCESS)
                 searches.append(search)
                 if failure is not None:
                     break
@@ -2338,6 +2501,11 @@ class LayoutTrajectoryConnector:
                 "failure": failure,
             }
             attempts.append(attempt)
+            if interrupts_generation(failure):
+                self._last_extraction_attempts = attempts
+                yield [], branch_tracker, failure, dict(stage='extraction', attempts=attempts,
+                                                       selected_attempt=None)
+                return
             if released:
                 yield path, branch_tracker, None, {
                     "stage": "extraction",
@@ -2423,13 +2591,15 @@ class LayoutTrajectoryConnector:
                 gate[:3, 3] += outward * distance
                 q, prefix, failure, search = self._connect_pose(self.virtual_from_physical(gate),
                     [start, grasp_q], start, obstacles, ik_seed=seed + len(attempts) * 100,
-                    connection_seed=seed + len(attempts) * 100 + 1, stage="pregrasp")
+                    connection_seed=seed + len(attempts) * 100 + 1, stage="pregrasp",
+                    purpose=MotionPurpose.FREE_APPROACH)
                 terminal_path = []
                 if failure is None and q is not None:
                     failure = self._approach_reserve_failure(q, target)
                 if failure is None and q is not None:
                     terminal_path, failure, terminal_search = self._cartesian(q, requested, obstacles,
-                        seed=seed + len(attempts) * 100 + 2, target_contact=target, stage="contact")
+                        seed=seed + len(attempts) * 100 + 2, target_contact=target, stage="contact",
+                        purpose=MotionPurpose.CONTACT_PROCESS)
                     search = {"connection": search, "terminal": terminal_search}
                 attempts.append({"mode": mode, "terminal_distance_m": distance,
                     "planning_wall_seconds": perf_counter() - before, "failure": failure, "search": search})
@@ -2446,6 +2616,8 @@ class LayoutTrajectoryConnector:
                         return [start.copy()], approach, None, evidence
                     return prefix, terminal_path, None, evidence
                 last_failure = failure or {"reason": "APPROACH_CONNECTION_FAILED", "stage": "contact"}
+                if interrupts_generation(last_failure):
+                    return [], [], last_failure, {"attempts": attempts}
         return [], [], last_failure, {"attempts": attempts}
 
     def _plan_branch(
@@ -2566,6 +2738,8 @@ class LayoutTrajectoryConnector:
         self._local_transit_remaining = self.budget.local_transit_cartesian_sample_budget
         for exit_index, (extraction, released_tracker, failure, evidence) in enumerate(extraction_options):
             trace["stages"]["extraction"] = evidence
+            if failure is not None:
+                return None, failure, trace
             supports = tuple(
                 ConveyorSupport(box, self.surface_directions_world.get(box.name))
                 for box in all_obstacles
@@ -2636,6 +2810,10 @@ class LayoutTrajectoryConnector:
                         trace=branch_trace, seed=seed + placement_index * 1000, release_height=height,
                         transit_hint=transit_hint)
                     record = {"height_m": height, "failure": failure}
+                    if interrupts_generation(failure):
+                        if not release_choices:
+                            return None, failure, branch_trace
+                        break
                     if segment is not None:
                         if self.budget.proof_of_concept:
                             return segment, None, branch_trace
@@ -2648,7 +2826,10 @@ class LayoutTrajectoryConnector:
                             self._branch_final_deadline = self._limit(
                                 getattr(self, "_branch_final_deadline", None), optional_deadline)
                         transit_start, transit_end = segment["stage_ranges"]["transit"]
-                        transit_hint = [np.asarray(q) for q in segment["path"][transit_start:transit_end + 1]]
+                        transit_hint = VerifiedTemplate.capture(
+                            segment['path'][transit_start:transit_end + 1],
+                            self._motion_validator(payload_obstacles, attachment=attachment, stage='transit'),
+                            self._validation_request())
                         departure = segment["post_release_safe_residence"]
                         lookahead = departure.get("next_contact", {})
                         cost = (None if self._deadline_reached() else
@@ -2738,7 +2919,8 @@ class LayoutTrajectoryConnector:
                     return [], {"reason": "SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET", "required": chunk_needed}, searches
                 before = self._statistics["cartesian_samples"]
                 path, failure, search = self._cartesian(full[-1], waypoint, obstacles,
-                    attachment=attachment, seed=attempt_seed + chunk, stage="transit")
+                    attachment=attachment, seed=attempt_seed + chunk, stage="transit",
+                    purpose=MotionPurpose.FREE_LOADED_TRANSFER)
                 self._local_transit_remaining -= self._statistics["cartesian_samples"] - before
                 searches.append(search)
                 if failure is not None:
@@ -2981,7 +3163,7 @@ class LayoutTrajectoryConnector:
                 orientation_change *= min(1., np.deg2rad(30.) / max(angle, 1e-12))
                 destination[:3, :3] = rotation_matrix_from_rotation_vector(orientation_change) @ destination[:3, :3]
             path, failure, search = self._cartesian(start, destination, [*obstacles, placed],
-                seed=seed + index, target_contact=placed, stage="withdrawal")
+                seed=seed + index, target_contact=placed, stage="withdrawal", purpose=MotionPurpose.DEPARTURE_PROCESS)
             if failure is None:
                 for predicted in sweep:
                     failure = self._path_failure(path, [*obstacles, predicted],
@@ -2996,6 +3178,10 @@ class LayoutTrajectoryConnector:
             attempts.append({"direction_world": vector.tolist(), "distance_m": distance,
                              "orientation_change_rotvec_rad": orientation_change.tolist(),
                              "failure": failure, "search": search})
+            if interrupts_generation(failure):
+                if not safe_choices:
+                    return [], failure, dict(attempts=attempts)
+                break
             if failure is None:
                 if not safe_choices:
                     # Safety is established before optional lookahead/quality.
@@ -3063,6 +3249,13 @@ class LayoutTrajectoryConnector:
             policy.ideal_heights()
             if not policy.ideal_release_min_height_m <= release_height <= policy.ideal_release_max_height_m:
                 return None, {"reason": "IDEAL_RELEASE_HEIGHT_OUT_OF_BOUNDS", "stage": "place"}, trace
+        # The process boundary is an observed tracker state AND actual attached
+        # geometry with the existing reserve, never a stage name or distance.
+        if not released_tracker.fully_released:
+            return None, dict(reason='ACTUAL_EXTRACTION_CLEARANCE_NOT_REACHED', stage='extraction'), trace
+        failure = self._extraction_reserve_failure(extraction[-1], attachment, payload_obstacles)
+        if failure is not None:
+            return None, failure, trace
         desired_box = placement.payload.world_from_local.copy()
         desired_box[2, 3] += release_height
         support_z = float(np.min(placement.payload.corners()[:, 2]))
@@ -3091,28 +3284,36 @@ class LayoutTrajectoryConnector:
         preplace_virtual = self.virtual_from_physical(preplace_physical)
         transit = []
         place_virtual = self.virtual_from_physical(desired_physical)
-        if history_hint is not None:
-            from .history_adaptation import loaded_suffix
-            transit, history_place, failure = loaded_suffix(self, history_hint, extraction,
-                preplace_virtual, place_virtual, payload_obstacles, attachment, support_contact_names)
-            if failure is not None:
-                return None, failure, trace
-            local_evidence = {"source": "HISTORY_NODES_NEW_ATTACHMENT_FULL_EDGE_RECHECK"}
-        if history_hint is None and transit_hint:
-            suffix, reuse_failure, local_evidence = self._cartesian(
-                transit_hint[-1], preplace_virtual, payload_obstacles, seed=seed + 54,
-                attachment=attachment, stage="transit")
-            if reuse_failure is None:
-                transit = [*transit_hint, *suffix[1:]]
-                local_evidence = {"reused_verified_loaded_prefix": True, "suffix": local_evidence}
-        if not transit and getattr(self, "_local_transit_remaining", 0) > 0:
-            transit, local_failure, local_evidence = self._local_cartesian_transit(
-                extraction[-1], preplace_virtual, payload_obstacles, attachment, seed=seed + 55)
-            trace["stages"]["local_transit"] = local_evidence
-        if transit:
-            preplace_q, failure, evidence = transit[-1], None, local_evidence
-        else:
-            preplace_q, transit, failure, evidence = self._connect_pose(
+        def bounded_candidates(goal_q):
+            if isinstance(transit_hint, VerifiedTemplate):
+                validator = self._motion_validator(payload_obstacles, attachment=attachment, stage='transit')
+                yield transit_hint.candidate(validator)
+            elif transit_hint:
+                # Bare path nodes are a hint, not a current binding certificate.
+                yield GenerationMethod.HISTORY_HINT, lambda: (transit_hint, None,
+                    dict(source='PREVIOUS_RECEIVER_CANDIDATE_REQUIRES_CURRENT_RECHECK'))
+            if history_hint is not None:
+                from .history_adaptation import free_loaded_hint
+                points = free_loaded_hint(self, history_hint, attachment, payload_obstacles, support_contact_names)
+                yield GenerationMethod.HISTORY_HINT, lambda: (points, None,
+                    dict(source='HISTORICAL_LOADED_PREFIX_CURRENT_CONTRACT_RECHECK'))
+            if getattr(self, '_local_transit_remaining', 0) > 0:
+                def local():
+                    pool = self._local_transit_remaining
+                    allocation = min(pool, max(1, self.budget.local_transit_cartesian_sample_budget
+                                               // self.budget.stage_connection_attempts))
+                    self._local_transit_remaining = allocation
+                    try:
+                        path, failure, evidence = self._local_cartesian_transit(extraction[-1],
+                            self.robot.fk(goal_q), payload_obstacles, attachment, seed=seed + 55)
+                        evidence['allocated_sample_budget'] = allocation
+                        trace['stages']['local_transit'] = evidence
+                        return path, failure, evidence
+                    finally:
+                        self._local_transit_remaining = pool-(allocation-self._local_transit_remaining)
+                yield GenerationMethod.LOCAL_CARTESIAN_CANDIDATE, local
+
+        preplace_q, transit, failure, evidence = self._connect_pose(
                 preplace_virtual,
                 [extraction[-1], contact_q, home_q],
                 extraction[-1],
@@ -3121,15 +3322,14 @@ class LayoutTrajectoryConnector:
                 connection_seed=seed + 70,
                 attachment=attachment,
                 stage="transit",
+                purpose=MotionPurpose.FREE_LOADED_TRANSFER,
+                candidate_factory=bounded_candidates,
             )
         trace["stages"]["transit"] = evidence
         if preplace_q is None or failure is not None:
             return None, failure, trace
 
-        if history_hint is not None:
-            place, failure, evidence = history_place, None, {"source": "CURRENT_ATTACHMENT_RECEIVER_IK_AND_EDGE_RECHECK"}
-        else:
-            place, failure, evidence = self._cartesian(
+        place, failure, evidence = self._cartesian(
                 preplace_q,
                 place_virtual,
                 payload_obstacles,
@@ -3137,6 +3337,7 @@ class LayoutTrajectoryConnector:
                 attachment=attachment,
                 support_names=support_contact_names,
                 stage="place",
+                purpose=MotionPurpose.PLACEMENT_PROCESS,
             )
         trace["stages"]["place"] = evidence
         if failure is not None:
@@ -3321,6 +3522,7 @@ class LayoutTrajectoryConnector:
             segment["history"].update(new_release_q_rad=place[-1].tolist(),
                 new_release_box_pose_world=placed.world_from_local.tolist(),
                 validation_inherited=False, all_required_stages_rechecked=True)
+        segment['motion_subsegments'] = motion_subsegments(segment, trace)
         failure = self._finalize_task(segment, [*payload_obstacles, target], target)
         if failure is not None:
             return None, failure, trace

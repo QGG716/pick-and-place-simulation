@@ -41,7 +41,7 @@ def connector(clock, validator=None):
 
 def transit(c):
     return c._transit(np.zeros(6), np.full(6, .1), [], seed=3,
-                      iteration_budget=10, stage="pregrasp")
+                      iteration_budget=10, stage="pregrasp", purpose="FREE_APPROACH")
 
 
 def test_shortcut_timeout_retains_independent_strict_baseline(clock, monkeypatch):
@@ -55,7 +55,10 @@ def test_shortcut_timeout_retains_independent_strict_baseline(clock, monkeypatch
         return [path[0], path[-1]], {"termination": "POSTPROCESS_BUDGET_EXHAUSTED"}
     monkeypatch.setattr(planning.RRTConnectPlanner, "bounded_shortcut", shortcut)
     c._deadline_monotonic = clock() + 10
-    path, failure, evidence = transit(c)
+    # Test the retained RRT result's optional optimizer. The free dispatcher now
+    # correctly bypasses RRT for this otherwise valid direct edge.
+    path, failure, evidence = c._rrt_transit(raw[0], raw[-1], [], purpose='FREE_APPROACH',
+        seed=3, iteration_budget=10, stage='pregrasp')
     assert failure is None, (failure, evidence)
     np.testing.assert_array_equal(path, raw)
     assert raw[1][0] == .2
@@ -143,7 +146,7 @@ def test_mid_edge_obstacle_rejects_shortcut_retains_original(clock, monkeypatch)
     monkeypatch.setattr(planning.RRTConnectPlanner, "bounded_shortcut", lambda self, path, **k:
                         ([path[0], path[-1]], {"termination": "INJECTED_PROPOSAL"}))
     path, failure, evidence = c._transit(raw[0], raw[-1], [], seed=0,
-                                        iteration_budget=10, stage="pregrasp")
+                                        iteration_budget=10, stage="pregrasp", purpose="FREE_APPROACH")
     assert failure is None
     np.testing.assert_array_equal(path, raw)
     assert evidence["simplification"]["recheck_failure"]["reason"] == "INTERIOR_OBSTACLE"
@@ -289,7 +292,8 @@ def test_successful_shortcut_is_still_selected_after_both_checks(clock, monkeypa
     raw = [np.zeros(6), np.full(6, .2), np.full(6, .1)]
     monkeypatch.setattr(planning.RRTConnectPlanner, "plan", lambda *a, **k:
                         planning.PlanResult(True, raw, 1))
-    path, failure, evidence = transit(c)
+    path, failure, evidence = c._rrt_transit(raw[0], raw[-1], [], purpose='FREE_APPROACH',
+        seed=3, iteration_budget=10, stage='pregrasp')
     assert failure is None and len(path) == 2
     assert evidence["simplification"]["reason"] == "FULLY_RECHECKED_IMPROVEMENT"
     assert evidence["simplification"]["after"]["soft_score"] < evidence["simplification"]["before"]["soft_score"]

@@ -285,7 +285,7 @@ def test_stage_connection_limit_does_not_prefetch_an_unused_ik_candidate():
         ik_seed=1,
         connection_seed=2,
         stage="transit",
-    )
+    purpose="FREE_APPROACH")
     assert selected is None and path == []
     assert failure["reason"] == "DISCONNECTED"
     assert connector.stream.next_calls == connector.budget.stage_connection_attempts

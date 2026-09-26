@@ -121,14 +121,14 @@ def test_connection_compares_two_feasible_paths_and_selects_lower_soft_cost():
         def _transit(self, start, goal, *args, **kwargs):
             path = [start, np.ones(6), goal] if goal[0] < .15 else [start, goal]
             return path, None, {'planning_iterations_consumed':1}
-    robot = SimpleNamespace(dof=6, joint_limits=np.tile([-2.,2.], (6,1)),
-                            fk=lambda q: np.eye(4), geometric_jacobian=lambda q: np.eye(6))
+    from test_layout_trajectory import _Robot
+    robot = _Robot()
     connector = Connector(robot, lambda *a, **kw: None,
         flange_from_virtual_task_tcp=np.eye(4), flange_from_physical_contact=np.eye(4),
         ik_policy={}, collision_margin_m=.01, contact_tolerance_m=.0002, joint_margin_rad=.01,
         maximum_jacobian_condition=10000, validator_identity='fixture', execution_qualified=True)
     selected, path, failure, evidence = connector._connect_pose(np.eye(4), [np.zeros(6)], np.zeros(6), [],
-                                                              ik_seed=0, connection_seed=1, stage='pregrasp')
+                                                              ik_seed=0, connection_seed=1, stage='pregrasp', purpose="FREE_APPROACH")
     assert failure is None
     np.testing.assert_allclose(selected, .2)
     assert len(path) == 2 and connector.stream.calls == 2
@@ -144,7 +144,8 @@ def test_reuse_tool_rejects_changed_non_target_obstacle_and_current_release_poli
     prediction = predict_release(box, [belt], mode=SHORT_DROP_RELEASE)
     segment = {'target':'target', 'path': [[0.]*6], 'release_index':0,
         'place': {'actual_box_pose_world':box.world_from_local.tolist(), 'release_prediction':prediction}}
-    connector = SimpleNamespace(budget=SimpleNamespace(maximum_drop_m=.05),
+    from unloading_sim.layout_trajectory import LayoutTrajectoryBudget
+    connector = SimpleNamespace(budget=LayoutTrajectoryBudget(maximum_drop_m=.05),
                                 post_landing_transport={'mode':'ideal_outfeed'})
     far = OBB([3,0,.775], [.1,.1,.1], np.eye(3), 'other', 'carton')
     actual, _ = module.recheck_current_release(segment, connector, [belt,far], box)
@@ -152,6 +153,7 @@ def test_reuse_tool_rejects_changed_non_target_obstacle_and_current_release_poli
     moved = OBB([0,0,.72], far.half_extents, far.rotation, far.name, far.category)
     with pytest.raises(ValueError, match='release prediction'):
         module.recheck_current_release(segment, connector, [belt,moved], box)
-    connector.budget.maximum_drop_m = .01
+    from dataclasses import replace
+    connector.budget = replace(connector.budget, maximum_drop_m=.01)
     with pytest.raises(ValueError, match='release prediction'):
         module.recheck_current_release(segment, connector, [belt,far], box)

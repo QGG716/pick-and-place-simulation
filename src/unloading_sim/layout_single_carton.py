@@ -74,6 +74,7 @@ PATH_BACKEND_UNAVAILABLE_REASON = "EXECUTION_PATH_BACKEND_UNAVAILABLE"
 TOOL_FRAME_SCHEMA = "m710id70_planner_tool_frames_v1"
 MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/motion_validation.py",
+    "src/unloading_sim/stage_motion_policy.py",
     "src/unloading_sim/validation_kernel.py",
     "src/unloading_sim/search_diagnostics.py",
     "src/unloading_sim/wrist_transfer.py",

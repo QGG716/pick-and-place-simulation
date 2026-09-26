@@ -84,6 +84,7 @@ class RRTConnectPlanner:
         self._last_edge_result = None
         self._direct_edge_result = None
         self._last_state_result = None
+        self._validation_stop_result = None
         self._rejected_candidates = set()
 
     def _state_valid(self, q: np.ndarray) -> bool:
@@ -110,6 +111,7 @@ class RRTConnectPlanner:
             "candidate_failures": self._candidate_failures,
             "bounded_tree_restarts": self._restarts,
             "motion_validation": None if self.motion_validator is None else dict(self.motion_validator.statistics),
+            "validation_failure": None if self._validation_stop_result is None else self._validation_stop_result.evidence(),
         })
 
     def _validation_budget(self, deadline=None):
@@ -124,7 +126,13 @@ class RRTConnectPlanner:
     def _interruption(self):
         from .motion_validation import Status
         status = self.request_budget.status() if self.request_budget is not None else None
-        return "cancelled" if status == Status.CANCELLED else "validation budget exhausted" if status else None
+        if status:
+            return "cancelled" if status == Status.CANCELLED else "validation budget exhausted"
+        for result in (self._validation_stop_result, self._last_state_result, self._last_edge_result):
+            if result is not None and result.status in {Status.INDETERMINATE, Status.CANCELLED}:
+                self._validation_stop_result = result
+                return 'cancelled' if result.status == Status.CANCELLED else 'state evidence incomplete'
+        return None
 
     def _accept_candidate(self, path):
         from .motion_validation import Status
@@ -132,6 +140,8 @@ class RRTConnectPlanner:
             result = self.motion_validator.check_path(path, self._validation_budget())
             if not result.valid:
                 self._candidate_failures.append(result.evidence())
+                if result.status != Status.INVALID:
+                    self._validation_stop_result = result
                 if result.status == Status.INVALID:
                     index = result.failure.get('edge', 0)
                     self.motion_validator.feedback_failure(path[index], path[index+1], result)
@@ -145,6 +155,8 @@ class RRTConnectPlanner:
             result = self.candidate_check(path, self._validation_budget())
             if not result.valid:
                 self._candidate_failures.append(result.evidence())
+                if result.status != Status.INVALID:
+                    self._validation_stop_result = result
                 failure = result.failure or {}
                 if result.status == Status.INVALID and failure.get('type', 'GEOMETRY') == 'GEOMETRY':
                     index = failure.get('edge', 0)
@@ -239,6 +251,8 @@ class RRTConnectPlanner:
         if direct_valid and self._accept_candidate([start,goal]):
             return self._result(True, [start, goal], 0, "direct edge")
         self._direct_rejected += 1
+        if self._interruption():
+            return self._result(False, [], 0, self._interruption())
         if self._deadline_reached(deadline):
             return self._result(False, [], 0, "time limit reached")
 

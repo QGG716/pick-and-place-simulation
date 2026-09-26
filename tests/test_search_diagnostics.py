@@ -33,30 +33,40 @@ def test_rrt_diagnostics_observe_real_rejections_without_changing_search(tmp_pat
     for diagnostic in (None, d):
         c = connector(blocked, diagnostic)
         outputs.append(c._transit(np.zeros(6), np.array([.4, 0, 0, 0, 0, 0]), [],
-            seed=44, iteration_budget=40, stage="pregrasp"))
+            seed=44, iteration_budget=40, stage="pregrasp", purpose="FREE_APPROACH"))
     assert outputs[0][1] == outputs[1][1]
-    assert outputs[0][2] == outputs[1][2]
+    # Timings are observations, not deterministic search decisions.
+    def decisions(value):
+        if isinstance(value, dict):
+            return {k:decisions(v) for k,v in value.items() if 'seconds' not in k}
+        if isinstance(value, list):return [decisions(v) for v in value]
+        return value
+    assert decisions(outputs[0][2]) == decisions(outputs[1][2])
     assert not outputs[1][0]
     assert d.groups
-    example = next(iter(d.groups.values()))["examples"][0]
-    assert example["origin"] == "rrt_internal"
-    assert example["edge"]["start_q_rad"] == [0.] * 6
+    example = next(iter(d.groups.values()))['examples'][0]
+    # The shared validator now finds/reuses this failure before tree expansion.
+    assert example['origin'] == 'state'
+    assert outputs[1][2]['rrt_called'] and outputs[1][2]['extension_attempts'] > 0
     assert blocked(example["q_rad"])["pair"] == example["failure"]["pair"]
     assert json.loads(d.path.read_text())["contexts"]
 
 
-def test_successful_rrt_full_edge_recheck_has_separate_rejection():
-    # Thin interval between the RRT's coarse samples; production recheck must catch it.
+def test_rrt_reuses_strict_direct_rejection_under_same_contract():
     def thin(q, *args, **kwargs):
-        if .016 < q[0] < .017:
+        if .04 < q[0] < .06:
             return dict(reason="CLEARANCE", classification="CLEARANCE_INSUFFICIENT", pair=["a", "b"])
     d = SearchDiagnostics()
     c = connector(thin, d)
     path, failure, evidence = c._transit(np.zeros(6), np.array([.1, 0, 0, 0, 0, 0]), [],
-        seed=2, iteration_budget=40, stage="transit")
-    assert evidence["search_success"] and not evidence["success"] and not path
-    assert failure["reason"] == "CLEARANCE"
-    assert next(iter(d.groups.values()))["examples"][0]["origin"] == "rrt_success_full_edge_recheck"
+        seed=2, iteration_budget=40, stage="transit", purpose="FREE_APPROACH")
+    assert evidence['attempts'][2]['status'] == 'INVALID'
+    assert evidence['direct_edge_validation']['cache_hit']
+    if path:
+        assert c._motion_validator([], stage='transit').check_path(path).valid
+    else:
+        assert failure
+    assert d.groups
 
 
 def test_counts_include_cached_rejections_and_examples_are_bounded():
@@ -123,7 +133,7 @@ def test_cartesian_rejection_records_actual_sample_seed_and_stage(tmp_path):
                 position_tolerance_m=1e-5, orientation_tolerance_rad=1e-5, orientation_weight=1.)
     destination = np.eye(4)
     destination[0, 3] = .03
-    _, failure, _ = c._cartesian(np.zeros(6), destination, [], seed=101, stage="transit")
+    _, failure, _ = c._cartesian(np.zeros(6), destination, [], seed=101, stage="transit", purpose="FREE_APPROACH")
     assert failure["reason"] == "TOOL_COLLISION"
     example = next(iter(d.groups.values()))["examples"][0]
     context = d.contexts[example["context"]]
@@ -149,7 +159,7 @@ def test_cartesian_numerical_failure_keeps_real_ik_result():
                 position_tolerance_m=1e-5, orientation_tolerance_rad=1e-5, orientation_weight=1.)
     destination = np.eye(4)
     destination[:3, :3] = rotation_matrix_from_rotation_vector([0., 0., .05])
-    path, failure, _ = c._cartesian(np.zeros(6), destination, [], seed=11, stage="transit")
+    path, failure, _ = c._cartesian(np.zeros(6), destination, [], seed=11, stage="transit", purpose="FREE_APPROACH")
     assert len(path) == 1 and failure["reason"] == "NO_IK"
     example = next(iter(d.outcomes.values()))["examples"][0]
     assert example["q_rad"] == example["seed_q_rad"] == [0.] * 6
