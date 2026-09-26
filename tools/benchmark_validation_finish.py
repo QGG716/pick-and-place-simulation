@@ -1,6 +1,7 @@
 """Same-input short CPU comparisons against 720fafc; never starts Isaac/search."""
 import argparse
 import cProfile
+from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
@@ -20,6 +21,45 @@ from unloading_sim.validation_physics import RigidAttachment
 from unloading_sim.motion_validation import MotionValidator,ValidationContext
 
 Q=np.array([-.37183334454120454,-.245641902048464,-.17740205572363327,1.7438672860074798,.37775574769199,-4.898300480640961])
+
+
+def binding_probe(c, scene):
+    """Preparation-only costs, separated from edge validation and copying inputs."""
+    rows=[]
+    for mode in ('deepcopy', 'new_container'):
+        for repeat in range(3):
+            c.start_planning_request();c._deadline_monotonic=None;c.validation_budget.deadline=None
+            a=list(deepcopy(scene.all_obstacles));va=c._motion_validator(a,stage='pregrasp')
+            assert va.check_motion(Q,Q+.000001).valid
+            b=deepcopy(a) if mode=='deepcopy' else list(a)
+            before=dict(c.context_statistics);start=perf_counter()
+            vb=c._motion_validator(b,stage='pregrasp');seconds=perf_counter()-start
+            delta={k:v-before.get(k,0) for k,v in c.context_statistics.items()}
+            first=vb.check_motion(Q,Q+.000001)
+            start=perf_counter();again=c._motion_validator(b,stage='pregrasp');hot_seconds=perf_counter()-start
+            hot=again.check_motion(Q,Q+.000001)
+            assert again is vb and hot.cache_hit
+            if mode=='deepcopy':b[-1].center[0]+=.001
+            else:b.pop()
+            result=vb.check_motion(Q,Q+.000001)
+            rows.append(dict(mode=mode,repeat=repeat,prepare_seconds=seconds,hot_prepare_seconds=hot_seconds,
+                context_delta=delta,same_validator=va is vb,same_semantic_id=va.context.context_id==vb.context.context_id,
+                first_status=first.status.value,hot_edge_cache_hit=hot.cache_hit,
+                after_mutation=result.evidence(),old_binding_status=va.check_motion(Q,Q+.000001).status.value))
+    # Isolate the actual hot lookup/guard from report serialization.
+    c.start_planning_request();c._deadline_monotonic=None;c.validation_budget.deadline=None
+    obstacles=list(scene.all_obstacles);v=c._motion_validator(obstacles,stage='pregrasp')
+    assert v.check_motion(Q,Q+.000001).valid
+    before=dict(c.context_statistics);prof=cProfile.Profile();prof.enable()
+    for _ in range(100):
+        assert c._motion_validator(obstacles,stage='pregrasp') is v
+        assert v.context_current()==v.context.context_id
+    prof.disable();stats=pstats.Stats(prof).stats
+    counts={label:sum(value[0] for key,value in stats.items() if key[2] in names)
+        for label,names in {'context_builds':{'_validation_context'},'json_serializations':{'dumps'},
+            'sha256_calls':{'<built-in method _hashlib.openssl_sha256>'}}.items()}
+    return dict(runs=rows,hot_lookup_guard=dict(repeats=100,profile_counts=counts,
+        context_delta={k:v-before.get(k,0) for k,v in c.context_statistics.items()}))
 
 
 def run(args):
@@ -49,6 +89,11 @@ def run(args):
         a,b=path[index:index+2];fraction=min(1.,.004/max(float(np.abs(b-a).sum()),1e-15));end=a+fraction*(b-a)
         cases.append((name,a,end,obstacles,dict(stage=stage,attachment=attachment)))
         fragments.append(dict(name=name,original_edge=[index,index+1],fraction=[0.,fraction],start=a.tolist(),end=end.tolist(),stage=stage))
+    if args.cases:
+        unknown=set(args.cases)-{case[0] for case in cases}
+        if unknown:raise ValueError(f'unknown cases: {sorted(unknown)}')
+        cases=[case for case in cases if case[0] in args.cases]
+        fragments=[item for item in fragments if item['name'] in args.cases]
 
     def cold(options):
         c.start_planning_request();c._deadline_monotonic=None;c.validation_budget.deadline=None
@@ -139,23 +184,28 @@ def run(args):
         return dict(reason='POINT_OBSTACLE',pair=['point',obstacle.name]) if obstacle.contains([q[0],0,0]) else None
     middle=MotionValidator(ValidationContext.create({'obstacle':[.25,.01]},resolution_rad=1/64),scalar)
     middle_times=[];middle_runs=[]
-    for repeat in range(3):
+    for repeat in range(0 if args.cases else 3):
         middle.states.clear();middle.edges.clear();seen.clear();start=perf_counter();r=middle.check_motion([0],[1]);middle_times.append(perf_counter()-start)
         first=next(i for i,x in enumerate(seen) if abs(x-.25)<=.01)
         middle_runs.append(dict(result=r.evidence(),actual_checks=len(seen),first_failed_sample=first,extra_checks_after_failure=len(seen)-first-1))
     # Python traced memory is a separate, untimed representative cold check.
     name,a,b,obs,base_options=cases[0];options=cold(base_options)
     tracemalloc.start();observe(a,b,obs,options);retained,peak=tracemalloc.get_traced_memory();tracemalloc.stop()
-    data=dict(baseline='720fafc6a65765dab849cf75ac873969c2f3aafc',python=sys.version,numpy=np.__version__,
+    data=dict(baseline=args.baseline_commit,python=sys.version,numpy=np.__version__,
         setup_seconds=setup_seconds,source_files={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(Path('src').rglob('*.py'))},
         inputs={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (motion_path,actual_path)},history_fragments=fragments,
-        cases=report,middle_obstacle=dict(times=middle_times,median_seconds=statistics.median(middle_times),runs=middle_runs),
+        cases=report,
+        middle_obstacle=None if not middle_times else dict(times=middle_times,median_seconds=statistics.median(middle_times),runs=middle_runs),
         memory=dict(python_retained_bytes=retained,python_peak_bytes=peak,process_max_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
             cache_sizes=dict(fk=len(k.cache),connector_states=len(c._state_cache),geometry=len(rv._geometry_cache),static=len(rv._static_cache))),
         note='CPU fragment revalidation only; no new candidate search, no historical fingerprint rewrite, no Isaac.')
+    if args.binding_probe:data['binding_probe']=binding_probe(c,scene)
     args.output.write_text(json.dumps(data,indent=2,default=lambda v:v.tolist() if hasattr(v,'tolist') else str(v)))
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--history-dir',type=Path,required=True);parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--cases',nargs='+',help='Run only these existing short cases (also omit synthetic middle case).')
+    parser.add_argument('--baseline-commit',default='720fafc6a65765dab849cf75ac873969c2f3aafc')
+    parser.add_argument('--binding-probe',action='store_true')
     args=parser.parse_args();args.output.parent.mkdir(parents=True,exist_ok=True);run(args)

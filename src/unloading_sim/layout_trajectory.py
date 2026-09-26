@@ -1069,12 +1069,20 @@ class LayoutTrajectoryConnector:
 
     def _motion_validator(self, obstacles, **kwargs):
         stateful = kwargs.get('initial_proximity') is not None
-        selector = (tuple(id(b) for b in obstacles),kwargs.get('stage'),
-            id(kwargs.get('attachment')),id(kwargs.get('target_contact')),
-            tuple(kwargs.get('support_names',())),getattr(self,'_request_generation',0))
+        # Semantic equality permits sharing geometric evidence, not callbacks or
+        # leases capturing different mutable inputs. Keep the actual containers
+        # as well as optional objects alive and verify identity at BOTH caches.
+        # IDs are only lookup accelerators; they never enter the semantic hash.
+        binding = (obstacles, kwargs.get('attachment'), kwargs.get('target_contact'),
+                   kwargs.get('support_names', ()))
+        def same_binding(candidate):
+            previous = candidate._layout_input_binding
+            return len(previous) == len(binding) and all(a is b for a,b in zip(previous,binding))
+        selector = (tuple(id(value) for value in binding), kwargs.get('stage'),
+                    getattr(self,'_request_generation',0))
         if not hasattr(self,'_prepared_contexts'): self._prepared_contexts=LRU(128)
         hit, prepared = self._prepared_contexts.lookup(selector) if not stateful else (False,None)
-        if hit and prepared.context_current() == prepared.context.context_id:
+        if hit and same_binding(prepared) and prepared.context_current() == prepared.context.context_id:
             self._context_statistics()['prepared_context_hits'] += 1
             return prepared
         context_kwargs=dict(kwargs)
@@ -1092,7 +1100,7 @@ class LayoutTrajectoryConnector:
         if not hasattr(self, '_motion_validators'):
             self._motion_validators = LRU(128)
         hit, validator = self._motion_validators.lookup(context.context_id) if not stateful else (False,None)
-        if hit and validator.context_current() == context.context_id:
+        if hit and same_binding(validator) and validator.context_current() == context.context_id:
             self._prepared_contexts.put(selector,validator)
             return validator
         options = dict(kwargs, validation_context_id=context.context_id)
@@ -1130,6 +1138,8 @@ class LayoutTrajectoryConnector:
             check_prefix=prefix,
             context_current=lambda: context.context_id if lease.current() else None,
             cache_states=not stateful)
+        # Never rebind an existing validator: callers may still hold and use it.
+        validator._layout_input_binding = binding
         kernel = getattr(self,'validation_kernel',None)
         if kernel is not None and not stateful:
             validator.interval_proof = kernel.prepare_context(context, obstacles, **kwargs)
