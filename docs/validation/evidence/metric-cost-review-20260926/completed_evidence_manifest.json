@@ -1,0 +1,63 @@
+{
+  "baseline_sha": "6ffa344496bb418719883a3c91d39cab897d5d64",
+  "files": {
+    "code.tar.gz": {
+      "bytes": 598273,
+      "sha256": "8dd8721fcbe9aee445dfdc5c01d2e026bcee74ae297019588831ddee6ca7f1de"
+    },
+    "code/tools/compare_metric_faces_ab.py": {
+      "bytes": 13852,
+      "sha256": "4d5b3aa5e1f7f0cad1a7f57400e9ff2264733727aa59b0ca6fafc0fea260a796"
+    },
+    "code/tools/explain_metric_cost_capture.py": {
+      "bytes": 6335,
+      "sha256": "749d27d502aa471cdfc1862ad4132cf1f89bb78bf55c6c05e803f0463a7115eb"
+    },
+    "code/tools/metric_thread_policy.py": {
+      "bytes": 7865,
+      "sha256": "aad9244898256bc76fa51886dc900ac167d409a08c8a1a86c489aa59eee2fc47"
+    },
+    "code/tools/reproduce_metric_cost.py": {
+      "bytes": 9143,
+      "sha256": "28d2a68df4ff447cc894e296f99ffd991b31f407710274a70720bbe4a27a32a3"
+    },
+    "code/tools/review_metric_blas_cost.py": {
+      "bytes": 9906,
+      "sha256": "6fdceffc30551f7512eff5ac0998f6136f31eaf3706ab3926de136c974acc308"
+    },
+    "explained_review.json": {
+      "bytes": 13384,
+      "sha256": "985ef27c491aec5cd6522f1ebae8a5a5d12eb10d3d175c23f040d7c3d54c9473"
+    },
+    "historical_review.json": {
+      "bytes": 11337,
+      "sha256": "7383bee7a61f77b097966be97a4a91d7c6e7f45d4151eb7bb19ed61c485d9297"
+    },
+    "mask9-blas-1/solver_arrays.npz": {
+      "bytes": 400601,
+      "sha256": "fcd9d99e1362ce06491ee0bf74903cf07b03d2e2ff0042b8140611876b59d8da"
+    },
+    "mask9-blas-1/solver_capture.json": {
+      "bytes": 22692,
+      "sha256": "eaaad0ce38adb0e2f3d7cfa1c596b66d2b3ddb1aba56eefecca6d9c8fa6409f5"
+    },
+    "mask9-inherit/solver_arrays.npz": {
+      "bytes": 400601,
+      "sha256": "fcd9d99e1362ce06491ee0bf74903cf07b03d2e2ff0042b8140611876b59d8da"
+    },
+    "mask9-inherit/solver_capture.json": {
+      "bytes": 22282,
+      "sha256": "574cd8d11be4b21a9b5c4e7b62ea6a2e65adeccd2a95a017707a1f2c4fc17ce6"
+    }
+  },
+  "fixed_instance": "module_1_lower/mask_id=9",
+  "full_47_instance_runs": 0,
+  "geometry_unchanged": {
+    "src/unloading_perception/final_geometry.py": "f4c618a93a27e08aebdb08bdcccf0a87ad89582da490f643ea8971272b83f6e2",
+    "src/unloading_perception/metric_faces.py": "10bfaa578583eee486da38003ebb965f8d515e8dda4e52b8de2f37d9e6fe302d",
+    "src/unloading_perception/metric_support.py": "4d6cb0896c4fa8101552cee1c40ad212294683b4c94d4a7ee33cd38641bff25c"
+  },
+  "old_comparison_sha256": "3904d8d9988cbf1f954704b0e8006e09bb9e71a22626eb7f0e3d2aab93b23c01",
+  "old_evidence_manifest_sha256": "8dc6eed6a7c1b315731a38ff20a7c6bd1d5424a3ba94331f5943d9bb40d859b6",
+  "real_solve_count": 2
+}
