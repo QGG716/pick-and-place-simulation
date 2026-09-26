@@ -388,3 +388,101 @@ PYTHONPATH=src /root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/pyt
 ```
 
 See [finishing-round evidence](evidence/validation_finish_20260922/README.md).
+
+## September 26: bind cached validators to the actual request inputs
+
+This is a correctness patch on `f5ad9bf73334ba430d67c74253d96b8847434480`.
+The tested source is `cc724ad32d510ae4641f5c94cfcc4bbd6e23f997`; the subsequent
+delivery commit only adds this documentation and evidence. The previous round's
+ordered early stop, lightweight leases and lazy geometry remain unchanged.
+
+Two production reproductions returned an old **VALID** after modifying B:
+
+* A and its deep copy B had equal semantic IDs. The second-level cache returned
+  A's validator, including the callbacks and lease still reading A.
+* `B = list(A)` retained the same element identities. The first-level selector
+  matched A even though appending, deleting or replacing B's elements would not
+  change the container watched by A's lease.
+
+`LayoutTrajectoryConnector._motion_validator` now records strong references to
+the obstacle **container**, attachment, target contact and support-name container.
+Both cache levels verify these references with `is` before reusing a validator.
+Process IDs only accelerate the prepared-cache lookup; they do not enter the
+semantic context ID and are never the sole ownership check. Stage and request
+generation remain in the selector. Ordered tracker validators remain uncached.
+
+An equal-content new binding gets its own validator, lease, state/batch callbacks
+and interval-proof closure. Existing validators are never rebound. The existing
+exact semantic state/FK/geometry caches can still share checked evidence; they do
+not supply a lease or callback for another input. Previously checked entries in
+an old validator can remain resident, but its sticky invalid lease prevents
+publication or new cache work. Changed inputs must acquire a fresh validator.
+The existing pre-preparation snapshot and post-batch guards are preserved.
+
+Eleven new official-scene tests cover both paths, append/delete/replace,
+attachment/target/support binding, simultaneous old/new validators, hot prepared
+and edge caches, second-level fallback, identity checks beyond lookup keys, and
+mutation during new-binding preparation. Callback recording verifies reacquired
+validators read the current scene and optional dependencies. Invalidation is
+tested separately from whether the changed geometry actually collides.
+
+The final nine-file CPU invocation on the existing GPU server environment passed
+**128 tests in 3.82 s** (including the previous preparation/batch mutation and
+early-stop regressions; overlapping earlier invocations are not added).
+The same final path-A/B tests against baseline production source fail four cases
+because they return stale VALID. Archive contents and SHA-256 manifests link
+tests and performance measurements to the exact source commit.
+
+Four existing cases were measured in the same environment, with three unprofiled
+cold/warm repetitions each. Cold clears validation caches after model loading;
+profiles and input copying are outside these timing medians. Only the recorded
+edge-120 prefix is revalidated for history; there is no new candidate search.
+
+| Case | Baseline cold ms | Patched cold ms | Baseline warm ms | Patched warm ms |
+| --- | ---: | ---: | ---: | ---: |
+| Open direct | 155.921 | 156.773 | .2343 | .2350 |
+| Very short valid | 25.079 | 24.783 | .4671 | .4769 |
+| Loaded first-state failure | 14.527 | 14.243 | .3909 | .3899 |
+| Historical loaded transit | 563.722 | 566.214 | .4159 | .4105 |
+
+Small regressions are retained: open cold +0.55%, historical cold +0.44%, and
+short-edge warm +2.09% (about 0.010 ms). These few repeats do not establish a
+general throughput change. All verdicts, strict grids, failure details and
+work counts agree. FK/expensive checks remain 35/35, 3/3, 1/1 and 15/15. The loaded
+failure skips four suffix states with **zero** extra expensive checks after
+failure. OBB constructions remain 7070, 606, 203 and 3045; transforms remain
+7070, 810, 299 and 3869. No collision geometry or acceptance rule changed.
+
+All four same-binding warm edge lookups hit, with zero full context construction
+or SHA calls. Their one JSON call is the existing motion-parameter key, not
+context serialization. A separate 100-lookup/200-guard profile gives **100 prepared
+hits, 0 full contexts, 0 JSON, 0 SHA** on both implementations. Profiled guard time
+was 128.6 -> 139.5 ms total; profiler overhead is included and this is not an
+unprofiled per-edge latency claim.
+
+Binding preparation is measured separately from input copying and edge checking:
+
+| New binding | Baseline preparation ms | Patched preparation ms | Patched repeated preparation ms |
+| --- | ---: | ---: | ---: |
+| Deep copy | 2.846 | 2.694 | .169 |
+| New list, same elements | .168 | 2.665 | .166 |
+
+Each patched new binding builds one context. Baseline's shallow-container case
+builds zero by incorrectly returning the old validator: its smaller time is not
+equivalent correct work. All three repeats for each baseline mode return stale
+VALID after mutation; patched modes return INDETERMINATE /
+VALIDATION_CONTEXT_CHANGED while the separately held A validator stays valid.
+
+Limitations: creating fresh containers repeatedly now incurs necessary binding
+preparation, and retained validators keep their dependency objects alive (the
+connector LRUs remain bounded at 128 each). Guards still compare mutable array
+contents at observation points; this patch does not provide atomic concurrent
+scene transactions. Scalar OBB pair checks and policy/evidence construction
+remain hotspots: historical cold profiling spends 0.588 s cumulative in
+`obb_pair_failure` out of 0.855 s total and still makes 1009 SHA calls, mostly
+per-pair evidence rather than guards. The geometric contract remains discrete
+with the existing conservative object-pair interval proofs.
+
+**Isaac was not run.** No full historical task, population, planning backend,
+physics configuration, contact permission, margin or sampling rule changed.
+See [binding-patch evidence and reproduction commands](evidence/validation_binding_20260926/README.md).

@@ -1,0 +1,1532 @@
+{
+  "cases": [
+    {
+      "case": "open_direct",
+      "baseline_median_ms": {
+        "cold": 155.92110902071,
+        "warm": 0.23427605628967285
+      },
+      "current_median_ms": {
+        "cold": 156.77276626229286,
+        "warm": 0.235043466091156
+      },
+      "change_percent": {
+        "cold": 0.5462103540257335,
+        "warm": 0.3275664673705547
+      },
+      "baseline_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3,
+        "obb_constructions": 7070,
+        "transform_constructions": 7070,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3,
+        "obb_constructions": 7070,
+        "transform_constructions": 7070,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "baseline_cold": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 35,
+        "fk_prepared": 35,
+        "expensive_states": 35,
+        "state_dispatches": 35,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "e83064e57038e475e5cf3556f2beb9fbcfd18548d25878141b3f4926449ce63b",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              0.5,
+              "DISCRETE_LEGACY_STRICT"
+            ],
+            [
+              0.5,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 35,
+            "edge_calls": 0,
+            "subdivisions": 1,
+            "certified_intervals": 0,
+            "pair_certificates": 4236,
+            "state_seconds": 0.15121828950941563,
+            "edge_seconds": 0.15916396118700504,
+            "repeated_failed_edges": 0,
+            "batch_calls": 7,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 1,
+            "state_cache_hits": 1,
+            "state_cache_misses": 35,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 35,
+          "native_batches": 7,
+          "native_array_operations": 553,
+          "kinematics_seconds": 0.008759643882513046,
+          "ordered_scalar_state_checks": 35,
+          "tool_obb_constructions": 7070,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 7070
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0015206597745418549,
+          "light_guard_calls": 55,
+          "light_guard_seconds": 0.007201395928859711,
+          "prepared_context_hits": 0
+        }
+      },
+      "current_cold": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 35,
+        "fk_prepared": 35,
+        "expensive_states": 35,
+        "state_dispatches": 35,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "e83064e57038e475e5cf3556f2beb9fbcfd18548d25878141b3f4926449ce63b",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              0.5,
+              "DISCRETE_LEGACY_STRICT"
+            ],
+            [
+              0.5,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 35,
+            "edge_calls": 0,
+            "subdivisions": 1,
+            "certified_intervals": 0,
+            "pair_certificates": 4236,
+            "state_seconds": 0.12943077087402344,
+            "edge_seconds": 0.1381936687976122,
+            "repeated_failed_edges": 0,
+            "batch_calls": 7,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 1,
+            "state_cache_hits": 1,
+            "state_cache_misses": 35,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 35,
+          "native_batches": 7,
+          "native_array_operations": 553,
+          "kinematics_seconds": 0.0070958323776721954,
+          "ordered_scalar_state_checks": 35,
+          "tool_obb_constructions": 7070,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 7070
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0020402129739522934,
+          "light_guard_calls": 55,
+          "light_guard_seconds": 0.006177244707942009,
+          "prepared_context_hits": 0
+        }
+      },
+      "baseline_warm": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 35,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "VALID",
+          "context_id": "e83064e57038e475e5cf3556f2beb9fbcfd18548d25878141b3f4926449ce63b",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              0.5,
+              "DISCRETE_LEGACY_STRICT"
+            ],
+            [
+              0.5,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 35
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.00016084499657154083,
+          "prepared_context_hits": 1
+        }
+      },
+      "current_warm": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 35,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "VALID",
+          "context_id": "e83064e57038e475e5cf3556f2beb9fbcfd18548d25878141b3f4926449ce63b",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              0.5,
+              "DISCRETE_LEGACY_STRICT"
+            ],
+            [
+              0.5,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 35
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.00016028247773647308,
+          "prepared_context_hits": 1
+        }
+      }
+    },
+    {
+      "case": "very_short_valid",
+      "baseline_median_ms": {
+        "cold": 25.07869526743889,
+        "warm": 0.46710483729839325
+      },
+      "current_median_ms": {
+        "cold": 24.783147498965263,
+        "warm": 0.4768539220094681
+      },
+      "change_percent": {
+        "cold": -1.1784814374189212,
+        "warm": 2.0871298973183183
+      },
+      "baseline_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3,
+        "obb_constructions": 606,
+        "transform_constructions": 810,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 5,
+        "sha256_calls": 3,
+        "obb_constructions": 606,
+        "transform_constructions": 810,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "baseline_cold": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 3,
+        "fk_prepared": 3,
+        "expensive_states": 3,
+        "state_dispatches": 3,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 3,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.020669348537921906,
+            "edge_seconds": 0.021290356293320656,
+            "repeated_failed_edges": 0,
+            "batch_calls": 2,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 3,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 3,
+          "native_batches": 2,
+          "native_array_operations": 158,
+          "kinematics_seconds": 0.00133565254509449,
+          "ordered_scalar_state_checks": 3,
+          "tool_obb_constructions": 606,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 606
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.002411775290966034,
+          "light_guard_calls": 10,
+          "light_guard_seconds": 0.0019076541066169739,
+          "prepared_context_hits": 0
+        }
+      },
+      "current_cold": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 3,
+        "fk_prepared": 3,
+        "expensive_states": 3,
+        "state_dispatches": 3,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 3,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.021444171667099,
+            "edge_seconds": 0.022105172276496887,
+            "repeated_failed_edges": 0,
+            "batch_calls": 2,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 3,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 3,
+          "native_batches": 2,
+          "native_array_operations": 158,
+          "kinematics_seconds": 0.00133446604013443,
+          "ordered_scalar_state_checks": 3,
+          "tool_obb_constructions": 606,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 606
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0024292748421430588,
+          "light_guard_calls": 10,
+          "light_guard_seconds": 0.0020034275949001312,
+          "prepared_context_hits": 0
+        }
+      },
+      "baseline_warm": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 3,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "VALID",
+          "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 3
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.0004010125994682312,
+          "prepared_context_hits": 1
+        }
+      },
+      "current_warm": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 3,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "VALID",
+          "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 3
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.0004711020737886429,
+          "prepared_context_hits": 1
+        }
+      }
+    },
+    {
+      "case": "loaded_early_invalid",
+      "baseline_median_ms": {
+        "cold": 14.527225866913795,
+        "warm": 0.3909338265657425
+      },
+      "current_median_ms": {
+        "cold": 14.242524281144142,
+        "warm": 0.38993358612060547
+      },
+      "change_percent": {
+        "cold": -1.959779440189402,
+        "warm": -0.2558592726354503
+      },
+      "baseline_counts": {
+        "context_builds": 1,
+        "json_serializations": 6,
+        "sha256_calls": 4,
+        "obb_constructions": 203,
+        "transform_constructions": 299,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 6,
+        "sha256_calls": 4,
+        "obb_constructions": 203,
+        "transform_constructions": 299,
+        "exact_collision": 1,
+        "exact_distance": 1
+      },
+      "baseline_cold": {
+        "status": "INVALID",
+        "failure": {
+          "reason": "PAYLOAD_COLLISION",
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "carton_l07_c04",
+            "carton_l06_c04"
+          ],
+          "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.0,
+          "q_rad": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_start": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_end": [
+            0.48503005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "first_failure_sample": 0
+        },
+        "guarantee": "NONE",
+        "strict_grid_samples": 5,
+        "fk_prepared": 1,
+        "expensive_states": 1,
+        "state_dispatches": 1,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "INVALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "PAYLOAD_COLLISION",
+            "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": true,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_start": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_end": [
+              0.48503005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "first_failure_sample": 0
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.0,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 1,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.011108821257948875,
+            "edge_seconds": 0.011733710765838623,
+            "repeated_failed_edges": 0,
+            "batch_calls": 1,
+            "skipped_suffix_states": 4,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 1,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 1,
+          "native_batches": 1,
+          "native_array_operations": 79,
+          "kinematics_seconds": 0.0006279312074184418,
+          "ordered_scalar_state_checks": 1,
+          "tool_obb_constructions": 202,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 202
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0023788083344697952,
+          "light_guard_calls": 6,
+          "light_guard_seconds": 0.0010953042656183243,
+          "prepared_context_hits": 0
+        }
+      },
+      "current_cold": {
+        "status": "INVALID",
+        "failure": {
+          "reason": "PAYLOAD_COLLISION",
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "carton_l07_c04",
+            "carton_l06_c04"
+          ],
+          "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.0,
+          "q_rad": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_start": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_end": [
+            0.48503005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "first_failure_sample": 0
+        },
+        "guarantee": "NONE",
+        "strict_grid_samples": 5,
+        "fk_prepared": 1,
+        "expensive_states": 1,
+        "state_dispatches": 1,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "INVALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "PAYLOAD_COLLISION",
+            "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": true,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_start": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_end": [
+              0.48503005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "first_failure_sample": 0
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.0,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 1,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.010970205068588257,
+            "edge_seconds": 0.01160731166601181,
+            "repeated_failed_edges": 0,
+            "batch_calls": 1,
+            "skipped_suffix_states": 4,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 1,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 1,
+          "native_batches": 1,
+          "native_array_operations": 79,
+          "kinematics_seconds": 0.0006350129842758179,
+          "ordered_scalar_state_checks": 1,
+          "tool_obb_constructions": 202,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 202
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.002400847151875496,
+          "light_guard_calls": 6,
+          "light_guard_seconds": 0.001100456342101097,
+          "prepared_context_hits": 0
+        }
+      },
+      "baseline_warm": {
+        "status": "INVALID",
+        "failure": {
+          "reason": "PAYLOAD_COLLISION",
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "carton_l07_c04",
+            "carton_l06_c04"
+          ],
+          "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.0,
+          "q_rad": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_start": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_end": [
+            0.48503005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "first_failure_sample": 0
+        },
+        "guarantee": "NONE",
+        "strict_grid_samples": 5,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "INVALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "PAYLOAD_COLLISION",
+            "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": true,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_start": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_end": [
+              0.48503005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "first_failure_sample": 0
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.0,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 1
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.00032000988721847534,
+          "prepared_context_hits": 1
+        }
+      },
+      "current_warm": {
+        "status": "INVALID",
+        "failure": {
+          "reason": "PAYLOAD_COLLISION",
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "carton_l07_c04",
+            "carton_l06_c04"
+          ],
+          "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.0,
+          "q_rad": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_start": [
+            0.48403005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "motion_end": [
+            0.48503005541115457,
+            -0.15354426468059104,
+            -0.12427669080619967,
+            -1.6264917415724245,
+            0.4846300627195182,
+            -1.5078751222538813
+          ],
+          "first_failure_sample": 0
+        },
+        "guarantee": "NONE",
+        "strict_grid_samples": 5,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "INVALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "NONE",
+          "failure": {
+            "reason": "PAYLOAD_COLLISION",
+            "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+            "accepted": false,
+            "stage": "transit",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+            "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+            "geometry_intersection_confirmed": true,
+            "original_cad_intersection_confirmed": true,
+            "surface_distance_m": 0.0,
+            "required_pair_clearance_m": 0.005,
+            "numerical_gap_tolerance_m": 1e-09,
+            "contact_permission_source": null,
+            "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+            "type": "GEOMETRY",
+            "fraction": 0.0,
+            "q_rad": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_start": [
+              0.48403005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "motion_end": [
+              0.48503005541115457,
+              -0.15354426468059104,
+              -0.12427669080619967,
+              -1.6264917415724245,
+              0.4846300627195182,
+              -1.5078751222538813
+            ],
+            "first_failure_sample": 0
+          },
+          "interval": [
+            0.0,
+            1.0
+          ],
+          "checked": [
+            [
+              0.0,
+              0.0,
+              "OBSERVED_THROUGH_FAILURE"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 1
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.00032438524067401886,
+          "prepared_context_hits": 1
+        }
+      }
+    },
+    {
+      "case": "history_loaded_transit",
+      "baseline_median_ms": {
+        "cold": 563.7221932411194,
+        "warm": 0.41588395833969116
+      },
+      "current_median_ms": {
+        "cold": 566.2137307226658,
+        "warm": 0.4104766994714737
+      },
+      "change_percent": {
+        "cold": 0.4419796686061517,
+        "warm": -1.3001845249825283
+      },
+      "baseline_counts": {
+        "context_builds": 1,
+        "json_serializations": 1011,
+        "sha256_calls": 1009,
+        "obb_constructions": 3045,
+        "transform_constructions": 3869,
+        "exact_collision": 2,
+        "exact_distance": 2
+      },
+      "current_counts": {
+        "context_builds": 1,
+        "json_serializations": 1011,
+        "sha256_calls": 1009,
+        "obb_constructions": 3045,
+        "transform_constructions": 3869,
+        "exact_collision": 2,
+        "exact_distance": 2
+      },
+      "baseline_cold": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 15,
+        "expensive_states": 15,
+        "state_dispatches": 15,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 15,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.5597045831382275,
+            "edge_seconds": 0.5605923235416412,
+            "repeated_failed_edges": 0,
+            "batch_calls": 3,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 15,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 15,
+          "native_batches": 3,
+          "native_array_operations": 237,
+          "kinematics_seconds": 0.0034042559564113617,
+          "ordered_scalar_state_checks": 15,
+          "tool_obb_constructions": 3030,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 3030
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.0027209334075450897,
+          "light_guard_calls": 24,
+          "light_guard_seconds": 0.0059499796479940414,
+          "prepared_context_hits": 0
+        }
+      },
+      "current_cold": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 15,
+        "expensive_states": 15,
+        "state_dispatches": 15,
+        "state_cache_hits": 0,
+        "edge_cache_hit": false,
+        "validation": {
+          "status": "VALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 15,
+            "edge_calls": 0,
+            "subdivisions": 0,
+            "certified_intervals": 0,
+            "pair_certificates": 0,
+            "state_seconds": 0.562742181122303,
+            "edge_seconds": 0.563395794481039,
+            "repeated_failed_edges": 0,
+            "batch_calls": 3,
+            "skipped_suffix_states": 0,
+            "state_cache_reuses": 0,
+            "state_cache_hits": 0,
+            "state_cache_misses": 15,
+            "state_cache_evictions": 0,
+            "edge_cache_hits": 0,
+            "edge_cache_evictions": 0
+          },
+          "cache_hit": false,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 15,
+          "native_batches": 3,
+          "native_array_operations": 237,
+          "kinematics_seconds": 0.0037202052772045135,
+          "ordered_scalar_state_checks": 15,
+          "tool_obb_constructions": 3030,
+          "tool_template_preparations": 1,
+          "tool_transform_constructions": 3030
+        },
+        "context_delta": {
+          "full_context_builds": 1,
+          "full_context_seconds": 0.002495627850294113,
+          "light_guard_calls": 24,
+          "light_guard_seconds": 0.006158092990517616,
+          "prepared_context_hits": 0
+        }
+      },
+      "baseline_warm": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "VALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 15
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.0003410074859857559,
+          "prepared_context_hits": 1
+        }
+      },
+      "current_warm": {
+        "status": "VALID",
+        "failure": null,
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "strict_grid_samples": 15,
+        "fk_prepared": 0,
+        "expensive_states": 0,
+        "state_dispatches": 0,
+        "state_cache_hits": 0,
+        "edge_cache_hit": true,
+        "validation": {
+          "status": "VALID",
+          "context_id": "d51463832d0a4678a11ae9ad145cf2998adfb405f612b30945f868dfc876d4b7",
+          "guarantee": "DISCRETE_LEGACY_STRICT",
+          "failure": null,
+          "interval": null,
+          "checked": [
+            [
+              0.0,
+              1.0,
+              "DISCRETE_LEGACY_STRICT"
+            ]
+          ],
+          "statistics": {
+            "state_samples": 0,
+            "edge_cache_hits": 1,
+            "reused_proof_state_samples": 15
+          },
+          "cache_hit": true,
+          "interval_certificate": false
+        },
+        "kernel_delta": {
+          "fk_states": 0,
+          "native_batches": 0,
+          "native_array_operations": 0,
+          "kinematics_seconds": 0.0,
+          "ordered_scalar_state_checks": 0,
+          "tool_obb_constructions": 0,
+          "tool_template_preparations": 0,
+          "tool_transform_constructions": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 2,
+          "light_guard_seconds": 0.00032827816903591156,
+          "prepared_context_hits": 1
+        }
+      }
+    }
+  ],
+  "binding_preparation": {
+    "baseline": {
+      "deepcopy": {
+        "prepare_median_ms": 2.846354618668556,
+        "hot_prepare_median_ms": 0.17695873975753784,
+        "build_counts": [
+          1,
+          1,
+          1
+        ],
+        "same_validator": [
+          true,
+          true,
+          true
+        ],
+        "after_mutation": [
+          "VALID",
+          "VALID",
+          "VALID"
+        ]
+      },
+      "new_container": {
+        "prepare_median_ms": 0.16782432794570923,
+        "hot_prepare_median_ms": 0.1663118600845337,
+        "build_counts": [
+          0,
+          0,
+          0
+        ],
+        "same_validator": [
+          true,
+          true,
+          true
+        ],
+        "after_mutation": [
+          "VALID",
+          "VALID",
+          "VALID"
+        ]
+      },
+      "hot_lookup_guard": {
+        "repeats": 100,
+        "profile_counts": {
+          "context_builds": 0,
+          "json_serializations": 0,
+          "sha256_calls": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 200,
+          "light_guard_seconds": 0.12855668179690838,
+          "prepared_context_hits": 100
+        }
+      }
+    },
+    "current": {
+      "deepcopy": {
+        "prepare_median_ms": 2.693610265851021,
+        "hot_prepare_median_ms": 0.16863271594047546,
+        "build_counts": [
+          1,
+          1,
+          1
+        ],
+        "same_validator": [
+          false,
+          false,
+          false
+        ],
+        "after_mutation": [
+          "INDETERMINATE",
+          "INDETERMINATE",
+          "INDETERMINATE"
+        ]
+      },
+      "new_container": {
+        "prepare_median_ms": 2.664513885974884,
+        "hot_prepare_median_ms": 0.1658797264099121,
+        "build_counts": [
+          1,
+          1,
+          1
+        ],
+        "same_validator": [
+          false,
+          false,
+          false
+        ],
+        "after_mutation": [
+          "INDETERMINATE",
+          "INDETERMINATE",
+          "INDETERMINATE"
+        ]
+      },
+      "hot_lookup_guard": {
+        "repeats": 100,
+        "profile_counts": {
+          "context_builds": 0,
+          "json_serializations": 0,
+          "sha256_calls": 0
+        },
+        "context_delta": {
+          "full_context_builds": 0,
+          "full_context_seconds": 0.0,
+          "light_guard_calls": 200,
+          "light_guard_seconds": 0.13946635648608208,
+          "prepared_context_hits": 100
+        }
+      }
+    }
+  },
+  "notes": [
+    "Cold means validation caches cleared with model already loaded. Three unprofiled repetitions; profiles are separate.",
+    "Same baseline/current input hashes; no candidate search or Isaac."
+  ]
+}

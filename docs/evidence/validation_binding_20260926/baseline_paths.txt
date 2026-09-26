@@ -1,0 +1,175 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+______________ test_equal_scene_new_binding_watches_current_scene ______________
+
+binding_scene = (FrozenLayoutMotionInput(policy=LayoutMotionPolicy(config_path=PosixPath('/root/autodl-tmp/m710-validation-binding-202...=array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]]), name='trailer_right_wall', category='trailer'), ...])
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f99f1f4c170>
+
+    def test_equal_scene_new_binding_watches_current_scene(binding_scene, monkeypatch):
+        _, c, a = binding_scene
+        va = c._motion_validator(a, stage='pregrasp')
+        assert edge(va).valid
+        b = deepcopy(a)
+        vb = c._motion_validator(b, stage='pregrasp')
+        assert vb.context.context_id == va.context.context_id
+        assert edge(vb).valid
+        b[-1].center[0] += .001
+>       changed(vb)
+
+tests/test_validation_binding.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+validator = <unloading_sim.motion_validation.MotionValidator object at 0x7f99ece2c230>
+
+    def changed(validator):
+        samples = validator.statistics['state_samples']
+        state_keys, edge_keys = list(validator.states), list(validator.edges)
+        result = edge(validator)
+>       assert result.status == Status.INDETERMINATE, result.evidence()
+E       AssertionError: {'status': 'VALID', 'context_id': '49803806e7e2f5fc7fdda54680958b089e111306b1ad3c9026c5065c62944528', 'guarantee': 'DISCRETE_LEGACY_STRICT', 'failure': None, ...}
+E       assert <Status.VALID: 'VALID'> == <Status.INDET...NDETERMINATE'>
+E         
+E         - INDETERMINATE
+E         + VALID
+
+tests/test_validation_binding.py:31: AssertionError
+__________ test_same_elements_different_container_invalidate[append] ___________
+
+binding_scene = (FrozenLayoutMotionInput(policy=LayoutMotionPolicy(config_path=PosixPath('/root/autodl-tmp/m710-validation-binding-202...=array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]]), name='trailer_right_wall', category='trailer'), ...])
+operation = 'append'
+
+    @pytest.mark.parametrize('operation', ['append', 'delete', 'replace'])
+    def test_same_elements_different_container_invalidate(binding_scene, operation):
+        _, c, a = binding_scene
+        va = c._motion_validator(a, stage='pregrasp')
+        assert edge(va).valid
+        b = list(a)
+        vb = c._motion_validator(b, stage='pregrasp')
+        assert vb.context.context_id == va.context.context_id
+        assert edge(vb).valid
+        if operation == 'delete':
+            b.pop()
+        else:
+            box = deepcopy(b[-1])
+            box.center[0] += .001
+            if operation == 'append':
+                b.append(box)
+            else:
+                b[-1] = box
+>       changed(vb)
+
+tests/test_validation_binding.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+validator = <unloading_sim.motion_validation.MotionValidator object at 0x7f99ecd7d370>
+
+    def changed(validator):
+        samples = validator.statistics['state_samples']
+        state_keys, edge_keys = list(validator.states), list(validator.edges)
+        result = edge(validator)
+>       assert result.status == Status.INDETERMINATE, result.evidence()
+E       AssertionError: {'status': 'VALID', 'context_id': '49803806e7e2f5fc7fdda54680958b089e111306b1ad3c9026c5065c62944528', 'guarantee': 'DISCRETE_LEGACY_STRICT', 'failure': None, ...}
+E       assert <Status.VALID: 'VALID'> == <Status.INDET...NDETERMINATE'>
+E         
+E         - INDETERMINATE
+E         + VALID
+
+tests/test_validation_binding.py:31: AssertionError
+__________ test_same_elements_different_container_invalidate[delete] ___________
+
+binding_scene = (FrozenLayoutMotionInput(policy=LayoutMotionPolicy(config_path=PosixPath('/root/autodl-tmp/m710-validation-binding-202...=array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]]), name='trailer_right_wall', category='trailer'), ...])
+operation = 'delete'
+
+    @pytest.mark.parametrize('operation', ['append', 'delete', 'replace'])
+    def test_same_elements_different_container_invalidate(binding_scene, operation):
+        _, c, a = binding_scene
+        va = c._motion_validator(a, stage='pregrasp')
+        assert edge(va).valid
+        b = list(a)
+        vb = c._motion_validator(b, stage='pregrasp')
+        assert vb.context.context_id == va.context.context_id
+        assert edge(vb).valid
+        if operation == 'delete':
+            b.pop()
+        else:
+            box = deepcopy(b[-1])
+            box.center[0] += .001
+            if operation == 'append':
+                b.append(box)
+            else:
+                b[-1] = box
+>       changed(vb)
+
+tests/test_validation_binding.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+validator = <unloading_sim.motion_validation.MotionValidator object at 0x7f99ecd91280>
+
+    def changed(validator):
+        samples = validator.statistics['state_samples']
+        state_keys, edge_keys = list(validator.states), list(validator.edges)
+        result = edge(validator)
+>       assert result.status == Status.INDETERMINATE, result.evidence()
+E       AssertionError: {'status': 'VALID', 'context_id': '49803806e7e2f5fc7fdda54680958b089e111306b1ad3c9026c5065c62944528', 'guarantee': 'DISCRETE_LEGACY_STRICT', 'failure': None, ...}
+E       assert <Status.VALID: 'VALID'> == <Status.INDET...NDETERMINATE'>
+E         
+E         - INDETERMINATE
+E         + VALID
+
+tests/test_validation_binding.py:31: AssertionError
+__________ test_same_elements_different_container_invalidate[replace] __________
+
+binding_scene = (FrozenLayoutMotionInput(policy=LayoutMotionPolicy(config_path=PosixPath('/root/autodl-tmp/m710-validation-binding-202...=array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.]]), name='trailer_right_wall', category='trailer'), ...])
+operation = 'replace'
+
+    @pytest.mark.parametrize('operation', ['append', 'delete', 'replace'])
+    def test_same_elements_different_container_invalidate(binding_scene, operation):
+        _, c, a = binding_scene
+        va = c._motion_validator(a, stage='pregrasp')
+        assert edge(va).valid
+        b = list(a)
+        vb = c._motion_validator(b, stage='pregrasp')
+        assert vb.context.context_id == va.context.context_id
+        assert edge(vb).valid
+        if operation == 'delete':
+            b.pop()
+        else:
+            box = deepcopy(b[-1])
+            box.center[0] += .001
+            if operation == 'append':
+                b.append(box)
+            else:
+                b[-1] = box
+>       changed(vb)
+
+tests/test_validation_binding.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+validator = <unloading_sim.motion_validation.MotionValidator object at 0x7f99ecdf9cd0>
+
+    def changed(validator):
+        samples = validator.statistics['state_samples']
+        state_keys, edge_keys = list(validator.states), list(validator.edges)
+        result = edge(validator)
+>       assert result.status == Status.INDETERMINATE, result.evidence()
+E       AssertionError: {'status': 'VALID', 'context_id': '49803806e7e2f5fc7fdda54680958b089e111306b1ad3c9026c5065c62944528', 'guarantee': 'DISCRETE_LEGACY_STRICT', 'failure': None, ...}
+E       assert <Status.VALID: 'VALID'> == <Status.INDET...NDETERMINATE'>
+E         
+E         - INDETERMINATE
+E         + VALID
+
+tests/test_validation_binding.py:31: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_validation_binding.py::test_equal_scene_new_binding_watches_current_scene
+FAILED tests/test_validation_binding.py::test_same_elements_different_container_invalidate[append]
+FAILED tests/test_validation_binding.py::test_same_elements_different_container_invalidate[delete]
+FAILED tests/test_validation_binding.py::test_same_elements_different_container_invalidate[replace]
+4 failed, 7 deselected in 0.73s
