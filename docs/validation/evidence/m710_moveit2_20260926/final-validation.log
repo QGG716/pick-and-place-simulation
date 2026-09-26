@@ -1,0 +1,10 @@
+Final validation begins; commands execute serially; no Isaac.
+Sat Sep 26 04:58:57 UTC 2026
+.......................                                                  [100%]
+23 passed in 0.29s
+Historical state/edge differential: PASS 16.789048051461577
+empty_short PASS 1.07186608761549
+linear_fixed_orientation PASS 0.9246288202702999
+loaded_fixed_transit FAIL 37.159244460985065
+Sat Sep 26 04:59:58 UTC 2026
+FINAL_VALIDATION_COMPLETE

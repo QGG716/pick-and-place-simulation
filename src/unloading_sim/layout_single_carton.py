@@ -96,6 +96,7 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/moveit2_backend.py",
     "src/unloading_sim/moveit2_timing.py",
     "ros2/m710_moveit_backend/src/worker.cpp",
+    "ros2/m710_moveit_backend/src/clearance.h",
     "src/unloading_sim/pinocchio_backend.py",
     "src/unloading_sim/planner.py",
     "src/unloading_sim/robot.py",

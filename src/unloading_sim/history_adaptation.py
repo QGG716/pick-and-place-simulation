@@ -49,6 +49,12 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
     q = solution.q
     if np.max(np.abs(q - grasp_q)) > hint["policy"].maximum_joint_adaptation_rad:
         return rejected({"reason": "HISTORY_JOINT_ADAPTATION_BOUND", "stage": "contact"})
+    capability = getattr(c, "history_capability_check", None)
+    if capability is not None:
+        failure = capability(hint, target, q, all_obstacles)
+        trace["capability_preflight"] = dict(location="after_contact_ik_before_contact_or_prefix_collision",failure=failure)
+        if failure:
+            return rejected(failure)
     try:
         selection = c._contact_selection(q, target, face, suction)
     except ValueError as exc:
@@ -163,25 +169,35 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
     return segment, failure, trace
 
 
+def loaded_prefix_geometry(c, hint, extraction_end, obstacles, attachment, support_names):
+    """Pure fixed-history cut selection shared by capability and execution path."""
+    old = _slice(hint, "transit")
+    supports = [b for b in obstacles if b.name in support_names]
+    top = max(float(b.corners()[:, 2].max()) for b in supports)
+    safe_height = c.budget.ideal_release_max_height_m + c.budget.receiver_runtime_clearance_reserve_m
+    cuts = [i for i, q in enumerate(old) if attachment.box_at(q).corners()[:, 2].min() >= top + safe_height]
+    cut = cuts[-1] if cuts else 0
+    return [extraction_end.copy(), *old[1:cut+1]], safe_height, len(old)
+
+
 def loaded_suffix(c, hint, extraction, preplace_virtual, place_virtual, obstacles, attachment, support_names):
     """Re-solve both receiver endpoints under the new attachment; check every edge."""
     if c.budget.proof_of_concept:
         # Retain only the early loaded prefix. Rebuild well before the old low
         # receiver approach; never edit the old release nodes in place.
-        old = _slice(hint, "transit")
-        supports = [b for b in obstacles if b.name in support_names]
-        top = max(float(b.corners()[:, 2].max()) for b in supports)
-        safe_height = c.budget.ideal_release_max_height_m + c.budget.receiver_runtime_clearance_reserve_m
-        cuts = [i for i, q in enumerate(old) if attachment.box_at(q).corners()[:, 2].min() >= top + safe_height]
-        cut = cuts[-1] if cuts else 0
-        prefix = [extraction[-1].copy(), *old[1:cut+1]]
+        prefix, safe_height, old_count = loaded_prefix_geometry(c, hint, extraction[-1], obstacles, attachment, support_names)
+        capability = getattr(c, "capability_check", None)
+        if capability is not None:
+            failure = capability(c.robot.fk(prefix[-1]), preplace_virtual, stage="transit", location="before_loaded_prefix_collision")
+            if failure:
+                return [], [], failure
         failure = c._path_failure(prefix, obstacles, attachment=attachment, stage="transit")
         if failure:
             return [], [], failure
         suffix, failure, evidence = c._cartesian(prefix[-1], preplace_virtual, obstacles,
             seed=int(hint["attempt_provenance"]["candidate_id"][:8], 16), attachment=attachment, stage="transit")
         hint["attempt_provenance"]["loaded_prefix_reconstruction"] = dict(
-            retained_nodes=len(prefix), old_nodes=len(old), safe_height_m=safe_height, suffix=evidence)
+            retained_nodes=len(prefix), old_nodes=old_count, safe_height_m=safe_height, suffix=evidence)
         if failure:
             return [], [], failure
         transit = [*prefix, *suffix[1:]]

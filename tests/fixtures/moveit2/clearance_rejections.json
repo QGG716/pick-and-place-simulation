@@ -1,0 +1,222 @@
+{
+  "schema": "m710_historical_clearance_rejections_v1",
+  "source": "docs/validation/evidence/m710_moveit2_20260922/native-loaded-tight-goal.json",
+  "source_sha256": "aaf938af5dcf720d5c1b5e721fef72448dfb972d5515a7bc4ca2d25c75b6793c",
+  "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+  "source_identity": {
+    "baseline_sha": "4f6e3037aceb47a525711e58360d98c8751fec6b",
+    "model_tool_fingerprint": "e89a5ab06a138868b14c7129ea06391a29b5bf1b0231ca4d32cd25ffd787eecc",
+    "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+    "policy_scope": "native_intersection_candidates_plus_authoritative_pair_gap_contact_checks",
+    "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+    "scene_version": "m710id70_unloading_layout_v1",
+    "schema": "m710_native_stage_v1",
+    "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129"
+  },
+  "effective_policy": {
+    "schema": "m710_poc_pair_collision_policy_v4",
+    "wrist_tool_exempt_links": [
+      "J5_link",
+      "J6_link"
+    ],
+    "stack_contact_mode": "planner_relaxed_physics_checked",
+    "stack_contact_stages": [
+      "support-release",
+      "extraction"
+    ],
+    "maximum_planned_stack_penetration_m": 0.01,
+    "free_space_clearance_m": 0.0052,
+    "free_space_clearance_loss_tolerance_m": 0.0002,
+    "maximum_actual_penetration_m": 0.01,
+    "maximum_neighbor_displacement_m": 0.06,
+    "maximum_neighbor_tilt_rad": 0.2,
+    "progress_timeout_s": 3.0,
+    "minimum_progress_m": 0.002,
+    "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+    "compliant_cup_neighbor_contact_mode": "ignore",
+    "maximum_compliant_cup_additional_compression_m": 0.005,
+    "required_pair_clearance_m": 0.005,
+    "self_collision_clearance_m": 0.0,
+    "boundary_mode": "finite_frozen_scene_walls",
+    "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+    "box_box_physics_enabled": true
+  },
+  "q_start": [
+    -0.847862919608377,
+    -0.7813072467331367,
+    -0.4789129694501762,
+    1.8277814235216392,
+    0.8872283109314466,
+    -5.106661645797671
+  ],
+  "q_goal": [
+    -0.7704942234539639,
+    0.2837638953904058,
+    -0.27184952289560693,
+    3.1417431315819426,
+    1.0150179257641823,
+    -5.5127236764052086
+  ],
+  "cases": [
+    {
+      "attempt_index": 1,
+      "original_failure": {
+        "reason": "PAYLOAD_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c02",
+          "carton_l07_c01"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.004984457298504093,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "edge": 31,
+        "fraction": 0.3866666666666667,
+        "q_rad": [
+          -0.8020375167123245,
+          -0.6740776214484026,
+          -0.2683856791079345,
+          2.5375600435769,
+          0.6790049288836357,
+          -5.2937846464964755
+        ]
+      },
+      "edge": [
+        [
+          -0.8026020607581976,
+          -0.6753986321252323,
+          -0.2709792608496189,
+          2.5288159569237125,
+          0.6815701277278952,
+          -5.291479392876991
+        ],
+        [
+          -0.8011420330533532,
+          -0.6719822252023967,
+          -0.2642717218625041,
+          2.5514299741302313,
+          0.674935992785845,
+          -5.297441255686001
+        ]
+      ],
+      "path_sha256": "a79ee31998edbee22b01856408d0e789d51848d197b407b5bee8b484fca6ded2",
+      "request_fingerprint": "c5f0e6f7f8ce02e2bfe483a5cf22a4e3d9c365b468b66b7dec6a817062757b08",
+      "original_planner": "RRTConnectkConfigDefault"
+    },
+    {
+      "attempt_index": 2,
+      "original_failure": {
+        "reason": "PAYLOAD_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c02",
+          "carton_l07_c01"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.004994185483438035,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "edge": 14,
+        "fraction": 0.9121621621621622,
+        "q_rad": [
+          -0.9011461621899325,
+          -0.6623477958948043,
+          -0.34571481338138954,
+          2.172521686252008,
+          0.875885146225905,
+          -5.085065062927872
+        ]
+      },
+      "edge": [
+        [
+          -0.8978868791140331,
+          -0.6696244274594508,
+          -0.35386241241595506,
+          2.151434266465601,
+          0.876578996355152,
+          -5.086386104471788
+        ],
+        [
+          -0.9014600190787228,
+          -0.6616470832256162,
+          -0.3449302297706536,
+          2.174552326675884,
+          0.8758183310282738,
+          -5.084937851519939
+        ]
+      ],
+      "path_sha256": "06be728b160ec2a513943b94e1ed8ec64e5f02d90c212b26bcc0e240a1f31bc3",
+      "request_fingerprint": "c5f0e6f7f8ce02e2bfe483a5cf22a4e3d9c365b468b66b7dec6a817062757b08",
+      "original_planner": "RRTConnectkConfigDefault"
+    },
+    {
+      "attempt_index": 3,
+      "original_failure": {
+        "reason": "PAYLOAD_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c02",
+          "carton_l07_c01"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.004998934563793401,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "edge": 23,
+        "fraction": 0.3175675675675676,
+        "q_rad": [
+          -0.92000494284512,
+          -0.6331240082475198,
+          -0.2878538178121271,
+          2.3184382788731615,
+          0.8407222768674892,
+          -5.229756993683933
+        ]
+      },
+      "edge": [
+        [
+          -0.9190224232588764,
+          -0.6351421514549449,
+          -0.29045589840528513,
+          2.311755905010072,
+          0.8413556537440484,
+          -5.228080528499739
+        ],
+        [
+          -0.9221163147219416,
+          -0.6287871473124148,
+          -0.2822621127076812,
+          2.3327982737704387,
+          0.8393611903880747,
+          -5.2333596103563504
+        ]
+      ],
+      "path_sha256": "cadff8ad9a46a5298a09c1fc4aeec841b87965c2472f342375a1870e1b09b7d4",
+      "request_fingerprint": "c5f0e6f7f8ce02e2bfe483a5cf22a4e3d9c365b468b66b7dec6a817062757b08",
+      "original_planner": "RRTConnectkConfigDefault"
+    }
+  ]
+}

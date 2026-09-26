@@ -15,6 +15,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include "clearance.h"
 
 using J = nlohmann::json;
 namespace mtc = moveit::task_constructor;
@@ -109,7 +110,7 @@ class Worker {
   planning_scene::PlanningScenePtr base;
   std::map<std::string,planning_pipeline::PlanningPipelinePtr> pipelines;
   std::vector<std::string> names;
-  J identity, scene_content; std::string scene_key;
+  J identity, scene_content, bound_policy, bound_tools; std::string scene_key;
   uint32_t seed=0; size_t requests=0; std::map<std::string,size_t> calls;
 public:
   J run(const J& req) {
@@ -139,13 +140,21 @@ public:
         p->displayComputedMotionPlans(false); p->publishReceivedRequests(false);
         pipelines[name]=p;
       }
+      for(auto it=req.at("expected_collision_shapes").begin();it!=req.at("expected_collision_shapes").end();++it) {
+        const auto* link=model->getLinkModel(it.key());
+        if(!link || link->getShapes().size()!=it.value().get<size_t>()) throw std::runtime_error("COLLISION_GEOMETRY_MISSING:"+it.key());
+        for(const auto& shape:link->getShapes()) {
+          if(shape->type==shapes::MESH && static_cast<const shapes::Mesh*>(shape.get())->triangle_count==0) throw std::runtime_error("EMPTY_COLLISION_MESH");
+        }
+      }
+      bound_policy=req.at("collision_policy");bound_tools=req.at("tool_links");
       base=std::make_shared<planning_scene::PlanningScene>(model);
       identity=req.at("identity");
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}}};
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
-    if(op!="fk" && op!="plan" && op!="compose" && op!="inspect") throw std::runtime_error("UNKNOWN_OPERATION");
+    if(op!="fk" && op!="plan" && op!="compose" && op!="inspect" && op!="validate") throw std::runtime_error("UNKNOWN_OPERATION");
     if(req.at("identity")!=identity) throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
     auto state=base->getCurrentState();
     auto q=req.at("q_start").get<std::vector<double>>();
@@ -198,6 +207,37 @@ public:
         {"target_in_world",!attached_id.empty() && scene->getWorld()->hasObject(attached_id)},
         {"permissions",permissions},{"base_attached_count",base_bodies.size()}};
     }
+    std::shared_ptr<m710::Clearance> clearance;
+    if(op=="plan" || op=="validate") {
+      if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
+      if(req.at("clearance_policy").at("source_policy")!=bound_policy || req.at("clearance_policy").at("tool_links")!=bound_tools)
+        throw std::runtime_error("EXECUTABLE_POLICY_MISMATCH");
+      clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"));
+      // Environment + ACM belong to this immutable candidate. The predicate
+      // always checks OMPL's supplied state, including its real attached body.
+      scene->setStateFeasibilityPredicate([clearance](const moveit::core::RobotState& current,bool verbose){return clearance->check(current,verbose);});
+    }
+    auto path_check=[&](const J& path) {return clearance->checkPath(scene->getCurrentState(),path,req.at("clearance_policy").at("edge_resolution_rad"));};
+    if(op=="validate") {
+      collision_detection::CollisionRequest old_request;old_request.contacts=true;old_request.max_contacts=20;
+      collision_detection::CollisionResult old_result;scene->checkCollision(old_request,old_result);
+      clearance->phase="diagnostic";
+      const bool valid=clearance->check(scene->getCurrentState());const J failure=clearance->last_failure;
+      J path_failure=nullptr;if(req.contains("probe_path")) {clearance->phase="output";path_failure=path_check(req.at("probe_path"));}
+      return {{"status","SUCCESS"},{"legacy_intersection_valid",!old_result.collision},{"native_valid",valid},
+        {"failure",failure},{"path_failure",path_failure},{"clearance",clearance->evidence()},
+        {"world_count",scene->getWorld()->size()},{"attached_id",attached_id},{"pipeline_calls",calls}};
+    }
+    if(op=="plan") {
+      if(!clearance->check(scene->getCurrentState())) return {{"status","INVALID_START_CLEARANCE"},{"failure",clearance->last_failure},{"clearance",clearance->evidence()},{"pipeline_calls",calls}};
+      if(req.contains("q_goal")) {
+        auto goal=req.at("q_goal").get<std::vector<double>>();
+        if(goal.size()!=names.size()) throw std::runtime_error("INVALID_GOAL");
+        for(double x:goal) if(!std::isfinite(x)) throw std::runtime_error("INVALID_GOAL");
+        auto end=scene->getCurrentState();end.setJointGroupPositions("manipulator",goal);end.update();
+        if(!clearance->check(end)) return {{"status","INVALID_GOAL_CLEARANCE"},{"failure",clearance->last_failure},{"clearance",clearance->evidence()},{"pipeline_calls",calls}};
+      }
+    }
     collision_detection::CollisionRequest cr; cr.contacts=true; cr.max_contacts=20;
     collision_detection::CollisionResult collision; scene->checkCollision(cr,collision);
     if(collision.collision) {
@@ -235,10 +275,10 @@ public:
       std::map<std::string,double> joints;for(size_t i=0;i<names.size();++i) joints[names[i]]=goal[i];motion->setGoal(joints);
     }
     auto* motion_stage=motion.get();
-    task.add(std::move(motion)); auto planning=Clock::now(); ++requests; task.plan(1);double plan_s=seconds(planning);
+    task.add(std::move(motion)); auto planning=Clock::now(); ++requests; clearance->phase="search"; task.plan(1);double plan_s=seconds(planning);
     J out={{"status","SEARCH_EXHAUSTED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_attempt_index",requests},{"pipeline_calls",calls},
       {"scene_import_s",import_s},{"scene_updated",changed},{"mtc_plan_s",plan_s},{"world_count",scene->getWorld()->size()},
-      {"attached_id",attached_id},{"resident_seed",seed},{"request_seed",req.at("seed")},{"authoritative_status","NOT_RUN"}};
+      {"attached_id",attached_id},{"resident_seed",seed},{"request_seed",req.at("seed")},{"authoritative_status","NOT_RUN"},{"clearance",clearance->evidence()}};
     if(task.solutions().empty()) {std::ostringstream why; task.explainFailure(why);out["detail"]=why.str(); J failures=J::array();for(const auto& failure:motion_stage->failures()) failures.push_back(failure->comment());out["failure_comments"]=failures;return out;}
     moveit_task_constructor_msgs::msg::Solution msg;task.solutions().front()->toMsg(msg);
     J points=J::array();
@@ -254,6 +294,11 @@ public:
       for(auto& p:sub.trajectory.joint_trajectory.points) points.push_back({{"q",p.positions},{"v",p.velocities},{"a",p.accelerations},
         {"t",p.time_from_start.sec+p.time_from_start.nanosec*1e-9}});
     }
+    clearance->phase="output"; J path=J::array();for(const auto& p:points) path.push_back(p.at("q"));
+    auto output_check=Clock::now();J native_failure=path_check(path);
+    out["native_output_check_s"]=seconds(output_check);out["clearance"]=clearance->evidence();
+    if(!native_failure.is_null()) {out["status"]="NATIVE_PATH_REJECTED";out["failure"]=native_failure;out["points"]=points;out["total_s"]=seconds(begin);return out;}
+    out["native_output_status"]="PASS";
     out["status"]="SUCCESS";out["points"]=points;out["joint_names"]=names;out["total_s"]=seconds(begin);
     out["time_parameterization"]=pipeline=="ompl"?"IPTP_preserves_waypoints":"Pilz_original";return out;
   }

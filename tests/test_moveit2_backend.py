@@ -44,13 +44,14 @@ def test_authority_rejection_continues_ompl_and_deduplicates():
     c.native=SimpleNamespace(request=request);c.native_identity={};c.native_joint_names=JOINT_NAMES
     c._candidate_identity="fixed-existing-candidate"
     c.native_evidence=[];c.native_verified=[];c.native_compliant=set();c.stack_carton_names=set()
-    c.robot_state_validator=SimpleNamespace(base_support_obstacle_name='chassis')
-    c.collision_policy=SimpleNamespace(allows_stack_planning_contact=lambda _:False,compliant_cup_neighbor_contact_mode='ignore')
-    c.budget=SimpleNamespace(stage_connection_attempts=2);c.flange_from_virtual_task_tcp=np.eye(4)
+    c.robot_state_validator=SimpleNamespace(base_support_obstacle_name='chassis',contact_target_name=None)
+    c.native_tools=[]
+    c.collision_policy=SimpleNamespace(poc_pair_clearance=True,allows_stack_planning_contact=lambda _:False,compliant_cup_neighbor_contact_mode='ignore',to_mapping=lambda:{})
+    c.budget=SimpleNamespace(stage_connection_attempts=2,receiver_runtime_clearance_reserve_m=.003,edge_resolution_rad=.04);c.flange_from_virtual_task_tcp=np.eye(4)
     c._deadline_reached=lambda:False;c._context_identity=lambda *a,**k:'fixed'
     def check(path,*a,**k):
         checks.append(path);return dict(reason='PAIR_GAP',objects=['tool','wall']) if len(checks)==1 else None
-    c._path_failure=check
+    c._path_failure=check;c._state_failure=lambda *a,**k:None
     path,failure,evidence=c._native_plan(np.zeros(6),np.full(6,.1),[],seed=1,stage='pregrasp')
     assert failure is None and len(path)==3 and len(checks)==2
     assert calls==[('pilz_industrial_motion_planner','PTP'),('ompl','RRTConnectkConfigDefault'),('ompl','RRTConnectkConfigDefault')]
@@ -100,3 +101,14 @@ def test_actual_nonzero_start_velocity_is_not_replaced_by_zero():
     scene=SimpleNamespace(snapshot={"robot":{"qd_rad_s":[0.,0.,.01,0.,0.,0.]}})
     with pytest.raises(MoveItUnavailable,match="START_VELOCITY"):
         MoveItLayoutConnector.from_existing(SimpleNamespace(),scene)
+
+
+def test_capability_is_adapter_scope_and_has_no_reachability_claim():
+    from unloading_sim.moveit2_backend import linear_capability
+    a=np.eye(4);b=a.copy();b[0,3]=2.
+    assert linear_capability(a,b,a,stage='transit',location='test')['supported']
+    b[:3,:3]=[[0.,-1.,0.],[1.,0.,0.],[0.,0.,1.]]
+    result=linear_capability(a,b,a,stage='transit',location='test')
+    assert not result['supported']
+    assert result['implementation_scope']=='adapter_constant_orientation_only_not_a_Pilz_limitation'
+    assert result['flange_from_task_tcp']==a.tolist()

@@ -19,7 +19,7 @@ from unloading_sim.moveit2_backend import MoveItLayoutConnector
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--suite',choices=['stages','task'],default='stages')
+    p.add_argument('--suite',choices=['stages','task','capability'],default='stages')
     p.add_argument('--backend',choices=['core','moveit2'],default='moveit2')
     p.add_argument('--case', action='append', help='Run only named directed motion cases')
     p.add_argument('--config',default='configs/validation/m710id70_proof_of_concept.yaml')
@@ -89,6 +89,10 @@ def main():
             from unloading_sim.history_candidates import compatible_hint, HistoryPolicy
             hint=compatible_hint(fixture,scene,c,target,built.evidence,HistoryPolicy())
             hint['attempt_provenance']={'candidate_id':'71070000fixed_candidate','source':'frozen_candidate.json'}
+            if args.suite=='capability':
+                if args.backend!='moveit2': raise ValueError('capability suite requires moveit2')
+                def forbidden(*a,**k): raise AssertionError('EARLY_CAPABILITY_MISSED_HEAVY_CHECK')
+                c._path_failure=forbidden;c._state_failure=forbidden
             with c._contact_context():
                 task_started=perf_counter()
                 result=c.plan(target=target,face=old['face'],requested_virtual_contact=np.asarray(old['contact']['requested_virtual_task_tcp_pose_world']),
@@ -99,6 +103,11 @@ def main():
             report['results'].append(dict(success=result.success,failure=result.failure,segment=result.segment,
                 attempts=result.attempts,statistics=result.statistics,end_to_end_s=perf_counter()-task_started,
                 scope='one fixed historical candidate, current process reconstruction and authoritative checks; no new candidate sweep'))
+        if args.suite=='capability':
+            assert not result.success and result.failure['reason']=='UNSUPPORTED_ROTATING_TASK_TCP_LIN'
+            assert c.native_evidence==[]
+            report['heavy_state_or_edge_checks']=0
+            report['capability_checks']=c.capability_evidence
         report['status']='COMPLETED'
     except Exception as exc:
         report.update(status='ERROR',error=str(exc),traceback=traceback.format_exc());print(report['traceback'],flush=True)
