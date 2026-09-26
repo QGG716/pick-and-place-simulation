@@ -18,6 +18,7 @@ from unloading_sim.planning_profile import DEFAULT_MOTION
 
 
 def main(args):
+    source_identity = motion_implementation_identity(Path.cwd())
     motion_path=args.history/'planning/motion.json';state_path=args.history/'inputs/actual_remaining_state.json'
     prior=json.loads(motion_path.read_text(encoding='utf-8'))['selected_trajectory_segment']
     policy=load_layout_motion_policy(DEFAULT_MOTION);scene=build_verified_motion_input(policy)
@@ -37,7 +38,8 @@ def main(args):
         suction=scene.policy.data['suction'],seed=71070)
     document=dict(scope='NEW_SINGLE_CANDIDATE_COMPLETE_CONNECTOR_PLAN',
         historical_path_revalidation=False,historical_path_supplied=False,
-        elapsed_seconds=perf_counter()-started,source=motion_implementation_identity(Path.cwd()),
+        elapsed_seconds=perf_counter()-started,source=source_identity,
+        source_unchanged_at_exit=(source_identity == motion_implementation_identity(Path.cwd())),
         input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (motion_path,state_path)},
         target=target.name,result=asdict(result),isaac_executed=False,
         execution_ready=False,independent_preflight_run=False)

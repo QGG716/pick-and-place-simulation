@@ -104,7 +104,16 @@ def main(args):
             recorded.clear();before=dict(owner._statistics);contexts=dict(getattr(owner,"context_statistics",{}))
             started=perf_counter();path,failure,trace=run();seconds=perf_counter()-started
             delta={key:owner._statistics[key]-before[key] for key in before if isinstance(before[key],(int,float))}
+            def completions(value):
+                if isinstance(value,dict):
+                    stamp=value.get('validation_completed_monotonic')
+                    if stamp is not None and stamp>=started:yield stamp-started
+                    for child in value.values():yield from completions(child)
+                elif isinstance(value,list):
+                    for child in value:yield from completions(child)
+            first=min(completions(trace),default=None)
             return dict(temperature=temperature,seconds=seconds,path_nodes=len(path),failure=failure,
+                first_checked_free_connection_seconds=first,
                 selected_method=trace.get('selected_method'),trace=trace,work=delta,
                 context_delta={k:v-contexts.get(k,0) for k,v in getattr(owner,"context_statistics",{}).items()},
                 rrt_interface_calls=len(recorded),rrt_extensions=sum(r.get('extension_attempts',0) for r in recorded),
@@ -115,7 +124,7 @@ def main(args):
         reset();measure('prime');prof=cProfile.Profile();prof.enable();warm=measure('profile_warm');prof.disable()
         stats=pstats.Stats(prof).stats
         profile={label:sum(v[0] for key,v in stats.items() if key[2] in names) for label,names in {
-            'full_context_builds':{'_validation_context'},'context_hashes':{'_identity'},
+            'full_context_builds':{'_validation_context'},'sha256_calls':{'<built-in method _hashlib.openssl_sha256>'},
             'json_calls':{'dumps'}}.items()}
         result=dict(case=name,runs=observations,median_seconds={t:statistics.median(r['seconds'] for r in observations if r['temperature']==t)
             for t in ('cold','warm')},warm_profile=profile)

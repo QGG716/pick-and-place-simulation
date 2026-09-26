@@ -289,3 +289,18 @@ def test_ik_endpoint_unknown_preserves_cause_without_rrt(monkeypatch):
     assert not path and failure['reason'] == 'ENDPOINT_GEOMETRY_UNKNOWN'
     assert failure['validation']['status'] == 'INDETERMINATE'
     assert trace['endpoint_checks'] and not trace['rrt_called']
+
+
+def test_production_plan_does_not_restart_a_cancelled_or_stale_branch(monkeypatch):
+    c = connector(); calls = []
+    failure = dict(reason='VALIDATION_CONTEXT_CHANGED', validation=dict(status='INDETERMINATE'))
+    def interrupted(**kwargs):
+        calls.append(kwargs)
+        return None, failure, {}
+    monkeypatch.setattr(c, '_plan_branch', interrupted)
+    target=OBB([1.,0.,1.],[.1]*3,np.eye(3),'target','carton')
+    result=c.plan(target=target,face='front',requested_virtual_contact=c.robot.fk(GOAL),
+        grasp_candidates=[dict(q_rad=GOAL),dict(q_rad=GOAL)],home_q=START,
+        all_obstacles=[target],receiver=target,support_names=(),suction={},seed=7)
+    assert not result.success and len(calls)==1
+    assert result.failure==failure

@@ -3669,7 +3669,7 @@ class LayoutTrajectoryConnector:
                     },
                 )
             last_failure = failure
-            if self._deadline_reached():
+            if interrupts_generation(failure) or self._deadline_reached():
                 break
         if not attempts and self._deadline_reached():
             last_failure = {"reason": "PLANNING_WALL_CLOCK_DEADLINE", "stage": "request"}

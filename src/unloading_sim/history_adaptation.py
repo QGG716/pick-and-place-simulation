@@ -9,7 +9,7 @@ from .ik import solve_ik
 from .release_motion import (ReleasePolicy, verify_release_prediction, release_flight_envelope,
                             departure_sweep, reception_footprint_audit)
 from .validation_physics import RigidAttachment
-from .stage_motion_policy import MotionPurpose, GenerationMethod
+from .stage_motion_policy import MotionPurpose, GenerationMethod, interrupts_generation
 
 
 def solve_local(c, pose, seed):
@@ -157,7 +157,7 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
             extraction=stages["extraction"], released_tracker=tracker, payload_obstacles=payload_obstacles,
             placement=placement, selected_supports=supports, trace=trace, seed=seed,
             release_height=height, history_hint=hint)
-        if segment is not None:
+        if segment is not None or interrupts_generation(failure):
             break
     return segment, failure, trace
 
