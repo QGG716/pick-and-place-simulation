@@ -12,7 +12,7 @@ from unloading_sim.tesseract_ompl_backend import TesseractOMPLBackend, create_fr
 
 
 def inputs():
-    scene = dict(joint_limits=[[-2., 2.]], joint_names=["J1"], constraints={"motion": "free_joint_space", "events": [], "edge_resolution_rad": .055},
+    scene = dict(joint_limits=[[-2., 2.]], joint_names=["J1"], constraints={"motion": "free_joint_space", "events": [], "edge_resolution_rad": .055, "point_motion_bound_m": .00125, "lever_arm_m": 4.},
                  frames={}, attachment=None, stage="pregrasp", model_fingerprint="model",
                  tool_fingerprint="tool", policy_fingerprint="policy", mesh_files={})
     scene["fingerprint"] = fingerprint(scene)
@@ -147,3 +147,44 @@ def test_legacy_rejects_changed_snapshot_and_request_policy():
     s["attachment"] = {"changed": True}
     result = backend.plan(r, s, lambda p: pytest.fail("stale snapshot reached authority"))
     assert result.status == PlanningStatus.STALE_SCENE
+
+
+@pytest.mark.parametrize("key,value", [("lever_arm_m", 2.), ("lever_arm_m", 8.),
+    ("point_motion_bound_m", .0025), ("point_motion_bound_m", .000625),
+    ("lever_arm_m", 0.), ("lever_arm_m", -4.), ("lever_arm_m", float("nan")),
+    ("point_motion_bound_m", float("inf")), ("edge_resolution_rad", .11),
+    ("edge_resolution_rad", 0.), ("lever_arm_m", True)])
+def test_subdivision_changes_and_invalid_values_explicitly_rejected(key, value):
+    r, s = inputs(); w = FakeWorker()
+    r = replace(r, constraints={**r.constraints, key: value})
+    result = TesseractOMPLBackend(worker=w).plan(r, s, lambda p: pytest.fail("unsupported grid reached authority"))
+    assert result.status == PlanningStatus.UNSUPPORTED_CONSTRAINT and not w.calls
+
+
+def test_default_and_repair_rule_numeric_contract():
+    from unloading_sim.planning_contract import subdivision_rule
+    r, s = inputs()
+    assert subdivision_rule(r.constraints)["l1_resolution_rad"] == .0003125
+    assert subdivision_rule(r.constraints, 1)["l1_resolution_rad"] == .00015625
+    assert subdivision_rule({**r.constraints, "edge_resolution_rad": .025})["edge_resolution_rad"] == .025
+    with pytest.raises(ValueError): subdivision_rule(r.constraints, 8)
+
+
+@pytest.mark.parametrize("change,status", [("cancel", PlanningStatus.CANCELLED),
+    ("revision", PlanningStatus.STALE_SCENE), ("wall", PlanningStatus.BUDGET_EXHAUSTED)])
+def test_returned_candidate_guarded_before_authority(change, status, monkeypatch):
+    import unloading_sim.tesseract_ompl_backend as module
+    clock=[0.]; cancelled=[False]; revision=["r1"]
+    monkeypatch.setattr(module,"perf_counter",lambda:clock[0])
+    class Worker(FakeWorker):
+        def call(self,data,cancel):
+            result=super().call(data,cancel)
+            if change == "cancel": cancelled[0]=True
+            if change == "revision": revision[0]="r2"
+            if change == "wall": clock[0]=2.
+            return result
+    r,s=inputs()
+    r=replace(r,cancelled=lambda:cancelled[0],current_revision=lambda:revision[0],
+              budget=PlanningBudget(wall_time_s=1.))
+    result=TesseractOMPLBackend(worker=Worker()).plan(r,s,lambda p:pytest.fail("obsolete candidate reached authority"))
+    assert result.status == status and not result.path

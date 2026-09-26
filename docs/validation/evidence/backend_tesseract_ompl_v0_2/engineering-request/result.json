@@ -1,0 +1,218 @@
+{
+  "status": "BUDGET_EXHAUSTED",
+  "backend": "tesseract_ompl",
+  "candidate_found": true,
+  "exact_solution": false,
+  "native_validated": false,
+  "authority_validated": false,
+  "path": [],
+  "diagnostics": {
+    "request_id": "empty_detour",
+    "seed": 71070,
+    "stage": "pregrasp",
+    "scene_revision": "5f9e06b478ed009dba1255b5f1a9fb1a1b86af8e367732fbc1bd3a23029078e0",
+    "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+    "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+    "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "attempts": [
+      {
+        "approximate_solution_found": true,
+        "cache": {
+          "capacity": 8192,
+          "refinement": 0,
+          "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+          "scope": "fresh per immutable request, exact IEEE state bytes"
+        },
+        "candidate_found": true,
+        "collision_object_count": 255,
+        "computed_rejections": {
+          "NATIVE_COLLISION": 266
+        },
+        "counter_semantics": {
+          "request_guard": 3200000,
+          "state_checks": "actual uncached computations, including bounds/kinematic rejection",
+          "state_requests": "all valid() calls including cache hits and interrupted calls",
+          "subdivision_samples": "grid sample requests, including cached and interrupted samples"
+        },
+        "counters": {
+          "actual_state_computations": 100000,
+          "cache_evictions": 91808,
+          "cache_hits": 222,
+          "collision_queries": 100000,
+          "edge_checks": 223,
+          "incomplete_edges": 1,
+          "invalid_edges": 135,
+          "ompl_iterations": null,
+          "state_checks": 100000,
+          "state_requests": 100223,
+          "subdivision_samples": 100044,
+          "termination_checks": 100490,
+          "valid_edges": 87
+        },
+        "direct_valid": false,
+        "effective_rule": {
+          "base_l1_resolution_rad": 0.0003125,
+          "edge_resolution_rad": 0.04,
+          "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+          "l1_resolution_rad": 0.0003125,
+          "lever_arm_m": 4.0,
+          "name": "fixed_4m_1.25mm_l1_grid_v1",
+          "point_motion_bound_m": 0.00125,
+          "refinement": 0
+        },
+        "environment_reused": false,
+        "exact_solution": false,
+        "failure": null,
+        "first_failed_sample": {
+          "classification": "STATE_REJECTION",
+          "edge": 0,
+          "failure": {
+            "distance_m": -0.005521780020839969,
+            "jacobian_condition": 5.457589935975545,
+            "joint_margin_rad": 1.029278152635796,
+            "maximum_jacobian_condition": 10000.0,
+            "pair": [
+              "carton_l05_c03",
+              "tool_rigid_0"
+            ],
+            "radial_limit_m": 2.106,
+            "radial_m": 1.1090168256114863,
+            "reason": "NATIVE_COLLISION",
+            "required_joint_margin_rad": 0.0174532925199433,
+            "required_margin_m": 0.005,
+            "tcp_world": [
+              [
+                0.8816680083625063,
+                -0.04618677767200732,
+                0.4696044128821281,
+                -0.09868962562569158
+              ],
+              [
+                0.22855322068619724,
+                -0.8288710916951485,
+                -0.5106232844926475,
+                0.23778917284183093
+              ],
+              [
+                0.4128255664854808,
+                0.5575298152748152,
+                -0.7202329878140632,
+                1.719492538560326
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "fraction": 0.4999756584392191,
+          "index": 10270,
+          "q_rad": [
+            0.10172341296423115,
+            -0.19855361686145445,
+            -0.37571189521963944,
+            -2.423319268521645,
+            1.0053977080144187,
+            -0.27137104532122214
+          ],
+          "subdivisions": 20541
+        },
+        "moving_collision_object_count": 208,
+        "native_validated": false,
+        "ompl_status": "Approximate solution",
+        "path": [],
+        "profile": {
+          "enabled": true,
+          "seconds": {
+            "budget_cancel_poll_s": 0.285369498999997,
+            "collision_transform_s": 12.143726817999836,
+            "edge_check_inclusive_s": 307.4957331010002,
+            "edge_schedule_s": 0.05048915699800196,
+            "fcl_contact_test_s": 285.8885093040025,
+            "fk_scene_state_s": 6.4959087959999975,
+            "jacobian_svd_s": 0.5975509840000025,
+            "state_check_inclusive_s": 307.77904650500204
+          }
+        },
+        "rejections": {
+          "BUDGET_EXHAUSTED": 1,
+          "NATIVE_COLLISION": 266
+        },
+        "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+        "search_progress": {
+          "approximate_goal_distance": 1.0383452429017008,
+          "goal_vertices": 1,
+          "iterations": null,
+          "start_vertices": 1,
+          "tree_edges": 87,
+          "tree_vertices": 89
+        },
+        "static_collision_object_count": 47,
+        "status": "BUDGET_EXHAUSTED",
+        "termination_detail": "ACTUAL_STATE_COMPUTATION_LIMIT",
+        "timings": {
+          "direct_check_s": 0.002606169,
+          "endpoint_check_s": 0.005343032,
+          "environment_init_s": 0.213383609,
+          "native_total_s": 308.045680137,
+          "ompl_solve_s": 307.823977588,
+          "path_conversion_s": 0.0,
+          "worker_roundtrip_s_inclusive": 308.15947238728404,
+          "worker_cold_start_s": 0.04795668087899685
+        },
+        "versions": {
+          "fcl": "0.7.0",
+          "implementation": "native C++17 worker",
+          "manager": "FCLDiscreteBVHManager",
+          "ompl": "1.7.0",
+          "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+          "tesseract": "0.35.0",
+          "tesseract_planning": null
+        }
+      }
+    ],
+    "backend_versions": {
+      "fcl": "0.7.0",
+      "implementation": "native C++17 worker",
+      "manager": "FCLDiscreteBVHManager",
+      "ompl": "1.7.0",
+      "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+      "tesseract": "0.35.0",
+      "tesseract_planning": null
+    },
+    "authority_rejections": 0,
+    "termination": "BUDGET_EXHAUSTED"
+  },
+  "timings": {
+    "input_validation_s": 0.04272126406431198,
+    "direct_check_s": 0.002606169,
+    "endpoint_check_s": 0.005343032,
+    "environment_init_s": 0.213383609,
+    "native_total_s": 308.045680137,
+    "ompl_solve_s": 307.823977588,
+    "path_conversion_s": 0.0,
+    "worker_roundtrip_s_inclusive": 308.15947238728404,
+    "worker_cold_start_s": 0.04795668087899685,
+    "request_total_s": 308.25238672085106
+  },
+  "counters": {
+    "subdivision_samples": 100044,
+    "collision_queries": 100000,
+    "actual_state_computations": 100000,
+    "cache_evictions": 91808,
+    "ompl_iterations": null,
+    "state_requests": 100223,
+    "cache_hits": 222,
+    "invalid_edges": 135,
+    "state_checks": 100000,
+    "incomplete_edges": 1,
+    "edge_checks": 223,
+    "termination_checks": 100490,
+    "valid_edges": 87
+  },
+  "deliverable_stage_path": false,
+  "complete_task_executable": false
+}

@@ -1,0 +1,63 @@
+{
+  "status": "BUDGET_EXHAUSTED",
+  "deliverable": false,
+  "complete_task_executable": false,
+  "exact": false,
+  "approximate": true,
+  "authority_executed": false,
+  "termination": "ACTUAL_STATE_COMPUTATION_LIMIT",
+  "counters": {
+    "actual_state_computations": 100000,
+    "cache_evictions": 91808,
+    "cache_hits": 222,
+    "collision_queries": 100000,
+    "edge_checks": 223,
+    "incomplete_edges": 1,
+    "invalid_edges": 135,
+    "ompl_iterations": null,
+    "state_checks": 100000,
+    "state_requests": 100223,
+    "subdivision_samples": 100044,
+    "termination_checks": 100490,
+    "valid_edges": 87
+  },
+  "search_progress": {
+    "approximate_goal_distance": 1.0383452429017008,
+    "goal_vertices": 1,
+    "iterations": null,
+    "start_vertices": 1,
+    "tree_edges": 87,
+    "tree_vertices": 89
+  },
+  "native_timings": {
+    "direct_check_s": 0.002606169,
+    "endpoint_check_s": 0.005343032,
+    "environment_init_s": 0.213383609,
+    "native_total_s": 308.045680137,
+    "ompl_solve_s": 307.823977588,
+    "path_conversion_s": 0.0,
+    "worker_roundtrip_s_inclusive": 308.15947238728404,
+    "worker_cold_start_s": 0.04795668087899685
+  },
+  "profile": {
+    "enabled": true,
+    "seconds": {
+      "budget_cancel_poll_s": 0.285369498999997,
+      "collision_transform_s": 12.143726817999836,
+      "edge_check_inclusive_s": 307.4957331010002,
+      "edge_schedule_s": 0.05048915699800196,
+      "fcl_contact_test_s": 285.8885093040025,
+      "fk_scene_state_s": 6.4959087959999975,
+      "jacobian_svd_s": 0.5975509840000025,
+      "state_check_inclusive_s": 307.77904650500204
+    }
+  },
+  "rejections": {
+    "BUDGET_EXHAUSTED": 1,
+    "NATIVE_COLLISION": 266
+  },
+  "request_total_s": 308.25238672085106,
+  "engineering_requests": 1,
+  "additional_searches": 0,
+  "worker_sha256": "8196a41723e4baa94aec3bd164cf8665e4f2857a819c087b3e9b1e61139c20fe"
+}

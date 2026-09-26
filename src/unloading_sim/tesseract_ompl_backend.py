@@ -13,7 +13,7 @@ from time import perf_counter
 import numpy as np
 
 from .planning_contract import (FreeMotionRequest, FreeMotionResult, PlanningStatus,
-                                fingerprint, validate_request)
+                                fingerprint, validate_request, subdivision_rule)
 
 
 class NativeWorker:
@@ -106,7 +106,7 @@ class TesseractOMPLBackend:
         result = FreeMotionResult(PlanningStatus.INTERNAL_ERROR, self.name)
         attempts = []
         remaining = request.budget.max_state_checks
-        resolution = .0003125
+        refinement = 0
         seen = set()
         result.diagnostics.update(request_id=request.request_id, seed=request.seed,
             stage=request.stage,
@@ -116,11 +116,11 @@ class TesseractOMPLBackend:
         try:
             # Own a JSON snapshot rather than lending a mutable caller dictionary
             # to a worker while another thread updates it.
-            scene = json.loads(json.dumps(scene, allow_nan=False))
             invalid = validate_request(request, scene["joint_limits"])
             if invalid is not None:
                 result.status = invalid
                 return result
+            scene = json.loads(json.dumps(scene, allow_nan=False))
             unsigned = {k: v for k, v in scene.items() if k != "fingerprint"}
             if fingerprint(unsigned) != scene["fingerprint"] or request.scene_fingerprint != scene["fingerprint"]:
                 result.status = PlanningStatus.STALE_SCENE
@@ -151,7 +151,9 @@ class TesseractOMPLBackend:
                     break
                 message = dict(scene=scene, q_start=request.q_start, q_goal=request.q_goal,
                     seed=request.seed, max_state_checks=remaining, wall_time_s=wall or 0.,
-                    l1_resolution_rad=resolution)
+                    refinement=refinement, range_rad=.18,
+                    l1_resolution_rad=subdivision_rule(scene["constraints"], refinement)["l1_resolution_rad"],
+                    profile=getattr(self, "profile", False))
                 raw = self.worker.call(message, request.cancelled)
                 attempts.append(raw)
                 consumed = int(raw.get("counters", {}).get("state_checks", 0))
@@ -167,6 +169,17 @@ class TesseractOMPLBackend:
                 result.diagnostics["backend_versions"] = raw.get("versions")
                 if raw.get("status") != "CANDIDATE":
                     result.status = PlanningStatus(raw.get("status", "INTERNAL_ERROR"))
+                    break
+                # The worker may finish after cancellation, revision change or
+                # deadline expiry. Do not start the expensive authority pass.
+                if request.cancelled():
+                    result.status = PlanningStatus.CANCELLED
+                    break
+                if request.current_revision and request.current_revision() != request.scene_revision:
+                    result.status = PlanningStatus.STALE_SCENE
+                    break
+                if request.budget.wall_time_s is not None and perf_counter()-started >= request.budget.wall_time_s:
+                    result.status = PlanningStatus.BUDGET_EXHAUSTED
                     break
                 converted = perf_counter()
                 path = np.asarray(raw.get("path"), float)
@@ -217,7 +230,7 @@ class TesseractOMPLBackend:
                     raw["repair"] = "MODEL_OR_POLICY_MISMATCH_STOP"
                     break
                 raw["repair"] = "REFINE_GRID_REBUILD_PLANNER"
-                resolution *= .5
+                refinement += 1
             result.diagnostics["authority_rejections"] = sum("authority_rejection" in a for a in attempts)
             result.diagnostics["termination"] = result.status.value
             return result
@@ -232,7 +245,7 @@ class TesseractOMPLBackend:
                     if "rejected_state_native_probe" in attempt else [attempt])]
                 keys = {key for call in calls for key in call.get("counters", {})}
                 result.counters = {key: sum(call["counters"][key] for call in calls)
-                                   if all(key in call.get("counters", {}) for call in calls) else None
+                                   if all(call.get("counters", {}).get(key) is not None for call in calls) else None
                                    for key in keys}
                 for key in {key for call in calls for key in call.get("timings", {})}:
                     result.timings[key] = sum(call.get("timings", {}).get(key, 0.) for call in calls)

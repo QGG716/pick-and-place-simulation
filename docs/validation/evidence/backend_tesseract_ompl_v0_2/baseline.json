@@ -1,0 +1,28 @@
+{
+  "review_baseline": "65768d92ee8553a71d6b3ff0f669a0d7520b4d04",
+  "local_head": "65768d92ee8553a71d6b3ff0f669a0d7520b4d04",
+  "remote_head": "65768d92ee8553a71d6b3ff0f669a0d7520b4d04",
+  "branch": "feat/v0.5-backend-tesseract-ompl",
+  "initial_worktree_clean": true,
+  "previous_final_worker_sha256": "ee1fd217ed8abf6bf38d88d74825df96fe0db24bc37397b7cf9786960da1285f",
+  "previous_comparison_worker_sha256": "8cb22acfb19898d8fbdd271cc1aa5e5270993b3ba5f405cd307ba120f1dd7c9e",
+  "legacy_path_saved": true,
+  "legacy_path_waypoints": 29,
+  "source_path_indices": [
+    78,
+    208
+  ],
+  "legacy_rerun": false,
+  "environment_reinstalled": false,
+  "isaac_started": false,
+  "full_task_started": false,
+  "historical_metadata_projection": {
+    "removed_fields": [
+      "collision_objects",
+      "joints[].type"
+    ],
+    "current_scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+    "projected_original_fingerprint": "1c44147b549f19b9895d1f991aa6abda28a3a1dcff84d5310ed8dcea7d550c83",
+    "exact_match": true
+  }
+}

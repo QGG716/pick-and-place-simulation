@@ -1,0 +1,6 @@
+{"event": "current_authority_path_begin"}
+{"event": "current_authority_path_finish"}
+{"event": "native_path_begin"}
+{"event": "native_path_finish"}
+{"event": "same_q_comparison_finish"}
+{"event": "audit_done"}

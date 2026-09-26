@@ -1,0 +1,63 @@
+{
+  "review_baseline": "65768d92ee8553a71d6b3ff0f669a0d7520b4d04",
+  "config_manifest": "source-config-sha256.json",
+  "artifact_manifest": "evidence-index.json",
+  "builds": [
+    {
+      "name": "pre_optimization_audit",
+      "worker": "06ca6576066cf36222154c007b147e726bc19af7257ff9ef7aab796fdb141d81",
+      "source": "worker-audit-source.cpp",
+      "artifacts": [
+        "baseline-audit/*",
+        "fixed-states-baseline.json",
+        "build-audit.log",
+        "audit-progress.log"
+      ],
+      "configuration": "baseline-audit/scene.json.gz; original legacy path/request in baseline-audit/audit.json",
+      "source_sha256": "48aaf427ab4478d388144a76f744a604e5b5b51a4c2641ada27e802e1d2a46e8"
+    },
+    {
+      "name": "rejected_contact_container_build",
+      "worker": "ce5a2e13ad77f936d3739e1a2ba4cc9f5a9089cdef68c9dc3c82b981257376c1",
+      "source": "before-contact-release-worker.cpp",
+      "artifacts": [
+        "before-contact-release-*",
+        "directed-tests.log"
+      ],
+      "configuration": "tests and modules preserved in initial-update-source.tar.gz",
+      "source_sha256": "b2854aa42e1f70daa30b40e765b8efd8376ddc0162a99faca420d2375ebda0b2"
+    },
+    {
+      "name": "intermediate_before_refinement_guard",
+      "worker": "b8f2577e891cf3419038791d12972d923704c566ab074657e696a8838aad7eca",
+      "source": "before-refinement-worker.cpp",
+      "artifacts": [
+        "final-audit/*",
+        "final-audit-progress.log",
+        "before-refinement-*"
+      ],
+      "configuration": "final-audit/scene.json.gz; directed test source",
+      "source_recovery": "exactly reconstructed input-guard-only diff; SHA256 matches source identity already captured in this audit",
+      "source_sha256": "bf7199dfd21fec3ab69c9929393c5c9aa893a16aea14b07298322f98ce16dcd8"
+    },
+    {
+      "name": "final",
+      "worker": "8196a41723e4baa94aec3bd164cf8665e4f2857a819c087b3e9b1e61139c20fe",
+      "source": "native/tesseract_ompl/worker.cpp (repository root); also validated-source.tar.gz",
+      "source_sha256": "03fc4729ae4b37cd9b233a210f9dac3fc6e34a08abca291dbd9491e76f4ca737",
+      "artifacts": [
+        "final-audit-validated/*",
+        "final-audit-validated-progress.log",
+        "engineering-*",
+        "native-tests.*",
+        "known-path-evidence-test.log",
+        "fast-rejection-*",
+        "profile-overhead.json",
+        "environment.json",
+        "build-final.log",
+        "final-build.sha256"
+      ],
+      "configuration": "engineering-request/request.json; final-audit-validated/scene.json.gz; tests in validated-source.tar.gz plus final-test-source.py; profile-driver.py"
+    }
+  ]
+}

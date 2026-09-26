@@ -1,0 +1,32 @@
+{
+  "baseline-audit/scene.json.gz": {
+    "uncompressed_file": "baseline-audit/scene.json",
+    "uncompressed_sha256": "2a4692cae94a0d86db8ccfec8ef9ec3072dfe0c4280e8bb69314b7651aa701c7",
+    "uncompressed_bytes": 5538793
+  },
+  "final-audit/scene.json.gz": {
+    "uncompressed_file": "final-audit/scene.json",
+    "uncompressed_sha256": "2a4692cae94a0d86db8ccfec8ef9ec3072dfe0c4280e8bb69314b7651aa701c7",
+    "uncompressed_bytes": 5538793
+  },
+  "final-audit-validated/scene.json.gz": {
+    "uncompressed_file": "final-audit-validated/scene.json",
+    "uncompressed_sha256": "2a4692cae94a0d86db8ccfec8ef9ec3072dfe0c4280e8bb69314b7651aa701c7",
+    "uncompressed_bytes": 5538793
+  },
+  "native-tests.json.gz": {
+    "uncompressed_file": "native-tests.json",
+    "uncompressed_sha256": "dc7a81f9d3d29893420e3d8fd4dd93c7acd6a6a8cf222267be7a501f9f9afd9c",
+    "uncompressed_bytes": 533205
+  },
+  "before-contact-release-native-tests.json.gz": {
+    "uncompressed_file": "before-contact-release-native-tests.json",
+    "uncompressed_sha256": "2ca35fc37f455f194e79c96fe28270438cbc0a75e71d4bbf96a20b0ac8fa94a4",
+    "uncompressed_bytes": 507563
+  },
+  "before-refinement-native-tests.json.gz": {
+    "uncompressed_file": "before-refinement-native-tests.json",
+    "uncompressed_sha256": "8fa79f24f0ae18df5da343b1dd1655f22a3c15d9d7fc0b4ec891cebe9fc505ed",
+    "uncompressed_bytes": 532056
+  }
+}

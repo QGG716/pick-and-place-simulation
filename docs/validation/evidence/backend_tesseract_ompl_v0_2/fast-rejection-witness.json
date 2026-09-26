@@ -1,0 +1,245 @@
+[
+  {
+    "audit_complete": false,
+    "cache": {
+      "capacity": 8192,
+      "refinement": 0,
+      "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+      "scope": "fresh per immutable request, exact IEEE state bytes"
+    },
+    "candidate_found": false,
+    "checked_samples": [
+      {
+        "edge": 0,
+        "index": 0,
+        "q_rad": [
+          0.9862454453352169,
+          -0.6632776651139614,
+          -0.4577066564420566,
+          -1.705148906574704,
+          0.999911262836787,
+          -1.3257244752169774
+        ],
+        "subdivisions": 20541
+      },
+      {
+        "edge": 0,
+        "index": 20541,
+        "q_rad": [
+          -0.7828847461869272,
+          0.2662156820286623,
+          -0.2937091500866846,
+          -3.141559559423011,
+          1.010884687412613,
+          0.783085048004903
+        ],
+        "subdivisions": 20541
+      },
+      {
+        "edge": 0,
+        "index": 10270,
+        "q_rad": [
+          0.10172341296423115,
+          -0.19855361686145445,
+          -0.37571189521963944,
+          -2.423319268521645,
+          1.0053977080144187,
+          -0.27137104532122214
+        ],
+        "subdivisions": 20541
+      }
+    ],
+    "collision_object_count": 255,
+    "computed_rejections": {
+      "NATIVE_COLLISION": 1
+    },
+    "counter_semantics": {
+      "request_guard": 64000,
+      "state_checks": "actual uncached computations, including bounds/kinematic rejection",
+      "state_requests": "all valid() calls including cache hits and interrupted calls",
+      "subdivision_samples": "grid sample requests, including cached and interrupted samples"
+    },
+    "counters": {
+      "actual_state_computations": 3,
+      "cache_evictions": 0,
+      "cache_hits": 0,
+      "collision_queries": 3,
+      "edge_checks": 1,
+      "incomplete_edges": 0,
+      "invalid_edges": 1,
+      "ompl_iterations": null,
+      "state_checks": 3,
+      "state_requests": 3,
+      "subdivision_samples": 3,
+      "termination_checks": 3,
+      "valid_edges": 0
+    },
+    "effective_rule": {
+      "base_l1_resolution_rad": 0.0003125,
+      "edge_resolution_rad": 0.04,
+      "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+      "l1_resolution_rad": 0.0003125,
+      "lever_arm_m": 4.0,
+      "name": "fixed_4m_1.25mm_l1_grid_v1",
+      "point_motion_bound_m": 0.00125,
+      "refinement": 0
+    },
+    "environment_reused": false,
+    "exact_solution": false,
+    "failure": {
+      "distance_m": -0.005521780020839969,
+      "jacobian_condition": 5.457589935975545,
+      "joint_margin_rad": 1.029278152635796,
+      "maximum_jacobian_condition": 10000.0,
+      "pair": [
+        "carton_l05_c03",
+        "tool_rigid_0"
+      ],
+      "radial_limit_m": 2.106,
+      "radial_m": 1.1090168256114863,
+      "reason": "NATIVE_COLLISION",
+      "required_joint_margin_rad": 0.0174532925199433,
+      "required_margin_m": 0.005,
+      "tcp_world": [
+        [
+          0.8816680083625063,
+          -0.04618677767200732,
+          0.4696044128821281,
+          -0.09868962562569158
+        ],
+        [
+          0.22855322068619724,
+          -0.8288710916951485,
+          -0.5106232844926475,
+          0.23778917284183093
+        ],
+        [
+          0.4128255664854808,
+          0.5575298152748152,
+          -0.7202329878140632,
+          1.719492538560326
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "first_failed_sample": {
+      "classification": "STATE_REJECTION",
+      "edge": 0,
+      "failure": {
+        "distance_m": -0.005521780020839969,
+        "jacobian_condition": 5.457589935975545,
+        "joint_margin_rad": 1.029278152635796,
+        "maximum_jacobian_condition": 10000.0,
+        "pair": [
+          "carton_l05_c03",
+          "tool_rigid_0"
+        ],
+        "radial_limit_m": 2.106,
+        "radial_m": 1.1090168256114863,
+        "reason": "NATIVE_COLLISION",
+        "required_joint_margin_rad": 0.0174532925199433,
+        "required_margin_m": 0.005,
+        "tcp_world": [
+          [
+            0.8816680083625063,
+            -0.04618677767200732,
+            0.4696044128821281,
+            -0.09868962562569158
+          ],
+          [
+            0.22855322068619724,
+            -0.8288710916951485,
+            -0.5106232844926475,
+            0.23778917284183093
+          ],
+          [
+            0.4128255664854808,
+            0.5575298152748152,
+            -0.7202329878140632,
+            1.719492538560326
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "fraction": 0.4999756584392191,
+      "index": 10270,
+      "q_rad": [
+        0.10172341296423115,
+        -0.19855361686145445,
+        -0.37571189521963944,
+        -2.423319268521645,
+        1.0053977080144187,
+        -0.27137104532122214
+      ],
+      "subdivisions": 20541
+    },
+    "moving_collision_object_count": 208,
+    "native_validated": false,
+    "path": [],
+    "profile": {
+      "enabled": false,
+      "seconds": {}
+    },
+    "rejections": {
+      "NATIVE_COLLISION": 1
+    },
+    "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+    "search_progress": {
+      "approximate_goal_distance": null,
+      "iterations": null,
+      "tree_edges": 0,
+      "tree_vertices": 0
+    },
+    "static_collision_object_count": 47,
+    "status": "AUDIT_INVALID",
+    "termination_detail": "",
+    "timings": {
+      "direct_check_s": 0.0,
+      "endpoint_check_s": 3.2e-08,
+      "environment_init_s": 0.204234415,
+      "native_total_s": 0.209951746,
+      "ompl_solve_s": 0.0,
+      "path_conversion_s": 0.0,
+      "worker_roundtrip_s_inclusive": 0.31780099123716354,
+      "worker_cold_start_s": 0.04550105705857277
+    },
+    "versions": {
+      "fcl": "0.7.0",
+      "implementation": "native C++17 worker",
+      "manager": "FCLDiscreteBVHManager",
+      "ompl": "1.7.0",
+      "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+      "tesseract": "0.35.0",
+      "tesseract_planning": null
+    },
+    "authority_first_rejection": {
+      "reason": "RIGID_TOOL_COLLISION",
+      "classification": "PROXY_GEOMETRY_INTERSECTION",
+      "accepted": false,
+      "stage": "pregrasp",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l05_c03"
+      ],
+      "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+      "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+      "geometry_intersection_confirmed": true,
+      "original_cad_intersection_confirmed": false,
+      "surface_distance_m": 0.0,
+      "required_pair_clearance_m": 0.005,
+      "numerical_gap_tolerance_m": 1e-09,
+      "contact_permission_source": null,
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+    }
+  }
+]

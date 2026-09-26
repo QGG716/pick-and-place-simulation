@@ -30,7 +30,6 @@
 #include <limits>
 #include <map>
 #include <cmath>
-#include <algorithm>
 
 using json = nlohmann::json;
 namespace ob = ompl::base;
@@ -131,7 +130,6 @@ struct Context {
       margins.setCollisionMargin(pair[0].get<std::string>(),pair[1].get<std::string>(),pair[2].get<double>());
     collision->setCollisionMarginData(margins);
     env=std::move(next); manager=std::move(collision); key=scene.at("fingerprint");
-    contacts.release();
     // Parse immutable JSON only when the scene changes.
     joints.clear();lower.resize(names.size());upper.resize(names.size());
     const auto& c=scene.at("constraints");
@@ -234,12 +232,7 @@ struct Context {
     manager->contactTest(contacts,tesseract::collision::ContactRequest(tesseract::collision::ContactTestType::FIRST));
     if(profile.enabled) profile.seconds["fcl_contact_test_s"]+=elapsed(contact_start);
     if(!contacts.empty()) {
-      // ContactResultMap::clear preserves empty pair vectors for reuse.
-      // Its first map entry need not contain this query's first contact.
-      const auto entry=std::find_if(contacts.begin(),contacts.end(),
-                                   [](const auto& item){return !item.second.empty();});
-      if(entry==contacts.end()) throw std::runtime_error("inconsistent contact result map");
-      const auto& contact=entry->second.front();
+      const auto& contact=contacts.begin()->second.front();
       failure=context();failure.update({{"reason","NATIVE_COLLISION"},{"pair",contact.link_names},{"distance_m",contact.distance},
         {"required_margin_m",manager->getCollisionMarginData().getCollisionMargin(contact.link_names[0],contact.link_names[1])}});
       return false;
@@ -315,10 +308,9 @@ json solve(Context& ctx,const json& r) {
     const double value=constraints[key].get<double>();
     return std::isfinite(value) && value>0 && value<=upper;
   };
-  const json refinement_value=r.value("refinement",json(0));
-  if(!refinement_value.is_number_integer() || refinement_value<0 || refinement_value>7)
-    return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","refinement must be an integer in [0,7]"}};
-  const int refinement=refinement_value.get<int>();
+  if(!r.value("refinement",json(0)).is_number_integer())
+    return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","refinement must be an integer"}};
+  const int refinement=r.value("refinement",0);
   const double base_resolution=.00125/4.;
   const double effective_resolution=std::ldexp(base_resolution,-refinement);
   if(!positive("lever_arm_m",4.) || constraints["lever_arm_m"]!=4. ||

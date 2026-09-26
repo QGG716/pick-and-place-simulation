@@ -1,0 +1,8 @@
+{
+  "worker_sha256": "ce5a2e13ad77f936d3739e1a2ba4cc9f5a9089cdef68c9dc3c82b981257376c1",
+  "worker_source_sha256": "b2854aa42e1f70daa30b40e765b8efd8376ddc0162a99faca420d2375ebda0b2",
+  "source": "before-contact-release-worker.cpp",
+  "results": "before-contact-release-native-tests.json",
+  "tests": "before-contact-release-tests.log",
+  "disposition": "Rejected development build: empty retained contact-pair vector was accessed; fixed using nonempty-entry lookup and scene-load release. No engineering search used this build."
+}

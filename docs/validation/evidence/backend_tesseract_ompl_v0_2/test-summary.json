@@ -1,0 +1,36 @@
+{
+  "distinct_cases_passed": 79,
+  "fake_contract_cases": 29,
+  "real_native_and_audit_cases": 14,
+  "direct_core_regressions": 36,
+  "final_worker_sha256": "8196a41723e4baa94aec3bd164cf8665e4f2857a819c087b3e9b1e61139c20fe",
+  "batches": [
+    {
+      "log": "directed-tests.log",
+      "passed": 76,
+      "failed": 2,
+      "deferred": 1,
+      "note": "65 unaffected fake/core cases passed; native failures retained and corrected"
+    },
+    {
+      "log": "native-tests.log",
+      "passed": 13,
+      "deferred": 1,
+      "note": "all real native cases rerun against final binary; evidence gate deferred until full path audit completed"
+    },
+    {
+      "log": "known-path-evidence-test.log",
+      "passed": 1,
+      "note": "previously deferred audit gate passed against final binary"
+    },
+    {
+      "log": "fast-rejection-test.log",
+      "passed": 1,
+      "note": "same existing case extended with authority same-q rejection; not counted twice"
+    }
+  ],
+  "full_suite_run": false,
+  "isaac_run": false,
+  "remaining_failures": 0,
+  "remaining_deferred": 0
+}

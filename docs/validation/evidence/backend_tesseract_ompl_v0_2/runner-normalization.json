@@ -1,0 +1,6 @@
+{
+  "executed_sha256": "1c639b5a36da8b0bb0003e4abdd35782d0ad437861f3a3f1af3fb8e6f6a3b3c1",
+  "repository_sha256": "5d570febe35ce0b5657c11020c8375af9357bb79d85b9cdc88127bb7673b143c",
+  "changes": "UTF-8 BOM removed; final CRLF normalized to LF; executable statements unchanged",
+  "executed_source_archive": "validated-source.tar.gz"
+}

@@ -50,3 +50,4 @@ native/tesseract_ompl/CMakeLists.txt text eol=lf
 tools/build_tesseract_ompl.sh text eol=lf
 tests/fixtures/tesseract_ompl/** -text
 docs/validation/evidence/backend_tesseract_ompl_v0_1/** -text
+docs/validation/evidence/backend_tesseract_ompl_v0_2/** -text -whitespace

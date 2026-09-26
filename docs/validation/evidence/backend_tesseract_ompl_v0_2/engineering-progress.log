@@ -1,0 +1,2 @@
+{"event": "native_finished", "status": "BUDGET_EXHAUSTED", "counters": {"actual_state_computations": 100000, "cache_evictions": 91808, "cache_hits": 222, "collision_queries": 100000, "edge_checks": 223, "incomplete_edges": 1, "invalid_edges": 135, "ompl_iterations": null, "state_checks": 100000, "state_requests": 100223, "subdivision_samples": 100044, "termination_checks": 100490, "valid_edges": 87}}
+{"event": "request_finished", "status": "BUDGET_EXHAUSTED", "deliverable": false}

@@ -315,10 +315,9 @@ json solve(Context& ctx,const json& r) {
     const double value=constraints[key].get<double>();
     return std::isfinite(value) && value>0 && value<=upper;
   };
-  const json refinement_value=r.value("refinement",json(0));
-  if(!refinement_value.is_number_integer() || refinement_value<0 || refinement_value>7)
-    return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","refinement must be an integer in [0,7]"}};
-  const int refinement=refinement_value.get<int>();
+  if(!r.value("refinement",json(0)).is_number_integer())
+    return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","refinement must be an integer"}};
+  const int refinement=r.value("refinement",0);
   const double base_resolution=.00125/4.;
   const double effective_resolution=std::ldexp(base_resolution,-refinement);
   if(!positive("lever_arm_m",4.) || constraints["lever_arm_m"]!=4. ||

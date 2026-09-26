@@ -10,6 +10,33 @@ from typing import Any, Callable, Mapping
 import numpy as np
 
 
+# Supported POC authority contract (layout_trajectory._path_failure). A smaller
+# caller-supplied lever arm is not evidence for a coarser geometric check.
+POINT_MOTION_BOUND_M = .00125
+LEVER_ARM_M = 4.
+
+
+def subdivision_rule(constraints, refinement=0):
+    for name, expected in (("point_motion_bound_m", POINT_MOTION_BOUND_M),
+                           ("lever_arm_m", LEVER_ARM_M)):
+        value = constraints.get(name)
+        if (isinstance(value, bool) or not isinstance(value, (int, float))
+                or not np.isfinite(value) or value <= 0 or value != expected):
+            raise ValueError(f"UNSUPPORTED_CONSTRAINT: {name} must be {expected}")
+    rad = constraints.get("edge_resolution_rad")
+    if (isinstance(rad, bool) or not isinstance(rad, (int, float))
+            or not np.isfinite(rad) or not 0 < rad <= .055):
+        raise ValueError("UNSUPPORTED_CONSTRAINT: edge_resolution_rad must be in (0, .055]")
+    if type(refinement) is not int or not 0 <= refinement <= 7:
+        raise ValueError("UNSUPPORTED_CONSTRAINT: refinement must be an integer in [0, 7]")
+    baseline = POINT_MOTION_BOUND_M / LEVER_ARM_M
+    return dict(name="fixed_4m_1.25mm_l1_grid_v1", point_motion_bound_m=POINT_MOTION_BOUND_M,
+                lever_arm_m=LEVER_ARM_M, base_l1_resolution_rad=baseline,
+                refinement=refinement, l1_resolution_rad=baseline / (2**refinement),
+                edge_resolution_rad=float(rad),
+                intervals="max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))")
+
+
 def fingerprint(value: Any) -> str:
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
                                     allow_nan=False).encode()).hexdigest()
@@ -108,6 +135,10 @@ def validate_request(request: FreeMotionRequest, limits) -> PlanningStatus | Non
     supported = {"motion", "events", "joint_margin", "maximum_jacobian_condition",
                  "radial_limit", "edge_resolution_rad", "point_motion_bound_m", "lever_arm_m"}
     if set(request.constraints) - supported:
+        return PlanningStatus.UNSUPPORTED_CONSTRAINT
+    try:
+        subdivision_rule(request.constraints)
+    except ValueError:
         return PlanningStatus.UNSUPPORTED_CONSTRAINT
     if len(set(request.joint_names)) != len(request.joint_names):
         return PlanningStatus.UNSUPPORTED_CONSTRAINT

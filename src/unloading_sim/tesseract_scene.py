@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 import numpy as np
 
 from .geometry import OBB
-from .planning_contract import fingerprint
+from .planning_contract import fingerprint, subdivision_rule, POINT_MOTION_BOUND_M, LEVER_ARM_M
 
 
 def _numbers(values):
@@ -168,12 +168,13 @@ def export_scene(connector, obstacles, *, stage, attachment=None, support_names=
                      maximum_jacobian_condition=connector.maximum_jacobian_condition,
                      radial_limit=None if connector.official_radial_reach_m is None else connector.official_radial_reach_m + connector.radial_guard_tolerance_m,
                      edge_resolution_rad=connector.budget.edge_resolution_rad,
-                     point_motion_bound_m=.00125, lever_arm_m=4.),
+                     point_motion_bound_m=POINT_MOTION_BOUND_M, lever_arm_m=LEVER_ARM_M),
                  frames=dict(world="+X into trailer,+Y left,+Z up; SI m,rad,s", base="base_link", flange="flange",
                      tcp="backend_tcp", base_transform=np.asarray(robot.base_transform).tolist(),
                      tip_from_tcp=np.asarray(robot.tip_from_tcp).tolist()),
                  attachment=None if payload is None else boxes[[b["name"] for b in boxes].index(payload.name)],
                  model_fingerprint=fingerprint(files), tool_fingerprint=fingerprint([b for b in boxes if b["category"] in {"rigid_tool", "compliant"}]),
                  policy_fingerprint=policy.fingerprint, stage=stage)
+    subdivision_rule(scene["constraints"])
     scene["fingerprint"] = fingerprint(scene)
     return scene
