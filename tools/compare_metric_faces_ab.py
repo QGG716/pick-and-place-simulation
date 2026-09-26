@@ -72,7 +72,13 @@ def differences(a, b, path, output):
         output.append(path + f': {str(a)[:100]} != {str(b)[:100]}')
 
 
-def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=None):
+def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=None, difference_collector=None):
+    # Read-only diagnostic callers may count every difference. CLI semantics and
+    # its exact-equality requirement remain unchanged.
+    def collect(a, b, path, output):
+        differences(a, b, path, output)  # strict verdict is never delegated
+        if difference_collector is not None:
+            difference_collector(a, b, path, [])
     if mode not in ('diagnostic-toggle', 'hotspot-off', 'blas-threads'):
         raise ValueError('unknown comparison mode')
     before, after = Path(before).resolve(), Path(after).resolve()
@@ -179,8 +185,8 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
                 'with_faces': sum(bool(r['camera_facing_faces']) for r in final['instances']),
                 'without_faces': sum(not r['camera_facing_faces'] for r in final['instances']),
                 'accepted_complete_cuboids': sum(bool(r['accepted']) for r in final['instances'])})
-        differences(*geometry, name+'/final', result['differences'])
-        differences(*obs, name+'/observation', result['differences'])
+        collect(*geometry, name+'/final', result['differences'])
+        collect(*obs, name+'/observation', result['differences'])
         result['modules'].append({'module_id': name, 'before': counts[0], 'after': counts[1],
             'instances': [{'mask_id': r['mask_id'], 'faces': len(r['camera_facing_faces']), 'accepted_complete_cuboid': r['accepted'],
                 'final_record_exact_equal': r == s} for r, s in zip(geometry[0]['instances'], geometry[1]['instances'])]})
@@ -188,7 +194,7 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
         ('index', [paths(index_identity(i, thread_policy=thread_mode), r) for i, r in zip(indexes, (before, after))]),
         ('fusion', [paths(read(r/'fusion_result.json'), r) for r in (before, after)]),
         ('fused_observation', [paths(observation_identity(o, thread_policy=thread_mode), r) for o, r in zip(observations, (before, after))])):
-        differences(*pair, title, result['differences'])
+        collect(*pair, title, result['differences'])
     result['results_equal'] = not result['differences']
     return result
 

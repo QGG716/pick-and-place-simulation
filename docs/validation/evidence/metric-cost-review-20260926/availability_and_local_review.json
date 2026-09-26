@@ -1,0 +1,83 @@
+{
+  "baseline_sha": "659a7de6a426d602783d0aff5e67588e887d6588",
+  "checked_at": "2026-09-26T12:10:42.873032+08:00",
+  "complete_remote_artifact_recheck": "NOT_RUN",
+  "decisions_and_support_exact_equal": null,
+  "diagnostic_review_status": "UNEXPLAINED_REQUIRES_REAL_SOLVER_EVIDENCE",
+  "historical_report_only": {
+    "differences": [
+      "module_1_lower/final/instances/8/metric_solver/cost: 1.0654886446379104 != 1.0654886446379102",
+      "module_1_lower/observation/cargo/8/raw_result/record/metric_solver/cost: 1.0654886446379104 != 1.0654886446379102"
+    ],
+    "exact_instance_records": 46,
+    "faces": 71,
+    "instances": 47
+  },
+  "limitations": [
+    "Binary64 comparison only; no residual vector or solver x/fun saved locally.",
+    "Archived comparison is historical evidence, not a new exhaustive traversal.",
+    "No proof of reduction-order causality; no ULP acceptance threshold.",
+    "Original comparison and artifact identities preserved; default remains inherit."
+  ],
+  "local_archived_file_checks": [
+    {
+      "file": "docs/validation/evidence/metric-blas-20260922/A-ab_summary.json",
+      "matches_archived_manifest": true,
+      "sha256": "d79a234e5cb1d3653b2d6d7a9d077d826dc9903cc69bb9fd29625f63a0016644"
+    },
+    {
+      "file": "docs/validation/evidence/metric-blas-20260922/A-function_timings.json",
+      "matches_archived_manifest": true,
+      "sha256": "9fa232cc0151c61123726aa98180a55aa3aa3470f1bb1e3b8c8d29bfd48e353d"
+    },
+    {
+      "file": "docs/validation/evidence/metric-blas-20260922/A-thread_policy_report.json",
+      "matches_archived_manifest": true,
+      "sha256": "c123823415fbba62c7d6dc71a951a9c4d359c4a970dd8c12d61e69b69e7c9d99"
+    },
+    {
+      "file": "docs/validation/evidence/metric-blas-20260922/B-ab_summary.json",
+      "matches_archived_manifest": true,
+      "sha256": "40c7acc7cee90bec1302578936a163ed1a1cb0649fe392419bf62469deaf0741"
+    },
+    {
+      "file": "docs/validation/evidence/metric-blas-20260922/B-function_timings.json",
+      "matches_archived_manifest": true,
+      "sha256": "06761b07cb08a706223b410a2d677a65aef1eea69ea9f86e67df6b02ce651706"
+    },
+    {
+      "file": "docs/validation/evidence/metric-blas-20260922/B-thread_policy_report.json",
+      "matches_archived_manifest": true,
+      "sha256": "5827771752a5de2255fba961901ff8b23d00e30d2fd5136d43406c4196b53a5a"
+    },
+    {
+      "file": "docs/validation/evidence/metric-blas-20260922/comparison.json",
+      "matches_archived_manifest": true,
+      "sha256": "3904d8d9988cbf1f954704b0e8006e09bb9e71a22626eb7f0e3d2aab93b23c01"
+    },
+    {
+      "file": "docs/validation/evidence/metric-blas-20260922/fixed_plan.json",
+      "matches_archived_manifest": true,
+      "sha256": "a7578fe294008dfda82b3181c4dd71477b8ce9adbdcf658e97661d8fd1664a0e"
+    }
+  ],
+  "numeric_representation_only": {
+    "absolute_difference": 2.220446049250313e-16,
+    "after": 1.0654886446379102,
+    "after_hex": "0x1.10c3dd22faac3p+0",
+    "after_type": "float",
+    "before": 1.0654886446379104,
+    "before_hex": "0x1.10c3dd22faac4p+0",
+    "before_type": "float",
+    "relative_difference_to_before": 2.0839696982457254e-16,
+    "ulp_distance": 1
+  },
+  "plan_complete": false,
+  "protected_geometry_exact_equal": null,
+  "real_single_instance_solver_reproduction": "NOT_RUN",
+  "records_exact_equal": false,
+  "remote_archive_root": "/root/autodl-tmp/v05-acceptance/metric-blas-20260922",
+  "ssh_attempts": 2,
+  "ssh_error": "NoValidConnectionsError: unable to connect to port 13599 on 36.103.198.204",
+  "status": "BLOCKED_REMOTE_UNAVAILABLE"
+}
