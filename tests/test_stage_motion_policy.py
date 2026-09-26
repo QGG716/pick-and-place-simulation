@@ -51,8 +51,10 @@ def detour():
 
 
 def connect(c, obstacles, **kwargs):
-    return c._transit(START, GOAL, obstacles, purpose=MotionPurpose.FREE_APPROACH,
-                      stage='pregrasp', seed=44, iteration_budget=200, **kwargs)
+    loaded = kwargs.get('attachment') is not None
+    return c._transit(START, GOAL, obstacles,
+                      purpose=MotionPurpose.FREE_LOADED_TRANSFER if loaded else MotionPurpose.FREE_APPROACH,
+                      stage='transit' if loaded else 'pregrasp', seed=44, iteration_budget=200, **kwargs)
 
 
 @pytest.mark.parametrize('loaded', [False, True])
@@ -90,14 +92,16 @@ def test_history_hint_is_rechecked_with_endpoint_bridges_before_rrt(monkeypatch)
 
 def test_invalid_hint_falls_through_to_real_rrt_and_same_contract():
     c = connector(); obstacles = [obstacle()]
-    path, failure, trace = connect(c, obstacles, candidates=(
+    attachment = PhysicalContactAttachment(c.robot,
+        RigidAttachment(np.eye(4),np.full(3,.01),'payload'),np.eye(4),np.eye(4))
+    path, failure, trace = connect(c, obstacles, attachment=attachment, candidates=(
         (GenerationMethod.HISTORY_HINT, lambda: ([START, GOAL], None, {})),))
     assert failure is None, trace
     assert trace['selected_method'] == 'RRT_CONNECT'
     assert trace['rrt_constructed'] and trace['rrt_called'] and trace['rrt_expanded']
     assert trace['extension_attempts'] > 0 and trace['planning_iterations_consumed'] > 0
     assert trace['direct_edge_validation']['cache_hit']
-    v = c._motion_validator(obstacles, stage='pregrasp')
+    v = c._motion_validator(obstacles, attachment=attachment, stage='transit')
     assert trace['validation_context'] == v.context.context_id
     assert v.check_path(path).valid
 

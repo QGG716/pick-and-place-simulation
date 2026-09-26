@@ -84,12 +84,14 @@ def main(args):
     from unloading_sim.geometry import OBB
     aa=np.array([0.,0.,1.,0.,0.,0.]);bb=aa+np.array([.4,0,0,0,0,0])
     wall=[OBB([.2,0,1],[.025,.06,.06],np.eye(3),'wall','wall')]
+    analytic_payload=PhysicalContactAttachment(analytic.robot,
+        RigidAttachment(np.eye(4),np.full(3,.01),'payload'),np.eye(4),np.eye(4))
     def blocked():
-        return analytic._transit(aa,bb,wall,stage='pregrasp',seed=44,iteration_budget=200,
-            **({'purpose':'FREE_APPROACH'} if modern else {}))
+        return analytic._transit(aa,bb,wall,attachment=analytic_payload,stage='transit',seed=44,iteration_budget=200,
+            **({'purpose':'FREE_LOADED_TRANSFER'} if modern else {}))
     cases=[('official_empty_direct',c,lambda:connect(c,Q,Q+np.array([.01,0,0,0,0,0]),[])),
            ('official_loaded_historical_endpoints_new_connection',loaded,loaded_connection),
-           ('analytic_obstructed_real_rrt',analytic,blocked),('official_contact_process',c,contact)]
+           ('analytic_loaded_obstructed_real_rrt',analytic,blocked),('official_contact_process',c,contact)]
     results=[]
     for name,owner,run in cases:
         observations=[]
