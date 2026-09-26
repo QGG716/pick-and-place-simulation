@@ -1,0 +1,255 @@
+{
+  "output": [
+    {
+      "run": "cold",
+      "reevaluated_bspline_max_error": {
+        "q": 0.0,
+        "dq": 0.0,
+        "ddq": 0.0
+      },
+      "control_space": "BSPLINE_3",
+      "delivered_interpolation": "linear_joint_samples",
+      "midpoint_bspline_vs_delivered_linear_max_rad": 2.3096799850463867e-06,
+      "samples": 21,
+      "padding": 4979,
+      "time_start": 0.0,
+      "time_end": 0.5,
+      "dt": 0.025,
+      "finite_dq_ddq": true,
+      "authority": true,
+      "derivative_semantics": "native evaluated B-spline derivatives; not acceleration/jerk proof for piecewise-linear delivery"
+    },
+    {
+      "run": "warm",
+      "reevaluated_bspline_max_error": {
+        "q": 0.0,
+        "dq": 0.0,
+        "ddq": 0.0
+      },
+      "control_space": "BSPLINE_3",
+      "delivered_interpolation": "linear_joint_samples",
+      "midpoint_bspline_vs_delivered_linear_max_rad": 2.3096799850463867e-06,
+      "samples": 21,
+      "padding": 4979,
+      "time_start": 0.0,
+      "time_end": 0.5,
+      "dt": 0.025,
+      "finite_dq_ddq": true,
+      "authority": true,
+      "derivative_semantics": "native evaluated B-spline derivatives; not acceleration/jerk proof for piecewise-linear delivery"
+    }
+  ],
+  "geometry": {
+    "base_link": {
+      "before_global_compensation": {
+        "metrics": {
+          "num_spheres": 62,
+          "coverage": 1.0,
+          "protrusion": 0.37879034876823425,
+          "protrusion_dist_mean": 0.018293436616659164,
+          "protrusion_dist_p95": 0.03745725005865097,
+          "surface_gap_mean": 6.672144081676379e-08,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.00033360719680786133,
+          "volume_ratio": 4.6442414650022386
+        },
+        "audit_s": 1.9357368145138025
+      },
+      "after_local_compensation": {
+        "metrics": {
+          "num_spheres": 62,
+          "coverage": 1.0,
+          "protrusion": 0.28354838490486145,
+          "protrusion_dist_mean": 0.014394894242286682,
+          "protrusion_dist_p95": 0.03291455656290054,
+          "surface_gap_mean": 9.5105616537694e-07,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0025876015424728394,
+          "volume_ratio": 3.7043466650969505
+        },
+        "audit_s": 1.595283007249236
+      }
+    },
+    "J1_link": {
+      "before_global_compensation": {
+        "metrics": {
+          "num_spheres": 46,
+          "coverage": 1.0,
+          "protrusion": 0.32163044810295105,
+          "protrusion_dist_mean": 0.017138337716460228,
+          "protrusion_dist_p95": 0.034663498401641846,
+          "surface_gap_mean": 0.0,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0,
+          "volume_ratio": 3.790073716653469
+        },
+        "audit_s": 13.101517328992486
+      },
+      "after_local_compensation": {
+        "metrics": {
+          "num_spheres": 48,
+          "coverage": 1.0,
+          "protrusion": 0.2316666692495346,
+          "protrusion_dist_mean": 0.013573242351412773,
+          "protrusion_dist_p95": 0.031127067282795906,
+          "surface_gap_mean": 8.585914770264935e-07,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0022760480642318726,
+          "volume_ratio": 3.3660088783575244
+        },
+        "audit_s": 12.458516577258706
+      }
+    },
+    "J2_link": {
+      "before_global_compensation": {
+        "metrics": {
+          "num_spheres": 63,
+          "coverage": 1.0,
+          "protrusion": 0.407698392868042,
+          "protrusion_dist_mean": 0.0237201489508152,
+          "protrusion_dist_p95": 0.045614853501319885,
+          "surface_gap_mean": 0.0,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0,
+          "volume_ratio": 5.113648034267841
+        },
+        "audit_s": 16.849728988483548
+      },
+      "after_local_compensation": {
+        "metrics": {
+          "num_spheres": 64,
+          "coverage": 1.0,
+          "protrusion": 0.3228124976158142,
+          "protrusion_dist_mean": 0.017640316858887672,
+          "protrusion_dist_p95": 0.03686437010765076,
+          "surface_gap_mean": 9.820714694797061e-07,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0013919323682785034,
+          "volume_ratio": 3.7189607255605286
+        },
+        "audit_s": 16.997680192813277
+      }
+    },
+    "J3_link": {
+      "before_global_compensation": {
+        "metrics": {
+          "num_spheres": 59,
+          "coverage": 1.0,
+          "protrusion": 0.3739830553531647,
+          "protrusion_dist_mean": 0.017154671251773834,
+          "protrusion_dist_p95": 0.03132812678813934,
+          "surface_gap_mean": 3.4176409258179774e-07,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0017088204622268677,
+          "volume_ratio": 4.731583015993777
+        },
+        "audit_s": 13.866503849625587
+      },
+      "after_local_compensation": {
+        "metrics": {
+          "num_spheres": 61,
+          "coverage": 1.0,
+          "protrusion": 0.23598361015319824,
+          "protrusion_dist_mean": 0.010185048915445805,
+          "protrusion_dist_p95": 0.023927627131342888,
+          "surface_gap_mean": 2.360619504315764e-07,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0009699426591396332,
+          "volume_ratio": 3.6131507359662325
+        },
+        "audit_s": 13.78654363565147
+      }
+    },
+    "J4_link": {
+      "before_global_compensation": {
+        "metrics": {
+          "num_spheres": 36,
+          "coverage": 1.0,
+          "protrusion": 0.542222261428833,
+          "protrusion_dist_mean": 0.015435755252838135,
+          "protrusion_dist_p95": 0.029611315578222275,
+          "surface_gap_mean": 0.0,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0,
+          "volume_ratio": 3.4475229301772545
+        },
+        "audit_s": 2.4101977795362473
+      },
+      "after_local_compensation": {
+        "metrics": {
+          "num_spheres": 33,
+          "coverage": 1.0,
+          "protrusion": 0.44151514768600464,
+          "protrusion_dist_mean": 0.011905115097761154,
+          "protrusion_dist_p95": 0.026797769591212273,
+          "surface_gap_mean": 1.437671386383954e-07,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0004928372800350189,
+          "volume_ratio": 2.5455195499886916
+        },
+        "audit_s": 2.4457291681319475
+      }
+    },
+    "J5_link": {
+      "before_global_compensation": {
+        "metrics": {
+          "num_spheres": 60,
+          "coverage": 1.0,
+          "protrusion": 0.26658332347869873,
+          "protrusion_dist_mean": 0.0072449189610779285,
+          "protrusion_dist_p95": 0.016827424988150597,
+          "surface_gap_mean": 0.0,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0,
+          "volume_ratio": 5.419947174779602
+        },
+        "audit_s": 4.994307290762663
+      },
+      "after_local_compensation": {
+        "metrics": {
+          "num_spheres": 62,
+          "coverage": 1.0,
+          "protrusion": 0.21580645442008972,
+          "protrusion_dist_mean": 0.00501096248626709,
+          "protrusion_dist_p95": 0.012131696566939354,
+          "surface_gap_mean": 2.657778566117486e-07,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0005722269415855408,
+          "volume_ratio": 3.962532390313327
+        },
+        "audit_s": 4.925010070204735
+      }
+    },
+    "J6_link": {
+      "before_global_compensation": {
+        "metrics": {
+          "num_spheres": 64,
+          "coverage": 1.0,
+          "protrusion": 0.5001562237739563,
+          "protrusion_dist_mean": 0.0042799897491931915,
+          "protrusion_dist_p95": 0.008774413727223873,
+          "surface_gap_mean": 0.0,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.0,
+          "volume_ratio": 5.615911801840085
+        },
+        "audit_s": 2.387467123568058
+      },
+      "after_local_compensation": {
+        "metrics": {
+          "num_spheres": 64,
+          "coverage": 1.0,
+          "protrusion": 0.3669531047344208,
+          "protrusion_dist_mean": 0.0031537858303636312,
+          "protrusion_dist_p95": 0.0076220715418457985,
+          "surface_gap_mean": 7.805824253637184e-08,
+          "surface_gap_p95": 0.0,
+          "max_uncovered_gap": 0.00018966570496559143,
+          "volume_ratio": 3.429763304700659
+        },
+        "audit_s": 2.247338604182005
+      }
+    }
+  },
+  "scope": "finite numerical mesh coverage, not full geometry certification"
+}

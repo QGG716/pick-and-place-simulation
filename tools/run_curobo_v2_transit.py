@@ -75,6 +75,7 @@ def main():
     p.add_argument('--config',default='configs/validation/m710id70_handoff_continuation.yaml')
     p.add_argument('--output',required=True);p.add_argument('--backend',choices=['baseline','curobo_v2'],default='curobo_v2')
     p.add_argument('--fixture',choices=['business','direct_unit'],default='business')
+    p.add_argument('--endpoints-only',action='store_true')
     p.add_argument('--gpu-python');p.add_argument('--prepare-only',action='store_true')
     p.add_argument('--warm-runs',type=int,default=1)
     args=p.parse_args();out=Path(args.output);out.mkdir(parents=True,exist_ok=True)
@@ -104,11 +105,16 @@ def main():
             process=subprocess.Popen([args.gpu_python,'-m','unloading_sim.curobo_v2_backend',
                  str((out/'bundle.json').resolve()),str((out/'sphere_cache').resolve())],
                  stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=log,text=True,bufsize=1)
+            native_call_count=0
             def call(command):
+                nonlocal native_call_count
                 t=perf_counter();process.stdin.write(json.dumps(command)+'\n');process.stdin.flush()
                 line=process.stdout.readline()
                 if not line: return dict(status='DEPENDENCY_UNAVAILABLE',trajectory=None,error='worker exited; see gpu_worker.log')
                 result=json.loads(line);result['ipc_inclusive_s']=perf_counter()-t
+                if command.get('op')=='solve':
+                    write(out/f'native_candidate_{native_call_count:03d}.json',result)
+                    native_call_count+=1
                 return result
             # A few fixed states, including an independent J3 perturbation.
             states=[request.data['q_start'],request.data['q_goal'],(historical[0]+np.array([0,0,.01,0,0,0])).tolist()]
@@ -134,6 +140,11 @@ def main():
                     write(out/'result.json',dict(status='MODEL_MISMATCH',candidate_generated=False,authority_accepted=False,delivered=False,isaac_execution_completed=False));return
             else:
                 write(out/'result.json',fk);return
+            if args.endpoints_only:
+                native=fk.get('native_endpoints',{})
+                write(out/'endpoint_result.json',dict(native=native,
+                    authority=[state_check(q) for q in states],stage='TRANSIT',no_planning_attempt=True))
+                return
             candidate=lambda req,attempt:call(dict(op='solve',attempt=attempt))
         else:
             # Rerun the original explicit fixed-endpoint RRT baseline; never copy

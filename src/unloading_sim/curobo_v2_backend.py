@@ -14,46 +14,72 @@ from time import perf_counter
 import traceback
 import numpy as np
 from .stage_backend import fingerprint, pose_wxyz
-from .stage_export import box_spheres, file_hash
+from .stage_export import file_hash,worker_context_key
 
 CUROBO_COMMIT = '4ea77366ca48ee453e7df139e39fa6532af49f3b'
 
 
-def prepare(bundle, directory):
-    """Fit official meshes once; conservative box tiling for tool and payload."""
-    import torch
-    import trimesh
-    from curobo._src.geom.sphere_fit import fit_spheres_to_mesh, SphereFitType
-    from .geometry import rotation_matrix_from_rpy
-    np.random.seed(bundle['request']['seed'])
-    torch.manual_seed(bundle['request']['seed'])
-    torch.cuda.manual_seed_all(bundle['request']['seed'])
-    start = perf_counter()
-    folder = Path(directory); folder.mkdir(parents=True, exist_ok=True)
-    key = fingerprint(dict(model=bundle['model_identity'],tool=dict(geometry=bundle['tool'],dynamics=bundle['tool_dynamics']),payload=bundle['request']['payload'],seed=bundle['request']['seed'],algorithm='MORPHIT64_100_BOX06_PAYLOAD08_v2_mass_frames',commit=CUROBO_COMMIT))
-    target = folder/(key+'.json')
+GEOMETRY_SCHEMA = 'curobo_geometry_v3_robot_local_cover'
+FIT_SETTINGS = dict(method='MORPHIT', num_spheres=64, iterations=100,
+                    surface_samples=20000, local_cover_padding_m=0.000002)
+
+
+def geometry_cache_key(bundle, settings=None):
+    # No policy, limits, attachment, default q or assembled robot_cfg is cached.
+    return fingerprint(dict(schema=GEOMETRY_SCHEMA, commit=CUROBO_COMMIT,
+        meshes=[{k:v for k,v in x.items() if k!='path'} for x in bundle['meshes']],
+        settings=FIT_SETTINGS if settings is None else settings, seed=bundle['request']['seed']))
+
+
+def local_cover(centers, radii, points, padding):
+    distances=np.linalg.norm(points[:,None,:]-centers[None,:,:],axis=-1)-radii
+    owners=np.argmin(distances,axis=1)
+    increments=np.zeros(len(radii))
+    np.maximum.at(increments,owners,np.maximum(distances[np.arange(len(points)),owners]+padding,0))
+    return radii+increments, increments
+
+
+def prepare_geometry(bundle, directory, settings=None):
+    from copy import deepcopy
+    settings=deepcopy(FIT_SETTINGS if settings is None else settings)
+    start=perf_counter();folder=Path(directory);folder.mkdir(parents=True,exist_ok=True)
+    key=geometry_cache_key(bundle,settings);target=folder/(key+'.json')
     if target.exists():
-        return json.loads(target.read_text())
-    spheres, quality = {}, {}
+        record=json.loads(target.read_text())
+        if record.get('schema')!=GEOMETRY_SCHEMA or record.get('key')!=key or 'robot_cfg' in record:
+            raise ValueError('MODEL_MISMATCH: invalid geometry cache schema')
+        return record,dict(cache_hit=True,geometry_s=perf_counter()-start,key=key)
+    import torch,trimesh
+    from curobo._src.geom.sphere_fit import fit_spheres_to_mesh,SphereFitType
+    from curobo._src.geom.sphere_fit.metrics import compute_sphere_fit_metrics
+    from .geometry import rotation_matrix_from_rpy
+    np.random.seed(bundle['request']['seed']);torch.manual_seed(bundle['request']['seed'])
+    spheres,quality={},{}
     for item in bundle['meshes']:
-        print('Fitting official collision link',item['link'],file=sys.stderr,flush=True)
-        if file_hash(item['path']) != item['sha256']:
-            raise ValueError('MODEL_MISMATCH: collision mesh changed')
-        mesh = trimesh.load(item['path'], force='mesh')
-        mesh.apply_scale(item['scale'])
-        m = np.eye(4); m[:3,:3] = rotation_matrix_from_rpy(*item['rpy']); m[:3,3] = item['xyz']
-        mesh.apply_transform(m)
-        fitted = fit_spheres_to_mesh(mesh, num_spheres=64, fit_type=SphereFitType.MORPHIT,
-                                    iterations=100, compute_metrics=True)
-        centers = fitted.centers.detach().cpu().numpy()
-        radii = fitted.radii.detach().cpu().numpy()
-        # Never shrink for success. Add the measured uncovered surface gap.
-        # Finite samples are not an all-surface/no-false-negative certificate.
-        compensation = max(0.,float(fitted.metrics.max_uncovered_gap))
-        spheres[item['link']] = [dict(center=c.tolist(),radius=float(r+compensation)) for c,r in zip(centers,radii)]
-        quality[item['link']] = dict(source=item, metrics=asdict(fitted.metrics),
-                                    fitting_compensation_m=compensation, fit_time_s=fitted.fit_time_s,
-                                    method='official_MORPHIT_64_100',debug_info=fitted.debug_info,coverage_proven=False)
+        if file_hash(item['path'])!=item['sha256']:raise ValueError('MODEL_MISMATCH: mesh changed')
+        print('Local sphere cover:',item['link'],file=sys.stderr,flush=True)
+        mesh=trimesh.load(item['path'],force='mesh');mesh.apply_scale(item['scale'])
+        m=np.eye(4);m[:3,:3]=rotation_matrix_from_rpy(*item['rpy']);m[:3,3]=item['xyz'];mesh.apply_transform(m)
+        fit=fit_spheres_to_mesh(mesh,num_spheres=settings['num_spheres'],fit_type=SphereFitType.MORPHIT,
+                                iterations=settings['iterations'],compute_metrics=True)
+        centers=fit.centers.detach().cpu().numpy();radii=fit.radii.detach().cpu().numpy()
+        points=np.concatenate([mesh.vertices,trimesh.sample.sample_surface(mesh,settings['surface_samples'])[0]])
+        enlarged,increments=local_cover(centers,radii,points,settings['local_cover_padding_m'])
+        after=compute_sphere_fit_metrics(mesh,centers,enlarged)
+        spheres[item['link']]=[dict(center=x.tolist(),radius=float(r)) for x,r in zip(centers,enlarged)]
+        quality[item['link']]=dict(source=item,before=asdict(fit.metrics),after=asdict(after),
+            local_radius_increments_m=increments.tolist(),coverage_proven=False,
+            method='nearest_sphere_local_sample_cover_no_radius_shrinking')
+    torch.cuda.synchronize()
+    record=dict(schema=GEOMETRY_SCHEMA,key=key,settings=settings,spheres=spheres,quality=quality,
+                source_commit=CUROBO_COMMIT,fitting_s=perf_counter()-start)
+    target.write_text(json.dumps(record,allow_nan=False))
+    return record,dict(cache_hit=False,geometry_s=perf_counter()-start,key=key)
+
+
+def assemble_runtime(bundle, geometry):
+    from copy import deepcopy
+    start=perf_counter();spheres=deepcopy(geometry['spheres'])
     def mass_fields(mass,com,tensor):
         inertia=np.asarray(tensor,float)
         return dict(link_mass=float(mass),link_com=list(com),
@@ -70,28 +96,15 @@ def prepare(bundle, directory):
         extras[name] = dict(parent_link_name='flange',link_name=name,joint_name=name+'_fixed',
                             joint_type='FIXED',fixed_transform=pose_wxyz(item['parent_from_object']),
                             **mass_fields(0.,[0.,0.,0.],np.zeros((3,3))))
-        spheres[name] = box_spheres(item['dimensions_m'])
-        quality[name] = dict(source=item, sphere_count=len(spheres[name]),method='analytic_OBB_cell_cover',
-                            pitch_m=.06,obb_volume_coverage_proven=True,original_cad_coverage_proven=False)
+        # All physical parts are exact OBBs in the GPU rollout collision cost.
     payload = bundle['request']['payload']
     extras['held_carton'] = dict(parent_link_name='flange',link_name='held_carton',joint_name='held_carton_fixed',
                                 joint_type='FIXED',fixed_transform=pose_wxyz(payload['flange_from_object']),
                                 **mass_fields(payload['mass_kg'],payload['com_xyz_m'],payload['inertia_tensor_com_kg_m2']))
-    spheres['held_carton'] = box_spheres(payload['dimensions_m'],.08)
-    quality['held_carton'] = dict(source=payload,sphere_count=len(spheres['held_carton']),
-                                  method='analytic_OBB_cell_cover',pitch_m=.08,obb_volume_coverage_proven=True)
     ignored = {}
     for a,b in bundle['self_collision_ignore']:
         ignored.setdefault(a,[]).append(b)
-    for link in bundle['request']['collision_policy'].get('wrist_tool_exempt_links',[]):
-        ignored.setdefault(link,[]).extend(tool_links)
-    # Parts of the same rigid assembled tool are not independently moving bodies.
-    for i,name in enumerate(tool_links):
-        ignored[name] = tool_links[i+1:]
-        # Tool/payload contact remains checked by the existing authority. Only
-        # flexible cup lips own attachment contact; rigid inserts stay enabled.
-        if bundle['tool'][i]['compliant']:
-            ignored[name].append('held_carton')
+    # Tool/payload pairs use typed thresholds in the GPU OBB cost, not robot-self rules.
     d = bundle['request']
     # Source URDF is preserved byte-for-byte; package URIs are resolved using its package root.
     k = dict(format_version=2.0, urdf_path=bundle['urdf_path'],
@@ -103,13 +116,18 @@ def prepare(bundle, directory):
              cspace=dict(joint_names=d['joint_names'],default_joint_position=d['q_start'],
                          cspace_distance_weight=[1.]*6,null_space_weight=[1.]*6,
                          max_acceleration=d['limits']['acceleration'],max_jerk=d['limits']['jerk']))
-    torch.cuda.synchronize()
-    record = dict(robot_cfg=dict(kinematics=k,load_dynamics=False),quality=quality,
-                  preparation_s=perf_counter()-start,source_commit=CUROBO_COMMIT,
-                  dynamics_constraints_enabled=False, tool_mass_kg=bundle['tool_dynamics']['mass_kg'],
-                  payload_mass_kg=payload['mass_kg'])
-    target.write_text(json.dumps(record,indent=2,allow_nan=False))
+    return dict(robot_cfg=dict(kinematics=k,load_dynamics=False),quality=geometry['quality'],
+                geometry_schema=GEOMETRY_SCHEMA,assembly_s=perf_counter()-start,
+                policy_fingerprint=d['collision_policy_fingerprint'],
+                runtime_policy=deepcopy(d['collision_policy']),pair_permissions=deepcopy(bundle['pair_permissions']),
+                exact_obb_count=len(bundle['tool'])+1,dynamics_constraints_enabled=False)
+
+
+def prepare(bundle,directory):
+    geometry,timing=prepare_geometry(bundle,directory)
+    record=assemble_runtime(bundle,geometry);record['geometry_cache']=timing
     return record
+
 
 
 class CuroboWorker:
@@ -184,15 +202,24 @@ class CuroboWorker:
             params.update_link_inertia(name,torch.tensor(tensor,device='cuda',dtype=torch.float32))
         cfg = MotionPlannerCfg.create(robot=native_robot,scene_model=scene,
                num_trajopt_seeds=self.d['resources']['num_seeds'], random_seed=self.d['seed'],
-               graph_planner_config=graph, metrics_rollout=str(metrics_path.resolve()), use_cuda_graph=True, self_collision_check=True,
+               graph_planner_config=graph, metrics_rollout=str(metrics_path.resolve()), use_cuda_graph=False, self_collision_check=True,
                optimizer_collision_activation_distance=.01)
         self.planner = MotionPlanner(cfg)
+        from .curobo_collision import install_pair_costs
+        self.pair_collision=install_pair_costs(self.planner,bundle,self.prepared)
         if self.planner.kinematics.joint_names != self.d['joint_names']:
             raise ValueError('MODEL_MISMATCH: GPU joint order')
-        self.backend['configuration']=dict(num_trajopt_seeds=self.d['resources']['num_seeds'],use_cuda_graph=True,
+        self.backend['configuration']=dict(num_trajopt_seeds=self.d['resources']['num_seeds'],use_cuda_graph=False,
             self_collision_check=True,hard_environment_gap_m=gap,optimizer_activation_distance_m=.01,
             graph_config_sha256=file_hash(Path(get_task_configs_path())/'graph_planner/exact_graph_planner.yml'),
             metrics_config_sha256=file_hash(metrics_path),dynamics_constraints_enabled=False)
+        self.native_metric_observations=[]
+        original_result=self.planner.trajopt_solver._get_result
+        def observed_result(*args,**kwargs):
+            result=original_result(*args,**kwargs)
+            self.native_metric_observations.append(result)
+            return result
+        self.planner.trajopt_solver._get_result=observed_result
         self.graph_observations = []
         original = self.planner.graph_planner.find_path
         def observed(*args,**kwargs):
@@ -203,6 +230,7 @@ class CuroboWorker:
         torch.cuda.synchronize()
         self.initialization_s = perf_counter()-before
         self.warmup_s = None
+        self.initialization_reported = False
         self.consistency=self.check_consistency()
         if not self.consistency['passed']:
             raise ValueError('MODEL_MISMATCH: FK, inertial or joint-limit audit failed: '+str(self.consistency))
@@ -297,17 +325,33 @@ class CuroboWorker:
         out = self.planner.compute_kinematics(js).tool_poses.to_dict()
         return {k:dict(position=v.position.detach().cpu().tolist(),quaternion_wxyz=v.quaternion.detach().cpu().tolist()) for k,v in out.items()}
 
+    def native_endpoints(self,states):
+        q=self.torch.tensor(states,device='cuda',dtype=self.torch.float32)
+        # Exactly the graph planner's native feasibility entry, also used to
+        # reject start/end nodes and every candidate graph edge sample.
+        feasible=self.planner.graph_planner.check_samples_feasibility(q)
+        state=self.planner.compute_kinematics(self.JointState.from_position(q,self.d['joint_names']))
+        accepted=feasible.detach().cpu().reshape(-1).tolist()
+        return dict(feasible=accepted,pairs=self.pair_collision.diagnose(state),
+                    self_pairs=[] if all(accepted) else [x['self_collision'] for x in self.collision_diagnostics(states)['states']],
+                    focus_pairs=self.pair_collision.focus_pairs(state))
+
     def solve(self,attempt):
         torch = self.torch
         torch.cuda.synchronize(); start=perf_counter()
+        endpoints=self.native_endpoints([self.d['q_start'],self.d['q_goal']])
+        if not all(endpoints['feasible']):
+            return dict(backend=self.backend,status='MODEL_MISMATCH',trajectory=None,
+                error=dict(reason='NATIVE_COLLISION_REJECTS_AUTHORITY_ENDPOINT',native_endpoints=endpoints),
+                timings=dict(worker_request_s=perf_counter()-start))
         if self.warmup_s is None:
-            t=perf_counter(); self.planner.warmup(enable_graph=True); torch.cuda.synchronize()
+            t=perf_counter(); self.native_endpoints([self.d['q_start'],self.d['q_goal']]); torch.cuda.synchronize()
             self.warmup_s=perf_counter()-t
         h2d=perf_counter()
         start_js=self.JointState.from_position(torch.tensor([self.d['q_start']],device='cuda',dtype=torch.float32),self.d['joint_names'])
         goal_js=self.JointState.from_position(torch.tensor([self.d['q_goal']],device='cuda',dtype=torch.float32),self.d['joint_names'])
         torch.cuda.synchronize(); h2d=perf_counter()-h2d
-        self.graph_observations.clear()
+        self.graph_observations.clear(); self.native_metric_observations.clear()
         t=perf_counter(); a,b=torch.cuda.Event(enable_timing=True),torch.cuda.Event(enable_timing=True)
         a.record()
         # Each outer authority rejection advances to graph seeds; do not repeat
@@ -317,14 +361,36 @@ class CuroboWorker:
         record=dict(backend=self.backend,status='BACKEND_NO_CANDIDATE',trajectory=None,
                     graph_enabled=attempt>0,graph_observations=list(self.graph_observations),
                     seeds=dict(optimizer=self.d['seed'],graph=self.d['seed'],attempt=attempt),
-                    timings=dict(initialization_s=self.initialization_s,warmup_s=self.warmup_s,
+                    timings=dict(initialization_s=0. if self.initialization_reported else self.initialization_s,warmup_s=0. if self.initialization_reported else self.warmup_s,preparation=dict(geometry=self.prepared['geometry_cache'],configuration_assembly_s=self.prepared['assembly_s']),initialization_includes_preparation=True,warmup_scope='fixed_joint_FK_and_native_collision_no_pose_IK',
                                  h2d_s=h2d,solve_including_gpu_wait_s=solve,gpu_event_s=a.elapsed_time(b)/1000,
                                  native_total_s=None if native is None else native.total_time,
                                  native_solve_s=None if native is None else native.solve_time),
                     memory_bytes=dict(allocated=torch.cuda.memory_allocated(),peak=torch.cuda.max_memory_allocated()))
+        self.initialization_reported=True
         if native is not None:
             record['native_success']=native.success.detach().cpu().tolist()
             record['native_status']=str(getattr(native,'status',None))
+            def finite_tensor(value):
+                if value is None:return None
+                arr=value.detach().cpu().numpy() if hasattr(value,"detach") else np.asarray(value)
+                return dict(shape=list(arr.shape),finite=bool(np.isfinite(arr).all()),
+                    min=float(np.nan_to_num(arr).min()),max=float(np.nan_to_num(arr).max()),
+                    nonzero=int(np.count_nonzero(arr)))
+            detail={key:finite_tensor(getattr(native,key,None)) for key in
+                ('feasible','cspace_error','position_error','rotation_error','minimum_trajectory_dt','maximum_trajectory_dt')}
+            for attr in ('metrics','interpolated_metrics'):
+                metrics=getattr(self.native_metric_observations[-1] if self.native_metric_observations else native,attr,None)
+                if metrics is not None:
+                    cc=metrics.costs_and_constraints
+                    detail[attr]={}
+                    for category in ('constraints','hybrid_costs_constraints','convergence'):
+                        entries=getattr(metrics if category=='convergence' else cc,category,None)
+                        if entries is not None:
+                            detail[attr][category]={name:finite_tensor(v) for name,v in zip(entries.names,entries.values)}
+            record['native_diagnostics']=detail
+            if not bool(native.success.any().item()):
+                record['error']=dict(reason='NATIVE_OPTIMIZATION_OR_CONVERGENCE_FAILED',native_endpoints=endpoints,native_constraints=detail)
+
             if bool(native.success.any().item()):
                 t=perf_counter(); js=native.get_interpolated_plan()
                 q=js.position.detach().cpu().numpy().reshape(-1,6)
@@ -337,8 +403,21 @@ class CuroboWorker:
                      valid_length=len(q),interpolation='linear_joint_samples',
                      native_interpolation='V2_evaluated_bspline_samples',
                      native_last_tstep=native.interpolated_last_tstep.detach().cpu().tolist())
+                padded=native.interpolated_trajectory.position.detach().cpu().numpy().reshape(-1,6)
+                record['native_output']=dict(control_points=native.solution.detach().cpu().tolist(),
+                    knot_dt=native.js_solution.knot_dt.detach().cpu().tolist(),
+                    optimized_dt=native.js_solution.dt.detach().cpu().tolist(),
+                    interpolated_buffer_shape=list(native.interpolated_trajectory.position.shape),
+                    interpolation_dt_s=dt,valid_length=len(q),padding_count=len(padded)-len(q),
+                    valid_samples_match_native_buffer=bool(np.array_equal(q,padded[:len(q)])),
+                    padding_max_position_delta_rad=float(np.max(np.abs(padded[len(q):]-q[-1]))) if len(padded)>len(q) else 0.,
+                    start_max_error_rad=float(np.max(np.abs(q[0]-self.d['q_start']))),
+                    goal_max_error_rad=float(np.max(np.abs(q[-1]-self.d['q_goal']))))
+                record['trajectory']['derivative_semantics']='native evaluated B-spline derivatives; not acceleration/jerk proof for piecewise-linear delivery'
                 record['status']='CANDIDATE_GENERATED'
                 record['timings']['d2h_conversion_s']=perf_counter()-t
+        else:
+            record['error']=dict(reason='NATIVE_GRAPH_NO_SEED',native_endpoints=endpoints,graph_observations=list(self.graph_observations))
         record['timings']['worker_request_s']=perf_counter()-start
         return record
 
@@ -354,15 +433,13 @@ def main():
                 if worker is None:
                     worker=CuroboWorker(bundle,sys.argv[2])
                 if command.get('op')=='fk':
-                    result=dict(backend=worker.backend,fk=worker.fk(command['states']),model_audit=worker.model_audit(),consistency=worker.consistency,collision_diagnostics=worker.collision_diagnostics(command['states']),
+                    result=dict(backend=worker.backend,fk=worker.fk(command['states']),model_audit=worker.model_audit(),consistency=worker.consistency,collision_diagnostics=worker.collision_diagnostics(command['states']),native_endpoints=worker.native_endpoints(command['states']),
                                 preparation=worker.prepared,initialization_s=worker.initialization_s)
                 else:
                     if 'request' in command:
                         from .stage_backend import StageRequest
                         incoming=StageRequest(command['request']).data
-                        keys=('robot_model_fingerprint','tool_fingerprint','payload_fingerprint',
-                              'collision_policy_fingerprint','scene_fingerprint','seed','resources')
-                        if any(incoming[k]!=worker.d[k] for k in keys):
+                        if worker_context_key(worker.bundle,incoming)!=worker_context_key(worker.bundle):
                             raise ValueError('MODEL_MISMATCH: worker context requires rebuild')
                         worker.d=incoming
                     result=worker.solve(command['attempt'])

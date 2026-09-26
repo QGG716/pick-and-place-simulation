@@ -1,0 +1,1644 @@
+{
+  "native": {
+    "feasible": [
+      false,
+      false,
+      false
+    ],
+    "pairs": [
+      [
+        {
+          "pair": [
+            "tool_compliant_bellows_6",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005900174379348755,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_7",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005900099873542786,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_8",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005900070071220398,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_9",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005900055170059204,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_10",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005899965763092041,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_11",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005899876356124878,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_12",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012149810791016,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_13",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001313328742981,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_14",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014057159423828,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_15",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015040636062622,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_16",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001596450805664,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_17",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016947984695435,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_18",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012179613113403,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_19",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013103485107422,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_20",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014086961746216,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_21",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015010833740234,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_22",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015994310379028,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_23",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016918182373047,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_24",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012149810791016,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_25",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001313328742981,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_26",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014057159423828,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_27",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015040636062622,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_28",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001596450805664,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_29",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016918182373047,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_30",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012149810791016,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_31",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013073682785034,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_32",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014057159423828,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_33",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015010833740234,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_34",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015994310379028,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_35",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001688838005066,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_36",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001209020614624,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_37",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013073682785034,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_38",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013997554779053,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_39",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015010833740234,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_40",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015934705734253,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_41",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016918182373047,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_42",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001209020614624,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_43",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013014078140259,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_44",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013997554779053,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_45",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014951229095459,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_46",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015934705734253,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_47",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016858577728271,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_48",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012060403823853,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_49",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013043880462646,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_50",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013967752456665,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_51",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014981031417847,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_52",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015904903411865,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_53",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001688838005066,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_54",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012060403823853,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_55",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012984275817871,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_56",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013967752456665,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_57",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014921426773071,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_58",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015904903411865,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_59",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016828775405884,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_60",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.0057998597621917725,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_61",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.0057999491691589355,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_62",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005800038576126099,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_63",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005799993872642517,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_64",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.00580008327960968,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_65",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005800172686576843,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        }
+      ],
+      [
+        {
+          "pair": [
+            "tool_compliant_bellows_6",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005900189280509949,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_7",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.0059001147747039795,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_8",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.00590004026889801,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_9",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005899965763092041,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_10",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005899950861930847,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_11",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005899876356124878,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_12",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012120008468628,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_13",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013073682785034,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_14",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014057159423828,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_15",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014981031417847,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_16",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001596450805664,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_17",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016918182373047,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_18",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012179613113403,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_19",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001313328742981,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_20",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001402735710144,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_21",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015010833740234,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_22",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015994310379028,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_23",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016918182373047,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_24",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012120008468628,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_25",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013103485107422,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_26",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014086961746216,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_27",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014981031417847,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_28",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001596450805664,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_29",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016947984695435,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_30",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012060403823853,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_31",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013043880462646,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_32",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014057159423828,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_33",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014981031417847,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_34",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015934705734253,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_35",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016918182373047,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_36",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012120008468628,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_37",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013073682785034,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_38",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013997554779053,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_39",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014981031417847,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_40",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001596450805664,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_41",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016858577728271,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_42",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012060403823853,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_43",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013043880462646,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_44",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013997554779053,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_45",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014921426773071,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_46",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015934705734253,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_47",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016918182373047,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_48",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012000799179077,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_49",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012984275817871,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_50",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013967752456665,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_51",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014891624450684,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_52",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015875101089478,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_53",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016858577728271,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_54",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012000799179077,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_55",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012984275817871,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_56",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013937950134277,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_57",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014921426773071,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_58",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015875101089478,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_59",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016798973083496,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_60",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005799844861030579,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_61",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005799919366836548,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_62",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005799993872642517,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_63",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005800068378448486,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_64",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005800142884254456,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_65",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005800217390060425,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        }
+      ],
+      [
+        {
+          "pair": [
+            "tool_compliant_bellows_6",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005900189280509949,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_7",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005900099873542786,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_8",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005900070071220398,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_9",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.00590004026889801,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_10",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005899950861930847,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_11",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.0058999210596084595,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_12",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012149810791016,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_13",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001313328742981,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_14",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014057159423828,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_15",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015010833740234,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_16",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015994310379028,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_17",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016977787017822,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_18",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012149810791016,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_19",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013073682785034,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_20",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014116764068604,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_21",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015040636062622,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_22",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015994310379028,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_23",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016918182373047,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_24",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012149810791016,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_25",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013103485107422,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_26",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001402735710144,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_27",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015010833740234,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_28",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015934705734253,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_29",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001688838005066,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_30",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012120008468628,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_31",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013043880462646,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_32",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013997554779053,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_33",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014921426773071,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_34",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015934705734253,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_35",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001688838005066,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_36",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012030601501465,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_37",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013014078140259,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_38",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013967752456665,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_39",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014921426773071,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_40",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015934705734253,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_41",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001688838005066,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_42",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012030601501465,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_43",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012954473495483,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_44",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013997554779053,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_45",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014951229095459,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_46",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010015875101089478,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_47",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016828775405884,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_48",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012030601501465,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_49",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012984275817871,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_50",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013937950134277,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_51",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014891624450684,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_52",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001584529876709,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_53",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016769170761108,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_54",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012000799179077,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_55",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010012954473495483,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_56",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010013878345489502,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_57",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010014861822128296,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_58",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.01001584529876709,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_59",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.010016798973083496,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_60",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005799844861030579,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_61",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005799934267997742,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_62",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005799904465675354,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_63",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005799993872642517,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_64",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.00580008327960968,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        },
+        {
+          "pair": [
+            "tool_compliant_bellows_65",
+            "carton_l07_c04"
+          ],
+          "surface_gap_or_SAT_lower_bound_m": -0.005800172686576843,
+          "required_m": -0.004999999888241291,
+          "kind": 3
+        }
+      ]
+    ]
+  },
+  "authority": [
+    null,
+    null,
+    null
+  ],
+  "stage": "TRANSIT",
+  "no_planning_attempt": true
+}

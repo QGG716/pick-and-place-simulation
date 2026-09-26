@@ -35,9 +35,9 @@ def run(candidate=lambda r,a:native(),authority=lambda t:None,**kwargs):
 
 
 def test_core_import_does_not_load_gpu():
-    import unloading_sim.curobo_v2_backend
-    assert 'curobo' not in sys.modules
-    assert 'torch' not in sys.modules
+    import subprocess
+    subprocess.run([sys.executable,'-c',
+        "import sys; import unloading_sim.curobo_v2_backend; assert 'curobo' not in sys.modules; assert 'torch' not in sys.modules"],check=True)
 
 
 def test_json_roundtrip_and_snapshot_copy():
@@ -147,3 +147,16 @@ def test_worker_launch_missing_dependency_is_structured_and_has_no_fallback():
     result=run(missing)
     assert result['status']=='DEPENDENCY_UNAVAILABLE' and len(result['attempts'])==1
     assert not result['fallback'] and not result['delivered']
+
+
+def test_native_endpoint_rejection_is_model_mismatch_not_physical_start_invalid():
+    error={'reason':'NATIVE_COLLISION_REJECTS_AUTHORITY_ENDPOINT','pair':['base_link','chassis']}
+    result=run(lambda r,a:dict(status='MODEL_MISMATCH',trajectory=None,error=error))
+    assert result['status']=='MODEL_MISMATCH' and result['first_failure']==error
+    assert len(result['attempts'])==1
+
+
+def test_no_candidate_preserves_native_first_cause():
+    error={'reason':'NATIVE_OPTIMIZATION_OR_CONVERGENCE_FAILED'}
+    result=run(lambda r,a:dict(status='BACKEND_NO_CANDIDATE',trajectory=None,error=error))
+    assert result['status']=='RESOURCE_EXHAUSTED' and result['first_failure']==error

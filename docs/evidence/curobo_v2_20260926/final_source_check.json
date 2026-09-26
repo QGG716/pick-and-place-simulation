@@ -1,0 +1,45 @@
+{
+  "source_sha256": {
+    "src/unloading_sim/curobo_v2_backend.py": "a590086c46f487283504bbae8bcb6521904045c47a089add88e3fbafa3ba2d83",
+    "src/unloading_sim/curobo_collision.py": "9803b6d5b771517acf898696a1e7600c5ef8eda2f429929c8d3a7383b5bd9941",
+    "src/unloading_sim/stage_export.py": "d08131870915c445fa3bda763dd2a82572f87d312dc7fa420e9d7fe32dc88f58",
+    "src/unloading_sim/stage_backend.py": "46256bdd30440643e415c73f60273615bd871c8560d54a5d56658f80c28fe5b6",
+    "src/unloading_sim/curobo_transit.py": "6bb7cee4201d838a442ebd6dc49b84ada1cc8ed3f5fbbf5475aa6237441659d3",
+    "src/unloading_sim/layout_single_carton.py": "6212ca03625bdaea1e3a1aa7f01a0c459925b837e130bd5af6e3498dc69d2141",
+    "src/unloading_sim/m710_execution.py": "167f4ec6b043449b742012890bb64a9ec977c5e655ccd94a2716d92be1c025f0",
+    "src/unloading_sim/layout_trajectory.py": "74f5ba67f62e11e10139d39735302fb3427839af3d397198ae498c313940b647",
+    "src/unloading_sim/pinocchio_backend.py": "3dcb8b4af6201f2319579aab9acd0611d0ad98c0a4f6ad784fe42f84e084c167",
+    "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+    "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+    "tools/run_curobo_v2_transit.py": "ca5b4fd73783d90daa09fcef1045c953957943d8a3996e7c25ffcd61735b6530",
+    "tools/collect_curobo_pair_cases.py": "afe54165895372f0fe35c9942bab24e33dec477853ca09e7ba6c82c516452d75",
+    "tools/verify_curobo_native_pairs.py": "d365014b8e52c90380bb06f4a9520bf87fc247ac32f29bb0e28f734f2a477b42",
+    "tools/audit_curobo_output_geometry.py": "0a1dc44ff07db77f52c3f9e180b05e3fcf9e94c19929680727d6dd2f8ccbacc4",
+    "tools/summarize_curobo_validation.py": "d77f4803217b40e027fdb8d6155fae1036942858ae251625bfbd2637f29086eb",
+    "tests/test_curobo_geometry_cache.py": "8603dd54f26fd7386fa94fcabbbce48c31a28040d385466190997787f6bcb315",
+    "tests/test_curobo_gpu_pairs.py": "0fd752ed7c630316a6f21820ba2770f918a03e1ed903a8f60ed3b6a6ad5fa3d8",
+    "tests/test_stage_backend.py": "7cd180bef5852fef2818b0ab21a885cb5e91c61a90eb97b22062e3a3fba09891"
+  },
+  "inputs_sha256": {
+    "fixtures/curobo_v2/actual_remaining_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "fixtures/curobo_v2/manifest.json": "076f2bbe10f384533bdf7c78df6499a1c67b2a8d460314b58b0f92f3ebb25a6a",
+    "fixtures/curobo_v2/source_motion.json": "4514c342791455f18e735d141f3146fb99db9de43a964e514e63b115c841f0e9"
+  },
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition, 595.71.05, 97887 MiB",
+  "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+  "final_direct_trajectory_identical_to_audited_cold_warm": true,
+  "isaac_started": false,
+  "business_source_scope": "business_sources.sha256; subsequent edits only context-key completeness, error/diagnostic/reporting and raw-output persistence; collision equations, fitted cache, thresholds, resources, solve and authority unchanged",
+  "test_results": {
+    "cpu": {
+      "passed": 62,
+      "skipped": 1,
+      "reason": "optional GPU tests skipped in CPU environment"
+    },
+    "cuda": {
+      "passed": 7,
+      "skipped": 0
+    }
+  },
+  "no_implicit_cpu_fallback": true
+}

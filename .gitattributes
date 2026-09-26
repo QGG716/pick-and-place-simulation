@@ -47,3 +47,4 @@ src/unloading_sim/isaac_bridge.py binary
 # Keep frozen cuRobo evidence and fixture byte hashes portable.
 fixtures/curobo_v2/*.json text eol=lf
 docs/evidence/curobo_v2_20260922/** text eol=lf
+docs/evidence/curobo_v2_20260926/** text eol=lf

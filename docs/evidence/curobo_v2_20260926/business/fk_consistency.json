@@ -1,0 +1,77 @@
+{
+  "passed": true,
+  "errors": [
+    {
+      "state": 0,
+      "frame": "flange",
+      "position_m": 1.046475953669912e-07,
+      "quaternion_error": 2.984006843410282e-08
+    },
+    {
+      "state": 0,
+      "frame": "fanuc_flange",
+      "position_m": 1.046475953669912e-07,
+      "quaternion_error": 4.66994292187689e-08
+    },
+    {
+      "state": 0,
+      "frame": "tool0",
+      "position_m": 1.046475953669912e-07,
+      "quaternion_error": 4.6699429476328125e-08
+    },
+    {
+      "state": 0,
+      "frame": "held_carton",
+      "position_m": 8.838328047211519e-08,
+      "quaternion_error": 2.9825112351461816e-08
+    },
+    {
+      "state": 1,
+      "frame": "flange",
+      "position_m": 1.404537440796716e-07,
+      "quaternion_error": 6.316462950619042e-08
+    },
+    {
+      "state": 1,
+      "frame": "fanuc_flange",
+      "position_m": 1.404537440796716e-07,
+      "quaternion_error": 3.1555149853886216e-08
+    },
+    {
+      "state": 1,
+      "frame": "tool0",
+      "position_m": 1.404537440796716e-07,
+      "quaternion_error": 3.155515000654695e-08
+    },
+    {
+      "state": 1,
+      "frame": "held_carton",
+      "position_m": 1.5399139186023092e-07,
+      "quaternion_error": 6.514359737163386e-08
+    },
+    {
+      "state": 2,
+      "frame": "flange",
+      "position_m": 6.902215987647509e-08,
+      "quaternion_error": 8.342457761500036e-08
+    },
+    {
+      "state": 2,
+      "frame": "fanuc_flange",
+      "position_m": 6.902215987647509e-08,
+      "quaternion_error": 4.365521721689721e-08
+    },
+    {
+      "state": 2,
+      "frame": "tool0",
+      "position_m": 6.902215987647509e-08,
+      "quaternion_error": 4.3655217447284935e-08
+    },
+    {
+      "state": 2,
+      "frame": "held_carton",
+      "position_m": 4.692106125858686e-08,
+      "quaternion_error": 4.036747104242032e-08
+    }
+  ]
+}

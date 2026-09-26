@@ -1,0 +1,27 @@
+{
+  "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b",
+  "inspection": "local source checkout at the pinned commit, not latest web documentation",
+  "files": {
+    "_src/geom/sphere_fit/fit_spheres.py": "733c113a252c83db065d1c8fb093fde7f825f83786063bdab7fbaf9fda86ff7b",
+    "_src/geom/sphere_fit/fit_morphit.py": "e00a4c9c9efe49a08ec680d04adfb88a74cf3e1c03bc49dec8023a48be1731c4",
+    "_src/geom/sphere_fit/metrics.py": "2dd78f751f8dc24aafe7b1cf0937c189db10e218743f17dfd24c1f3299440f2a",
+    "_src/solver/solver_core.py": "9cd310a6a8d5434f512862823c0e2c20f432ef6d15c7480bdae50494daf93b3f",
+    "_src/solver/solver_trajopt.py": "368a03c5271883f9ae4f2c039674ba3d3b2a516a027f78e7abaf2dcde9a808aa",
+    "_src/solver/solver_trajopt_result.py": "3a7adeb6e6f7cebea0da93fe9e9b88c8cb2d3badca520fbdb1bb985e58482b49",
+    "_src/rollout/metrics.py": "f90444291e35ac6c76709938cf1a1f414110d1539cddbd5b930e05b6c0f4bd74",
+    "_src/cost/cost_base.py": "a85d6fa1c2e14839e2503888bd60ab9010d8591f8df3dd5d745d169992e732f9",
+    "_src/util/trajectory.py": "6cfe0a56a3a5cb1197dd784c20a9a1e64415790909a9bb9a9078267c8c436b50",
+    "_src/motion/motion_planner.py": "2f4c07c535be985420415e5312648f2267f0042e1688de1bdb58a17c7cc38f34"
+  },
+  "findings": [
+    "Pinned sphere fitting supports a single clip_plane; it does not supply the required whole six-face OBB pair representation. No clipping parameter was applied or borrowed from latest docs.",
+    "Project-owned BaseCost CUDA tensor extension replaces scene_collision in each cost manager while native robot self_collision remains installed.",
+    "SolverCore.get_all_rollout_instances omits additional_metrics_rollouts; explicitly include interpolated_rollout.",
+    "Native constraint feasibility sums constraints <= 0. Costs require B,H,1 output.",
+    "plan_cspace uses real TrajOpt solve_cspace with implicit fixed goal and optional graph seeds.",
+    "get_interpolated_plan trims by interpolated_last_tstep; preserve sample dt and record native derivative semantics."
+  ],
+  "compatibility": "Extension uses pinned private cost-manager/rollout interfaces; a version change needs revalidation. No third-party source edits.",
+  "remote_source_hashes_match": true,
+  "installation": "archive source tree with PINNED_SOURCE.json; no .git directory"
+}

@@ -224,6 +224,7 @@ def run_stage(request: StageRequest, candidate: Callable, authority: Callable,
             return finish(native["status"])
         trajectory = native.get("trajectory")
         if trajectory is None:
+            result["first_failure"] = result["first_failure"] or native.get("error")
             continue
         result["candidate_generated"] = True
         key = fingerprint(trajectory["q"])

@@ -115,8 +115,8 @@ def export_request(scene, connector, attachment, start, goal, *, request_id, see
                   world_count_before=len(scene.all_obstacles), world_count_attached=len(obstacles),
                   snapshot=scene.snapshot, dynamics_constraints_enabled=False,
                   approximation_notes=['robot sphere fit requires numerical coverage audit',
-                    'box covers are conservative; do not shrink for success',
-                    'native sphere checker may overreject approved assembly/cup contacts; CPU authority retains exact policy'])
+                    'full tool and payload OBBs enter GPU feasibility and optimization',
+                    'SAT separation is a conservative Euclidean distance lower bound; authority retained'])
     states=[np.asarray(start),np.asarray(goal),np.asarray(start)+np.array([0,0,.01,0,0,0])]
     reference=[]
     for state in states:
@@ -126,6 +126,19 @@ def export_request(scene, connector, attachment, start, goal, *, request_id, see
                           for name in ('flange','fanuc_flange','tool0','held_carton')})
     bundle['fk_reference']=dict(states=[s.tolist() for s in states],poses=reference,
                                 tolerance=2e-5,source='official_project_Pinocchio_and_actual_attachment')
+    # Keep the original uncompressed source and its request identity. Collision
+    # shapes must match the existing authority's current nominal cup compression.
+    validator=connector.robot_state_validator
+    actual_shapes={b.name:box_record(b,np.linalg.inv(flange)) for b in
+                   [*tool_robot.tool_collision_obbs(q),*validator._compliant_boxes(q)]}
+    bundle['authority_tool']=[{**actual_shapes[x['name']],'compliant':x['compliant']} for x in tool]
+    bundle['authority_tool_source']=dict(provider='ExactM710LayoutStateValidator._compliant_boxes',
+        nominal_cup_compression_m=validator.nominal_cup_compression_m,
+        original_uncompressed_source_retained=True)
+    bundle['pair_permissions']=dict(base_mount=[['base_link',connector.robot_state_validator.base_support_obstacle_name]],
+        source='ExactM710LayoutStateValidator fixed installation pair only',
+        named_stack_cartons=sorted(connector.robot_state_validator.stack_carton_names),
+        target_id=payload.name,stage='transit')
     bundle['bundle_fingerprint'] = fingerprint(bundle)
     return request, bundle
 
@@ -140,3 +153,12 @@ def released_world(bundle, world_from_object):
     if any(x['name'] == item['name'] for x in bundle['obstacles']):
         raise ValueError('duplicate payload identity')
     return dict(obstacles=[*bundle['obstacles'],item], attached_object=None)
+
+
+def worker_context_key(bundle, request=None):
+    """All configuration dependencies, excluding per-request solve state only."""
+    data=bundle['request'] if request is None else request
+    per_solve={'request_id','q_start','q_goal','deadline_monotonic','cancellation_token'}
+    return fingerprint(dict(configuration={k:v for k,v in bundle.items() if k not in
+        {'request','bundle_fingerprint','fk_reference','snapshot'}},
+        request_configuration={k:v for k,v in data.items() if k not in per_solve}))

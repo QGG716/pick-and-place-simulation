@@ -1,0 +1,13 @@
+{
+  "source_motion": "fixtures/curobo_v2/source_motion.json",
+  "source_motion_sha256": "4514c342791455f18e735d141f3146fb99db9de43a964e514e63b115c841f0e9",
+  "source_state": "fixtures/curobo_v2/actual_remaining_state.json",
+  "source_state_sha256": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+  "fixture_kind": "business_full_TRANSIT",
+  "historical_success_inherited": false,
+  "current_source_hashes": {
+    "src/unloading_sim/layout_trajectory.py": "74f5ba67f62e11e10139d39735302fb3427839af3d397198ae498c313940b647",
+    "src/unloading_sim/pinocchio_backend.py": "3dcb8b4af6201f2319579aab9acd0611d0ad98c0a4f6ad784fe42f84e084c167",
+    "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136"
+  }
+}

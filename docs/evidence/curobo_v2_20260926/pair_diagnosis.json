@@ -1,0 +1,832 @@
+{
+  "pairs": [
+    {
+      "endpoint": "business_start",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l07_c04"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.043482988186756014,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "flange-owned rigid tool",
+          "held carton"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": -0.015649542212486267,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "gpu_gap_m": 0.04348301887512207,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "SPHERE_PROTRUSION_AND_ZERO_SELF_GAP_MAPPING"
+    },
+    {
+      "endpoint": "business_start",
+      "pair": [
+        "carton_l07_c04",
+        "carton_l06_c04"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.008781301413630649,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "held carton",
+          "world obstacle"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": -0.0068613923587142675,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "gpu_gap_m": 0.008781224489212036,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "SPHERE_PROTRUSION"
+    },
+    {
+      "endpoint": "business_start",
+      "pair": [
+        "carton_l07_c04",
+        "conveyor_longitudinal"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "conveyor_longitudinal"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 1.8252146620725396,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "held carton",
+          "world obstacle"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": null,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "carton_l07_c04",
+          "conveyor_longitudinal"
+        ],
+        "gpu_gap_m": 1.544062614440918,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "NO_MISMATCH_FOR_THIS_PAIR_AT_THIS_ENDPOINT"
+    },
+    {
+      "endpoint": "business_start",
+      "pair": [
+        "base_link",
+        "chassis"
+      ],
+      "authority": {
+        "pair": [
+          "base_link",
+          "chassis"
+        ],
+        "ownership": [
+          "fixed robot base",
+          "world installation"
+        ],
+        "permission": "existing exact fixed installation pair",
+        "required_pair_clearance_m": 0,
+        "raw_geometry": {
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "base_link",
+            "chassis"
+          ],
+          "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+          "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "colliders": [
+            "base_link_0",
+            "chassis"
+          ]
+        },
+        "accepted": true
+      },
+      "before_gpu_gap_m": -0.054777808487415314,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "base_link",
+          "chassis"
+        ],
+        "gpu_gap_m": -0.058221668004989624,
+        "required_m": 0.0,
+        "permission": "existing fixed installation",
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "EXISTING_ASSEMBLY_PERMISSION_NOT_MAPPED"
+    },
+    {
+      "endpoint": "business_goal",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l07_c04"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.043482988186756076,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "flange-owned rigid tool",
+          "held carton"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": -0.01564958691596985,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "gpu_gap_m": 0.04348301887512207,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "SPHERE_PROTRUSION_AND_ZERO_SELF_GAP_MAPPING"
+    },
+    {
+      "endpoint": "business_goal",
+      "pair": [
+        "carton_l07_c04",
+        "carton_l06_c04"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 1.2157200598022952,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "held carton",
+          "world obstacle"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": null,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "gpu_gap_m": 1.050236701965332,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "NO_MISMATCH_FOR_THIS_PAIR_AT_THIS_ENDPOINT"
+    },
+    {
+      "endpoint": "business_goal",
+      "pair": [
+        "carton_l07_c04",
+        "conveyor_longitudinal"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "conveyor_longitudinal"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.024999961968527218,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "held carton",
+          "world obstacle"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": -0.003926187753677368,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "carton_l07_c04",
+          "conveyor_longitudinal"
+        ],
+        "gpu_gap_m": 0.024999860674142838,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "SPHERE_PROTRUSION"
+    },
+    {
+      "endpoint": "business_goal",
+      "pair": [
+        "base_link",
+        "chassis"
+      ],
+      "authority": {
+        "pair": [
+          "base_link",
+          "chassis"
+        ],
+        "ownership": [
+          "fixed robot base",
+          "world installation"
+        ],
+        "permission": "existing exact fixed installation pair",
+        "required_pair_clearance_m": 0,
+        "raw_geometry": {
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "base_link",
+            "chassis"
+          ],
+          "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+          "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "colliders": [
+            "base_link_0",
+            "chassis"
+          ]
+        },
+        "accepted": true
+      },
+      "before_gpu_gap_m": -0.054777808487415314,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "base_link",
+          "chassis"
+        ],
+        "gpu_gap_m": -0.058221668004989624,
+        "required_m": 0.0,
+        "permission": "existing fixed installation",
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "EXISTING_ASSEMBLY_PERMISSION_NOT_MAPPED"
+    },
+    {
+      "endpoint": "direct_start",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l07_c04"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.043482988186756076,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "flange-owned rigid tool",
+          "held carton"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": -0.01564958691596985,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "gpu_gap_m": 0.04348301887512207,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "SPHERE_PROTRUSION_AND_ZERO_SELF_GAP_MAPPING"
+    },
+    {
+      "endpoint": "direct_start",
+      "pair": [
+        "carton_l07_c04",
+        "carton_l06_c04"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 1.2157200598022952,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "held carton",
+          "world obstacle"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": null,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "gpu_gap_m": 1.050236701965332,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "NO_MISMATCH_FOR_THIS_PAIR_AT_THIS_ENDPOINT"
+    },
+    {
+      "endpoint": "direct_start",
+      "pair": [
+        "carton_l07_c04",
+        "conveyor_longitudinal"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "conveyor_longitudinal"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.024999961968527218,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "held carton",
+          "world obstacle"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": -0.003926187753677368,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "carton_l07_c04",
+          "conveyor_longitudinal"
+        ],
+        "gpu_gap_m": 0.024999860674142838,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "SPHERE_PROTRUSION"
+    },
+    {
+      "endpoint": "direct_start",
+      "pair": [
+        "base_link",
+        "chassis"
+      ],
+      "authority": {
+        "pair": [
+          "base_link",
+          "chassis"
+        ],
+        "ownership": [
+          "fixed robot base",
+          "world installation"
+        ],
+        "permission": "existing exact fixed installation pair",
+        "required_pair_clearance_m": 0,
+        "raw_geometry": {
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "base_link",
+            "chassis"
+          ],
+          "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+          "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "colliders": [
+            "base_link_0",
+            "chassis"
+          ]
+        },
+        "accepted": true
+      },
+      "before_gpu_gap_m": -0.054777808487415314,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "base_link",
+          "chassis"
+        ],
+        "gpu_gap_m": -0.058221668004989624,
+        "required_m": 0.0,
+        "permission": "existing fixed installation",
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "EXISTING_ASSEMBLY_PERMISSION_NOT_MAPPED"
+    },
+    {
+      "endpoint": "direct_goal",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l07_c04"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.04348298818675616,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "flange-owned rigid tool",
+          "held carton"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": -0.015649668872356415,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "tool_rigid_0",
+          "carton_l07_c04"
+        ],
+        "gpu_gap_m": 0.04348301887512207,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "SPHERE_PROTRUSION_AND_ZERO_SELF_GAP_MAPPING"
+    },
+    {
+      "endpoint": "direct_goal",
+      "pair": [
+        "carton_l07_c04",
+        "carton_l06_c04"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 1.2156661967586935,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "held carton",
+          "world obstacle"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": null,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "gpu_gap_m": 1.050803303718567,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "NO_MISMATCH_FOR_THIS_PAIR_AT_THIS_ENDPOINT"
+    },
+    {
+      "endpoint": "direct_goal",
+      "pair": [
+        "carton_l07_c04",
+        "conveyor_longitudinal"
+      ],
+      "authority": {
+        "classification": "CLEAR",
+        "accepted": true,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "conveyor_longitudinal"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.025731751024697325,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "ownership": [
+          "held carton",
+          "world obstacle"
+        ],
+        "permission": null
+      },
+      "before_gpu_gap_m": -0.003140091896057129,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "carton_l07_c04",
+          "conveyor_longitudinal"
+        ],
+        "gpu_gap_m": 0.025731835514307022,
+        "required_m": 0.004999999888241291,
+        "permission": null,
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "SPHERE_PROTRUSION"
+    },
+    {
+      "endpoint": "direct_goal",
+      "pair": [
+        "base_link",
+        "chassis"
+      ],
+      "authority": {
+        "pair": [
+          "base_link",
+          "chassis"
+        ],
+        "ownership": [
+          "fixed robot base",
+          "world installation"
+        ],
+        "permission": "existing exact fixed installation pair",
+        "required_pair_clearance_m": 0,
+        "raw_geometry": {
+          "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+          "accepted": false,
+          "stage": "transit",
+          "pair": [
+            "base_link",
+            "chassis"
+          ],
+          "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+          "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+          "geometry_intersection_confirmed": true,
+          "original_cad_intersection_confirmed": true,
+          "surface_distance_m": 0.0,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "colliders": [
+            "base_link_0",
+            "chassis"
+          ]
+        },
+        "accepted": true
+      },
+      "before_gpu_gap_m": -0.054777808487415314,
+      "before_gap_scope": "CPU analysis of actual GPU transformed sphere coordinates; null means not in old <5mm violations",
+      "after_gpu": {
+        "pair": [
+          "base_link",
+          "chassis"
+        ],
+        "gpu_gap_m": -0.058221668004989624,
+        "required_m": 0.0,
+        "permission": "existing fixed installation",
+        "accepted": true
+      },
+      "native_endpoint_before": false,
+      "native_endpoint_after": true,
+      "classification": "EXISTING_ASSEMBLY_PERMISSION_NOT_MAPPED"
+    }
+  ],
+  "fixture_invariants": {
+    "business": {
+      "entire_request_identical": true,
+      "q_start": [
+        0.9862454453352169,
+        -0.6632776651139614,
+        -0.4577066564420566,
+        -1.705148906574704,
+        0.999911262836787,
+        -1.3257244752169774
+      ],
+      "q_goal": [
+        -0.7828847461869272,
+        0.2662156820286623,
+        -0.2937091500866846,
+        -3.141559559423011,
+        1.010884687412613,
+        0.7830850480049029
+      ],
+      "resources": {
+        "attempts": 3,
+        "num_seeds": 4
+      },
+      "policy": "77cda26a6ae718488f9450ae9ea934649cea9b48c7ab60716942520459e86278"
+    },
+    "direct": {
+      "entire_request_identical": true,
+      "q_start": [
+        -0.7828847461869272,
+        0.2662156820286623,
+        -0.2937091500866846,
+        -3.141559559423011,
+        1.010884687412613,
+        0.7830850480049029
+      ],
+      "q_goal": [
+        -0.7828847461869272,
+        0.2662156820286623,
+        -0.2927091500866846,
+        -3.141559559423011,
+        1.010884687412613,
+        0.7830850480049029
+      ],
+      "resources": {
+        "attempts": 3,
+        "num_seeds": 4
+      },
+      "policy": "77cda26a6ae718488f9450ae9ea934649cea9b48c7ab60716942520459e86278"
+    }
+  },
+  "category_catalog": {
+    "1_ACTUALLY_ILLEGAL": "All five labelled CPU/native negative cases rejected",
+    "2_ASSEMBLY_PERMISSION_NOT_MAPPED": "base_link/chassis exact installation",
+    "3_SPHERE_PROTRUSION": "rigid tool/payload, payload/neighbor, payload/conveyor",
+    "4_UNDERCOVER_OR_FILTER": "Old whole flexible-cup/payload exemption omitted its bounded compression constraint; robot sample coverage remains finite",
+    "5_FRAME_OR_IDENTITY": "Not observed in fixed endpoints; FK separately checked",
+    "6_THRESHOLD_MAPPING": "tool/payload were wrongly treated as zero-gap native robot-self pairs",
+    "7_UNKNOWN": "Global robot sphere coverage and collision equivalence not proven"
+  },
+  "geometry_source_mismatch": "uncompressed cups vs existing nominal 10mm compression; exported authority geometry now matches"
+}

@@ -7,7 +7,7 @@ from threading import Lock
 from time import perf_counter
 import numpy as np
 from .stage_backend import fingerprint,run_stage
-from .stage_export import export_request,box_record
+from .stage_export import export_request,box_record,worker_context_key
 
 
 class CuroboTransitAdapter:
@@ -27,8 +27,7 @@ class CuroboTransitAdapter:
             self.process=None
 
     def _candidate(self,request,bundle,attempt):
-        key=fingerprint([request.data[x] for x in ('robot_model_fingerprint','tool_fingerprint',
-            'payload_fingerprint','collision_policy_fingerprint','scene_fingerprint','seed','resources')])
+        key=worker_context_key(bundle)
         if self.process is None or self.context_key!=key:
             reason='initialization' if self.context_key is None else 'model_scene_attachment_or_policy_changed'
             self.close();self.generation+=1

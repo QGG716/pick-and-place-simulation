@@ -96,6 +96,7 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/stage_backend.py",
     "src/unloading_sim/stage_export.py",
     "src/unloading_sim/curobo_v2_backend.py",
+    "src/unloading_sim/curobo_collision.py",
     "src/unloading_sim/curobo_transit.py",
     "src/unloading_sim/pinocchio_backend.py",
     "src/unloading_sim/planner.py",

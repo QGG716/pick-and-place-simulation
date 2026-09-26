@@ -1,7 +1,8 @@
 # cuRobo V2 TRANSIT verification: reproduce this branch
 
 This is an optional, fail-closed geometric candidate backend. It is not an accepted
-execution backend yet: see `m710_curobo_v2_20260922.md` and its raw evidence.
+execution backend yet: see `m710_curobo_v2_20260926.md` for current collision validation and
+`m710_curobo_v2_20260922.md` for preserved historical failures.
 The CPU package has no new mandatory CUDA/Isaac/ROS dependency.
 
 ## Fixed inputs and entry points
@@ -38,7 +39,10 @@ $CPU -m pytest -q tests/test_stage_backend.py tests/test_poc_pair_clearance.py t
 `--prepare-only` writes the neutral request, frozen bundle and input provenance.
 The GPU worker checks source hashes, model order, full inertials/limits and three
 FK states before permitting `plan_cspace`. `gpu_model.json` contains the exact
-885-sphere collision configuration, link-by-link fitting sources and metrics.
+394 robot spheres plus 203 GPU OBB solids, link-by-link fitting sources and metrics.
+Use `--endpoints-only` before planning to obtain native endpoint feasibility.
+The geometry-only v3 cache is independent of policy; current pair permissions are
+assembled on every worker creation, including the native interpolated rollout.
 The worker is a real `MotionPlanner` from the pinned source, not an example wrapper.
 A YAML metrics file avoids the tag's in-place dictionary mutation across factories.
 The tag's URDF inertial parsing defect is corrected in parsed tensors from the

@@ -1,0 +1,3 @@
+0 AUTHORITY_ACCEPTED {'authority_s': 0.5994196683168411, 'end_to_end_s': 10.45826924778521, 'request_entry_to_result_s': 15.633385218679905, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
+1 AUTHORITY_ACCEPTED {'authority_s': 0.007007794454693794, 'end_to_end_s': 8.757031148299575, 'request_entry_to_result_s': 8.757031148299575, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
+0 AUTHORITY_ACCEPTED {'authority_s': 1092.113158263266, 'end_to_end_s': 1105.5737461857498, 'request_entry_to_result_s': 1110.7010621577501, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}

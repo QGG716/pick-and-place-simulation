@@ -1,0 +1,21 @@
+{
+  "native": {
+    "feasible": [
+      true,
+      true,
+      true
+    ],
+    "pairs": [
+      [],
+      [],
+      []
+    ]
+  },
+  "authority": [
+    null,
+    null,
+    null
+  ],
+  "stage": "TRANSIT",
+  "no_planning_attempt": true
+}

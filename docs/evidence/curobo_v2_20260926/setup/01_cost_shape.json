@@ -1,0 +1,14 @@
+{
+  "status": "BACKEND_ERROR",
+  "backend": {
+    "name": "curobo_v2",
+    "commit": "4ea77366ca48ee453e7df139e39fa6532af49f3b"
+  },
+  "trajectory": null,
+  "error": {
+    "type": "RuntimeError",
+    "message": "Tensors must have same number of dimensions: got 3 and 2",
+    "traceback": "Traceback (most recent call last):\n  File \"/root/autodl-tmp/curobo-v2-20260926/repo/src/unloading_sim/curobo_v2_backend.py\", line 391, in main\n    result=dict(backend=worker.backend,fk=worker.fk(command['states']),model_audit=worker.model_audit(),consistency=worker.consistency,collision_diagnostics=worker.collision_diagnostics(command['states']),native_endpoints=worker.native_endpoints(command['states']),\n  File \"/root/autodl-tmp/curobo-v2-20260926/repo/src/unloading_sim/curobo_v2_backend.py\", line 324, in native_endpoints\n    feasible=self.planner.graph_planner.check_samples_feasibility(q)\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/graph_planner/graph_planner_prm.py\", line 178, in check_samples_feasibility\n    metrics_result = self.feasibility_rollout.compute_metrics_from_action(\n  File \"/usr/lib/python3.10/contextlib.py\", line 79, in inner\n    return func(*args, **kwds)\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/rollout/rollout_robot.py\", line 320, in compute_metrics_from_action\n    return self._compute_metrics_from_action_impl(act_seq, **kwargs)\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/rollout/rollout_robot.py\", line 658, in _compute_metrics_from_action_impl\n    metrics = self._compute_metrics_from_state_impl(state, **kwargs)\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/rollout/rollout_robot.py\", line 649, in _compute_metrics_from_state_impl\n    feasible=costs_and_constraints.get_feasible(),\n  File \"/usr/lib/python3.10/contextlib.py\", line 79, in inner\n    return func(*args, **kwds)\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/rollout/metrics.py\", line 280, in get_feasible\n    sum_constraint = self.get_sum_constraint(\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/rollout/metrics.py\", line 230, in get_sum_constraint\n    sum_constraint = cat_sum(constraint_values, sum_dim=(2))\n  File \"/root/autodl-tmp/curobo-v2-20260922/curobo-pinned/curobo/_src/util/tensor_util.py\", line 107, in cat_sum\n    cat_tensor = torch.cat(tensor_list, dim=-1)  # [batch_size, horizon, costs]\nRuntimeError: Tensors must have same number of dimensions: got 3 and 2\n"
+  },
+  "ipc_inclusive_s": 117.92185517586768
+}

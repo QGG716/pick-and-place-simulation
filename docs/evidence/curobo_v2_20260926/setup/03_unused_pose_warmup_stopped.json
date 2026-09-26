@@ -1,0 +1,6 @@
+{
+  "reason": "V2 default warmup runs 10 pose/IK planning problems; fixed-q adapter needs only collision/FK warmup. Stopped this setup before business plan_cspace. No trajectory or success claimed.",
+  "worker_pid": 6967,
+  "parent_pid": 6903,
+  "physical_trials": 0
+}

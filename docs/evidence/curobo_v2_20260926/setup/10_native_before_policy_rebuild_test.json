@@ -1,0 +1,2014 @@
+{
+  "endpoints": {
+    "business": {
+      "feasible": [
+        true,
+        true
+      ],
+      "pairs": [
+        [],
+        []
+      ],
+      "focus_pairs": [
+        [
+          {
+            "pair": [
+              "base_link",
+              "chassis"
+            ],
+            "gpu_gap_m": -0.058221668004989624,
+            "required_m": 0.0,
+            "permission": "existing fixed installation",
+            "accepted": true
+          },
+          {
+            "pair": [
+              "tool_rigid_0",
+              "carton_l07_c04"
+            ],
+            "gpu_gap_m": 0.04348301887512207,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          },
+          {
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "gpu_gap_m": 0.008781224489212036,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          },
+          {
+            "pair": [
+              "carton_l07_c04",
+              "conveyor_longitudinal"
+            ],
+            "gpu_gap_m": 1.544062614440918,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          }
+        ],
+        [
+          {
+            "pair": [
+              "base_link",
+              "chassis"
+            ],
+            "gpu_gap_m": -0.058221668004989624,
+            "required_m": 0.0,
+            "permission": "existing fixed installation",
+            "accepted": true
+          },
+          {
+            "pair": [
+              "tool_rigid_0",
+              "carton_l07_c04"
+            ],
+            "gpu_gap_m": 0.04348301887512207,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          },
+          {
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "gpu_gap_m": 1.050236701965332,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          },
+          {
+            "pair": [
+              "carton_l07_c04",
+              "conveyor_longitudinal"
+            ],
+            "gpu_gap_m": 0.024999860674142838,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          }
+        ]
+      ]
+    },
+    "direct": {
+      "feasible": [
+        true,
+        true
+      ],
+      "pairs": [
+        [],
+        []
+      ],
+      "focus_pairs": [
+        [
+          {
+            "pair": [
+              "base_link",
+              "chassis"
+            ],
+            "gpu_gap_m": -0.058221668004989624,
+            "required_m": 0.0,
+            "permission": "existing fixed installation",
+            "accepted": true
+          },
+          {
+            "pair": [
+              "tool_rigid_0",
+              "carton_l07_c04"
+            ],
+            "gpu_gap_m": 0.04348301887512207,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          },
+          {
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "gpu_gap_m": 1.050236701965332,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          },
+          {
+            "pair": [
+              "carton_l07_c04",
+              "conveyor_longitudinal"
+            ],
+            "gpu_gap_m": 0.024999860674142838,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          }
+        ],
+        [
+          {
+            "pair": [
+              "base_link",
+              "chassis"
+            ],
+            "gpu_gap_m": -0.058221668004989624,
+            "required_m": 0.0,
+            "permission": "existing fixed installation",
+            "accepted": true
+          },
+          {
+            "pair": [
+              "tool_rigid_0",
+              "carton_l07_c04"
+            ],
+            "gpu_gap_m": 0.04348301887512207,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          },
+          {
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "gpu_gap_m": 1.050803303718567,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          },
+          {
+            "pair": [
+              "carton_l07_c04",
+              "conveyor_longitudinal"
+            ],
+            "gpu_gap_m": 0.025731835514307022,
+            "required_m": 0.004999999888241291,
+            "permission": null,
+            "accepted": true
+          }
+        ]
+      ]
+    }
+  },
+  "negatives": [
+    {
+      "name": "payload_corner_robot_tool_clear",
+      "native": {
+        "feasible": [
+          false
+        ],
+        "pairs": [
+          [
+            {
+              "pair": [
+                "carton_l07_c04",
+                "payload_corner_probe"
+              ],
+              "surface_gap_or_SAT_lower_bound_m": -0.003999910783022642,
+              "required_m": 0.004999999888241291,
+              "kind": 2
+            }
+          ]
+        ],
+        "focus_pairs": [
+          [
+            {
+              "pair": [
+                "base_link",
+                "chassis"
+              ],
+              "gpu_gap_m": -0.058221668004989624,
+              "required_m": 0.0,
+              "permission": "existing fixed installation",
+              "accepted": true
+            },
+            {
+              "pair": [
+                "tool_rigid_0",
+                "carton_l07_c04"
+              ],
+              "gpu_gap_m": 0.04348301887512207,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "carton_l06_c04"
+              ],
+              "gpu_gap_m": 0.008781224489212036,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "conveyor_longitudinal"
+              ],
+              "gpu_gap_m": 1.544062614440918,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            }
+          ]
+        ]
+      },
+      "authority": {
+        "reason": "PAYLOAD_COLLISION",
+        "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "payload_corner_probe"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": true,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      }
+    },
+    {
+      "name": "J5_link_environment",
+      "native": {
+        "feasible": [
+          false
+        ],
+        "pairs": [
+          [
+            {
+              "pair": [
+                "J4_link",
+                "J5_link_probe"
+              ],
+              "surface_gap_or_SAT_lower_bound_m": -0.11154595017433167,
+              "required_m": 0.004999999888241291,
+              "kind": 0
+            },
+            {
+              "pair": [
+                "J5_link",
+                "J5_link_probe"
+              ],
+              "surface_gap_or_SAT_lower_bound_m": -0.08900725841522217,
+              "required_m": 0.004999999888241291,
+              "kind": 0
+            }
+          ]
+        ],
+        "focus_pairs": [
+          [
+            {
+              "pair": [
+                "base_link",
+                "chassis"
+              ],
+              "gpu_gap_m": -0.058221668004989624,
+              "required_m": 0.0,
+              "permission": "existing fixed installation",
+              "accepted": true
+            },
+            {
+              "pair": [
+                "tool_rigid_0",
+                "carton_l07_c04"
+              ],
+              "gpu_gap_m": 0.04348301887512207,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "carton_l06_c04"
+              ],
+              "gpu_gap_m": 0.008781224489212036,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "conveyor_longitudinal"
+              ],
+              "gpu_gap_m": 1.544062614440918,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            }
+          ]
+        ]
+      },
+      "authority": {
+        "reason": "ROBOT_MESH_COLLISION",
+        "collision_kind": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "J4_link",
+          "J5_link_probe"
+        ],
+        "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+        "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": true,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "colliders": [
+          "J4_link_0",
+          "J5_link_probe"
+        ]
+      }
+    },
+    {
+      "name": "J6_link_environment",
+      "native": {
+        "feasible": [
+          false
+        ],
+        "pairs": [
+          [
+            {
+              "pair": [
+                "J5_link",
+                "J6_link_probe"
+              ],
+              "surface_gap_or_SAT_lower_bound_m": -0.06243400648236275,
+              "required_m": 0.004999999888241291,
+              "kind": 0
+            },
+            {
+              "pair": [
+                "J6_link",
+                "J6_link_probe"
+              ],
+              "surface_gap_or_SAT_lower_bound_m": -0.05822217836976051,
+              "required_m": 0.004999999888241291,
+              "kind": 0
+            },
+            {
+              "pair": [
+                "tool_rigid_13",
+                "J6_link_probe"
+              ],
+              "surface_gap_or_SAT_lower_bound_m": -0.04026235640048981,
+              "required_m": 0.004999999888241291,
+              "kind": 2
+            }
+          ]
+        ],
+        "focus_pairs": [
+          [
+            {
+              "pair": [
+                "base_link",
+                "chassis"
+              ],
+              "gpu_gap_m": -0.058221668004989624,
+              "required_m": 0.0,
+              "permission": "existing fixed installation",
+              "accepted": true
+            },
+            {
+              "pair": [
+                "tool_rigid_0",
+                "carton_l07_c04"
+              ],
+              "gpu_gap_m": 0.04348301887512207,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "carton_l06_c04"
+              ],
+              "gpu_gap_m": 0.008781224489212036,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "conveyor_longitudinal"
+              ],
+              "gpu_gap_m": 1.544062614440918,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            }
+          ]
+        ]
+      },
+      "authority": {
+        "reason": "ROBOT_MESH_COLLISION",
+        "collision_kind": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "J5_link",
+          "J6_link_probe"
+        ],
+        "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+        "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": true,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "colliders": [
+          "J5_link_0",
+          "J6_link_probe"
+        ]
+      }
+    },
+    {
+      "name": "rigid_tool_despite_cup_permissions",
+      "native": {
+        "feasible": [
+          false
+        ],
+        "pairs": [
+          [
+            {
+              "pair": [
+                "tool_rigid_0",
+                "rigid_probe"
+              ],
+              "surface_gap_or_SAT_lower_bound_m": -0.016000986099243164,
+              "required_m": 0.004999999888241291,
+              "kind": 2
+            }
+          ]
+        ],
+        "focus_pairs": [
+          [
+            {
+              "pair": [
+                "base_link",
+                "chassis"
+              ],
+              "gpu_gap_m": -0.058221668004989624,
+              "required_m": 0.0,
+              "permission": "existing fixed installation",
+              "accepted": true
+            },
+            {
+              "pair": [
+                "tool_rigid_0",
+                "carton_l07_c04"
+              ],
+              "gpu_gap_m": 0.04348301887512207,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "carton_l06_c04"
+              ],
+              "gpu_gap_m": 0.008781224489212036,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "conveyor_longitudinal"
+              ],
+              "gpu_gap_m": 1.544062614440918,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            }
+          ]
+        ]
+      },
+      "authority": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "tool_rigid_0",
+          "rigid_probe"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      }
+    },
+    {
+      "name": "legal_endpoints_colliding_middle",
+      "native": {
+        "feasible": [
+          false
+        ],
+        "pairs": [
+          [
+            {
+              "pair": [
+                "carton_l07_c04",
+                "carton_l06_c04"
+              ],
+              "surface_gap_or_SAT_lower_bound_m": 0.00496712327003479,
+              "required_m": 0.004999999888241291,
+              "kind": 2
+            }
+          ]
+        ],
+        "focus_pairs": [
+          [
+            {
+              "pair": [
+                "base_link",
+                "chassis"
+              ],
+              "gpu_gap_m": -0.058221668004989624,
+              "required_m": 0.0,
+              "permission": "existing fixed installation",
+              "accepted": true
+            },
+            {
+              "pair": [
+                "tool_rigid_0",
+                "carton_l07_c04"
+              ],
+              "gpu_gap_m": 0.04348301887512207,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "carton_l06_c04"
+              ],
+              "gpu_gap_m": 0.00496712327003479,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": false
+            },
+            {
+              "pair": [
+                "carton_l07_c04",
+                "conveyor_longitudinal"
+              ],
+              "gpu_gap_m": 1.5024335384368896,
+              "required_m": 0.004999999888241291,
+              "permission": null,
+              "accepted": true
+            }
+          ]
+        ]
+      },
+      "authority": {
+        "reason": "PAYLOAD_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.004967064876701348,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5"
+      }
+    }
+  ],
+  "baseline": {
+    "final_business": {
+      "native_feasible": [
+        false,
+        false
+      ],
+      "sphere_diagnostics": {
+        "scope": "diagnostic_CPU_pair_analysis_of_GPU_transformed_spheres_not_authority",
+        "states": [
+          {
+            "environment": [
+              {
+                "link": "base_link",
+                "object": "chassis",
+                "sphere_surface_gap_m": -0.054777808487415314
+              },
+              {
+                "link": "held_carton",
+                "object": "carton_l06_c04",
+                "sphere_surface_gap_m": -0.0068613923587142675
+              }
+            ],
+            "self_collision": [
+              {
+                "links": [
+                  "tool_part_0",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.015649542212486267
+              },
+              {
+                "links": [
+                  "tool_part_75",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011440565809607506
+              },
+              {
+                "links": [
+                  "tool_part_105",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011440476402640343
+              },
+              {
+                "links": [
+                  "tool_part_87",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011429956182837486
+              },
+              {
+                "links": [
+                  "tool_part_117",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011429814621806145
+              },
+              {
+                "links": [
+                  "tool_part_70",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011423466727137566
+              },
+              {
+                "links": [
+                  "tool_part_100",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011423436924815178
+              },
+              {
+                "links": [
+                  "tool_part_82",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011412760242819786
+              },
+              {
+                "links": [
+                  "tool_part_112",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011412730440497398
+              },
+              {
+                "links": [
+                  "tool_part_72",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010611256584525108
+              },
+              {
+                "links": [
+                  "tool_part_102",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010611077770590782
+              },
+              {
+                "links": [
+                  "tool_part_84",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010600639507174492
+              },
+              {
+                "links": [
+                  "tool_part_114",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010600520297884941
+              },
+              {
+                "links": [
+                  "tool_part_73",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010590014979243279
+              },
+              {
+                "links": [
+                  "tool_part_103",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010590000078082085
+              },
+              {
+                "links": [
+                  "tool_part_115",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01057945005595684
+              },
+              {
+                "links": [
+                  "tool_part_85",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010579442605376244
+              },
+              {
+                "links": [
+                  "tool_part_93",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008126458153128624
+              },
+              {
+                "links": [
+                  "tool_part_88",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008110171183943748
+              },
+              {
+                "links": [
+                  "tool_part_99",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008096044883131981
+              },
+              {
+                "links": [
+                  "tool_part_94",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008079556748270988
+              },
+              {
+                "links": [
+                  "tool_part_90",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007331689819693565
+              },
+              {
+                "links": [
+                  "tool_part_91",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007311416789889336
+              },
+              {
+                "links": [
+                  "tool_part_96",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007301485165953636
+              },
+              {
+                "links": [
+                  "tool_part_97",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007281197234988213
+              },
+              {
+                "links": [
+                  "tool_part_74",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004277532920241356
+              },
+              {
+                "links": [
+                  "tool_part_104",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0042773764580488205
+              },
+              {
+                "links": [
+                  "tool_part_86",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004267750307917595
+              },
+              {
+                "links": [
+                  "tool_part_116",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0042675938457250595
+              },
+              {
+                "links": [
+                  "tool_part_71",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004222763702273369
+              },
+              {
+                "links": [
+                  "tool_part_101",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004222763702273369
+              },
+              {
+                "links": [
+                  "tool_part_113",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004213122650980949
+              },
+              {
+                "links": [
+                  "tool_part_83",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004213070496916771
+              },
+              {
+                "links": [
+                  "tool_part_81",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018762033432722092
+              },
+              {
+                "links": [
+                  "tool_part_111",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001876113936305046
+              },
+              {
+                "links": [
+                  "tool_part_106",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018611308187246323
+              },
+              {
+                "links": [
+                  "tool_part_76",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018610712140798569
+              },
+              {
+                "links": [
+                  "tool_part_92",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0012404229491949081
+              },
+              {
+                "links": [
+                  "tool_part_98",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0012124385684728622
+              },
+              {
+                "links": [
+                  "tool_part_89",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001187821850180626
+              },
+              {
+                "links": [
+                  "tool_part_95",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011597033590078354
+              },
+              {
+                "links": [
+                  "tool_part_78",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011394303292036057
+              },
+              {
+                "links": [
+                  "tool_part_108",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011393409222364426
+              },
+              {
+                "links": [
+                  "tool_part_79",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011205729097127914
+              },
+              {
+                "links": [
+                  "tool_part_109",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011205356568098068
+              }
+            ]
+          },
+          {
+            "environment": [
+              {
+                "link": "base_link",
+                "object": "chassis",
+                "sphere_surface_gap_m": -0.054777808487415314
+              },
+              {
+                "link": "held_carton",
+                "object": "conveyor_longitudinal",
+                "sphere_surface_gap_m": -0.003926187753677368
+              }
+            ],
+            "self_collision": [
+              {
+                "links": [
+                  "tool_part_0",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01564958691596985
+              },
+              {
+                "links": [
+                  "tool_part_75",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01144067756831646
+              },
+              {
+                "links": [
+                  "tool_part_105",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011440536007285118
+              },
+              {
+                "links": [
+                  "tool_part_87",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011430053040385246
+              },
+              {
+                "links": [
+                  "tool_part_117",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011429918929934502
+              },
+              {
+                "links": [
+                  "tool_part_70",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011423563584685326
+              },
+              {
+                "links": [
+                  "tool_part_100",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011423474177718163
+              },
+              {
+                "links": [
+                  "tool_part_82",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011412864550948143
+              },
+              {
+                "links": [
+                  "tool_part_112",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011412767693400383
+              },
+              {
+                "links": [
+                  "tool_part_72",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01061130128800869
+              },
+              {
+                "links": [
+                  "tool_part_102",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010611196979880333
+              },
+              {
+                "links": [
+                  "tool_part_84",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010600706562399864
+              },
+              {
+                "links": [
+                  "tool_part_114",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01060059480369091
+              },
+              {
+                "links": [
+                  "tool_part_73",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010590089485049248
+              },
+              {
+                "links": [
+                  "tool_part_103",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010590000078082085
+              },
+              {
+                "links": [
+                  "tool_part_85",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010579532012343407
+              },
+              {
+                "links": [
+                  "tool_part_115",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010579464957118034
+              },
+              {
+                "links": [
+                  "tool_part_93",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008126510307192802
+              },
+              {
+                "links": [
+                  "tool_part_88",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008110268041491508
+              },
+              {
+                "links": [
+                  "tool_part_99",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008096067234873772
+              },
+              {
+                "links": [
+                  "tool_part_94",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008079705759882927
+              },
+              {
+                "links": [
+                  "tool_part_90",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007331809028983116
+              },
+              {
+                "links": [
+                  "tool_part_91",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.00731145404279232
+              },
+              {
+                "links": [
+                  "tool_part_96",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007301537320017815
+              },
+              {
+                "links": [
+                  "tool_part_97",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0072813089936971664
+              },
+              {
+                "links": [
+                  "tool_part_74",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004277629777789116
+              },
+              {
+                "links": [
+                  "tool_part_104",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0042774733155965805
+              },
+              {
+                "links": [
+                  "tool_part_86",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004267839714884758
+              },
+              {
+                "links": [
+                  "tool_part_116",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004267683252692223
+              },
+              {
+                "links": [
+                  "tool_part_101",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004222868010401726
+              },
+              {
+                "links": [
+                  "tool_part_71",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004222845658659935
+              },
+              {
+                "links": [
+                  "tool_part_113",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.00421314500272274
+              },
+              {
+                "links": [
+                  "tool_part_83",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004213122650980949
+              },
+              {
+                "links": [
+                  "tool_part_81",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018762852996587753
+              },
+              {
+                "links": [
+                  "tool_part_111",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001876218244433403
+              },
+              {
+                "links": [
+                  "tool_part_76",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018612127751111984
+              },
+              {
+                "links": [
+                  "tool_part_106",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018611084669828415
+              },
+              {
+                "links": [
+                  "tool_part_92",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0012405496090650558
+              },
+              {
+                "links": [
+                  "tool_part_98",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001212453469634056
+              },
+              {
+                "links": [
+                  "tool_part_89",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001187806949019432
+              },
+              {
+                "links": [
+                  "tool_part_95",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011597555130720139
+              },
+              {
+                "links": [
+                  "tool_part_78",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011395346373319626
+              },
+              {
+                "links": [
+                  "tool_part_108",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011393632739782333
+              },
+              {
+                "links": [
+                  "tool_part_109",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011206548660993576
+              },
+              {
+                "links": [
+                  "tool_part_79",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011205952614545822
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "final_direct_gpu": {
+      "native_feasible": [
+        false,
+        false
+      ],
+      "sphere_diagnostics": {
+        "scope": "diagnostic_CPU_pair_analysis_of_GPU_transformed_spheres_not_authority",
+        "states": [
+          {
+            "environment": [
+              {
+                "link": "base_link",
+                "object": "chassis",
+                "sphere_surface_gap_m": -0.054777808487415314
+              },
+              {
+                "link": "held_carton",
+                "object": "conveyor_longitudinal",
+                "sphere_surface_gap_m": -0.003926187753677368
+              }
+            ],
+            "self_collision": [
+              {
+                "links": [
+                  "tool_part_0",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01564958691596985
+              },
+              {
+                "links": [
+                  "tool_part_75",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01144067756831646
+              },
+              {
+                "links": [
+                  "tool_part_105",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011440536007285118
+              },
+              {
+                "links": [
+                  "tool_part_87",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011430053040385246
+              },
+              {
+                "links": [
+                  "tool_part_117",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011429918929934502
+              },
+              {
+                "links": [
+                  "tool_part_70",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011423563584685326
+              },
+              {
+                "links": [
+                  "tool_part_100",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011423474177718163
+              },
+              {
+                "links": [
+                  "tool_part_82",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011412864550948143
+              },
+              {
+                "links": [
+                  "tool_part_112",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011412767693400383
+              },
+              {
+                "links": [
+                  "tool_part_72",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01061130128800869
+              },
+              {
+                "links": [
+                  "tool_part_102",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010611196979880333
+              },
+              {
+                "links": [
+                  "tool_part_84",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010600706562399864
+              },
+              {
+                "links": [
+                  "tool_part_114",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01060059480369091
+              },
+              {
+                "links": [
+                  "tool_part_73",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010590089485049248
+              },
+              {
+                "links": [
+                  "tool_part_103",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010590000078082085
+              },
+              {
+                "links": [
+                  "tool_part_85",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010579532012343407
+              },
+              {
+                "links": [
+                  "tool_part_115",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010579464957118034
+              },
+              {
+                "links": [
+                  "tool_part_93",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008126510307192802
+              },
+              {
+                "links": [
+                  "tool_part_88",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008110268041491508
+              },
+              {
+                "links": [
+                  "tool_part_99",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008096067234873772
+              },
+              {
+                "links": [
+                  "tool_part_94",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008079705759882927
+              },
+              {
+                "links": [
+                  "tool_part_90",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007331809028983116
+              },
+              {
+                "links": [
+                  "tool_part_91",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.00731145404279232
+              },
+              {
+                "links": [
+                  "tool_part_96",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007301537320017815
+              },
+              {
+                "links": [
+                  "tool_part_97",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0072813089936971664
+              },
+              {
+                "links": [
+                  "tool_part_74",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004277629777789116
+              },
+              {
+                "links": [
+                  "tool_part_104",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0042774733155965805
+              },
+              {
+                "links": [
+                  "tool_part_86",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004267839714884758
+              },
+              {
+                "links": [
+                  "tool_part_116",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004267683252692223
+              },
+              {
+                "links": [
+                  "tool_part_101",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004222868010401726
+              },
+              {
+                "links": [
+                  "tool_part_71",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004222845658659935
+              },
+              {
+                "links": [
+                  "tool_part_113",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.00421314500272274
+              },
+              {
+                "links": [
+                  "tool_part_83",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004213122650980949
+              },
+              {
+                "links": [
+                  "tool_part_81",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018762852996587753
+              },
+              {
+                "links": [
+                  "tool_part_111",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001876218244433403
+              },
+              {
+                "links": [
+                  "tool_part_76",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018612127751111984
+              },
+              {
+                "links": [
+                  "tool_part_106",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018611084669828415
+              },
+              {
+                "links": [
+                  "tool_part_92",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0012405496090650558
+              },
+              {
+                "links": [
+                  "tool_part_98",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001212453469634056
+              },
+              {
+                "links": [
+                  "tool_part_89",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001187806949019432
+              },
+              {
+                "links": [
+                  "tool_part_95",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011597555130720139
+              },
+              {
+                "links": [
+                  "tool_part_78",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011395346373319626
+              },
+              {
+                "links": [
+                  "tool_part_108",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011393632739782333
+              },
+              {
+                "links": [
+                  "tool_part_109",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011206548660993576
+              },
+              {
+                "links": [
+                  "tool_part_79",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011205952614545822
+              }
+            ]
+          },
+          {
+            "environment": [
+              {
+                "link": "base_link",
+                "object": "chassis",
+                "sphere_surface_gap_m": -0.054777808487415314
+              },
+              {
+                "link": "held_carton",
+                "object": "conveyor_longitudinal",
+                "sphere_surface_gap_m": -0.003140091896057129
+              }
+            ],
+            "self_collision": [
+              {
+                "links": [
+                  "tool_part_0",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.015649668872356415
+              },
+              {
+                "links": [
+                  "tool_part_75",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011440714821219444
+              },
+              {
+                "links": [
+                  "tool_part_105",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011440647765994072
+              },
+              {
+                "links": [
+                  "tool_part_87",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011430134996771812
+              },
+              {
+                "links": [
+                  "tool_part_117",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011429926380515099
+              },
+              {
+                "links": [
+                  "tool_part_70",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01142357848584652
+              },
+              {
+                "links": [
+                  "tool_part_100",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011423489078879356
+              },
+              {
+                "links": [
+                  "tool_part_82",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.01141289435327053
+              },
+              {
+                "links": [
+                  "tool_part_112",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.011412819847464561
+              },
+              {
+                "links": [
+                  "tool_part_72",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010611368343234062
+              },
+              {
+                "links": [
+                  "tool_part_102",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010611256584525108
+              },
+              {
+                "links": [
+                  "tool_part_84",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010600781068205833
+              },
+              {
+                "links": [
+                  "tool_part_114",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010600632056593895
+              },
+              {
+                "links": [
+                  "tool_part_73",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010590089485049248
+              },
+              {
+                "links": [
+                  "tool_part_103",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010590074583888054
+              },
+              {
+                "links": [
+                  "tool_part_85",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010579554364085197
+              },
+              {
+                "links": [
+                  "tool_part_115",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.010579539462924004
+              },
+              {
+                "links": [
+                  "tool_part_93",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008126629516482353
+              },
+              {
+                "links": [
+                  "tool_part_88",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008110260590910912
+              },
+              {
+                "links": [
+                  "tool_part_99",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.00809619389474392
+              },
+              {
+                "links": [
+                  "tool_part_94",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.008079668506979942
+              },
+              {
+                "links": [
+                  "tool_part_90",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007331838831305504
+              },
+              {
+                "links": [
+                  "tool_part_91",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0073115285485982895
+              },
+              {
+                "links": [
+                  "tool_part_96",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007301589474081993
+              },
+              {
+                "links": [
+                  "tool_part_97",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.007281361147761345
+              },
+              {
+                "links": [
+                  "tool_part_74",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004277652129530907
+              },
+              {
+                "links": [
+                  "tool_part_104",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004277488216757774
+              },
+              {
+                "links": [
+                  "tool_part_86",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004267929121851921
+              },
+              {
+                "links": [
+                  "tool_part_116",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004267765209078789
+              },
+              {
+                "links": [
+                  "tool_part_101",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004222935065627098
+              },
+              {
+                "links": [
+                  "tool_part_71",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004222853109240532
+              },
+              {
+                "links": [
+                  "tool_part_113",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004213226959109306
+              },
+              {
+                "links": [
+                  "tool_part_83",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.004213182255625725
+              },
+              {
+                "links": [
+                  "tool_part_81",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001876307651400566
+              },
+              {
+                "links": [
+                  "tool_part_111",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001876210793852806
+              },
+              {
+                "links": [
+                  "tool_part_76",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.001861250028014183
+              },
+              {
+                "links": [
+                  "tool_part_106",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0018611382693052292
+              },
+              {
+                "links": [
+                  "tool_part_92",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0012405198067426682
+              },
+              {
+                "links": [
+                  "tool_part_98",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.00121256522834301
+              },
+              {
+                "links": [
+                  "tool_part_89",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011878516525030136
+              },
+              {
+                "links": [
+                  "tool_part_95",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011598002165555954
+              },
+              {
+                "links": [
+                  "tool_part_78",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011395644396543503
+              },
+              {
+                "links": [
+                  "tool_part_108",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011394377797842026
+              },
+              {
+                "links": [
+                  "tool_part_79",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011206697672605515
+              },
+              {
+                "links": [
+                  "tool_part_109",
+                  "held_carton"
+                ],
+                "sphere_surface_gap_m": -0.0011206548660993576
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "broadphase": {
+    "all_pairs": [
+      0.0020890627056360245,
+      0.0008702874183654785
+    ],
+    "broadphase": [
+      0.0020890627056360245,
+      0.0008702874183654785
+    ],
+    "finite_gradient": true
+  }
+}

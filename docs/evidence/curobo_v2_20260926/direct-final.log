@@ -1,0 +1,1 @@
+0 AUTHORITY_ACCEPTED {'authority_s': 0.6125954743474722, 'end_to_end_s': 11.289703020825982, 'request_entry_to_result_s': 16.35134757682681, 'handoff_s': None, 'timing_scope': 'result only; no executable delivery when rejected'}
