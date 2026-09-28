@@ -57,6 +57,7 @@ class RRTConnectPlanner:
         motion_validator=None,
         request_budget=None,
         candidate_check=None,
+        progress_callback=None,
     ) -> None:
         self.diagnostic_context = diagnostic_context
         self.sample_context = None
@@ -71,6 +72,8 @@ class RRTConnectPlanner:
         self.motion_validator = motion_validator
         self.request_budget = request_budget
         self.candidate_check = candidate_check
+        self.progress_callback = progress_callback
+        self._next_progress_checkpoint = 0.
         self._reset_search_evidence()
 
     def _reset_search_evidence(self) -> None:
@@ -85,6 +88,7 @@ class RRTConnectPlanner:
         self._direct_edge_result = None
         self._last_state_result = None
         self._validation_stop_result = None
+        self._stop_outcome = None
         self._rejected_candidates = set()
 
     def _state_valid(self, q: np.ndarray) -> bool:
@@ -95,6 +99,27 @@ class RRTConnectPlanner:
         return bool(self.is_state_valid(q))
 
     def _result(self, success: bool, path: list[np.ndarray], iterations: int, message: str) -> PlanResult:
+        if self._stop_outcome is None:
+            self._interruption(completed=success)
+        # Check the lease at publication too, including zero-iteration exhaustion.
+        if self.motion_validator is not None:
+            current = self.motion_validator.context_current
+            if (current is not None and current() != self.motion_validator.context.context_id
+                    and (self._stop_outcome or {}).get('status') != 'CANCELLED'):
+                self._stop_outcome = dict(status='INDETERMINATE', reason='VALIDATION_CONTEXT_CHANGED',
+                    termination_scope='INPUT', can_continue_candidates=False)
+        termination = message.upper().replace(' ', '_')
+        outcome = self._stop_outcome
+        if outcome is None:
+            uncertain = message in {'maximum iterations reached', 'time limit reached',
+                                    'validation budget exhausted', 'state evidence incomplete'}
+            outcome = dict(status='VALID' if success else 'INDETERMINATE' if uncertain else 'INVALID',
+                reason=termination, termination_scope=('REQUEST' if uncertain and
+                    message != 'maximum iterations reached' else 'CANDIDATE'),
+                can_continue_candidates=message == 'maximum iterations reached')
+        if outcome['status'] != 'VALID' and success:
+            success, path = False, []
+        termination = outcome['reason']
         return PlanResult(success, path, iterations, message, {
             "planning_iteration_budget": self.max_iterations,
             "planning_iterations_consumed": iterations,
@@ -104,8 +129,9 @@ class RRTConnectPlanner:
             "edge_state_samples": self._edge_state_samples,
             "state_validation_budget": None,
             "edge_validation_budget": None,
-            "termination": message.upper().replace(" ", "_"),
-            "validation_status": "VALID" if success else "CANCELLED" if "cancel" in message else "INDETERMINATE" if message in {"maximum iterations reached", "time limit reached", "validation budget exhausted", "state evidence incomplete"} else "INVALID",
+            "termination": termination,
+            "validation_status": outcome['status'],
+            "validation": dict(outcome),
             "direct_rejected_continue_search": self._direct_rejected,
             "direct_edge_validation": None if self._direct_edge_result is None else self._direct_edge_result.evidence(),
             "candidate_failures": self._candidate_failures,
@@ -123,14 +149,29 @@ class RRTConnectPlanner:
             self.request_budget.deadline = deadline if old is None else min(old, deadline)
         return self.request_budget
 
-    def _interruption(self):
+    def _interruption(self, *, completed=False):
         from .motion_validation import Status
-        status = self.request_budget.status() if self.request_budget is not None else None
+        if self._stop_outcome is not None:
+            return 'cancelled' if self._stop_outcome['status'] == 'CANCELLED' else 'state evidence incomplete'
+        status = ((self.request_budget.interrupted() if completed else self.request_budget.status())
+                  if self.request_budget is not None else None)
         if status:
+            reason = 'VALIDATION_CANCELLED' if status == Status.CANCELLED else 'VALIDATION_WORK_BUDGET_EXHAUSTED'
+            node = self.request_budget
+            while node is not None:
+                if status != Status.CANCELLED and self._deadline_reached(node.deadline):
+                    reason = 'VALIDATION_DEADLINE_REACHED'
+                node = node.parent
+            self._stop_outcome = dict(status=status.value, reason=reason,
+                termination_scope='REQUEST', can_continue_candidates=False)
             return "cancelled" if status == Status.CANCELLED else "validation budget exhausted"
         for result in (self._validation_stop_result, self._last_state_result, self._last_edge_result):
             if result is not None and result.status in {Status.INDETERMINATE, Status.CANCELLED}:
                 self._validation_stop_result = result
+                reason = (result.failure or {}).get('reason', result.status.value)
+                self._stop_outcome = dict(status=result.status.value, reason=reason,
+                    termination_scope='INPUT' if 'CONTEXT' in reason else 'REQUEST',
+                    can_continue_candidates=False)
                 return 'cancelled' if result.status == Status.CANCELLED else 'state evidence incomplete'
         return None
 
@@ -199,6 +240,11 @@ class RRTConnectPlanner:
 
     def _extend(self, tree: _Tree, target: np.ndarray, deadline: float | None = None) -> tuple[str, int | None]:
         self._extension_attempts += 1
+        if self.progress_callback is not None and perf_counter() >= self._next_progress_checkpoint:
+            self._next_progress_checkpoint = perf_counter() + 5.
+            self.progress_callback(dict(event='rrt_checkpoint', extension_attempts=self._extension_attempts,
+                edge_validation_calls=self._edge_validation_calls,
+                edge_state_samples=self._edge_state_samples))
         if self._deadline_reached(deadline) or self._interruption():
             return "timeout", None
         nearest_idx = tree.nearest_index(target)

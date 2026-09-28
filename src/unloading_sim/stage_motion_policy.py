@@ -64,12 +64,48 @@ def require_purpose(purpose, *, free=False):
     return purpose
 
 
+def failure_status(failure):
+    """Read structured and legacy outcomes without inventing geometric invalidity."""
+    if failure is None:
+        return 'VALID'
+    status = (failure.get('validation') or {}).get('status',
+        failure.get('status', failure.get('validation_status')))
+    if status in {s.value for s in Status}:
+        return status
+    reason = str(failure.get('reason', ''))
+    if 'CANCEL' in reason:
+        return 'CANCELLED'
+    if any(word in reason for word in ('CONTEXT', 'STALE', 'DEADLINE', 'UNKNOWN',
+            'BUDGET', 'EXHAUSTED', 'LIMIT_REACHED', 'NO_IK', 'NO_STRICT_GRASP')):
+        return 'INDETERMINATE'
+    if failure.get('type') in {'GEOMETRY', 'STAGE_CONSTRAINT'} or any(word in reason
+            for word in ('COLLISION', 'PENETRATION', 'JOINT_LIMIT', 'STATE_IS_INVALID')):
+        return 'INVALID'
+    return 'INDETERMINATE'  # Missing evidence is not a geometric proof.
+
+
 def interrupts_generation(failure):
     if not failure:
         return False
-    status = (failure.get('validation') or {}).get('status', failure.get('status'))
-    return status in ('INDETERMINATE', 'CANCELLED') or any(word in str(failure.get('reason', ''))
-        for word in ('CONTEXT_CHANGED', 'CANCEL', 'DEADLINE', 'UNKNOWN', 'VALIDATION_WORK_BUDGET'))
+    status = failure_status(failure)
+    if status == 'CANCELLED':
+        return True
+    reason = str(failure.get('reason', ''))
+    if any(word in reason for word in ('CONTEXT_CHANGED', 'STALE', 'CANCEL', 'DEADLINE',
+                                      'UNKNOWN', 'VALIDATION_WORK_BUDGET')):
+        return True
+    outcome = failure.get('validation') or failure
+    if 'termination_scope' not in outcome and (
+            reason in {'CARTESIAN_SAMPLE_BUDGET_EXCEEDED', 'PATH_SEARCH_EXHAUSTED',
+                       'NO_STRICT_GRASP_CANDIDATE'} or reason.endswith('_NO_IK')):
+        return False  # Existing bounded candidate formats, not request budgets.
+    if not any(key in outcome for key in ('status', 'validation_status', 'termination_scope')):
+        # Legacy local process rejection: no evidence of global infeasibility,
+        # but also no request stop. Explicit unknown/budget/input stops bind.
+        return 'BUDGET' in reason
+    return status == 'INDETERMINATE' and not (
+        outcome.get('termination_scope') == 'CANDIDATE' and
+        outcome.get('can_continue_candidates') is True)
 
 
 def free_connection_prefix(start, goal, validator, budget, *, purpose, candidates=()):
@@ -131,13 +167,13 @@ def free_connection_prefix(start, goal, validator, budget, *, purpose, candidate
         attempt = dict(method=method.value, generation=evidence, failure=failure)
         trace['attempts'].append(attempt)
         if failure is not None:
-            status = (failure.get('validation') or {}).get('status')
+            status = failure_status(failure)
+            attempt['status'] = status
             reason = str(failure.get('reason', ''))
             if interrupts_generation(failure):
                 result = validator._result(Status.CANCELLED if 'CANCEL' in reason or status == 'CANCELLED'
                                            else Status.INDETERMINATE, failure)
                 return finish([], result)
-            attempt['status'] = 'GENERATION_REJECTED'
             continue
         if not points:
             attempt['status'] = 'UNAVAILABLE'

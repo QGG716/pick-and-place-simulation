@@ -24,7 +24,7 @@ from unloading_sim.serial_unloading import apply_actual_motion_state  # noqa: E4
 from unloading_sim.unloading_sequence import RowSequencePolicy, RowUnloadingState  # noqa: E402
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, *, source_guard=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default=DEFAULT_MOTION)
     parser.add_argument("--output", default="outputs/m710_contact_unloading_round01")
@@ -117,6 +117,8 @@ def main(argv: list[str] | None = None) -> int:
             if diagnostics is not None:
                 diagnostics.flush()
     serialize_started = time.monotonic()
+    if source_guard is not None:
+        source_guard()  # Fixed-source experiment must not publish a stale result.
     write_layout_single_carton_audit(result, output / "motion.json")
     delivery = {"simulation_profile": profile_evidence(planning_policy.data), "planning_seconds": result["planning_performance"]["planning_total_wall_seconds"],
         "serialization_seconds": time.monotonic()-serialize_started,
@@ -136,6 +138,8 @@ def main(argv: list[str] | None = None) -> int:
         preflight_started = time.monotonic()
         preflight = build_m710_execution_preflight(
             args.execution_config, motion_result=result, motion_input=scene)
+        if source_guard is not None:
+            source_guard()
         write_m710_execution_preflight(preflight, output / "preflight.json")
         delivery["preflight_seconds"] = time.monotonic()-preflight_started
         delivery["simulation_execution_ready"] = preflight.get("simulation_execution_ready", False)
@@ -158,6 +162,8 @@ def main(argv: list[str] | None = None) -> int:
             if os.path.normcase(source_root) not in existing_roots:
                 child_env["PYTHONPATH"] = source_root + (os.pathsep + python_path if python_path else "")
             export_started = time.monotonic()
+            if source_guard is not None:
+                source_guard()
             subprocess.run([
                 sys.executable, str(ROOT / "scripts/export_isaac_fanuc_replay.py"),
                 "--preflight", str((output / "preflight.json").resolve()),

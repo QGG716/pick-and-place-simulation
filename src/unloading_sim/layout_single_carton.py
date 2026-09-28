@@ -1650,6 +1650,7 @@ def run_layout_single_carton_audit(
         trajectory_connector.stack_carton_names = {box.name for box in remaining}
     tasks: list[dict[str, Any]] = []
     selected_trajectory_segment: Mapping[str, Any] | None = None
+    request_stop_failure = None
     base_seed = int(policy.data["ik"]["seed"])
     pose_index = 0
     candidate_generation_seconds = 0.0
@@ -1856,8 +1857,10 @@ def run_layout_single_carton_audit(
                         )
                     else:
                         failure = dict(outcome.failure or {})
-                        if outcome.statistics.get("termination") == "PLANNING_WALL_CLOCK_DEADLINE":
-                            task_search_termination = "PLANNING_WALL_CLOCK_DEADLINE"
+                        from .stage_motion_policy import interrupts_generation
+                        if interrupts_generation(failure):
+                            task_search_termination = failure.get('reason', 'INCOMPLETE_VALIDATION')
+                            request_stop_failure = failure
                         attempt.update(
                             complete_trajectory=False,
                             failure_stage=str(
@@ -1965,6 +1968,8 @@ def run_layout_single_carton_audit(
                 "failure_reason": task_reason,
             }
         )
+        if request_stop_failure is not None:
+            break  # No next target, no geometric blacklist entry for interruption.
         if not task_complete:
             sequence.record_failure(target_name, row_selection.scene_fingerprint, task_reason)
 
@@ -2173,6 +2178,11 @@ def run_layout_single_carton_audit(
             "unmeasured_value": None,
         },
         "selected_trajectory_segment": selected_trajectory_segment,
+        "validation_status": ('VALID' if selected_trajectory_segment is not None else
+            (request_stop_failure.get('validation') or {}).get('status',
+                request_stop_failure.get('status', 'INDETERMINATE'))
+            if request_stop_failure is not None else 'INDETERMINATE'),
+        "failure": request_stop_failure,
         "planning_success": selected_trajectory_segment is not None,
         "execution_ready": False,
         "execution_readiness_status": "INDEPENDENT_PREFLIGHT_NOT_RUN",
@@ -2187,6 +2197,8 @@ def run_layout_single_carton_audit(
         "complete_trajectory_failure_reason": (
             None
             if selected_trajectory_segment is not None
+            else request_stop_failure.get('reason', 'INCOMPLETE_VALIDATION')
+            if request_stop_failure is not None
             else EXECUTION_GATE_REASON
             if not execution["qualified"]
             else trajectory_backend_failure

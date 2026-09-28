@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from copy import deepcopy
 from types import SimpleNamespace
 
 import pytest
@@ -24,8 +25,12 @@ def setup_planner(monkeypatch, tmp_path, *, ready=True):
     def write(value, path):
         path.write_text(json.dumps(value), encoding="utf-8")
     monkeypatch.setattr(runner, "run_layout_single_carton_audit", plan)
-    monkeypatch.setattr(runner, "load_layout_motion_policy", lambda path: SimpleNamespace(
-        data={"search_strategy": {"row_height_fraction": .08}}))
+    # The runner now consumes the explicit profile as well as row ordering.
+    # Use the real policy schema, rather than an incomplete pre-profile stub.
+    data = deepcopy(runner.load_layout_motion_policy(runner.DEFAULT_MOTION).data)
+    data['search_strategy']['row_height_fraction'] = .08
+    calls['policy'] = SimpleNamespace(data=data)
+    monkeypatch.setattr(runner, "load_layout_motion_policy", lambda path: calls['policy'])
     monkeypatch.setattr(runner, "write_layout_single_carton_audit", write)
     monkeypatch.setattr("unloading_sim.m710_execution.build_m710_execution_preflight", preflight)
     monkeypatch.setattr("unloading_sim.m710_execution.write_m710_execution_preflight", write)
@@ -56,7 +61,7 @@ def test_actual_state_is_passed_through_to_planning_and_preflight(monkeypatch, t
     source = tmp_path / "actual.json"
     source.write_text(json.dumps(actual), encoding="utf-8")
     initial = SimpleNamespace(cartons=(), support_graph=None)
-    actual_scene = SimpleNamespace(policy=SimpleNamespace(data={"search_strategy": {}}),
+    actual_scene = SimpleNamespace(policy=calls['policy'],
                                    snapshot={"scene_fingerprint": "actual-snapshot"})
     monkeypatch.setattr(runner, "build_verified_motion_input", lambda policy: initial)
     def apply(scene, state, **kwargs):
@@ -92,8 +97,8 @@ def test_blocked_preflight_does_not_export_and_geometry_failure_has_nonzero_stat
     assert runner.main(["--output", str(tmp_path), "--execution-bundle", str(tmp_path / "bundle.json")]) == 3
     assert "export" not in calls
     result["complete_trajectory_status"] = "FAIL_CLOSED"
-    calls.clear()
-    assert runner.main(["--output", str(tmp_path)]) == 2
+    calls.pop('preflight')
+    assert runner.main(["--output", str(tmp_path/'geometry_failure')]) == 2
     assert "preflight" not in calls
 
 
@@ -106,3 +111,16 @@ def test_missing_or_malformed_actual_state_cannot_fall_back_to_initial_scene(mon
     with pytest.raises(ValueError, match="one actual-state JSON"):
         runner.main(["--output", str(tmp_path), "--actual-state", str(source)])
     assert "plan" not in calls
+
+
+@pytest.mark.parametrize('change_at', [1, 2, 3])
+def test_fixed_source_change_stops_publication_and_export(monkeypatch, tmp_path, change_at):
+    calls, _ = setup_planner(monkeypatch, tmp_path)
+    checks = []
+    def guard():
+        checks.append(1)
+        if len(checks) == change_at:
+            raise RuntimeError('SOURCE_OR_INPUT_CHANGED_NO_PUBLICATION')
+    with pytest.raises(RuntimeError, match='NO_PUBLICATION'):
+        runner.main(['--output', str(tmp_path/'run')], source_guard=guard)
+    assert 'export' not in calls

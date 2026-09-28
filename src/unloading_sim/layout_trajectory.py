@@ -14,6 +14,7 @@ from .pair_clearance import obb_pair_failure, obb_surface_distance
 from contextlib import contextmanager, nullcontext
 from copy import deepcopy
 from dataclasses import dataclass, replace
+from functools import wraps
 import hashlib
 import json
 from pathlib import Path
@@ -44,7 +45,7 @@ from .motion_quality import path_quality, QualityDeadline, quality_improves
 from .planner import RRTConnectPlanner
 from .motion_validation import ValidationContext, MotionValidator, RequestBudget, LRU, ContextLease, Status
 from .stage_motion_policy import (MotionPurpose, GenerationMethod, require_purpose,
-                                  free_connection_prefix, interrupts_generation, VerifiedTemplate,
+                                  free_connection_prefix, interrupts_generation, failure_status, VerifiedTemplate,
                                   motion_subsegments, validate_motion_subsegments)
 from .pinocchio_backend import PinocchioHppFclBackend
 from .validation_physics import (
@@ -53,6 +54,34 @@ from .validation_physics import (
     contact_separated,
     support_audit,
 )
+
+
+def _observed_generation(function):
+    """Optional stage-boundary telemetry; no scene serialization or validation work."""
+    @wraps(function)
+    def observed(self, *args, **kwargs):
+        if getattr(self, 'progress_callback', None) is None:
+            return function(self, *args, **kwargs)
+        label = dict(entry=function.__name__, stage=kwargs.get('stage'),
+                     purpose=getattr(kwargs.get('purpose'), 'value', kwargs.get('purpose')),
+                     strategy={'_transit': 'JOINT_DIRECT_THEN_CANDIDATES_THEN_RRT',
+                         '_connect_pose': 'ENDPOINT_IK', '_cartesian': 'PROCESS_INTERPOLATION'
+                         }.get(function.__name__, 'CONTROLLED_PROCESS'))
+        stack = getattr(self, '_progress_stack', [])
+        self._progress_stack = stack
+        stack.append(label)
+        self._progress('stage_enter', **label)
+        try:
+            result = function(self, *args, **kwargs)
+            failure = result[-2] if isinstance(result, tuple) else getattr(result, 'failure', None)
+            self._progress('stage_exit', **label, success=failure is None, failure=failure)
+            return result
+        except BaseException as exc:
+            self._progress('stage_interrupted', **label, exception=type(exc).__name__, detail=str(exc))
+            raise
+        finally:
+            stack.pop()
+    return observed
 
 
 class LayoutTrajectoryRobot(Protocol):
@@ -1350,7 +1379,21 @@ class LayoutTrajectoryConnector:
             callback = getattr(self, "progress_callback", None)
             (callback or diagnostics.event)({"candidate": dict(diagnostics.candidate), **item})
 
+    def _progress(self, event, **item):
+        callback = getattr(self, 'progress_callback', None)
+        if callback is None:
+            return
+        now = perf_counter()
+        if event == 'work_checkpoint' and now < getattr(self, '_next_progress_checkpoint', 0.):
+            return
+        self._next_progress_checkpoint = now + 5.0
+        callback(dict(event=event, target=getattr(self, '_progress_target', None),
+            candidate=getattr(self, '_candidate_identity', None),
+            active_entries=list(getattr(self, '_progress_stack', [])),
+            statistics=dict(self._statistics), **item))
+
     def _state_failure(self, q, obstacles, *, diagnostic_origin="state", diagnostic_edge=None, **kwargs):
+        self._progress('work_checkpoint', stage=kwargs.get('stage'))
         failure = self._checked_state_failure(q, obstacles, **kwargs)
         diagnostics = getattr(self, "diagnostics", None)
         if diagnostics is not None:
@@ -1554,6 +1597,7 @@ class LayoutTrajectoryConnector:
             return None
         return dict(result.failure or {}, validation=result.evidence(), stage=stage)
 
+    @_observed_generation
     def _transit(self, start, goal, obstacles, *, purpose, seed, iteration_budget,
                  attachment=None, support_names=(), target_contact=None, stage,
                  candidates=(), allow_rrt=True):
@@ -1579,10 +1623,15 @@ class LayoutTrajectoryConnector:
             if attachment is None and stage == 'pregrasp':
                 path, simplify = self._improve_free_path(path, obstacles)
                 evidence.update(simplification=simplify, fallback_to_verified=not simplify.get('adopted', False))
+            if getattr(self, 'cancel_requested', False):
+                evidence.update(success=False, validation_completed=False, validation_status='CANCELLED')
+                return [], dict(reason='VALIDATION_CANCELLED', stage=stage,
+                                validation=dict(status='CANCELLED')), evidence
             if validator.context_current() != validator.context.context_id:
                 evidence.update(success=False, validation_completed=False,
                                 validation_status='INDETERMINATE')
-                return [], dict(reason='VALIDATION_CONTEXT_CHANGED', stage=stage), evidence
+                return [], dict(reason='VALIDATION_CONTEXT_CHANGED', stage=stage,
+                                validation=dict(status='INDETERMINATE')), evidence
             evidence['expensive_states'] = self._statistics['state_validations']-before['state_validations']
             return path, None, evidence
         if not evidence['continue_to_candidates_or_rrt']:
@@ -1598,12 +1647,12 @@ class LayoutTrajectoryConnector:
         evidence['attempts'].append(dict(method=GenerationMethod.RRT_CONNECT.value,
                                          failure=failure, search=search))
         evidence.update(search)
-        evidence.update(purpose=purpose.value, rrt_constructed=True, rrt_called=True,
+        evidence.update(purpose=purpose.value, rrt_constructed=search.get('search_started', True),
+            rrt_called=search.get('search_started', True),
             rrt_expanded=search.get('extension_attempts', 0) > 0,
             selected_method=GenerationMethod.RRT_CONNECT.value if failure is None else None,
             validation_completed=failure is None,
-            validation_status=('VALID' if failure is None else
-                (failure.get('validation') or {}).get('status', 'INVALID')),
+            validation_status=failure_status(failure),
             expensive_states=self._statistics['state_validations']-before['state_validations'])
         return path, failure, evidence
 
@@ -1623,10 +1672,13 @@ class LayoutTrajectoryConnector:
         motion_validator=None,
         request_budget=None,
     ) -> tuple[list[np.ndarray], Mapping[str, Any] | None, Mapping[str, Any]]:
-        require_purpose(purpose, free=True)
+        purpose = require_purpose(purpose, free=True)
         if self._deadline_reached():
-            return [], {"reason": "STAGE_CONNECTION_DEADLINE", "stage": stage}, {
+            return [], {"reason": "STAGE_CONNECTION_DEADLINE", "stage": stage,
+                       "validation": dict(status='INDETERMINATE', termination_scope='REQUEST',
+                                          can_continue_candidates=False)}, {
                 "stage": stage, "planning_iterations_consumed": 0,
+                "validation_status": "INDETERMINATE",
                 "validation_level": "A_UNVERIFIED_GEOMETRY", "search_started": False}
         self.diagnostic_path_seed = int(seed)
         self.diagnostic_cartesian_sample = None
@@ -1642,6 +1694,7 @@ class LayoutTrajectoryConnector:
         callback = getattr(self, "progress_callback", None)
         if callback is not None:
             callback({"event": "connection_started", "stage": stage,
+                      "purpose": purpose.value, "strategy": "RRT_CONNECT",
                       "iteration_budget": int(iteration_budget), "seed": int(seed)})
         motion_validator = motion_validator or self._motion_validator(obstacles, attachment=attachment,
             support_names=support_names, target_contact=target_contact, stage=stage)
@@ -1656,6 +1709,8 @@ class LayoutTrajectoryConnector:
             rng=np.random.default_rng(seed),
             motion_validator=motion_validator, request_budget=request_budget or self._validation_request(),
             diagnostic_context=getattr(self, "diagnostics", None) is not None,
+            progress_callback=(None if callback is None else lambda item: callback(dict(
+                stage=stage, purpose=purpose.value, strategy='RRT_CONNECT', **item))),
         )
         connection_started = perf_counter()
         result = planner.plan(
@@ -1681,20 +1736,25 @@ class LayoutTrajectoryConnector:
             **dict(result.search_evidence),
         }
         if not result.success:
-            uncertain = result.search_evidence.get('validation_failure')
-            if uncertain is not None:
-                return [], dict(uncertain.get('failure') or {}, validation=uncertain, stage=stage), evidence
+            outcome = result.search_evidence['validation']
             return [], {
-                "reason": "STAGE_CONNECTION_DEADLINE" if "time limit" in result.message else "PATH_SEARCH_EXHAUSTED",
+                "reason": outcome['reason'],
+                "validation": outcome,
+                "validation_failure": result.search_evidence.get('validation_failure'),
                 "stage": stage,
                 "detail": result.message,
                 "iterations": int(result.iterations),
             }, evidence
+        def rejected(failure):
+            status = failure_status(failure)
+            failure = dict(failure, validation=dict(failure.get('validation') or {}, status=status))
+            evidence.update(success=False, validation_status=status, validation=failure['validation'])
+            return [], failure, evidence
         context = lambda: self._context_identity(obstacles, attachment=attachment,
             support_names=support_names, target_contact=target_contact, stage=stage)
         identity = context()
         if motion_validator.context_current() != identity:
-            return [], dict(reason='VALIDATION_CONTEXT_CHANGED', stage=stage), evidence
+            return rejected(dict(reason='VALIDATION_CONTEXT_CHANGED', stage=stage))
         evidence["validation_level"] = "A_UNVERIFIED_GEOMETRY"
         # Same strict contract and exact motion keys in search and final verification.
         failure = self._path_failure(
@@ -1706,11 +1766,9 @@ class LayoutTrajectoryConnector:
             stage=stage, diagnostic_origin="rrt_success_full_edge_recheck",
         )
         if failure is not None:
-            evidence["success"] = False
-            return [], failure, evidence
+            return rejected(failure)
         if context() != identity:
-            evidence["success"] = False
-            return [], {"reason": "VALIDATION_CONTEXT_CHANGED", "stage": stage}, evidence
+            return rejected(dict(reason='VALIDATION_CONTEXT_CHANGED', stage=stage))
         baseline = self._remember_path(result.path, identity, stage, "B_STRICT_LOCAL_CONNECTION")
         evidence.update(validation_level=baseline["validation_level"],
             validation_completed_monotonic=baseline["completed_monotonic"],
@@ -1723,8 +1781,9 @@ class LayoutTrajectoryConnector:
                 baseline = self._remember_path(path, identity, stage,
                     "B_STRICT_LOCAL_CONNECTION", simplify["after"])
         if context() != baseline["context"]:
-            evidence["success"] = False
-            return [], {"reason": "VALIDATION_CONTEXT_CHANGED", "stage": stage}, evidence
+            return rejected(dict(reason='VALIDATION_CONTEXT_CHANGED', stage=stage))
+        if getattr(self, 'cancel_requested', False):
+            return rejected(dict(reason='VALIDATION_CANCELLED', stage=stage))
         return [np.array(q) for q in baseline["path"]], None, evidence
 
     def _ik_stream(
@@ -1861,6 +1920,7 @@ class LayoutTrajectoryConnector:
         evidence["finished_monotonic"] = perf_counter()
         return baseline, evidence
 
+    @_observed_generation
     def _connect_pose(
         self,
         pose: np.ndarray,
@@ -1998,7 +2058,7 @@ class LayoutTrajectoryConnector:
                     break
             elif not feasible:
                 failure = candidate_failure
-                if (connection.get('validation_status') in ('INDETERMINATE', 'CANCELLED')
+                if (interrupts_generation(candidate_failure)
                         or connection.get('invalid_endpoint') == 'start'):
                     break
         if feasible:
@@ -2039,9 +2099,22 @@ class LayoutTrajectoryConnector:
             termination = "CONNECTION_ATTEMPT_LIMIT_REACHED"
         else:
             termination = "IK_STREAM_EXHAUSTED"
+        if selected is None and not interrupts_generation(failure):
+            # A finite search did not prove global infeasibility. Retain each
+            # rejected edge in attempts, and retain the earliest uncertain exit.
+            uncertain = next((a['failure'] for a in attempts
+                if failure_status(a['failure']) == 'INDETERMINATE'), None)
+            failure = (dict(uncertain) if uncertain else dict(reason=termination,
+                last_candidate_failure=failure, stage=stage, validation=dict(
+                    status='INDETERMINATE', reason=termination,
+                    termination_scope='CANDIDATE', can_continue_candidates=True)))
+            if not failure.get('validation'):
+                failure['validation'] = dict(status='INDETERMINATE', reason=failure.get('reason'),
+                    termination_scope='CANDIDATE', can_continue_candidates=True)
         return selected, selected_path, failure, {
             "stage": stage,
             "purpose": purpose.value,
+            "validation_status": failure_status(failure),
             "endpoint_ik_streams": 1,
             "endpoint_ik_seed_attempts": int(stream_evidence.get('seeds_attempted', 0)),
             "endpoint_checks": endpoint_checks,
@@ -2064,7 +2137,8 @@ class LayoutTrajectoryConnector:
             "remaining_connection_iterations": remaining,
             "attempts": attempts,
             "ik_stream": stream_evidence,
-            "termination": termination,
+            "termination": 'SUCCESS' if selected is not None else failure.get('reason', termination),
+            "candidate_search_termination": termination,
             "validation_level": "B_STRICT_LOCAL_CONNECTION" if selected is not None else "A_UNVERIFIED_GEOMETRY",
             "improvement_deadline_monotonic": improvement_deadline,
             "optional_comparison_skipped": bool(feasible and improvement_started is None),
@@ -2080,6 +2154,7 @@ class LayoutTrajectoryConnector:
             },
         }
 
+    @_observed_generation
     def _cartesian(self, start, destination, obstacles, *, purpose, **kwargs):
         purpose = require_purpose(purpose)
         before = dict(self._statistics)
@@ -2309,6 +2384,7 @@ class LayoutTrajectoryConnector:
             self.contact_tolerance_m,
         )
 
+    @_observed_generation
     def _support_release(
         self,
         start: np.ndarray,
@@ -2564,6 +2640,7 @@ class LayoutTrajectoryConnector:
         full.extend(q.copy() for q in arrays[1:])
         stages[name] = [begin, len(full) - 1]
 
+    @_observed_generation
     def _approach(self, start, grasp_q, requested, obstacles, target, *, seed):
         """Both routes share strict collision edges and the controlled terminal arc.
 
@@ -2633,6 +2710,7 @@ class LayoutTrajectoryConnector:
             self._deadline_monotonic = outer
             self._branch_final_deadline = final
 
+    @_observed_generation
     def _plan_branch_search(
         self,
         *,
@@ -3081,6 +3159,7 @@ class LayoutTrajectoryConnector:
         finally:
             self._deadline_monotonic = outer
 
+    @_observed_generation
     def _departure_search(self, start, placed, obstacles, direction, *, seed, working_normal,
                    release_prediction, verified_baseline=None):
         if direction is None:
@@ -3242,6 +3321,7 @@ class LayoutTrajectoryConnector:
         failure = {"reason": "NO_SAFE_MOVING_CARTON_DEPARTURE", "stage": "withdrawal"}
         return [], failure, {"attempts": attempts, "failure": failure}
 
+    @_observed_generation
     def _finish_place_branch(self, *, target, face, requested_virtual_contact, home_q,
             contact_q, physical_contact, rigid, attachment, selection, pregrasp, contact,
             support_release, extraction, released_tracker, payload_obstacles, placement,
@@ -3533,6 +3613,8 @@ class LayoutTrajectoryConnector:
     def plan(self, **kwargs):
         """One bounded candidate slice nested inside the shared request deadline."""
         outer = self._deadline_monotonic
+        self._progress_target = kwargs['target'].name
+        self._progress('plan_enter')
         outer_final = getattr(self, "_candidate_final_deadline", None)
         allowance = getattr(self, "candidate_slice_s", self.budget.candidate_wall_time_s)
         started = perf_counter()
@@ -3546,6 +3628,15 @@ class LayoutTrajectoryConnector:
         event_start = len(self._budget_events)
         try:
             result = self._plan_candidate(**kwargs)
+            if getattr(self, 'cancel_requested', False):
+                result = replace(result, success=False, segment=None, failure=dict(
+                    reason='VALIDATION_CANCELLED', stage='request', validation=dict(status='CANCELLED'),
+                    last_candidate_failure=result.failure))
+            if not result.success:
+                result.failure['validation'] = dict(result.failure.get('validation') or {},
+                    status=failure_status(result.failure))
+                result.statistics['termination'] = result.failure.get('reason', 'INCOMPLETE_SEARCH')
+            result.statistics['validation_status'] = failure_status(result.failure)
             if not result.success and self._deadline_reached() and (outer is None or perf_counter() < outer):
                 result.statistics["termination"] = "CANDIDATE_WALL_CLOCK_DEADLINE"
                 result.failure["budget_termination"] = "CANDIDATE_WALL_CLOCK_DEADLINE"
@@ -3571,6 +3662,7 @@ class LayoutTrajectoryConnector:
                 "validator": dict(getattr(self.robot_state_validator, "performance_counters", {})),
                 "mesh_backend": dict(getattr(getattr(self.robot_state_validator, "mesh_robot", None), "performance_counters", {})),
                 "nested_timers_overlap": True}
+            self._progress('plan_exit', success=result.success, failure=result.failure)
             return result
         finally:
             self._deadline_monotonic = outer
@@ -3602,6 +3694,7 @@ class LayoutTrajectoryConnector:
         home = np.asarray(home_q, dtype=float)
         attempts: list[Mapping[str, Any]] = []
         last_failure: Mapping[str, Any] | None = None
+        uncertain_failure = None
         for index, candidate in enumerate(grasp_candidates[: self.budget.grasp_branches]):
             if self._deadline_reached():
                 break
@@ -3671,6 +3764,8 @@ class LayoutTrajectoryConnector:
                     },
                 )
             last_failure = failure
+            if failure_status(failure) == 'INDETERMINATE' and uncertain_failure is None:
+                uncertain_failure = failure
             if interrupts_generation(failure) or self._deadline_reached():
                 break
         if not attempts and self._deadline_reached():
@@ -3680,6 +3775,8 @@ class LayoutTrajectoryConnector:
                 "reason": "NO_STRICT_GRASP_CANDIDATE",
                 "stage": "contact",
             }
+        if uncertain_failure is not None and not interrupts_generation(last_failure):
+            last_failure = uncertain_failure
         return LayoutTrajectorySearchResult(
             False,
             None,

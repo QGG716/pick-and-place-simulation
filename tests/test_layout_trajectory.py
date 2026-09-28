@@ -288,6 +288,10 @@ def test_stage_connection_limit_does_not_prefetch_an_unused_ik_candidate():
     purpose="FREE_APPROACH")
     assert selected is None and path == []
     assert failure["reason"] == "DISCONNECTED"
+    # The legacy candidate message is retained, but bounded search is not an
+    # infeasibility proof. Scheduling remains lazy and within its original cap.
+    assert failure['validation']['status'] == evidence['validation_status'] == 'INDETERMINATE'
+    assert failure['validation']['can_continue_candidates']
     assert connector.stream.next_calls == connector.budget.stage_connection_attempts
     assert len(evidence["attempts"]) == connector.budget.stage_connection_attempts
 
