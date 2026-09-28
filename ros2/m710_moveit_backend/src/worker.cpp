@@ -117,7 +117,10 @@ public:
     auto begin=Clock::now(); auto op=req.at("op").get<std::string>();
     if(op=="init") {
       if(model) throw std::runtime_error("ALREADY_INITIALIZED");
-      seed=req.at("seed"); ompl::RNG::setSeed(seed);
+      seed=req.at("seed");
+      static bool seeded=false;static uint32_t process_seed=0;
+      if(!seeded) {ompl::RNG::setSeed(seed);process_seed=seed;seeded=true;}
+      else if(seed!=process_seed) throw std::runtime_error("RESIDENT_SEED_MISMATCH");
       std::vector<rclcpp::Parameter> params;
       for(auto it=req.at("parameters").begin(); it!=req.at("parameters").end(); ++it) {
         const auto& v=it.value();
@@ -128,7 +131,7 @@ public:
         else if(v.is_array()) params.emplace_back(it.key(),v.get<std::vector<std::string>>());
         else throw std::runtime_error("INVALID_PARAMETER_TYPE");
       }
-      node=std::make_shared<rclcpp::Node>("m710_moveit_worker", rclcpp::NodeOptions().parameter_overrides(params).automatically_declare_parameters_from_overrides(true));
+      node=std::make_shared<rclcpp::Node>("m710_moveit_worker_"+req.at("identity").at("model_tool_fingerprint").get<std::string>().substr(0,12), rclcpp::NodeOptions().parameter_overrides(params).automatically_declare_parameters_from_overrides(true));
       loader=std::make_shared<robot_model_loader::RobotModelLoader>(node,"robot_description");
       model=loader->getModel(); if(!model) throw std::runtime_error("MODEL_UNAVAILABLE");
       const auto* group=model->getJointModelGroup("manipulator");
@@ -285,7 +288,10 @@ public:
     auto motion=std::make_unique<mtc::stages::MoveTo>(req.at("stage"),solver);motion->setGroup("manipulator");
     motion->setTimeout(req.at("allowed_planning_time_s").get<double>());
     if(req.contains("goal_pose")) {
-      motion->setIKFrame(matrix(req.at("flange_from_task_tcp")),"flange");
+      if(req.at("flange_from_task_tcp")!=identity.at("flange_from_task_tcp")) throw std::runtime_error("TASK_TCP_CONTEXT_MISMATCH");
+      const std::string tcp=identity.at("task_tcp_link");
+      if(!model->getLinkModel(tcp) || !model->getJointModelGroup("manipulator")->canSetStateFromIK(tcp)) throw std::runtime_error("TASK_TCP_IK_UNAVAILABLE");
+      motion->setIKFrame(Eigen::Isometry3d::Identity(),tcp);
       geometry_msgs::msg::PoseStamped target;target.header.frame_id="world";target.pose=pose(req.at("goal_pose"));motion->setGoal(target);
     } else {
       auto goal=req.at("q_goal").get<std::vector<double>>();if(goal.size()!=names.size()) throw std::runtime_error("INVALID_GOAL");
@@ -295,8 +301,16 @@ public:
     task.add(std::move(motion)); auto planning=Clock::now(); ++requests; clearance->phase="search"; task.plan(1);double plan_s=seconds(planning);
     J out={{"status","SEARCH_EXHAUSTED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_attempt_index",requests},{"pipeline_calls",calls},
       {"scene_import_s",import_s},{"scene_updated",changed},{"mtc_plan_s",plan_s},{"world_count",scene->getWorld()->size()},
-      {"attached_id",attached_id},{"resident_seed",seed},{"request_seed",req.at("seed")},{"authoritative_status","NOT_RUN"},{"clearance",clearance->evidence()}};
-    if(task.solutions().empty()) {std::ostringstream why; task.explainFailure(why);out["detail"]=why.str(); J failures=J::array();for(const auto& failure:motion_stage->failures()) failures.push_back(failure->comment());out["failure_comments"]=failures;return out;}
+      {"attached_id",attached_id},{"task_tcp_identity",identity.at("task_tcp_fingerprint")},{"interpolated_link",req.contains("goal_pose")?identity.at("task_tcp_link"):J(nullptr)},
+      {"resident_seed",seed},{"request_seed",req.at("seed")},{"authoritative_status","NOT_RUN"},{"clearance",clearance->evidence()}};
+    if(task.solutions().empty()) {
+      if(pipeline=="pilz_industrial_motion_planner") out["status"]="NATIVE_PLANNING_FAILED";
+      std::ostringstream why; task.explainFailure(why);out["detail"]=why.str(); J failures=J::array();for(const auto& failure:motion_stage->failures()) failures.push_back(failure->comment());out["failure_comments"]=failures;
+      for(const auto& item:failures) {
+        const auto message=item.get<std::string>();
+        if(message.find("NO_IK_SOLUTION")!=std::string::npos) out["status"]="NATIVE_IK_FAILED";
+        else if(message.find("INVALID_MOTION_PLAN")!=std::string::npos) out["status"]="NATIVE_INVALID_MOTION_PLAN";
+      }return out;}
     moveit_task_constructor_msgs::msg::Solution msg;task.solutions().front()->toMsg(msg);
     J points=J::array();
     for(auto& sub:msg.sub_trajectory) {
@@ -321,9 +335,23 @@ public:
   }
 };
 int main(int argc,char**argv) {
-  setenv("RCUTILS_LOGGING_USE_STDOUT","0",1);rclcpp::init(argc,argv);Worker worker;std::string line;
+  setenv("RCUTILS_LOGGING_USE_STDOUT","0",1);rclcpp::init(argc,argv);std::map<std::string,std::unique_ptr<Worker>> workers;std::map<std::string,J> startups,init_requests;std::string line;
   while(std::getline(std::cin,line)) {
-    J req,answer;try {req=J::parse(line); auto* protocol=std::cout.rdbuf(std::cerr.rdbuf()); try {answer=worker.run(req);} catch(...) {std::cout.rdbuf(protocol);throw;} std::cout.rdbuf(protocol);} catch(const std::exception& e) {answer={{"status","ERROR"},{"detail",e.what()}};}
+    J req,answer;try {req=J::parse(line); auto* protocol=std::cout.rdbuf(std::cerr.rdbuf()); try {const auto key=req.at("identity").dump();
+      J init_content=req;init_content.erase("request_id");
+      if(req.at("op")=="init" && startups.count(key)) {
+        if(init_content!=init_requests.at(key)) throw std::runtime_error("CONTEXT_IDENTITY_REUSED_WITH_DIFFERENT_CONTENT");
+        answer=startups.at(key);answer["context_reused"]=true;
+      }
+      else {
+        if(req.at("op")=="init") {
+          if(workers.size()>=4) throw std::runtime_error("UNSUPPORTED_RESIDENT_CONTEXT_CAPACITY");
+          workers[key]=std::make_unique<Worker>();
+        }
+        if(!workers.count(key)) throw std::runtime_error("UNKNOWN_MODEL_TCP_CONTEXT");
+        answer=workers.at(key)->run(req);
+        if(req.at("op")=="init") {answer["context_reused"]=false;startups[key]=answer;init_requests[key]=init_content;}
+      }} catch(...) {std::cout.rdbuf(protocol);throw;} std::cout.rdbuf(protocol);} catch(const std::exception& e) {answer={{"status","ERROR"},{"detail",e.what()}};}
     answer["request_id"]=req.value("request_id",std::string());std::cout<<answer.dump()<<std::endl;
   }
   rclcpp::shutdown();return 0;

@@ -109,6 +109,6 @@ def test_capability_is_adapter_scope_and_has_no_reachability_claim():
     assert linear_capability(a,b,a,stage='transit',location='test')['supported']
     b[:3,:3]=[[0.,-1.,0.],[1.,0.,0.],[0.,0.,1.]]
     result=linear_capability(a,b,a,stage='transit',location='test')
-    assert not result['supported']
-    assert result['implementation_scope']=='adapter_constant_orientation_only_not_a_Pilz_limitation'
+    assert result['supported']
+    assert result['implementation_scope']=='fixed_task_tcp_link_Pilz_LIN_shortest_rotation_stopped_motion'
     assert result['flange_from_task_tcp']==a.tolist()

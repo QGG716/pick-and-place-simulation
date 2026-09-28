@@ -95,6 +95,7 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/layout_trajectory.py",
     "src/unloading_sim/moveit2_backend.py",
     "src/unloading_sim/moveit2_timing.py",
+    "src/unloading_sim/moveit2_tcp.py",
     "ros2/m710_moveit_backend/src/worker.cpp",
     "ros2/m710_moveit_backend/src/clearance.h",
     "ros2/m710_moveit_backend/src/clearance_workspace.h",
@@ -1502,6 +1503,7 @@ def run_layout_single_carton_audit(
     target_id: str | None = None,
     backend: str = "core",
     moveit_command: str | None = None,
+    fixed_history_fixture: str | Path | None = None,
 ) -> dict[str, Any]:
     """Search the initial top layer and expose one replay-ready full segment.
 
@@ -1672,6 +1674,11 @@ def run_layout_single_carton_audit(
     trajectory_search_seconds = 0.0
     from .history_candidates import HistorySource, history_policy, evaluate_history
     history_config = history_policy(strategy.get("history"))
+    if fixed_history_fixture is not None:
+        if target_id is None:
+            raise ValueError("fixed history validation requires one explicit target")
+        history_config = replace(history_config, source=str(Path(fixed_history_fixture).resolve()),
+            maximum_candidates=1, maximum_variants=1)
     if history_config.source is not None and not Path(history_config.source).is_absolute():
         history_config = replace(history_config, source=str(root / history_config.source))
     history_started = perf_counter()
@@ -1714,7 +1721,7 @@ def run_layout_single_carton_audit(
             trajectory_connector.budget.task_complete_connection_attempt_limit if trajectory_connector else pose_cap)
         history_attempts, history_segment = evaluate_history(history_source, scene,
             trajectory_connector, target, connector_build.evidence, deadline=history_deadline,
-            attempt_limit=max(0, min(pose_cap, connection_limit)//2))
+            attempt_limit=1 if fixed_history_fixture is not None else max(0, min(pose_cap, connection_limit)//2))
         attempts.extend(history_attempts)
         trajectory_pose_attempts += len(history_attempts)
         trajectory_search_seconds += sum(item["elapsed_s"] for item in history_attempts)
@@ -1725,7 +1732,7 @@ def run_layout_single_carton_audit(
                      "policy_fingerprint": policy.policy_fingerprint}, request_seed=base_seed,
             batch_size=(trajectory_connector.budget.task_pose_batch_size if trajectory_connector
                         else max(1, len(faces))),
-            attempt_limit=max(0, min(pose_cap, connection_limit)-len(history_attempts)),
+            attempt_limit=0 if fixed_history_fixture is not None else max(0, min(pose_cap, connection_limit)-len(history_attempts)),
             complete_connection_limit=max(0, connection_limit-len(history_attempts)),
             fair_retries=strategy.get("profile") == POC)
         if selected_trajectory_segment is not None:
@@ -2135,6 +2142,10 @@ def run_layout_single_carton_audit(
         "execution_collision_qualification": execution,
         "trajectory_backend": dict(connector_build.evidence),
         "history_source": history_source.evidence(),
+        "fixed_history_validation": None if fixed_history_fixture is None else {
+            "fixture": str(Path(fixed_history_fixture).resolve()), "target": target_id,
+            "maximum_candidates": 1, "new_candidate_search": False,
+            "all_current_validation_gates_retained": True},
         "effective_motion_policy": copy.deepcopy(dict(policy.data)),
         "history_compatibility": {"simulation_profile": profile_evidence(policy.data), "joint_names": list(scene.snapshot["robot"]["joint_names"]),
             "coordinate_convention": "+X into trailer, +Y left, +Z up; SI",
@@ -2212,6 +2223,7 @@ def run_layout_single_carton_audit(
     }
     if backend == "moveit2" and trajectory_connector is not None:
         result["native_backend_evidence"] = list(trajectory_connector.native_evidence)
+        result["authority_path_checks"] = list(trajectory_connector.authority_path_evidence)
         trajectory_connector.native.close()
     result["evidence_fingerprint"] = canonical_digest(result)
     return result

@@ -32,13 +32,40 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--backend", choices=("core", "moveit2"), default="core")
     parser.add_argument("--moveit-command", help="JSONL resident worker launcher; alternatively M710_MOVEIT_COMMAND")
     parser.add_argument("--target", help="One legal carton from the unchanged frozen scene")
+    parser.add_argument("--fixed-history-fixture", type=Path, help="Validate only this fixed candidate; requires --target, no candidate sweep")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
-        result = run_layout_single_carton_audit(args.config, project_root=ROOT, backend=args.backend, moveit_command=args.moveit_command, target_id=args.target)
+        if args.fixed_history_fixture is not None:
+            # The repository fixture is an extracted hint, not a complete prior
+            # audit document. Seal a separate derivative; never overwrite it or
+            # inherit its historical validation. HistorySource still verifies the
+            # derivative content fingerprint and compatible_hint checks assets/FK.
+            import hashlib
+            from unloading_sim.workcell_layout import canonical_digest
+            raw = args.fixed_history_fixture.read_bytes()
+            hint = json.loads(raw)
+            hint["fixed_fixture_derivation"] = {
+                "source_path": str(args.fixed_history_fixture.resolve()),
+                "source_sha256": hashlib.sha256(raw).hexdigest(),
+                "source_evidence_fingerprint": hint.get("evidence_fingerprint"),
+                "validation_inherited": False,
+                "scope": "fixed candidate hint; all current complete-task checks required"}
+            # Extracted fixtures omit old report metadata. Keep it explicitly
+            # unknown; never substitute the current policy/implementation as old.
+            hint.setdefault("policy_fingerprint", None)
+            hint.setdefault("implementation_identity", None)
+            hint["run_status"] = "HINT_ONLY"
+            hint["complete_trajectory_status"] = "NOT_VALIDATED"
+            hint["evidence_fingerprint"] = canonical_digest({k:v for k,v in hint.items() if k!="evidence_fingerprint"})
+            derived = args.output.with_suffix(".hint.json")
+            derived.parent.mkdir(parents=True,exist_ok=True)
+            derived.write_text(json.dumps(hint,indent=2,allow_nan=False),encoding="utf-8")
+            args.fixed_history_fixture = derived
+        result = run_layout_single_carton_audit(args.config, project_root=ROOT, backend=args.backend, moveit_command=args.moveit_command, target_id=args.target, fixed_history_fixture=args.fixed_history_fixture)
         output = write_layout_single_carton_audit(result, args.output)
     except Exception as exc:
         failure={"run_status": "BLOCKED", "backend": args.backend,

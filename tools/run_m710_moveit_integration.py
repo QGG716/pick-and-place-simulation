@@ -122,6 +122,12 @@ def main():
             if args.suite=='capability':
                 if args.backend!='moveit2': raise ValueError('capability suite requires moveit2')
                 def forbidden(*a,**k): raise AssertionError('EARLY_CAPABILITY_MISSED_HEAVY_CHECK')
+                # Negative capability fixture: a foreign bound TCP context.
+                # Rotating requests in the real bound context are now supported.
+                from copy import deepcopy
+                c.native_identity=deepcopy(c.native_identity)
+                c.native_identity["flange_from_task_tcp"][0][3]+=.01
+                report["negative_case"]="request_TCP_differs_from_bound_model_TCP"
                 c._path_failure=forbidden;c._state_failure=forbidden
             with c._contact_context():
                 task_started=perf_counter()
@@ -134,7 +140,7 @@ def main():
                 attempts=result.attempts,statistics=result.statistics,end_to_end_s=perf_counter()-task_started,
                 scope='one fixed historical candidate, current process reconstruction and authoritative checks; no new candidate sweep'))
         if args.suite=='capability':
-            assert not result.success and result.failure['reason']=='UNSUPPORTED_ROTATING_TASK_TCP_LIN'
+            assert not result.success and result.failure['reason']=='UNSUPPORTED_TASK_TCP_CONTEXT_MISMATCH'
             assert c.native_evidence==[]
             report['heavy_state_or_edge_checks']=0
             report['capability_checks']=c.capability_evidence

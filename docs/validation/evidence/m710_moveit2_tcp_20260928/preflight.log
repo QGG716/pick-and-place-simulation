@@ -1,0 +1,18 @@
+{
+  "status": "READY",
+  "simulation_execution_ready": true,
+  "execution_qualified": true,
+  "simulation_readiness_blockers": [],
+  "machine_qualified": false,
+  "machine_qualification_warnings": [
+    "SUPPLIED_ASSEMBLY_MATERIAL_AND_COMPONENT_MASSES_NOT_AVAILABLE",
+    "VACUUM_FORCE_SHEAR_AND_PEEL_ENVELOPE_NOT_MEASURED",
+    "ZONE_ASSIGNMENT_NOT_VENDOR_CONFIRMED"
+  ],
+  "backend_execution_status": "NOT_RUN",
+  "isaac_validation_performed": false,
+  "video": "NOT_PRODUCED_WITHOUT_A_PHYSICAL_EXECUTION",
+  "dynamic_carton_count": 40,
+  "preflight_fingerprint": "5a8cfbef47df6f5a7a5653f4dd9e2ea67bfb89b3bbc88eabc1e4165d089205ac",
+  "output": "/root/autodl-tmp/m710-tcp-lin-20260928/evidence/final2/preflight.json"
+}

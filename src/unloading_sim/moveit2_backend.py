@@ -24,6 +24,7 @@ import numpy as np
 from .layout_trajectory import LayoutTrajectoryConnector, OFFICIAL_MODEL_URDF, OFFICIAL_MODEL_SRDF
 
 SCHEMA = "m710_native_stage_v1"
+TASK_TCP_LINK = "m710_virtual_task_tcp"
 JOINT_NAMES = [f"J{i}" for i in range(1, 7)]
 
 
@@ -144,6 +145,14 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
         joint = ET.SubElement(urdf, "joint", name="mount_"+box.name, type="fixed")
         ET.SubElement(joint, "parent", link="flange"); ET.SubElement(joint, "child", link=box.name)
         ET.SubElement(joint, "origin", xyz=" ".join(map(str, local[:3, 3])), rpy=" ".join(map(str, _rpy(local[:3, :3]))))
+    # Collisionless fixed frame: Pilz interpolates this link itself, including
+    # rotation. Official physical links, tool solids and attachment frame stay intact.
+    tcp = np.asarray(connector.flange_from_virtual_task_tcp)
+    ET.SubElement(urdf, "link", name=TASK_TCP_LINK)
+    joint = ET.SubElement(urdf, "joint", name="mount_"+TASK_TCP_LINK, type="fixed")
+    ET.SubElement(joint, "parent", link="flange"); ET.SubElement(joint, "child", link=TASK_TCP_LINK)
+    ET.SubElement(joint, "origin", xyz=" ".join(map(str,tcp[:3,3])), rpy=" ".join(map(str,_rpy(tcp[:3,:3]))))
+    srdf.find("group[@name='manipulator']/chain").set("tip_link", TASK_TCP_LINK)
     # Owned tool solids form one assembly. Wrist exceptions retain exact ownership.
     for first, second in itertools.combinations(tool_names, 2):
         ET.SubElement(srdf, "disable_collisions", link1=first, link2=second, reason="Owned_tool_assembly")
@@ -174,7 +183,8 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
     identity = dict(schema=SCHEMA, baseline_sha="baeb2a7056e8af0397855e9f54c0d9d421472e6d",
         scene_version="m710id70_unloading_layout_v1", scene_fingerprint=scene.snapshot.get("scene_fingerprint"),
         policy_fingerprint=scene.policy.policy_fingerprint, validator_identity=connector.validator_identity,
-        model_tool_fingerprint=digest(params), policy_scope="native_POC_free_pair_clearance_search_and_edges_plus_existing_authority")
+        model_tool_fingerprint=digest(params), task_tcp_link=TASK_TCP_LINK, flange_from_task_tcp=tcp.tolist(),
+        task_tcp_fingerprint=digest(tcp.tolist()), policy_scope="native_POC_free_pair_clearance_search_and_edges_plus_existing_authority")
     return dict(op="init", parameters=params, identity=identity, joint_names=names, seed=seed,
         collision_policy=connector.collision_policy.to_mapping(),tool_links=sorted(tool_names),
         expected_collision_shapes={link.attrib["name"]:len(link.findall("collision")) for link in urdf.findall("link") if link.findall("collision")}), tool_names, compliant
@@ -200,20 +210,28 @@ def validate_native_result(result, start, goal, names):
     return [q.copy() for q in path]
 
 
-def linear_capability(origin, destination, flange_from_task_tcp, *, stage, location):
-    """Implementation capability only; no IK, planning, reachability or collision."""
-    origin=np.asarray(origin,dtype=float);destination=np.asarray(destination,dtype=float)
-    supported=np.allclose(origin[:3,:3],destination[:3,:3],atol=1e-8,rtol=0)
-    return dict(schema="m710_native_capability_v1",supported=bool(supported),
-        reason=None if supported else "UNSUPPORTED_ROTATING_TASK_TCP_LIN",stage=stage,location=location,
-        implementation_scope="adapter_constant_orientation_only_not_a_Pilz_limitation",
-        flange_from_task_tcp=np.asarray(flange_from_task_tcp).tolist(),start_pose_world=origin.tolist(),
-        goal_pose_world=destination.tolist())
+def linear_capability(origin, destination, flange_from_task_tcp, *, stage, location, bound_tcp=None):
+    """Structural support only; no IK, reachability or collision queries."""
+    values=[np.asarray(x,dtype=float) for x in (origin,destination,flange_from_task_tcp)]
+    valid=all(x.shape==(4,4) and np.isfinite(x).all() and
+        np.allclose(x[3],[0,0,0,1],atol=1e-12,rtol=0) and
+        np.allclose(x[:3,:3].T@x[:3,:3],np.eye(3),atol=1e-8,rtol=0) and
+        abs(np.linalg.det(x[:3,:3])-1)<1e-8 for x in values)
+    reason=None
+    if not valid: reason="UNSUPPORTED_INVALID_TCP_TRANSFORM"
+    elif stage not in {"pregrasp","transit","residence"}: reason="UNSUPPORTED_POLICY_STAGE"
+    elif bound_tcp is not None and not np.array_equal(values[2],np.asarray(bound_tcp)):
+        reason="UNSUPPORTED_TASK_TCP_CONTEXT_MISMATCH"
+    return dict(schema="m710_native_capability_v2",supported=reason is None,reason=reason,
+        stage=stage,location=location,reference_frame="world",
+        implementation_scope="fixed_task_tcp_link_Pilz_LIN_shortest_rotation_stopped_motion",
+        task_tcp_link=TASK_TCP_LINK,task_tcp_fingerprint=digest(values[2].tolist()) if valid else None,
+        flange_from_task_tcp=values[2].tolist(),start_pose_world=values[0].tolist(),goal_pose_world=values[1].tolist())
 
 
 class MoveItLayoutConnector(LayoutTrajectoryConnector):
     @classmethod
-    def from_existing(cls, connector, scene, command=None):
+    def from_existing(cls, connector, scene, command=None, *, native_client=None):
         self = cls.__new__(cls); self.__dict__.update(connector.__dict__)
         measured_velocity=scene.snapshot.get("robot",{}).get("qd_rad_s")
         if measured_velocity is None and scene.snapshot.get("actual_state_context"):
@@ -222,7 +240,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             velocity=np.asarray(measured_velocity,dtype=float)
             if velocity.shape!=(6,) or not np.isfinite(velocity).all() or np.any(velocity!=0):
                 raise MoveItUnavailable("UNSUPPORTED_NONZERO_OR_INVALID_START_VELOCITY")
-        self.native = ResidentMoveItClient(command or os.environ.get("M710_MOVEIT_COMMAND"),
+        self.native = native_client or ResidentMoveItClient(command or os.environ.get("M710_MOVEIT_COMMAND"),
             log_path=os.environ.get("M710_MOVEIT_LOG"))
         init, self.native_tools, self.native_compliant = model_request(self, scene,
             asset_root=os.environ.get("M710_MOVEIT_ASSET_ROOT"), seed=int(os.environ.get("M710_MOVEIT_SEED", "71070")))
@@ -232,7 +250,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         if (not np.isfinite(self.native_stage_seconds) or self.native_stage_seconds<=0 or
                 not np.isfinite(self.native_request_timeout) or self.native_request_timeout<=self.native_stage_seconds):
             self.native.close(); raise ValueError("invalid native stage time budget")
-        self.native_scene=scene; self.native_evidence=[]; self.native_verified=[]; self.capability_evidence=[]
+        self.native_scene=scene; self.native_evidence=[]; self.native_verified=[]; self.capability_evidence=[]; self.authority_path_evidence=[]
         try:
             self.native_startup=self.native.request(init)
             self.check_fk()
@@ -246,9 +264,9 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             links=["base_link", "J3_link", "J6_link", "flange", "fanuc_flange", "tool0"]
             reference=self.robot.named_link_frames(q)
             links=[l for l in links if l in reference]
-            result=self.native.request(dict(op="fk",identity=self.native_identity,q_start=q.tolist(),links=links))
+            result=self.native.request(dict(op="fk",identity=self.native_identity,q_start=q.tolist(),links=links+[TASK_TCP_LINK]))
             error=max(float(np.max(np.abs(np.asarray(result["frames"][l])-reference[l]))) for l in links)
-            tcp=np.asarray(result["frames"]["flange"]) @ self.flange_from_virtual_task_tcp
+            tcp=np.asarray(result["frames"][TASK_TCP_LINK])
             error=max(error,float(np.max(np.abs(tcp-self.robot.fk(q)))))
             checks.append(dict(q=q.tolist(),max_matrix_error=error,links=links))
             if error>1e-8: raise MoveItUnavailable(f"MODEL_FK_MISMATCH: {error}")
@@ -289,7 +307,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         return request
 
     def capability_check(self, start_pose, goal_pose, *, stage, location):
-        result=linear_capability(start_pose,goal_pose,self.flange_from_virtual_task_tcp,stage=stage,location=location)
+        result=linear_capability(start_pose,goal_pose,self.flange_from_virtual_task_tcp,stage=stage,location=location,
+            bound_tcp=self.native_identity["flange_from_task_tcp"])
         result["native_planning_calls"]=sum(1 for a in self.native_evidence if a.get("mtc_attempt_index") is not None)
         self.capability_evidence.append(result)
         return None if result["supported"] else result
@@ -344,6 +363,20 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             path_id=digest([q.tolist() for q in path]);attempt["path_sha256"]=path_id
             if path_id in seen:
                 attempt["authoritative_status"]="DUPLICATE_REJECTED_PATH"; continue
+            if goal_pose is not None:
+                from .moveit2_tcp import audit_linear_tcp
+                checked=perf_counter()
+                audit=audit_linear_tcp(path,self.robot.fk,self.robot.fk(start),goal_pose,
+                    position_tolerance=float(self.ik["position_tolerance_m"]),
+                    orientation_tolerance=float(self.ik["orientation_tolerance_rad"]),
+                    edge_resolution_rad=self.budget.edge_resolution_rad)
+                attempt["lin_constraint_audit"]=audit
+                attempt["tcp_audit_s"]=perf_counter()-checked
+                if not audit["passed"]:
+                    attempt["authoritative_status"]="REJECTED"
+                    attempt["failure"]={"reason":"LIN_TASK_TCP_CONSTRAINT","stage":stage}
+                    self.native_evidence.extend(attempts)
+                    return [],attempt["failure"],dict(backend="moveit2",success=False,attempts=attempts)
             seen.add(path_id);checked=perf_counter()
             failure=self._path_failure(path,obstacles,attachment=attachment,support_names=support_names,
                 target_contact=target_contact,stage=stage,diagnostic_origin="moveit2_final_edge_recheck")
@@ -360,39 +393,16 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                         path_sha256=path_id,remaining_attempts=len(schedule)-len(attempts))
                     return [],detail,dict(backend="moveit2",success=False,attempts=attempts)
                 continue
-            if goal_pose is not None:
-                from .ik import pose_error
-                origin=self.robot.fk(start);direction=np.asarray(goal_pose)[:3,3]-origin[:3,3]
-                length2=float(direction@direction)
-                maximum_position=maximum_angle=0.
-                for a,b in zip(path[:-1],path[1:]):
-                    for fraction in (0.,.5,1.):
-                        actual=self.robot.fk(a+fraction*(b-a))
-                        along=0. if length2<1e-20 else float(np.clip((actual[:3,3]-origin[:3,3])@direction/length2,0.,1.))
-                        expected=origin.copy();expected[:3,3]+=along*direction
-                        _,distance,angle=pose_error(actual,expected)
-                        maximum_position=max(maximum_position,distance);maximum_angle=max(maximum_angle,angle)
-                _,end_distance,end_angle=pose_error(self.robot.fk(path[-1]),np.asarray(goal_pose))
-                attempt["lin_constraint_audit"]=dict(maximum_line_error_m=maximum_position,maximum_orientation_error_rad=maximum_angle,
-                    endpoint_error_m=end_distance,endpoint_error_rad=end_angle,sampling="knots_and_each_joint_edge_midpoint")
-                if (max(maximum_position,end_distance)>float(self.ik["position_tolerance_m"]) or
-                    max(maximum_angle,end_angle)>float(self.ik["orientation_tolerance_rad"])):
-                    attempt["authoritative_status"]="REJECTED";attempt["failure"]={"reason":"LIN_TASK_TCP_CONSTRAINT","stage":stage};continue
             attempt["end_to_end_s"]=perf_counter()-started
             self.native_evidence.extend(attempts);self.native_verified.append(deepcopy(attempt))
             return path,None,dict(backend="moveit2",success=True,validation_level="B_STRICT_LOCAL_CONNECTION",attempts=attempts)
         self.native_evidence.extend(attempts)
-        reason=attempts[-1]["status"] if attempts and attempts[-1]["status"].startswith(("INVALID_START","INVALID_GOAL")) else "MOVEIT2_SEARCH_EXHAUSTED"
+        reason=attempts[-1]["status"] if attempts and (goal_pose is not None or attempts[-1]["status"].startswith(("INVALID_START","INVALID_GOAL"))) else "MOVEIT2_SEARCH_EXHAUSTED"
         return [],dict(reason=reason,stage=stage,attempts=attempts),dict(backend="moveit2",success=False,attempts=attempts)
 
-    def history_capability_check(self,hint,target,contact_q,obstacles):
-        """Exact fixed-history suffix geometry after contact IK, before edge checks.
-
-        Only rejects when every existing release-height alternative needs the same
-        unsupported rotation. No planning, collision, or reachability conclusion.
-        Unknown/non-POC history is deferred to the normal earliest suffix check.
-        """
-        if not self.budget.proof_of_concept: return None
+    def history_linear_suffix_requests(self,hint,target,contact_q,obstacles):
+        """Pure current process geometry; no prefix/path validity work or planning."""
+        if not self.budget.proof_of_concept: return []
         from .history_adaptation import loaded_prefix_geometry
         from .layout_trajectory import PhysicalContactAttachment
         from .validation_physics import RigidAttachment
@@ -400,21 +410,21 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         from .release_motion import reception_footprint_audit
         old=hint["segment"];names=old["place"]["support_names"]
         supports=[b for b in obstacles if b.name in names and b.category=="conveyor"]
-        if len(supports)!=len(names): return None
+        if len(supports)!=len(names): return []
         desired=np.asarray(old["place"]["actual_box_pose_world"]).copy()
         box=OBB(desired[:3,3],target.half_extents,desired[:3,:3],target.name,target.category)
         top=max(float(b.corners()[:,2].max()) for b in supports)
         desired[2,3]-=max(0.,float(box.corners()[:,2].min())-top)
         payload=OBB(desired[:3,3],target.half_extents,desired[:3,:3],target.name,target.category)
         reception=reception_footprint_audit(payload,supports,edge_tolerance_m=self.placement_policy.edge_tolerance_m)
-        if not reception["supported"]: return None
+        if not reception["supported"]: return []
         physical=self.physical_from_virtual(self.robot.fk(contact_q))
         rigid=RigidAttachment.capture(physical,target)
         attachment=PhysicalContactAttachment(self.robot,rigid,self.flange_from_virtual_task_tcp,self.flange_from_physical_contact)
         a,b=old["stage_ranges"]["extraction"]
         extraction_end=np.asarray(old["path"][b]) if b>a else np.asarray(contact_q)
         prefix,_,_=loaded_prefix_geometry(self,hint,extraction_end,obstacles,attachment,reception["receiver_names"])
-        failures=[]
+        requests=[]
         for height in self.budget.release_policy().ideal_heights():
             released=desired.copy();released[2,3]+=height
             preplace=released@np.linalg.inv(rigid.tcp_from_box)
@@ -422,11 +432,33 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 +self.budget.receiver_runtime_clearance_reserve_m+self.contact_tolerance_m+2*float(self.ik["position_tolerance_m"]))
             preplace[2,3]+=max(0.,clearance-height)
             goal=self.virtual_from_physical(preplace)
-            failure=self.capability_check(self.robot.fk(prefix[-1]),goal,stage="transit",
+            requests.append(dict(q_start=np.asarray(prefix[-1]).copy(),goal_pose=goal,
+                attachment=attachment,release_height_m=height,receiver_names=reception["receiver_names"],
+                receiver_intent_pose_world=desired.copy(),physical_contact_pose_world=physical.copy(),
+                contact_q=np.asarray(contact_q).copy(),safe_prefix_nodes=len(prefix)))
+        return requests
+
+    def history_capability_check(self,hint,target,contact_q,obstacles):
+        failures=[]
+        for request in self.history_linear_suffix_requests(hint,target,contact_q,obstacles):
+            failure=self.capability_check(self.robot.fk(request["q_start"]),request["goal_pose"],stage="transit",
                 location="after_contact_ik_before_contact_or_prefix_collision")
             if failure is None: return None
-            failures.append({**failure,"release_height_m":height})
-        return {**failures[0],"all_release_alternatives_unsupported":failures}
+            failures.append({**failure,"release_height_m":request["release_height_m"]})
+        return {**failures[0],"all_release_alternatives_unsupported":failures} if failures else None
+
+    def _path_failure(self,path,obstacles,**kwargs):
+        """Observe the unchanged authority gate at path granularity, not each state."""
+        started=perf_counter()
+        failure=super()._path_failure(path,obstacles,**kwargs)
+        row=dict(stage=kwargs.get("stage"),path_nodes=len(path),seconds=perf_counter()-started,
+            reason=None if failure is None else failure.get("reason"),
+            diagnostic_origin=kwargs.get("diagnostic_origin"),attached=kwargs.get("attachment") is not None)
+        self.authority_path_evidence.append(row)
+        trace=os.environ.get("M710_AUTHORITY_TRACE")
+        if trace:
+            with open(trace,"a",encoding="utf-8") as stream: stream.write(json.dumps(row,allow_nan=False)+"\n")
+        return failure
 
     def _improve_free_path(self,path,obstacles,*,planner=None):
         return path,{"adopted":False,"reason":"PRESERVE_NATIVE_OR_VERIFIED_TEMPLATE_EDGES_AND_TIMING"}
