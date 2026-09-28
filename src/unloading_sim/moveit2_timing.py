@@ -19,7 +19,11 @@ def native_timing_floor(path, records):
         times = np.asarray([p["t"] for p in points], dtype=float)
         if len(candidate)<2 or not np.isfinite(times).all() or np.any(np.diff(times)<=0):
             raise ValueError("INVALID_NATIVE_TIMES")
-        for offset in range(len(path)-len(candidate)+1):
+        matches=[offset for offset in range(len(path)-len(candidate)+1)
+                 if np.array_equal(path[offset:offset+len(candidate)],candidate)]
+        if len(matches)>1:
+            raise ValueError('AMBIGUOUS_NATIVE_STAGE_PATH_RANGE')
+        for offset in matches:
             if np.array_equal(path[offset:offset+len(candidate)],candidate):
                 last=offset+len(candidate)-1
                 floors[offset:last]=np.maximum(floors[offset:last],np.diff(times))

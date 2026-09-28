@@ -1,0 +1,6 @@
+{
+  "output": "/root/autodl-tmp/m710-execution-gate-20260928/evidence/final/standard-export.json",
+  "commands": 5498,
+  "duration_seconds": 106.16363929051933,
+  "target": "carton_l07_c02"
+}

@@ -1396,6 +1396,9 @@ def build_fanuc_isaac_replay_bundle(
     approach_boundary = segment.get("approach", {}).get("free_connection_end_index")
     if approach_boundary is not None:
         protected.add(int(approach_boundary))
+    from .m710_execution_tcp import lin_records, bind_reference
+    for record in lin_records(segment):
+        protected.update(record['path_range'])
     prefix_indices = collinear_indices(path[:release_index + 1], protected)
     prefix = time_parameterize_joint_path(path[prefix_indices], limits)
     from .moveit2_timing import preserve_native_durations
@@ -1481,16 +1484,28 @@ def build_fanuc_isaac_replay_bundle(
     if not np.isfinite(release_seconds) or release_seconds < 0.0:
         raise ValueError("release_seconds must be finite and non-negative")
 
+    reference_source_indices = list(reference_indices)
+    def insert_mapped_hold(times, values, event, duration):
+        nonlocal reference_source_indices
+        if duration:
+            hits=np.flatnonzero(np.abs(times-event)<=1e-12)
+            if len(hits)!=1:
+                raise ValueError('REFERENCE_HOLD_BOUNDARY_AMBIGUOUS')
+            source=reference_source_indices[int(hits[0])]
+            reference_source_indices=([i for i,t in zip(reference_source_indices,times) if t<event-1e-12]
+                +[source,source]+[i for i,t in zip(reference_source_indices,times) if t>event+1e-12])
+        return _insert_command_hold(times,values,event,duration)
+
     source_grasp_time = event_time("grasp_index")
     source_release_time = event_time("release_index")
     grasp_arrival_time = source_grasp_time
     grasp_time = source_grasp_time
     if source_grasp_time is not None:
-        command_times, commands = _insert_command_hold(
+        command_times, commands = insert_mapped_hold(
             command_times, commands, source_grasp_time, pre_grasp_settle_seconds
         )
         grasp_time += pre_grasp_settle_seconds
-        command_times, commands = _insert_command_hold(
+        command_times, commands = insert_mapped_hold(
             command_times, commands, grasp_time, vacuum_establish_seconds
         )
     release_arrival_time = source_release_time
@@ -1502,14 +1517,15 @@ def build_fanuc_isaac_replay_bundle(
         release_arrival_time += pre_grasp_settle_seconds + vacuum_establish_seconds
     release_time = release_arrival_time
     if release_arrival_time is not None:
-        command_times, commands = _insert_command_hold(
+        command_times, commands = insert_mapped_hold(
             command_times, commands, release_arrival_time, release_seconds
         )
         release_time += release_seconds
     analytic_reference = {"interpolation": "C2_piecewise_quintic_rest_to_rest",
         "timestamps_seconds": command_times.tolist(), "positions_rad": commands.tolist(),
         "boundary_state": "REST_START_REQUIRES_ACTUAL_SETTLING",
-        "source_retained_indices": reference_indices}
+        "source_retained_indices": reference_indices,
+        "source_path_indices": reference_source_indices}
     command_times, commands = _sample_trajectory(command_times, commands,
         float(controller_period_seconds), quintic=True)
     source_release_retreat_time = event_time("release_retreat_index")
@@ -2370,4 +2386,8 @@ def build_fanuc_isaac_replay_bundle(
     if robot_model_id == "fanuc_m710id_70":
         metadata["m710_execution_preflight"] = copy.deepcopy(preflight)
         metadata["m710_replay_contract"] = m710_replay_contract
+    if robot_model_id == "fanuc_m710id_70":
+        from .m710_execution_tcp import audit_bundle_tcp
+        metadata['lin_reference_bindings']=bind_reference(segment,analytic_reference)
+        metadata['final_reference_tcp_audit']=audit_bundle_tcp({'metadata':metadata})
     return IsaacReplayBundle(command_times, commands, metadata)

@@ -1,0 +1,9 @@
+..............                                                           [100%]
+=============================== warnings summary ===============================
+../../m710-official-dynamics-20260910/cpu-venv/lib/python3.12/site-packages/_pytest/config/__init__.py:1346
+  /root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/lib/python3.12/site-packages/_pytest/config/__init__.py:1346: PytestConfigWarning: assertions not in test modules or plugins will be ignored because assert statements are not executed by the underlying Python interpreter (are you using python -O?)
+  
+    self._warn_about_missing_assertion(mode)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+14 passed, 15 deselected, 1 warning in 4.77s

@@ -349,6 +349,12 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             attempt={**raw,"stage":stage,"seed":seed,"request_fingerprint":digest(request),
                 "endpoint_authority":endpoints,"endpoint_authority_s":endpoint_s,
                 "ipc_watchdog_s":getattr(self,"native_request_timeout",600.)}
+            if goal_pose is not None:
+                from .m710_execution_tcp import make_lin_contract
+                attempt['lin_contract']=make_lin_contract(request,self.robot.fk(start),
+                    position_tolerance=self.ik['position_tolerance_m'],orientation_tolerance=self.ik['orientation_tolerance_rad'],
+                    edge_resolution=self.budget.edge_resolution_rad,root=Path(__file__).resolve().parents[2])
+                attempt['stage_id']='lin-'+digest([attempt['request_fingerprint'],len(self.native_verified)])
             attempts.append(attempt)
             if raw["status"]!="SUCCESS":
                 if raw["status"].startswith(("INVALID_START","INVALID_GOAL")): break

@@ -6,7 +6,7 @@ also recompute its hashes.  Replay therefore has to bind a bundle to a
 verified preflight *and* compare the preflight's source identities with the
 current workspace before starting a heavyweight simulator.
 
-This file intentionally imports only the Python standard library so the
+At initial import this file loads only the Python standard library so the
 fail-closed gate can execute before importing Isaac Sim, NumPy, or the core
 ``unloading_sim`` package.
 """
@@ -614,7 +614,7 @@ def verify_workspace_preflight_identity(
     return {"status": "PASS", "checked_sha256": checked}
 
 
-def verify_m710_replay_bundle(
+def _verify_m710_replay_bundle_integrity(
     bundle_payload: Mapping[str, Any],
     *,
     project_root: str | Path | None = None,
@@ -668,6 +668,52 @@ def verify_m710_replay_bundle(
         "source_preflight_fingerprint": preflight["preflight_fingerprint"],
         "integrity_scope": INTEGRITY_SCOPE,
     }
+
+
+def verify_m710_replay_bundle(bundle_payload, *, project_root=None, current_asset_audit=None):
+    """Verify the actual loaded reference before any physics initialization.
+
+    The standalone pre-Kit loader runs NumPy FK in a short-lived child so Kit's
+    Python process remains free of numerical imports before SimulationApp.
+    No external PASS file is consumed; every call performs the semantic audit.
+    """
+    result = _verify_m710_replay_bundle_integrity(bundle_payload)
+    metadata=bundle_payload['metadata']
+    segment=metadata['m710_execution_preflight']['replay_adapter_inputs']['trajectory_segment']
+    if metadata.get('native_backend') != segment.get('native_backend'):
+        raise M710ReplayContractError('NATIVE_METADATA_BINDING_MISMATCH')
+    for stage in (segment.get('native_backend') or {}).get('stages',[]):
+        if stage.get('planner_id')=='LIN' and not isinstance(stage.get('lin_contract'),dict):
+            raise M710ReplayContractError('LIN_CONTRACT_MISSING_REQUIRES_MIGRATION_OR_REAUDIT')
+    if project_root is not None:
+        verify_workspace_preflight_identity(metadata['m710_execution_preflight'],project_root,
+            current_asset_audit=current_asset_audit)
+    if not segment.get('native_backend'):
+        if metadata.get('lin_reference_bindings'):
+            raise M710ReplayContractError('ORPHAN_LIN_BINDING')
+        result['final_reference_tcp_audit']={'status':'NOT_APPLICABLE','reason':'NO_NATIVE_LIN_STAGES'}
+        return result
+    if __package__:
+        from .m710_execution_tcp import audit_bundle_tcp
+        audit=audit_bundle_tcp(bundle_payload,project_root=project_root)
+    else:
+        import subprocess
+        import sys
+        root=Path(project_root) if project_root else Path(__file__).resolve().parents[2]
+        code=("import sys,json;sys.path.insert(0,sys.argv[1]);"
+              "from unloading_sim.m710_execution_tcp import audit_bundle_tcp;"
+              "print(json.dumps(audit_bundle_tcp(json.load(sys.stdin),project_root=sys.argv[2]),allow_nan=False))")
+        completed=subprocess.run([sys.executable]+(['-O'] if sys.flags.optimize else [])+['-c',code,str(root/'src'),str(root)],
+            input=json.dumps(bundle_payload,allow_nan=False),text=True,capture_output=True,timeout=120)
+        if completed.returncode:
+            raise M710ReplayContractError('FINAL_REFERENCE_TCP_REJECTED: '+completed.stderr[-4000:])
+        audit=json.loads(completed.stdout)
+    recorded=metadata.get('final_reference_tcp_audit')
+    if recorded is not None and (recorded.get('status')!=audit['status'] or
+            recorded.get('binding_sha256')!=audit.get('binding_sha256')):
+        raise M710ReplayContractError('STALE_FINAL_REFERENCE_TCP_AUDIT')
+    result['final_reference_tcp_audit']=audit
+    return result
 
 
 __all__ = [

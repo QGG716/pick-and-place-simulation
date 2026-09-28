@@ -52,3 +52,6 @@ docs/validation/evidence/m710_moveit2_perf_20260928/** -text -whitespace
 
 # Preserve rotating TCP and physical execution evidence bytes.
 docs/validation/evidence/m710_moveit2_tcp_20260928/** -text -whitespace
+
+# Preserve final execution-reference audit evidence identities.
+docs/validation/evidence/m710_execution_gate_20260928/** -text -whitespace
