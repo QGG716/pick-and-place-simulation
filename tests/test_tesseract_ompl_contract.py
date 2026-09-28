@@ -33,6 +33,8 @@ class FakeWorker:
             return dict(status="INVALID_START", counters={"state_checks": 1}, timings={})
         return dict(status="CANDIDATE", candidate_found=True, exact_solution=True, native_validated=True,
                     planner_config=data.get("planner_config"),
+                    effective_planner={"type": "ompl::geometric::LazyPRM" if data.get("planner_config", {}).get("name") == "lazy_prm" else "ompl::geometric::RRTConnect",
+                                       "star": False, "max_nearest_neighbors": 5},
                     path=[list(data["q_start"]), list(data["q_goal"])],
                     scene_fingerprint=data["scene"]["fingerprint"], counters={"state_checks": 4}, timings={})
 

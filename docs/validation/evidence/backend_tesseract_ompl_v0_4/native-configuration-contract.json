@@ -1,0 +1,616 @@
+[
+  {
+    "request": {
+      "scene": {
+        "urdf": "<robot name=\"unit_xy\" xmlns:tesseract=\"https://tesseract-robotics.github.io\" tesseract:make_convex=\"false\">\n      <link name=\"world\"/><link name=\"base_link\"/><link name=\"x\"/>\n      <link name=\"flange\"><collision><geometry><box size=\"0.10 0.10 0.10\"/></geometry></collision></link>\n      <link name=\"tool0\"/><link name=\"backend_tcp\"/>\n      <link name=\"obstacle\"><collision><geometry><box size=\"0.2 0.6 0.2\"/></geometry></collision></link>\n      <joint name=\"base\" type=\"fixed\"><parent link=\"world\"/><child link=\"base_link\"/></joint>\n      <joint name=\"Jx\" type=\"prismatic\"><parent link=\"base_link\"/><child link=\"x\"/><origin xyz=\"0 0 0.5\"/><axis xyz=\"1 0 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"Jy\" type=\"prismatic\"><parent link=\"x\"/><child link=\"flange\"/><axis xyz=\"0 1 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"tool\" type=\"fixed\"><parent link=\"flange\"/><child link=\"tool0\"/></joint>\n      <joint name=\"tcp\" type=\"fixed\"><parent link=\"tool0\"/><child link=\"backend_tcp\"/></joint>\n      <joint name=\"obstacle_mount\" type=\"fixed\"><parent link=\"world\"/><child link=\"obstacle\"/><origin xyz=\"0 0 0.5\"/></joint>\n      </robot>",
+        "srdf": "<robot name=\"unit_xy\"><group name=\"manipulator\"><chain base_link=\"base_link\" tip_link=\"tool0\"/></group></robot>",
+        "joint_names": [
+          "Jx",
+          "Jy"
+        ],
+        "joint_limits": [
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            1
+          ]
+        ],
+        "joints": [
+          {
+            "name": "Jx",
+            "link": "x",
+            "type": "prismatic",
+            "axis": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "Jy",
+            "link": "flange",
+            "type": "prismatic",
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "active_links": [
+          "flange"
+        ],
+        "collision_objects": [
+          "flange",
+          "obstacle"
+        ],
+        "default_margin": 0.005,
+        "pair_margins": [],
+        "constraints": {
+          "joint_margin": 0.0,
+          "maximum_jacobian_condition": 100.0,
+          "radial_limit": null,
+          "edge_resolution_rad": 0.055,
+          "point_motion_bound_m": 0.00125,
+          "lever_arm_m": 4.0
+        },
+        "fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb"
+      },
+      "q_start": [
+        -0.6,
+        0
+      ],
+      "q_goal": [
+        0.6,
+        0
+      ],
+      "seed": 71070,
+      "max_state_checks": 100000,
+      "profile": true,
+      "planner_config": {
+        "name": "rrt_connect",
+        "max_samples": 10000,
+        "max_roadmap_vertices": 10002,
+        "max_roadmap_edges": 50010
+      },
+      "operation": "configure"
+    },
+    "result": {
+      "candidate_found": false,
+      "collision_object_count": 2,
+      "effective_planner": {
+        "distance": "RealVectorStateSpace unweighted Euclidean L2",
+        "range_rad": 0.18,
+        "state_space_maximum_extent": 2.8284271247461903,
+        "type": "ompl::geometric::RRTConnect"
+      },
+      "effective_rule": {
+        "base_l1_resolution_rad": 0.0003125,
+        "edge_resolution_rad": 0.055,
+        "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+        "l1_resolution_rad": 0.0003125,
+        "lever_arm_m": 4.0,
+        "name": "fixed_4m_1.25mm_l1_grid_v1",
+        "point_motion_bound_m": 0.00125,
+        "refinement": 0
+      },
+      "environment_reused": false,
+      "exact_solution": false,
+      "first_native_valid_path_s": null,
+      "initial_roadmap_edges": null,
+      "initial_roadmap_vertices": null,
+      "moving_collision_object_count": 1,
+      "native_validated": false,
+      "path": [],
+      "planner_config": {
+        "max_roadmap_edges": 50010,
+        "max_roadmap_vertices": 10002,
+        "max_samples": 10000,
+        "name": "rrt_connect"
+      },
+      "scene_fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb",
+      "search_started": false,
+      "seed": 71070,
+      "static_collision_object_count": 1,
+      "status": "CONFIGURED",
+      "timings": {
+        "environment_init_s": 0.008571277,
+        "worker_roundtrip_s_inclusive": 0.009600697085261345,
+        "worker_cold_start_s": 0.04204605892300606
+      },
+      "versions": {
+        "fcl": "0.7.0",
+        "implementation": "native C++17 worker",
+        "manager": "FCLDiscreteBVHManager",
+        "ompl": "1.7.0",
+        "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+        "tesseract": "0.35.0",
+        "tesseract_planning": null
+      }
+    }
+  },
+  {
+    "request": {
+      "scene": {
+        "urdf": "<robot name=\"unit_xy\" xmlns:tesseract=\"https://tesseract-robotics.github.io\" tesseract:make_convex=\"false\">\n      <link name=\"world\"/><link name=\"base_link\"/><link name=\"x\"/>\n      <link name=\"flange\"><collision><geometry><box size=\"0.10 0.10 0.10\"/></geometry></collision></link>\n      <link name=\"tool0\"/><link name=\"backend_tcp\"/>\n      <link name=\"obstacle\"><collision><geometry><box size=\"0.2 0.6 0.2\"/></geometry></collision></link>\n      <joint name=\"base\" type=\"fixed\"><parent link=\"world\"/><child link=\"base_link\"/></joint>\n      <joint name=\"Jx\" type=\"prismatic\"><parent link=\"base_link\"/><child link=\"x\"/><origin xyz=\"0 0 0.5\"/><axis xyz=\"1 0 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"Jy\" type=\"prismatic\"><parent link=\"x\"/><child link=\"flange\"/><axis xyz=\"0 1 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"tool\" type=\"fixed\"><parent link=\"flange\"/><child link=\"tool0\"/></joint>\n      <joint name=\"tcp\" type=\"fixed\"><parent link=\"tool0\"/><child link=\"backend_tcp\"/></joint>\n      <joint name=\"obstacle_mount\" type=\"fixed\"><parent link=\"world\"/><child link=\"obstacle\"/><origin xyz=\"0 0 0.5\"/></joint>\n      </robot>",
+        "srdf": "<robot name=\"unit_xy\"><group name=\"manipulator\"><chain base_link=\"base_link\" tip_link=\"tool0\"/></group></robot>",
+        "joint_names": [
+          "Jx",
+          "Jy"
+        ],
+        "joint_limits": [
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            1
+          ]
+        ],
+        "joints": [
+          {
+            "name": "Jx",
+            "link": "x",
+            "type": "prismatic",
+            "axis": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "Jy",
+            "link": "flange",
+            "type": "prismatic",
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "active_links": [
+          "flange"
+        ],
+        "collision_objects": [
+          "flange",
+          "obstacle"
+        ],
+        "default_margin": 0.005,
+        "pair_margins": [],
+        "constraints": {
+          "joint_margin": 0.0,
+          "maximum_jacobian_condition": 100.0,
+          "radial_limit": null,
+          "edge_resolution_rad": 0.055,
+          "point_motion_bound_m": 0.00125,
+          "lever_arm_m": 4.0
+        },
+        "fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb"
+      },
+      "q_start": [
+        -0.6,
+        0
+      ],
+      "q_goal": [
+        0.6,
+        0
+      ],
+      "seed": 71070,
+      "max_state_checks": 100000,
+      "profile": true,
+      "planner_config": {
+        "name": "lazy_prm",
+        "max_samples": 10000,
+        "max_roadmap_vertices": 10002,
+        "max_roadmap_edges": 50010
+      },
+      "operation": "configure"
+    },
+    "result": {
+      "candidate_found": false,
+      "collision_object_count": 2,
+      "effective_planner": {
+        "connection_strategy": "default KBoundedStrategy",
+        "cost_threshold": "positive infinity",
+        "distance": "RealVectorStateSpace unweighted Euclidean L2",
+        "max_connection_distance": 0.5656854249492381,
+        "max_nearest_neighbors": 5,
+        "nondefault_planner_parameters": {},
+        "objective": "default PathLengthOptimizationObjective",
+        "star": false,
+        "state_space_maximum_extent": 2.8284271247461903,
+        "type": "ompl::geometric::LazyPRM"
+      },
+      "effective_rule": {
+        "base_l1_resolution_rad": 0.0003125,
+        "edge_resolution_rad": 0.055,
+        "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+        "l1_resolution_rad": 0.0003125,
+        "lever_arm_m": 4.0,
+        "name": "fixed_4m_1.25mm_l1_grid_v1",
+        "point_motion_bound_m": 0.00125,
+        "refinement": 0
+      },
+      "environment_reused": true,
+      "exact_solution": false,
+      "first_native_valid_path_s": null,
+      "initial_roadmap_edges": 0,
+      "initial_roadmap_vertices": 0,
+      "moving_collision_object_count": 1,
+      "native_validated": false,
+      "path": [],
+      "planner_config": {
+        "max_roadmap_edges": 50010,
+        "max_roadmap_vertices": 10002,
+        "max_samples": 10000,
+        "name": "lazy_prm"
+      },
+      "scene_fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb",
+      "search_started": false,
+      "seed": 71070,
+      "static_collision_object_count": 1,
+      "status": "CONFIGURED",
+      "timings": {
+        "environment_init_s": 0.0,
+        "worker_roundtrip_s_inclusive": 0.0009204577654600143,
+        "worker_cold_start_s": 0.0
+      },
+      "versions": {
+        "fcl": "0.7.0",
+        "implementation": "native C++17 worker",
+        "manager": "FCLDiscreteBVHManager",
+        "ompl": "1.7.0",
+        "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+        "tesseract": "0.35.0",
+        "tesseract_planning": null
+      }
+    }
+  },
+  {
+    "request": {
+      "scene": {
+        "urdf": "<robot name=\"unit_xy\" xmlns:tesseract=\"https://tesseract-robotics.github.io\" tesseract:make_convex=\"false\">\n      <link name=\"world\"/><link name=\"base_link\"/><link name=\"x\"/>\n      <link name=\"flange\"><collision><geometry><box size=\"0.10 0.10 0.10\"/></geometry></collision></link>\n      <link name=\"tool0\"/><link name=\"backend_tcp\"/>\n      <link name=\"obstacle\"><collision><geometry><box size=\"0.2 0.6 0.2\"/></geometry></collision></link>\n      <joint name=\"base\" type=\"fixed\"><parent link=\"world\"/><child link=\"base_link\"/></joint>\n      <joint name=\"Jx\" type=\"prismatic\"><parent link=\"base_link\"/><child link=\"x\"/><origin xyz=\"0 0 0.5\"/><axis xyz=\"1 0 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"Jy\" type=\"prismatic\"><parent link=\"x\"/><child link=\"flange\"/><axis xyz=\"0 1 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"tool\" type=\"fixed\"><parent link=\"flange\"/><child link=\"tool0\"/></joint>\n      <joint name=\"tcp\" type=\"fixed\"><parent link=\"tool0\"/><child link=\"backend_tcp\"/></joint>\n      <joint name=\"obstacle_mount\" type=\"fixed\"><parent link=\"world\"/><child link=\"obstacle\"/><origin xyz=\"0 0 0.5\"/></joint>\n      </robot>",
+        "srdf": "<robot name=\"unit_xy\"><group name=\"manipulator\"><chain base_link=\"base_link\" tip_link=\"tool0\"/></group></robot>",
+        "joint_names": [
+          "Jx",
+          "Jy"
+        ],
+        "joint_limits": [
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            1
+          ]
+        ],
+        "joints": [
+          {
+            "name": "Jx",
+            "link": "x",
+            "type": "prismatic",
+            "axis": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "Jy",
+            "link": "flange",
+            "type": "prismatic",
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "active_links": [
+          "flange"
+        ],
+        "collision_objects": [
+          "flange",
+          "obstacle"
+        ],
+        "default_margin": 0.005,
+        "pair_margins": [],
+        "constraints": {
+          "joint_margin": 0.0,
+          "maximum_jacobian_condition": 100.0,
+          "radial_limit": null,
+          "edge_resolution_rad": 0.055,
+          "point_motion_bound_m": 0.00125,
+          "lever_arm_m": 4.0
+        },
+        "fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb"
+      },
+      "q_start": [
+        -0.6,
+        0
+      ],
+      "q_goal": [
+        0.6,
+        0
+      ],
+      "seed": 71070,
+      "max_state_checks": 100000,
+      "profile": true,
+      "planner_config": {
+        "name": "typo"
+      }
+    },
+    "result": {
+      "error": "unknown planner",
+      "status": "UNSUPPORTED_CONSTRAINT",
+      "timings": {
+        "worker_roundtrip_s_inclusive": 0.0006789844483137131,
+        "worker_cold_start_s": 0.0
+      }
+    }
+  },
+  {
+    "request": {
+      "scene": {
+        "urdf": "<robot name=\"unit_xy\" xmlns:tesseract=\"https://tesseract-robotics.github.io\" tesseract:make_convex=\"false\">\n      <link name=\"world\"/><link name=\"base_link\"/><link name=\"x\"/>\n      <link name=\"flange\"><collision><geometry><box size=\"0.10 0.10 0.10\"/></geometry></collision></link>\n      <link name=\"tool0\"/><link name=\"backend_tcp\"/>\n      <link name=\"obstacle\"><collision><geometry><box size=\"0.2 0.6 0.2\"/></geometry></collision></link>\n      <joint name=\"base\" type=\"fixed\"><parent link=\"world\"/><child link=\"base_link\"/></joint>\n      <joint name=\"Jx\" type=\"prismatic\"><parent link=\"base_link\"/><child link=\"x\"/><origin xyz=\"0 0 0.5\"/><axis xyz=\"1 0 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"Jy\" type=\"prismatic\"><parent link=\"x\"/><child link=\"flange\"/><axis xyz=\"0 1 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"tool\" type=\"fixed\"><parent link=\"flange\"/><child link=\"tool0\"/></joint>\n      <joint name=\"tcp\" type=\"fixed\"><parent link=\"tool0\"/><child link=\"backend_tcp\"/></joint>\n      <joint name=\"obstacle_mount\" type=\"fixed\"><parent link=\"world\"/><child link=\"obstacle\"/><origin xyz=\"0 0 0.5\"/></joint>\n      </robot>",
+        "srdf": "<robot name=\"unit_xy\"><group name=\"manipulator\"><chain base_link=\"base_link\" tip_link=\"tool0\"/></group></robot>",
+        "joint_names": [
+          "Jx",
+          "Jy"
+        ],
+        "joint_limits": [
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            1
+          ]
+        ],
+        "joints": [
+          {
+            "name": "Jx",
+            "link": "x",
+            "type": "prismatic",
+            "axis": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "Jy",
+            "link": "flange",
+            "type": "prismatic",
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "active_links": [
+          "flange"
+        ],
+        "collision_objects": [
+          "flange",
+          "obstacle"
+        ],
+        "default_margin": 0.005,
+        "pair_margins": [],
+        "constraints": {
+          "joint_margin": 0.0,
+          "maximum_jacobian_condition": 100.0,
+          "radial_limit": null,
+          "edge_resolution_rad": 0.055,
+          "point_motion_bound_m": 0.00125,
+          "lever_arm_m": 4.0
+        },
+        "fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb"
+      },
+      "q_start": [
+        -0.6,
+        0
+      ],
+      "q_goal": [
+        0.6,
+        0
+      ],
+      "seed": 71070,
+      "max_state_checks": 100000,
+      "profile": true,
+      "planner_config": {
+        "name": "lazy_prm",
+        "max_samples": true
+      }
+    },
+    "result": {
+      "error": "invalid finite roadmap resource limit",
+      "status": "UNSUPPORTED_CONSTRAINT",
+      "timings": {
+        "worker_roundtrip_s_inclusive": 0.0005380343645811081,
+        "worker_cold_start_s": 0.0
+      }
+    }
+  },
+  {
+    "request": {
+      "scene": {
+        "urdf": "<robot name=\"unit_xy\" xmlns:tesseract=\"https://tesseract-robotics.github.io\" tesseract:make_convex=\"false\">\n      <link name=\"world\"/><link name=\"base_link\"/><link name=\"x\"/>\n      <link name=\"flange\"><collision><geometry><box size=\"0.10 0.10 0.10\"/></geometry></collision></link>\n      <link name=\"tool0\"/><link name=\"backend_tcp\"/>\n      <link name=\"obstacle\"><collision><geometry><box size=\"0.2 0.6 0.2\"/></geometry></collision></link>\n      <joint name=\"base\" type=\"fixed\"><parent link=\"world\"/><child link=\"base_link\"/></joint>\n      <joint name=\"Jx\" type=\"prismatic\"><parent link=\"base_link\"/><child link=\"x\"/><origin xyz=\"0 0 0.5\"/><axis xyz=\"1 0 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"Jy\" type=\"prismatic\"><parent link=\"x\"/><child link=\"flange\"/><axis xyz=\"0 1 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"tool\" type=\"fixed\"><parent link=\"flange\"/><child link=\"tool0\"/></joint>\n      <joint name=\"tcp\" type=\"fixed\"><parent link=\"tool0\"/><child link=\"backend_tcp\"/></joint>\n      <joint name=\"obstacle_mount\" type=\"fixed\"><parent link=\"world\"/><child link=\"obstacle\"/><origin xyz=\"0 0 0.5\"/></joint>\n      </robot>",
+        "srdf": "<robot name=\"unit_xy\"><group name=\"manipulator\"><chain base_link=\"base_link\" tip_link=\"tool0\"/></group></robot>",
+        "joint_names": [
+          "Jx",
+          "Jy"
+        ],
+        "joint_limits": [
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            1
+          ]
+        ],
+        "joints": [
+          {
+            "name": "Jx",
+            "link": "x",
+            "type": "prismatic",
+            "axis": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "Jy",
+            "link": "flange",
+            "type": "prismatic",
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "active_links": [
+          "flange"
+        ],
+        "collision_objects": [
+          "flange",
+          "obstacle"
+        ],
+        "default_margin": 0.005,
+        "pair_margins": [],
+        "constraints": {
+          "joint_margin": 0.0,
+          "maximum_jacobian_condition": 100.0,
+          "radial_limit": null,
+          "edge_resolution_rad": 0.055,
+          "point_motion_bound_m": 0.00125,
+          "lever_arm_m": 4.0
+        },
+        "fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb"
+      },
+      "q_start": [
+        -0.6,
+        0
+      ],
+      "q_goal": [
+        0.6,
+        0
+      ],
+      "seed": 71070,
+      "max_state_checks": 100000,
+      "profile": true,
+      "planner_config": {
+        "name": "lazy_prm",
+        "unknown": 1
+      }
+    },
+    "result": {
+      "error": "unknown planner configuration field",
+      "status": "UNSUPPORTED_CONSTRAINT",
+      "timings": {
+        "worker_roundtrip_s_inclusive": 0.0005086846649646759,
+        "worker_cold_start_s": 0.0
+      }
+    }
+  },
+  {
+    "request": {
+      "scene": {
+        "urdf": "<robot name=\"unit_xy\" xmlns:tesseract=\"https://tesseract-robotics.github.io\" tesseract:make_convex=\"false\">\n      <link name=\"world\"/><link name=\"base_link\"/><link name=\"x\"/>\n      <link name=\"flange\"><collision><geometry><box size=\"0.10 0.10 0.10\"/></geometry></collision></link>\n      <link name=\"tool0\"/><link name=\"backend_tcp\"/>\n      <link name=\"obstacle\"><collision><geometry><box size=\"0.2 0.6 0.2\"/></geometry></collision></link>\n      <joint name=\"base\" type=\"fixed\"><parent link=\"world\"/><child link=\"base_link\"/></joint>\n      <joint name=\"Jx\" type=\"prismatic\"><parent link=\"base_link\"/><child link=\"x\"/><origin xyz=\"0 0 0.5\"/><axis xyz=\"1 0 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"Jy\" type=\"prismatic\"><parent link=\"x\"/><child link=\"flange\"/><axis xyz=\"0 1 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"tool\" type=\"fixed\"><parent link=\"flange\"/><child link=\"tool0\"/></joint>\n      <joint name=\"tcp\" type=\"fixed\"><parent link=\"tool0\"/><child link=\"backend_tcp\"/></joint>\n      <joint name=\"obstacle_mount\" type=\"fixed\"><parent link=\"world\"/><child link=\"obstacle\"/><origin xyz=\"0 0 0.5\"/></joint>\n      </robot>",
+        "srdf": "<robot name=\"unit_xy\"><group name=\"manipulator\"><chain base_link=\"base_link\" tip_link=\"tool0\"/></group></robot>",
+        "joint_names": [
+          "Jx",
+          "Jy"
+        ],
+        "joint_limits": [
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            1
+          ]
+        ],
+        "joints": [
+          {
+            "name": "Jx",
+            "link": "x",
+            "type": "prismatic",
+            "axis": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "Jy",
+            "link": "flange",
+            "type": "prismatic",
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "active_links": [
+          "flange"
+        ],
+        "collision_objects": [
+          "flange",
+          "obstacle"
+        ],
+        "default_margin": 0.005,
+        "pair_margins": [],
+        "constraints": {
+          "joint_margin": 0.0,
+          "maximum_jacobian_condition": 100.0,
+          "radial_limit": null,
+          "edge_resolution_rad": 0.055,
+          "point_motion_bound_m": 0.00125,
+          "lever_arm_m": 4.0
+        },
+        "fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb"
+      },
+      "q_start": [
+        -0.6,
+        0
+      ],
+      "q_goal": [
+        0.6,
+        0
+      ],
+      "seed": 71070,
+      "max_state_checks": 100000,
+      "profile": true,
+      "planner_config": {
+        "name": "lazy_prm",
+        "max_samples": 10000,
+        "max_roadmap_vertices": 10002,
+        "max_roadmap_edges": 50010
+      },
+      "range_rad": 0.18
+    },
+    "result": {
+      "error": "RRT range_rad is not a LazyPRM parameter",
+      "status": "UNSUPPORTED_CONSTRAINT",
+      "timings": {
+        "worker_roundtrip_s_inclusive": 0.0005315281450748444,
+        "worker_cold_start_s": 0.0
+      }
+    }
+  }
+]

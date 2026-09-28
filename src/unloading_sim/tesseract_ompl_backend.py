@@ -8,6 +8,7 @@ import queue
 import subprocess
 import tempfile
 import threading
+from dataclasses import asdict
 from time import perf_counter
 
 import numpy as np
@@ -96,10 +97,26 @@ class NativeWorker:
         self.directory.cleanup()
 
 
+class NativePlanningBlocked(RuntimeError):
+    """Explicit experiment boundary; must escape ordinary candidate retries."""
+
+    def __init__(self, evidence):
+        self.evidence = evidence
+        super().__init__(evidence["status"])
+
+
 class TesseractOMPLBackend:
     name = "tesseract_ompl"
 
-    def __init__(self, executable=None, *, worker=None, planner_config=None, profile=False):
+    def __init__(self, executable=None, *, worker=None, planner_config=None, profile=False,
+                 max_state_checks=100000, max_attempts=2, stop_on_native_block=False):
+        from .planning_contract import PlanningBudget
+        budget = PlanningBudget(max_state_checks=max_state_checks, max_attempts=max_attempts)
+        if type(stop_on_native_block) is not bool:
+            raise ValueError("stop_on_native_block must be boolean")
+        self.max_state_checks = budget.max_state_checks
+        self.max_attempts = budget.max_attempts
+        self.stop_on_native_block = stop_on_native_block
         self.planner_config = planner_config if planner_config is not None else OMPLPlannerConfig()
         if not isinstance(self.planner_config, OMPLPlannerConfig):
             raise ValueError("planner_config must be OMPLPlannerConfig")
@@ -170,6 +187,16 @@ class TesseractOMPLBackend:
                         result.status = PlanningStatus.UNSUPPORTED_CONSTRAINT
                         result.diagnostics["error"] = "native planner configuration not acknowledged"
                         break
+                effective = raw.get("effective_planner", {})
+                expected_type = "ompl::geometric::" + ("LazyPRM" if self.planner_config.name == "lazy_prm" else "RRTConnect")
+                if ((self.planner_config.name == "lazy_prm" or effective) and
+                        (not isinstance(effective, dict) or effective.get("type") != expected_type or
+                         (self.planner_config.name == "lazy_prm" and
+                          (effective.get("star") is not False or effective.get("max_nearest_neighbors") != 5)))):
+                    result.status = PlanningStatus.UNSUPPORTED_CONSTRAINT
+                    result.diagnostics["error"] = "effective native planner differs from requested contract"
+                    break
+                result.diagnostics["effective_planner"] = effective or None
                 consumed = int(raw.get("counters", {}).get("state_checks", 0))
                 remaining -= consumed
                 result.counters = {"state_checks": request.budget.max_state_checks-remaining,
@@ -226,6 +253,9 @@ class TesseractOMPLBackend:
                     break
                 result.status = PlanningStatus.AUTHORITY_REJECTED
                 raw["authority_rejection"] = dict(rejection)
+                if self.stop_on_native_block:
+                    raw["repair"] = "EXPERIMENT_STOP_ON_AUTHORITY_REJECTION_NO_RETRY"
+                    break
                 q = rejection.get("q_rad")
                 if q is None or remaining < 2:
                     raw["repair"] = "MODEL_OR_POLICY_MISMATCH_NO_NATIVE_POINT_WITNESS"
@@ -341,6 +371,17 @@ def create_free_motion_backend(name, **kwargs):
     raise ValueError(f"unknown free motion backend: {name}")
 
 
+def _record_free_motion(connector, backend, evidence):
+    records = getattr(connector, "free_motion_records", None)
+    if records is None:
+        connector.free_motion_records = records = []
+    records.append(evidence)
+    if getattr(backend, "stop_on_native_block", False) and evidence["status"] in {
+            "BUDGET_EXHAUSTED", "CANCELLED", "STALE_SCENE", "UNSUPPORTED_CONSTRAINT",
+            "BACKEND_UNAVAILABLE", "AUTHORITY_REJECTED", "INTERNAL_ERROR"}:
+        raise NativePlanningBlocked(evidence)
+
+
 def connect_free_motion(connector, backend, start, goal, obstacles, *, seed, iteration_budget,
                         attachment=None, support_names=(), target_contact=None, stage):
     from .planning_contract import PlanningBudget
@@ -351,8 +392,12 @@ def connect_free_motion(connector, backend, start, goal, obstacles, *, seed, ite
                              support_names=support_names, target_contact=target_contact)
     except (ValueError, OSError) as exc:
         reason = "UNSUPPORTED_CONSTRAINT" if isinstance(exc, ValueError) else "BACKEND_UNAVAILABLE"
-        return [], dict(reason=reason, stage=stage, detail=str(exc)), dict(
-            backend=backend.name, success=False, search_success=False, planning_iterations_consumed=0)
+        evidence = dict(status=reason, stage=stage, backend=backend.name, success=False,
+            search_success=False, planning_iterations_consumed=0, diagnostics={"error": str(exc)},
+            request={"q_start": list(start), "q_goal": list(goal), "seed": int(seed)},
+            timings={"scene_export_s": perf_counter()-began})
+        _record_free_motion(connector, backend, evidence)
+        return [], dict(reason=reason, stage=stage, detail=str(exc)), evidence
     conversion = perf_counter()-began
     def context():
         identity = connector._context_identity(obstacles, attachment=attachment,
@@ -367,6 +412,7 @@ def connect_free_motion(connector, backend, start, goal, obstacles, *, seed, ite
         constraints=scene["constraints"], frames=scene["frames"], attachment=scene["attachment"], seed=int(seed),
         budget=PlanningBudget(legacy_iterations=int(iteration_budget),
             max_state_checks=getattr(backend, "max_state_checks", 100000),
+            max_attempts=getattr(backend, "max_attempts", 2),
             wall_time_s=connector._limit(connector._remaining_wall_time(), connector.budget.stage_wall_time_s)),
         cancelled=getattr(connector, "planning_cancelled", lambda: False), current_revision=context)
     authority = lambda path: connector._path_failure(path, obstacles, attachment=attachment,
@@ -383,6 +429,12 @@ def connect_free_motion(connector, backend, start, goal, obstacles, *, seed, ite
                       counters=result.counters, timings=result.timings))
     result.timings["scene_export_s"] = conversion
     evidence = result.to_mapping()
+    evidence["request"] = {key: getattr(request, key) for key in (
+        "request_id", "scene_revision", "scene_fingerprint", "model_fingerprint", "tool_fingerprint",
+        "policy_fingerprint", "stage", "joint_names", "q_start", "q_goal", "constraints", "frames", "attachment", "seed")}
+    evidence["request"]["budget"] = asdict(request.budget)
+    evidence["world_obstacle_names"] = [box.name for box in obstacles]
+    evidence["effective_planner"] = result.diagnostics.get("effective_planner")
     evidence.update(stage=stage, seed=int(seed), success=result.deliverable,
         search_success=result.candidate_found, validation_level="B_STRICT_LOCAL_CONNECTION" if result.deliverable else "A_UNVERIFIED_GEOMETRY",
         # Debit the caller's allocated attempt slice. This is scheduling accounting,
@@ -391,10 +443,7 @@ def connect_free_motion(connector, backend, start, goal, obstacles, *, seed, ite
         outer_budget_accounting="ALLOCATED_LEGACY_SLICE_NOT_MEASURED_OMPL_ITERATIONS")
     connector._statistics["connection_attempts"] += 1
     connector._statistics["path_connection_wall_seconds_inclusive"] += perf_counter()-began
-    records = getattr(connector, "free_motion_records", None)
-    if records is None:
-        connector.free_motion_records = records = []
-    records.append(evidence)
+    _record_free_motion(connector, backend, evidence)
     if not result.deliverable:
         return [], dict(reason=result.status.value, stage=stage, detail=result.diagnostics), evidence
     connector._remember_path(result.path, revision, stage, "B_STRICT_LOCAL_CONNECTION")

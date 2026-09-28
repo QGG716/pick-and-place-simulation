@@ -1,0 +1,156 @@
+{
+  "schema": "tesseract_single_candidate_delivery_v04",
+  "baseline": {
+    "review_commit": "e7c73a8c40ad07d964339560ff455aa29e59b531",
+    "local_head_at_start": "e7c73a8c40ad07d964339560ff455aa29e59b531",
+    "origin_branch_head_at_start": "e7c73a8c40ad07d964339560ff455aa29e59b531",
+    "branch": "feat/v0.5-backend-tesseract-ompl",
+    "worktree_clean_before_edits": true,
+    "reset_performed": false,
+    "other_branches_modified": false,
+    "server_repository_is_git_checkout": false,
+    "server_baseline_file": "server-baseline.txt",
+    "worker_rebuilt": false,
+    "dependencies_installed_or_upgraded": false
+  },
+  "actual_planner": {
+    "connection_strategy": "default KBoundedStrategy",
+    "cost_threshold": "positive infinity",
+    "distance": "RealVectorStateSpace unweighted Euclidean L2",
+    "max_connection_distance": 4.431260361343388,
+    "max_nearest_neighbors": 5,
+    "nondefault_planner_parameters": {},
+    "objective": "default PathLengthOptimizationObjective",
+    "star": false,
+    "state_space_maximum_extent": 22.15630180671694,
+    "type": "ompl::geometric::LazyPRM"
+  },
+  "task_calls": 1,
+  "task_native_requests": 1,
+  "auxiliary_regressions": {
+    "configuration_operations": 6,
+    "attachment_endpoint_checks": 3,
+    "task_calls": 0
+  },
+  "stages": {
+    "pregrasp": "BUDGET_EXHAUSTED",
+    "contact": "NOT_REACHED",
+    "support-release": "NOT_REACHED",
+    "extraction": "NOT_REACHED",
+    "transit": "NOT_REACHED",
+    "place": "NOT_REACHED",
+    "withdrawal": "NOT_REACHED"
+  },
+  "complete_geometry": "NOT_AVAILABLE",
+  "time_parameterization": "NOT_RUN",
+  "execution_preflight": "NOT_RUN_NO_COMPLETE_TRAJECTORY",
+  "simulation_execution_ready": false,
+  "isaac_started": false,
+  "physical_execution": "NOT_RUN",
+  "last_physical_event": null,
+  "new_world_completed_cartons": 0,
+  "machine_qualification": "NOT_ESTABLISHED",
+  "blocker": {
+    "status": "BUDGET_EXHAUSTED",
+    "detail": "CUMULATIVE_SAMPLE_LIMIT",
+    "ompl_status": "Timeout",
+    "wall_deadline_configured": false
+  },
+  "counters": {
+    "actual_state_computations": 8720,
+    "cache_evictions": 528,
+    "cache_hits": 33,
+    "collision_queries": 8710,
+    "cumulative_samples": 10000,
+    "edge_checks": 19,
+    "incomplete_edges": 0,
+    "invalid_edges": 18,
+    "ompl_iterations": 9900,
+    "state_checks": 8720,
+    "state_requests": 8753,
+    "subdivision_samples": 8420,
+    "termination_checks": 18666,
+    "valid_edges": 1
+  },
+  "search_progress": {
+    "approximate_goal_distance": null,
+    "candidate_path_validations": null,
+    "candidate_researches": null,
+    "edge_count_semantics": "underlying undirected graph, each edge once; not PlannerData arcs",
+    "iterations": 9900,
+    "known_valid_edges": 1,
+    "known_valid_nodes": 48,
+    "node_validity_semantics": "upstream VALIDITY_TRUE or explicitly validated start/goal",
+    "roadmap_edges": 47446,
+    "roadmap_reused": false,
+    "roadmap_vertices": 9619,
+    "unknown_edges": 47445,
+    "unknown_nodes": 9571
+  },
+  "computed_rejections": {
+    "JOINT_MARGIN": 3,
+    "NATIVE_COLLISION": 290,
+    "RADIAL_REACH": 4,
+    "SINGULARITY": 3
+  },
+  "timings": {
+    "fixture_and_identity_s": 0.556959854438901,
+    "connector_task_s_inclusive": 12.865175245329738,
+    "ik_process_prepare_s_inclusive": 0.01494554616510868,
+    "input_validation_s": 0.0441861804574728,
+    "direct_check_s": 0.002366557,
+    "endpoint_check_s": 0.009823792,
+    "environment_init_s": 0.188111055,
+    "native_total_s": 12.515146426,
+    "ompl_solve_s": 12.277921182,
+    "path_conversion_s": 0.0,
+    "worker_roundtrip_s_inclusive": 12.621600737795234,
+    "worker_cold_start_s": 0.04076447896659374,
+    "request_total_s": 12.747809523716569,
+    "scene_export_s": 0.08734467998147011,
+    "authority_s": null,
+    "complete_trajectory_check_s": null,
+    "time_parameterization_s": null,
+    "execution_preflight_s": null,
+    "isaac_initialization_s": null,
+    "physical_execution_s": null
+  },
+  "native_profile": {
+    "enabled": true,
+    "seconds": {
+      "budget_cancel_poll_s": 0.024437610999999828,
+      "collision_transform_s": 1.0836024719999997,
+      "edge_check_inclusive_s": 11.697055401,
+      "edge_schedule_s": 0.003240379999992704,
+      "fcl_contact_test_s": 10.31920540099997,
+      "fk_scene_state_s": 0.456388838999999,
+      "jacobian_svd_s": 0.04356534699999986,
+      "state_check_inclusive_s": 12.091000429000015
+    }
+  },
+  "path_metrics": {
+    "returned_points": 0,
+    "joint_path_length_l2_rad": null,
+    "per_joint_total_variation_rad": null,
+    "execution_duration_s": null
+  },
+  "final_source_delta_after_single_task": {
+    "src/unloading_sim/tesseract_ompl_backend.py": {
+      "executed": "9fd4885b509a092d0339e8210eac8e5f6841c265e58af4bd27790dfc2b61e3a5",
+      "final": "62f1958082dc6478126aaaecce183788c43a33781c70db37996dc768ab71761f"
+    }
+  },
+  "delta_explanation": "Final adapter additionally rejects a non-dict effective_planner. The task returned a dict and was executed before this defensive type guard. Exact executed sources are archived; no task rerun.",
+  "tests": {
+    "fake_and_contract": 66,
+    "stage_export_and_execution_contract": 12,
+    "real_native_configuration": 1,
+    "real_native_attachment": 1,
+    "unique_total": 80
+  },
+  "cautions": [
+    "Finite resource failure is not physical unreachability",
+    "No full-task or execution evidence from v0.3 reused",
+    "Profile-enabled duration is not an uninstrumented benchmark"
+  ]
+}

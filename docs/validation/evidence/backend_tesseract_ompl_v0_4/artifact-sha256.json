@@ -1,0 +1,23 @@
+{
+  "baseline.json": "724f94ef45f88ca5725ddbef393e9f41e086d94cd86d294786f4fe778981c6af",
+  "config-files.sha256.json": "7d77b4fd52c0d4c23e43702f42b55abbfe1c40034853a4d4f2e96d5a32f92983",
+  "config-verification.json": "7747309821fda4b1cb52286475f1774dea873323eb84f8fe664398c331047f0d",
+  "contract-tests.txt": "6f7ca9ad8d65cb12b29d7822f32a6718fcdf6569ea3832d7a0c7b2ea778a8862",
+  "final-contract-tests.txt": "087fa57540f2f5f27c19c2836ee9890bad3b5555db44ac34ec516ba36664f660",
+  "final-tested-sources.txt": "c8ee37b58cd97d39f4bbbf0f518feec624659584b12176f1ca686c298cec869c",
+  "native-configuration-contract.json": "3945a31fc6dc7df6f5819871c443bf2de5c1e3870e3728dda72f9eca46a21d57",
+  "native-configuration-tests.txt": "09229b326b028651d725fa47cd1bae9fd8e0145ff8779bdb84ae2762c00ab737",
+  "native-directed-tests.txt": "419732bec3dd698ad14edc1fa1610d51199669c58a21ce03c0664378e0d09755",
+  "run-directed-tests.sh": "12dbb34c1764b12d29fc373bf3554b97a050221c1113deac49c5dd6510e61d4c",
+  "run-task.sh": "0f736ffbcf892bd0a2a79a584f73a25b381c392742382f2d563ed404f9381c4a",
+  "server-baseline.txt": "6cfd5ee6f620c8a6fdb13ca5baf1020ff07f36aa694842164b5c6040fbedcbe0",
+  "stage-export-execution-contract-tests.txt": "43e8a207772d15eaf1c6d862548540f0c5c8786cc7be8b5e7667080534034ead",
+  "summary.json": "2251ce422ea10163aff2304a742440330409c49ad7437b44c6b24db456777add",
+  "task-executed-sources.tar.gz": "43784438792266d15983e417dacd75f5bd3f05bbb9f924dc0b9ff22eb95f12ae",
+  "task-result-native/native-01.request.json": "2882e66a436a6abb0bd10208b395f1c90d36241af17e1c8a5aa1bf8c73213bfe",
+  "task-result-native/native-01.result.json": "70f9213be5376defa42aab46c90405baef791e8d56858392095c4749da03c84b",
+  "task-result.identity.json": "62d24f217944dd8d676693a85583650d64f6d0e33919aad661d199815826f349",
+  "task-result.json": "21c3f659967500f37ded8c8f31e138bcb1153f0b21b3709e095a2e34224350e3",
+  "task.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+  "task.log": "53f29bf2717e65e62aaec1401d07b05409a5fe7a4cbe68f316822cb59a14f362"
+}
