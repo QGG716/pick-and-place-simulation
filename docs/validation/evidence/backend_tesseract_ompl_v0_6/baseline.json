@@ -1,0 +1,11 @@
+{
+  "review_base": "e16a759d857d55003ed50b7627a1fa012274c19a",
+  "local_head_at_start": "e16a759d857d55003ed50b7627a1fa012274c19a",
+  "remote_head_at_start": "e16a759d857d55003ed50b7627a1fa012274c19a",
+  "branch": "feat/v0.5-backend-tesseract-ompl",
+  "worktree_at_start": "CLEAN",
+  "other_branches_modified": false,
+  "reset": false,
+  "force_push": false,
+  "recorded_utc": "2026-09-28T08:02:31.344394+00:00"
+}

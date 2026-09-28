@@ -815,8 +815,10 @@ class LayoutTrajectoryConnector:
         surface_directions_world: Mapping[str, Sequence[float]] | None = None,
         tool_collision_obbs_provider: Callable[[np.ndarray], Sequence[OBB]] | None = None,
         post_landing_transport: Mapping[str, Any] | None = None,
+        stage_evidence_callback: Callable[[Mapping[str, Any]], None] | None = None,
     ) -> None:
         self.robot = robot
+        self.stage_evidence_callback = stage_evidence_callback
         from .post_landing_transport import transport_policy
         self.post_landing_transport = transport_policy(post_landing_transport)
         self.collision_policy = SimulationCollisionPolicy.from_mapping(collision_policy)
@@ -985,7 +987,17 @@ class LayoutTrajectoryConnector:
             quality=deepcopy(quality))
         self._budget_events.append({key: value for key, value in snapshot.items()
                                    if key != "path"})
+        if self.stage_evidence_callback is not None:
+            self.stage_evidence_callback(deepcopy(snapshot))
         return snapshot
+
+    def _record_process_stage(self, stage, path, failure, evidence):
+        """Optional evidence sink only; no changes to validation or candidate scheduling."""
+        if self.stage_evidence_callback is not None:
+            self.stage_evidence_callback(dict(stage=stage,
+                status="PASS" if failure is None else "FAIL", failure=deepcopy(failure),
+                path=[np.asarray(q).tolist() for q in path], evidence=deepcopy(evidence),
+                scope="PLANNED_PROCESS_STAGE_NOT_PHYSICAL_EVENT"))
 
     def _optional_quality(self, path, deadline):
         if deadline is not None and perf_counter() >= deadline:
@@ -2366,6 +2378,7 @@ class LayoutTrajectoryConnector:
         pregrasp, contact, failure, evidence = self._approach(
             home_q, grasp_q, requested_virtual_contact, all_obstacles, target, seed=seed + 10)
         trace["stages"]["approach"] = evidence
+        self._record_process_stage("approach", [*pregrasp, *contact[1:]], failure, evidence)
         if failure is not None:
             return None, failure, trace
         contact_q = contact[-1]
@@ -2410,6 +2423,10 @@ class LayoutTrajectoryConnector:
         payload_obstacles = [
             obstacle for obstacle in all_obstacles if obstacle.name != target.name
         ]
+        self._record_process_stage("attachment_geometry", [contact_q], None,
+            dict(target=target.name, physical_contact_from_box=rigid.tcp_from_box.tolist(),
+                 world_obstacle_names=[box.name for box in payload_obstacles],
+                 physical_attachment="NOT_RUN"))
         tracker, proximity_failure = self._initial_proximity(
             target, payload_obstacles, support_names
         )
@@ -2425,6 +2442,7 @@ class LayoutTrajectoryConnector:
             seed=seed + 40,
         )
         trace["stages"]["support-release"] = evidence
+        self._record_process_stage("support-release", support_release, failure, evidence)
         if failure is not None:
             return None, failure, trace
 
@@ -2435,6 +2453,7 @@ class LayoutTrajectoryConnector:
         self._local_transit_remaining = self.budget.local_transit_cartesian_sample_budget
         for exit_index, (extraction, released_tracker, failure, evidence) in enumerate(extraction_options):
             trace["stages"]["extraction"] = evidence
+            self._record_process_stage("extraction", extraction, failure, evidence)
             supports = tuple(
                 ConveyorSupport(box, self.surface_directions_world.get(box.name))
                 for box in all_obstacles
@@ -2992,6 +3011,7 @@ class LayoutTrajectoryConnector:
                 stage="transit",
             )
         trace["stages"]["transit"] = evidence
+        self._record_process_stage("transit", transit, failure, evidence)
         if preplace_q is None or failure is not None:
             return None, failure, trace
 
@@ -3093,6 +3113,8 @@ class LayoutTrajectoryConnector:
         if not transport_support["accepted"]:
             return None, {"reason": transport_support["reason"], "stage": "place",
                           "transport_support": transport_support}, trace
+        self._record_process_stage("place_and_release_contract", place, None,
+            dict(search=evidence, release_prediction=release_prediction, physical_release="NOT_RUN"))
         if history_hint is not None:
             from .history_adaptation import checked_departure
             withdrawal, failure, escape_audit = checked_departure(self, history_hint,
@@ -3102,6 +3124,7 @@ class LayoutTrajectoryConnector:
                 place[-1], placed, payload_obstacles, direction, seed=seed + 90,
                 working_normal=place_physical[:3, 2], release_prediction=release_prediction)
         trace["stages"]["withdrawal"] = escape_audit
+        self._record_process_stage("withdrawal", withdrawal, failure, escape_audit)
         if failure is not None:
             return None, failure, trace
 

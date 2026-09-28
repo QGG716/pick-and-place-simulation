@@ -1,0 +1,205 @@
+{
+  "kind": "free_motion_result",
+  "status": "BACKEND_UNAVAILABLE",
+  "backend": "tesseract_ompl",
+  "candidate_found": false,
+  "exact_solution": false,
+  "native_validated": false,
+  "authority_validated": false,
+  "path": [],
+  "diagnostics": {
+    "request_id": "pregrasp:71081:1b633b138aa5",
+    "seed": 71081,
+    "stage": "pregrasp",
+    "planner_config": {
+      "name": "lazy_prm",
+      "max_samples": 10000,
+      "max_roadmap_vertices": 10002,
+      "max_roadmap_edges": 50010,
+      "sampling": {
+        "type": "endpoint_mixture",
+        "local_probability": 0.5,
+        "joint_span_half_width_fraction": 0.05
+      }
+    },
+    "scene_revision": "1b633b138aa51343cefbc9f9679b8293afa0af517d36e1f039655627e13be4b6",
+    "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+    "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+    "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "attempts": [],
+    "error": "UNSUPPORTED_CONSTRAINT"
+  },
+  "timings": {
+    "input_validation_s": 0.04614938050508499,
+    "request_total_s": 0.10644968412816525,
+    "scene_export_s": 0.09220231138169765
+  },
+  "counters": {},
+  "deliverable_stage_path": false,
+  "complete_task_executable": false,
+  "request": {
+    "request_id": "pregrasp:71081:1b633b138aa5",
+    "scene_revision": "1b633b138aa51343cefbc9f9679b8293afa0af517d36e1f039655627e13be4b6",
+    "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+    "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+    "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "stage": "pregrasp",
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "q_start": [
+      -0.5284209847450256,
+      0.09451229125261307,
+      -0.21063973009586334,
+      -3.1416585445404053,
+      1.2654187679290771,
+      0.5286964774131775
+    ],
+    "q_goal": [
+      0.5000137206581776,
+      -0.18736779957354116,
+      -0.15311780513086534,
+      -1.6334118791635104,
+      0.5008636650157714,
+      -1.4994301903402696
+    ],
+    "constraints": {
+      "motion": "free_joint_space",
+      "events": [],
+      "joint_margin": 0.0174532925199433,
+      "maximum_jacobian_condition": 10000.0,
+      "radial_limit": 2.106,
+      "edge_resolution_rad": 0.04,
+      "point_motion_bound_m": 0.00125,
+      "lever_arm_m": 4.0
+    },
+    "frames": {
+      "world": "+X into trailer,+Y left,+Z up; SI m,rad,s",
+      "base": "base_link",
+      "flange": "flange",
+      "tcp": "backend_tcp",
+      "base_transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.325
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.6
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "tip_from_tcp": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          1.5308084989341915e-17
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "attachment": null,
+    "seed": 71081,
+    "budget": {
+      "max_state_checks": 100000,
+      "legacy_iterations": 600,
+      "max_attempts": 1,
+      "wall_time_s": null
+    }
+  },
+  "world_obstacle_names": [
+    "chassis",
+    "conveyor_transverse",
+    "conveyor_longitudinal",
+    "trailer_floor",
+    "trailer_left_wall",
+    "trailer_right_wall",
+    "trailer_ceiling",
+    "trailer_closed_end_wall",
+    "carton_l00_c00",
+    "carton_l00_c01",
+    "carton_l00_c02",
+    "carton_l00_c03",
+    "carton_l00_c04",
+    "carton_l01_c00",
+    "carton_l01_c01",
+    "carton_l01_c02",
+    "carton_l01_c03",
+    "carton_l01_c04",
+    "carton_l02_c00",
+    "carton_l02_c01",
+    "carton_l02_c02",
+    "carton_l02_c03",
+    "carton_l02_c04",
+    "carton_l03_c00",
+    "carton_l03_c01",
+    "carton_l03_c02",
+    "carton_l03_c03",
+    "carton_l03_c04",
+    "carton_l04_c00",
+    "carton_l04_c01",
+    "carton_l04_c02",
+    "carton_l04_c03",
+    "carton_l04_c04",
+    "carton_l05_c00",
+    "carton_l05_c01",
+    "carton_l05_c02",
+    "carton_l05_c03",
+    "carton_l05_c04",
+    "carton_l06_c00",
+    "carton_l06_c01",
+    "carton_l06_c02",
+    "carton_l06_c03",
+    "carton_l06_c04",
+    "carton_l07_c00",
+    "carton_l07_c04"
+  ],
+  "effective_planner": null,
+  "stage": "pregrasp",
+  "seed": 71081,
+  "success": false,
+  "search_success": false,
+  "validation_level": "A_UNVERIFIED_GEOMETRY",
+  "planning_iterations_consumed": 600,
+  "outer_budget_accounting": "ALLOCATED_LEGACY_SLICE_NOT_MEASURED_OMPL_ITERATIONS"
+}

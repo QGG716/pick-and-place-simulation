@@ -291,6 +291,9 @@ class TesseractOMPLBackend:
             result.diagnostics["authority_rejections"] = sum("authority_rejection" in a for a in attempts)
             result.diagnostics["termination"] = result.status.value
             return result
+        except NativePlanningBlocked:
+            # Explicit host experiment guards are not dependency startup failures.
+            raise
         except (OSError, RuntimeError, ValueError) as exc:
             result.status = PlanningStatus.BACKEND_UNAVAILABLE if not attempts else PlanningStatus.INTERNAL_ERROR
             result.diagnostics["error"] = str(exc)
@@ -389,6 +392,9 @@ def _record_free_motion(connector, backend, evidence):
     if records is None:
         connector.free_motion_records = records = []
     records.append(evidence)
+    callback = getattr(connector, "stage_evidence_callback", None)
+    if callback is not None:
+        callback(dict(kind="free_motion_result", **evidence))
     if getattr(backend, "stop_on_native_block", False) and evidence["status"] in {
             "BUDGET_EXHAUSTED", "CANCELLED", "STALE_SCENE", "UNSUPPORTED_CONSTRAINT",
             "BACKEND_UNAVAILABLE", "AUTHORITY_REJECTED", "INTERNAL_ERROR"}:

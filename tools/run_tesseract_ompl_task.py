@@ -28,12 +28,38 @@ def parse_args(argv=None):
     ap.add_argument("--segment", type=Path, required=True)
     ap.add_argument("--worker", required=True)
     ap.add_argument("--output", type=Path, required=True)
-    ap.add_argument("--ompl-planner", choices=["rrt_connect", "lazy_prm"], default="rrt_connect")
+    ap.add_argument("--ompl-planner", choices=["rrt_connect", "lazy_prm"])
+    ap.add_argument("--planner-config", type=Path, help="Strict OMPLPlannerConfig JSON")
+    ap.add_argument("--expected-first-request", type=Path,
+                    help="Compare identity only, before first native search; never read a saved path")
+    ap.add_argument("--execution-config", type=Path)
     ap.add_argument("--native-max-attempts", type=int, default=2)
     ap.add_argument("--stop-on-native-block", action="store_true",
                     help="Stop this experiment before the connector retries an expensive blocked request")
     ap.add_argument("--profile", action="store_true")
     return ap.parse_args(argv)
+
+
+def planner_configuration(args):
+    if args.planner_config is None:
+        return OMPLPlannerConfig(name=args.ompl_planner or "rrt_connect")
+    def strict_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"duplicate configuration key: {key}")
+            result[key] = value
+        return result
+    value = json.loads(args.planner_config.read_text(encoding="utf-8"), object_pairs_hook=strict_object)
+    if not isinstance(value, dict):
+        raise ValueError("planner configuration must be an object")
+    try:
+        config = OMPLPlannerConfig(**value)
+    except TypeError as exc:
+        raise ValueError(f"unsupported planner configuration: {exc}") from exc
+    if args.ompl_planner is not None and args.ompl_planner != config.name:
+        raise ValueError("--ompl-planner conflicts with --planner-config")
+    return config
 
 
 def write_json(path, value):
@@ -42,15 +68,35 @@ def write_json(path, value):
 
 class RecordingWorker(NativeWorker):
     """Persist actual transport inputs/results; no alternate planner or paths."""
-    def __init__(self, executable, directory):
+    def __init__(self, executable, directory, expected_first_request=None):
         super().__init__(executable)
         self.directory_evidence = directory
         self.call_count = 0
+        self.transport_call_count = 0
+        self.expected_first_request = expected_first_request
 
     def call(self, message, cancelled=lambda: False):
         self.call_count += 1
         stem = self.directory_evidence / f"native-{self.call_count:02d}"
         write_json(stem.with_suffix(".request.json"), message)
+        if self.call_count == 1 and self.expected_first_request is not None:
+            expected = json.loads(self.expected_first_request.read_text(encoding="utf-8"))
+            # Full scene equality includes assets, TCP, attachment, constraints and fingerprints.
+            fields = ("q_start", "q_goal", "seed", "scene", "planner_config")
+            # Compare what actually crosses the JSON transport: request q tuples
+            # and JSON arrays are the same sequence, not a model difference.
+            wire_message = json.loads(json.dumps(message, allow_nan=False))
+            differences = [key for key in fields if expected.get(key) != wire_message.get(key)]
+            identity = dict(status="FAIL" if differences else "PASS", differences=differences,
+                compared_fields=fields, reference_sha256=hashlib.sha256(self.expected_first_request.read_bytes()).hexdigest(),
+                historical_path_or_roadmap_read=False)
+            write_json(stem.with_suffix(".identity-check.json"), identity)
+            if differences:
+                result = dict(status="UNSUPPORTED_CONSTRAINT", source="HOST_IDENTITY_GUARD_NO_NATIVE_CALL",
+                              diagnostics={"first_request_identity": identity})
+                write_json(stem.with_suffix(".result.json"), result)
+                raise NativePlanningBlocked(dict(status="UNSUPPORTED_CONSTRAINT", stage="pregrasp", diagnostics=identity))
+        self.transport_call_count += 1
         result = super().call(message, cancelled)
         write_json(stem.with_suffix(".result.json"), result)
         return result
@@ -58,15 +104,15 @@ class RecordingWorker(NativeWorker):
 
 def task_backend(args, worker=None):
     return create_free_motion_backend("tesseract_ompl", executable=args.worker, worker=worker,
-        planner_config=OMPLPlannerConfig(name=args.ompl_planner), max_state_checks=100000,
+        planner_config=planner_configuration(args), max_state_checks=100000,
         max_attempts=args.native_max_attempts, stop_on_native_block=args.stop_on_native_block,
         profile=args.profile)
 
 
-def run_single_candidate(scene, historical, connector, backend):
+def run_single_candidate(scene, historical, connector, backend, *, progress=None):
     connector.free_motion_backend = backend
     connector.start_planning_request()
-    connector.progress_callback = lambda event: print(json.dumps(event), flush=True)
+    connector.progress_callback = progress or (lambda event: print(json.dumps(event), flush=True))
     target = next(b for b in scene.cartons if b.name == historical["target"])
     started = perf_counter()
     outcome = None
@@ -82,6 +128,9 @@ def run_single_candidate(scene, historical, connector, backend):
     except NativePlanningBlocked as exc:
         block = dict(reason=exc.evidence["status"], stage=exc.evidence["stage"],
                      detail=exc.evidence.get("diagnostics"), termination="EXPERIMENT_STOP_ON_NATIVE_BLOCK")
+    except Exception as exc:
+        block = dict(reason="INTERNAL_ERROR", detail=str(exc), exception_type=type(exc).__name__,
+                     termination="EXPERIMENT_STOP_NO_RETRY")
     result = dict(schema="tesseract_real_single_candidate_task_v2", task_entry="LayoutTrajectoryConnector.plan",
             target=target.name, scene_fingerprint=scene.snapshot["scene_fingerprint"],
             fixed_contact_candidate=historical["contact"], success=bool(outcome and outcome.success),
@@ -93,7 +142,8 @@ def run_single_candidate(scene, historical, connector, backend):
             elapsed_s=perf_counter()-started, execution_preflight="NOT_RUN", isaac_run=False,
             task_call_count=1, historical_path_injected=False, all_candidates_proven_infeasible=False,
             simulation_execution_ready=False, machine_qualified=False,
-            complete_geometry_status="PASS" if outcome and outcome.success else "NOT_AVAILABLE",
+            complete_geometry_status="PENDING_VALIDATION" if outcome and outcome.success else "NOT_AVAILABLE",
+            execution_trajectory_status="NOT_RUN",
             time_parameterization_status="NOT_RUN", physical_execution_status="NOT_RUN")
     segment = result["selected_trajectory_segment"]
     if segment:
@@ -106,6 +156,7 @@ def run_single_candidate(scene, historical, connector, backend):
 
 def main(argv=None):
     args = parse_args(argv)
+    planner_configuration(args)  # Reject conflicting/unknown configuration before creating evidence.
     args.output.parent.mkdir(parents=True, exist_ok=True)
     evidence_dir = args.output.parent / (args.output.stem + "-native")
     # A rerun must use a new explicit artifact location; never overwrite evidence.
@@ -114,7 +165,7 @@ def main(argv=None):
         raise FileExistsError(args.output)
     setup = perf_counter()
     scene, historical, connector, _ = fixture_context(args.state, args.segment)
-    worker = RecordingWorker(args.worker, evidence_dir)
+    worker = RecordingWorker(args.worker, evidence_dir, args.expected_first_request)
     backend = task_backend(args, worker)
     try:
         initial = export_scene(connector, scene.all_obstacles, stage="pregrasp")
@@ -131,19 +182,39 @@ def main(argv=None):
             candidate_count=1, history_hint_used=False, roadmap_or_solution_injected=False,
             command=[sys.executable, *sys.argv],
             files_sha256={str(p): hashlib.sha256(p.read_bytes()).hexdigest()
-                          for p in [args.state, args.segment, Path(args.worker)]},
+                          for p in [args.state, args.segment, Path(args.worker),
+                                    args.planner_config, args.expected_first_request, args.execution_config] if p is not None},
             source_sha256={p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                           for p in [*sorted((ROOT / "src/unloading_sim").glob("*.py")),
-                                    Path(__file__).resolve(), ROOT / "native/tesseract_ompl/worker.cpp"]})
+                                    Path(__file__).resolve(), ROOT / "native/tesseract_ompl/worker.cpp",
+                                    *sorted((ROOT / "native/tesseract_ompl").glob("*.h"))]})
         write_json(args.output.with_suffix(".identity.json"), identity)
         setup_s = perf_counter()-setup
-        result = run_single_candidate(scene, historical, connector, backend)
-        result.update(setup_and_identity_s=setup_s, native_call_count=worker.call_count)
+        from unloading_sim.tesseract_task_delivery import prepare_task_delivery
+        completed_dir = args.output.parent / (args.output.stem + "-stages")
+        completed_dir.mkdir(exist_ok=False)
+        stage_count = 0
+        def save_stage(item):
+            nonlocal stage_count
+            stage_count += 1
+            write_json(completed_dir / f"{stage_count:03d}.json", item)
+        connector.stage_evidence_callback = save_stage
+        def progress(event):
+            with args.output.with_suffix(".progress.jsonl").open("a", encoding="utf-8") as stream:
+                stream.write(json.dumps(event) + "\n")
+            print(json.dumps(event), flush=True)
+        result = run_single_candidate(scene, historical, connector, backend, progress=progress)
+        result.update(setup_and_identity_s=setup_s, native_request_count=worker.call_count,
+                      native_call_count=worker.transport_call_count)
         write_json(args.output, result)
+        if result["success"]:
+            prepare_task_delivery(result, scene, connector, args.output.parent / (args.output.stem + "-delivery"),
+                                  execution_config=args.execution_config, project_root=ROOT)
+            write_json(args.output, result)
         print(json.dumps({key: result[key] for key in ["task_entry", "success", "failure", "elapsed_s", "isaac_run"]}), flush=True)
     finally:
         backend.worker.close()
-    return 0 if result["success"] else 1
+    return 0 if result["simulation_execution_ready"] else 1
 
 
 if __name__ == "__main__":

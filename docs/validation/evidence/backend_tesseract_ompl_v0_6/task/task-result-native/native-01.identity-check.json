@@ -1,0 +1,16 @@
+{
+  "status": "FAIL",
+  "differences": [
+    "q_start",
+    "q_goal"
+  ],
+  "compared_fields": [
+    "q_start",
+    "q_goal",
+    "seed",
+    "scene",
+    "planner_config"
+  ],
+  "reference_sha256": "3a439407fe114a19a995e98609fa435ba6a980f6070a82bf3fb61bbe9899935b",
+  "historical_path_or_roadmap_read": false
+}

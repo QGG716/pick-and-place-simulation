@@ -1,0 +1,21 @@
+{
+  "schema": "v6_offline_wire_identity_postmortem",
+  "equal": {
+    "q_start": true,
+    "q_goal": true,
+    "seed": true,
+    "scene": true,
+    "planner_config": true
+  },
+  "original_guard_failure": "Python tuple != JSON list; NOT a q/model/policy difference",
+  "method": "Compare already serialized requests only; no native, authority, IK or connector execution",
+  "actual_connector_plan_calls": 1,
+  "native_transport_calls": 0,
+  "native_search_calls": 0,
+  "initialization_failures_before_plan": 1,
+  "isaac_calls": 0,
+  "request_sha256": "748babf32121077b59f8a1a6c22b9ad9d6e6049008be74679d88d70ce7c0c267",
+  "prior_request_sha256": "3a439407fe114a19a995e98609fa435ba6a980f6070a82bf3fb61bbe9899935b",
+  "executed_source_archive": "executed-source.tar.gz",
+  "python": "3.12.3"
+}

@@ -1,0 +1,2 @@
+{"event": "connection_started", "stage": "pregrasp", "backend": "tesseract_ompl", "seed": 71081, "max_state_checks": 100000}
+{"event": "connection_finished", "stage": "pregrasp", "backend": "tesseract_ompl", "success": false, "termination": "BACKEND_UNAVAILABLE", "counters": {}, "timings": {"input_validation_s": 0.04614938050508499, "request_total_s": 0.10644968412816525}}
