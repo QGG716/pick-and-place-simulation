@@ -1,0 +1,38 @@
+{
+  "exhaustion": {
+    "failure": {
+      "reason": "MAXIMUM_ITERATIONS_REACHED",
+      "validation": {
+        "status": "INDETERMINATE",
+        "reason": "MAXIMUM_ITERATIONS_REACHED",
+        "termination_scope": "CANDIDATE",
+        "can_continue_candidates": true
+      },
+      "validation_failure": null,
+      "stage": "pregrasp",
+      "detail": "maximum iterations reached",
+      "iterations": 1
+    },
+    "status": "INDETERMINATE",
+    "termination": "MAXIMUM_ITERATIONS_REACHED",
+    "extensions": 1
+  },
+  "cancellation": {
+    "failure": {
+      "reason": "VALIDATION_CANCELLED",
+      "validation": {
+        "status": "CANCELLED",
+        "reason": "VALIDATION_CANCELLED",
+        "termination_scope": "REQUEST",
+        "can_continue_candidates": false
+      },
+      "validation_failure": null,
+      "stage": "pregrasp",
+      "detail": "cancelled",
+      "iterations": 0
+    },
+    "status": "CANCELLED",
+    "termination": "VALIDATION_CANCELLED",
+    "extensions": 1
+  }
+}

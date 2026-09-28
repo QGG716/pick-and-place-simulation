@@ -1,0 +1,9 @@
+{
+  "python": "3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]",
+  "executable": "/root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python",
+  "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+  "baseline": "aa525e873c6a6c8618355923d01f05c9162e87cb",
+  "tested_source": "8d059dd0931fe6cd9690ec948438f9cd16ab5549",
+  "environment_reinstalled": false,
+  "isaac_executed": false
+}

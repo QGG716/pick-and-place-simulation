@@ -1,0 +1,478 @@
+{
+  "scope": "ONE_NORMAL_NEW_SINGLE_CARTON_PLANNING_ATTEMPT",
+  "status": "OFFLINE_RESOURCE_LIMIT",
+  "source": {
+    "implementation": {
+      "source_sha256": {
+        "src/unloading_sim/motion_validation.py": "bd110d351b61550e1bedcd3ad3b9df86279a3e79d49b73a70edebef01d4089ab",
+        "src/unloading_sim/stage_motion_policy.py": "93cd5757a8f1ba37947d2ca9e996cd209cdf22062d33b69a5f54ff48919e1f36",
+        "src/unloading_sim/validation_kernel.py": "f3c6de1746dd352050d0a024608f5274413afff184b2ce62fc3b5d2fa8041202",
+        "src/unloading_sim/search_diagnostics.py": "4ecb355246a00c4caf67c6f2800124024ccc5cc890773f88b21b4abc8d84b5d3",
+        "src/unloading_sim/wrist_transfer.py": "325ca2f61f220c68f26fc9d4cbaafdb2bc6d3d6075a600f4c8e378dd25c30c69",
+        "src/unloading_sim/history_candidates.py": "b801bb46c2128bcb681c079f37dc46f7674dc373f948f0d4e7aca364068f311a",
+        "src/unloading_sim/history_adaptation.py": "6fbb1ce41f56620152865ce4bb2143c6d8dc4439766edc88e3967c4f11624298",
+        "src/unloading_sim/contact_scheduler.py": "7ab9a8bf8e6e9d961d599846ab00d87b30c1bc2c0d5079ed090c3caee270a427",
+        "src/unloading_sim/motion_quality.py": "cb8ab84a9b747b3dd0709d1e0a3ad5a8e2a42e1d78e6816d82c90f01ec7e0d82",
+        "src/unloading_sim/release_motion.py": "d714fa20c533fdc9c1c919fd1bb059c03527f35f7fbe4e6d19c776f425042422",
+        "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+        "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+        "src/unloading_sim/conveyor_placement.py": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503",
+        "src/unloading_sim/unloading_sequence.py": "1881b114d280286ffaaf22d9ad306040bcf435dd64efad0a4d3b41fcee6ae915",
+        "src/unloading_sim/tool_geometry.py": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d",
+        "src/unloading_sim/depalletizing.py": "aef4ff69219ca4ff27d1da9cd3b7f7567b5de5c4b0f59310b44b821f070f59e3",
+        "src/unloading_sim/fanuc_m710id70.py": "f60871dccd361c6d6a6da32ef55b0f67f02f1a76f9f18268fe4783bae8b7eff3",
+        "src/unloading_sim/geometry.py": "78f1deed2f8e0d9fc637cb7b5ee931947f13da72e7f0d68950e5688dcc59bf40",
+        "src/unloading_sim/grasp.py": "4f5856d1c36f78ad8c58c0df7f23e7c280a83a7c84bdefe2a6a3461026b50a60",
+        "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+        "src/unloading_sim/ik.py": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5",
+        "src/unloading_sim/layout_single_carton.py": "770e9c06b5257d90b476994ee22f35ffcfa22359b283e70c227e2a74b3021f00",
+        "src/unloading_sim/layout_trajectory.py": "a8647d4e4665cac8aed95099d3624f5c87c4d849b91a1b25ed90678438473014",
+        "src/unloading_sim/pinocchio_backend.py": "699de06e0eb467a4e33076bde649fbcc2f7844c93d27b01795060935800ab4a2",
+        "src/unloading_sim/planner.py": "02b67186376a2b45e236baf3c5f43f0a81623a79edce68536e72ac05aed95a9b",
+        "src/unloading_sim/robot.py": "5069f0064bebda6b02ad772b3fd5d9e8db15c9b68146123ef32e75268c0d03d6",
+        "src/unloading_sim/robot_load/model.py": "6fd02fe472b4c142689f12420b145e7a41ea837ebe449d2bcee00e87379f8979",
+        "src/unloading_sim/robot_load/spatial.py": "2d56858234b59e5ef239a39b8fd7d924e4c4148f4b72d17d582819306a10d363",
+        "src/unloading_sim/robot_load/task.py": "6ca40eb357be668ece73fbdf5540ee9efb5c364df60cf53f79c9c62e331df363",
+        "src/unloading_sim/scene.py": "6178c10ab83b561613399d5fd710a165cfe49762550b769780b249578e91017a",
+        "src/unloading_sim/serial_unloading.py": "e3451a69b770a513731cfdceb2bd5551cbb9a840440dcd8e0c21e187d6aec8be",
+        "src/unloading_sim/planning_profile.py": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee",
+        "src/unloading_sim/post_landing_transport.py": "1db1de76dcbcae6e0f45c811707f245f7fe9d21f662526270ff6210e8ace1223",
+        "src/unloading_sim/support.py": "c752893bb3f94a620d2921b6c2a93d1bb34c1102f1521cdba8d1b72e703ae4cf",
+        "src/unloading_sim/timing.py": "9e8951093f357b2eba05d8670bbf21b93be1f17016d08e4a4bc889eafebc13a9",
+        "src/unloading_sim/validation_motion.py": "5d79a2a7ee8897249db52ede23f48529356a89ddaacf1539003944c382d52d0e",
+        "src/unloading_sim/validation_physics.py": "770cbc4acc32d58eb8fc4f422d18d03b56c3a4eb54f4f1cae380d4e8939e7ab8",
+        "src/unloading_sim/workcell_layout.py": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2"
+      },
+      "runtime": {
+        "python": "3.12.3",
+        "python_implementation": "CPython",
+        "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+        "numpy": "2.3.2"
+      }
+    },
+    "entry_files": {
+      "tools/validate_stage_motion_single_carton.py": "5a47c8240ffa8a5ee64862b2eefbcfc57223d1b93764ea3a3d1868a73b145db6",
+      "tools/run_m710_contact_unloading.py": "6f3fa8a7bd351fb67cfdbaedbdcd934715719d63e46a8f06fe61bde1d315b4ca"
+    }
+  },
+  "input_sha256": {
+    "/root/autodl-tmp/m710-validation-kernel-20260922/delivery/planning/motion.json": "e5fe909900bac61e9a0a381324bacbd496fc82b75d87025592cb26928b790715",
+    "/root/autodl-tmp/m710-validation-kernel-20260922/delivery/inputs/actual_remaining_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "/root/autodl-tmp/m710-rrt-status-20260928/source-8d059dd/configs/validation/m710id70_proof_of_concept.yaml": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0",
+    "/root/autodl-tmp/m710-rrt-status-20260928/source-8d059dd/configs/simulation/m710id70_proof_of_concept.yaml": "a6b9c9c71f6e7ee55e61bb63d46710e6168648a6bd97eec208fa5f1116e2f7d0"
+  },
+  "target": "carton_l07_c04",
+  "source_snapshot": "/root/autodl-tmp/m710-rrt-status-20260928/source-8d059dd",
+  "historical_path_supplied": false,
+  "historical_path_revalidation": false,
+  "archived_contact_seed_supplied": false,
+  "planning_entry": "tools.run_m710_contact_unloading.main",
+  "progress_path": "/root/autodl-tmp/m710-rrt-status-20260928/evidence/single_carton_delivery/planning_progress.jsonl",
+  "offline_resource_limit_seconds": 300.0,
+  "resource_limit_scope": "EXTERNAL_EXPERIMENT_ONLY_NOT_PRODUCTION_BUDGET",
+  "checkpoint_interval_seconds": 5,
+  "isaac_executed": false,
+  "complete_planning": false,
+  "independent_preflight_run": false,
+  "bundle_readback": false,
+  "validation_status": "INDETERMINATE",
+  "reason": "offline experiment resource limit; feasibility unknown",
+  "planning_infeasible": false,
+  "elapsed_seconds": 300.0082048922777,
+  "source_unchanged_at_exit": true,
+  "inputs_unchanged_at_exit": true,
+  "last_progress": {
+    "elapsed_s": 299.9999768231064,
+    "event": "ERROR",
+    "reason": "offline experiment resource limit; feasibility unknown",
+    "exception_type": "OfflineResourceLimit",
+    "simulation_profile": {
+      "name": "proof_of_concept",
+      "ideal_suction": true,
+      "ideal_reception": true,
+      "ideal_outfeed": true,
+      "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+      "machine_qualification_claimed": false
+    },
+    "best_complete_result": null,
+    "resume_supported": false,
+    "progress_evidence": "planning_progress.jsonl"
+  },
+  "last_known_stage": {
+    "elapsed_s": 296.9287591110915,
+    "event": "work_checkpoint",
+    "target": "carton_l07_c04",
+    "candidate": "a2fe9288df95bda9a1da120b70c6eb203043dd13273754facbb7580daf4ef9cb",
+    "active_entries": [
+      {
+        "entry": "_plan_branch_search",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_approach",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_connect_pose",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "ENDPOINT_IK"
+      },
+      {
+        "entry": "_transit",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "JOINT_DIRECT_THEN_CANDIDATES_THEN_RRT"
+      }
+    ],
+    "statistics": {
+      "state_validations": 40285,
+      "edge_validation_calls": 0,
+      "edge_state_samples": 0,
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 0,
+      "placement_candidates_generated": 0,
+      "placement_candidate_generation_wall_seconds": 0,
+      "state_cache_hits": 0,
+      "state_cache_misses": 40285,
+      "trajectory_ik_wall_seconds": 0.10341781005263329,
+      "path_connection_wall_seconds_inclusive": 0,
+      "collision_validation_wall_seconds_nested": 238.55914567783475,
+      "kinematics_and_joint_checks_wall_seconds": 3.479884449392557,
+      "final_recheck_wall_seconds": 0
+    },
+    "stage": "pregrasp"
+  },
+  "last_completed_stage": {
+    "elapsed_s": 26.3995298165828,
+    "event": "stage_exit",
+    "target": "carton_l07_c04",
+    "candidate": "a2fe9288df95bda9a1da120b70c6eb203043dd13273754facbb7580daf4ef9cb",
+    "active_entries": [
+      {
+        "entry": "_plan_branch_search",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_approach",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_connect_pose",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "ENDPOINT_IK"
+      },
+      {
+        "entry": "_transit",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "JOINT_DIRECT_THEN_CANDIDATES_THEN_RRT"
+      }
+    ],
+    "statistics": {
+      "state_validations": 3737,
+      "edge_validation_calls": 0,
+      "edge_state_samples": 0,
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 0,
+      "placement_candidates_generated": 0,
+      "placement_candidate_generation_wall_seconds": 0,
+      "state_cache_hits": 0,
+      "state_cache_misses": 3737,
+      "trajectory_ik_wall_seconds": 0.10341781005263329,
+      "path_connection_wall_seconds_inclusive": 0,
+      "collision_validation_wall_seconds_nested": 21.4961925316602,
+      "kinematics_and_joint_checks_wall_seconds": 0.3170960545539856,
+      "final_recheck_wall_seconds": 0
+    },
+    "entry": "_transit",
+    "stage": "pregrasp",
+    "purpose": "FREE_APPROACH",
+    "strategy": "JOINT_DIRECT_THEN_CANDIDATES_THEN_RRT",
+    "success": false,
+    "failure": {
+      "reason": "DIRECT_CONNECTION_REJECTED",
+      "stage": "pregrasp",
+      "validation": {
+        "status": "INVALID",
+        "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+        "guarantee": "NONE",
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "CLEARANCE_INSUFFICIENT",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_rigid_0",
+            "carton_l05_c02"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": false,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.004984748077057233,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.017581171132851268,
+          "q_rad": [
+            -0.5103398305888585,
+            0.11994584466249018,
+            -0.15468190899488857,
+            -3.1327974728615318,
+            1.2686326682236067,
+            0.4077523577601001
+          ],
+          "motion_start": [
+            -0.5284209847450256,
+            0.09451229125261307,
+            -0.21063973009586334,
+            -3.1416585445404053,
+            1.2654187679290771,
+            0.5286964774131775
+          ],
+          "motion_end": [
+            0.5000175657666454,
+            1.5411481960902207,
+            2.9721869813974844,
+            -2.6376493626767394,
+            1.4482223064558226,
+            -6.350488005757428
+          ],
+          "first_failure_sample": 744
+        },
+        "interval": [
+          0.01755754052648991,
+          0.018030152653717095
+        ],
+        "checked": [
+          [
+            0.0,
+            0.00047261212722718465,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.00047261212722718465,
+            0.0009688548608157285,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0009688548608157285,
+            0.001441466988042913,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.001441466988042913,
+            0.001937709721631457,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.001937709721631457,
+            0.002410321848858642,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.002410321848858642,
+            0.0029065645824471855,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0029065645824471855,
+            0.0034028073160357296,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0034028073160357296,
+            0.0038990500496242733,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0038990500496242733,
+            0.004371662176851458,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.004371662176851458,
+            0.004867904910440002,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.004867904910440002,
+            0.0053405170376671866,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0053405170376671866,
+            0.005836759771255731,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.005836759771255731,
+            0.006309371898482915,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.006309371898482915,
+            0.006805614632071459,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.006805614632071459,
+            0.007301857365660002,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.007301857365660002,
+            0.0077981000992485465,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0077981000992485465,
+            0.008270712226475732,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.008270712226475732,
+            0.008766954960064275,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.008766954960064275,
+            0.00923956708729146,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.00923956708729146,
+            0.009735809820880004,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.009735809820880004,
+            0.010208421948107189,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.010208421948107189,
+            0.010704664681695732,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.010704664681695732,
+            0.011200907415284277,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.011200907415284277,
+            0.01169715014887282,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.01169715014887282,
+            0.012169762276100005,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.012169762276100005,
+            0.012666005009688548,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.012666005009688548,
+            0.013162247743277093,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.013162247743277093,
+            0.013658490476865636,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.013658490476865636,
+            0.01413110260409282,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.01413110260409282,
+            0.014627345337681365,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.014627345337681365,
+            0.015123588071269909,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.015123588071269909,
+            0.015619830804858452,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.015619830804858452,
+            0.016092442932085636,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.016092442932085636,
+            0.01658868566567418,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.01658868566567418,
+            0.017061297792901366,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.017061297792901366,
+            0.01755754052648991,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.01755754052648991,
+            0.017581171132851268,
+            "OBSERVED_THROUGH_FAILURE"
+          ]
+        ],
+        "statistics": {
+          "state_samples": 744,
+          "edge_calls": 0,
+          "subdivisions": 45,
+          "certified_intervals": 0,
+          "pair_certificates": 799804,
+          "state_seconds": 4.688418250530958,
+          "edge_seconds": 5.020490018650889,
+          "repeated_failed_edges": 0,
+          "batch_calls": 109,
+          "skipped_suffix_states": 41574,
+          "state_cache_reuses": 37,
+          "state_cache_hits": 201,
+          "state_cache_misses": 3743,
+          "state_cache_evictions": 0,
+          "edge_cache_hits": 0,
+          "edge_cache_evictions": 0
+        },
+        "cache_hit": false,
+        "interval_certificate": false
+      }
+    }
+  },
+  "location_is_last_observed_only": true
+}

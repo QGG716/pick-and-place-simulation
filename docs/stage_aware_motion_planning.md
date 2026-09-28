@@ -201,3 +201,167 @@ calls and 0 SHA calls**. Profiled total guard time is .632 -> .571 seconds;
 this includes profiler overhead, not an unprofiled per-edge latency claim.
 Warm loaded and blocked paths still reuse their checked states/edges. Existing
 early-stop and stale-binding regressions pass on the final source.
+
+## September 28 follow-up: RRT outcomes and observable single-carton delivery
+
+Review/start baseline: `aa525e873c6a6c8618355923d01f05c9162e87cb`.
+The baseline was the clean local and fetched remote HEAD. Code and regression
+snapshot: `8d059dd0931fe6cd9690ec948438f9cd16ab5549`. Validation runs use a separate
+Git archive on the existing GPU server CPU environment; source files are not
+edited during the runs. This patch leaves generation policy, geometry,
+permissions, sampling and validation-kernel behavior unchanged.
+
+### Structured outcomes across the real call chain
+
+The baseline reproduction uses the production analytic-carriage connector,
+real MotionValidator and real RRT. With valid endpoints and a blocked direct
+edge, one actual extension exhausting a one-iteration quota reported
+`MAXIMUM_ITERATIONS_REACHED` in the planner but `INVALID` in `_transit`.
+Cancellation injected at the real extension's budget-check entry likewise
+became `INVALID / PATH_SEARCH_EXHAUSTED`, without a validation-failure object.
+
+`planner._result` now publishes `validation.status`, `reason`,
+`termination_scope` and `can_continue_candidates`, independently of an optional
+state-validation failure. Budget-entry stops latch their own outcome. Publication
+also checks the existing lease; incomplete results cannot become successful
+paths or geometric blacklist entries. Completed validation may use the last work
+unit; cancellation and deadline checks still bind.
+
+`_rrt_transit`, `_transit`, `_connect_pose`, the grasp-branch loop and the ordinary
+single-carton audit preserve these outcomes. The direct-edge rejection remains
+separate evidence. A candidate's iteration quota is INDETERMINATE/CANDIDATE and
+leaves other candidates their original remaining allocation. Cancellation is
+CANCELLED; input invalidation, request work exhaustion and deadlines stop further
+use of the request. No budget is restarted. An exhausted finite candidate set
+is not a global unreachable proof. Legacy local producers keep their reasons;
+missing status is not inferred to be geometric INVALID. Known local sample
+quota failures can still advance to another bounded candidate. Explicit
+geometric rejections remain INVALID in their checked scope.
+
+### Observable normal entry
+
+The validation tool now invokes `run_m710_contact_unloading.main` once, with
+explicit POC motion/execution policies and the archived actual state. The old
+motion supplies only the target name: no old path, no history adaptation and no
+archived contact seed is supplied. A successful new result follows the existing
+motion serialization, independent preflight, replay exporter and bundle readback.
+The optional source guard prevents publication/export if the captured source or
+input identity changes.
+
+Entry identity is written atomically before scene construction. Connector stage
+entry/exit events precede/follow expensive calls; work and real RRT checkpoints
+are limited to one per five seconds per producer. They reuse counters and active
+entry labels, with no scene JSON or hash per state. JSONL records flush at each
+write. Normal completion, manual cancellation and an explicitly external offline
+resource stop have separate summary states, with source/input checks at exit.
+A native call between observation points can only be localized to its last
+observed stage; no collision cause is inferred from elapsed time.
+
+### Validation records
+
+Final measurements, single-carton outcome and remaining limits are recorded below.
+
+The final 21-file CPU invocation on `8d059dd` reports **323 passed, 0 failed,
+22 skipped in 24.23 s** (24.48 s subprocess wall time). No overlapping development
+runs are added. The skips still require the specified older private history
+fixtures; the newer available POC archive is not substituted for them. New real
+RRT interruption tests and production dispatch regressions do not need these
+files. The separate seam invocation remains **5 failed** on both `aa525e8` and
+`8d059dd`; those five acceptance/fixture expectations are not changed here.
+
+New regressions cover actual RRT extension-entry cancellation with no separate
+validation-failure object, work/deadline/context stops after RRT starts,
+publication-time context changes, candidate quotas, downstream candidate
+opportunity, legacy producer status formats, geometric INVALID, actual detour
+VALID, final connector/audit propagation, progress durability and stale-source
+export prevention. The ordinary bounded-retry regression also caught and fixed
+a development error that had attached a request-stop meaning to an old local
+candidate failure. Its final result retains all 195 existing finite dispatch
+opportunities; cancellation, stale input and request work exhaustion stop after
+the first observed interrupted candidate. The runner's six pre-existing test
+failures were separately reproduced on the baseline: their incomplete mock
+policy now uses the real POC configuration, and separate outputs respect the
+existing immutable-output rule. These are wiring tests, not physical evidence.
+
+Same-input server short probes, three unprofiled repetitions (median ms):
+
+| Case | Baseline cold | Final cold | Baseline hot | Final hot |
+| --- | ---: | ---: | ---: | ---: |
+| Official empty direct | 136.838 | 137.802 | 78.344 | 78.740 |
+| Official loaded short endpoints | 451.640 | 468.648 | 5.068 | 5.267 |
+| Analytic loaded blocked / real RRT | 12.083 | 12.448 | 2.363 | 2.442 |
+| Official contact process | 181.625 | 243.613 | 131.685 | 140.124 |
+
+Recorded work is unchanged in these probes: cold expensive state counts are
+397 / 16 / 50 / 27 respectively, and hot counts are zero. Direct connections and
+the contact probe perform zero RRT expansions. The blocked case still performs
+one real RRT call, three iterations and six extensions; contact retains three
+Cartesian samples. The loaded probe generates a new connection between archived
+short endpoints; it is not a new full pick/place cycle. Latency regresses in all
+four measurements, especially contact cold (+34.1%, hot +6.4%). Counts do not
+identify the cause of that timing variation; no general speedup is claimed.
+Nested legacy timers are not additive wall time.
+
+Both 100-lookup hot-binding probes retain 100 prepared hits, 200 lightweight
+guards, **zero context rebuilds, zero JSON calls and zero SHA calls**. Existing
+prefix regressions still check exactly 1 / 5 / 10 / 18 states for failures at
+samples 0 / 4 / 9 / 17 (65 for an all-valid edge), with no suffix cache entries.
+Five alternating batches of 20 analytic hot direct calls measure real flushed
+JSONL telemetry: 0.161 ms/call without telemetry versus 0.197 ms/call with it
+(+0.036 ms, 200 boundary records, no RRT). This is a small explicit logging cost,
+not a claim of zero overhead or a full-task performance profile.
+
+### The single new planning attempt
+
+Exactly one ordinary new planning attempt ran from the fixed `8d059dd` archive:
+`/root/autodl-tmp/m710-rrt-status-20260928/source-8d059dd`.
+The unchanged historical actual scene and target `carton_l07_c04` were used;
+no obstacles were deleted, no margins changed and no full historical path was
+supplied. Motion/execution policies were explicitly paired as
+`configs/validation/m710id70_proof_of_concept.yaml` and
+`configs/simulation/m710id70_proof_of_concept.yaml`.
+
+The explicitly external 300 s experiment alarm stopped the run at **300.008 s**:
+`OFFLINE_RESOURCE_LIMIT / INDETERMINATE`, not geometric infeasibility and not a
+planner iteration-budget verdict. Source and input hashes match at exit; all
+284 files from the source archive also match after the run. There was no retry,
+seed change or reset. No complete planning result, motion export, independent
+preflight, bundle readback or Isaac execution was obtained. The complete chain
+therefore remains **unaccepted** in this round.
+
+The last observed active chain was `_plan_branch_search -> _approach ->
+_connect_pose -> _transit`, purpose `FREE_APPROACH`, stage `pregrasp`, strategy
+`RRT_CONNECT`. At 298.525 s the RRT checkpoint recorded 96 extension attempts,
+96 edge calls and 36,727 edge samples. The 296.929 s connector checkpoint
+recorded 40,285 state-validation calls. These are separate counters and must not
+be added. Some connector totals (IK stream calls, completed RRT iterations) are
+updated only when the enclosing call returns; their unfinished zero values do
+not mean no IK or RRT work occurred. The RRT-specific checkpoints are the
+available in-flight evidence. No contact, extraction, placement or release
+cycle completed.
+
+The completed direct checks include a rigid-tool/carton clearance rejection:
+`tool_rigid_0 / carton_l05_c02`, measured gap 0.004984748077 m versus the unchanged
+0.005 m requirement. It is proxy-OBB clearance evidence, not a claim of
+original-CAD penetration, and does not prove that all routes fail. A rejected
+edge recorded 744 additional state samples and 41,574 unobserved suffix states;
+its suffix was not continued after failure. The later external stop provides
+no additional collision diagnosis.
+
+Evidence is under [evidence/rrt_status_20260928](evidence/rrt_status_20260928/):
+`source_8d059dd.json`, `cpu_run_8d059dd.json`, `cpu_8d059dd.txt`, the two
+`*_reproduction.json` files, same-input short measurements and separate seam
+logs. `single_carton_run.json` records the exact command; `single_carton.json`
+and `single_carton_summary.json` bind inputs/source and termination.
+`single_carton_delivery/planning_progress.jsonl` contains 108 flushed records
+(123,058 bytes), with 5-second work-checkpoint cadence and explicit phase
+boundaries. Full server evidence remains at
+`/root/autodl-tmp/m710-rrt-status-20260928/evidence`.
+
+Remaining limits: this particular free-approach RRT did not finish within the
+offline resource envelope; scalar narrow-phase/clearance and dense edge checks
+remain substantial work. Their optimization is outside this patch. Progress
+localizes native calls to the last observation, not an unobserved internal cause.
+The five seam failures and 22 unavailable-history skips remain separate from
+passing regressions. No full-row stability, continuous-motion safety proof,
+physical reception success or machine qualification is claimed.

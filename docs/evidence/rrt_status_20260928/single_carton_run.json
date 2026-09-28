@@ -1,0 +1,19 @@
+{
+  "commit": "8d059dd0931fe6cd9690ec948438f9cd16ab5549",
+  "archive_sha256": "13ba09df0d58ccebc2f8cd960d54865c389633724a948e4cc8d676088f1f463c",
+  "command": [
+    "/root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python",
+    "tools/validate_stage_motion_single_carton.py",
+    "--history",
+    "/root/autodl-tmp/m710-validation-kernel-20260922/delivery",
+    "--output",
+    "/root/autodl-tmp/m710-rrt-status-20260928/evidence/single_carton.json",
+    "--offline-resource-seconds",
+    "300"
+  ],
+  "cwd": "/root/autodl-tmp/m710-rrt-status-20260928/source-8d059dd",
+  "started_unix": 1790569272.2527413,
+  "maximum_attempts": 1,
+  "production_budget_changed": false,
+  "pid": 12457
+}

@@ -1,0 +1,493 @@
+{
+  "commit": "8d059dd0931fe6cd9690ec948438f9cd16ab5549",
+  "status": "OFFLINE_RESOURCE_LIMIT",
+  "elapsed_seconds": 300.0082048922777,
+  "target": "carton_l07_c04",
+  "source_unchanged": true,
+  "inputs_unchanged": true,
+  "all_archived_files_unchanged": true,
+  "complete_planning": false,
+  "independent_preflight_run": false,
+  "bundle_readback": false,
+  "isaac_executed": false,
+  "progress_records": 108,
+  "progress_bytes": 123058,
+  "last_work_checkpoint": {
+    "elapsed_s": 296.9287591110915,
+    "event": "work_checkpoint",
+    "target": "carton_l07_c04",
+    "candidate": "a2fe9288df95bda9a1da120b70c6eb203043dd13273754facbb7580daf4ef9cb",
+    "active_entries": [
+      {
+        "entry": "_plan_branch_search",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_approach",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_connect_pose",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "ENDPOINT_IK"
+      },
+      {
+        "entry": "_transit",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "JOINT_DIRECT_THEN_CANDIDATES_THEN_RRT"
+      }
+    ],
+    "statistics": {
+      "state_validations": 40285,
+      "edge_validation_calls": 0,
+      "edge_state_samples": 0,
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 0,
+      "placement_candidates_generated": 0,
+      "placement_candidate_generation_wall_seconds": 0,
+      "state_cache_hits": 0,
+      "state_cache_misses": 40285,
+      "trajectory_ik_wall_seconds": 0.10341781005263329,
+      "path_connection_wall_seconds_inclusive": 0,
+      "collision_validation_wall_seconds_nested": 238.55914567783475,
+      "kinematics_and_joint_checks_wall_seconds": 3.479884449392557,
+      "final_recheck_wall_seconds": 0
+    },
+    "stage": "pregrasp"
+  },
+  "last_rrt_checkpoint": {
+    "elapsed_s": 298.52540467493236,
+    "stage": "pregrasp",
+    "purpose": "FREE_APPROACH",
+    "strategy": "RRT_CONNECT",
+    "event": "rrt_checkpoint",
+    "extension_attempts": 96,
+    "edge_validation_calls": 96,
+    "edge_state_samples": 36727
+  },
+  "last_stage_entry": {
+    "elapsed_s": 26.399719079956412,
+    "event": "stage_enter",
+    "target": "carton_l07_c04",
+    "candidate": "a2fe9288df95bda9a1da120b70c6eb203043dd13273754facbb7580daf4ef9cb",
+    "active_entries": [
+      {
+        "entry": "_plan_branch_search",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_approach",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_connect_pose",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "ENDPOINT_IK"
+      },
+      {
+        "entry": "_transit",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "JOINT_DIRECT_THEN_CANDIDATES_THEN_RRT"
+      }
+    ],
+    "statistics": {
+      "state_validations": 3737,
+      "edge_validation_calls": 0,
+      "edge_state_samples": 0,
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 0,
+      "placement_candidates_generated": 0,
+      "placement_candidate_generation_wall_seconds": 0,
+      "state_cache_hits": 0,
+      "state_cache_misses": 3737,
+      "trajectory_ik_wall_seconds": 0.10341781005263329,
+      "path_connection_wall_seconds_inclusive": 0,
+      "collision_validation_wall_seconds_nested": 21.4961925316602,
+      "kinematics_and_joint_checks_wall_seconds": 0.3170960545539856,
+      "final_recheck_wall_seconds": 0
+    },
+    "entry": "_transit",
+    "stage": "pregrasp",
+    "purpose": "FREE_APPROACH",
+    "strategy": "JOINT_DIRECT_THEN_CANDIDATES_THEN_RRT"
+  },
+  "last_completed_stage": {
+    "elapsed_s": 26.3995298165828,
+    "event": "stage_exit",
+    "target": "carton_l07_c04",
+    "candidate": "a2fe9288df95bda9a1da120b70c6eb203043dd13273754facbb7580daf4ef9cb",
+    "active_entries": [
+      {
+        "entry": "_plan_branch_search",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_approach",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_connect_pose",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "ENDPOINT_IK"
+      },
+      {
+        "entry": "_transit",
+        "stage": "pregrasp",
+        "purpose": "FREE_APPROACH",
+        "strategy": "JOINT_DIRECT_THEN_CANDIDATES_THEN_RRT"
+      }
+    ],
+    "statistics": {
+      "state_validations": 3737,
+      "edge_validation_calls": 0,
+      "edge_state_samples": 0,
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 0,
+      "placement_candidates_generated": 0,
+      "placement_candidate_generation_wall_seconds": 0,
+      "state_cache_hits": 0,
+      "state_cache_misses": 3737,
+      "trajectory_ik_wall_seconds": 0.10341781005263329,
+      "path_connection_wall_seconds_inclusive": 0,
+      "collision_validation_wall_seconds_nested": 21.4961925316602,
+      "kinematics_and_joint_checks_wall_seconds": 0.3170960545539856,
+      "final_recheck_wall_seconds": 0
+    },
+    "entry": "_transit",
+    "stage": "pregrasp",
+    "purpose": "FREE_APPROACH",
+    "strategy": "JOINT_DIRECT_THEN_CANDIDATES_THEN_RRT",
+    "success": false,
+    "failure": {
+      "reason": "DIRECT_CONNECTION_REJECTED",
+      "stage": "pregrasp",
+      "validation": {
+        "status": "INVALID",
+        "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+        "guarantee": "NONE",
+        "failure": {
+          "reason": "RIGID_TOOL_COLLISION",
+          "classification": "CLEARANCE_INSUFFICIENT",
+          "accepted": false,
+          "stage": "pregrasp",
+          "pair": [
+            "tool_rigid_0",
+            "carton_l05_c02"
+          ],
+          "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+          "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+          "geometry_intersection_confirmed": false,
+          "original_cad_intersection_confirmed": false,
+          "surface_distance_m": 0.004984748077057233,
+          "required_pair_clearance_m": 0.005,
+          "numerical_gap_tolerance_m": 1e-09,
+          "contact_permission_source": null,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "type": "GEOMETRY",
+          "fraction": 0.017581171132851268,
+          "q_rad": [
+            -0.5103398305888585,
+            0.11994584466249018,
+            -0.15468190899488857,
+            -3.1327974728615318,
+            1.2686326682236067,
+            0.4077523577601001
+          ],
+          "motion_start": [
+            -0.5284209847450256,
+            0.09451229125261307,
+            -0.21063973009586334,
+            -3.1416585445404053,
+            1.2654187679290771,
+            0.5286964774131775
+          ],
+          "motion_end": [
+            0.5000175657666454,
+            1.5411481960902207,
+            2.9721869813974844,
+            -2.6376493626767394,
+            1.4482223064558226,
+            -6.350488005757428
+          ],
+          "first_failure_sample": 744
+        },
+        "interval": [
+          0.01755754052648991,
+          0.018030152653717095
+        ],
+        "checked": [
+          [
+            0.0,
+            0.00047261212722718465,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.00047261212722718465,
+            0.0009688548608157285,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0009688548608157285,
+            0.001441466988042913,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.001441466988042913,
+            0.001937709721631457,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.001937709721631457,
+            0.002410321848858642,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.002410321848858642,
+            0.0029065645824471855,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0029065645824471855,
+            0.0034028073160357296,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0034028073160357296,
+            0.0038990500496242733,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0038990500496242733,
+            0.004371662176851458,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.004371662176851458,
+            0.004867904910440002,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.004867904910440002,
+            0.0053405170376671866,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0053405170376671866,
+            0.005836759771255731,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.005836759771255731,
+            0.006309371898482915,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.006309371898482915,
+            0.006805614632071459,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.006805614632071459,
+            0.007301857365660002,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.007301857365660002,
+            0.0077981000992485465,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.0077981000992485465,
+            0.008270712226475732,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.008270712226475732,
+            0.008766954960064275,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.008766954960064275,
+            0.00923956708729146,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.00923956708729146,
+            0.009735809820880004,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.009735809820880004,
+            0.010208421948107189,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.010208421948107189,
+            0.010704664681695732,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.010704664681695732,
+            0.011200907415284277,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.011200907415284277,
+            0.01169715014887282,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.01169715014887282,
+            0.012169762276100005,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.012169762276100005,
+            0.012666005009688548,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.012666005009688548,
+            0.013162247743277093,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.013162247743277093,
+            0.013658490476865636,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.013658490476865636,
+            0.01413110260409282,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.01413110260409282,
+            0.014627345337681365,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.014627345337681365,
+            0.015123588071269909,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.015123588071269909,
+            0.015619830804858452,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.015619830804858452,
+            0.016092442932085636,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.016092442932085636,
+            0.01658868566567418,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.01658868566567418,
+            0.017061297792901366,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.017061297792901366,
+            0.01755754052648991,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            0.01755754052648991,
+            0.017581171132851268,
+            "OBSERVED_THROUGH_FAILURE"
+          ]
+        ],
+        "statistics": {
+          "state_samples": 744,
+          "edge_calls": 0,
+          "subdivisions": 45,
+          "certified_intervals": 0,
+          "pair_certificates": 799804,
+          "state_seconds": 4.688418250530958,
+          "edge_seconds": 5.020490018650889,
+          "repeated_failed_edges": 0,
+          "batch_calls": 109,
+          "skipped_suffix_states": 41574,
+          "state_cache_reuses": 37,
+          "state_cache_hits": 201,
+          "state_cache_misses": 3743,
+          "state_cache_evictions": 0,
+          "edge_cache_hits": 0,
+          "edge_cache_evictions": 0
+        },
+        "cache_hit": false,
+        "interval_certificate": false
+      }
+    }
+  },
+  "direct_rejections": [
+    {
+      "reason": "RIGID_TOOL_COLLISION",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l05_c02"
+      ],
+      "surface_distance_m": 0.0049653753380203836,
+      "required_pair_clearance_m": 0.005,
+      "fraction": 0.09557931870797046,
+      "first_failure_sample": 1734
+    },
+    {
+      "reason": "RIGID_TOOL_COLLISION",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l05_c01"
+      ],
+      "surface_distance_m": 0.004945463444735565,
+      "required_pair_clearance_m": 0.005,
+      "fraction": 0.018753372908796546,
+      "first_failure_sample": 1251
+    },
+    {
+      "reason": "RIGID_TOOL_COLLISION",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l05_c02"
+      ],
+      "surface_distance_m": 0.004984748077057233,
+      "required_pair_clearance_m": 0.005,
+      "fraction": 0.017581171132851268,
+      "first_failure_sample": 744
+    }
+  ],
+  "termination_is_global_infeasibility_proof": false
+}

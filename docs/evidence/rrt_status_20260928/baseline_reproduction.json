@@ -1,0 +1,24 @@
+{
+  "exhaustion": {
+    "failure": {
+      "reason": "PATH_SEARCH_EXHAUSTED",
+      "stage": "pregrasp",
+      "detail": "maximum iterations reached",
+      "iterations": 1
+    },
+    "status": "INVALID",
+    "termination": "MAXIMUM_ITERATIONS_REACHED",
+    "extensions": 1
+  },
+  "cancellation": {
+    "failure": {
+      "reason": "PATH_SEARCH_EXHAUSTED",
+      "stage": "pregrasp",
+      "detail": "cancelled",
+      "iterations": 0
+    },
+    "status": "INVALID",
+    "termination": "CANCELLED",
+    "extensions": 1
+  }
+}

@@ -1,0 +1,115 @@
+{"elapsed_s": 0.6082381438463926, "event": "work_checkpoint", "stage": "actual_task_start", "target": null, "failure": null}
+{"elapsed_s": 0.6425362639129162, "event": "CONTACT_CANDIDATE_STARTED", "stage": "grasp_ik", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 0.8102692645043135, "target": "carton_l07_c04", "face": "front", "roll": 90, "pose": 0, "valid_grasps": 4, "failure": "TRAJECTORY_SEARCH_PENDING"}
+{"elapsed_s": 0.8104968462139368, "event": "plan_enter", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 0.8107025753706694, "event": "stage_enter", "stage": null, "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 0.8209271561354399, "event": "stage_enter", "stage": null, "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 0.8239298034459352, "event": "stage_enter", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 0.8446200042963028, "event": "stage_enter", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 5.847759060561657, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 10.851554717868567, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 12.713555688038468, "event": "stage_exit", "stage": "pregrasp", "success": false, "target": "carton_l07_c04", "failure": "DIRECT_CONNECTION_REJECTED"}
+{"elapsed_s": 12.786684149876237, "event": "stage_enter", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 17.79166024364531, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 21.35963276401162, "event": "stage_exit", "stage": "pregrasp", "success": false, "target": "carton_l07_c04", "failure": "DIRECT_CONNECTION_REJECTED"}
+{"elapsed_s": 21.376074755564332, "event": "stage_enter", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 26.391447212547064, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 26.3995298165828, "event": "stage_exit", "stage": "pregrasp", "success": false, "target": "carton_l07_c04", "failure": "DIRECT_CONNECTION_REJECTED"}
+{"elapsed_s": 26.399719079956412, "event": "stage_enter", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 26.400509344413877, "event": "connection_started", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 26.401242204010487, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 31.4023318272084, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 34.91374062746763, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 36.44817875884473, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 41.4518943335861, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 42.94664053991437, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 46.46304845251143, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 48.64371922798455, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 51.469162963330746, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 56.46932726725936, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 56.83366343937814, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 61.469820933416486, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 66.4731056112796, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 66.71301902830601, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 71.47322026081383, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 73.04676545225084, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 76.48098916374147, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 81.48816631734371, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 84.01816216856241, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 86.49004022032022, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 91.49702226370573, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 91.55533285625279, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 96.50160170160234, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 100.51300835050642, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 101.50593637488782, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 106.50930007174611, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 110.76216627657413, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 111.51432861760259, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 116.51785498857498, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 117.54408825933933, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 121.52014812454581, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 126.30578381568193, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 126.52246730402112, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 131.52831972949207, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 134.97729201242328, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 136.53225664421916, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 141.53484445624053, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 146.53499076142907, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 146.7392079308629, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 151.53970906697214, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 156.5440223067999, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 160.67694464698434, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 161.5488431043923, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 166.55694481357932, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 167.04555463977158, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 171.56374293379486, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 176.5648946389556, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 178.32901707477868, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 181.5663389991969, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 186.8253488279879, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 187.29105161502957, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 191.8290392793715, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 196.27365727722645, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 196.83462962508202, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 201.83592734485865, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 203.527845159173, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 206.836161268875, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 211.84034799411893, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 212.3552927710116, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 216.86250771209598, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 221.86414191499352, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 222.79445850662887, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 226.86978315375745, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 229.26220031641424, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 231.87412372790277, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 236.8780825957656, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 238.32965141907334, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 241.88210963644087, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 246.88435572385788, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 251.88520916178823, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 253.94697907194495, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 256.8889649361372, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 261.89885558001697, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 264.88160247169435, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 266.8994399830699, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 271.90206875279546, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 276.9095862992108, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 278.1905063074082, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 281.9098426513374, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 283.51671604439616, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 286.92126740701497, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 291.926016215235, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 296.9287591110915, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 298.52540467493236, "event": "rrt_checkpoint", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 299.99978677369654, "event": "stage_interrupted", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 299.99988439306617, "event": "stage_interrupted", "stage": "pregrasp", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 299.99991517327726, "event": "stage_interrupted", "stage": null, "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 299.9999412968755, "event": "stage_interrupted", "stage": null, "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 299.9999768231064, "event": "ERROR", "failure": null}
+{
+  "status": "OFFLINE_RESOURCE_LIMIT",
+  "elapsed_seconds": 300.0082048922777,
+  "complete_planning": false,
+  "independent_preflight_run": false,
+  "source_unchanged_at_exit": true
+}

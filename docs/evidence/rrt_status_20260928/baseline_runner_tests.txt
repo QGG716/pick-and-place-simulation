@@ -1,0 +1,71 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+____ test_actual_state_is_passed_through_to_planning_and_preflight[missing] ____
+tests/test_contact_unloading_runner.py:69: in test_actual_state_is_passed_through_to_planning_and_preflight
+    assert runner.main(["--output", str(tmp_path / "run"), "--actual-state", str(source),
+tools/run_m710_contact_unloading.py:54: in main
+    if args.execution_config is None and profile_evidence(planning_policy.data)["name"] == POC:
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/unloading_sim/planning_profile.py:36: in profile_evidence
+    return {"name": name, "ideal_suction": data["suction"]["mode"] == "ideal_independent_cups",
+                                           ^^^^^^^^^^^^^^^
+E   KeyError: 'suction'
+_____ test_actual_state_is_passed_through_to_planning_and_preflight[other] _____
+tests/test_contact_unloading_runner.py:69: in test_actual_state_is_passed_through_to_planning_and_preflight
+    assert runner.main(["--output", str(tmp_path / "run"), "--actual-state", str(source),
+tools/run_m710_contact_unloading.py:54: in main
+    if args.execution_config is None and profile_evidence(planning_policy.data)["name"] == POC:
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/unloading_sim/planning_profile.py:36: in profile_evidence
+    return {"name": name, "ideal_suction": data["suction"]["mode"] == "ideal_independent_cups",
+                                           ^^^^^^^^^^^^^^^
+E   KeyError: 'suction'
+____ test_actual_state_is_passed_through_to_planning_and_preflight[present] ____
+tests/test_contact_unloading_runner.py:69: in test_actual_state_is_passed_through_to_planning_and_preflight
+    assert runner.main(["--output", str(tmp_path / "run"), "--actual-state", str(source),
+tools/run_m710_contact_unloading.py:54: in main
+    if args.execution_config is None and profile_evidence(planning_policy.data)["name"] == POC:
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/unloading_sim/planning_profile.py:36: in profile_evidence
+    return {"name": name, "ideal_suction": data["suction"]["mode"] == "ideal_independent_cups",
+                                           ^^^^^^^^^^^^^^^
+E   KeyError: 'suction'
+_ test_actual_state_is_passed_through_to_planning_and_preflight[relative_present] _
+tests/test_contact_unloading_runner.py:69: in test_actual_state_is_passed_through_to_planning_and_preflight
+    assert runner.main(["--output", str(tmp_path / "run"), "--actual-state", str(source),
+tools/run_m710_contact_unloading.py:54: in main
+    if args.execution_config is None and profile_evidence(planning_policy.data)["name"] == POC:
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/unloading_sim/planning_profile.py:36: in profile_evidence
+    return {"name": name, "ideal_suction": data["suction"]["mode"] == "ideal_independent_cups",
+                                           ^^^^^^^^^^^^^^^
+E   KeyError: 'suction'
+_ test_blocked_preflight_does_not_export_and_geometry_failure_has_nonzero_status _
+tests/test_contact_unloading_runner.py:92: in test_blocked_preflight_does_not_export_and_geometry_failure_has_nonzero_status
+    assert runner.main(["--output", str(tmp_path), "--execution-bundle", str(tmp_path / "bundle.json")]) == 3
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/run_m710_contact_unloading.py:54: in main
+    if args.execution_config is None and profile_evidence(planning_policy.data)["name"] == POC:
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/unloading_sim/planning_profile.py:36: in profile_evidence
+    return {"name": name, "ideal_suction": data["suction"]["mode"] == "ideal_independent_cups",
+                                           ^^^^^^^^^^^^^^^
+E   KeyError: 'suction'
+___ test_missing_or_malformed_actual_state_cannot_fall_back_to_initial_scene ___
+tests/test_contact_unloading_runner.py:103: in test_missing_or_malformed_actual_state_cannot_fall_back_to_initial_scene
+    runner.main(["--output", str(tmp_path), "--actual-state", str(tmp_path / "missing.json")])
+tools/run_m710_contact_unloading.py:54: in main
+    if args.execution_config is None and profile_evidence(planning_policy.data)["name"] == POC:
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/unloading_sim/planning_profile.py:36: in profile_evidence
+    return {"name": name, "ideal_suction": data["suction"]["mode"] == "ideal_independent_cups",
+                                           ^^^^^^^^^^^^^^^
+E   KeyError: 'suction'
+=========================== short test summary info ============================
+FAILED tests/test_contact_unloading_runner.py::test_actual_state_is_passed_through_to_planning_and_preflight[missing]
+FAILED tests/test_contact_unloading_runner.py::test_actual_state_is_passed_through_to_planning_and_preflight[other]
+FAILED tests/test_contact_unloading_runner.py::test_actual_state_is_passed_through_to_planning_and_preflight[present]
+FAILED tests/test_contact_unloading_runner.py::test_actual_state_is_passed_through_to_planning_and_preflight[relative_present]
+FAILED tests/test_contact_unloading_runner.py::test_blocked_preflight_does_not_export_and_geometry_failure_has_nonzero_status
+FAILED tests/test_contact_unloading_runner.py::test_missing_or_malformed_actual_state_cannot_fall_back_to_initial_scene
+6 failed in 0.22s
