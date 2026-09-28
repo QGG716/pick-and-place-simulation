@@ -1,0 +1,11 @@
+{
+  "name": "lazy_prm",
+  "max_samples": 10000,
+  "max_roadmap_vertices": 10002,
+  "max_roadmap_edges": 50010,
+  "sampling": {
+    "type": "endpoint_mixture",
+    "local_probability": 0.5,
+    "joint_span_half_width_fraction": 0.05
+  }
+}

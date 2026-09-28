@@ -1,0 +1,9 @@
+{
+  "status": "BUDGET_EXHAUSTED",
+  "deliverable": false,
+  "native_requests": 1,
+  "authority_calls": 0,
+  "adapter_wall_s": 13.103707430884242,
+  "full_task_run": false,
+  "isaac_run": false
+}

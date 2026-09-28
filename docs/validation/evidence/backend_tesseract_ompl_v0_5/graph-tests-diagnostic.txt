@@ -1,0 +1,3 @@
+Debug:   LazyPRM: Planner range detected to be 0.565685
+Debug:   LazyPRM: Planner range detected to be 0.565685
+3 real upstream graph fixtures passed: UNKNOWN vs VALID, edge deletion, vertex deletion; deliberate label corruption detected

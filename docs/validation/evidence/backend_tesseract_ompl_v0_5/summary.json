@@ -1,0 +1,245 @@
+{
+  "schema": "tesseract_ompl_v05_delivery",
+  "engineering_requests": 2,
+  "diagnostic_requests": 1,
+  "improved_requests": 1,
+  "authority_calls": 1,
+  "diagnosis": "Goal-side isolation / disconnected endpoint regions; no component-label mismatch observed",
+  "only_improvement": {
+    "configuration": {
+      "joint_span_half_width_fraction": 0.05,
+      "local_probability": 0.5,
+      "type": "endpoint_mixture"
+    },
+    "endpoint_choice": "equal probability given a local draw",
+    "new_vertex_edge_validity": "UNKNOWN; upstream validation required",
+    "rejection_sampling": false,
+    "setup_sampling": "unchanged uniform projection-estimation samples"
+  },
+  "frozen_config": {
+    "max_roadmap_edges": 50010,
+    "max_roadmap_vertices": 10002,
+    "max_samples": 10000,
+    "name": "lazy_prm",
+    "sampling": {
+      "joint_span_half_width_fraction": 0.05,
+      "local_probability": 0.5,
+      "type": "endpoint_mixture"
+    }
+  },
+  "baseline": {
+    "status": "BUDGET_EXHAUSTED",
+    "termination": "CUMULATIVE_SAMPLE_LIMIT",
+    "counters": {
+      "actual_state_computations": 8720,
+      "cache_evictions": 528,
+      "cache_hits": 33,
+      "collision_queries": 8710,
+      "cumulative_samples": 10000,
+      "edge_checks": 19,
+      "incomplete_edges": 0,
+      "invalid_edges": 18,
+      "ompl_iterations": 9900,
+      "state_checks": 8720,
+      "state_requests": 8753,
+      "subdivision_samples": 8420,
+      "termination_checks": 18666,
+      "valid_edges": 1
+    },
+    "connectivity": {
+      "candidate_graph": {
+        "component_count": 2,
+        "connected": false,
+        "goal": [
+          {
+            "component": 1,
+            "size": 2
+          }
+        ],
+        "largest_component_size": 9617,
+        "start": [
+          {
+            "component": 0,
+            "size": 9617
+          }
+        ]
+      },
+      "candidate_unknown_is_not_safe": true,
+      "component_label_audit": {
+        "components_with_multiple_labels": 0,
+        "labels_spanning_disconnected_components": 0,
+        "matches_independent_traversal": true,
+        "wrong_live_label_sizes": 0
+      },
+      "verified_node_rule": "VALIDITY_TRUE or endpoint explicitly accepted by the same state validator",
+      "verified_subgraph": {
+        "component_count": 47,
+        "connected": false,
+        "goal": [
+          {
+            "component": 1,
+            "size": 2
+          }
+        ],
+        "largest_component_size": 2,
+        "start": [
+          {
+            "component": 0,
+            "size": 1
+          }
+        ]
+      }
+    },
+    "native_s": 12.856020117
+  },
+  "improved": {
+    "status": "VERIFIED",
+    "deliverable": true,
+    "exact": true,
+    "native_validated": true,
+    "authority_validated": true,
+    "counters": {
+      "actual_state_computations": 97494,
+      "cache_evictions": 89302,
+      "cache_hits": 45,
+      "collision_queries": 97462,
+      "cumulative_samples": 1389,
+      "edge_checks": 39,
+      "incomplete_edges": 0,
+      "invalid_edges": 21,
+      "ompl_iterations": 1289,
+      "state_checks": 97494,
+      "state_requests": 97539,
+      "subdivision_samples": 96895,
+      "termination_checks": 98858,
+      "valid_edges": 18
+    },
+    "sampling_counts": {
+      "all_generation_attempts": 1389,
+      "global": 644,
+      "goal_neighborhood": 331,
+      "other": 0,
+      "rejected_generation_attempts": 0,
+      "roadmap_total": 1289,
+      "setup_projection": 100,
+      "start_neighborhood": 314
+    },
+    "connectivity": {
+      "candidate_graph": {
+        "component_count": 1,
+        "connected": true,
+        "goal": [
+          {
+            "component": 0,
+            "size": 751
+          }
+        ],
+        "largest_component_size": 751,
+        "start": [
+          {
+            "component": 0,
+            "size": 751
+          }
+        ]
+      },
+      "candidate_unknown_is_not_safe": true,
+      "component_label_audit": {
+        "components_with_multiple_labels": 0,
+        "labels_spanning_disconnected_components": 0,
+        "matches_independent_traversal": true,
+        "wrong_live_label_sizes": 0
+      },
+      "verified_node_rule": "VALIDITY_TRUE or endpoint explicitly accepted by the same state validator",
+      "verified_subgraph": {
+        "component_count": 84,
+        "connected": true,
+        "goal": [
+          {
+            "component": 0,
+            "size": 19
+          }
+        ],
+        "largest_component_size": 19,
+        "start": [
+          {
+            "component": 0,
+            "size": 19
+          }
+        ]
+      }
+    },
+    "native_s": 459.985002508,
+    "authority_s": 645.8020444326103,
+    "backend_wall_s": 1106.047419032082,
+    "profile": {
+      "enabled": true,
+      "seconds": {
+        "budget_cancel_poll_s": 0.26927283799999946,
+        "collision_transform_s": 11.784399752999954,
+        "edge_check_inclusive_s": 458.966101679,
+        "edge_schedule_s": 0.04285155399819367,
+        "fcl_contact_test_s": 438.218280604002,
+        "fk_scene_state_s": 6.599427115000015,
+        "jacobian_svd_s": 0.5527038570000039,
+        "state_check_inclusive_s": 459.7034247660018
+      }
+    },
+    "path_metrics": {
+      "points": 9,
+      "edges": 8,
+      "joint_path_length_l2_rad": 10.441596014539387,
+      "per_joint_total_variation_rad": [
+        5.946893487435383,
+        0.9699207867785156,
+        2.5853177004841563,
+        1.8296352832817322,
+        1.859932222276917,
+        5.917028009432836
+      ],
+      "execution_duration_s": null
+    }
+  },
+  "authority": {
+    "accepted": true,
+    "failure": null,
+    "wall_s": 645.8020444326103,
+    "statistics": {
+      "state_validations": 61156,
+      "edge_validation_calls": 1,
+      "edge_state_samples": 61162,
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 0,
+      "placement_candidates_generated": 0,
+      "placement_candidate_generation_wall_seconds": 0.0,
+      "state_cache_hits": 6,
+      "state_cache_misses": 61156,
+      "trajectory_ik_wall_seconds": 0.0,
+      "path_connection_wall_seconds_inclusive": 0.0,
+      "collision_validation_wall_seconds_nested": 635.7884306758642,
+      "kinematics_and_joint_checks_wall_seconds": 16.855956617742777,
+      "final_recheck_wall_seconds": 0.0
+    }
+  },
+  "tests": {
+    "pytest_total": 87,
+    "fake_python_contract_and_identity": 82,
+    "real_native_small_scene": 5,
+    "standalone_cpp_graph_fixtures": 3,
+    "standalone_cpp_sampler_fixtures": 1
+  },
+  "full_task_run": false,
+  "time_parameterization": "NOT_RUN",
+  "execution_preflight": "NOT_RUN",
+  "isaac_run": false,
+  "machine_qualification": "NOT_ESTABLISHED",
+  "full_task_ready": false,
+  "remaining_native_state_budget": 2506,
+  "future_todo": [
+    "Explicitly pass the frozen optional sampling configuration into a future single-candidate task; ordinary default remains uniform",
+    "Wire successful full-task output to existing time parameterization and execution preflight before physical execution"
+  ]
+}

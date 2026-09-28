@@ -109,7 +109,8 @@ class TesseractOMPLBackend:
     name = "tesseract_ompl"
 
     def __init__(self, executable=None, *, worker=None, planner_config=None, profile=False,
-                 max_state_checks=100000, max_attempts=2, stop_on_native_block=False):
+                 max_state_checks=100000, max_attempts=2, stop_on_native_block=False,
+                 roadmap_diagnostics=False):
         from .planning_contract import PlanningBudget
         budget = PlanningBudget(max_state_checks=max_state_checks, max_attempts=max_attempts)
         if type(stop_on_native_block) is not bool:
@@ -117,6 +118,9 @@ class TesseractOMPLBackend:
         self.max_state_checks = budget.max_state_checks
         self.max_attempts = budget.max_attempts
         self.stop_on_native_block = stop_on_native_block
+        if type(roadmap_diagnostics) is not bool:
+            raise ValueError("roadmap_diagnostics must be boolean")
+        self.roadmap_diagnostics = roadmap_diagnostics
         self.planner_config = planner_config if planner_config is not None else OMPLPlannerConfig()
         if not isinstance(self.planner_config, OMPLPlannerConfig):
             raise ValueError("planner_config must be OMPLPlannerConfig")
@@ -178,6 +182,8 @@ class TesseractOMPLBackend:
                     profile=self.profile)
                 if self.planner_config.name == "rrt_connect":
                     message["range_rad"] = .18
+                if self.roadmap_diagnostics:
+                    message["roadmap_diagnostics"] = True
                 raw = self.worker.call(message, request.cancelled)
                 attempts.append(raw)
                 # An older worker must not silently ignore lazy_prm and run RRT.
@@ -197,6 +203,13 @@ class TesseractOMPLBackend:
                     result.diagnostics["error"] = "effective native planner differs from requested contract"
                     break
                 result.diagnostics["effective_planner"] = effective or None
+                if self.planner_config.sampling is not None:
+                    sampler = raw.get("effective_sampler")
+                    if not isinstance(sampler, dict) or sampler.get("configuration") != message["planner_config"]["sampling"]:
+                        result.status = PlanningStatus.UNSUPPORTED_CONSTRAINT
+                        result.diagnostics["error"] = "native sampling configuration not acknowledged"
+                        break
+                result.diagnostics["effective_sampler"] = raw.get("effective_sampler")
                 consumed = int(raw.get("counters", {}).get("state_checks", 0))
                 remaining -= consumed
                 result.counters = {"state_checks": request.budget.max_state_checks-remaining,

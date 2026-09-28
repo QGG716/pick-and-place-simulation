@@ -1,0 +1,11 @@
+{
+  "review": "92471392b5d25fa76f2846c361cc7a159ecfa5aa",
+  "local_head_at_start": "92471392b5d25fa76f2846c361cc7a159ecfa5aa",
+  "remote_head_at_start": "92471392b5d25fa76f2846c361cc7a159ecfa5aa",
+  "branch": "feat/v0.5-backend-tesseract-ompl",
+  "worktree_clean_at_start": true,
+  "reset": false,
+  "force_push": false,
+  "dependencies_reinstalled": false,
+  "engineering_call_limit": 2
+}

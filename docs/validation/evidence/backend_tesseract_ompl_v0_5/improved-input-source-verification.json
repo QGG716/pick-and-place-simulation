@@ -1,0 +1,15 @@
+{
+  "changed_wire_fields": [
+    "planner_config",
+    "roadmap_diagnostics"
+  ],
+  "only_planner_config_change": "sampling",
+  "scene_equal": true,
+  "q_start_equal": true,
+  "q_goal_equal": true,
+  "seed_equal": true,
+  "native_limits_equal": true,
+  "final_sources_equal_to_executed": true,
+  "worker_sha256": "742607df1eca48881f48f463c9bf021be5144183e2959addcdca70d1a572d53f",
+  "config_sha256": "9455cdaa28e92668fa54c51bad05f726452416e9a49f7ac92d3382331cb2a6ea"
+}

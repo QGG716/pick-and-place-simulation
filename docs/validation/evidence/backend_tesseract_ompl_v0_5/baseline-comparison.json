@@ -1,0 +1,292 @@
+{
+  "original_result_sha256": "70f9213be5376defa42aab46c90405baef791e8d56858392095c4749da03c84b",
+  "counters_exactly_equal": true,
+  "progress_exactly_equal": true,
+  "first_rejection_exactly_equal": true,
+  "rejection_counts_exactly_equal": true,
+  "original_counters": {
+    "actual_state_computations": 8720,
+    "cache_evictions": 528,
+    "cache_hits": 33,
+    "collision_queries": 8710,
+    "cumulative_samples": 10000,
+    "edge_checks": 19,
+    "incomplete_edges": 0,
+    "invalid_edges": 18,
+    "ompl_iterations": 9900,
+    "state_checks": 8720,
+    "state_requests": 8753,
+    "subdivision_samples": 8420,
+    "termination_checks": 18666,
+    "valid_edges": 1
+  },
+  "diagnostic_counters": {
+    "actual_state_computations": 8720,
+    "cache_evictions": 528,
+    "cache_hits": 33,
+    "collision_queries": 8710,
+    "cumulative_samples": 10000,
+    "edge_checks": 19,
+    "incomplete_edges": 0,
+    "invalid_edges": 18,
+    "ompl_iterations": 9900,
+    "state_checks": 8720,
+    "state_requests": 8753,
+    "subdivision_samples": 8420,
+    "termination_checks": 18666,
+    "valid_edges": 1
+  },
+  "original_timings": {
+    "direct_check_s": 0.002366557,
+    "endpoint_check_s": 0.009823792,
+    "environment_init_s": 0.188111055,
+    "native_total_s": 12.515146426,
+    "ompl_solve_s": 12.277921182,
+    "path_conversion_s": 0.0,
+    "worker_roundtrip_s_inclusive": 12.621600737795234,
+    "worker_cold_start_s": 0.04076447896659374
+  },
+  "diagnostic_timings": {
+    "direct_check_s": 0.00246078,
+    "endpoint_check_s": 0.010110168,
+    "environment_init_s": 0.198789693,
+    "native_total_s": 12.856020117,
+    "ompl_solve_s": 12.595841771,
+    "path_conversion_s": 0.0,
+    "roadmap_diagnostics_s_inclusive": 0.012748801,
+    "worker_roundtrip_s_inclusive": 12.966373207047582,
+    "worker_cold_start_s": 0.04099585860967636
+  },
+  "milestones": [
+    {
+      "event": "endpoints_added",
+      "cumulative_samples": 100,
+      "actual_state_computations": 3,
+      "roadmap_vertices": 2,
+      "roadmap_edges": 1,
+      "known_valid_nodes": 2,
+      "known_valid_edges": 0,
+      "candidate_connected_by_ompl_labels": true,
+      "start": {
+        "degree": 1,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 0,
+        "ompl_component_size": 2,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 1,
+        "unknown_neighbors": 0,
+        "valid_edges": 0,
+        "valid_neighbors": 1
+      },
+      "goal": {
+        "degree": 1,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 0,
+        "ompl_component_size": 2,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 1,
+        "unknown_neighbors": 0,
+        "valid_edges": 0,
+        "valid_neighbors": 1
+      }
+    },
+    {
+      "event": "sample_milestone",
+      "cumulative_samples": 1000,
+      "actual_state_computations": 691,
+      "roadmap_vertices": 711,
+      "roadmap_edges": 3129,
+      "known_valid_nodes": 32,
+      "known_valid_edges": 0,
+      "candidate_connected_by_ompl_labels": false,
+      "start": {
+        "degree": 12,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 1016,
+        "ompl_component_size": 710,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 12,
+        "unknown_neighbors": 7,
+        "valid_edges": 0,
+        "valid_neighbors": 5
+      },
+      "goal": {
+        "degree": 0,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 1015,
+        "ompl_component_size": 1,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 0,
+        "unknown_neighbors": 0,
+        "valid_edges": 0,
+        "valid_neighbors": 0
+      }
+    },
+    {
+      "event": "sample_milestone",
+      "cumulative_samples": 2500,
+      "actual_state_computations": 742,
+      "roadmap_vertices": 2171,
+      "roadmap_edges": 10331,
+      "known_valid_nodes": 39,
+      "known_valid_edges": 0,
+      "candidate_connected_by_ompl_labels": false,
+      "start": {
+        "degree": 18,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 2595,
+        "ompl_component_size": 2170,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 18,
+        "unknown_neighbors": 13,
+        "valid_edges": 0,
+        "valid_neighbors": 5
+      },
+      "goal": {
+        "degree": 0,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 2594,
+        "ompl_component_size": 1,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 0,
+        "unknown_neighbors": 0,
+        "valid_edges": 0,
+        "valid_neighbors": 0
+      }
+    },
+    {
+      "event": "sample_milestone",
+      "cumulative_samples": 5000,
+      "actual_state_computations": 8682,
+      "roadmap_vertices": 4650,
+      "roadmap_edges": 22676,
+      "known_valid_nodes": 44,
+      "known_valid_edges": 1,
+      "candidate_connected_by_ompl_labels": false,
+      "start": {
+        "degree": 21,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 5017,
+        "ompl_component_size": 4648,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 21,
+        "unknown_neighbors": 15,
+        "valid_edges": 0,
+        "valid_neighbors": 6
+      },
+      "goal": {
+        "degree": 1,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 5018,
+        "ompl_component_size": 2,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 0,
+        "unknown_neighbors": 0,
+        "valid_edges": 1,
+        "valid_neighbors": 1
+      }
+    },
+    {
+      "event": "sample_milestone",
+      "cumulative_samples": 7500,
+      "actual_state_computations": 8707,
+      "roadmap_vertices": 7132,
+      "roadmap_edges": 35032,
+      "known_valid_nodes": 48,
+      "known_valid_edges": 1,
+      "candidate_connected_by_ompl_labels": false,
+      "start": {
+        "degree": 20,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 6364,
+        "ompl_component_size": 7130,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 20,
+        "unknown_neighbors": 14,
+        "valid_edges": 0,
+        "valid_neighbors": 6
+      },
+      "goal": {
+        "degree": 1,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 6363,
+        "ompl_component_size": 2,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 0,
+        "unknown_neighbors": 0,
+        "valid_edges": 1,
+        "valid_neighbors": 1
+      }
+    },
+    {
+      "event": "sample_milestone",
+      "cumulative_samples": 10000,
+      "actual_state_computations": 8720,
+      "roadmap_vertices": 9619,
+      "roadmap_edges": 47446,
+      "known_valid_nodes": 48,
+      "known_valid_edges": 1,
+      "candidate_connected_by_ompl_labels": false,
+      "start": {
+        "degree": 22,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 10091,
+        "ompl_component_size": 9617,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 22,
+        "unknown_neighbors": 16,
+        "valid_edges": 0,
+        "valid_neighbors": 6
+      },
+      "goal": {
+        "degree": 1,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 10090,
+        "ompl_component_size": 2,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 0,
+        "unknown_neighbors": 0,
+        "valid_edges": 1,
+        "valid_neighbors": 1
+      }
+    },
+    {
+      "event": "terminated",
+      "cumulative_samples": 10000,
+      "actual_state_computations": 8720,
+      "roadmap_vertices": 9619,
+      "roadmap_edges": 47446,
+      "known_valid_nodes": 48,
+      "known_valid_edges": 1,
+      "candidate_connected_by_ompl_labels": false,
+      "start": {
+        "degree": 22,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 10091,
+        "ompl_component_size": 9617,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 22,
+        "unknown_neighbors": 16,
+        "valid_edges": 0,
+        "valid_neighbors": 6
+      },
+      "goal": {
+        "degree": 1,
+        "explicit_endpoint_validation": true,
+        "ompl_component_label": 10090,
+        "ompl_component_size": 2,
+        "raw_vertex_validity_flag": 0,
+        "unknown_edges": 0,
+        "unknown_neighbors": 0,
+        "valid_edges": 1,
+        "valid_neighbors": 1
+      }
+    }
+  ],
+  "classification": [
+    "A: goal isolated at recorded early milestones, then a size-two component",
+    "B: goal-side candidate region disconnected from start-side region at termination"
+  ],
+  "no_upstream_component_error_observed": true,
+  "diagnostic_overhead_wall_difference_is_not_a_controlled_benchmark": true
+}

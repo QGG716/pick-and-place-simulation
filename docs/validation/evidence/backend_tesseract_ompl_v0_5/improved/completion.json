@@ -1,0 +1,9 @@
+{
+  "status": "VERIFIED",
+  "deliverable": true,
+  "native_requests": 1,
+  "authority_calls": 1,
+  "adapter_wall_s": 1106.047419032082,
+  "full_task_run": false,
+  "isaac_run": false
+}

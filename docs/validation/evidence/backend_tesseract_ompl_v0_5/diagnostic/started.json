@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-28T06:21:29.146267+00:00",
+  "command": [
+    "tools/run_tesseract_ompl_v5_request.py",
+    "--worker",
+    "/root/autodl-tmp/tesseract-ompl-20260922/v0_5/build-diagnostic/unloading_tesseract_ompl",
+    "--output",
+    "/root/autodl-tmp/tesseract-ompl-20260922/v0_5/evidence/diagnostic"
+  ]
+}

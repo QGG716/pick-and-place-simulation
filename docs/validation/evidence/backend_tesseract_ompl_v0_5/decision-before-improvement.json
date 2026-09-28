@@ -1,0 +1,68 @@
+{
+  "frozen_before_improved_engineering_run_utc": "2026-09-28T06:25:25.342213+00:00",
+  "mechanism": "StateSamplerAllocator endpoint-neighborhood/global mixture only",
+  "diagnosis_sha256": "15d7e08d71f14c5c20411407442051f8bdb749152cfe726cb89b5e5dbd04a87d",
+  "diagnosis_connectivity": {
+    "candidate_graph": {
+      "component_count": 2,
+      "connected": false,
+      "goal": [
+        {
+          "component": 1,
+          "size": 2
+        }
+      ],
+      "largest_component_size": 9617,
+      "start": [
+        {
+          "component": 0,
+          "size": 9617
+        }
+      ]
+    },
+    "candidate_unknown_is_not_safe": true,
+    "component_label_audit": {
+      "components_with_multiple_labels": 0,
+      "labels_spanning_disconnected_components": 0,
+      "matches_independent_traversal": true,
+      "wrong_live_label_sizes": 0
+    },
+    "verified_node_rule": "VALIDITY_TRUE or endpoint explicitly accepted by the same state validator",
+    "verified_subgraph": {
+      "component_count": 47,
+      "connected": false,
+      "goal": [
+        {
+          "component": 1,
+          "size": 2
+        }
+      ],
+      "largest_component_size": 2,
+      "start": [
+        {
+          "component": 0,
+          "size": 1
+        }
+      ]
+    }
+  },
+  "basis": [
+    "goal degree zero at samples 1000 and 2500, degree one in a size-two component at termination",
+    "candidate graph and verified subgraph both disconnected; OMPL labels agree with independent traversal",
+    "long goal edges rejected by existing collision and singularity checks",
+    "a 5%-of-span half-width box occupies at most 0.1^6 = 1e-6 of the uniform six-joint domain: expected at most 0.0099 baseline roadmap draws per endpoint box"
+  ],
+  "parameter_basis": {
+    "local_probability": "0.5 reserves half the draws for unchanged full-domain exploration; equal start/goal allocation within local draws",
+    "joint_span_half_width_fraction": "0.05 gives a modest local box from joint limits alone; no historical intermediate state or follow-up tuning"
+  },
+  "alternatives_not_implemented": [
+    "endpoint reconnection",
+    "k change",
+    "range change",
+    "seed change",
+    "collision/kinematic/grid change"
+  ],
+  "no_claim_that_all_existing_nearby_nodes_are_known": true,
+  "config_sha256": "9455cdaa28e92668fa54c51bad05f726452416e9a49f7ac92d3382331cb2a6ea"
+}

@@ -34,6 +34,8 @@
 #include <map>
 #include <cmath>
 #include <algorithm>
+#include "roadmap_diagnostics.h"
+#include "endpoint_sampler.h"
 
 using json = nlohmann::json;
 namespace ob = ompl::base;
@@ -316,43 +318,33 @@ struct SeededConnect final : og::RRTConnect {
   SeededConnect(const ob::SpaceInformationPtr& si,uint32_t seed):og::RRTConnect(si) {rng_.setLocalSeed(seed);}
 };
 
-// Read-only diagnostics. All graph construction, invalidation, A* and stopping
-// on the first fully validated finite-cost solution remain upstream OMPL 1.7.
-struct ObservedLazyPRM final : og::LazyPRM {
-  explicit ObservedLazyPRM(const ob::SpaceInformationPtr& si):og::LazyPRM(si,false) {}
-  unsigned int neighbors() const {
-    const auto* strategy=connectionStrategy_.target<og::KBoundedStrategy<Vertex>>();
-    if(!strategy || starStrategy_) throw std::runtime_error("unexpected LazyPRM connection strategy");
-    return strategy->getNumNeighbors();
-  }
-  json parameters() const {
-    const double threshold=opt_->getCostThreshold().value();
-    if(!std::isinf(threshold) || threshold<0 || !opt_->isSatisfied(ob::Cost(1.)))
-      throw std::runtime_error("LazyPRM must stop at first validated finite-cost solution");
-    return {{"type","ompl::geometric::LazyPRM"},{"star",false},
-      {"connection_strategy","default KBoundedStrategy"},{"max_nearest_neighbors",neighbors()},
-      {"max_connection_distance",getRange()},{"distance","RealVectorStateSpace unweighted Euclidean L2"},
-      {"objective","default PathLengthOptimizationObjective"},{"cost_threshold","positive infinity"},
-      {"nondefault_planner_parameters",json::object()}};
-  }
-  json progress() const {
-    uint64_t known_nodes=0,known_edges=0;
-    auto vertices=boost::vertices(g_);
-    for(auto it=vertices.first;it!=vertices.second;++it) {
-      const bool endpoint=std::find(startM_.begin(),startM_.end(),*it)!=startM_.end() ||
-                          std::find(goalM_.begin(),goalM_.end(),*it)!=goalM_.end();
-      if(endpoint || (vertexValidityProperty_[*it]&VALIDITY_TRUE)) ++known_nodes;
+// Observer delegates every check to the unchanged DenseMotion. Temporarily
+// resetting only its diagnostic slot captures the current failure witness.
+struct ObservedMotion final : ob::MotionValidator {
+  std::shared_ptr<DenseMotion> delegate;Context& ctx;Eigen::VectorXd start,goal;
+  mutable json rejected=json::array(),endpoint_rejected=json::array();
+  ObservedMotion(const ob::SpaceInformationPtr& si,std::shared_ptr<DenseMotion> d,Context& c,
+      const json& a,const json& b):ob::MotionValidator(si),delegate(d),ctx(c),start(vector(a)),goal(vector(b)) {}
+  bool check(const ob::State* a,const ob::State* b,std::pair<ob::State*,double>* last) const {
+    json saved=ctx.first_failed_sample;ctx.first_failed_sample=nullptr;
+    bool ok=last?delegate->checkMotion(a,b,*last):delegate->checkMotion(a,b);
+    if(!ok) {
+      const auto qa=ctx.q(a),qb=ctx.q(b);
+      const bool at_start=(qa-start).squaredNorm()==0 || (qb-start).squaredNorm()==0;
+      const bool at_goal=(qa-goal).squaredNorm()==0 || (qb-goal).squaredNorm()==0;
+      json item=ctx.first_failed_sample;
+      item["q_from"]=array(qa);item["q_to"]=array(qb);
+      item["involves_start"]=at_start;item["involves_goal"]=at_goal;
+      if(!ctx.termination.empty()) {item["failure"]=nullptr;item["interruption"]=ctx.termination;}
+      if(rejected.size()<16) rejected.push_back(item);
+      if((at_start || at_goal) && endpoint_rejected.size()<16) endpoint_rejected.push_back(item);
     }
-    auto edges=boost::edges(g_);
-    for(auto it=edges.first;it!=edges.second;++it) if(edgeValidityProperty_[*it]&VALIDITY_TRUE) ++known_edges;
-    return {{"roadmap_vertices",milestoneCount()},{"roadmap_edges",edgeCount()},
-      {"known_valid_nodes",known_nodes},{"unknown_nodes",milestoneCount()-known_nodes},
-      {"known_valid_edges",known_edges},{"unknown_edges",edgeCount()-known_edges},
-      {"edge_count_semantics","underlying undirected graph, each edge once; not PlannerData arcs"},
-      {"node_validity_semantics","upstream VALIDITY_TRUE or explicitly validated start/goal"},
-      {"iterations",iterations_},{"candidate_path_validations",nullptr},{"candidate_researches",nullptr},
-      {"approximate_goal_distance",nullptr},{"roadmap_reused",false}};
+    if(!saved.is_null()) ctx.first_failed_sample=std::move(saved);
+    if(ok) ++valid_;else ++invalid_;
+    return ok;
   }
+  bool checkMotion(const ob::State* a,const ob::State* b) const override {return check(a,b,nullptr);}
+  bool checkMotion(const ob::State* a,const ob::State* b,std::pair<ob::State*,double>& last) const override {return check(a,b,&last);}
 };
 
 json solve(Context& ctx,const json& r) {
@@ -361,13 +353,27 @@ json solve(Context& ctx,const json& r) {
   if(r.contains("planner_config")) {
     if(!r["planner_config"].is_object()) return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","planner_config must be an object"}};
     for(auto it=r["planner_config"].begin();it!=r["planner_config"].end();++it) {
-      if(!config.contains(it.key())) return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","unknown planner configuration field"}};
+      if(!config.contains(it.key()) && it.key()!="sampling") return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","unknown planner configuration field"}};
       config[it.key()]=it.value();
     }
   }
   if(!config["name"].is_string() || (config["name"]!="rrt_connect" && config["name"]!="lazy_prm"))
     return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","unknown planner"}};
   const bool lazy_requested=config["name"]=="lazy_prm";
+  const bool mixture=config.contains("sampling");
+  if(mixture) {
+    const auto& sampling=config["sampling"];
+    if(!lazy_requested || !sampling.is_object() || sampling.size()!=3 ||
+        !sampling.contains("type") || !sampling["type"].is_string() || sampling["type"]!="endpoint_mixture" ||
+        !sampling.contains("local_probability") || !sampling.contains("joint_span_half_width_fraction"))
+      return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","invalid endpoint sampling configuration"}};
+    for(const auto& entry:std::vector<std::pair<std::string,double>>{{"local_probability",1.},{"joint_span_half_width_fraction",.25}}) {
+      if(!sampling[entry.first].is_number()) return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","sampling parameter must be numeric"}};
+      double value=sampling[entry.first].get<double>();
+      if(!std::isfinite(value) || value<=0 || value>=entry.second)
+        return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","sampling parameter outside supported range"}};
+    }
+  }
   const std::map<std::string,std::pair<int,int>> limits={
     {"max_samples",{1,1000000}},{"max_roadmap_vertices",{2,1000002}},{"max_roadmap_edges",{6,5000010}}};
   for(const auto& item:limits) if(!config[item.first].is_number_integer() ||
@@ -427,6 +433,7 @@ json solve(Context& ctx,const json& r) {
   ctx.wall=r.value("wall_time_s",0.);ctx.resolution=effective_resolution;
   if(ctx.resolution<=0 || ctx.resolution>.0003125 || ctx.max_states==0 || ctx.max_states>1000000000 || !std::isfinite(ctx.wall) || ctx.wall<0) throw std::runtime_error("invalid native resource/grid budget");
   uint64_t sampler_calls=0;
+  bool setup_complete=false;EndpointSamplingUsage sampling_usage;
   auto space=std::make_shared<ob::RealVectorStateSpace>(ctx.names.size());
   ob::RealVectorBounds bounds(ctx.names.size());
   for(size_t i=0;i<ctx.names.size();++i) {
@@ -434,10 +441,22 @@ json solve(Context& ctx,const json& r) {
   }
   space->setBounds(bounds);
   uint32_t seed=r.at("seed");
-  space->setStateSamplerAllocator([seed,&sampler_calls](const ob::StateSpace* s){return std::make_shared<SeededSampler>(s,seed,sampler_calls);});
+  space->setStateSamplerAllocator([&](const ob::StateSpace* s)->ob::StateSamplerPtr {
+    if(!mixture) return std::make_shared<SeededSampler>(s,seed,sampler_calls);
+    return std::make_shared<EndpointMixtureSampler>(s,seed,sampler_calls,setup_complete,sampling_usage,
+      r.at("q_start").get<std::vector<double>>(),r.at("q_goal").get<std::vector<double>>(),
+      config["sampling"]["local_probability"],config["sampling"]["joint_span_half_width_fraction"]);
+  });
   auto si=std::make_shared<ob::SpaceInformation>(space);
   si->setStateValidityChecker([&ctx](const ob::State* s){return ctx.valid(ctx.q(s));});
-  auto motion=std::make_shared<DenseMotion>(si,ctx);si->setMotionValidator(motion);si->setup();
+  if(r.contains("roadmap_diagnostics") && !r["roadmap_diagnostics"].is_boolean())
+    return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","roadmap_diagnostics must be boolean"}};
+  const bool diagnostic=r.value("roadmap_diagnostics",false);
+  std::shared_ptr<ObservedMotion> observed;
+  auto dense=std::make_shared<DenseMotion>(si,ctx);
+  ob::MotionValidatorPtr motion=dense;
+  if(diagnostic) {observed=std::make_shared<ObservedMotion>(si,dense,ctx,r.at("q_start"),r.at("q_goal"));motion=observed;}
+  si->setMotionValidator(motion);si->setup();
   ob::ScopedState<> start(space),goal(space);
   for(size_t i=0;i<ctx.names.size();++i) {start[i]=r["q_start"][i];goal[i]=r["q_goal"][i];}
   auto problem=std::make_shared<ob::ProblemDefinition>(si);problem->setStartAndGoalStates(start,goal,1e-10);
@@ -448,6 +467,11 @@ json solve(Context& ctx,const json& r) {
     auto rrt=std::make_shared<SeededConnect>(si,seed);rrt->setRange(r.value("range_rad",.18));planner=rrt;
   }
   planner->setProblemDefinition(problem);planner->setup();
+  const uint64_t setup_samples=sampler_calls;setup_complete=true;
+  result["effective_sampler"]={{"configuration",mixture?config["sampling"]:json{{"type","uniform"}}},
+    {"setup_sampling","unchanged uniform projection-estimation samples"},
+    {"endpoint_choice","equal probability given a local draw"},{"rejection_sampling",false},
+    {"new_vertex_edge_validity","UNKNOWN; upstream validation required"}};
   result["effective_planner"]=lazy?lazy->parameters():json{{"type","ompl::geometric::RRTConnect"},
     {"range_rad",std::dynamic_pointer_cast<SeededConnect>(planner)->getRange()},
     {"distance","RealVectorStateSpace unweighted Euclidean L2"}};
@@ -506,7 +530,18 @@ json solve(Context& ctx,const json& r) {
       result["initial_roadmap_vertices"]=lazy?json(lazy->milestoneCount()):json(nullptr);
       result["initial_roadmap_edges"]=lazy?json(lazy->edgeCount()):json(nullptr);
       const auto invalid_before=ctx.invalid_edges;
+      json milestones=json::array();size_t next_milestone=0;bool endpoints_seen=false;
+      const std::vector<uint64_t> thresholds{1000,2500,5000,7500,10000};
+      double diagnostic_s=0.;
       auto terminate=[&]() {
+        if(diagnostic && lazy && lazy->endpointsAdded() &&
+            (!endpoints_seen || (next_milestone<thresholds.size() && sampler_calls>=thresholds[next_milestone]))) {
+          auto before=Clock::now();
+          milestones.push_back(lazy->snapshot(sampler_calls,ctx.states,endpoints_seen?"sample_milestone":"endpoints_added"));
+          endpoints_seen=true;
+          while(next_milestone<thresholds.size() && sampler_calls>=thresholds[next_milestone]) ++next_milestone;
+          diagnostic_s+=elapsed(before);
+        }
         if(ctx.stopped()) return true;
         if(!lazy) return false;
         std::string reason;
@@ -521,6 +556,13 @@ json solve(Context& ctx,const json& r) {
       auto search=Clock::now();auto solved=planner->solve(ob::PlannerTerminationCondition(terminate));
       result["ompl_invalid_motion_checks"]=ctx.invalid_edges-invalid_before;
       result["timings"]["ompl_solve_s"]=elapsed(search);
+      if(diagnostic && lazy) {
+        auto before=Clock::now();
+        result["roadmap_diagnostics"]={{"milestones",milestones},
+          {"terminal",lazy->snapshot(sampler_calls,ctx.states,"terminated")},
+          {"connectivity",lazy->terminalConnectivity()}};
+        result["timings"]["roadmap_diagnostics_s_inclusive"]=diagnostic_s+elapsed(before);
+      }
       result["ompl_status"]=solved.asString();
       ob::PlannerData data(si);planner->getPlannerData(data);
       result["search_progress"]={{"tree_vertices",data.numVertices()},{"tree_edges",data.numEdges()},
@@ -560,12 +602,19 @@ json solve(Context& ctx,const json& r) {
   result["rejections"]=ctx.rejections;
   result["computed_rejections"]=ctx.computed_rejections;
   result["first_failed_sample"]=ctx.first_failed_sample;
+  if(observed) result["rejected_connections"]={{"first_16",observed->rejected},{"endpoint_first_16",observed->endpoint_rejected},
+    {"limit_each",16},{"total_rejected_or_interrupted",ctx.invalid_edges+ctx.incomplete_edges}};
   result["termination_detail"]=ctx.termination_detail;
   result["counters"]["actual_state_computations"]=ctx.states;
   result["counters"]["cache_hits"]=ctx.cache_hits;
   result["counters"]["cache_evictions"]=ctx.cache_evictions;
   result["counters"]["ompl_iterations"]=result["search_progress"]["iterations"];
   result["counters"]["cumulative_samples"]=sampler_calls;
+  result["sampling_counts"]={{"setup_projection",setup_samples},{"roadmap_total",sampler_calls-setup_samples},
+    {"global",mixture?sampling_usage.global:sampler_calls-setup_samples},
+    {"start_neighborhood",sampling_usage.start},{"goal_neighborhood",sampling_usage.goal},{"other",sampling_usage.other},
+    {"all_generation_attempts",sampler_calls},{"rejected_generation_attempts",0}};
+  if(mixture) result["sampling_first_12"]=sampling_usage.first_draws;
   if(lazy && !result.value("search_started",false)) result["search_progress"]=lazy->progress();
   result["search_started"]=result.value("search_started",false);
   result["roadmap_discarded_after_request"]=true;
