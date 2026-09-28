@@ -175,7 +175,9 @@ def test_continuation_keeps_all_identities_but_does_not_regrasp_assumed_receptio
     assert reception_counts([], {name: record}) == counts
 
 
-def test_ordinary_entry_dispatches_beyond_48_and_executes_retries(monkeypatch):
+@pytest.mark.parametrize('request_stop', [None, 'VALIDATION_CANCELLED',
+    'VALIDATION_CONTEXT_CHANGED', 'VALIDATION_WORK_BUDGET_EXHAUSTED'])
+def test_ordinary_entry_dispatches_beyond_48_and_executes_retries(monkeypatch, request_stop):
     """Injected failures verify dispatch only; not robot planning success."""
     from unloading_sim import layout_single_carton as production
     policy = load_layout_motion_policy(DEFAULT_MOTION)
@@ -205,11 +207,21 @@ def test_ordinary_entry_dispatches_beyond_48_and_executes_retries(monkeypatch):
     def branch(**kwargs):
         assert c._deadline_monotonic is None
         connected.append(kwargs["seed"])
+        if request_stop is not None:
+            return None, dict(reason=request_stop, stage='transit', validation=dict(
+                status='CANCELLED' if 'CANCELLED' in request_stop else 'INDETERMINATE',
+                termination_scope='REQUEST', can_continue_candidates=False)), {}
         return None, {"reason": "INJECTED_FINITE_SEARCH_FAILURE", "stage": "transit"}, {}
     monkeypatch.setattr(production, "_scheduled_contact_poses", pool)
     monkeypatch.setattr(production, "_audit_pose", evaluate)
     monkeypatch.setattr(c, "_plan_branch", branch)
     result = production.run_layout_single_carton_audit(policy, motion_input=scene, trajectory_connector=c)
+    if request_stop is not None:
+        assert len(evaluated) == len(connected) == 1
+        assert result['failure']['reason'] == result['complete_trajectory_failure_reason'] == request_stop
+        assert result['validation_status'] == ('CANCELLED' if 'CANCELLED' in request_stop else 'INDETERMINATE')
+        assert not result['planning_success']
+        return
     assert len(evaluated) == len(connected) == 195
     assert {index for index, seed in evaluated} == set(range(65))
     assert len(set(connected)) == 195

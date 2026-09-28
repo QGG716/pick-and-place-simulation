@@ -3633,8 +3633,12 @@ class LayoutTrajectoryConnector:
                     reason='VALIDATION_CANCELLED', stage='request', validation=dict(status='CANCELLED'),
                     last_candidate_failure=result.failure))
             if not result.success:
-                result.failure['validation'] = dict(result.failure.get('validation') or {},
-                    status=failure_status(result.failure))
+                stop = interrupts_generation(result.failure)
+                result.failure['validation'] = {
+                    'termination_scope': 'REQUEST' if stop else 'CANDIDATE',
+                    'can_continue_candidates': not stop,
+                    **(result.failure.get('validation') or {}),
+                    'status': failure_status(result.failure)}
                 result.statistics['termination'] = result.failure.get('reason', 'INCOMPLETE_SEARCH')
             result.statistics['validation_status'] = failure_status(result.failure)
             if not result.success and self._deadline_reached() and (outer is None or perf_counter() < outer):
