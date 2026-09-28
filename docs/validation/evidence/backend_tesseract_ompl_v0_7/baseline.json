@@ -1,0 +1,11 @@
+{
+  "review_base": "b4c840003ac52f61d3a059d235e012cde439f320",
+  "local_head_at_start": "b4c840003ac52f61d3a059d235e012cde439f320",
+  "remote_head_at_start": "b4c840003ac52f61d3a059d235e012cde439f320",
+  "branch": "feat/v0.5-backend-tesseract-ompl",
+  "worktree_at_start": "CLEAN",
+  "parent_test_commit": "e16a759d857d55003ed50b7627a1fa012274c19a",
+  "other_branches_modified": false,
+  "worker_rebuilt": false,
+  "dependencies_installed": false
+}

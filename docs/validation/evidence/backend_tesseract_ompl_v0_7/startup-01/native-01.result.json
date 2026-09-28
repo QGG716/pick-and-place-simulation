@@ -1,0 +1,75 @@
+{
+  "candidate_found": false,
+  "collision_object_count": 255,
+  "effective_planner": {
+    "connection_strategy": "default KBoundedStrategy",
+    "cost_threshold": "positive infinity",
+    "distance": "RealVectorStateSpace unweighted Euclidean L2",
+    "max_connection_distance": 4.431260361343388,
+    "max_nearest_neighbors": 5,
+    "nondefault_planner_parameters": {},
+    "objective": "default PathLengthOptimizationObjective",
+    "star": false,
+    "state_space_maximum_extent": 22.15630180671694,
+    "type": "ompl::geometric::LazyPRM"
+  },
+  "effective_rule": {
+    "base_l1_resolution_rad": 0.0003125,
+    "edge_resolution_rad": 0.04,
+    "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+    "l1_resolution_rad": 0.0003125,
+    "lever_arm_m": 4.0,
+    "name": "fixed_4m_1.25mm_l1_grid_v1",
+    "point_motion_bound_m": 0.00125,
+    "refinement": 0
+  },
+  "effective_sampler": {
+    "configuration": {
+      "joint_span_half_width_fraction": 0.05,
+      "local_probability": 0.5,
+      "type": "endpoint_mixture"
+    },
+    "endpoint_choice": "equal probability given a local draw",
+    "new_vertex_edge_validity": "UNKNOWN; upstream validation required",
+    "rejection_sampling": false,
+    "setup_sampling": "unchanged uniform projection-estimation samples"
+  },
+  "environment_reused": false,
+  "exact_solution": false,
+  "first_native_valid_path_s": null,
+  "initial_roadmap_edges": 0,
+  "initial_roadmap_vertices": 0,
+  "moving_collision_object_count": 208,
+  "native_validated": false,
+  "path": [],
+  "planner_config": {
+    "max_roadmap_edges": 50010,
+    "max_roadmap_vertices": 10002,
+    "max_samples": 10000,
+    "name": "lazy_prm",
+    "sampling": {
+      "joint_span_half_width_fraction": 0.05,
+      "local_probability": 0.5,
+      "type": "endpoint_mixture"
+    }
+  },
+  "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+  "search_started": false,
+  "seed": 71081,
+  "static_collision_object_count": 47,
+  "status": "CONFIGURED",
+  "timings": {
+    "environment_init_s": 0.19825631,
+    "worker_roundtrip_s_inclusive": 0.3077393416315317,
+    "worker_cold_start_s": 0.048953827470541
+  },
+  "versions": {
+    "fcl": "0.7.0",
+    "implementation": "native C++17 worker",
+    "manager": "FCLDiscreteBVHManager",
+    "ompl": "1.7.0",
+    "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+    "tesseract": "0.35.0",
+    "tesseract_planning": null
+  }
+}

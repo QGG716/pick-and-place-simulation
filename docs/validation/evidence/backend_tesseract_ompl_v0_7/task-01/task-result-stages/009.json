@@ -1,0 +1,663 @@
+{
+  "kind": "free_motion_result",
+  "status": "BUDGET_EXHAUSTED",
+  "backend": "tesseract_ompl",
+  "candidate_found": false,
+  "exact_solution": false,
+  "native_validated": false,
+  "authority_validated": false,
+  "path": [],
+  "diagnostics": {
+    "request_id": "transit:71140:d041653ca102",
+    "seed": 71140,
+    "stage": "transit",
+    "planner_config": {
+      "name": "lazy_prm",
+      "max_samples": 10000,
+      "max_roadmap_vertices": 10002,
+      "max_roadmap_edges": 50010,
+      "sampling": {
+        "type": "endpoint_mixture",
+        "local_probability": 0.5,
+        "joint_span_half_width_fraction": 0.05
+      }
+    },
+    "scene_revision": "d041653ca10218d5a70bac7cda085c32ad5c5328beba7e7cd4271ef97be61525",
+    "scene_fingerprint": "9ad38ed6caaee7336b828a6aa8cc3479960e2d94a99704006683a27b203d68f9",
+    "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+    "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "attempts": [
+      {
+        "approximate_solution_found": false,
+        "cache": {
+          "capacity": 8192,
+          "refinement": 0,
+          "scene_fingerprint": "9ad38ed6caaee7336b828a6aa8cc3479960e2d94a99704006683a27b203d68f9",
+          "scope": "fresh per immutable request, exact IEEE state bytes"
+        },
+        "candidate_found": false,
+        "collision_object_count": 255,
+        "computed_rejections": {
+          "JOINT_MARGIN": 21,
+          "NATIVE_COLLISION": 1578,
+          "RADIAL_REACH": 35,
+          "SINGULARITY": 1
+        },
+        "counter_semantics": {
+          "request_guard": 3200000,
+          "state_checks": "actual uncached computations, including bounds/kinematic rejection",
+          "state_requests": "all valid() calls including cache hits and interrupted calls",
+          "subdivision_samples": "grid sample requests, including cached and interrupted samples"
+        },
+        "counters": {
+          "actual_state_computations": 100000,
+          "cache_evictions": 91808,
+          "cache_hits": 55,
+          "collision_queries": 99943,
+          "cumulative_samples": 5240,
+          "edge_checks": 46,
+          "incomplete_edges": 1,
+          "invalid_edges": 23,
+          "ompl_iterations": 5140,
+          "state_checks": 100000,
+          "state_requests": 100056,
+          "subdivision_samples": 98255,
+          "termination_checks": 105263,
+          "valid_edges": 22
+        },
+        "direct_valid": false,
+        "effective_planner": {
+          "connection_strategy": "default KBoundedStrategy",
+          "cost_threshold": "positive infinity",
+          "distance": "RealVectorStateSpace unweighted Euclidean L2",
+          "max_connection_distance": 4.431260361343388,
+          "max_nearest_neighbors": 5,
+          "nondefault_planner_parameters": {},
+          "objective": "default PathLengthOptimizationObjective",
+          "star": false,
+          "state_space_maximum_extent": 22.15630180671694,
+          "type": "ompl::geometric::LazyPRM"
+        },
+        "effective_rule": {
+          "base_l1_resolution_rad": 0.0003125,
+          "edge_resolution_rad": 0.04,
+          "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+          "l1_resolution_rad": 0.0003125,
+          "lever_arm_m": 4.0,
+          "name": "fixed_4m_1.25mm_l1_grid_v1",
+          "point_motion_bound_m": 0.00125,
+          "refinement": 0
+        },
+        "effective_sampler": {
+          "configuration": {
+            "joint_span_half_width_fraction": 0.05,
+            "local_probability": 0.5,
+            "type": "endpoint_mixture"
+          },
+          "endpoint_choice": "equal probability given a local draw",
+          "new_vertex_edge_validity": "UNKNOWN; upstream validation required",
+          "rejection_sampling": false,
+          "setup_sampling": "unchanged uniform projection-estimation samples"
+        },
+        "environment_reused": false,
+        "exact_solution": false,
+        "failure": null,
+        "first_failed_sample": {
+          "classification": "STATE_REJECTION",
+          "edge": 0,
+          "failure": {
+            "distance_m": -0.057685020349929235,
+            "jacobian_condition": 5.441024604266552,
+            "joint_margin_rad": 1.0317302005232991,
+            "maximum_jacobian_condition": 10000.0,
+            "pair": [
+              "carton_l03_c02",
+              "carton_l07_c04"
+            ],
+            "radial_limit_m": 2.106,
+            "radial_m": 1.1070928098348087,
+            "reason": "NATIVE_COLLISION",
+            "required_joint_margin_rad": 0.0174532925199433,
+            "required_margin_m": 0.005,
+            "tcp_world": [
+              [
+                0.8818771282957233,
+                -0.049294385877442726,
+                0.46889529120034296,
+                -0.10078396043287724
+              ],
+              [
+                0.22608586970142217,
+                -0.8285057013858478,
+                -0.5123118994250433,
+                0.23684588540619755
+              ],
+              [
+                0.4137365225723251,
+                0.5578067463666159,
+                -0.7194954646122864,
+                1.7242828532873808
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "fraction": 0.5,
+          "index": 10286,
+          "q_rad": [
+            0.10168226953118353,
+            -0.200688337263843,
+            -0.3732598473321363,
+            -2.4233586110496947,
+            1.0099976158327977,
+            -0.2713107349063295
+          ],
+          "subdivisions": 20572
+        },
+        "first_native_valid_path_s": null,
+        "initial_roadmap_edges": 0,
+        "initial_roadmap_vertices": 0,
+        "moving_collision_object_count": 209,
+        "native_validated": false,
+        "ompl_invalid_motion_checks": 22,
+        "ompl_status": "Timeout",
+        "path": [],
+        "planner_config": {
+          "max_roadmap_edges": 50010,
+          "max_roadmap_vertices": 10002,
+          "max_samples": 10000,
+          "name": "lazy_prm",
+          "sampling": {
+            "joint_span_half_width_fraction": 0.05,
+            "local_probability": 0.5,
+            "type": "endpoint_mixture"
+          }
+        },
+        "profile": {
+          "enabled": true,
+          "seconds": {
+            "budget_cancel_poll_s": 0.27650268800000477,
+            "collision_transform_s": 12.746136437000088,
+            "edge_check_inclusive_s": 351.583583231,
+            "edge_schedule_s": 0.04695306399960412,
+            "fcl_contact_test_s": 330.734879488004,
+            "fk_scene_state_s": 6.476619882000115,
+            "jacobian_svd_s": 0.5849719129999922,
+            "state_check_inclusive_s": 353.26315476600047
+          }
+        },
+        "rejections": {
+          "BUDGET_EXHAUSTED": 1,
+          "JOINT_MARGIN": 21,
+          "NATIVE_COLLISION": 1579,
+          "RADIAL_REACH": 35,
+          "SINGULARITY": 1
+        },
+        "roadmap_discarded_after_request": true,
+        "sampling_counts": {
+          "all_generation_attempts": 5240,
+          "global": 2597,
+          "goal_neighborhood": 1277,
+          "other": 0,
+          "rejected_generation_attempts": 0,
+          "roadmap_total": 5140,
+          "setup_projection": 100,
+          "start_neighborhood": 1266
+        },
+        "sampling_first_12": [
+          {
+            "kind": "goal_neighborhood",
+            "q_rad": [
+              -1.0176764962479847,
+              0.33753633634868224,
+              -0.1386624259806561,
+              -2.9299607413063766,
+              1.0480744920945535,
+              0.6635278729685368
+            ]
+          },
+          {
+            "kind": "start_neighborhood",
+            "q_rad": [
+              1.190589377863061,
+              -0.7317089440718744,
+              -0.22195204244683342,
+              -1.8658204039578876,
+              0.9414573279363055,
+              -0.8854088071647799
+            ]
+          },
+          {
+            "kind": "goal_neighborhood",
+            "q_rad": [
+              -0.603541483415833,
+              0.37300299812523124,
+              -0.05303517593727447,
+              -3.653667660077534,
+              1.1480115245217029,
+              0.353704105565571
+            ]
+          },
+          {
+            "kind": "global",
+            "q_rad": [
+              2.174817345962115,
+              0.14608701801113066,
+              3.529612030651999,
+              -0.722531301616617,
+              1.1717408922735788,
+              2.750388504865204
+            ]
+          },
+          {
+            "kind": "global",
+            "q_rad": [
+              2.010760730847112,
+              0.26600134680559795,
+              3.2172303400710605,
+              4.752595219827923,
+              0.33499483884266645,
+              4.853528450509194
+            ]
+          },
+          {
+            "kind": "global",
+            "q_rad": [
+              2.911574275382896,
+              1.4954010378524198,
+              3.0415133912352963,
+              -4.868642534628103,
+              -1.3776323592513526,
+              -0.7464365674832854
+            ]
+          },
+          {
+            "kind": "goal_neighborhood",
+            "q_rad": [
+              -1.0175377809946822,
+              0.21551604210788555,
+              -0.40254357455273615,
+              -2.6672010463006783,
+              0.8882814253265254,
+              0.5138503432260642
+            ]
+          },
+          {
+            "kind": "goal_neighborhood",
+            "q_rad": [
+              -1.0051117162062964,
+              0.2523006484899656,
+              -0.5090388365434452,
+              -3.675598154351329,
+              0.9883219038655758,
+              0.3990699234888922
+            ]
+          },
+          {
+            "kind": "global",
+            "q_rad": [
+              3.1474954049428634,
+              0.031363172383887195,
+              -0.7475596544227673,
+              -5.549745771757833,
+              1.6650063469843697,
+              -1.0888037929531151
+            ]
+          },
+          {
+            "kind": "global",
+            "q_rad": [
+              0.2467387005549928,
+              0.8543493875269157,
+              0.3698134038909373,
+              4.705419902186931,
+              -1.5337108076152304,
+              -6.583523773345448
+            ]
+          },
+          {
+            "kind": "global",
+            "q_rad": [
+              -0.22949353602024436,
+              1.3067950622269955,
+              -0.8795141299011989,
+              4.599357819211687,
+              2.1252331265901026,
+              6.246288604192716
+            ]
+          },
+          {
+            "kind": "start_neighborhood",
+            "q_rad": [
+              1.1245445947804198,
+              -0.6412627150603792,
+              -0.6161037475120456,
+              -2.0550051772962625,
+              1.027336985420196,
+              -1.4000320043868908
+            ]
+          }
+        ],
+        "scene_fingerprint": "9ad38ed6caaee7336b828a6aa8cc3479960e2d94a99704006683a27b203d68f9",
+        "search_progress": {
+          "approximate_goal_distance": null,
+          "candidate_path_validations": null,
+          "candidate_researches": null,
+          "edge_count_semantics": "underlying undirected graph, each edge once; not PlannerData arcs",
+          "iterations": 5140,
+          "known_valid_edges": 22,
+          "known_valid_nodes": 186,
+          "node_validity_semantics": "upstream VALIDITY_TRUE or explicitly validated start/goal",
+          "roadmap_edges": 14780,
+          "roadmap_reused": false,
+          "roadmap_vertices": 3529,
+          "unknown_edges": 14758,
+          "unknown_nodes": 3343
+        },
+        "search_started": true,
+        "seed": 71140,
+        "static_collision_object_count": 46,
+        "status": "BUDGET_EXHAUSTED",
+        "termination_detail": "ACTUAL_STATE_COMPUTATION_LIMIT",
+        "timings": {
+          "direct_check_s": 0.002812247,
+          "endpoint_check_s": 0.006107519,
+          "environment_init_s": 0.212123765,
+          "native_total_s": 353.837076688,
+          "ompl_solve_s": 353.600293717,
+          "path_conversion_s": 0.0,
+          "worker_roundtrip_s_inclusive": 353.9402515627444,
+          "worker_cold_start_s": 0.0
+        },
+        "versions": {
+          "fcl": "0.7.0",
+          "implementation": "native C++17 worker",
+          "manager": "FCLDiscreteBVHManager",
+          "ompl": "1.7.0",
+          "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+          "tesseract": "0.35.0",
+          "tesseract_planning": null
+        }
+      }
+    ],
+    "effective_planner": {
+      "connection_strategy": "default KBoundedStrategy",
+      "cost_threshold": "positive infinity",
+      "distance": "RealVectorStateSpace unweighted Euclidean L2",
+      "max_connection_distance": 4.431260361343388,
+      "max_nearest_neighbors": 5,
+      "nondefault_planner_parameters": {},
+      "objective": "default PathLengthOptimizationObjective",
+      "star": false,
+      "state_space_maximum_extent": 22.15630180671694,
+      "type": "ompl::geometric::LazyPRM"
+    },
+    "effective_sampler": {
+      "configuration": {
+        "joint_span_half_width_fraction": 0.05,
+        "local_probability": 0.5,
+        "type": "endpoint_mixture"
+      },
+      "endpoint_choice": "equal probability given a local draw",
+      "new_vertex_edge_validity": "UNKNOWN; upstream validation required",
+      "rejection_sampling": false,
+      "setup_sampling": "unchanged uniform projection-estimation samples"
+    },
+    "backend_versions": {
+      "fcl": "0.7.0",
+      "implementation": "native C++17 worker",
+      "manager": "FCLDiscreteBVHManager",
+      "ompl": "1.7.0",
+      "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+      "tesseract": "0.35.0",
+      "tesseract_planning": null
+    },
+    "authority_rejections": 0,
+    "termination": "BUDGET_EXHAUSTED"
+  },
+  "timings": {
+    "input_validation_s": 0.04602553881704807,
+    "direct_check_s": 0.002812247,
+    "endpoint_check_s": 0.006107519,
+    "environment_init_s": 0.212123765,
+    "native_total_s": 353.837076688,
+    "ompl_solve_s": 353.600293717,
+    "path_conversion_s": 0.0,
+    "worker_roundtrip_s_inclusive": 353.9402515627444,
+    "worker_cold_start_s": 0.0,
+    "request_total_s": 354.0353920739144,
+    "scene_export_s": 0.09707943722605705
+  },
+  "counters": {
+    "state_requests": 100056,
+    "incomplete_edges": 1,
+    "state_checks": 100000,
+    "termination_checks": 105263,
+    "edge_checks": 46,
+    "cumulative_samples": 5240,
+    "cache_hits": 55,
+    "valid_edges": 22,
+    "collision_queries": 99943,
+    "cache_evictions": 91808,
+    "actual_state_computations": 100000,
+    "subdivision_samples": 98255,
+    "ompl_iterations": 5140,
+    "invalid_edges": 23
+  },
+  "deliverable_stage_path": false,
+  "complete_task_executable": false,
+  "request": {
+    "request_id": "transit:71140:d041653ca102",
+    "scene_revision": "d041653ca10218d5a70bac7cda085c32ad5c5328beba7e7cd4271ef97be61525",
+    "scene_fingerprint": "9ad38ed6caaee7336b828a6aa8cc3479960e2d94a99704006683a27b203d68f9",
+    "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+    "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "stage": "transit",
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "q_start": [
+      0.9862490191061573,
+      -0.6632646938574328,
+      -0.45767794803502826,
+      -1.7051578917387533,
+      0.9999168378940207,
+      -1.3257064976784838
+    ],
+    "q_goal": [
+      -0.7828844800437902,
+      0.2618880193297468,
+      -0.28884174662924433,
+      -3.141559330360636,
+      1.0200783937715747,
+      0.7830850278658247
+    ],
+    "constraints": {
+      "motion": "free_joint_space",
+      "events": [],
+      "joint_margin": 0.0174532925199433,
+      "maximum_jacobian_condition": 10000.0,
+      "radial_limit": 2.106,
+      "edge_resolution_rad": 0.04,
+      "point_motion_bound_m": 0.00125,
+      "lever_arm_m": 4.0
+    },
+    "frames": {
+      "world": "+X into trailer,+Y left,+Z up; SI m,rad,s",
+      "base": "base_link",
+      "flange": "flange",
+      "tcp": "backend_tcp",
+      "base_transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.325
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.35
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.6
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "tip_from_tcp": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          1.5308084989341915e-17
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "attachment": {
+      "name": "carton_l07_c04",
+      "parent": "backend_tcp",
+      "transform": [
+        [
+          1.9884700472923532e-05,
+          1.130604400390643e-06,
+          0.9999999998016604,
+          6.901480018584039e-05
+        ],
+        [
+          -5.079553927579651e-07,
+          -0.999999999999232,
+          1.130614501150592e-06,
+          -5.013887323390698e-05
+        ],
+        [
+          0.9999999998021701,
+          -5.079778746298404e-07,
+          -1.9884699898631182e-05,
+          0.2674859537508379
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "half_extents": [
+        0.3,
+        0.2,
+        0.15
+      ],
+      "category": "payload"
+    },
+    "seed": 71140,
+    "budget": {
+      "max_state_checks": 100000,
+      "legacy_iterations": 200,
+      "max_attempts": 1,
+      "wall_time_s": null
+    }
+  },
+  "world_obstacle_names": [
+    "chassis",
+    "conveyor_transverse",
+    "conveyor_longitudinal",
+    "trailer_floor",
+    "trailer_left_wall",
+    "trailer_right_wall",
+    "trailer_ceiling",
+    "trailer_closed_end_wall",
+    "carton_l00_c00",
+    "carton_l00_c01",
+    "carton_l00_c02",
+    "carton_l00_c03",
+    "carton_l00_c04",
+    "carton_l01_c00",
+    "carton_l01_c01",
+    "carton_l01_c02",
+    "carton_l01_c03",
+    "carton_l01_c04",
+    "carton_l02_c00",
+    "carton_l02_c01",
+    "carton_l02_c02",
+    "carton_l02_c03",
+    "carton_l02_c04",
+    "carton_l03_c00",
+    "carton_l03_c01",
+    "carton_l03_c02",
+    "carton_l03_c03",
+    "carton_l03_c04",
+    "carton_l04_c00",
+    "carton_l04_c01",
+    "carton_l04_c02",
+    "carton_l04_c03",
+    "carton_l04_c04",
+    "carton_l05_c00",
+    "carton_l05_c01",
+    "carton_l05_c02",
+    "carton_l05_c03",
+    "carton_l05_c04",
+    "carton_l06_c00",
+    "carton_l06_c01",
+    "carton_l06_c02",
+    "carton_l06_c03",
+    "carton_l06_c04",
+    "carton_l07_c00"
+  ],
+  "effective_planner": {
+    "connection_strategy": "default KBoundedStrategy",
+    "cost_threshold": "positive infinity",
+    "distance": "RealVectorStateSpace unweighted Euclidean L2",
+    "max_connection_distance": 4.431260361343388,
+    "max_nearest_neighbors": 5,
+    "nondefault_planner_parameters": {},
+    "objective": "default PathLengthOptimizationObjective",
+    "star": false,
+    "state_space_maximum_extent": 22.15630180671694,
+    "type": "ompl::geometric::LazyPRM"
+  },
+  "stage": "transit",
+  "seed": 71140,
+  "success": false,
+  "search_success": false,
+  "validation_level": "A_UNVERIFIED_GEOMETRY",
+  "planning_iterations_consumed": 200,
+  "outer_budget_accounting": "ALLOCATED_LEGACY_SLICE_NOT_MEASURED_OMPL_ITERATIONS"
+}

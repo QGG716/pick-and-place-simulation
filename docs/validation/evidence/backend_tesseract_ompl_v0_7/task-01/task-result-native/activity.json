@@ -1,0 +1,33 @@
+{
+  "requests_prepared": 2,
+  "communication_attempts": 2,
+  "native_results_returned": 2,
+  "configure_results": 0,
+  "plan_results": 2,
+  "requests_with_state_checks": 2,
+  "actual_state_computations": 197494,
+  "direct_motion_checks": 2,
+  "ompl_searches": 2,
+  "pending_or_failed_communication_attempts": 0,
+  "count_scope": "RETURNED_RESULTS_ONLY; pending communication does not prove zero native work",
+  "results": [
+    {
+      "operation": "plan",
+      "status": "CANDIDATE",
+      "seed": 71081,
+      "stage": "pregrasp",
+      "actual_state_computations": 97494,
+      "direct_checked": true,
+      "search_started": true
+    },
+    {
+      "operation": "plan",
+      "status": "BUDGET_EXHAUSTED",
+      "seed": 71140,
+      "stage": "transit",
+      "actual_state_computations": 100000,
+      "direct_checked": true,
+      "search_started": true
+    }
+  ]
+}

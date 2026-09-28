@@ -73,12 +73,28 @@ class RecordingWorker(NativeWorker):
         self.directory_evidence = directory
         self.call_count = 0
         self.transport_call_count = 0
+        self.returned_results = []
         self.expected_first_request = expected_first_request
+
+    def activity(self):
+        """Lower bounds from returned worker results, never inferred from a send attempt."""
+        plans = [r for r in self.returned_results if r["operation"] == "plan"]
+        return dict(requests_prepared=self.call_count, communication_attempts=self.transport_call_count,
+            native_results_returned=len(self.returned_results),
+            configure_results=sum(r["operation"] == "configure" for r in self.returned_results),
+            plan_results=len(plans), requests_with_state_checks=sum(r["actual_state_computations"] > 0 for r in plans),
+            actual_state_computations=sum(r["actual_state_computations"] for r in plans),
+            direct_motion_checks=sum(r["direct_checked"] for r in plans),
+            ompl_searches=sum(r["search_started"] for r in plans),
+            pending_or_failed_communication_attempts=self.transport_call_count-len(self.returned_results),
+            count_scope="RETURNED_RESULTS_ONLY; pending communication does not prove zero native work",
+            results=self.returned_results)
 
     def call(self, message, cancelled=lambda: False):
         self.call_count += 1
         stem = self.directory_evidence / f"native-{self.call_count:02d}"
         write_json(stem.with_suffix(".request.json"), message)
+        write_json(self.directory_evidence / "activity.json", self.activity())
         if self.call_count == 1 and self.expected_first_request is not None:
             expected = json.loads(self.expected_first_request.read_text(encoding="utf-8"))
             # Full scene equality includes assets, TCP, attachment, constraints and fingerprints.
@@ -97,8 +113,19 @@ class RecordingWorker(NativeWorker):
                 write_json(stem.with_suffix(".result.json"), result)
                 raise NativePlanningBlocked(dict(status="UNSUPPORTED_CONSTRAINT", stage="pregrasp", diagnostics=identity))
         self.transport_call_count += 1
-        result = super().call(message, cancelled)
+        write_json(self.directory_evidence / "activity.json", self.activity())
+        try:
+            result = super().call(message, cancelled)
+        except Exception as exc:
+            write_json(stem.with_suffix(".communication-error.json"),
+                       dict(source="HOST_TRANSPORT_EXCEPTION_NOT_NATIVE_RESULT", error=str(exc)))
+            raise
         write_json(stem.with_suffix(".result.json"), result)
+        self.returned_results.append(dict(operation=message.get("operation", "plan"),
+            status=result.get("status"), seed=message["seed"], stage=message["scene"].get("stage"),
+            actual_state_computations=result.get("counters", {}).get("actual_state_computations", 0),
+            direct_checked="direct_valid" in result, search_started=result.get("search_started") is True))
+        write_json(self.directory_evidence / "activity.json", self.activity())
         return result
 
 
@@ -205,7 +232,9 @@ def main(argv=None):
             print(json.dumps(event), flush=True)
         result = run_single_candidate(scene, historical, connector, backend, progress=progress)
         result.update(setup_and_identity_s=setup_s, native_request_count=worker.call_count,
-                      native_call_count=worker.transport_call_count)
+                      native_call_count=len(worker.returned_results),
+                      native_communication_attempts=worker.transport_call_count,
+                      native_activity=worker.activity())
         write_json(args.output, result)
         if result["success"]:
             prepare_task_delivery(result, scene, connector, args.output.parent / (args.output.stem + "-delivery"),

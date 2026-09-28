@@ -1,0 +1,92 @@
+{
+  "stage": "attachment_geometry",
+  "status": "PASS",
+  "failure": null,
+  "path": [
+    [
+      0.48403005510530944,
+      -0.15354426480869374,
+      -0.12427669124750475,
+      -1.6264917412495743,
+      0.484630062398053,
+      -1.5078751226839828
+    ]
+  ],
+  "evidence": {
+    "target": "carton_l07_c04",
+    "physical_contact_from_box": [
+      [
+        1.9884700473084343e-05,
+        1.1306044003906428e-06,
+        0.9999999998016604,
+        6.901480018584039e-05
+      ],
+      [
+        -5.079553927579651e-07,
+        -0.999999999999232,
+        1.130614501150592e-06,
+        -5.013887323390698e-05
+      ],
+      [
+        0.9999999998021701,
+        -5.079778746298405e-07,
+        -1.9884699898791993e-05,
+        0.2999859537508378
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "world_obstacle_names": [
+      "chassis",
+      "conveyor_transverse",
+      "conveyor_longitudinal",
+      "trailer_floor",
+      "trailer_left_wall",
+      "trailer_right_wall",
+      "trailer_ceiling",
+      "trailer_closed_end_wall",
+      "carton_l00_c00",
+      "carton_l00_c01",
+      "carton_l00_c02",
+      "carton_l00_c03",
+      "carton_l00_c04",
+      "carton_l01_c00",
+      "carton_l01_c01",
+      "carton_l01_c02",
+      "carton_l01_c03",
+      "carton_l01_c04",
+      "carton_l02_c00",
+      "carton_l02_c01",
+      "carton_l02_c02",
+      "carton_l02_c03",
+      "carton_l02_c04",
+      "carton_l03_c00",
+      "carton_l03_c01",
+      "carton_l03_c02",
+      "carton_l03_c03",
+      "carton_l03_c04",
+      "carton_l04_c00",
+      "carton_l04_c01",
+      "carton_l04_c02",
+      "carton_l04_c03",
+      "carton_l04_c04",
+      "carton_l05_c00",
+      "carton_l05_c01",
+      "carton_l05_c02",
+      "carton_l05_c03",
+      "carton_l05_c04",
+      "carton_l06_c00",
+      "carton_l06_c01",
+      "carton_l06_c02",
+      "carton_l06_c03",
+      "carton_l06_c04",
+      "carton_l07_c00"
+    ],
+    "physical_attachment": "NOT_RUN"
+  },
+  "scope": "PLANNED_PROCESS_STAGE_NOT_PHYSICAL_EVENT"
+}

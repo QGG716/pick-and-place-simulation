@@ -1,0 +1,7 @@
+{
+  "pid": 42416,
+  "source": "/tmp/unloading-tesseract-qrfr64j4/native.log",
+  "observed_unix_s": 1790585824.9331417,
+  "scope": "PARTIAL_STDERR_SNAPSHOT_NOT_A_FINAL_PLANNING_RESULT",
+  "ompl_start_message_observed": true
+}

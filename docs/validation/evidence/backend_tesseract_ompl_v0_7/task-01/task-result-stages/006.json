@@ -1,0 +1,25 @@
+{
+  "stage": "support-release",
+  "status": "PASS",
+  "failure": null,
+  "path": [
+    [
+      0.48403005510530944,
+      -0.15354426480869374,
+      -0.12427669124750475,
+      -1.6264917412495743,
+      0.484630062398053,
+      -1.5078751226839828
+    ]
+  ],
+  "evidence": {
+    "stage": "support-release",
+    "required": false,
+    "lift_m": 0.0,
+    "support_names": [
+      "carton_l06_c04"
+    ],
+    "motion_policy": "allow_supported_sliding_or_lift_in_extraction"
+  },
+  "scope": "PLANNED_PROCESS_STAGE_NOT_PHYSICAL_EVENT"
+}

@@ -1,0 +1,24 @@
+{
+  "requests_prepared": 1,
+  "communication_attempts": 1,
+  "native_results_returned": 1,
+  "configure_results": 1,
+  "plan_results": 0,
+  "requests_with_state_checks": 0,
+  "actual_state_computations": 0,
+  "direct_motion_checks": 0,
+  "ompl_searches": 0,
+  "pending_or_failed_communication_attempts": 0,
+  "count_scope": "RETURNED_RESULTS_ONLY; pending communication does not prove zero native work",
+  "results": [
+    {
+      "operation": "configure",
+      "status": "CONFIGURED",
+      "seed": 71081,
+      "stage": "pregrasp",
+      "actual_state_computations": 0,
+      "direct_checked": false,
+      "search_started": false
+    }
+  ]
+}

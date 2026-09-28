@@ -1,0 +1,406 @@
+{
+  "startup": "PASS",
+  "startup_configure_calls": 1,
+  "startup_searches": 0,
+  "formal_task_calls": 1,
+  "formal_task_startup_failures": 0,
+  "native_activity": {
+    "requests_prepared": 2,
+    "communication_attempts": 2,
+    "native_results_returned": 2,
+    "configure_results": 0,
+    "plan_results": 2,
+    "requests_with_state_checks": 2,
+    "actual_state_computations": 197494,
+    "direct_motion_checks": 2,
+    "ompl_searches": 2,
+    "pending_or_failed_communication_attempts": 0,
+    "count_scope": "RETURNED_RESULTS_ONLY; pending communication does not prove zero native work",
+    "results": [
+      {
+        "operation": "plan",
+        "status": "CANDIDATE",
+        "seed": 71081,
+        "stage": "pregrasp",
+        "actual_state_computations": 97494,
+        "direct_checked": true,
+        "search_started": true
+      },
+      {
+        "operation": "plan",
+        "status": "BUDGET_EXHAUSTED",
+        "seed": 71140,
+        "stage": "transit",
+        "actual_state_computations": 100000,
+        "direct_checked": true,
+        "search_started": true
+      }
+    ]
+  },
+  "authority_calls": 1,
+  "authority_passes": 1,
+  "stages": [
+    {
+      "file": "task-01/task-result-stages/001.json",
+      "stage": "pregrasp",
+      "status": "VERIFIED",
+      "path_points": 9,
+      "joint_path_length_l2_rad": 10.441596014539387,
+      "per_joint_total_variation_rad": [
+        5.946893487435383,
+        0.9699207867785156,
+        2.5853177004841563,
+        1.8296352832817322,
+        1.859932222276917,
+        5.917028009432836
+      ],
+      "scope": "PARTIAL_STAGE_GEOMETRY_NOT_COMPLETE_TASK_OR_PHYSICAL_EVENT"
+    },
+    {
+      "file": "task-01/task-result-stages/002.json",
+      "stage": "pregrasp",
+      "status": "B_STRICT_LOCAL_CONNECTION",
+      "path_points": 9,
+      "joint_path_length_l2_rad": 10.441596014539387,
+      "per_joint_total_variation_rad": [
+        5.946893487435383,
+        0.9699207867785156,
+        2.5853177004841563,
+        1.8296352832817322,
+        1.859932222276917,
+        5.917028009432836
+      ],
+      "scope": "PARTIAL_STAGE_GEOMETRY_NOT_COMPLETE_TASK_OR_PHYSICAL_EVENT"
+    },
+    {
+      "file": "task-01/task-result-stages/003.json",
+      "stage": "approach",
+      "status": "PASS",
+      "path_points": 12,
+      "joint_path_length_l2_rad": 10.492730696954046,
+      "per_joint_total_variation_rad": [
+        5.962877152988252,
+        1.003744321543363,
+        2.614158814367517,
+        1.8365554211956683,
+        1.8761658248946353,
+        5.925472941776548
+      ],
+      "scope": "PARTIAL_STAGE_GEOMETRY_NOT_COMPLETE_TASK_OR_PHYSICAL_EVENT"
+    },
+    {
+      "file": "task-01/task-result-stages/004.json",
+      "stage": "contact",
+      "status": "C_COMPLETE_APPROACH",
+      "path_points": 12,
+      "joint_path_length_l2_rad": 10.492730696954046,
+      "per_joint_total_variation_rad": [
+        5.962877152988252,
+        1.003744321543363,
+        2.614158814367517,
+        1.8365554211956683,
+        1.8761658248946353,
+        5.925472941776548
+      ],
+      "scope": "PARTIAL_STAGE_GEOMETRY_NOT_COMPLETE_TASK_OR_PHYSICAL_EVENT"
+    },
+    {
+      "file": "task-01/task-result-stages/005.json",
+      "stage": "attachment_geometry",
+      "status": "PASS",
+      "path_points": 1,
+      "joint_path_length_l2_rad": 0,
+      "per_joint_total_variation_rad": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "scope": "PARTIAL_STAGE_GEOMETRY_NOT_COMPLETE_TASK_OR_PHYSICAL_EVENT"
+    },
+    {
+      "file": "task-01/task-result-stages/006.json",
+      "stage": "support-release",
+      "status": "PASS",
+      "path_points": 1,
+      "joint_path_length_l2_rad": 0,
+      "per_joint_total_variation_rad": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "scope": "PARTIAL_STAGE_GEOMETRY_NOT_COMPLETE_TASK_OR_PHYSICAL_EVENT"
+    },
+    {
+      "file": "task-01/task-result-stages/007.json",
+      "stage": "extraction",
+      "status": "PASS",
+      "path_points": 42,
+      "joint_path_length_l2_rad": 0.9977612462751401,
+      "per_joint_total_variation_rad": [
+        0.5022189640008479,
+        0.509720429048739,
+        0.3334012567875235,
+        0.10275993230512226,
+        0.5152867754959678,
+        0.18216862500549902
+      ],
+      "scope": "PARTIAL_STAGE_GEOMETRY_NOT_COMPLETE_TASK_OR_PHYSICAL_EVENT"
+    },
+    {
+      "file": "task-01/task-result-stages/008.json",
+      "stage": "transit",
+      "status": "PASS",
+      "path_points": 131,
+      "joint_path_length_l2_rad": 4.936183966122619,
+      "per_joint_total_variation_rad": [
+        2.1486201459672603,
+        1.576810462462956,
+        0.7190734867198311,
+        2.3240733054509417,
+        0.8375582414536863,
+        2.2229853239750827
+      ],
+      "scope": "PARTIAL_STAGE_GEOMETRY_NOT_COMPLETE_TASK_OR_PHYSICAL_EVENT"
+    },
+    {
+      "file": "task-01/task-result-stages/009.json",
+      "stage": "transit",
+      "status": "BUDGET_EXHAUSTED",
+      "path_points": 0,
+      "joint_path_length_l2_rad": 0,
+      "per_joint_total_variation_rad": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "scope": "PARTIAL_STAGE_GEOMETRY_NOT_COMPLETE_TASK_OR_PHYSICAL_EVENT"
+    }
+  ],
+  "task_status": "STOPPED_ON_NATIVE_BLOCK",
+  "first_terminal_block": {
+    "request": "native-02",
+    "stage": "transit",
+    "seed": 71140,
+    "status": "BUDGET_EXHAUSTED",
+    "termination_detail": "ACTUAL_STATE_COMPUTATION_LIMIT",
+    "incomplete_edges": 1
+  },
+  "complete_geometry": "NOT_AVAILABLE",
+  "time_parameterization": "NOT_RUN",
+  "control_reference": "NOT_RUN",
+  "preflight": "NOT_RUN",
+  "simulation_execution_ready": false,
+  "isaac_started": false,
+  "isaac_calls": 0,
+  "physical_event_reached": null,
+  "machine_qualified": false,
+  "execution_bundle": null,
+  "video": null,
+  "task_wall_s": 2676.4226816613227,
+  "setup_and_identity_s": 0.5799781810492277,
+  "production_statistics": {
+    "state_validations": 101479,
+    "edge_validation_calls": 182,
+    "edge_state_samples": 101618,
+    "ik_calls": 182,
+    "ik_seeds_attempted": 182,
+    "ik_iterations_consumed": 558,
+    "connection_attempts": 2,
+    "rrt_iterations_consumed": 0,
+    "cartesian_samples": 181,
+    "placement_candidates_generated": 12,
+    "placement_candidate_generation_wall_seconds": 0.034939249977469444,
+    "state_cache_hits": 142,
+    "state_cache_misses": 94532,
+    "trajectory_ik_wall_seconds": 0.0311847273260355,
+    "path_connection_wall_seconds_inclusive": 1454.7103286795318,
+    "collision_validation_wall_seconds_nested": 1842.8069729059935,
+    "kinematics_and_joint_checks_wall_seconds": 28.338086236268282,
+    "final_recheck_wall_seconds": 0
+  },
+  "native_requests": [
+    {
+      "number": 1,
+      "seed": 71081,
+      "status": "CANDIDATE",
+      "timings": {
+        "direct_check_s": 0.002377802,
+        "endpoint_check_s": 0.009762346,
+        "environment_init_s": 0.18597175,
+        "native_total_s": 462.867326329,
+        "ompl_solve_s": 462.666538623,
+        "path_conversion_s": 3.837e-06,
+        "worker_roundtrip_s_inclusive": 462.9730927180499,
+        "worker_cold_start_s": 0.03717178851366043
+      },
+      "counters": {
+        "actual_state_computations": 97494,
+        "cache_evictions": 89302,
+        "cache_hits": 45,
+        "collision_queries": 97462,
+        "cumulative_samples": 1389,
+        "edge_checks": 39,
+        "incomplete_edges": 0,
+        "invalid_edges": 21,
+        "ompl_iterations": 1289,
+        "state_checks": 97494,
+        "state_requests": 97539,
+        "subdivision_samples": 96895,
+        "termination_checks": 98858,
+        "valid_edges": 18
+      },
+      "profile": {
+        "enabled": true,
+        "seconds": {
+          "budget_cancel_poll_s": 0.27956693299999885,
+          "collision_transform_s": 11.770469010000069,
+          "edge_check_inclusive_s": 461.8760963329999,
+          "edge_schedule_s": 0.04365679899841757,
+          "fcl_contact_test_s": 441.24557146700084,
+          "fk_scene_state_s": 6.515023452000046,
+          "jacobian_svd_s": 0.5559328800000041,
+          "state_check_inclusive_s": 462.6036825690016
+        }
+      },
+      "sampling_counts": {
+        "all_generation_attempts": 1389,
+        "global": 644,
+        "goal_neighborhood": 331,
+        "other": 0,
+        "rejected_generation_attempts": 0,
+        "roadmap_total": 1289,
+        "setup_projection": 100,
+        "start_neighborhood": 314
+      },
+      "search_progress": {
+        "approximate_goal_distance": null,
+        "candidate_path_validations": null,
+        "candidate_researches": null,
+        "edge_count_semantics": "underlying undirected graph, each edge once; not PlannerData arcs",
+        "iterations": 1289,
+        "known_valid_edges": 18,
+        "known_valid_nodes": 102,
+        "node_validity_semantics": "upstream VALIDITY_TRUE or explicitly validated start/goal",
+        "roadmap_edges": 2835,
+        "roadmap_reused": false,
+        "roadmap_vertices": 751,
+        "unknown_edges": 2817,
+        "unknown_nodes": 649
+      },
+      "termination_detail": "",
+      "computed_rejections": {
+        "JOINT_MARGIN": 14,
+        "NATIVE_COLLISION": 528,
+        "RADIAL_REACH": 12,
+        "SINGULARITY": 6
+      }
+    },
+    {
+      "number": 2,
+      "seed": 71140,
+      "status": "BUDGET_EXHAUSTED",
+      "timings": {
+        "direct_check_s": 0.002812247,
+        "endpoint_check_s": 0.006107519,
+        "environment_init_s": 0.212123765,
+        "native_total_s": 353.837076688,
+        "ompl_solve_s": 353.600293717,
+        "path_conversion_s": 0.0,
+        "worker_roundtrip_s_inclusive": 353.9402515627444,
+        "worker_cold_start_s": 0.0
+      },
+      "counters": {
+        "actual_state_computations": 100000,
+        "cache_evictions": 91808,
+        "cache_hits": 55,
+        "collision_queries": 99943,
+        "cumulative_samples": 5240,
+        "edge_checks": 46,
+        "incomplete_edges": 1,
+        "invalid_edges": 23,
+        "ompl_iterations": 5140,
+        "state_checks": 100000,
+        "state_requests": 100056,
+        "subdivision_samples": 98255,
+        "termination_checks": 105263,
+        "valid_edges": 22
+      },
+      "profile": {
+        "enabled": true,
+        "seconds": {
+          "budget_cancel_poll_s": 0.27650268800000477,
+          "collision_transform_s": 12.746136437000088,
+          "edge_check_inclusive_s": 351.583583231,
+          "edge_schedule_s": 0.04695306399960412,
+          "fcl_contact_test_s": 330.734879488004,
+          "fk_scene_state_s": 6.476619882000115,
+          "jacobian_svd_s": 0.5849719129999922,
+          "state_check_inclusive_s": 353.26315476600047
+        }
+      },
+      "sampling_counts": {
+        "all_generation_attempts": 5240,
+        "global": 2597,
+        "goal_neighborhood": 1277,
+        "other": 0,
+        "rejected_generation_attempts": 0,
+        "roadmap_total": 5140,
+        "setup_projection": 100,
+        "start_neighborhood": 1266
+      },
+      "search_progress": {
+        "approximate_goal_distance": null,
+        "candidate_path_validations": null,
+        "candidate_researches": null,
+        "edge_count_semantics": "underlying undirected graph, each edge once; not PlannerData arcs",
+        "iterations": 5140,
+        "known_valid_edges": 22,
+        "known_valid_nodes": 186,
+        "node_validity_semantics": "upstream VALIDITY_TRUE or explicitly validated start/goal",
+        "roadmap_edges": 14780,
+        "roadmap_reused": false,
+        "roadmap_vertices": 3529,
+        "unknown_edges": 14758,
+        "unknown_nodes": 3343
+      },
+      "termination_detail": "ACTUAL_STATE_COMPUTATION_LIMIT",
+      "computed_rejections": {
+        "JOINT_MARGIN": 21,
+        "NATIVE_COLLISION": 1578,
+        "RADIAL_REACH": 35,
+        "SINGULARITY": 1
+      }
+    }
+  ],
+  "identities": {
+    "runtime_sources_match_recorded_manifest": true,
+    "worker_sha256": "742607df1eca48881f48f463c9bf021be5144183e2959addcdca70d1a572d53f",
+    "compiled_headers_match_v5_build": true,
+    "attachment_target_removed_from_world": true,
+    "requests_have_distinct_scene_identity": true,
+    "both_roadmaps_fresh": true
+  },
+  "tests": {
+    "passed": 142,
+    "skipped": 5,
+    "skipped_scope": "real native unit cases; separate actual configure and engineering task evidence",
+    "fixture_parent": "FAIL_missing_release_policy",
+    "fixture_review_base": "FAIL_missing_release_policy",
+    "fixture_after": "PASS_in_directed_suite"
+  },
+  "limitations": [
+    "Budget failure is not physical unreachability.",
+    "Intermediate failed placement branch local trace was not persisted before NativePlanningBlocked unwound; attempts=[] is not proof of no process attempts.",
+    "No complete trajectory, execution duration, controller-reference, preflight, physical validation or general success-rate claim.",
+    "Profile is instrumented; overhead was not separately measured."
+  ]
+}

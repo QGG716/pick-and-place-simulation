@@ -144,7 +144,9 @@ def test_reuse_tool_rejects_changed_non_target_obstacle_and_current_release_poli
     prediction = predict_release(box, [belt], mode=SHORT_DROP_RELEASE)
     segment = {'target':'target', 'path': [[0.]*6], 'release_index':0,
         'place': {'actual_box_pose_world':box.world_from_local.tolist(), 'release_prediction':prediction}}
-    connector = SimpleNamespace(budget=SimpleNamespace(maximum_drop_m=.05),
+    from dataclasses import replace
+    from unloading_sim.layout_trajectory import LayoutTrajectoryBudget
+    connector = SimpleNamespace(budget=LayoutTrajectoryBudget(maximum_drop_m=.05),
                                 post_landing_transport={'mode':'ideal_outfeed'})
     far = OBB([3,0,.775], [.1,.1,.1], np.eye(3), 'other', 'carton')
     actual, _ = module.recheck_current_release(segment, connector, [belt,far], box)
@@ -152,6 +154,6 @@ def test_reuse_tool_rejects_changed_non_target_obstacle_and_current_release_poli
     moved = OBB([0,0,.72], far.half_extents, far.rotation, far.name, far.category)
     with pytest.raises(ValueError, match='release prediction'):
         module.recheck_current_release(segment, connector, [belt,moved], box)
-    connector.budget.maximum_drop_m = .01
+    connector.budget = replace(connector.budget, maximum_drop_m=.01)
     with pytest.raises(ValueError, match='release prediction'):
         module.recheck_current_release(segment, connector, [belt,far], box)

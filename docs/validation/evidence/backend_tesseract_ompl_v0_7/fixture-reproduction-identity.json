@@ -1,0 +1,17 @@
+{
+  "versions": {
+    "e16a759d857d55003ed50b7627a1fa012274c19a": {
+      "tests/test_motion_quality.py": "2b5c277d1473032d08329657fe96146a72d162eaf433715d744e20078d2f24b0",
+      "src/unloading_sim/history_adaptation.py": "9358f7098cd3b2858d9312b30d918f594fdb19c8000b95105c648ab63e3fcbc6",
+      "tools/reuse_m710_motion.py": "cf17e98452b50065d08c934faff5060b84ff8b5262bae79898e9c9f5682cc479"
+    },
+    "b4c840003ac52f61d3a059d235e012cde439f320": {
+      "tests/test_motion_quality.py": "2b5c277d1473032d08329657fe96146a72d162eaf433715d744e20078d2f24b0",
+      "src/unloading_sim/history_adaptation.py": "9358f7098cd3b2858d9312b30d918f594fdb19c8000b95105c648ab63e3fcbc6",
+      "tools/reuse_m710_motion.py": "cf17e98452b50065d08c934faff5060b84ff8b5262bae79898e9c9f5682cc479"
+    }
+  },
+  "parents_have_identical_test_and_implementation": true,
+  "corrected_test_sha256": "f30c3f083408c8430be8863b78eb00e910458b09bd9a5927da2fc069e1e2dae2",
+  "fix": "Use real frozen LayoutTrajectoryBudget and dataclasses.replace; production history implementation unchanged"
+}

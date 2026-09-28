@@ -1,0 +1,1071 @@
+{
+  "stage": "approach",
+  "status": "PASS",
+  "failure": null,
+  "path": [
+    [
+      -0.5284209847450256,
+      0.09451229125261307,
+      -0.21063973009586334,
+      -3.1416585445404053,
+      1.2654187679290771,
+      0.5286964774131775
+    ],
+    [
+      -0.6258401793997522,
+      0.08008204386748205,
+      -0.13647245769411415,
+      -3.1461049976502102,
+      1.3107644891697678,
+      0.33771950825384434
+    ],
+    [
+      -0.791063922736685,
+      0.13003391283844448,
+      -0.2297081191583749,
+      -3.1648862293870383,
+      1.410056155584094,
+      0.1005245458956392
+    ],
+    [
+      -0.7399539008085838,
+      0.026655548090822795,
+      -0.4040872881320917,
+      -3.302352853492824,
+      1.4145243355595207,
+      -0.14358248329952833
+    ],
+    [
+      -1.5399065304463335,
+      0.11741235492470814,
+      -1.1212193234606866,
+      -3.2744662285845285,
+      1.716237479883406,
+      -2.585165550079748
+    ],
+    [
+      -2.936540353833014,
+      -0.3624650233792691,
+      -1.1757086961794398,
+      -3.188953436333449,
+      1.1907674466213671,
+      -3.4411688906121505
+    ],
+    [
+      0.31791520075450486,
+      -0.30346401678093615,
+      -0.06839274730214295,
+      -2.3022036010657825,
+      0.660048588507296,
+      -2.0335828392441564
+    ],
+    [
+      0.3990639364825014,
+      -0.33167846514654115,
+      -0.2930543965763961,
+      -1.841796945117934,
+      0.40399381728829453,
+      -2.0362948098119698
+    ],
+    [
+      0.5000137206581776,
+      -0.18736779957354116,
+      -0.15311780513086534,
+      -1.6334118791635104,
+      0.5008636650157714,
+      -1.4994301903402696
+    ],
+    [
+      0.4945449621319659,
+      -0.1761472952381205,
+      -0.14369201281736177,
+      -1.6309776789165507,
+      0.49530224049045446,
+      -1.502422070481976
+    ],
+    [
+      0.4892357770653425,
+      -0.1648646338827226,
+      -0.13405518592353172,
+      -1.6286749632233137,
+      0.4899101889040797,
+      -1.50522655147472
+    ],
+    [
+      0.48403005510530944,
+      -0.15354426480869374,
+      -0.12427669124750475,
+      -1.6264917412495743,
+      0.484630062398053,
+      -1.5078751226839828
+    ]
+  ],
+  "evidence": {
+    "selected_mode": "direct",
+    "attempts": [
+      {
+        "mode": "direct",
+        "terminal_distance_m": 0.03500099649267572,
+        "planning_wall_seconds": 1105.0009632892907,
+        "failure": null,
+        "search": {
+          "connection": {
+            "stage": "pregrasp",
+            "shared_connection_iteration_budget": 1800,
+            "remaining_connection_iterations": 1200,
+            "attempts": [
+              {
+                "candidate_index": 0,
+                "candidate_id": "seed_000_unique_00",
+                "q_rad": [
+                  0.5000137206581776,
+                  -0.18736779957354116,
+                  -0.15311780513086534,
+                  -1.6334118791635104,
+                  0.5008636650157714,
+                  -1.4994301903402696
+                ],
+                "position_error_m": 6.7779868918019845e-06,
+                "orientation_error_rad": 1.8208566804522113e-05,
+                "connection": {
+                  "status": "VERIFIED",
+                  "backend": "tesseract_ompl",
+                  "candidate_found": true,
+                  "exact_solution": true,
+                  "native_validated": true,
+                  "authority_validated": true,
+                  "path": [
+                    [
+                      -0.5284209847450256,
+                      0.09451229125261307,
+                      -0.21063973009586334,
+                      -3.1416585445404053,
+                      1.2654187679290771,
+                      0.5286964774131775
+                    ],
+                    [
+                      -0.6258401793997522,
+                      0.08008204386748205,
+                      -0.13647245769411415,
+                      -3.1461049976502102,
+                      1.3107644891697678,
+                      0.33771950825384434
+                    ],
+                    [
+                      -0.791063922736685,
+                      0.13003391283844448,
+                      -0.2297081191583749,
+                      -3.1648862293870383,
+                      1.410056155584094,
+                      0.1005245458956392
+                    ],
+                    [
+                      -0.7399539008085838,
+                      0.026655548090822795,
+                      -0.4040872881320917,
+                      -3.302352853492824,
+                      1.4145243355595207,
+                      -0.14358248329952833
+                    ],
+                    [
+                      -1.5399065304463335,
+                      0.11741235492470814,
+                      -1.1212193234606866,
+                      -3.2744662285845285,
+                      1.716237479883406,
+                      -2.585165550079748
+                    ],
+                    [
+                      -2.936540353833014,
+                      -0.3624650233792691,
+                      -1.1757086961794398,
+                      -3.188953436333449,
+                      1.1907674466213671,
+                      -3.4411688906121505
+                    ],
+                    [
+                      0.31791520075450486,
+                      -0.30346401678093615,
+                      -0.06839274730214295,
+                      -2.3022036010657825,
+                      0.660048588507296,
+                      -2.0335828392441564
+                    ],
+                    [
+                      0.3990639364825014,
+                      -0.33167846514654115,
+                      -0.2930543965763961,
+                      -1.841796945117934,
+                      0.40399381728829453,
+                      -2.0362948098119698
+                    ],
+                    [
+                      0.5000137206581776,
+                      -0.18736779957354116,
+                      -0.15311780513086534,
+                      -1.6334118791635104,
+                      0.5008636650157714,
+                      -1.4994301903402696
+                    ]
+                  ],
+                  "diagnostics": {
+                    "request_id": "pregrasp:71081:37d1f7da54d5",
+                    "seed": 71081,
+                    "stage": "pregrasp",
+                    "planner_config": {
+                      "name": "lazy_prm",
+                      "max_samples": 10000,
+                      "max_roadmap_vertices": 10002,
+                      "max_roadmap_edges": 50010,
+                      "sampling": {
+                        "type": "endpoint_mixture",
+                        "local_probability": 0.5,
+                        "joint_span_half_width_fraction": 0.05
+                      }
+                    },
+                    "scene_revision": "37d1f7da54d5dd6b76211fd5b8f67b146b6775c0597844ed5ce19866140ac245",
+                    "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+                    "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+                    "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+                    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+                    "attempts": [
+                      {
+                        "cache": {
+                          "capacity": 8192,
+                          "refinement": 0,
+                          "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+                          "scope": "fresh per immutable request, exact IEEE state bytes"
+                        },
+                        "candidate_found": true,
+                        "collision_object_count": 255,
+                        "computed_rejections": {
+                          "JOINT_MARGIN": 14,
+                          "NATIVE_COLLISION": 528,
+                          "RADIAL_REACH": 12,
+                          "SINGULARITY": 6
+                        },
+                        "counter_semantics": {
+                          "request_guard": 3200000,
+                          "state_checks": "actual uncached computations, including bounds/kinematic rejection",
+                          "state_requests": "all valid() calls including cache hits and interrupted calls",
+                          "subdivision_samples": "grid sample requests, including cached and interrupted samples"
+                        },
+                        "counters": {
+                          "actual_state_computations": 97494,
+                          "cache_evictions": 89302,
+                          "cache_hits": 45,
+                          "collision_queries": 97462,
+                          "cumulative_samples": 1389,
+                          "edge_checks": 39,
+                          "incomplete_edges": 0,
+                          "invalid_edges": 21,
+                          "ompl_iterations": 1289,
+                          "state_checks": 97494,
+                          "state_requests": 97539,
+                          "subdivision_samples": 96895,
+                          "termination_checks": 98858,
+                          "valid_edges": 18
+                        },
+                        "direct_valid": false,
+                        "effective_planner": {
+                          "connection_strategy": "default KBoundedStrategy",
+                          "cost_threshold": "positive infinity",
+                          "distance": "RealVectorStateSpace unweighted Euclidean L2",
+                          "max_connection_distance": 4.431260361343388,
+                          "max_nearest_neighbors": 5,
+                          "nondefault_planner_parameters": {},
+                          "objective": "default PathLengthOptimizationObjective",
+                          "star": false,
+                          "state_space_maximum_extent": 22.15630180671694,
+                          "type": "ompl::geometric::LazyPRM"
+                        },
+                        "effective_rule": {
+                          "base_l1_resolution_rad": 0.0003125,
+                          "edge_resolution_rad": 0.04,
+                          "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+                          "l1_resolution_rad": 0.0003125,
+                          "lever_arm_m": 4.0,
+                          "name": "fixed_4m_1.25mm_l1_grid_v1",
+                          "point_motion_bound_m": 0.00125,
+                          "refinement": 0
+                        },
+                        "effective_sampler": {
+                          "configuration": {
+                            "joint_span_half_width_fraction": 0.05,
+                            "local_probability": 0.5,
+                            "type": "endpoint_mixture"
+                          },
+                          "endpoint_choice": "equal probability given a local draw",
+                          "new_vertex_edge_validity": "UNKNOWN; upstream validation required",
+                          "rejection_sampling": false,
+                          "setup_sampling": "unchanged uniform projection-estimation samples"
+                        },
+                        "environment_reused": false,
+                        "exact_solution": true,
+                        "failure": null,
+                        "first_failed_sample": {
+                          "classification": "STATE_REJECTION",
+                          "edge": 0,
+                          "failure": {
+                            "distance_m": -0.08558153294285857,
+                            "jacobian_condition": 6.456646240462042,
+                            "joint_margin_rad": 1.223109694829884,
+                            "maximum_jacobian_condition": 10000.0,
+                            "pair": [
+                              "carton_l06_c02",
+                              "tool_rigid_104"
+                            ],
+                            "radial_limit_m": 2.106,
+                            "radial_m": 1.2669850950583619,
+                            "reason": "NATIVE_COLLISION",
+                            "required_joint_margin_rad": 0.0174532925199433,
+                            "required_margin_m": 0.005,
+                            "tcp_world": [
+                              [
+                                0.7762036568792812,
+                                -0.31657550522421934,
+                                0.5452410774503896,
+                                0.07346325264859847
+                              ],
+                              [
+                                0.03324837948425879,
+                                -0.8430435826754638,
+                                -0.5368166008716471,
+                                0.1052468656967786
+                              ],
+                              [
+                                0.6296049779892962,
+                                0.4348073909235546,
+                                -0.6438478892481897,
+                                1.8127196481439072
+                              ],
+                              [
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0
+                              ]
+                            ]
+                          },
+                          "fraction": 0.49997243812358744,
+                          "index": 9070,
+                          "q_rad": [
+                            -0.014231977633672677,
+                            -0.046419985016237536,
+                            -0.18188035302555125,
+                            -2.3875767819601483,
+                            0.8831622890456814,
+                            -0.4853109574869805
+                          ],
+                          "subdivisions": 18141
+                        },
+                        "first_native_valid_path_s": 462.867255146,
+                        "initial_roadmap_edges": 0,
+                        "initial_roadmap_vertices": 0,
+                        "moving_collision_object_count": 208,
+                        "native_validated": true,
+                        "ompl_invalid_motion_checks": 20,
+                        "ompl_status": "Exact solution",
+                        "path": [
+                          [
+                            -0.5284209847450256,
+                            0.09451229125261307,
+                            -0.21063973009586334,
+                            -3.1416585445404053,
+                            1.2654187679290771,
+                            0.5286964774131775
+                          ],
+                          [
+                            -0.6258401793997522,
+                            0.08008204386748205,
+                            -0.13647245769411415,
+                            -3.1461049976502102,
+                            1.3107644891697678,
+                            0.33771950825384434
+                          ],
+                          [
+                            -0.791063922736685,
+                            0.13003391283844448,
+                            -0.2297081191583749,
+                            -3.1648862293870383,
+                            1.410056155584094,
+                            0.1005245458956392
+                          ],
+                          [
+                            -0.7399539008085838,
+                            0.026655548090822795,
+                            -0.4040872881320917,
+                            -3.302352853492824,
+                            1.4145243355595207,
+                            -0.14358248329952833
+                          ],
+                          [
+                            -1.5399065304463335,
+                            0.11741235492470814,
+                            -1.1212193234606866,
+                            -3.2744662285845285,
+                            1.716237479883406,
+                            -2.585165550079748
+                          ],
+                          [
+                            -2.936540353833014,
+                            -0.3624650233792691,
+                            -1.1757086961794398,
+                            -3.188953436333449,
+                            1.1907674466213671,
+                            -3.4411688906121505
+                          ],
+                          [
+                            0.31791520075450486,
+                            -0.30346401678093615,
+                            -0.06839274730214295,
+                            -2.3022036010657825,
+                            0.660048588507296,
+                            -2.0335828392441564
+                          ],
+                          [
+                            0.3990639364825014,
+                            -0.33167846514654115,
+                            -0.2930543965763961,
+                            -1.841796945117934,
+                            0.40399381728829453,
+                            -2.0362948098119698
+                          ],
+                          [
+                            0.5000137206581776,
+                            -0.18736779957354116,
+                            -0.15311780513086534,
+                            -1.6334118791635104,
+                            0.5008636650157714,
+                            -1.4994301903402696
+                          ]
+                        ],
+                        "planner_config": {
+                          "max_roadmap_edges": 50010,
+                          "max_roadmap_vertices": 10002,
+                          "max_samples": 10000,
+                          "name": "lazy_prm",
+                          "sampling": {
+                            "joint_span_half_width_fraction": 0.05,
+                            "local_probability": 0.5,
+                            "type": "endpoint_mixture"
+                          }
+                        },
+                        "profile": {
+                          "enabled": true,
+                          "seconds": {
+                            "budget_cancel_poll_s": 0.27956693299999885,
+                            "collision_transform_s": 11.770469010000069,
+                            "edge_check_inclusive_s": 461.8760963329999,
+                            "edge_schedule_s": 0.04365679899841757,
+                            "fcl_contact_test_s": 441.24557146700084,
+                            "fk_scene_state_s": 6.515023452000046,
+                            "jacobian_svd_s": 0.5559328800000041,
+                            "state_check_inclusive_s": 462.6036825690016
+                          }
+                        },
+                        "rejections": {
+                          "JOINT_MARGIN": 14,
+                          "NATIVE_COLLISION": 529,
+                          "RADIAL_REACH": 12,
+                          "SINGULARITY": 6
+                        },
+                        "roadmap_discarded_after_request": true,
+                        "sampling_counts": {
+                          "all_generation_attempts": 1389,
+                          "global": 644,
+                          "goal_neighborhood": 331,
+                          "other": 0,
+                          "rejected_generation_attempts": 0,
+                          "roadmap_total": 1289,
+                          "setup_projection": 100,
+                          "start_neighborhood": 314
+                        },
+                        "sampling_first_12": [
+                          {
+                            "kind": "global",
+                            "q_rad": [
+                              -1.046260559947299,
+                              -0.8651484399797881,
+                              2.987749797555281,
+                              -5.78037643843154,
+                              1.8015448386528483,
+                              5.062751936839979
+                            ]
+                          },
+                          {
+                            "kind": "global",
+                            "q_rad": [
+                              0.01119970933617731,
+                              0.6696349298727378,
+                              2.971003246830652,
+                              -5.538035516722918,
+                              0.3733998558282492,
+                              -6.381590442723915
+                            ]
+                          },
+                          {
+                            "kind": "goal_neighborhood",
+                            "q_rad": [
+                              0.2655482417586935,
+                              -0.21204323356608215,
+                              -0.26396344141697514,
+                              -1.464463446908217,
+                              0.3209957902863195,
+                              -1.9554868826661953
+                            ]
+                          },
+                          {
+                            "kind": "global",
+                            "q_rad": [
+                              -1.3392037797512202,
+                              1.4027032543459328,
+                              2.5223851628025984,
+                              -0.34182085429130993,
+                              -0.2682493466757261,
+                              -6.113794462287771
+                            ]
+                          },
+                          {
+                            "kind": "global",
+                            "q_rad": [
+                              2.5645268108511727,
+                              -0.6368186679257672,
+                              2.397576197784194,
+                              -6.45429762573253,
+                              1.2907535762132318,
+                              1.2721339143635513
+                            ]
+                          },
+                          {
+                            "kind": "goal_neighborhood",
+                            "q_rad": [
+                              0.28410833425215665,
+                              -0.14310300562649983,
+                              -0.33756574982681276,
+                              -1.45030206938861,
+                              0.5656789669867379,
+                              -2.0765570232483106
+                            ]
+                          },
+                          {
+                            "kind": "start_neighborhood",
+                            "q_rad": [
+                              -0.6599129171155429,
+                              0.044963522127029976,
+                              -0.1504033661785366,
+                              -3.3740193157837313,
+                              1.1409600161311002,
+                              0.7045760493292241
+                            ]
+                          },
+                          {
+                            "kind": "global",
+                            "q_rad": [
+                              -1.7221659159645866,
+                              -1.160958865508002,
+                              2.714502555979966,
+                              -5.886325105325491,
+                              1.9647078588202298,
+                              -0.713900616787293
+                            ]
+                          },
+                          {
+                            "kind": "global",
+                            "q_rad": [
+                              -1.0089736217717284,
+                              1.7353471861810206,
+                              -0.6690529138911927,
+                              0.20774908693307115,
+                              -0.013534528651825362,
+                              0.9374550603610237
+                            ]
+                          },
+                          {
+                            "kind": "global",
+                            "q_rad": [
+                              -2.1195247315025547,
+                              2.449907761765628,
+                              0.12719360305459215,
+                              -2.8591335441725185,
+                              0.9838936862231145,
+                              -4.05204331541256
+                            ]
+                          },
+                          {
+                            "kind": "start_neighborhood",
+                            "q_rad": [
+                              -0.5129338671100592,
+                              0.015375727695477931,
+                              -0.061474505701631266,
+                              -3.4876854329960953,
+                              1.3962328592126336,
+                              0.01211143290730024
+                            ]
+                          },
+                          {
+                            "kind": "global",
+                            "q_rad": [
+                              -0.7218066523228162,
+                              -0.15860822762953108,
+                              -0.41281511888321165,
+                              0.532195461490601,
+                              -0.0890807725742806,
+                              4.632457437648038
+                            ]
+                          }
+                        ],
+                        "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+                        "search_progress": {
+                          "approximate_goal_distance": null,
+                          "candidate_path_validations": null,
+                          "candidate_researches": null,
+                          "edge_count_semantics": "underlying undirected graph, each edge once; not PlannerData arcs",
+                          "iterations": 1289,
+                          "known_valid_edges": 18,
+                          "known_valid_nodes": 102,
+                          "node_validity_semantics": "upstream VALIDITY_TRUE or explicitly validated start/goal",
+                          "roadmap_edges": 2835,
+                          "roadmap_reused": false,
+                          "roadmap_vertices": 751,
+                          "unknown_edges": 2817,
+                          "unknown_nodes": 649
+                        },
+                        "search_started": true,
+                        "seed": 71081,
+                        "static_collision_object_count": 47,
+                        "status": "CANDIDATE",
+                        "termination_detail": "",
+                        "timings": {
+                          "direct_check_s": 0.002377802,
+                          "endpoint_check_s": 0.009762346,
+                          "environment_init_s": 0.18597175,
+                          "native_total_s": 462.867326329,
+                          "ompl_solve_s": 462.666538623,
+                          "path_conversion_s": 3.837e-06,
+                          "worker_roundtrip_s_inclusive": 462.9730927180499,
+                          "worker_cold_start_s": 0.03717178851366043
+                        },
+                        "versions": {
+                          "fcl": "0.7.0",
+                          "implementation": "native C++17 worker",
+                          "manager": "FCLDiscreteBVHManager",
+                          "ompl": "1.7.0",
+                          "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+                          "tesseract": "0.35.0",
+                          "tesseract_planning": null
+                        },
+                        "repeated_candidate": false
+                      }
+                    ],
+                    "effective_planner": {
+                      "connection_strategy": "default KBoundedStrategy",
+                      "cost_threshold": "positive infinity",
+                      "distance": "RealVectorStateSpace unweighted Euclidean L2",
+                      "max_connection_distance": 4.431260361343388,
+                      "max_nearest_neighbors": 5,
+                      "nondefault_planner_parameters": {},
+                      "objective": "default PathLengthOptimizationObjective",
+                      "star": false,
+                      "state_space_maximum_extent": 22.15630180671694,
+                      "type": "ompl::geometric::LazyPRM"
+                    },
+                    "effective_sampler": {
+                      "configuration": {
+                        "joint_span_half_width_fraction": 0.05,
+                        "local_probability": 0.5,
+                        "type": "endpoint_mixture"
+                      },
+                      "endpoint_choice": "equal probability given a local draw",
+                      "new_vertex_edge_validity": "UNKNOWN; upstream validation required",
+                      "rejection_sampling": false,
+                      "setup_sampling": "unchanged uniform projection-estimation samples"
+                    },
+                    "backend_versions": {
+                      "fcl": "0.7.0",
+                      "implementation": "native C++17 worker",
+                      "manager": "FCLDiscreteBVHManager",
+                      "ompl": "1.7.0",
+                      "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+                      "tesseract": "0.35.0",
+                      "tesseract_planning": null
+                    },
+                    "authority_rejections": 0,
+                    "termination": "VERIFIED"
+                  },
+                  "timings": {
+                    "input_validation_s": 0.04487266391515732,
+                    "direct_check_s": 0.002377802,
+                    "endpoint_check_s": 0.009762346,
+                    "environment_init_s": 0.18597175,
+                    "native_total_s": 462.867326329,
+                    "ompl_solve_s": 462.666538623,
+                    "path_conversion_s": 3.837e-06,
+                    "worker_roundtrip_s_inclusive": 462.9730927180499,
+                    "worker_cold_start_s": 0.03717178851366043,
+                    "result_conversion_s": 0.0002582129091024399,
+                    "authority_s": 637.3250972516835,
+                    "request_total_s": 1100.4756307061762,
+                    "scene_export_s": 0.091482849791646
+                  },
+                  "counters": {
+                    "state_requests": 97539,
+                    "incomplete_edges": 0,
+                    "state_checks": 97494,
+                    "termination_checks": 98858,
+                    "edge_checks": 39,
+                    "cumulative_samples": 1389,
+                    "cache_hits": 45,
+                    "valid_edges": 18,
+                    "collision_queries": 97462,
+                    "cache_evictions": 89302,
+                    "actual_state_computations": 97494,
+                    "subdivision_samples": 96895,
+                    "ompl_iterations": 1289,
+                    "invalid_edges": 21
+                  },
+                  "deliverable_stage_path": true,
+                  "complete_task_executable": false,
+                  "request": {
+                    "request_id": "pregrasp:71081:37d1f7da54d5",
+                    "scene_revision": "37d1f7da54d5dd6b76211fd5b8f67b146b6775c0597844ed5ce19866140ac245",
+                    "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+                    "model_fingerprint": "ec758ab69ff14d1e988b4c087c71eb8478a6d45d3272a6bbfbb008bf56bc6e9d",
+                    "tool_fingerprint": "8d749d1fd5d1fdf2c0a8663e2fbebd729eef2fa7f2b44deae583ec42aceea0b1",
+                    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+                    "stage": "pregrasp",
+                    "joint_names": [
+                      "J1",
+                      "J2",
+                      "J3",
+                      "J4",
+                      "J5",
+                      "J6"
+                    ],
+                    "q_start": [
+                      -0.5284209847450256,
+                      0.09451229125261307,
+                      -0.21063973009586334,
+                      -3.1416585445404053,
+                      1.2654187679290771,
+                      0.5286964774131775
+                    ],
+                    "q_goal": [
+                      0.5000137206581776,
+                      -0.18736779957354116,
+                      -0.15311780513086534,
+                      -1.6334118791635104,
+                      0.5008636650157714,
+                      -1.4994301903402696
+                    ],
+                    "constraints": {
+                      "motion": "free_joint_space",
+                      "events": [],
+                      "joint_margin": 0.0174532925199433,
+                      "maximum_jacobian_condition": 10000.0,
+                      "radial_limit": 2.106,
+                      "edge_resolution_rad": 0.04,
+                      "point_motion_bound_m": 0.00125,
+                      "lever_arm_m": 4.0
+                    },
+                    "frames": {
+                      "world": "+X into trailer,+Y left,+Z up; SI m,rad,s",
+                      "base": "base_link",
+                      "flange": "flange",
+                      "tcp": "backend_tcp",
+                      "base_transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          -1.325
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.35
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.6
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ],
+                      "tip_from_tcp": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          1.5308084989341915e-17
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.25
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    },
+                    "attachment": null,
+                    "seed": 71081,
+                    "budget": {
+                      "max_state_checks": 100000,
+                      "legacy_iterations": 600,
+                      "max_attempts": 1,
+                      "wall_time_s": null
+                    }
+                  },
+                  "world_obstacle_names": [
+                    "chassis",
+                    "conveyor_transverse",
+                    "conveyor_longitudinal",
+                    "trailer_floor",
+                    "trailer_left_wall",
+                    "trailer_right_wall",
+                    "trailer_ceiling",
+                    "trailer_closed_end_wall",
+                    "carton_l00_c00",
+                    "carton_l00_c01",
+                    "carton_l00_c02",
+                    "carton_l00_c03",
+                    "carton_l00_c04",
+                    "carton_l01_c00",
+                    "carton_l01_c01",
+                    "carton_l01_c02",
+                    "carton_l01_c03",
+                    "carton_l01_c04",
+                    "carton_l02_c00",
+                    "carton_l02_c01",
+                    "carton_l02_c02",
+                    "carton_l02_c03",
+                    "carton_l02_c04",
+                    "carton_l03_c00",
+                    "carton_l03_c01",
+                    "carton_l03_c02",
+                    "carton_l03_c03",
+                    "carton_l03_c04",
+                    "carton_l04_c00",
+                    "carton_l04_c01",
+                    "carton_l04_c02",
+                    "carton_l04_c03",
+                    "carton_l04_c04",
+                    "carton_l05_c00",
+                    "carton_l05_c01",
+                    "carton_l05_c02",
+                    "carton_l05_c03",
+                    "carton_l05_c04",
+                    "carton_l06_c00",
+                    "carton_l06_c01",
+                    "carton_l06_c02",
+                    "carton_l06_c03",
+                    "carton_l06_c04",
+                    "carton_l07_c00",
+                    "carton_l07_c04"
+                  ],
+                  "effective_planner": {
+                    "connection_strategy": "default KBoundedStrategy",
+                    "cost_threshold": "positive infinity",
+                    "distance": "RealVectorStateSpace unweighted Euclidean L2",
+                    "max_connection_distance": 4.431260361343388,
+                    "max_nearest_neighbors": 5,
+                    "nondefault_planner_parameters": {},
+                    "objective": "default PathLengthOptimizationObjective",
+                    "star": false,
+                    "state_space_maximum_extent": 22.15630180671694,
+                    "type": "ompl::geometric::LazyPRM"
+                  },
+                  "stage": "pregrasp",
+                  "seed": 71081,
+                  "success": true,
+                  "search_success": true,
+                  "validation_level": "B_STRICT_LOCAL_CONNECTION",
+                  "planning_iterations_consumed": 600,
+                  "outer_budget_accounting": "ALLOCATED_LEGACY_SLICE_NOT_MEASURED_OMPL_ITERATIONS"
+                },
+                "failure": null,
+                "path_quality": {
+                  "nodes": 9,
+                  "joint_travel_rad": [
+                    5.946893487435383,
+                    0.9699207867785156,
+                    2.5853177004841563,
+                    1.8296352832817322,
+                    1.859932222276917,
+                    5.917028009432836
+                  ],
+                  "total_joint_travel_rad": 19.10872748968954,
+                  "joint_names": [
+                    "J1",
+                    "J2",
+                    "J3",
+                    "J4",
+                    "J5",
+                    "J6"
+                  ],
+                  "start_q_rad": [
+                    -0.5284209847450256,
+                    0.09451229125261307,
+                    -0.21063973009586334,
+                    -3.1416585445404053,
+                    1.2654187679290771,
+                    0.5286964774131775
+                  ],
+                  "end_q_rad": [
+                    0.5000137206581776,
+                    -0.18736779957354116,
+                    -0.15311780513086534,
+                    -1.6334118791635104,
+                    0.5008636650157714,
+                    -1.4994301903402696
+                  ],
+                  "joint_net_rad": [
+                    1.0284347054032033,
+                    0.28188009082615423,
+                    0.057521924964998,
+                    1.508246665376895,
+                    0.7645551029133058,
+                    2.028126667753447
+                  ],
+                  "joint_extra_rad": [
+                    4.91845878203218,
+                    0.6880406959523613,
+                    2.5277957755191585,
+                    0.3213886179048373,
+                    1.0953771193636113,
+                    3.888901341679389
+                  ],
+                  "j6_index": 5,
+                  "j6_total_rad": 5.917028009432836,
+                  "j6_net_rad": 2.028126667753447,
+                  "j6_extra_rad": 3.888901341679389,
+                  "tcp_path_length_m": 6.166330565976456,
+                  "wrist_travel_rad": [
+                    1.8296352832817322,
+                    1.859932222276917,
+                    5.917028009432836
+                  ],
+                  "wrist_total_rad": 9.606595514991486,
+                  "reversals": [
+                    3,
+                    6,
+                    4,
+                    1,
+                    2,
+                    1
+                  ],
+                  "reversal_threshold_rad": 0.02,
+                  "orientation_travel_so3_rad": 12.895067003712692,
+                  "orientation_max_joint_sample_step_rad": 0.04,
+                  "velocity_only_time_lower_bound_s": 2.1822781819522357,
+                  "minimum_joint_margin_rad": 0.2292813516759955,
+                  "maximum_jacobian_condition": 14.797000768507885,
+                  "soft_score": 29.19644529228757,
+                  "score_weights": {
+                    "joint_rad": 1.0,
+                    "wrist_rad": 0.5,
+                    "reversal": 0.1,
+                    "orientation_rad": 0.25,
+                    "velocity_lower_bound_s": 0.1,
+                    "inverse_joint_margin_rad": 0.02,
+                    "log_jacobian_condition": 0.02
+                  }
+                },
+                "quality_status": "COMPLETE"
+              }
+            ],
+            "ik_stream": {
+              "policy": "lazy_distinct_valid_solutions",
+              "seed_pool_available": 14,
+              "explicit_seed_count": 2,
+              "random_restart_count": 12,
+              "seeds_attempted": 1,
+              "last_seed_index": 0,
+              "iterations_per_seed_available": 180,
+              "iteration_capacity_available": 2520,
+              "iteration_capacity_for_attempted_seeds": 180,
+              "iterations_consumed": 20,
+              "converged_pose_results": 1,
+              "valid_solutions": 1,
+              "deduplicated_candidates": 1,
+              "duplicate_candidates": 0,
+              "candidate_limit": 3,
+              "dedup_tolerance_rad": 0.001,
+              "dedup_tolerance_m": 0.0001,
+              "seed_stream_exhausted": false,
+              "termination": "VALID_SOLUTION_YIELDED",
+              "parent_deadline_monotonic": null,
+              "effective_deadline_monotonic": null,
+              "last_solve_deadline_monotonic": null,
+              "last_deadline_stop": null
+            },
+            "termination": "SUCCESS",
+            "validation_level": "B_STRICT_LOCAL_CONNECTION",
+            "improvement_deadline_monotonic": null,
+            "optional_comparison_skipped": true,
+            "optional_comparison": {
+              "started_monotonic": null,
+              "finished_monotonic": null,
+              "skip_reason": null,
+              "termination": null,
+              "fallback_to_verified": false
+            }
+          },
+          "terminal": {
+            "stage": "contact",
+            "samples": [
+              {
+                "sample": 1,
+                "fraction": 0.3333333333333333,
+                "success": true,
+                "position_error_m": 8.32362292779823e-05,
+                "orientation_error_rad": 2.3638066876904815e-05,
+                "maximum_joint_step_rad": 0.011220504335420656
+              },
+              {
+                "sample": 2,
+                "fraction": 0.6666666666666666,
+                "success": true,
+                "position_error_m": 8.257409409721793e-05,
+                "orientation_error_rad": 2.154311515291046e-05,
+                "maximum_joint_step_rad": 0.011282661355397905
+              },
+              {
+                "sample": 3,
+                "fraction": 1.0,
+                "success": true,
+                "position_error_m": 8.218716485760193e-05,
+                "orientation_error_rad": 1.992329313562767e-05,
+                "maximum_joint_step_rad": 0.011320369074028863
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "joint_path_length_rad": 10.492730696954046,
+    "independent_pregrasp_station": false,
+    "free_connection_end_index": 8,
+    "terminal_contact_start_index": 8
+  },
+  "scope": "PLANNED_PROCESS_STAGE_NOT_PHYSICAL_EVENT"
+}

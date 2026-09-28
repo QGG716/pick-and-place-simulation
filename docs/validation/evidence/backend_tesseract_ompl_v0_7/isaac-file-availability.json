@@ -1,0 +1,10 @@
+{
+  "scope": "READ_ONLY_FILE_AVAILABILITY_NO_ISAAC_IMPORT_OR_EXECUTION",
+  "paths": {
+    "/root/autodl-tmp/envs/isaacsim-clean/bin/python": true,
+    "/root/autodl-tmp/m710-official-dynamics-20260910/isaac_usd/m710id_70_official_8/m710id_70_official.usda": true,
+    "/root/autodl-tmp/m710-official-dynamics-20260910/isaac_outputs/initialization_render_sync_logged_final/run_status.json": true,
+    "/root/autodl-tmp/m710-official-dynamics-20260910/repo/outputs/m710_official_dynamics_20260910_final/initialization_contract.json": true
+  },
+  "replay_source_sha256": "9e08a15ec9606e09bb92733a355e297d3ce3c63cdc74bf41a9b5237f4d0270a1"
+}
