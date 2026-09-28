@@ -1,4 +1,4 @@
-// Native FK, state/motion validation and one seeded OMPL RRTConnect instance.
+// Native FK, state/motion validation and one seeded OMPL planner per request.
 // JSON-lines transport; scene structures may be reused, trees/solutions never are.
 #include <tesseract/environment/environment.h>
 #include <tesseract/environment/commands/add_contact_managers_plugin_info_command.h>
@@ -14,6 +14,9 @@
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/PlannerData.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <ompl/geometric/planners/prm/LazyPRM.h>
+#include <ompl/geometric/planners/prm/ConnectionStrategy.h>
+#include <ompl/base/OptimizationObjective.h>
 #include <ompl/geometric/PathGeometric.h>
 #include <ompl/config.h>
 #include <fcl/config.h>
@@ -299,14 +302,79 @@ struct DenseMotion final : ob::MotionValidator {
   bool checkMotion(const ob::State* a,const ob::State* b,std::pair<ob::State*,double>& last) const override { return check(a,b,&last); }
 };
 struct SeededSampler final : ob::RealVectorStateSampler {
-  SeededSampler(const ob::StateSpace* s,uint32_t seed):ob::RealVectorStateSampler(s) {rng_.setLocalSeed(seed);}
+  uint64_t& calls;
+  SeededSampler(const ob::StateSpace* s,uint32_t seed,uint64_t& count):ob::RealVectorStateSampler(s),calls(count) {rng_.setLocalSeed(seed);}
+  void sampleUniform(ob::State* s) override {++calls;ob::RealVectorStateSampler::sampleUniform(s);}
+  void sampleUniformNear(ob::State* s,const ob::State* near,double distance) override {
+    ++calls;ob::RealVectorStateSampler::sampleUniformNear(s,near,distance);
+  }
+  void sampleGaussian(ob::State* s,const ob::State* mean,double stddev) override {
+    ++calls;ob::RealVectorStateSampler::sampleGaussian(s,mean,stddev);
+  }
 };
 struct SeededConnect final : og::RRTConnect {
   SeededConnect(const ob::SpaceInformationPtr& si,uint32_t seed):og::RRTConnect(si) {rng_.setLocalSeed(seed);}
 };
 
+// Read-only diagnostics. All graph construction, invalidation, A* and stopping
+// on the first fully validated finite-cost solution remain upstream OMPL 1.7.
+struct ObservedLazyPRM final : og::LazyPRM {
+  explicit ObservedLazyPRM(const ob::SpaceInformationPtr& si):og::LazyPRM(si,false) {}
+  unsigned int neighbors() const {
+    const auto* strategy=connectionStrategy_.target<og::KBoundedStrategy<Vertex>>();
+    if(!strategy || starStrategy_) throw std::runtime_error("unexpected LazyPRM connection strategy");
+    return strategy->getNumNeighbors();
+  }
+  json parameters() const {
+    const double threshold=opt_->getCostThreshold().value();
+    if(!std::isinf(threshold) || threshold<0 || !opt_->isSatisfied(ob::Cost(1.)))
+      throw std::runtime_error("LazyPRM must stop at first validated finite-cost solution");
+    return {{"type","ompl::geometric::LazyPRM"},{"star",false},
+      {"connection_strategy","default KBoundedStrategy"},{"max_nearest_neighbors",neighbors()},
+      {"max_connection_distance",getRange()},{"distance","RealVectorStateSpace unweighted Euclidean L2"},
+      {"objective","default PathLengthOptimizationObjective"},{"cost_threshold","positive infinity"},
+      {"nondefault_planner_parameters",json::object()}};
+  }
+  json progress() const {
+    uint64_t known_nodes=0,known_edges=0;
+    auto vertices=boost::vertices(g_);
+    for(auto it=vertices.first;it!=vertices.second;++it) {
+      const bool endpoint=std::find(startM_.begin(),startM_.end(),*it)!=startM_.end() ||
+                          std::find(goalM_.begin(),goalM_.end(),*it)!=goalM_.end();
+      if(endpoint || (vertexValidityProperty_[*it]&VALIDITY_TRUE)) ++known_nodes;
+    }
+    auto edges=boost::edges(g_);
+    for(auto it=edges.first;it!=edges.second;++it) if(edgeValidityProperty_[*it]&VALIDITY_TRUE) ++known_edges;
+    return {{"roadmap_vertices",milestoneCount()},{"roadmap_edges",edgeCount()},
+      {"known_valid_nodes",known_nodes},{"unknown_nodes",milestoneCount()-known_nodes},
+      {"known_valid_edges",known_edges},{"unknown_edges",edgeCount()-known_edges},
+      {"edge_count_semantics","underlying undirected graph, each edge once; not PlannerData arcs"},
+      {"node_validity_semantics","upstream VALIDITY_TRUE or explicitly validated start/goal"},
+      {"iterations",iterations_},{"candidate_path_validations",nullptr},{"candidate_researches",nullptr},
+      {"approximate_goal_distance",nullptr},{"roadmap_reused",false}};
+  }
+};
+
 json solve(Context& ctx,const json& r) {
   auto total=Clock::now();
+  json config={{"name","rrt_connect"},{"max_samples",10000},{"max_roadmap_vertices",10002},{"max_roadmap_edges",50010}};
+  if(r.contains("planner_config")) {
+    if(!r["planner_config"].is_object()) return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","planner_config must be an object"}};
+    for(auto it=r["planner_config"].begin();it!=r["planner_config"].end();++it) {
+      if(!config.contains(it.key())) return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","unknown planner configuration field"}};
+      config[it.key()]=it.value();
+    }
+  }
+  if(!config["name"].is_string() || (config["name"]!="rrt_connect" && config["name"]!="lazy_prm"))
+    return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","unknown planner"}};
+  const bool lazy_requested=config["name"]=="lazy_prm";
+  const std::map<std::string,std::pair<int,int>> limits={
+    {"max_samples",{1,1000000}},{"max_roadmap_vertices",{2,1000002}},{"max_roadmap_edges",{6,5000010}}};
+  for(const auto& item:limits) if(!config[item.first].is_number_integer() ||
+      config[item.first]<item.second.first || config[item.first]>item.second.second)
+    return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","invalid finite roadmap resource limit"}};
+  if(lazy_requested && r.contains("range_rad"))
+    return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","RRT range_rad is not a LazyPRM parameter"}};
   // One supported geometric contract. Reject unsupported inputs before loading
   // geometry, including direct protocol callers that bypass the Python adapter.
   const auto& constraints=r.at("scene").at("constraints");
@@ -329,11 +397,13 @@ json solve(Context& ctx,const json& r) {
     return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","supported subdivision contract: 4m / 1.25mm, dyadic refinement 0..7, edge resolution (0,.055]"}};
   }
   const std::string operation=r.value("operation",std::string("plan"));
-  if(operation!="plan" && operation!="audit") return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","unknown operation"}};
+  if(operation!="plan" && operation!="audit" && operation!="configure") return {{"status","UNSUPPORTED_CONSTRAINT"},{"error","unknown operation"}};
   json result={{"candidate_found",false},{"exact_solution",false},{"native_validated",false},{"path",json::array()},
     {"versions",{{"tesseract","0.35.0"},{"tesseract_planning",nullptr},
       {"pipeline","direct OMPL; no TaskComposer, TrajOpt or time parameterization"},
       {"ompl",OMPL_VERSION},{"fcl",FCL_VERSION},{"manager","FCLDiscreteBVHManager"},{"implementation","native C++17 worker"}}}};
+  result["planner_config"]=config;result["seed"]=r.at("seed");
+  result["first_native_valid_path_s"]=nullptr;
   bool reused=ctx.env && ctx.key==r.at("scene").at("fingerprint").get<std::string>();
   if(reused && ctx.scene!=r.at("scene")) return {{"status","STALE_SCENE"},{"error","scene content changed under unchanged identity"}};
   result["effective_rule"]={{"name","fixed_4m_1.25mm_l1_grid_v1"},{"lever_arm_m",4.},
@@ -356,6 +426,7 @@ json solve(Context& ctx,const json& r) {
   ctx.started=Clock::now();ctx.max_states=r.at("max_state_checks");ctx.cancel_file=r.value("cancel_file","");
   ctx.wall=r.value("wall_time_s",0.);ctx.resolution=effective_resolution;
   if(ctx.resolution<=0 || ctx.resolution>.0003125 || ctx.max_states==0 || ctx.max_states>1000000000 || !std::isfinite(ctx.wall) || ctx.wall<0) throw std::runtime_error("invalid native resource/grid budget");
+  uint64_t sampler_calls=0;
   auto space=std::make_shared<ob::RealVectorStateSpace>(ctx.names.size());
   ob::RealVectorBounds bounds(ctx.names.size());
   for(size_t i=0;i<ctx.names.size();++i) {
@@ -363,12 +434,30 @@ json solve(Context& ctx,const json& r) {
   }
   space->setBounds(bounds);
   uint32_t seed=r.at("seed");
-  space->setStateSamplerAllocator([seed](const ob::StateSpace* s){return std::make_shared<SeededSampler>(s,seed);});
+  space->setStateSamplerAllocator([seed,&sampler_calls](const ob::StateSpace* s){return std::make_shared<SeededSampler>(s,seed,sampler_calls);});
   auto si=std::make_shared<ob::SpaceInformation>(space);
   si->setStateValidityChecker([&ctx](const ob::State* s){return ctx.valid(ctx.q(s));});
   auto motion=std::make_shared<DenseMotion>(si,ctx);si->setMotionValidator(motion);si->setup();
   ob::ScopedState<> start(space),goal(space);
   for(size_t i=0;i<ctx.names.size();++i) {start[i]=r["q_start"][i];goal[i]=r["q_goal"][i];}
+  auto problem=std::make_shared<ob::ProblemDefinition>(si);problem->setStartAndGoalStates(start,goal,1e-10);
+  ob::PlannerPtr planner;
+  std::shared_ptr<ObservedLazyPRM> lazy;
+  if(lazy_requested) {lazy=std::make_shared<ObservedLazyPRM>(si);planner=lazy;}
+  else {
+    auto rrt=std::make_shared<SeededConnect>(si,seed);rrt->setRange(r.value("range_rad",.18));planner=rrt;
+  }
+  planner->setProblemDefinition(problem);planner->setup();
+  result["effective_planner"]=lazy?lazy->parameters():json{{"type","ompl::geometric::RRTConnect"},
+    {"range_rad",std::dynamic_pointer_cast<SeededConnect>(planner)->getRange()},
+    {"distance","RealVectorStateSpace unweighted Euclidean L2"}};
+  result["effective_planner"]["state_space_maximum_extent"]=space->getMaximumExtent();
+  if(operation=="configure") {
+    result["status"]="CONFIGURED";result["search_started"]=false;
+    result["initial_roadmap_vertices"]=lazy?json(lazy->milestoneCount()):json(nullptr);
+    result["initial_roadmap_edges"]=lazy?json(lazy->edgeCount()):json(nullptr);
+    result["scene_fingerprint"]=ctx.key;return result;
+  }
   std::string status;
   const bool audit=r.value("operation",std::string("plan"))=="audit";
   if(audit) {
@@ -413,10 +502,24 @@ json solve(Context& ctx,const json& r) {
       result["path"]={r["q_start"],r["q_goal"]};status="CANDIDATE";
     } else if(!ctx.termination.empty()) status=ctx.termination;
     else {
-      auto problem=std::make_shared<ob::ProblemDefinition>(si);problem->setStartAndGoalStates(start,goal,1e-10);
-      auto planner=std::make_shared<SeededConnect>(si,seed);planner->setRange(r.value("range_rad",.18));
-      planner->setProblemDefinition(problem);planner->setup();
-      auto search=Clock::now();auto solved=planner->solve(ob::PlannerTerminationCondition([&ctx](){return ctx.stopped();}));
+      result["search_started"]=true;
+      result["initial_roadmap_vertices"]=lazy?json(lazy->milestoneCount()):json(nullptr);
+      result["initial_roadmap_edges"]=lazy?json(lazy->edgeCount()):json(nullptr);
+      const auto invalid_before=ctx.invalid_edges;
+      auto terminate=[&]() {
+        if(ctx.stopped()) return true;
+        if(!lazy) return false;
+        std::string reason;
+        if(sampler_calls>=config["max_samples"].get<uint64_t>()) reason="CUMULATIVE_SAMPLE_LIMIT";
+        else if(lazy->milestoneCount()+1>config["max_roadmap_vertices"].get<uint64_t>()) reason="ROADMAP_VERTEX_LIMIT";
+        // Reserve one complete default neighbor batch before the next milestone.
+        // This may stop up to k-1 edges early; the hard edge cap is never exceeded.
+        else if(lazy->edgeCount()+lazy->neighbors()>config["max_roadmap_edges"].get<uint64_t>()) reason="ROADMAP_EDGE_RESERVATION_LIMIT";
+        if(reason.empty()) return false;
+        ctx.termination="BUDGET_EXHAUSTED";ctx.termination_detail=reason;return true;
+      };
+      auto search=Clock::now();auto solved=planner->solve(ob::PlannerTerminationCondition(terminate));
+      result["ompl_invalid_motion_checks"]=ctx.invalid_edges-invalid_before;
       result["timings"]["ompl_solve_s"]=elapsed(search);
       result["ompl_status"]=solved.asString();
       ob::PlannerData data(si);planner->getPlannerData(data);
@@ -424,7 +527,8 @@ json solve(Context& ctx,const json& r) {
         {"start_vertices",data.numStartVertices()},{"goal_vertices",data.numGoalVertices()},
         {"approximate_goal_distance",problem->hasApproximateSolution()?json(problem->getSolutionDifference()):json(nullptr)},
         {"iterations",nullptr}};
-      if(solved==ob::PlannerStatus::EXACT_SOLUTION && problem->hasExactSolution()) {
+      if(lazy) result["search_progress"]=lazy->progress();
+      if(solved==ob::PlannerStatus::EXACT_SOLUTION && problem->hasExactSolution() && ctx.termination.empty()) {
         auto conversion=Clock::now();
         auto path=std::dynamic_pointer_cast<og::PathGeometric>(problem->getSolutionPath());
         if(!path) throw std::runtime_error("OMPL did not return a geometric path");
@@ -439,6 +543,7 @@ json solve(Context& ctx,const json& r) {
     }
   }
   if(status=="CANDIDATE") {
+    result["first_native_valid_path_s"]=elapsed(total);
     result["candidate_found"]=true;result["exact_solution"]=true;result["native_validated"]=true;
     if((vector(result["path"].front())-vector(r["q_start"])).norm()>1e-9 ||
        (vector(result["path"].back())-vector(r["q_goal"])).norm()>1e-9)
@@ -459,7 +564,11 @@ json solve(Context& ctx,const json& r) {
   result["counters"]["actual_state_computations"]=ctx.states;
   result["counters"]["cache_hits"]=ctx.cache_hits;
   result["counters"]["cache_evictions"]=ctx.cache_evictions;
-  result["counters"]["ompl_iterations"]=nullptr;
+  result["counters"]["ompl_iterations"]=result["search_progress"]["iterations"];
+  result["counters"]["cumulative_samples"]=sampler_calls;
+  if(lazy && !result.value("search_started",false)) result["search_progress"]=lazy->progress();
+  result["search_started"]=result.value("search_started",false);
+  result["roadmap_discarded_after_request"]=true;
   result["cache"]={{"scope","fresh per immutable request, exact IEEE state bytes"},{"capacity",ctx.cache_capacity},
     {"scene_fingerprint",ctx.key},{"refinement",refinement}};
   result["counter_semantics"]={{"state_checks","actual uncached computations, including bounds/kinematic rejection"},

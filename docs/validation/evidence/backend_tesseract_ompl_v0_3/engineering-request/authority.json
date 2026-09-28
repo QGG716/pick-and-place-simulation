@@ -1,0 +1,25 @@
+{
+  "accepted": true,
+  "failure": null,
+  "wall_s": 492.36603994481266,
+  "statistics": {
+    "state_validations": 47471,
+    "edge_validation_calls": 1,
+    "edge_state_samples": 47473,
+    "ik_calls": 0,
+    "ik_seeds_attempted": 0,
+    "ik_iterations_consumed": 0,
+    "connection_attempts": 0,
+    "rrt_iterations_consumed": 0,
+    "cartesian_samples": 0,
+    "placement_candidates_generated": 0,
+    "placement_candidate_generation_wall_seconds": 0.0,
+    "state_cache_hits": 2,
+    "state_cache_misses": 47471,
+    "trajectory_ik_wall_seconds": 0.0,
+    "path_connection_wall_seconds_inclusive": 0.0,
+    "collision_validation_wall_seconds_nested": 484.6432591304183,
+    "kinematics_and_joint_checks_wall_seconds": 13.074944574385881,
+    "final_recheck_wall_seconds": 0.0
+  }
+}

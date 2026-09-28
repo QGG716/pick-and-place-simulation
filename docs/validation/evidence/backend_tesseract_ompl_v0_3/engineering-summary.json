@@ -1,0 +1,94 @@
+{
+  "status": "VERIFIED",
+  "deliverable": true,
+  "native_status": "CANDIDATE",
+  "termination_detail": "",
+  "effective_planner": {
+    "connection_strategy": "default KBoundedStrategy",
+    "cost_threshold": "positive infinity",
+    "distance": "RealVectorStateSpace unweighted Euclidean L2",
+    "max_connection_distance": 4.431260361343388,
+    "max_nearest_neighbors": 5,
+    "nondefault_planner_parameters": {},
+    "objective": "default PathLengthOptimizationObjective",
+    "star": false,
+    "state_space_maximum_extent": 22.15630180671694,
+    "type": "ompl::geometric::LazyPRM"
+  },
+  "counters": {
+    "actual_state_computations": 49703,
+    "cache_evictions": 41511,
+    "cache_hits": 14,
+    "collision_queries": 49685,
+    "cumulative_samples": 632,
+    "edge_checks": 12,
+    "incomplete_edges": 0,
+    "invalid_edges": 9,
+    "ompl_iterations": 532,
+    "state_checks": 49703,
+    "state_requests": 49717,
+    "subdivision_samples": 49322,
+    "termination_checks": 50262,
+    "valid_edges": 3
+  },
+  "progress": {
+    "approximate_goal_distance": null,
+    "candidate_path_validations": null,
+    "candidate_researches": null,
+    "edge_count_semantics": "underlying undirected graph, each edge once; not PlannerData arcs",
+    "iterations": 532,
+    "known_valid_edges": 3,
+    "known_valid_nodes": 52,
+    "node_validity_semantics": "upstream VALIDITY_TRUE or explicitly validated start/goal",
+    "roadmap_edges": 559,
+    "roadmap_reused": false,
+    "roadmap_vertices": 193,
+    "unknown_edges": 556,
+    "unknown_nodes": 141
+  },
+  "timings": {
+    "input_validation_s": 0.042839933186769485,
+    "direct_check_s": 0.002655502,
+    "endpoint_check_s": 0.005484704,
+    "environment_init_s": 0.0,
+    "native_total_s": 328.277154965,
+    "ompl_solve_s": 328.266889536,
+    "path_conversion_s": 2.513e-06,
+    "worker_roundtrip_s_inclusive": 328.3719706647098,
+    "worker_cold_start_s": 0.0,
+    "result_conversion_s": 0.0012297891080379486,
+    "authority_s": 492.36636579595506,
+    "request_total_s": 820.7867420352995
+  },
+  "profile": {
+    "enabled": true,
+    "seconds": {
+      "budget_cancel_poll_s": 0.13393602299999974,
+      "collision_transform_s": 6.5118565020000165,
+      "edge_check_inclusive_s": 327.806223042,
+      "edge_schedule_s": 0.023972580000572594,
+      "fcl_contact_test_s": 317.00527117900157,
+      "fk_scene_state_s": 3.085431090000012,
+      "jacobian_svd_s": 0.2949597570000016,
+      "state_check_inclusive_s": 328.2423004679994
+    }
+  },
+  "computed_rejections": {
+    "JOINT_MARGIN": 11,
+    "NATIVE_COLLISION": 331,
+    "RADIAL_REACH": 5,
+    "SINGULARITY": 2
+  },
+  "rejections": {
+    "JOINT_MARGIN": 11,
+    "NATIVE_COLLISION": 332,
+    "RADIAL_REACH": 5,
+    "SINGULARITY": 2
+  },
+  "completion": {
+    "authority_calls": 1,
+    "status": "VERIFIED",
+    "deliverable": true,
+    "configuration_and_request_s": 821.1867394056171
+  }
+}

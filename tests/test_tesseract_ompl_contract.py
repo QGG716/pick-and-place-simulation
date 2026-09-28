@@ -32,6 +32,7 @@ class FakeWorker:
         if self.probe_rejects and data["q_start"] == data["q_goal"]:
             return dict(status="INVALID_START", counters={"state_checks": 1}, timings={})
         return dict(status="CANDIDATE", candidate_found=True, exact_solution=True, native_validated=True,
+                    planner_config=data.get("planner_config"),
                     path=[list(data["q_start"]), list(data["q_goal"])],
                     scene_fingerprint=data["scene"]["fingerprint"], counters={"state_checks": 4}, timings={})
 
@@ -39,6 +40,84 @@ class FakeWorker:
 def test_core_import_has_no_native_dependency():
     code = "import sys;import unloading_sim.planner,unloading_sim.layout_trajectory;assert not any(n.startswith('tesseract_robotics') for n in sys.modules)"
     subprocess.run([sys.executable, "-c", code], check=True)
+
+
+@pytest.mark.parametrize("name", ["rrt_connect", "lazy_prm"])
+def test_formal_planner_configuration_reaches_transport_and_result(name):
+    from unloading_sim.tesseract_ompl_config import OMPLPlannerConfig
+    r, s = inputs(); w = FakeWorker()
+    config = OMPLPlannerConfig(name=name)
+    result = create_free_motion_backend("tesseract_ompl", worker=w,
+        planner_config=config).plan(r, s, lambda p: None)
+    assert result.deliverable
+    assert w.calls[0]["planner_config"] == result.diagnostics["planner_config"] == config.to_mapping()
+    assert ("range_rad" in w.calls[0]) == (name == "rrt_connect")
+
+
+def test_lazy_cannot_silently_run_on_old_rrt_worker():
+    from unloading_sim.tesseract_ompl_config import OMPLPlannerConfig
+    r, s = inputs()
+    class OldWorker(FakeWorker):
+        def call(self, data, cancelled):
+            result = super().call(data, cancelled)
+            result.pop("planner_config")
+            return result
+    result = TesseractOMPLBackend(worker=OldWorker(),
+        planner_config=OMPLPlannerConfig(name="lazy_prm")).plan(r, s,
+            lambda p: pytest.fail("unacknowledged planner reached authority"))
+    assert result.status == PlanningStatus.UNSUPPORTED_CONSTRAINT and not result.deliverable
+
+
+@pytest.mark.parametrize("kwargs", [{"name": "lazy_prm_star"}, {"max_samples": True},
+    {"max_samples": 0}, {"max_roadmap_vertices": 1}, {"max_roadmap_edges": 5},
+    {"max_samples": float("inf")}, {"max_samples": 1.5}])
+def test_planner_and_resource_contract_reject_invalid_values(kwargs):
+    from unloading_sim.tesseract_ompl_config import OMPLPlannerConfig
+    with pytest.raises(ValueError): OMPLPlannerConfig(**kwargs)
+
+
+def test_cli_planner_default_and_explicit_selection():
+    from tools.run_m710id70_layout_single_carton import parse_args
+    assert parse_args([]).free_motion_backend == "legacy"
+    assert parse_args([]).ompl_planner == "rrt_connect"
+    assert parse_args(["--free-motion-backend", "tesseract_ompl",
+                       "--ompl-planner", "lazy_prm"]).ompl_planner == "lazy_prm"
+
+
+@pytest.mark.parametrize("when", ["before", "after"])
+@pytest.mark.parametrize("change,status", [("cancel", PlanningStatus.CANCELLED),
+    ("revision", PlanningStatus.STALE_SCENE), ("wall", PlanningStatus.BUDGET_EXHAUSTED)])
+def test_lazy_candidate_pre_and_post_authority_guards(when, change, status, monkeypatch):
+    from unloading_sim.tesseract_ompl_config import OMPLPlannerConfig
+    import unloading_sim.tesseract_ompl_backend as module
+    clock = [0.]; cancelled = [False]; revision = ["r1"]; calls = []
+    monkeypatch.setattr(module, "perf_counter", lambda: clock[0])
+    def update():
+        if change == "cancel": cancelled[0] = True
+        if change == "revision": revision[0] = "r2"
+        if change == "wall": clock[0] = 2.
+    class Worker(FakeWorker):
+        def call(self, data, cancel):
+            raw = super().call(data, cancel)
+            if when == "before": update()
+            return raw
+    def authority(path):
+        calls.append(path)
+        update()
+    r, s = inputs()
+    r = replace(r, cancelled=lambda: cancelled[0], current_revision=lambda: revision[0],
+                budget=PlanningBudget(wall_time_s=1.))
+    result = TesseractOMPLBackend(worker=Worker(), planner_config=OMPLPlannerConfig(name="lazy_prm")).plan(r, s, authority)
+    assert result.status == status and not result.path and not result.deliverable
+    assert len(calls) == (1 if when == "after" else 0)
+
+
+def test_known_path_checker_identity_reuses_v2_proof_without_search():
+    from tools.tesseract_ompl_v3_identity import verify_checkers
+    from pathlib import Path
+    proof = verify_checkers(Path(__file__).resolve().parents[1])
+    assert proof["previous_path_points"] == 29 and proof["previous_same_q_mismatches"] == 0
+    assert not proof["new_full_audit_executed"] and not proof["historical_path_injected"]
 
 
 def test_explicit_unavailable_is_not_legacy():

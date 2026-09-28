@@ -1,0 +1,39 @@
+......F...                                                               [100%]
+=================================== FAILURES ===================================
+_______ test_known_path_checker_identity_reuses_v2_proof_without_search ________
+
+    def test_known_path_checker_identity_reuses_v2_proof_without_search():
+        from tools.tesseract_ompl_v3_identity import verify_checkers
+        from pathlib import Path
+>       proof = verify_checkers(Path(__file__).resolve().parents[1])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_tesseract_ompl_contract.py:118: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tools/tesseract_ompl_v3_identity.py:16: in verify_checkers
+    audit = json.loads(audit_file.read_text())
+                       ^^^^^^^^^^^^^^^^^^^^^^
+/root/miniconda3/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/root/autodl-tmp/tesseract-ompl-20260922/repo/docs/validation/evidence/backend_tesseract_ompl_v0_2/final-audit-validated/audit.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/root/autodl-tmp/tesseract-ompl-20260922/repo/docs/validation/evidence/backend_tesseract_ompl_v0_2/final-audit-validated/audit.json'
+
+/root/miniconda3/lib/python3.12/pathlib.py:1013: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_tesseract_ompl_contract.py::test_known_path_checker_identity_reuses_v2_proof_without_search
+1 failed, 9 passed in 3.74s

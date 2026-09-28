@@ -1,0 +1,3 @@
+{"event": "configuration", "status": "CONFIGURED", "counters": null}
+{"event": "native-result", "status": "CANDIDATE", "counters": {"actual_state_computations": 49703, "cache_evictions": 41511, "cache_hits": 14, "collision_queries": 49685, "cumulative_samples": 632, "edge_checks": 12, "incomplete_edges": 0, "invalid_edges": 9, "ompl_iterations": 532, "state_checks": 49703, "state_requests": 49717, "subdivision_samples": 49322, "termination_checks": 50262, "valid_edges": 3}}
+{"event": "finished", "status": "VERIFIED", "deliverable": true}

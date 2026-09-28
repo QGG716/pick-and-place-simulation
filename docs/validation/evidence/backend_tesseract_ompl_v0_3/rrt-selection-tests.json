@@ -1,0 +1,627 @@
+[
+  {
+    "request": {
+      "scene": {
+        "urdf": "<robot name=\"unit_xy\" xmlns:tesseract=\"https://tesseract-robotics.github.io\" tesseract:make_convex=\"false\">\n      <link name=\"world\"/><link name=\"base_link\"/><link name=\"x\"/>\n      <link name=\"flange\"><collision><geometry><box size=\"0.10 0.10 0.10\"/></geometry></collision></link>\n      <link name=\"tool0\"/><link name=\"backend_tcp\"/>\n      <link name=\"obstacle\"><collision><geometry><box size=\"0.2 0.6 0.2\"/></geometry></collision></link>\n      <joint name=\"base\" type=\"fixed\"><parent link=\"world\"/><child link=\"base_link\"/></joint>\n      <joint name=\"Jx\" type=\"prismatic\"><parent link=\"base_link\"/><child link=\"x\"/><origin xyz=\"0 0 0.5\"/><axis xyz=\"1 0 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"Jy\" type=\"prismatic\"><parent link=\"x\"/><child link=\"flange\"/><axis xyz=\"0 1 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"tool\" type=\"fixed\"><parent link=\"flange\"/><child link=\"tool0\"/></joint>\n      <joint name=\"tcp\" type=\"fixed\"><parent link=\"tool0\"/><child link=\"backend_tcp\"/></joint>\n      <joint name=\"obstacle_mount\" type=\"fixed\"><parent link=\"world\"/><child link=\"obstacle\"/><origin xyz=\"0 0 0.5\"/></joint>\n      </robot>",
+        "srdf": "<robot name=\"unit_xy\"><group name=\"manipulator\"><chain base_link=\"base_link\" tip_link=\"tool0\"/></group></robot>",
+        "joint_names": [
+          "Jx",
+          "Jy"
+        ],
+        "joint_limits": [
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            1
+          ]
+        ],
+        "joints": [
+          {
+            "name": "Jx",
+            "link": "x",
+            "type": "prismatic",
+            "axis": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "Jy",
+            "link": "flange",
+            "type": "prismatic",
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "active_links": [
+          "flange"
+        ],
+        "collision_objects": [
+          "flange",
+          "obstacle"
+        ],
+        "default_margin": 0.005,
+        "pair_margins": [],
+        "constraints": {
+          "joint_margin": 0.0,
+          "maximum_jacobian_condition": 100.0,
+          "radial_limit": null,
+          "edge_resolution_rad": 0.055,
+          "point_motion_bound_m": 0.00125,
+          "lever_arm_m": 4.0
+        },
+        "fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb"
+      },
+      "q_start": [
+        -0.6,
+        0
+      ],
+      "q_goal": [
+        0.6,
+        0
+      ],
+      "seed": 71070,
+      "max_state_checks": 100000,
+      "profile": true,
+      "planner_config": {}
+    },
+    "result": {
+      "cache": {
+        "capacity": 8192,
+        "refinement": 0,
+        "scene_fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb",
+        "scope": "fresh per immutable request, exact IEEE state bytes"
+      },
+      "candidate_found": true,
+      "collision_object_count": 2,
+      "computed_rejections": {
+        "NATIVE_COLLISION": 42
+      },
+      "counter_semantics": {
+        "request_guard": 3200000,
+        "state_checks": "actual uncached computations, including bounds/kinematic rejection",
+        "state_requests": "all valid() calls including cache hits and interrupted calls",
+        "subdivision_samples": "grid sample requests, including cached and interrupted samples"
+      },
+      "counters": {
+        "actual_state_computations": 22143,
+        "cache_evictions": 13951,
+        "cache_hits": 68,
+        "collision_queries": 22143,
+        "cumulative_samples": 42,
+        "edge_checks": 53,
+        "incomplete_edges": 0,
+        "invalid_edges": 21,
+        "ompl_iterations": null,
+        "state_checks": 22143,
+        "state_requests": 22211,
+        "subdivision_samples": 22171,
+        "termination_checks": 22253,
+        "valid_edges": 32
+      },
+      "direct_valid": false,
+      "effective_planner": {
+        "distance": "RealVectorStateSpace unweighted Euclidean L2",
+        "range_rad": 0.18,
+        "state_space_maximum_extent": 2.8284271247461903,
+        "type": "ompl::geometric::RRTConnect"
+      },
+      "effective_rule": {
+        "base_l1_resolution_rad": 0.0003125,
+        "edge_resolution_rad": 0.055,
+        "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+        "l1_resolution_rad": 0.0003125,
+        "lever_arm_m": 4.0,
+        "name": "fixed_4m_1.25mm_l1_grid_v1",
+        "point_motion_bound_m": 0.00125,
+        "refinement": 0
+      },
+      "environment_reused": false,
+      "exact_solution": true,
+      "failure": null,
+      "first_failed_sample": {
+        "classification": "STATE_REJECTION",
+        "edge": 0,
+        "failure": {
+          "distance_m": -0.15000000000000002,
+          "jacobian_condition": 1.0,
+          "joint_margin_rad": 1.0,
+          "maximum_jacobian_condition": 100.0,
+          "pair": [
+            "obstacle",
+            "flange"
+          ],
+          "radial_limit_m": null,
+          "radial_m": null,
+          "reason": "NATIVE_COLLISION",
+          "required_joint_margin_rad": 0.0,
+          "required_margin_m": 0.005,
+          "tcp_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "fraction": 0.5,
+        "index": 1920,
+        "q_rad": [
+          0.0,
+          0.0
+        ],
+        "subdivisions": 3840
+      },
+      "first_native_valid_path_s": 0.059356654,
+      "initial_roadmap_edges": null,
+      "initial_roadmap_vertices": null,
+      "moving_collision_object_count": 1,
+      "native_validated": true,
+      "ompl_invalid_motion_checks": 20,
+      "ompl_status": "Exact solution",
+      "path": [
+        [
+          -0.6,
+          0.0
+        ],
+        [
+          -0.5541104347913375,
+          -0.17405214105250158
+        ],
+        [
+          -0.41709687626784014,
+          -0.29078810286688067
+        ],
+        [
+          -0.4526390769510603,
+          -0.46724419363904335
+        ],
+        [
+          -0.4979263989339362,
+          -0.637050547893228
+        ],
+        [
+          -0.32788552770212265,
+          -0.696093770287723
+        ],
+        [
+          -0.35138299500106984,
+          -0.5609833286208022
+        ],
+        [
+          -0.171384932333078,
+          -0.561818454820655
+        ],
+        [
+          0.0071638080633280865,
+          -0.5390073324708716
+        ],
+        [
+          0.18571254845973417,
+          -0.5161962101210883
+        ],
+        [
+          0.36426128885614023,
+          -0.4933850877713049
+        ],
+        [
+          0.5193574759938615,
+          -0.4735702288541894
+        ],
+        [
+          0.6857117861867575,
+          -0.44332315759688706
+        ],
+        [
+          0.7571516301868927,
+          -0.27810709091680796
+        ],
+        [
+          0.7508419051598763,
+          -0.09821771554937989
+        ],
+        [
+          0.6,
+          0.0
+        ]
+      ],
+      "planner_config": {
+        "max_roadmap_edges": 50010,
+        "max_roadmap_vertices": 10002,
+        "max_samples": 10000,
+        "name": "rrt_connect"
+      },
+      "profile": {
+        "enabled": true,
+        "seconds": {
+          "budget_cancel_poll_s": 0.010273257000000311,
+          "collision_transform_s": 0.002877920000000012,
+          "edge_check_inclusive_s": 0.049126616999999984,
+          "edge_schedule_s": 0.0021864589999998733,
+          "fcl_contact_test_s": 0.0016506479999998285,
+          "fk_scene_state_s": 0.013307096999999952,
+          "jacobian_svd_s": 0.004851875000000085,
+          "state_check_inclusive_s": 0.04726824300000013
+        }
+      },
+      "rejections": {
+        "NATIVE_COLLISION": 42
+      },
+      "roadmap_discarded_after_request": true,
+      "scene_fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb",
+      "search_progress": {
+        "approximate_goal_distance": null,
+        "goal_vertices": 1,
+        "iterations": null,
+        "start_vertices": 1,
+        "tree_edges": 33,
+        "tree_vertices": 34
+      },
+      "search_started": true,
+      "seed": 71070,
+      "static_collision_object_count": 1,
+      "status": "CANDIDATE",
+      "termination_detail": "",
+      "timings": {
+        "direct_check_s": 0.000112915,
+        "endpoint_check_s": 4.2339e-05,
+        "environment_init_s": 0.009576515,
+        "native_total_s": 0.059373458,
+        "ompl_solve_s": 0.049425054,
+        "path_conversion_s": 3.494e-06,
+        "worker_roundtrip_s_inclusive": 0.06021624803543091,
+        "worker_cold_start_s": 0.048634422942996025
+      },
+      "versions": {
+        "fcl": "0.7.0",
+        "implementation": "native C++17 worker",
+        "manager": "FCLDiscreteBVHManager",
+        "ompl": "1.7.0",
+        "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+        "tesseract": "0.35.0",
+        "tesseract_planning": null
+      }
+    }
+  },
+  {
+    "request": {
+      "scene": {
+        "urdf": "<robot name=\"unit_xy\" xmlns:tesseract=\"https://tesseract-robotics.github.io\" tesseract:make_convex=\"false\">\n      <link name=\"world\"/><link name=\"base_link\"/><link name=\"x\"/>\n      <link name=\"flange\"><collision><geometry><box size=\"0.10 0.10 0.10\"/></geometry></collision></link>\n      <link name=\"tool0\"/><link name=\"backend_tcp\"/>\n      <link name=\"obstacle\"><collision><geometry><box size=\"0.2 0.6 0.2\"/></geometry></collision></link>\n      <joint name=\"base\" type=\"fixed\"><parent link=\"world\"/><child link=\"base_link\"/></joint>\n      <joint name=\"Jx\" type=\"prismatic\"><parent link=\"base_link\"/><child link=\"x\"/><origin xyz=\"0 0 0.5\"/><axis xyz=\"1 0 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"Jy\" type=\"prismatic\"><parent link=\"x\"/><child link=\"flange\"/><axis xyz=\"0 1 0\"/><limit lower=\"-1\" upper=\"1\" effort=\"10\" velocity=\"1\"/></joint>\n      <joint name=\"tool\" type=\"fixed\"><parent link=\"flange\"/><child link=\"tool0\"/></joint>\n      <joint name=\"tcp\" type=\"fixed\"><parent link=\"tool0\"/><child link=\"backend_tcp\"/></joint>\n      <joint name=\"obstacle_mount\" type=\"fixed\"><parent link=\"world\"/><child link=\"obstacle\"/><origin xyz=\"0 0 0.5\"/></joint>\n      </robot>",
+        "srdf": "<robot name=\"unit_xy\"><group name=\"manipulator\"><chain base_link=\"base_link\" tip_link=\"tool0\"/></group></robot>",
+        "joint_names": [
+          "Jx",
+          "Jy"
+        ],
+        "joint_limits": [
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            1
+          ]
+        ],
+        "joints": [
+          {
+            "name": "Jx",
+            "link": "x",
+            "type": "prismatic",
+            "axis": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "Jy",
+            "link": "flange",
+            "type": "prismatic",
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "active_links": [
+          "flange"
+        ],
+        "collision_objects": [
+          "flange",
+          "obstacle"
+        ],
+        "default_margin": 0.005,
+        "pair_margins": [],
+        "constraints": {
+          "joint_margin": 0.0,
+          "maximum_jacobian_condition": 100.0,
+          "radial_limit": null,
+          "edge_resolution_rad": 0.055,
+          "point_motion_bound_m": 0.00125,
+          "lever_arm_m": 4.0
+        },
+        "fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb"
+      },
+      "q_start": [
+        -0.6,
+        0
+      ],
+      "q_goal": [
+        0.6,
+        0
+      ],
+      "seed": 71070,
+      "max_state_checks": 100000,
+      "profile": true,
+      "planner_config": {
+        "name": "rrt_connect",
+        "max_samples": 10000,
+        "max_roadmap_vertices": 10002,
+        "max_roadmap_edges": 50010
+      }
+    },
+    "result": {
+      "cache": {
+        "capacity": 8192,
+        "refinement": 0,
+        "scene_fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb",
+        "scope": "fresh per immutable request, exact IEEE state bytes"
+      },
+      "candidate_found": true,
+      "collision_object_count": 2,
+      "computed_rejections": {
+        "NATIVE_COLLISION": 42
+      },
+      "counter_semantics": {
+        "request_guard": 3200000,
+        "state_checks": "actual uncached computations, including bounds/kinematic rejection",
+        "state_requests": "all valid() calls including cache hits and interrupted calls",
+        "subdivision_samples": "grid sample requests, including cached and interrupted samples"
+      },
+      "counters": {
+        "actual_state_computations": 22143,
+        "cache_evictions": 13951,
+        "cache_hits": 68,
+        "collision_queries": 22143,
+        "cumulative_samples": 42,
+        "edge_checks": 53,
+        "incomplete_edges": 0,
+        "invalid_edges": 21,
+        "ompl_iterations": null,
+        "state_checks": 22143,
+        "state_requests": 22211,
+        "subdivision_samples": 22171,
+        "termination_checks": 22253,
+        "valid_edges": 32
+      },
+      "direct_valid": false,
+      "effective_planner": {
+        "distance": "RealVectorStateSpace unweighted Euclidean L2",
+        "range_rad": 0.18,
+        "state_space_maximum_extent": 2.8284271247461903,
+        "type": "ompl::geometric::RRTConnect"
+      },
+      "effective_rule": {
+        "base_l1_resolution_rad": 0.0003125,
+        "edge_resolution_rad": 0.055,
+        "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+        "l1_resolution_rad": 0.0003125,
+        "lever_arm_m": 4.0,
+        "name": "fixed_4m_1.25mm_l1_grid_v1",
+        "point_motion_bound_m": 0.00125,
+        "refinement": 0
+      },
+      "environment_reused": true,
+      "exact_solution": true,
+      "failure": null,
+      "first_failed_sample": {
+        "classification": "STATE_REJECTION",
+        "edge": 0,
+        "failure": {
+          "distance_m": -0.15000000000000002,
+          "jacobian_condition": 1.0,
+          "joint_margin_rad": 1.0,
+          "maximum_jacobian_condition": 100.0,
+          "pair": [
+            "obstacle",
+            "flange"
+          ],
+          "radial_limit_m": null,
+          "radial_m": null,
+          "reason": "NATIVE_COLLISION",
+          "required_joint_margin_rad": 0.0,
+          "required_margin_m": 0.005,
+          "tcp_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "fraction": 0.5,
+        "index": 1920,
+        "q_rad": [
+          0.0,
+          0.0
+        ],
+        "subdivisions": 3840
+      },
+      "first_native_valid_path_s": 0.050605359,
+      "initial_roadmap_edges": null,
+      "initial_roadmap_vertices": null,
+      "moving_collision_object_count": 1,
+      "native_validated": true,
+      "ompl_invalid_motion_checks": 20,
+      "ompl_status": "Exact solution",
+      "path": [
+        [
+          -0.6,
+          0.0
+        ],
+        [
+          -0.5541104347913375,
+          -0.17405214105250158
+        ],
+        [
+          -0.41709687626784014,
+          -0.29078810286688067
+        ],
+        [
+          -0.4526390769510603,
+          -0.46724419363904335
+        ],
+        [
+          -0.4979263989339362,
+          -0.637050547893228
+        ],
+        [
+          -0.32788552770212265,
+          -0.696093770287723
+        ],
+        [
+          -0.35138299500106984,
+          -0.5609833286208022
+        ],
+        [
+          -0.171384932333078,
+          -0.561818454820655
+        ],
+        [
+          0.0071638080633280865,
+          -0.5390073324708716
+        ],
+        [
+          0.18571254845973417,
+          -0.5161962101210883
+        ],
+        [
+          0.36426128885614023,
+          -0.4933850877713049
+        ],
+        [
+          0.5193574759938615,
+          -0.4735702288541894
+        ],
+        [
+          0.6857117861867575,
+          -0.44332315759688706
+        ],
+        [
+          0.7571516301868927,
+          -0.27810709091680796
+        ],
+        [
+          0.7508419051598763,
+          -0.09821771554937989
+        ],
+        [
+          0.6,
+          0.0
+        ]
+      ],
+      "planner_config": {
+        "max_roadmap_edges": 50010,
+        "max_roadmap_vertices": 10002,
+        "max_samples": 10000,
+        "name": "rrt_connect"
+      },
+      "profile": {
+        "enabled": true,
+        "seconds": {
+          "budget_cancel_poll_s": 0.01043905200000005,
+          "collision_transform_s": 0.0030107910000000122,
+          "edge_check_inclusive_s": 0.04937111900000001,
+          "edge_schedule_s": 0.002149968999999936,
+          "fcl_contact_test_s": 0.0016663579999997887,
+          "fk_scene_state_s": 0.01322557299999997,
+          "jacobian_svd_s": 0.004897582000000078,
+          "state_check_inclusive_s": 0.04753631500000008
+        }
+      },
+      "rejections": {
+        "NATIVE_COLLISION": 42
+      },
+      "roadmap_discarded_after_request": true,
+      "scene_fingerprint": "2fa2b1aa233e34c088c2edd0178521a6de3dc07aa15f01628c2342f814b6b2cb",
+      "search_progress": {
+        "approximate_goal_distance": null,
+        "goal_vertices": 1,
+        "iterations": null,
+        "start_vertices": 1,
+        "tree_edges": 33,
+        "tree_vertices": 34
+      },
+      "search_started": true,
+      "seed": 71070,
+      "static_collision_object_count": 1,
+      "status": "CANDIDATE",
+      "termination_detail": "",
+      "timings": {
+        "direct_check_s": 4.1749e-05,
+        "endpoint_check_s": 2.817e-05,
+        "environment_init_s": 0.0,
+        "native_total_s": 0.050620599,
+        "ompl_solve_s": 0.049721877,
+        "path_conversion_s": 2.864e-06,
+        "worker_roundtrip_s_inclusive": 0.051527636125683784,
+        "worker_cold_start_s": 0.0
+      },
+      "versions": {
+        "fcl": "0.7.0",
+        "implementation": "native C++17 worker",
+        "manager": "FCLDiscreteBVHManager",
+        "ompl": "1.7.0",
+        "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+        "tesseract": "0.35.0",
+        "tesseract_planning": null
+      }
+    }
+  }
+]

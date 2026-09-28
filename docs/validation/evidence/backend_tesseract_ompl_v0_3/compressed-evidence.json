@@ -1,0 +1,14 @@
+[
+  {
+    "original": "engineering-request/scene.json",
+    "gzip": "engineering-request/scene.json.gz",
+    "original_sha256": "2a4692cae94a0d86db8ccfec8ef9ec3072dfe0c4280e8bb69314b7651aa701c7",
+    "original_bytes": 5538793
+  },
+  {
+    "original": "environment.json",
+    "gzip": "environment.json.gz",
+    "original_sha256": "8a30b629011215c4763075703f9f26f885976f3634d49b8a3403920725428624",
+    "original_bytes": 554299
+  }
+]

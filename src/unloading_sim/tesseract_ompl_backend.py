@@ -14,6 +14,7 @@ import numpy as np
 
 from .planning_contract import (FreeMotionRequest, FreeMotionResult, PlanningStatus,
                                 fingerprint, validate_request, subdivision_rule)
+from .tesseract_ompl_config import OMPLPlannerConfig
 
 
 class NativeWorker:
@@ -98,7 +99,11 @@ class NativeWorker:
 class TesseractOMPLBackend:
     name = "tesseract_ompl"
 
-    def __init__(self, executable=None, *, worker=None):
+    def __init__(self, executable=None, *, worker=None, planner_config=None, profile=False):
+        self.planner_config = planner_config if planner_config is not None else OMPLPlannerConfig()
+        if not isinstance(self.planner_config, OMPLPlannerConfig):
+            raise ValueError("planner_config must be OMPLPlannerConfig")
+        self.profile = bool(profile)
         self.worker = worker or NativeWorker(executable)
 
     def plan(self, request: FreeMotionRequest, scene, authority):
@@ -109,7 +114,7 @@ class TesseractOMPLBackend:
         refinement = 0
         seen = set()
         result.diagnostics.update(request_id=request.request_id, seed=request.seed,
-            stage=request.stage,
+            stage=request.stage, planner_config=self.planner_config.to_mapping(),
             scene_revision=request.scene_revision, scene_fingerprint=request.scene_fingerprint,
             model_fingerprint=request.model_fingerprint, tool_fingerprint=request.tool_fingerprint,
             policy_fingerprint=request.policy_fingerprint, attempts=attempts)
@@ -151,11 +156,20 @@ class TesseractOMPLBackend:
                     break
                 message = dict(scene=scene, q_start=request.q_start, q_goal=request.q_goal,
                     seed=request.seed, max_state_checks=remaining, wall_time_s=wall or 0.,
-                    refinement=refinement, range_rad=.18,
+                    refinement=refinement, planner_config=self.planner_config.to_mapping(),
                     l1_resolution_rad=subdivision_rule(scene["constraints"], refinement)["l1_resolution_rad"],
-                    profile=getattr(self, "profile", False))
+                    profile=self.profile)
+                if self.planner_config.name == "rrt_connect":
+                    message["range_rad"] = .18
                 raw = self.worker.call(message, request.cancelled)
                 attempts.append(raw)
+                # An older worker must not silently ignore lazy_prm and run RRT.
+                # Default RRT remains compatible with the preceding protocol.
+                if (self.planner_config.name != "rrt_connect" or "planner_config" in raw):
+                    if raw.get("planner_config") != message["planner_config"]:
+                        result.status = PlanningStatus.UNSUPPORTED_CONSTRAINT
+                        result.diagnostics["error"] = "native planner configuration not acknowledged"
+                        break
                 consumed = int(raw.get("counters", {}).get("state_checks", 0))
                 remaining -= consumed
                 result.counters = {"state_checks": request.budget.max_state_checks-remaining,

@@ -1,0 +1,43 @@
+{
+  "version": "1.7.0",
+  "installed_header_identical_to_upstream": true,
+  "sources": {
+    "LazyPRM.h": {
+      "url": "https://github.com/ompl/ompl/blob/1.7.0/src/ompl/geometric/planners/prm/LazyPRM.h",
+      "sha256": "53b45905f449faecf2427805af8d75f541aadbb4bdce96937e0e488feb06af95"
+    },
+    "LazyPRM.cpp": {
+      "url": "https://github.com/ompl/ompl/blob/1.7.0/src/ompl/geometric/planners/prm/src/LazyPRM.cpp",
+      "sha256": "31ab172201bc7b73422138a6dbc13a80b129bdeea030fcd07fe6d58d783e1511"
+    },
+    "ConnectionStrategy.h": {
+      "url": "https://github.com/ompl/ompl/blob/1.7.0/src/ompl/geometric/planners/prm/ConnectionStrategy.h",
+      "sha256": "d203f9b6175e9b8cae947716f72e79c0f3383d1b48de05e0282b25160cc664b5"
+    },
+    "ProjectionEvaluator.cpp": {
+      "url": "https://github.com/ompl/ompl/blob/1.7.0/src/ompl/base/src/ProjectionEvaluator.cpp",
+      "sha256": "31cb6ca35b3b772061ab60102c0668351a015676be3dcbc06c043bcfeb6689ad"
+    },
+    "RealVectorStateSpace.cpp": {
+      "url": "https://github.com/ompl/ompl/blob/1.7.0/src/ompl/base/spaces/src/RealVectorStateSpace.cpp",
+      "sha256": "fed1ce94772903cffaa29873ad1707266d7b3d1eed871f5de96988ee40f2c27a"
+    },
+    "SelfConfig.cpp": {
+      "url": "https://github.com/ompl/ompl/blob/1.7.0/src/ompl/tools/config/src/SelfConfig.cpp",
+      "sha256": "bc59e2e5b65fce046e0a617a47b7735b5188dc6422a007733f11a3218253cd7f"
+    },
+    "MagicConstants.h": {
+      "url": "https://github.com/ompl/ompl/blob/1.7.0/src/ompl/tools/config/MagicConstants.h",
+      "sha256": "cc900c4996b82f33534212589dc7144c206427d21fda487f033cc10ab6c87419"
+    }
+  },
+  "source_archive_url": "https://github.com/ompl/ompl/archive/1.7.0.tar.gz",
+  "source_archive_sha256_from_installed_recipe": "e2e2700dfb0b4c2d86e216736754dd1b316bd6a46cc8818e1ffcbce4a388aca9",
+  "package_build": "py314hc49c504_2",
+  "raw_source_location": "/root/autodl-tmp/tesseract-ompl-20260922/v0_3/evidence/upstream",
+  "default_neighbor_count": 5,
+  "nonstar_default_cost_threshold": "positive infinity",
+  "solution_publication": "after leaving solve loop; not during constructSolution",
+  "projection_extents_samples": 100,
+  "projection_calls_validity_checker": false
+}

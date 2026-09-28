@@ -1,0 +1,28 @@
+{
+  "unique_passed": 56,
+  "python_contract_and_identity": 47,
+  "real_native": 9,
+  "rounds": [
+    {
+      "file": "directed-tests.log",
+      "passed": 46,
+      "failed": 0,
+      "test_sources": "initial-tests-source.tar.gz"
+    },
+    {
+      "file": "additional-tests.log",
+      "passed": 9,
+      "failed": 1,
+      "failure": "missing already-committed v2 audit archive in server source copy",
+      "test_sources": "validated-source.tar.gz"
+    },
+    {
+      "file": "identity-test.log",
+      "passed": 1,
+      "failed": 0,
+      "test_sources": "validated-source.tar.gz"
+    }
+  ],
+  "worker_sha256": "12e2e94a5ea530d389e5d097fca4bd0daa117c30016b00049827e1b33860e288",
+  "preceding_local_preflight_not_counted": true
+}

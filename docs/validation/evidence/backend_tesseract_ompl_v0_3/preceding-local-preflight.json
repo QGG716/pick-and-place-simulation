@@ -1,0 +1,33 @@
+{
+  "recorded_at_utc": "2026-09-26T07:21:48.298247+00:00",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.10.21 (main, Aug 14 2026, 15:34:01) [MSC v.1944 64 bit (AMD64)]",
+  "baseline": "eab8d9de69786e2069f243fd8b8d994af86e4162",
+  "test_command": ".venv/Scripts/python.exe -m pytest tests/test_tesseract_ompl_contract.py -q",
+  "test_result": {
+    "passed": 29,
+    "failed": 0,
+    "duration_s": 5.92,
+    "kind": "Python contract/fake transport, NOT native LazyPRM evidence"
+  },
+  "sources": {
+    "tests/test_tesseract_ompl_contract.py": "b8e61ee2e33e117a5472ce43b37bbb54ade011877ccff8c4953aa2ecb321b12b",
+    "src/unloading_sim/planning_contract.py": "856af5dc8cc33f0d2321228032ae095108db57d4d50fde19eaaf92a67d0abf9c",
+    "src/unloading_sim/tesseract_ompl_backend.py": "c109a4f0811fc6124d61b94989fa4377bf055435705600eec4abd3b1cd86eb30",
+    "native/tesseract_ompl/worker.cpp": "03fc4729ae4b37cd9b233a210f9dac3fc6e34a08abca291dbd9491e76f4ca737"
+  },
+  "cmake_probe": {
+    "compiler": "MSVC 19.51.36252.0",
+    "compiler_probe_succeeded": true,
+    "configure_succeeded": false,
+    "missing_package": "tesseract 0.35.0",
+    "build_dir": ".venv/local-native-probe-approved"
+  },
+  "ompl_headers_found": false,
+  "native_worker_found": false,
+  "wsl_installed": false,
+  "packages_installed": false,
+  "engineering_requests_executed": 0,
+  "native_tests_executed": 0,
+  "code_modified": false
+}

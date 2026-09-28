@@ -1,0 +1,227 @@
+{
+  "cache": {
+    "capacity": 8192,
+    "refinement": 0,
+    "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+    "scope": "fresh per immutable request, exact IEEE state bytes"
+  },
+  "candidate_found": true,
+  "collision_object_count": 255,
+  "computed_rejections": {
+    "JOINT_MARGIN": 11,
+    "NATIVE_COLLISION": 331,
+    "RADIAL_REACH": 5,
+    "SINGULARITY": 2
+  },
+  "counter_semantics": {
+    "request_guard": 3200000,
+    "state_checks": "actual uncached computations, including bounds/kinematic rejection",
+    "state_requests": "all valid() calls including cache hits and interrupted calls",
+    "subdivision_samples": "grid sample requests, including cached and interrupted samples"
+  },
+  "counters": {
+    "actual_state_computations": 49703,
+    "cache_evictions": 41511,
+    "cache_hits": 14,
+    "collision_queries": 49685,
+    "cumulative_samples": 632,
+    "edge_checks": 12,
+    "incomplete_edges": 0,
+    "invalid_edges": 9,
+    "ompl_iterations": 532,
+    "state_checks": 49703,
+    "state_requests": 49717,
+    "subdivision_samples": 49322,
+    "termination_checks": 50262,
+    "valid_edges": 3
+  },
+  "direct_valid": false,
+  "effective_planner": {
+    "connection_strategy": "default KBoundedStrategy",
+    "cost_threshold": "positive infinity",
+    "distance": "RealVectorStateSpace unweighted Euclidean L2",
+    "max_connection_distance": 4.431260361343388,
+    "max_nearest_neighbors": 5,
+    "nondefault_planner_parameters": {},
+    "objective": "default PathLengthOptimizationObjective",
+    "star": false,
+    "state_space_maximum_extent": 22.15630180671694,
+    "type": "ompl::geometric::LazyPRM"
+  },
+  "effective_rule": {
+    "base_l1_resolution_rad": 0.0003125,
+    "edge_resolution_rad": 0.04,
+    "intervals": "max(1, ceil(L1/l1_resolution_rad), 2*ceil(Linf/edge_resolution_rad))",
+    "l1_resolution_rad": 0.0003125,
+    "lever_arm_m": 4.0,
+    "name": "fixed_4m_1.25mm_l1_grid_v1",
+    "point_motion_bound_m": 0.00125,
+    "refinement": 0
+  },
+  "environment_reused": true,
+  "exact_solution": true,
+  "failure": null,
+  "first_failed_sample": {
+    "classification": "STATE_REJECTION",
+    "edge": 0,
+    "failure": {
+      "distance_m": -0.005521780020839969,
+      "jacobian_condition": 5.457589935975545,
+      "joint_margin_rad": 1.029278152635796,
+      "maximum_jacobian_condition": 10000.0,
+      "pair": [
+        "carton_l05_c03",
+        "tool_rigid_0"
+      ],
+      "radial_limit_m": 2.106,
+      "radial_m": 1.1090168256114863,
+      "reason": "NATIVE_COLLISION",
+      "required_joint_margin_rad": 0.0174532925199433,
+      "required_margin_m": 0.005,
+      "tcp_world": [
+        [
+          0.8816680083625063,
+          -0.04618677767200732,
+          0.4696044128821281,
+          -0.09868962562569158
+        ],
+        [
+          0.22855322068619724,
+          -0.8288710916951485,
+          -0.5106232844926475,
+          0.23778917284183093
+        ],
+        [
+          0.4128255664854808,
+          0.5575298152748152,
+          -0.7202329878140632,
+          1.719492538560326
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "fraction": 0.4999756584392191,
+    "index": 10270,
+    "q_rad": [
+      0.10172341296423115,
+      -0.19855361686145445,
+      -0.37571189521963944,
+      -2.423319268521645,
+      1.0053977080144187,
+      -0.27137104532122214
+    ],
+    "subdivisions": 20541
+  },
+  "first_native_valid_path_s": 328.277116121,
+  "initial_roadmap_edges": 0,
+  "initial_roadmap_vertices": 0,
+  "moving_collision_object_count": 208,
+  "native_validated": true,
+  "ompl_invalid_motion_checks": 8,
+  "ompl_status": "Exact solution",
+  "path": [
+    [
+      0.9862454453352169,
+      -0.6632776651139614,
+      -0.4577066564420566,
+      -1.705148906574704,
+      0.999911262836787,
+      -1.3257244752169774
+    ],
+    [
+      0.9400800301413312,
+      -0.7740280884862096,
+      -0.40314271463211315,
+      -3.4344168429523845,
+      1.5999392915606516,
+      -3.0721930026203514
+    ],
+    [
+      -0.31786977292110663,
+      0.30905278553720095,
+      -0.6869728760608864,
+      -1.9997554115322282,
+      1.432431691141153,
+      -1.8311898684539507
+    ],
+    [
+      -0.7828847461869272,
+      0.2662156820286623,
+      -0.2937091500866846,
+      -3.141559559423011,
+      1.010884687412613,
+      0.7830850480049029
+    ]
+  ],
+  "planner_config": {
+    "max_roadmap_edges": 50010,
+    "max_roadmap_vertices": 10002,
+    "max_samples": 10000,
+    "name": "lazy_prm"
+  },
+  "profile": {
+    "enabled": true,
+    "seconds": {
+      "budget_cancel_poll_s": 0.13393602299999974,
+      "collision_transform_s": 6.5118565020000165,
+      "edge_check_inclusive_s": 327.806223042,
+      "edge_schedule_s": 0.023972580000572594,
+      "fcl_contact_test_s": 317.00527117900157,
+      "fk_scene_state_s": 3.085431090000012,
+      "jacobian_svd_s": 0.2949597570000016,
+      "state_check_inclusive_s": 328.2423004679994
+    }
+  },
+  "rejections": {
+    "JOINT_MARGIN": 11,
+    "NATIVE_COLLISION": 332,
+    "RADIAL_REACH": 5,
+    "SINGULARITY": 2
+  },
+  "roadmap_discarded_after_request": true,
+  "scene_fingerprint": "ec7c545c2233047bdad2c42d49bea2d438e7fd7504b6553407399bf380161b90",
+  "search_progress": {
+    "approximate_goal_distance": null,
+    "candidate_path_validations": null,
+    "candidate_researches": null,
+    "edge_count_semantics": "underlying undirected graph, each edge once; not PlannerData arcs",
+    "iterations": 532,
+    "known_valid_edges": 3,
+    "known_valid_nodes": 52,
+    "node_validity_semantics": "upstream VALIDITY_TRUE or explicitly validated start/goal",
+    "roadmap_edges": 559,
+    "roadmap_reused": false,
+    "roadmap_vertices": 193,
+    "unknown_edges": 556,
+    "unknown_nodes": 141
+  },
+  "search_started": true,
+  "seed": 71070,
+  "static_collision_object_count": 47,
+  "status": "CANDIDATE",
+  "termination_detail": "",
+  "timings": {
+    "direct_check_s": 0.002655502,
+    "endpoint_check_s": 0.005484704,
+    "environment_init_s": 0.0,
+    "native_total_s": 328.277154965,
+    "ompl_solve_s": 328.266889536,
+    "path_conversion_s": 2.513e-06,
+    "worker_roundtrip_s_inclusive": 328.3719706647098,
+    "worker_cold_start_s": 0.0
+  },
+  "versions": {
+    "fcl": "0.7.0",
+    "implementation": "native C++17 worker",
+    "manager": "FCLDiscreteBVHManager",
+    "ompl": "1.7.0",
+    "pipeline": "direct OMPL; no TaskComposer, TrajOpt or time parameterization",
+    "tesseract": "0.35.0",
+    "tesseract_planning": null
+  }
+}
