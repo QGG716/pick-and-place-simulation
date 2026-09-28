@@ -280,16 +280,33 @@ def filter_suction_candidates_by_seal(
             )
         ]
 
+    centers, zones, minimum_sealed = suction_cup_layout_geometry(layout)
+    cup_radius = float(layout["cup_radius_m"])
+    accepted: list[SuctionGraspCandidate] = []
+    for candidate in candidates:
+        sealed = suction_cup_seal_indices(candidate, carton, centers, cup_radius, edge_margin_m=edge_margin)
+        candidate.sealed_cup_indices = sealed
+        candidate.sealed_cups_per_zone = tuple(sum(zones[i] == zone for i in sealed)
+                                              for zone in range(int(layout.get("zone_count", 1))))
+        if len(sealed) >= minimum_sealed:
+            accepted.append(candidate)
+    return accepted
+
+
+def suction_cup_layout_geometry(layout: dict) -> tuple[np.ndarray, tuple[int, ...], int]:
+    """Shared physical cup numbering: column-major, contiguous column zones."""
     rows = int(layout.get("rows", 0))
     columns = int(layout.get("columns", 0))
     pitch = np.asarray(layout.get("pitch_m", []), dtype=float)
     cup_radius = float(layout.get("cup_radius_m", 0.0))
     zone_count = int(layout.get("zone_count", 1))
     minimum_sealed = int(layout.get("minimum_sealed_cups", rows * columns))
-    if rows <= 0 or columns <= 0 or pitch.shape != (2,) or np.any(pitch <= 0.0):
+    if rows <= 0 or columns <= 0 or pitch.shape != (2,) or not np.isfinite(pitch).all() or np.any(pitch <= 0.0):
         raise ValueError("suction cup layout rows, columns, and pitch must be positive")
     if zone_count <= 0 or columns % zone_count != 0:
         raise ValueError("suction cup columns must divide evenly across zones")
+    if not np.isfinite(cup_radius) or cup_radius <= 0 or not 1 <= minimum_sealed <= rows * columns:
+        raise ValueError("invalid cup radius or minimum sealed count")
     width_offsets = (np.arange(rows) - 0.5 * (rows - 1)) * pitch[0]
     length_offsets = (np.arange(columns) - 0.5 * (columns - 1)) * pitch[1]
     centers = np.asarray(
@@ -297,24 +314,7 @@ def filter_suction_candidates_by_seal(
         dtype=float,
     )
     columns_per_zone = columns // zone_count
-    accepted: list[SuctionGraspCandidate] = []
-    for candidate in candidates:
-        sealed = suction_cup_seal_indices(
-            candidate,
-            carton,
-            centers,
-            cup_radius,
-            edge_margin_m=edge_margin,
-        )
-        zone_counts = [0] * zone_count
-        for cup_index in sealed:
-            column = cup_index // rows
-            zone_counts[min(column // columns_per_zone, zone_count - 1)] += 1
-        candidate.sealed_cup_indices = sealed
-        candidate.sealed_cups_per_zone = tuple(zone_counts)
-        if len(sealed) >= minimum_sealed:
-            accepted.append(candidate)
-    return accepted
+    return centers, tuple(i // rows // columns_per_zone for i in range(rows * columns)), minimum_sealed
 
 
 def filter_suction_candidates_by_tool_clearance(

@@ -1,0 +1,243 @@
+{
+  "plan": {
+    "baseline_sha": "c5c1a53be34d8b21b951b8f274022fdf995f197f",
+    "groups": [
+      {
+        "name": "video_00",
+        "artifact": {
+          "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/algorithm_artifact.json",
+          "sha256": "ab0f0f5de7d476b9eb21b323ed82b1130e3616526c24845b4c40ef30e2841767"
+        }
+      },
+      {
+        "name": "video_01",
+        "artifact": {
+          "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/algorithm_artifact.json",
+          "sha256": "3129c890d63f49b82d3b3ea46628f1d89a4f95b5188666376fdaf893d666496b"
+        }
+      }
+    ]
+  },
+  "tool": {
+    "name": "shanghai_wantai_three_zone_unloading_gripper_20kg",
+    "layout": {
+      "rows": 6,
+      "columns": 12,
+      "pitch_m": [
+        0.048,
+        0.048
+      ],
+      "cup_radius_m": 0.0215,
+      "zone_count": 3,
+      "minimum_sealed_cups": 60
+    },
+    "edge_margin_m": 0.0,
+    "standoff_m": 0.15,
+    "contact_gap_m": 0.0,
+    "contact_gap_source": "validation_motion.evaluate_task -> fanuc_m710id70.target_pose: contact at face plane",
+    "grid_fractions": [
+      -0.42,
+      0.0,
+      0.42
+    ],
+    "grid_source": "generate_suction_candidates default grid_fraction=0.42",
+    "roll_degrees": [
+      0,
+      90,
+      180,
+      270
+    ],
+    "flange_from_task_tcp": [
+      [
+        6.123233995736766e-17,
+        0.0,
+        1.0,
+        0.25
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        -1.0,
+        0.0,
+        6.123233995736766e-17,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "mechanical_tcp_from_task_tcp": [
+      [
+        6.123233995736766e-17,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        -1.0,
+        0.0,
+        6.123233995736766e-17,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "rigid_geometry": {
+      "outer_size_m": [
+        0.576,
+        0.288,
+        0.25
+      ],
+      "rigid_plate_collision_size_m": [
+        0.288,
+        0.576,
+        0.024
+      ],
+      "rigid_plate_center_behind_working_plane_m": 0.0655
+    },
+    "zone_assignment": [
+      {
+        "zone": 0,
+        "column_step_x_mm": [
+          -312.561732,
+          -264.561732,
+          -216.561732,
+          -168.561732
+        ],
+        "cup_count": 24,
+        "assignment_source": "equal_contiguous_columns_inferred_pending_vendor_confirmation"
+      },
+      {
+        "zone": 1,
+        "column_step_x_mm": [
+          -120.561732,
+          -72.561732,
+          -24.561732,
+          23.438268
+        ],
+        "cup_count": 24,
+        "assignment_source": "equal_contiguous_columns_inferred_pending_vendor_confirmation"
+      },
+      {
+        "zone": 2,
+        "column_step_x_mm": [
+          71.438268,
+          119.438268,
+          167.438268,
+          215.438268
+        ],
+        "cup_count": 24,
+        "assignment_source": "equal_contiguous_columns_inferred_pending_vendor_confirmation"
+      }
+    ],
+    "zone_minimum_policy": "total cup minimum only; no extra per-zone threshold",
+    "maximum_point_error_m": 0.003,
+    "error_scope": "Each covered depth sample <= existing plane mean limit; stricter local sample test, not seal/pose uncertainty",
+    "sources": [
+      {
+        "path": "/root/autodl-tmp/v05-acceptance/surface-contacts-20260928/code/configs/validation/m710id70_v3.yaml",
+        "sha256": "6991da28606fc658fcb41c15448679c2b13744a1e0e4dfe58f77437028a2dae3"
+      },
+      {
+        "path": "/root/autodl-tmp/v05-acceptance/surface-contacts-20260928/code/configs/tools/unloading_gripper_20kg.yaml",
+        "sha256": "724a68677f768817465ea8391e24385d62a7523258ac2a1ec435567baf91b64a"
+      },
+      {
+        "path": "/root/autodl-tmp/v05-acceptance/surface-contacts-20260928/code/assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+        "sha256": "2596f20270848f8874cf8e766602be7985da8dd047d769889b83f690009f13f0"
+      }
+    ],
+    "transform_source": "validation_config.ValidationConfig.robot: mechanical_tcp @ Ry(pi/2)",
+    "identity": "88295faa710465e73d02cbe28f07b68cd3e857f9a32f107ba7aed996965a0a88"
+  },
+  "selection": "ALL fused objects; existing representative faces only; independent groups",
+  "objects": {
+    "video_00": [
+      "fusion-770c9865405b396397a7",
+      "fusion-b764f8e4c1663d865647",
+      "fusion-f810929170299f308d70",
+      "fusion-65ddb0c09edf6d63f324",
+      "fusion-62411c13a3a5e3171f5e",
+      "fusion-d42427b0ebc84abb2fd3",
+      "fusion-51442e1c9199e32b7ecc",
+      "fusion-f84878edf245e587d99d",
+      "fusion-c9f2ad5606e331e322d1",
+      "fusion-54d4c0885201aff09f0d",
+      "fusion-8e7142029b0cf02438c5",
+      "fusion-4db1d6323d02d4a0aa6c",
+      "fusion-4b72918b0eaf985773e1",
+      "fusion-1f40e623927dbfb0950d",
+      "fusion-6075f683e1dd8735e729",
+      "fusion-6df1d558c8c13dfd4d25",
+      "fusion-29e6f3f1b2d4b7289127",
+      "fusion-9856da667aaa508ad36d",
+      "fusion-6af8f3f820ae44d48874",
+      "fusion-28bc5809f75edaa9e8b2",
+      "fusion-f09604bb4743dbec0159",
+      "fusion-d81684abe156d5ce753a",
+      "fusion-1979274fe10310a99bd0",
+      "fusion-8a62abc60f8e24ab4a7b",
+      "fusion-149f607bf8a1f204e5dc",
+      "fusion-08e03e4c3611528bb89a",
+      "fusion-87566f319536c373f299",
+      "fusion-866da4be75975337763b",
+      "fusion-1b688b71e5f884215019",
+      "fusion-5f8ab6565cc3cb5edfdc",
+      "fusion-38aa471fde3e79bcbcbb",
+      "fusion-e426b292886ba4e073ba",
+      "fusion-f421f6a70d4fc4c2adf7",
+      "fusion-d833f74bbcf1bc35c224",
+      "fusion-5ddb2acf6aa9a4fa9852",
+      "fusion-3240948f22e4a9b12ab6",
+      "fusion-834b1ea258368e6abee2"
+    ],
+    "video_01": [
+      "fusion-4e0241dcc2df871d5cc5",
+      "fusion-ef93be8d7453742f20a5",
+      "fusion-c65a267b060ef951cf22",
+      "fusion-b71fbdca461a2483b685",
+      "fusion-f4b0004ca9bfae2e331b",
+      "fusion-a794a24611526d360a48",
+      "fusion-76f73be33cc29b8675e8",
+      "fusion-808e1cd7b98c3681839d",
+      "fusion-5bcf4ebdac9b98c5d7ab",
+      "fusion-68410278c4600057c34f",
+      "fusion-73349c2e1668167a17ad",
+      "fusion-9c363e2131b2f853d13d",
+      "fusion-cd5112c36125f5dde690",
+      "fusion-487d55d875291b94c7c0",
+      "fusion-5cc45cb33772e31da8f7",
+      "fusion-de45fee53d90765c5c6e",
+      "fusion-cfed1a2888d579afe0ba",
+      "fusion-8a9c1ce363121e35b5d8",
+      "fusion-ac960e0f60a6ea57bb14",
+      "fusion-f63d9388db66bf4ca23e",
+      "fusion-166a474f97a710e1f952",
+      "fusion-eb560d6ada77a821e486",
+      "fusion-3d7fead4c9737dbf4d18",
+      "fusion-a42107cda077a3f2af44",
+      "fusion-be5ec75e8745a8c678a0",
+      "fusion-1445fce8067043309954",
+      "fusion-2e4b0d0e7fa1fa2b366c",
+      "fusion-072ee9953722d213024a"
+    ]
+  },
+  "visualization_selection": "first object with support, first object with no supported candidate; no re-selection/tuning"
+}
