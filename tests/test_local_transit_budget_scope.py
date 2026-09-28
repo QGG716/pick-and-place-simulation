@@ -18,21 +18,21 @@ def loaded(c):
 
 
 def local(c, attachment, obstacles, destination=None):
-    # Exactly 121 requested samples, with unchanged 80/240 method allocation.
+    # Demand exceeds even the bounded loan; preserve the prior shortage tests.
     if destination is None:
         destination = c.robot.fk(START).copy()
-        destination[0, 3] += 120.5 * c.budget.cartesian_step_m
+        destination[0, 3] += 200.5 * c.budget.cartesian_step_m
     return c._bounded_local_transit(START, destination, obstacles, attachment, seed=44)
 
 
-def test_real_producer_121_80_240_zero_work_and_scope_through_wrappers():
+def test_real_unallocatable_producer_zero_work_and_scope_through_wrappers():
     c = connector(); c._local_transit_remaining = 240
     a = loaded(c); world = [obstacle()]
     before = dict(c._statistics)
     path, failure, evidence = local(c, a, world)
-    assert not path and failure['required'] == 121
+    assert not path and failure['required'] == 201
     assert {k: failure[k] for k in ('allocated', 'consumed', 'candidate_remaining', 'shared_remaining')} == dict(
-        allocated=80, consumed=0, candidate_remaining=80, shared_remaining=240)
+        allocated=160, consumed=0, candidate_remaining=160, shared_remaining=240)
     assert failure['termination_scope'] == 'CANDIDATE'
     assert c._statistics == before and c._local_transit_remaining == 240
     v = c._motion_validator(world, attachment=a, stage='transit')
@@ -151,7 +151,7 @@ def test_connect_pose_real_producer_continues_to_rrt():
 
 
 def test_real_chunk_residual_shortage_settles_only_executed_prefix():
-    c = connector(); c._local_transit_remaining = 240
+    c = connector(); c._local_transit_remaining = 80
     a = loaded(c); goal = c.robot.fk(START)
     goal[0, 3] += 80*c.budget.cartesian_step_m
     path, failure, evidence = local(c, a, [], goal)
@@ -159,7 +159,7 @@ def test_real_chunk_residual_shortage_settles_only_executed_prefix():
     assert not path and failure['required'] == 41
     assert failure['consumed'] == c._statistics['cartesian_samples'] == 40
     assert failure['candidate_remaining'] == 40
-    assert failure['shared_remaining'] == c._local_transit_remaining == 200
+    assert failure['shared_remaining'] == c._local_transit_remaining == 40
     assert not interrupts_generation(failure)
 
 

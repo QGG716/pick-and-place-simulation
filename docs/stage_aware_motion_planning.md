@@ -691,3 +691,25 @@ started only after complete archive/file verification, and its source and all
 inputs still matched at exit. Raw progress, frozen data, comparison script,
 source manifest and final CPU invocation are included; no prior fingerprint was
 rewritten and no whole-cycle success is inferred from prefix reuse.
+
+### Demand-aware local allocation (following 09dbd951)
+
+The shared Cartesian pool stays at 240. The original 80 is the default fair
+share, not an absolute candidate cap. `_local_transit_work` estimates the same
+production chunks, allowing for the existing strict IK position/orientation
+residual at later chunk starts. `_bounded_local_transit` also budgets the existing
+finite short outward retries, and lends up to `pool - reserved`, reserving one
+default share for later candidates when the pool permits. At 240 this caps the
+loan at 160; smaller pools still permit the default share before retaining the
+remainder. No allocation is charged in advance. Existing actual-work settlement,
+method/candidate stop scope and independent RRT/request budgets are unchanged.
+Every chunk still recalculates demand using actual FK; the estimate is neither
+an exact future sample count nor geometric acceptance.
+
+The previous scope regressions now use an unallocatable 201-sample demand where
+they require zero-work rejection; the explicit real 121/80 producer rejection
+is still tested separately. Partial residual-induced exhaustion is retained
+with a genuinely limited 80-sample pool. New regressions cover executable loans,
+residual headroom, partial geometry rejection followed by real RRT, insufficient
+pools and request cancellation/context/work stops during borrowed interpolation.
+Valid direct edges still bypass the local producer entirely.

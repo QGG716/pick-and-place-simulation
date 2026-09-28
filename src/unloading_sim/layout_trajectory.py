@@ -3055,11 +3055,39 @@ class LayoutTrajectoryConnector:
                       "attempts": all_exit_attempts,
                       "extraction_attempts": getattr(self, "_last_extraction_attempts", [])}, trace
 
+    def _local_transit_work(self, start, destination):
+        """Estimate existing chunks, including strict endpoint FK residuals.
+
+        This is an allocation estimate, never a promise or a validity proof.
+        Each chunk still recomputes its demand from the actual preceding FK.
+        """
+        _, distance, angle = pose_error(self.robot.fk(start), destination)
+        required = max(1, int(np.ceil(distance / self.budget.cartesian_step_m)),
+                       int(np.ceil(angle / self.budget.cartesian_orientation_step_rad)))
+        capacity = max(1, self.budget.cartesian_max_samples_per_stage - 1)
+        chunks = max(1, int(np.ceil(required / capacity)))
+        first = max(1, int(np.ceil(distance / chunks / self.budget.cartesian_step_m)),
+                    int(np.ceil(angle / chunks / self.budget.cartesian_orientation_step_rad)))
+        following = max(1, int(np.ceil((distance / chunks + self.ik['position_tolerance_m'])
+                                       / self.budget.cartesian_step_m)),
+                        int(np.ceil((angle / chunks + self.ik['orientation_tolerance_rad'])
+                                       / self.budget.cartesian_orientation_step_rad)))
+        return dict(required=required, chunks=chunks,
+                    estimated_chunk_samples=first + (chunks-1)*following)
+
     def _bounded_local_transit(self, start, destination, obstacles, attachment, *, seed):
         """Lend one finite method allocation; settle actual work exactly once."""
         pool = self._local_transit_remaining
-        allocation = min(pool, max(1, self.budget.local_transit_cartesian_sample_budget
-                                   // self.budget.stage_connection_attempts))
+        share = max(1, self.budget.local_transit_cartesian_sample_budget
+                    // self.budget.stage_connection_attempts)
+        estimate = self._local_transit_work(start, destination)
+        # Keep at least one default share for later candidates when borrowing.
+        # The existing three short outward retries also need real sample work.
+        reserve = min(share, max(0, pool-share))
+        outward_work = self.budget.local_transit_outward_attempts * (1 + int(np.ceil(
+            (self.budget.local_transit_outward_step_m + self.ik['position_tolerance_m'])
+            / self.budget.cartesian_step_m)))
+        allocation = min(pool-reserve, max(share, estimate['estimated_chunk_samples'] + outward_work))
         self._local_transit_remaining = allocation
         try:
             path, failure, evidence = self._local_cartesian_transit(
@@ -3071,7 +3099,9 @@ class LayoutTrajectoryConnector:
                 request_budget_remaining=self._validation_request().available(),
                 request_budget_unit='VALIDATION_CHECKS_OR_UNLIMITED_NULL',
                 sample_unit='ATTEMPTED_CARTESIAN_IK_SAMPLES')
-            evidence.update(account, allocated_sample_budget=allocation)
+            evidence.update(account, allocated_sample_budget=allocation, work_estimate=estimate,
+                default_fair_share=share, reserved_for_later_candidates=reserve,
+                estimated_outward_retry_samples=outward_work)
             if failure is not None and failure.get('reason') == 'SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET':
                 failure.update(account,
                     termination_scope='METHOD' if pool-consumed == 0 else 'CANDIDATE')
@@ -3103,15 +3133,13 @@ class LayoutTrajectoryConnector:
 
         def connect(origin_q, goal, attempt_seed):
             origin = self.robot.fk(origin_q)
-            _, distance, angle = pose_error(origin, goal)
-            needed = max(1, int(np.ceil(distance / self.budget.cartesian_step_m)),
-                         int(np.ceil(angle / self.budget.cartesian_orientation_step_rad)))
+            work = self._local_transit_work(origin_q, goal)
+            needed = work['required']
             if needed > self._local_transit_remaining:
                 return [], shortage(needed), []
             # Leave one sample of headroom for the previous strict FK residual
             # when determining the next chunk's actual required sample count.
-            capacity = max(1, self.budget.cartesian_max_samples_per_stage - 1)
-            chunks = max(1, int(np.ceil(needed / capacity)))
+            chunks = work['chunks']
             omega = rotation_vector_from_matrix(goal[:3, :3] @ origin[:3, :3].T)
             full, searches = [origin_q.copy()], []
             for chunk in range(1, chunks + 1):

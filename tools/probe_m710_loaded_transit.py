@@ -50,6 +50,18 @@ def main(args):
             log.write(json.dumps(dict(elapsed_s=perf_counter()-started, **event), default=str)+'\n')
             log.flush()
         c.progress_callback = record
+        original_local = c._bounded_local_transit
+        def local(*a, **kw):
+            nonlocal result
+            path, failure, evidence = original_local(*a, **kw)
+            data.setdefault('local_candidates', []).append(dict(path=path, failure=failure, evidence=evidence))
+            write(args.output.with_suffix('.local.json'), data['local_candidates'])
+            if args.stop_after_local:
+                result = (None, path, failure, evidence)
+                data['scope'] = 'FIRST_REAL_LOCAL_PRODUCER_DIAGNOSTIC_NOT_COMPLETE_CONNECTION'
+                raise Finished()
+            return path, failure, evidence
+        c._bounded_local_transit = local
         record(dict(event='FIXED_INPUT', source=source, inputs=inputs))
         # The previous successful approach is input evidence, not replanned here.
         c._approach = lambda *a, **k: ([np.asarray(q) for q in approach['prefix']],
@@ -132,4 +144,5 @@ if __name__ == '__main__':
     for name in ('case','motion','approach','output'): p.add_argument('--'+name, type=Path, required=True)
     p.add_argument('--frozen', type=Path)
     p.add_argument('--connection-resource-seconds', type=float, default=300.)
+    p.add_argument('--stop-after-local', action='store_true')
     main(p.parse_args())
