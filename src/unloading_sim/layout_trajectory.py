@@ -1936,6 +1936,7 @@ class LayoutTrajectoryConnector:
         target_contact: OBB | None = None,
         stage: str,
         candidate_factory=None,
+        allow_rrt: bool = True,
     ) -> tuple[np.ndarray | None, list[np.ndarray], Mapping[str, Any] | None, Mapping[str, Any]]:
         purpose = require_purpose(purpose, free=True)
         began = perf_counter()
@@ -1999,7 +2000,7 @@ class LayoutTrajectoryConnector:
                 if candidate_failure and candidate_failure.get('reason') == 'DIRECT_CONNECTION_REJECTED':
                     deferred.append((index, candidate))
             for index, candidate in deferred:
-                if feasible:
+                if feasible or not allow_rrt:
                     return  # A checked connection never needs optional candidate/RRT work.
                 yield index, candidate, True
 
@@ -2640,6 +2641,69 @@ class LayoutTrajectoryConnector:
         full.extend(q.copy() for q in arrays[1:])
         stages[name] = [begin, len(full) - 1]
 
+    def _approach_clearance_candidate(self, start, grasp_q, gate, obstacles, *, seed, sample_budget):
+        """One optional geometric transition, checked with free-space permissions.
+
+        Move/turn outside the stack's support plane using the complete tool's
+        radius about the physical contact frame. This only generates waypoints;
+        it proves no robot clearance and grants no target contact permission.
+        """
+        outward = -self.physical_from_virtual(gate)[:3, 2]
+        stack = [b for b in obstacles if b.category == 'carton'
+                 and (self.stack_carton_names is None or b.name in self.stack_carton_names)]
+        radii = [float(np.linalg.norm(b.corners() -
+                    self.physical_from_virtual(self.robot.fk(q))[:3, 3], axis=1).max())
+                 for q in (start, grasp_q) for b in self.tool_collision_obbs_provider(q)]
+        evidence = dict(purpose=MotionPurpose.FREE_APPROACH.value,
+            selected_method=GenerationMethod.LOCAL_CARTESIAN_CANDIDATE.value,
+            source='CURRENT_STACK_SUPPORT_PLANE_AND_FULL_TOOL_RADIUS', parts=[],
+            cartesian_samples=0, along_path_ik_calls=0, rrt_called=False, rrt_expanded=False)
+        if not stack or not radii:
+            return [], dict(reason='CLEARANCE_CANDIDATE_UNAVAILABLE', stage='pregrasp'), evidence
+        origin = self.robot.fk(start)
+        front = max(float(np.max(b.corners() @ outward)) for b in stack)
+        radius = max(radii)
+        plane = max(float(self.physical_from_virtual(p)[:3, 3] @ outward) for p in (origin, gate))
+        plane = max(plane, front + radius + self.collision_policy.pair_clearance('external', self.collision_margin_m))
+        waypoints = []
+        for pose in (origin, gate):
+            physical = self.physical_from_virtual(pose)
+            physical[:3, 3] += outward * (plane - physical[:3, 3] @ outward)
+            waypoints.append(self.virtual_from_physical(physical))
+        waypoints.append(gate)
+        evidence.update(outward=outward.tolist(), stack_support_plane_m=front,
+                        full_tool_radius_m=radius, transition_plane_m=plane)
+        path = [np.asarray(start).copy()]
+        for index, goal in enumerate(waypoints):
+            origin = self.robot.fk(path[-1])
+            _, distance, angle = pose_error(origin, goal)
+            needed = max(1, int(np.ceil(distance / self.budget.cartesian_step_m)),
+                         int(np.ceil(angle / self.budget.cartesian_orientation_step_rad)))
+            capacity = max(1, self.budget.cartesian_max_samples_per_stage - 1)
+            chunks = int(np.ceil(needed / capacity))
+            omega = rotation_vector_from_matrix(goal[:3, :3] @ origin[:3, :3].T)
+            for chunk in range(1, chunks + 1):
+                fraction = chunk / chunks
+                destination = origin.copy()
+                destination[:3, 3] += fraction * (goal[:3, 3] - origin[:3, 3])
+                destination[:3, :3] = rotation_matrix_from_rotation_vector(fraction * omega) @ origin[:3, :3]
+                _, distance, angle = pose_error(self.robot.fk(path[-1]), destination)
+                needed = max(1, int(np.ceil(distance / self.budget.cartesian_step_m)),
+                             int(np.ceil(angle / self.budget.cartesian_orientation_step_rad)))
+                if evidence['cartesian_samples'] + needed > sample_budget:
+                    return [], dict(reason='CARTESIAN_SAMPLE_BUDGET_EXCEEDED', stage='pregrasp',
+                        required=needed, remaining=sample_budget-evidence['cartesian_samples']), evidence
+                part, failure, search = self._cartesian(path[-1], destination, obstacles,
+                    seed=seed + index * 100 + chunk, stage='pregrasp', purpose=MotionPurpose.FREE_APPROACH)
+                evidence['parts'].append(search)
+                evidence['cartesian_samples'] += search['cartesian_samples']
+                evidence['along_path_ik_calls'] += search['along_path_ik_calls']
+                if failure is not None:
+                    return [], failure, evidence
+                path.extend(part[1:])
+        evidence['validation_completed'] = True
+        return path, None, evidence
+
     @_observed_generation
     def _approach(self, start, grasp_q, requested, obstacles, target, *, seed):
         """Both routes share strict collision edges and the controlled terminal arc.
@@ -2663,26 +2727,54 @@ class LayoutTrajectoryConnector:
                  else ["direct", "adaptive_pregrasp"])
         attempts = []
         last_failure = {"reason": "APPROACH_NOT_SEARCHED", "stage": "contact"}
-        for mode in modes:
-            for distance in ([terminal] if mode == "direct" else adaptive_distances):
+        gates = [(mode, distance) for mode in modes
+                 for distance in ([terminal] if mode == "direct" else adaptive_distances)]
+        deferred_gates = set()
+        local_remaining = self.budget.local_transit_cartesian_sample_budget
+        binding = self._motion_validator(obstacles, stage='pregrasp')
+        # Give every existing entry its bounded cheap IK/direct pass before a
+        # near-stack entry can occupy the RRT pool. Seeds belong to the entry,
+        # not to the pass; fallback reuses exact directed-edge cache evidence.
+        for connection_pass in ('JOINT_DIRECT', 'LOCAL_CARTESIAN_CANDIDATE', 'CANDIDATES_THEN_RRT'):
+            for gate_index, (mode, distance) in enumerate(gates):
+                if connection_pass != 'JOINT_DIRECT' and gate_index not in deferred_gates:
+                    continue
+                if connection_pass == 'LOCAL_CARTESIAN_CANDIDATE' and local_remaining <= 0:
+                    continue
+                current = binding.check_states([start], self._validation_request())[0]
+                if not current.valid:
+                    return [], [], dict(current.failure or {}, validation=current.evidence(), stage='pregrasp'), {'attempts': attempts}
                 before = perf_counter()
                 gate = physical.copy()
                 gate[:3, 3] += outward * distance
-                q, prefix, failure, search = self._connect_pose(self.virtual_from_physical(gate),
-                    [start, grasp_q], start, obstacles, ik_seed=seed + len(attempts) * 100,
-                    connection_seed=seed + len(attempts) * 100 + 1, stage="pregrasp",
-                    purpose=MotionPurpose.FREE_APPROACH)
+                if connection_pass == 'LOCAL_CARTESIAN_CANDIDATE':
+                    prefix, failure, search = self._approach_clearance_candidate(start, grasp_q,
+                        self.virtual_from_physical(gate), obstacles, seed=seed + gate_index * 100,
+                        sample_budget=local_remaining)
+                    local_remaining -= search['cartesian_samples']
+                    q = prefix[-1] if prefix else None
+                else:
+                    q, prefix, failure, search = self._connect_pose(self.virtual_from_physical(gate),
+                        [start, grasp_q], start, obstacles, ik_seed=seed + gate_index * 100,
+                        connection_seed=seed + gate_index * 100 + 1, stage="pregrasp",
+                        purpose=MotionPurpose.FREE_APPROACH, allow_rrt=connection_pass == 'CANDIDATES_THEN_RRT')
+                if connection_pass == 'JOINT_DIRECT' and failure is not None:
+                    deferred_gates.add(gate_index)
                 terminal_path = []
                 if failure is None and q is not None:
                     failure = self._approach_reserve_failure(q, target)
                 if failure is None and q is not None:
                     terminal_path, failure, terminal_search = self._cartesian(q, requested, obstacles,
-                        seed=seed + len(attempts) * 100 + 2, target_contact=target, stage="contact",
+                        seed=seed + gate_index * 100 + 2, target_contact=target, stage="contact",
                         purpose=MotionPurpose.CONTACT_PROCESS)
                     search = {"connection": search, "terminal": terminal_search}
                 attempts.append({"mode": mode, "terminal_distance_m": distance,
+                    "connection_pass": connection_pass,
                     "planning_wall_seconds": perf_counter() - before, "failure": failure, "search": search})
                 if failure is None and terminal_path:
+                    if binding.context_current() != binding.context.context_id:
+                        return [], [], dict(reason='VALIDATION_CONTEXT_CHANGED', stage='contact',
+                            validation=dict(status='INDETERMINATE')), {'attempts': attempts}
                     if self._deadline_reached():
                         return [], [], {"reason": "PLANNING_WALL_CLOCK_DEADLINE", "stage": "contact"}, {"attempts": attempts}
                     approach = [*prefix, *terminal_path[1:]]
