@@ -1,0 +1,49 @@
+{
+  "scope": "CPU/subprocess orchestration and geometry regression; no model inference, ROS or simulation",
+  "local_default_suite": {
+    "command": ".venv310/Scripts/python.exe -m pytest -q --basetemp=tmp/workcell-geometry-final-suite",
+    "passed": 972,
+    "skipped": 3,
+    "deselected": 1,
+    "elapsed_seconds": 173.41,
+    "skip_scope": "Linux native BLAS integration unavailable on this Windows host; 2 prior native-policy cases and 1 new owned-child case"
+  },
+  "local_supplemental_tests_added_after_suite_collection": {
+    "nodes": [
+      "tests/test_workcell_geometry_process.py::test_child_new_snapshot_path_calls_existing_geometry_once",
+      "tests/test_workcell_geometry_process.py::test_subprocess_option_keeps_legal_empty_segmentation_without_child"
+    ],
+    "passed": 2,
+    "elapsed_seconds": 1.69
+  },
+  "linux_targeted_suite": {
+    "interpreter": "/root/v05-gpu-venv/bin/python",
+    "files": [
+      "tests/test_workcell_geometry_process.py",
+      "tests/test_metric_thread_policy.py",
+      "tests/test_workcell_perception_once.py",
+      "tests/test_video_demo.py",
+      "tests/test_metric_faces_ab_comparison.py",
+      "tests/test_metric_blas_cost_review.py",
+      "tests_metric/test_offline_payload_consumption.py"
+    ],
+    "passed": 174,
+    "elapsed_seconds": 11.93,
+    "native_getters_and_owned_child_parent_pool_isolation": "PASS"
+  },
+  "linux_supplemental_tests": {
+    "new_snapshot": {"passed": 1, "elapsed_seconds": 0.32},
+    "empty_segmentation": {"passed": 1, "elapsed_seconds": 0.46}
+  },
+  "real_validation": {
+    "geometry_groups_computed": 1,
+    "geometry_children": 2,
+    "instances": 47,
+    "faces": 71,
+    "results_exact_equal_after_declared_runtime_normalization": true,
+    "differences": 0,
+    "scope": "reused SAM artifacts, real geometry, parent fusion and artifact loader",
+    "preflight_failure_before_any_instance": "archive line endings changed byte SHA; retained failure evidence, no geometry code change"
+  },
+  "not_run": ["SAM", "MoGe", "Isaac", "full video", "ROS", "RViz", "execution bridge", "robot", "new full inherit/1 A/B"]
+}

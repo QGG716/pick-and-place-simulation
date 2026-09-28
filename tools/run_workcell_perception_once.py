@@ -159,13 +159,16 @@ def evaluate_masks(folder, artifacts, output, *, payload):
     return summary
 
 
-def main(argv=None, *, runtime_factory=None):
+def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
+    from workcell_geometry_process import add_arguments, validate_arguments, effective_config, dispatch_geometry
     p=argparse.ArgumentParser(description=__doc__)
+    add_arguments(p)
     p.add_argument('--legacy-cuboid-diagnostic', action=argparse.BooleanOptionalAction, default=None)
     p.add_argument('--capture',type=Path,required=True);p.add_argument('--vision',type=Path,required=True)
     p.add_argument('--models',type=Path,required=True)
     p.add_argument('--output-directory',type=Path,help='new isolated run directory; refuse overwrite')
     a=p.parse_args(argv)
+    validate_arguments(p, a)
     try:
         a.capture, a.vision = a.capture.resolve(), a.vision.resolve()
         output=(a.output_directory or a.capture/'perception-once').resolve()
@@ -254,11 +257,13 @@ def main(argv=None, *, runtime_factory=None):
         config = yaml.safe_load((ROOT/'configs/isaac/perception_validation.yaml').read_text(encoding='utf-8'))
         if a.legacy_cuboid_diagnostic is not None:
             config['vision']['legacy_cuboid_diagnostic'] = a.legacy_cuboid_diagnostic
+        config = effective_config(config, a.geometry_backend, a.geometry_blas_threads)
+        summary['geometry_runtime'] = config.get('geometry_runtime', {'backend': 'inline'})
         summary['legacy_cuboid_diagnostic_requested'] = config['vision']['legacy_cuboid_diagnostic']
         checkpoint('dependencies')
         # Heavy optional imports happen only after a report and module roster exist.
         from run_metric_small_matrix import oracle_proposals, infer
-        from run_isaac_rgbd_geometry import _worker_artifacts, _run_secondary_module
+        from run_isaac_rgbd_geometry import _worker_artifacts
         from vision_resident_worker import ResidentRuntime, parser as worker_parser
         checkpoint('runtime_initialize')
         runtime=(runtime_factory or ResidentRuntime)(worker_parser().parse_args(['--upstream-root',str(a.vision),
@@ -266,6 +271,8 @@ def main(argv=None, *, runtime_factory=None):
         for camera, row in zip(manifest.cameras, summary['runs']):
             if row['module'] not in prepared:
                 continue
+            if geometry_stop_requested is not None and geometry_stop_requested():
+                raise KeyboardInterrupt('worker stop requested')
             active = row
             module = row['module']
             folder = output/module
@@ -302,16 +309,25 @@ def main(argv=None, *, runtime_factory=None):
                                                          'run_id': summary['run_id']})
                     from unloading_perception.algorithm_artifact import empty_module_observation
                     result = {'observed_face_sets': (), 'observation': empty_module_observation(payload)}
+                    if a.geometry_backend == 'subprocess':
+                        from dataclasses import replace
+                        from unloading_contracts import canonical_fingerprint
+                        result['observation'] = replace(result['observation'], config_identity=canonical_fingerprint(config))
                     row['metric_not_run_reason'] = 'EMPTY_SEGMENTATION'
                 else:
                     checkpoint('metric_geometry', row)
                     row['metric_attempts'] += 1
-                    result = _run_secondary_module(scene='FULL_STACK_NOMINAL', module_dir=folder, manifest=manifest,
-                        artifacts=artifacts, config=config, vision_root=a.vision, upstream_python=Path(sys.executable), timeout=1200,
+                    result = dispatch_geometry(backend=a.geometry_backend, blas_threads=a.geometry_blas_threads,
+                        geometry_python=a.geometry_python, run_id=summary['run_id'], stop_requested=geometry_stop_requested,
+                        scene='FULL_STACK_NOMINAL', module_dir=folder, manifest=manifest,
+                        artifacts=artifacts, config=config, vision_root=a.vision, upstream_python=Path(sys.executable), timeout=a.geometry_timeout,
                         payload=payload)
                     _check_technical_status(result, 'geometry')
                     row['legacy_cuboid_diagnostic'] = result.get('legacy_cuboid_diagnostic')
                     row['geometry_timing_seconds'] = result.get('timing_seconds')
+                    if a.geometry_backend == 'subprocess':
+                        row['geometry_process_timing_seconds'] = result['geometry_process_timing_seconds']
+                        row['geometry_child_pid'] = result['geometry_process']['pid']
                 checkpoint('geometry_result', row)
                 geometry = _read_json(_owned_file(folder/'rgbd_cuboids.json', folder))
                 row.update(_algorithm_counts(result, geometry, count))

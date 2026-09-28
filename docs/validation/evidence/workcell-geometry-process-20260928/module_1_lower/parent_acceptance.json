@@ -1,0 +1,14 @@
+{
+  "status": "ACCEPTED",
+  "pid": 21136,
+  "request": {
+    "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/.geometry-task-module_1_lower/request.json",
+    "sha256": "17f5adae5df09e353a6d2f0522da372c2dc8c043c1c8925e19033748c703663b"
+  },
+  "timing_seconds": {
+    "launch": 0.0010969620198011398,
+    "child_wait": 71.6029890011996,
+    "parent_accept": 0.8009717054665089,
+    "dispatch_total": 72.43157088011503
+  }
+}

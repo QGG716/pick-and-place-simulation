@@ -26,12 +26,15 @@ class RuntimeCache:
         return self.runtime
 
 
-def main():
+def main(argv=None):
+    from workcell_geometry_process import add_arguments, validate_arguments, forwarded_arguments
     parser=argparse.ArgumentParser(description=__doc__)
+    add_arguments(parser)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--models',type=Path,required=True)
     parser.add_argument('--vision',type=Path,required=True)
-    args=parser.parse_args()
+    args=parser.parse_args(argv)
+    validate_arguments(parser, args)
     cache=RuntimeCache(); seen=set()
     while not (args.output/'stop-worker').exists():
         path=args.output/'worker-request.json'
@@ -47,11 +50,18 @@ def main():
         atomic_json(args.output/'worker-status.json',result)
         try:
             code=run_capture(['--capture',request['capture'],'--vision',str(args.vision),
-                '--models',str(args.models),'--output-directory',request['algorithm_output']],runtime_factory=cache)
+                '--models',str(args.models),'--output-directory',request['algorithm_output']] + forwarded_arguments(args),
+                runtime_factory=cache, geometry_stop_requested=lambda: (args.output/'stop-worker').exists())
             summary=read_json(Path(request['algorithm_output'])/'summary.json')
             result.update(exit_code=code,status='COMPLETED' if code==0 else 'FAILED',summary=summary)
         except Exception as exc:
             result.update(exit_code=1,status='FAILED',error=f'{type(exc).__name__}: {exc}')
+        except (KeyboardInterrupt, SystemExit) as exc:
+            result.update(exit_code=130,status='INTERRUPTED',error=f'{type(exc).__name__}: {exc}',
+                          finished_monotonic=time.monotonic(),wall_seconds=time.monotonic()-started,
+                          resident_model_loads=cache.loads)
+            atomic_json(args.output/'worker-status.json',result)
+            raise
         result.update(finished_monotonic=time.monotonic(),wall_seconds=time.monotonic()-started,
                       resident_model_loads=cache.loads)
         atomic_json(args.output/'worker-status.json',result)

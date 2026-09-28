@@ -1,0 +1,18 @@
+{
+  "status": "FAILED",
+  "modules": [],
+  "plan_sha256": "a7578fe294008dfda82b3181c4dd71477b8ce9adbdcf658e97661d8fd1664a0e",
+  "planning_admissible": false,
+  "raw_image_automatic": false,
+  "validation_scope": "reused SAM artifacts; production geometry subprocess acceptance",
+  "production_sha256": {
+    "src/unloading_perception/final_geometry.py": "7efeffcc4af968ae1da2452e711da4f0e627ca5bfe3664ba8abb3ecc47d7bb22",
+    "src/unloading_perception/metric_faces.py": "10bfaa578583eee486da38003ebb965f8d515e8dda4e52b8de2f37d9e6fe302d",
+    "src/unloading_perception/metric_support.py": "1f3df5cd9c4cf7934da8012f337c5121671cd017791ee93e2685ff1d93bb11d4",
+    "tools/metric_depth_runner.py": "c0f449e6dd9a6b5a71e3eabc21a5d3bd1b7f0b8630607b62730334b28b21730c",
+    "tools/run_isaac_rgbd_geometry.py": "81bfadf344387ddb1e0bc77f18f3ad475dd31697a80e008730ab4e675a3743d6"
+  },
+  "error_type": "ValueError",
+  "error": "GEOMETRY_CODE_CHANGED",
+  "group_wall_seconds": 0.3667378481477499
+}

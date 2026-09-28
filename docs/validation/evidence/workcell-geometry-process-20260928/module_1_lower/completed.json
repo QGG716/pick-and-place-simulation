@@ -1,0 +1,100 @@
+{
+  "status": "COMPLETED",
+  "task_id": "4936f10fe2e8438fb193ad69bf27b0cb",
+  "run_id": "subprocess-blas-1-verified",
+  "capture": {
+    "module_id": "module_1_lower",
+    "capture_id": "carton-assets-capture-f24f63a:module_1_lower:100",
+    "source_epoch": "carton-assets-capture-f24f63a",
+    "source_sequence": 100,
+    "capture_time": 1.6666666666666667,
+    "calibration_identity": "e6318d1f0cd52b9c8a12ca8df80192da9f5a4cdf7602fcc7b5d0473cd5bf180b",
+    "K": [
+      748.2459488697552,
+      0.0,
+      1295.5,
+      0.0,
+      1525.7343809582005,
+      971.5,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "T_W_C_at_capture": [
+      [
+        0.0,
+        -0.3420201433256687,
+        0.9396926207859084,
+        -1.325
+      ],
+      [
+        -1.0,
+        -0.0,
+        0.0,
+        0.75
+      ],
+      [
+        0.0,
+        -0.9396926207859084,
+        -0.3420201433256687,
+        1.6293411964178086
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "pid": 21136,
+  "request": {
+    "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/.geometry-task-module_1_lower/request.json",
+    "sha256": "17f5adae5df09e353a6d2f0522da372c2dc8c043c1c8925e19033748c703663b"
+  },
+  "files": {
+    "thread_report": {
+      "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/.geometry-task-module_1_lower/thread_report.json",
+      "sha256": "437148277d3bff062f744724c8fd51053b57364b3cc13310f523eddd30a61ddd"
+    },
+    "face_sets": {
+      "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/.geometry-task-module_1_lower/face_sets.json",
+      "sha256": "bb3dd59ecf06a1748d33ad8ca6e6ce39e135937758dda39105c3c49e7f608243"
+    },
+    "observation": {
+      "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/.geometry-task-module_1_lower/observation.json",
+      "sha256": "a449e4f531545f59cb5816e9fa4cefb6a33781f9bc349e4935b14fe77774e7b0"
+    },
+    "geometry": {
+      "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/module_1_lower/rgbd_cuboids.json",
+      "sha256": "dc63d7e43020f8180a1f8933da1f475364d95b1447988fde646a259fd3244ba6"
+    }
+  },
+  "result_metadata": {
+    "elapsed_seconds": 28.997341779991984,
+    "timing_seconds": {
+      "input_validation_and_snapshot": 0.09858076274394989,
+      "pointmap_build_including_filter_audits": 26.244865857064724,
+      "pointmap_write": 0.9528596494346857,
+      "legacy_geometry": 28.997341779991984,
+      "legacy_cuboid_diagnostic": 0.0,
+      "final_metric_faces": 28.995572593063116,
+      "final_validation_and_observation": 9.912302846089005,
+      "evaluation_and_observation_write": 1.1239724233746529,
+      "filter_audit_json_write": 0.0009370651096105576,
+      "module_total_before_timing_record": 67.35608741082251
+    },
+    "legacy_cuboid_diagnostic": {
+      "status": "DISABLED",
+      "enabled": false,
+      "seconds": 0.0,
+      "command": null
+    }
+  },
+  "timing_seconds": {
+    "input_validation": 2.717874279245734,
+    "thread_initialization": 0.07373387552797794,
+    "geometry": 67.35997974686325,
+    "child_before_index": 71.48936285078526
+  }
+}

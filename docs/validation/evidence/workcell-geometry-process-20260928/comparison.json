@@ -1,0 +1,330 @@
+{
+  "plan_complete": true,
+  "results_equal": true,
+  "differences": [],
+  "modules": [
+    {
+      "module_id": "module_0_upper",
+      "before": {
+        "instances": 16,
+        "faces": 23,
+        "with_faces": 16,
+        "without_faces": 0,
+        "accepted_complete_cuboids": 0
+      },
+      "after": {
+        "instances": 16,
+        "faces": 23,
+        "with_faces": 16,
+        "without_faces": 0,
+        "accepted_complete_cuboids": 0
+      },
+      "instances": [
+        {
+          "mask_id": 1,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 2,
+          "faces": 3,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 3,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 4,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 5,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 6,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 7,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 8,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 9,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 10,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 11,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 12,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 13,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 14,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 15,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 16,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        }
+      ]
+    },
+    {
+      "module_id": "module_1_lower",
+      "before": {
+        "instances": 31,
+        "faces": 48,
+        "with_faces": 30,
+        "without_faces": 1,
+        "accepted_complete_cuboids": 0
+      },
+      "after": {
+        "instances": 31,
+        "faces": 48,
+        "with_faces": 30,
+        "without_faces": 1,
+        "accepted_complete_cuboids": 0
+      },
+      "instances": [
+        {
+          "mask_id": 1,
+          "faces": 0,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 2,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 3,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 4,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 5,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 6,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 7,
+          "faces": 3,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 8,
+          "faces": 3,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 9,
+          "faces": 4,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 10,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 11,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 12,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 13,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 14,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 15,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 16,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 17,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 18,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 19,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 20,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 21,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 22,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 23,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 24,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 25,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 26,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 27,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 28,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 29,
+          "faces": 2,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 30,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        },
+        {
+          "mask_id": 31,
+          "faces": 1,
+          "accepted_complete_cuboid": false,
+          "final_record_exact_equal": true
+        }
+      ]
+    }
+  ],
+  "comparison_policy": "Strict fixed-roster comparison of metric geometry, observations and fusion.\n\nWhitelist: run-directory prefixes; observation processed_time/config_identity;\nalgorithm index run_id/diagnostic flag/config_identity and verified reference\nhashes whose complete documents are compared separately. No numeric tolerance.\n",
+  "mode": "geometry-subprocess",
+  "plan_sha256": "a7578fe294008dfda82b3181c4dd71477b8ce9adbdcf658e97661d8fd1664a0e"
+}

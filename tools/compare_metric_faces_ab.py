@@ -33,11 +33,13 @@ def paths(value, root):
     return value
 
 
-def index_identity(value, *, thread_policy=False):
+def index_identity(value, *, thread_policy=False, geometry_process=False):
     value = deepcopy(value)
     value['run_id'] = '<RUN_ID>'
     value['config_identity'] = '<VERIFIED_CONFIG_IDENTITY>'
     value['config']['vision']['legacy_cuboid_diagnostic'] = '<DIAGNOSTIC_FLAG>'
+    if geometry_process:
+        value['config'].pop('geometry_runtime', None)  # exact declaration verified before comparison
     if thread_policy:
         value['config']['metric_runtime_policy']['requested_blas_threads'] = '<VERIFIED_THREAD_POLICY>'
         value['config']['metric_runtime_policy']['mechanism'] = '<VERIFIED_THREAD_MECHANISM>'
@@ -47,12 +49,13 @@ def index_identity(value, *, thread_policy=False):
     return value
 
 
-def observation_identity(value, *, thread_policy=False):
+def observation_identity(value, *, thread_policy=False, geometry_process=False):
     value = deepcopy(value)
     value['processed_time'] = '<PROCESSING_TIME>'
     value['config_identity'] = '<VERIFIED_CONFIG_IDENTITY>'
     if 'algorithm_run' in value['coverage']:
-        value['coverage']['algorithm_run'] = index_identity(value['coverage']['algorithm_run'], thread_policy=thread_policy)
+        value['coverage']['algorithm_run'] = index_identity(value['coverage']['algorithm_run'], thread_policy=thread_policy,
+                                                          geometry_process=geometry_process)
     return value
 
 
@@ -79,12 +82,13 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
         differences(a, b, path, output)  # strict verdict is never delegated
         if difference_collector is not None:
             difference_collector(a, b, path, [])
-    if mode not in ('diagnostic-toggle', 'hotspot-off', 'blas-threads'):
+    if mode not in ('diagnostic-toggle', 'hotspot-off', 'blas-threads', 'geometry-subprocess'):
         raise ValueError('unknown comparison mode')
     before, after = Path(before).resolve(), Path(after).resolve()
     diagnostic_flags = (True, False) if mode == 'diagnostic-toggle' else (False, False)
     plan = read(plan_path)
     thread_mode = mode == 'blas-threads'
+    process_mode = mode == 'geometry-subprocess'
     thread_reports = []
     if thread_mode and plan.get('thread_policies') != [None, 1]:
         raise ValueError('thread comparison requires frozen inherit/1 policies')
@@ -94,9 +98,9 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
               'comparison_policy': __doc__, 'mode': mode, 'plan_sha256': sha(Path(plan_path))}
     indexes, observations, summaries = [], [], []
     for ordinal, (root, enabled) in enumerate(zip((before, after), diagnostic_flags)):
-        if thread_mode:
+        if thread_mode or (process_mode and ordinal == 0):
             from metric_thread_policy import policy, verify_blas, verify_non_targets
-            runtime = policy((None, 1)[ordinal])
+            runtime = policy(1 if process_mode else (None, 1)[ordinal])
             report = read(root/'thread_policy_report.json')
             if report['status'] != 'COMPLETED' or report['policy'] != runtime:
                 raise ValueError(f'{root.name}: THREAD_POLICY_NOT_VERIFIED')
@@ -107,7 +111,7 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
                 verify_non_targets(report['before_policy'], report[phase])
                 if report[phase]['pid'] != report['pid']:
                     raise ValueError(f'{root.name}: thread evidence from another process')
-            if ordinal == 0 and (report['applied'] or report['before_policy']['blas'] != report['after_geometry']['blas']):
+            if thread_mode and ordinal == 0 and (report['applied'] or report['before_policy']['blas'] != report['after_geometry']['blas']):
                 raise ValueError('inherited thread policy was changed')
             thread_reports.append(report)
         summary = read(root/'ab_summary.json')
@@ -122,6 +126,28 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
         if thread_mode:
             expected['metric_runtime_policy'] = runtime
             if report['artifact'] != ref: raise ValueError('thread report artifact identity mismatch')
+        if process_mode:
+            from metric_thread_policy import policy
+            from workcell_geometry_process import effective_config, accept_result
+            expected['metric_runtime_policy'] = policy(1)
+            if ordinal == 0:
+                if report['artifact'] != ref: raise ValueError('thread report artifact identity mismatch')
+            else:
+                expected = effective_config(expected, 'subprocess', 1)
+                pids = []
+                for module in modules:
+                    task = root/('.geometry-task-'+module)
+                    request = read(task/'request.json')
+                    acceptance = read(task/'parent_acceptance.json')
+                    if (request['run_id'] != root.name or request['capture']['module_id'] != module or
+                            request['output_directory'] != str(root/module) or request['config'] != expected or
+                            acceptance['status'] != 'ACCEPTED'):
+                        raise ValueError('subprocess request/acceptance identity mismatch')
+                    accepted = accept_result(request, acceptance['request'], acceptance['pid'])
+                    if to_wire(accepted['observation']) != to_wire(loads((root/module/'mode_b_rgbd_observation.json').read_text())):
+                        raise ValueError('published module differs from accepted child observation')
+                    pids.append(acceptance['pid'])
+                if len(set(pids)) != len(modules): raise ValueError('subprocess PID reused')
         if index['config'] != expected or index['config_identity'] != canonical_fingerprint(expected):
             raise ValueError(f'{root.name}: effective config mismatch')
         if index['run_id'] != root.name or observation.config_identity != canonical_fingerprint(expected):
@@ -131,6 +157,10 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
         indexes.append(index); observations.append(to_wire(observation)); summaries.append(summary)
     if summaries[0]['code_sha256'] != summaries[1]['code_sha256']:
         raise ValueError('A/B production code differs')
+    if process_mode:
+        production = read(before/'function_timings.json')['production_sha256']
+        if not production or production != summaries[1]['production_sha256']:
+            raise ValueError('subprocess comparison requires identical geometry production code')
     if mode in ('hotspot-off', 'blas-threads'):
         timed = [read(r/'function_timings.json') for r in (before, after)]
         for root, measurement in zip((before, after), timed):
@@ -180,7 +210,8 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
             if module_obs.processed_time != module_obs.capture_time + row['timing_seconds']['legacy_geometry']:
                 raise ValueError(f'{root.name}/{name}: processing interval mismatch')
             geometry.append(paths(final, root))
-            obs.append(paths(observation_identity(to_wire(module_obs), thread_policy=thread_mode), root))
+            obs.append(paths(observation_identity(to_wire(module_obs), thread_policy=thread_mode,
+                                                  geometry_process=process_mode), root))
             counts.append({'instances': len(final['instances']), 'faces': sum(len(r['camera_facing_faces']) for r in final['instances']),
                 'with_faces': sum(bool(r['camera_facing_faces']) for r in final['instances']),
                 'without_faces': sum(not r['camera_facing_faces'] for r in final['instances']),
@@ -191,9 +222,9 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
             'instances': [{'mask_id': r['mask_id'], 'faces': len(r['camera_facing_faces']), 'accepted_complete_cuboid': r['accepted'],
                 'final_record_exact_equal': r == s} for r, s in zip(geometry[0]['instances'], geometry[1]['instances'])]})
     for title, pair in (
-        ('index', [paths(index_identity(i, thread_policy=thread_mode), r) for i, r in zip(indexes, (before, after))]),
+        ('index', [paths(index_identity(i, thread_policy=thread_mode, geometry_process=process_mode), r) for i, r in zip(indexes, (before, after))]),
         ('fusion', [paths(read(r/'fusion_result.json'), r) for r in (before, after)]),
-        ('fused_observation', [paths(observation_identity(o, thread_policy=thread_mode), r) for o, r in zip(observations, (before, after))])):
+        ('fused_observation', [paths(observation_identity(o, thread_policy=thread_mode, geometry_process=process_mode), r) for o, r in zip(observations, (before, after))])):
         collect(*pair, title, result['differences'])
     result['results_equal'] = not result['differences']
     return result
@@ -202,7 +233,7 @@ def compare(before, after, plan_path, *, mode='diagnostic-toggle', code_change=N
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('before', 'after', 'plan', 'output'): parser.add_argument('--'+name, type=Path, required=True)
-    parser.add_argument('--mode', choices=('diagnostic-toggle', 'hotspot-off', 'blas-threads'), default='diagnostic-toggle')
+    parser.add_argument('--mode', choices=('diagnostic-toggle', 'hotspot-off', 'blas-threads', 'geometry-subprocess'), default='diagnostic-toggle')
     parser.add_argument('--code-change', type=Path, help='required for hotspot-off; one explicit old/new source SHA')
     args = parser.parse_args(argv)
     try:

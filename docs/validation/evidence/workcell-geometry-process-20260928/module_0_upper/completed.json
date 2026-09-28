@@ -1,0 +1,100 @@
+{
+  "status": "COMPLETED",
+  "task_id": "077d23e85c244db0a8f6b0e700f86a8f",
+  "run_id": "subprocess-blas-1-verified",
+  "capture": {
+    "module_id": "module_0_upper",
+    "capture_id": "carton-assets-capture-f24f63a:module_0_upper:100",
+    "source_epoch": "carton-assets-capture-f24f63a",
+    "source_sequence": 100,
+    "capture_time": 1.6666666666666667,
+    "calibration_identity": "372d53029e85bd0e617ee1a2e523319c0d818ee4f47bc60f0d06f637ec7fe3b0",
+    "K": [
+      748.2459488697552,
+      0.0,
+      1295.5,
+      0.0,
+      1525.7343809582005,
+      971.5,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "T_W_C_at_capture": [
+      [
+        0.0,
+        -0.0,
+        1.0,
+        -1.325
+      ],
+      [
+        -1.0,
+        -0.0,
+        0.0,
+        0.75
+      ],
+      [
+        0.0,
+        -1.0,
+        -0.0,
+        2.4
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "pid": 20938,
+  "request": {
+    "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/.geometry-task-module_0_upper/request.json",
+    "sha256": "93242aa14fa780a38ac07fd81ce8e040f7469a7beb142326c43008ed32914c88"
+  },
+  "files": {
+    "thread_report": {
+      "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/.geometry-task-module_0_upper/thread_report.json",
+      "sha256": "f789d90537bc9d23fe17b0f244c0a5dd5e902f4013fa54886d363eb3200ff53e"
+    },
+    "face_sets": {
+      "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/.geometry-task-module_0_upper/face_sets.json",
+      "sha256": "498613c7605e3320449adc262ea26d1e7eb8a1b3294f7b15a5f42df598b62f78"
+    },
+    "observation": {
+      "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/.geometry-task-module_0_upper/observation.json",
+      "sha256": "e88bc8f7facd007e826d13f3d3c5424c151816072e5e59247a0a4451f2354b9f"
+    },
+    "geometry": {
+      "path": "/root/autodl-tmp/v05-acceptance/workcell-geometry-process-20260928/subprocess-blas-1-verified/module_0_upper/rgbd_cuboids.json",
+      "sha256": "1f22cd3e11cf23f2b42e473ef365cea8c4a8554d1258df4cd222d39e2e97bf9d"
+    }
+  },
+  "result_metadata": {
+    "elapsed_seconds": 14.112674759700894,
+    "timing_seconds": {
+      "input_validation_and_snapshot": 0.09788566827774048,
+      "pointmap_build_including_filter_audits": 13.500714788213372,
+      "pointmap_write": 0.7140324451029301,
+      "legacy_geometry": 14.112674759700894,
+      "legacy_cuboid_diagnostic": 0.0,
+      "final_metric_faces": 14.109994804486632,
+      "final_validation_and_observation": 5.046519923955202,
+      "evaluation_and_observation_write": 0.5568178035318851,
+      "filter_audit_json_write": 0.0005325581878423691,
+      "module_total_before_timing_record": 34.050617748871446
+    },
+    "legacy_cuboid_diagnostic": {
+      "status": "DISABLED",
+      "enabled": false,
+      "seconds": 0.0,
+      "command": null
+    }
+  },
+  "timing_seconds": {
+    "input_validation": 1.605807926505804,
+    "thread_initialization": 0.09302989207208157,
+    "geometry": 34.05419275537133,
+    "child_before_index": 36.35625489987433
+  }
+}
