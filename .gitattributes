@@ -49,3 +49,6 @@ fixtures/curobo_v2/*.json text eol=lf
 docs/evidence/curobo_v2_20260922/** text eol=lf
 docs/evidence/curobo_v2_20260926/** text eol=lf
 docs/evidence/curobo_v2_20260928/** text eol=lf
+
+# Preserve raw physical-trial evidence (including video) byte-for-byte.
+docs/evidence/curobo_v2_20260928_isaac/** -text

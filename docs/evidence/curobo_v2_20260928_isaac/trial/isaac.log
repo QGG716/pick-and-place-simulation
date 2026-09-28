@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/root/autodl-tmp/curobo-v2-20260928-isaac/repo/scripts/isaacsim_fanuc_replay.py", line 521, in <module>
+    from isaacsim import SimulationApp
+ModuleNotFoundError: No module named 'isaacsim'

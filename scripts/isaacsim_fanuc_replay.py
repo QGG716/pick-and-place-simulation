@@ -3258,8 +3258,8 @@ try:
         (args.output / "stack_cube_shapes.json").write_text(json.dumps(stack_cube_shapes, indent=2), encoding="utf-8")
     session_output_root = args.output
     session_segment_index = 0
-    session_time_offset_s = (float(archive_initialization["time_s"])
-                             if archive_initialization is not None else 0.0)
+    # A reconstructed world has a new task clock; archive time is provenance only.
+    session_time_offset_s = 0.0
     retained_receiver_records = ideal_transport_records
     dynamic_index_by_name = {item["name"]: index for index, item in enumerate(dynamic_scene_records)}
     def _advance_ideal_bodies(dt_s):
@@ -3324,7 +3324,7 @@ try:
         settled_actual_state = archived_world_actual_state(metadata, archive_initialization,
             q_rad=np.asarray(articulation.get_dof_positions().numpy())[0].tolist(),
             joint_names=discovered_joint_names, cartons=_capture_carton_states(),
-            world_session_id=str(run_started_unix_s))
+            world_session_id=str(run_started_unix_s), world_physics_time_s=float(world.current_time))
         actual_state_path = args.output / "initialized_actual_state.json"
         actual_state_path.write_text(json.dumps(settled_actual_state, indent=2), encoding="utf-8")
         actual_state_sha256 = _sha256_path(actual_state_path)
@@ -4537,7 +4537,8 @@ try:
                             actual_received = (set(metadata.get("completed_carton_ids", []))
                                 | {n for n, r in ideal_transport_records.items()
                                    if r.get("completion_source") == LANDING_SOURCE})
-                            counts = reception_counts(actual_received, ideal_transport_records)
+                            counts = reception_counts(actual_received, ideal_transport_records,
+                                exclude_ids=(() if archive_initialization is None else archive_initialization["processed_carton_ids"]))
                             lines.append(
                                 f"物理接收 {counts['actual_reception']} | 理想接收 {counts['ideal_reception']} | 理想送出 {counts['ideal_outfeed']}"
                                 if hud_chinese_enabled else
@@ -6061,7 +6062,8 @@ try:
                 "ideal_outfed": int(str(metadata["target"]) in handed_off_ids),
                 "workflow_completed": int(workflow_cycle_completed),
             }
-        result["execution_counts"] = {**reception_counts(completed_carton_ids, ideal_transport_records),
+        result["execution_counts"] = {**reception_counts(completed_carton_ids, ideal_transport_records,
+            exclude_ids=(() if archive_initialization is None else archive_initialization["processed_carton_ids"])),
             "actual_grasp": int(bool(grasp_enabled)), "actual_release": int(bool(release_open_confirmed))}
         result["post_landing_transport"] = {
             "policy": post_landing_policy, "states": ideal_transport_records,

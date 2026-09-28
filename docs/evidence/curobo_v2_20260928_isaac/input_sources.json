@@ -1,0 +1,10 @@
+{
+  "docs/evidence/curobo_v2_20260928/full_task/motion.json": "8cc3cb349bb223b8624df9aac43996201dec6abd2a512409a4d6f350b1da4c62",
+  "fixtures/curobo_v2/actual_remaining_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+  "configs/validation/m710id70_handoff_continuation.yaml": "2c163170e8492d5e96a3ff498343dd0357baeadc0bb22acf628316f36f9f2f71",
+  "configs/simulation/m710id70_handoff_continuation.yaml": "bd417cca10660994cbe6a7a1b8955a53116bc0c435a75f54a8e3f8ddab115a1c",
+  "docs/evidence/curobo_v2_20260928/final_execution_corrected_schema/preflight.json": "5b6365513bc8714b12101bb7e2909cc9311ccfa4505332bacd7062914c92c771",
+  "docs/evidence/curobo_v2_20260928/final_execution_corrected_schema/replay_bundle.json": "a05fb850e0b3f8960dfd6bf5c4633595de5681fb4f6fa43a88d6f20dfb2acaad",
+  "docs/evidence/curobo_v2_20260928/final_execution_corrected_schema/execution_handoff.json": "a4febe0b2f1b4b6ee54580e7d3cd010591acdb401ccdd7067d0ccb82002a8a79",
+  "docs/evidence/curobo_v2_20260928/final_execution_corrected_schema/delivery.json": "f7de66d4599ee2753c72a967a269d5cbdf3638839d07bd2336976febe648ae8c"
+}

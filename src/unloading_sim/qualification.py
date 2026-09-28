@@ -20,10 +20,12 @@ NOT_APPLICABLE = "NOT_APPLICABLE"
 BLOCKED_BY = "BLOCKED_BY"
 
 
-def reception_counts(actual_received_ids, transport_records):
+def reception_counts(actual_received_ids, transport_records, *, exclude_ids=()):
     """Count identities by evidence source without promoting ideal reception."""
     from .post_landing_transport import RECEPTION_SOURCE, OUTFED
-    actual = set(actual_received_ids)
+    excluded = set(exclude_ids)
+    actual = set(actual_received_ids) - excluded
+    transport_records = {name: record for name, record in transport_records.items() if name not in excluded}
     assumed = {name for name, record in transport_records.items()
                if record.get("completion_source") == RECEPTION_SOURCE}
     if actual & assumed:

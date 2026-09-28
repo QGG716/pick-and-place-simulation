@@ -1,0 +1,206 @@
+{
+  "schema": "curobo_complete_execution_handoff_v1",
+  "accepted": true,
+  "failure": null,
+  "stages": [
+    {
+      "stage": "home",
+      "source_range": [
+        0,
+        0
+      ],
+      "retained_points": 1,
+      "wall_s": 0.01411406323313713,
+      "failure": null
+    },
+    {
+      "stage": "pregrasp",
+      "source_range": [
+        0,
+        35
+      ],
+      "retained_points": 29,
+      "wall_s": 433.1982197333127,
+      "failure": null
+    },
+    {
+      "stage": "contact",
+      "source_range": [
+        35,
+        38
+      ],
+      "retained_points": 4,
+      "wall_s": 3.953752027824521,
+      "failure": null
+    },
+    {
+      "stage": "extraction",
+      "source_range": [
+        38,
+        79
+      ],
+      "retained_points": 42,
+      "wall_s": 169.14130933396518,
+      "failure": null
+    },
+    {
+      "stage": "transit",
+      "source_range": [
+        79,
+        341
+      ],
+      "retained_points": 261,
+      "wall_s": 273.8620980195701,
+      "failure": null
+    },
+    {
+      "stage": "place",
+      "source_range": [
+        341,
+        342
+      ],
+      "retained_points": 2,
+      "wall_s": 0.17765494249761105,
+      "failure": null
+    },
+    {
+      "stage": "withdrawal",
+      "source_range": [
+        342,
+        357
+      ],
+      "retained_points": 16,
+      "wall_s": 17.426172886043787,
+      "failure": null
+    },
+    {
+      "stage": "withdrawal",
+      "source_range": [
+        342,
+        357
+      ],
+      "retained_points": 16,
+      "wall_s": 17.555906981229782,
+      "failure": null
+    }
+  ],
+  "native_spline_derivatives_used": false,
+  "physical_execution_completed": false,
+  "source_points": 358,
+  "retained_points": 349,
+  "actual_reference_sha256": "1f4e96e2d7cc820ca4a42ca84d24115b4aa9b3d6354c72a612eb92b658ac9ce5",
+  "timing_audit": {
+    "interpolation": "C2_piecewise_quintic_rest_to_rest",
+    "peak_method": "analytic_extrema_not_finite_differences",
+    "duration_seconds": 196.09004723794692,
+    "waypoints": 334,
+    "iterations": 1,
+    "peak_velocity_rad_s": [
+      0.6391900470400343,
+      0.20629002681579142,
+      0.19379179868477414,
+      0.6726726933415405,
+      0.26405918017416563,
+      0.3364103465473309
+    ],
+    "peak_acceleration_rad_s2": [
+      0.7500000000000001,
+      0.36954587573186726,
+      0.46403040930617917,
+      0.835943703906231,
+      0.724996444474904,
+      0.9983843934964513
+    ],
+    "peak_jerk_rad_s3": [
+      3.7500000000000013,
+      3.7500000000000013,
+      3.750000000000001,
+      7.500000000000001,
+      7.5,
+      10.000000000000002
+    ],
+    "max_velocity_ratio": 0.4069210222462503,
+    "max_acceleration_ratio": 1.0000000000000002,
+    "max_jerk_ratio": 1.0000000000000004,
+    "within_limits": true,
+    "phase_model": "stopped_release_then_empty_tool",
+    "controller_reference": "analytic_C2_quintic_same_as_limits_audit",
+    "ordinary_collinear_samples_removed": 9,
+    "remaining_noncollinear_corners": "STOPPED_NO_UNCHECKED_CURVE_SMOOTHING",
+    "pre_release": {
+      "interpolation": "C2_piecewise_quintic_rest_to_rest",
+      "peak_method": "analytic_extrema_not_finite_differences",
+      "duration_seconds": 186.55352454515184,
+      "waypoints": 334,
+      "iterations": 1,
+      "peak_velocity_rad_s": [
+        0.6391900470400343,
+        0.20629002681579142,
+        0.19379179868477414,
+        0.6726726933415405,
+        0.26405918017416563,
+        0.3364103465473309
+      ],
+      "peak_acceleration_rad_s2": [
+        0.7500000000000001,
+        0.36954587573186726,
+        0.46403040930617917,
+        0.835943703906231,
+        0.724996444474904,
+        0.9983843934964513
+      ],
+      "peak_jerk_rad_s3": [
+        3.7500000000000013,
+        3.7500000000000013,
+        3.750000000000001,
+        7.500000000000001,
+        7.5,
+        10.000000000000002
+      ],
+      "max_velocity_ratio": 0.4069210222462503,
+      "max_acceleration_ratio": 1.0000000000000002,
+      "max_jerk_ratio": 1.0000000000000004,
+      "within_limits": true
+    },
+    "post_release": {
+      "interpolation": "C2_piecewise_quintic_rest_to_rest",
+      "peak_method": "analytic_extrema_not_finite_differences",
+      "duration_seconds": 9.536522692795076,
+      "waypoints": 16,
+      "iterations": 1,
+      "peak_velocity_rad_s": [
+        0.006741707632272431,
+        0.011653368040008317,
+        0.050631563201122436,
+        9.274236924960204e-07,
+        0.04146447780899561,
+        0.006740060070509555
+      ],
+      "peak_acceleration_rad_s2": [
+        0.03375633720102878,
+        0.05459081021175968,
+        0.23718619783978076,
+        4.643693942207697e-06,
+        0.2076163742379966,
+        0.033748087710920235
+      ],
+      "peak_jerk_rad_s3": [
+        0.570445942840963,
+        0.8631005520497621,
+        3.750000000000001,
+        7.84734538392633e-05,
+        3.5084943501455106,
+        0.5703065352940214
+      ],
+      "max_velocity_ratio": 0.03223305423971337,
+      "max_acceleration_ratio": 0.31624826378637433,
+      "max_jerk_ratio": 1.0000000000000002,
+      "within_limits": true
+    },
+    "isaac_replay_time_scale": 1.0
+  },
+  "geometry_rule": "REVALIDATE_ACTUAL_RETAINED_EDGES_WITH_LEGACY_SPATIAL_GRID",
+  "time_rule": "MONOTONE_C2_REST_TO_REST_ON_STRAIGHT_JOINT_EDGES",
+  "runtime_effort_inertia_and_feedback_checks_required": true,
+  "wall_s": 915.5065956320614
+}

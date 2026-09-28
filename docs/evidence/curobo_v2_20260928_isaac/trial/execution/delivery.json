@@ -1,0 +1,18 @@
+{
+  "planning_invoked": false,
+  "isaac_executed": false,
+  "motion_sha256": "8cc3cb349bb223b8624df9aac43996201dec6abd2a512409a4d6f350b1da4c62",
+  "state_sha256": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+  "status": "PASS",
+  "preflight_s": 0.3412680197507143,
+  "export_s": 0.32029526494443417,
+  "readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "37f38787e81b16013e57b8d457422f5a30594d55c5f75fe1e5e579ba6c6ab346",
+    "source_preflight_fingerprint": "50ac40659f50ca3b5858f8446aef235e5895b0b649a77ffdb3547bbf46503cfc",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "failure": null,
+  "handoff_wall_s": 915.5065956320614,
+  "wall_s": 916.8411669582129
+}

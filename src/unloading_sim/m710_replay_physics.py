@@ -210,12 +210,14 @@ def archived_replay_initialization(metadata):
     return result
 
 
-def archived_world_actual_state(metadata, initialization, *, q_rad, joint_names, cartons, world_session_id):
+def archived_world_actual_state(metadata, initialization, *, q_rad, joint_names, cartons, world_session_id, world_physics_time_s):
     """Capture post-settling measurements; do not restore any pose to the plan."""
     from copy import deepcopy
     from .serial_unloading import _identity_set, _vector, rotation_from_actual_quaternion
     if not world_session_id or world_session_id == initialization["world_session_id"]:
         raise ValueError("archive reconstruction requires a distinct new-world identity")
+    if not np.isfinite(world_physics_time_s) or world_physics_time_s < 0:
+        raise ValueError("new-world measurement requires its actual physics time")
     expected = {p["name"] for p in metadata["scene_primitives"] if p.get("dynamic")}
     if _identity_set([c["name"] for c in cartons], "measured active bodies") != expected:
         raise ValueError("post-settling readback lost active carton identities")
@@ -234,7 +236,7 @@ def archived_world_actual_state(metadata, initialization, *, q_rad, joint_names,
     return {
         "schema": "m710id70_actual_motion_state_v1", "q_rad": q.tolist(),
         "joint_names": list(joint_names), "world_session_id": world_session_id,
-        "time_s": float(initialization["time_s"]), "attached": False, "attachment_target": None,
+        "time_s": float(world_physics_time_s), "attached": False, "attachment_target": None,
         "cartons": records,
         **{field: deepcopy(initialization[field]) for field in (
             "completed_carton_ids", "processed_carton_ids", "ideal_received_ids",
@@ -245,6 +247,8 @@ def archived_world_actual_state(metadata, initialization, *, q_rad, joint_names,
         "initialization_provenance": {
             "world_scope": initialization["world_scope"],
             "source_world_session_id": initialization["world_session_id"],
+            "source_archive_time_s": float(initialization["time_s"]),
+            "measurement_source": "POST_SETTLING_CURRENT_PHYSX_STATE",
             "source_actual_state_fingerprint": initialization["actual_state_fingerprint"],
             "historical_events_counted_as_new_task_completion": False,
         },

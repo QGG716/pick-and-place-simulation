@@ -1,0 +1,20 @@
+{
+  "world_session_id": "1790577723.9653654",
+  "target": "carton_l07_c04",
+  "phase": "withdrawal",
+  "task_time_s": 197.3375,
+  "world_physics_time_s": 198.24167700577527,
+  "source": "CURRENT_PHYSX_ZERO_TIME_RENDER",
+  "image": "final_actual.png",
+  "physics_time_delta_s": 0.0,
+  "joint_max_delta_rad": 0.0,
+  "carton_state_unchanged": true,
+  "q_rad": [
+    -0.7517407536506653,
+    0.3038911521434784,
+    -0.0524793341755867,
+    -3.141575574874878,
+    1.2144834995269775,
+    0.751950740814209
+  ]
+}

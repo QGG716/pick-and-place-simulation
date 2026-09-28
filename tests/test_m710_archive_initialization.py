@@ -83,7 +83,7 @@ def test_archive_context_cannot_be_added_by_rehashing_only_the_bundle():
         verify_m710_replay_bundle(changed)
 
 
-@pytest.mark.parametrize("damage", [None, "lost_body", "nan_q", "old_world"])
+@pytest.mark.parametrize("damage", [None, "lost_body", "nan_q", "old_world", "nan_time", "negative_time"])
 def test_measured_new_world_state_enters_real_actual_state_pipeline(poc_scene, damage):
     name = poc_scene.cartons[-1].name
     raw = ideal_state(poc_scene, [name])
@@ -94,8 +94,12 @@ def test_measured_new_world_state_enters_real_actual_state_pipeline(poc_scene, d
                      linear_velocity_m_s=c["linear_velocity_m_s"], angular_velocity_rad_s=c["angular_velocity_rad_s"])
                 for c in raw["cartons"]]
     kwargs = dict(q_rad=list(raw["q_rad"]), joint_names=metadata["joint_names"],
-                  cartons=feedback, world_session_id="new-archive-world")
-    if damage == "lost_body":
+                  cartons=feedback, world_session_id="new-archive-world", world_physics_time_s=1.25)
+    if damage == "nan_time":
+        kwargs["world_physics_time_s"] = float("nan")
+    elif damage == "negative_time":
+        kwargs["world_physics_time_s"] = -1.
+    elif damage == "lost_body":
         feedback.pop()
     elif damage == "nan_q":
         kwargs["q_rad"][0] = float("nan")
@@ -110,6 +114,8 @@ def test_measured_new_world_state_enters_real_actual_state_pipeline(poc_scene, d
     assert current.snapshot["actual_state_context"]["world_session_id"] == "new-archive-world"
     assert name not in current.removable_cartons
     assert name in {b.name for b in current.cartons}
+    assert captured["time_s"] == 1.25
+    assert captured["initialization_provenance"]["source_archive_time_s"] == raw["time_s"]
     assert captured["completed_carton_ids"] == []
     assert captured["ideal_received_ids"] == captured["processed_carton_ids"] == [name]
     assert captured["receiver_transport_state"] == raw["receiver_transport_state"]
