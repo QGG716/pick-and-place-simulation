@@ -1,0 +1,684 @@
+{
+  "review_baseline": "20c7a375a263c825182427b30ac53c6a4215b8d6",
+  "source_commit": "01a92826b005a8590599cfa4cdefa557dba8e4ba",
+  "baseline_execution_source": "0bfd708489219b8635b836ab307c186faa7f03e6",
+  "baseline_code_identical_to_review_baseline": true,
+  "archive_sha256": "260a12b542cd5650f5a239c22c1ff80a3258945197adca0cfb1582a0f64268c1",
+  "archive_files_verified": 269,
+  "archive_files_unchanged": true,
+  "target": "carton_l07_c04",
+  "start_q": [
+    0.9862454563859637,
+    -0.6632776457504109,
+    -0.4577065817616128,
+    -1.7051491620249044,
+    0.9999112930290731,
+    -1.3257242474822586
+  ],
+  "preplace_virtual": [
+    [
+      0.9999999758256821,
+      0.00021790022688254756,
+      -2.9463974345757426e-05,
+      -0.36010170867385805
+    ],
+    [
+      0.0002178999195527576,
+      -0.9999999762053832,
+      -1.0433503962156957e-05,
+      -0.6100768595239217
+    ],
+    [
+      -2.946624710753548e-05,
+      1.0427083512218581e-05,
+      -0.9999999995115081,
+      1.1924893657734648
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "placement": {
+    "target_name": "carton_l07_c04",
+    "target_world": [
+      [
+        -9.394175219687711e-06,
+        -0.00021672603962030875,
+        0.9999999764707863,
+        -0.36004052342597626
+      ],
+      [
+        -9.955082788492564e-06,
+        0.9999999764653801,
+        0.00021672594609934283,
+        -0.6100295176601545
+      ],
+      [
+        -0.9999999999063229,
+        -9.953046592744985e-06,
+        -9.39633252426621e-06,
+        0.9000034000310941
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "half_extents_m": [
+      0.3,
+      0.2,
+      0.15
+    ],
+    "receiver_names": [
+      "conveyor_longitudinal"
+    ],
+    "support": {
+      "schema": "complete_bottom_support_union_v1",
+      "actual_box_pose": [
+        [
+          -9.394175219687711e-06,
+          -0.00021672603962030875,
+          0.9999999764707863,
+          -0.36004052342597626
+        ],
+        [
+          -9.955082788492564e-06,
+          0.9999999764653801,
+          0.00021672594609934283,
+          -0.6100295176601545
+        ],
+        [
+          -0.9999999999063229,
+          -9.953046592744985e-06,
+          -9.39633252426621e-06,
+          0.9000034000310941
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "payload_half_extents_m": [
+        0.3,
+        0.2,
+        0.15
+      ],
+      "support_obbs": [
+        {
+          "name": "conveyor_longitudinal",
+          "category": "conveyor",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -1.6
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.7500000000000001
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.54
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            1.4,
+            0.35,
+            0.06
+          ]
+        },
+        {
+          "name": "conveyor_transverse",
+          "category": "conveyor",
+          "pose_world": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -0.55
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.35
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.54
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "half_extents_m": [
+            0.35,
+            0.75,
+            0.06
+          ]
+        }
+      ],
+      "supported": true,
+      "reason": "SUPPORTED",
+      "receiver_names": [
+        "conveyor_longitudinal"
+      ],
+      "footprint_area_m2": 0.11999999998875877,
+      "unsupported_area_m2": 0.0,
+      "bottom_z_range_m": [
+        0.6000000000000001,
+        0.6000068001183945
+      ],
+      "support_z_m": 0.6000000000000001,
+      "plane_error_m": 6.8001183943788845e-06,
+      "tolerance_m": 0.002,
+      "edge_tolerance_m": 1e-06,
+      "engineering_edge_margin_m": 0.0,
+      "coverage_method": "complete_convex_footprint_minus_support_polygon_union",
+      "support_face_local_axis": 0,
+      "support_face_local_sign": 1
+    },
+    "reasons": [
+      "COMPLETE_BOTTOM_SUPPORT",
+      "CURRENT_OCCUPANCY_CLEAR",
+      "BOTH_CONVEYORS_SHARE_SAMPLING_BUDGET",
+      "PRESERVE_YAW"
+    ],
+    "yaw_rad": 0.0002167259478055182,
+    "score": 0.7427011435287636,
+    "outlet_directions": {
+      "conveyor_longitudinal": [
+        -1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "orientation_rpy_offset_rad": [
+      0.0,
+      1.5707963267948966,
+      0.0
+    ],
+    "contact_normal_up_alignment": -0.9999999995115082,
+    "effective_receiver": "conveyor_longitudinal",
+    "process_family": "longitudinal",
+    "placement_family": "TOP_DOWN",
+    "working_normal_world": [
+      -2.946397434575743e-05,
+      -1.0433503962156958e-05,
+      -0.9999999995115082
+    ]
+  },
+  "input_sha256": "e7f3fd755ad82a758867f5cbd4d0d3339a3b5ab0ed85a3f9d8b4a9dfcbe45d21",
+  "attachment": {
+    "tcp_from_box": [
+      [
+        2.006990290046499e-05,
+        1.1741733224179251e-06,
+        0.9999999997979104,
+        6.907736975536594e-05
+      ],
+      [
+        -4.7404795261425603e-07,
+        -0.9999999999991984,
+        1.1741828367243507e-06,
+        -5.011762886453219e-05
+      ],
+      [
+        0.9999999997984873,
+        -4.7407151817808435e-07,
+        -2.006990234381594e-05,
+        0.29998596331500377
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "half_extents": [
+      0.3,
+      0.2,
+      0.15
+    ],
+    "flange_from_virtual": [
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.25
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "flange_from_physical": [
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.2175
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "tracker": {
+    "mode": "planner_relaxed_physics_checked",
+    "target": "carton_l07_c04",
+    "stack_carton_names": [
+      "carton_l00_c00",
+      "carton_l00_c01",
+      "carton_l00_c02",
+      "carton_l00_c03",
+      "carton_l00_c04",
+      "carton_l01_c00",
+      "carton_l01_c01",
+      "carton_l01_c02",
+      "carton_l01_c03",
+      "carton_l01_c04",
+      "carton_l02_c00",
+      "carton_l02_c01",
+      "carton_l02_c02",
+      "carton_l02_c03",
+      "carton_l02_c04",
+      "carton_l03_c00",
+      "carton_l03_c01",
+      "carton_l03_c02",
+      "carton_l03_c03",
+      "carton_l03_c04",
+      "carton_l04_c00",
+      "carton_l04_c01",
+      "carton_l04_c02",
+      "carton_l04_c03",
+      "carton_l04_c04",
+      "carton_l05_c00",
+      "carton_l05_c01",
+      "carton_l05_c02",
+      "carton_l05_c03",
+      "carton_l05_c04",
+      "carton_l06_c00",
+      "carton_l06_c01",
+      "carton_l06_c02",
+      "carton_l06_c03",
+      "carton_l06_c04",
+      "carton_l07_c00"
+    ],
+    "fully_released": true,
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "physics_collision_enabled": true
+  },
+  "extraction_nodes": 42,
+  "prefix_scope": "PREVIOUS_APPROACH_REUSED_EXTRACTION_RECONSTRUCTED_AND_RECHECKED_NOT_PHYSICAL_EXECUTION",
+  "validation_context": "f1510ea7db557b10af16da59f42e17d90840def9227e280c83f918507feb0bb6",
+  "account_baseline": {
+    "source": {
+      "source_sha256": {
+        "src/unloading_sim/motion_validation.py": "bd110d351b61550e1bedcd3ad3b9df86279a3e79d49b73a70edebef01d4089ab",
+        "src/unloading_sim/stage_motion_policy.py": "93cd5757a8f1ba37947d2ca9e996cd209cdf22062d33b69a5f54ff48919e1f36",
+        "src/unloading_sim/validation_kernel.py": "f3c6de1746dd352050d0a024608f5274413afff184b2ce62fc3b5d2fa8041202",
+        "src/unloading_sim/search_diagnostics.py": "4ecb355246a00c4caf67c6f2800124024ccc5cc890773f88b21b4abc8d84b5d3",
+        "src/unloading_sim/wrist_transfer.py": "325ca2f61f220c68f26fc9d4cbaafdb2bc6d3d6075a600f4c8e378dd25c30c69",
+        "src/unloading_sim/history_candidates.py": "b801bb46c2128bcb681c079f37dc46f7674dc373f948f0d4e7aca364068f311a",
+        "src/unloading_sim/history_adaptation.py": "6fbb1ce41f56620152865ce4bb2143c6d8dc4439766edc88e3967c4f11624298",
+        "src/unloading_sim/contact_scheduler.py": "7ab9a8bf8e6e9d961d599846ab00d87b30c1bc2c0d5079ed090c3caee270a427",
+        "src/unloading_sim/motion_quality.py": "cb8ab84a9b747b3dd0709d1e0a3ad5a8e2a42e1d78e6816d82c90f01ec7e0d82",
+        "src/unloading_sim/release_motion.py": "d714fa20c533fdc9c1c919fd1bb059c03527f35f7fbe4e6d19c776f425042422",
+        "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+        "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+        "src/unloading_sim/conveyor_placement.py": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503",
+        "src/unloading_sim/unloading_sequence.py": "1881b114d280286ffaaf22d9ad306040bcf435dd64efad0a4d3b41fcee6ae915",
+        "src/unloading_sim/tool_geometry.py": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d",
+        "src/unloading_sim/depalletizing.py": "aef4ff69219ca4ff27d1da9cd3b7f7567b5de5c4b0f59310b44b821f070f59e3",
+        "src/unloading_sim/fanuc_m710id70.py": "f60871dccd361c6d6a6da32ef55b0f67f02f1a76f9f18268fe4783bae8b7eff3",
+        "src/unloading_sim/geometry.py": "78f1deed2f8e0d9fc637cb7b5ee931947f13da72e7f0d68950e5688dcc59bf40",
+        "src/unloading_sim/grasp.py": "4f5856d1c36f78ad8c58c0df7f23e7c280a83a7c84bdefe2a6a3461026b50a60",
+        "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+        "src/unloading_sim/ik.py": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5",
+        "src/unloading_sim/layout_single_carton.py": "770e9c06b5257d90b476994ee22f35ffcfa22359b283e70c227e2a74b3021f00",
+        "src/unloading_sim/layout_trajectory.py": "ad6619801089f5a9b9bb8347a4d089c2947b311755cd055ebb68a9093da66a2f",
+        "src/unloading_sim/pinocchio_backend.py": "699de06e0eb467a4e33076bde649fbcc2f7844c93d27b01795060935800ab4a2",
+        "src/unloading_sim/planner.py": "02b67186376a2b45e236baf3c5f43f0a81623a79edce68536e72ac05aed95a9b",
+        "src/unloading_sim/robot.py": "5069f0064bebda6b02ad772b3fd5d9e8db15c9b68146123ef32e75268c0d03d6",
+        "src/unloading_sim/robot_load/model.py": "6fd02fe472b4c142689f12420b145e7a41ea837ebe449d2bcee00e87379f8979",
+        "src/unloading_sim/robot_load/spatial.py": "2d56858234b59e5ef239a39b8fd7d924e4c4148f4b72d17d582819306a10d363",
+        "src/unloading_sim/robot_load/task.py": "6ca40eb357be668ece73fbdf5540ee9efb5c364df60cf53f79c9c62e331df363",
+        "src/unloading_sim/scene.py": "6178c10ab83b561613399d5fd710a165cfe49762550b769780b249578e91017a",
+        "src/unloading_sim/serial_unloading.py": "e3451a69b770a513731cfdceb2bd5551cbb9a840440dcd8e0c21e187d6aec8be",
+        "src/unloading_sim/planning_profile.py": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee",
+        "src/unloading_sim/post_landing_transport.py": "1db1de76dcbcae6e0f45c811707f245f7fe9d21f662526270ff6210e8ace1223",
+        "src/unloading_sim/support.py": "c752893bb3f94a620d2921b6c2a93d1bb34c1102f1521cdba8d1b72e703ae4cf",
+        "src/unloading_sim/timing.py": "9e8951093f357b2eba05d8670bbf21b93be1f17016d08e4a4bc889eafebc13a9",
+        "src/unloading_sim/validation_motion.py": "5d79a2a7ee8897249db52ede23f48529356a89ddaacf1539003944c382d52d0e",
+        "src/unloading_sim/validation_physics.py": "770cbc4acc32d58eb8fc4f422d18d03b56c3a4eb54f4f1cae380d4e8939e7ab8",
+        "src/unloading_sim/workcell_layout.py": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2"
+      },
+      "runtime": {
+        "python": "3.12.3",
+        "python_implementation": "CPython",
+        "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+        "numpy": "2.3.2"
+      }
+    },
+    "context_id": "f1510ea7db557b10af16da59f42e17d90840def9227e280c83f918507feb0bb6",
+    "input_sha256": "e7f3fd755ad82a758867f5cbd4d0d3339a3b5ab0ed85a3f9d8b4a9dfcbe45d21",
+    "failure": {
+      "reason": "SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET",
+      "required": 121
+    },
+    "evidence": {
+      "stage": "transit",
+      "method": "BOUNDED_EXISTING_CARTESIAN_WITH_OUTWARD_ESCAPE",
+      "attempts": [
+        {
+          "outward_steps": 0,
+          "failure": {
+            "reason": "SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET",
+            "required": 121
+          },
+          "searches": []
+        }
+      ],
+      "shared_sample_budget": 240,
+      "remaining_samples": 80,
+      "allocated": 80,
+      "consumed": 0,
+      "candidate_remaining": 80,
+      "shared_remaining": 240,
+      "request_budget_remaining": null
+    },
+    "status": "INDETERMINATE",
+    "interrupts_request": true,
+    "elapsed_seconds": 0.004139648750424385,
+    "statistics_delta": {
+      "state_validations": 0,
+      "edge_validation_calls": 0,
+      "edge_state_samples": 0,
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 0,
+      "placement_candidates_generated": 0,
+      "placement_candidate_generation_wall_seconds": 0.0,
+      "state_cache_hits": 0,
+      "state_cache_misses": 0,
+      "trajectory_ik_wall_seconds": 0.0,
+      "path_connection_wall_seconds_inclusive": 0.0,
+      "collision_validation_wall_seconds_nested": 0.0,
+      "kinematics_and_joint_checks_wall_seconds": 0.0,
+      "final_recheck_wall_seconds": 0.0
+    },
+    "shared_after": 240
+  },
+  "account_patched": {
+    "source": {
+      "source_sha256": {
+        "src/unloading_sim/motion_validation.py": "a650d1267992fe21f6451d4acad9662f05ab0b13e14755db4a45ea3d0ccf3752",
+        "src/unloading_sim/stage_motion_policy.py": "ec2df9bf973d181d36b04eef0e6374b704feb601c287f3aa4f04d00ac8b256e0",
+        "src/unloading_sim/validation_kernel.py": "f3c6de1746dd352050d0a024608f5274413afff184b2ce62fc3b5d2fa8041202",
+        "src/unloading_sim/search_diagnostics.py": "4ecb355246a00c4caf67c6f2800124024ccc5cc890773f88b21b4abc8d84b5d3",
+        "src/unloading_sim/wrist_transfer.py": "325ca2f61f220c68f26fc9d4cbaafdb2bc6d3d6075a600f4c8e378dd25c30c69",
+        "src/unloading_sim/history_candidates.py": "b801bb46c2128bcb681c079f37dc46f7674dc373f948f0d4e7aca364068f311a",
+        "src/unloading_sim/history_adaptation.py": "6fbb1ce41f56620152865ce4bb2143c6d8dc4439766edc88e3967c4f11624298",
+        "src/unloading_sim/contact_scheduler.py": "7ab9a8bf8e6e9d961d599846ab00d87b30c1bc2c0d5079ed090c3caee270a427",
+        "src/unloading_sim/motion_quality.py": "cb8ab84a9b747b3dd0709d1e0a3ad5a8e2a42e1d78e6816d82c90f01ec7e0d82",
+        "src/unloading_sim/release_motion.py": "d714fa20c533fdc9c1c919fd1bb059c03527f35f7fbe4e6d19c776f425042422",
+        "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+        "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+        "src/unloading_sim/conveyor_placement.py": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503",
+        "src/unloading_sim/unloading_sequence.py": "1881b114d280286ffaaf22d9ad306040bcf435dd64efad0a4d3b41fcee6ae915",
+        "src/unloading_sim/tool_geometry.py": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d",
+        "src/unloading_sim/depalletizing.py": "aef4ff69219ca4ff27d1da9cd3b7f7567b5de5c4b0f59310b44b821f070f59e3",
+        "src/unloading_sim/fanuc_m710id70.py": "f60871dccd361c6d6a6da32ef55b0f67f02f1a76f9f18268fe4783bae8b7eff3",
+        "src/unloading_sim/geometry.py": "78f1deed2f8e0d9fc637cb7b5ee931947f13da72e7f0d68950e5688dcc59bf40",
+        "src/unloading_sim/grasp.py": "4f5856d1c36f78ad8c58c0df7f23e7c280a83a7c84bdefe2a6a3461026b50a60",
+        "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+        "src/unloading_sim/ik.py": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5",
+        "src/unloading_sim/layout_single_carton.py": "770e9c06b5257d90b476994ee22f35ffcfa22359b283e70c227e2a74b3021f00",
+        "src/unloading_sim/layout_trajectory.py": "905e5d76da63b4610b7e98d9a16719437d37d1846e1689e808d1694dc26dc5ef",
+        "src/unloading_sim/pinocchio_backend.py": "699de06e0eb467a4e33076bde649fbcc2f7844c93d27b01795060935800ab4a2",
+        "src/unloading_sim/planner.py": "02b67186376a2b45e236baf3c5f43f0a81623a79edce68536e72ac05aed95a9b",
+        "src/unloading_sim/robot.py": "5069f0064bebda6b02ad772b3fd5d9e8db15c9b68146123ef32e75268c0d03d6",
+        "src/unloading_sim/robot_load/model.py": "6fd02fe472b4c142689f12420b145e7a41ea837ebe449d2bcee00e87379f8979",
+        "src/unloading_sim/robot_load/spatial.py": "2d56858234b59e5ef239a39b8fd7d924e4c4148f4b72d17d582819306a10d363",
+        "src/unloading_sim/robot_load/task.py": "6ca40eb357be668ece73fbdf5540ee9efb5c364df60cf53f79c9c62e331df363",
+        "src/unloading_sim/scene.py": "6178c10ab83b561613399d5fd710a165cfe49762550b769780b249578e91017a",
+        "src/unloading_sim/serial_unloading.py": "e3451a69b770a513731cfdceb2bd5551cbb9a840440dcd8e0c21e187d6aec8be",
+        "src/unloading_sim/planning_profile.py": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee",
+        "src/unloading_sim/post_landing_transport.py": "1db1de76dcbcae6e0f45c811707f245f7fe9d21f662526270ff6210e8ace1223",
+        "src/unloading_sim/support.py": "c752893bb3f94a620d2921b6c2a93d1bb34c1102f1521cdba8d1b72e703ae4cf",
+        "src/unloading_sim/timing.py": "9e8951093f357b2eba05d8670bbf21b93be1f17016d08e4a4bc889eafebc13a9",
+        "src/unloading_sim/validation_motion.py": "5d79a2a7ee8897249db52ede23f48529356a89ddaacf1539003944c382d52d0e",
+        "src/unloading_sim/validation_physics.py": "770cbc4acc32d58eb8fc4f422d18d03b56c3a4eb54f4f1cae380d4e8939e7ab8",
+        "src/unloading_sim/workcell_layout.py": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2"
+      },
+      "runtime": {
+        "python": "3.12.3",
+        "python_implementation": "CPython",
+        "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+        "numpy": "2.3.2"
+      }
+    },
+    "context_id": "f1510ea7db557b10af16da59f42e17d90840def9227e280c83f918507feb0bb6",
+    "input_sha256": "e7f3fd755ad82a758867f5cbd4d0d3339a3b5ab0ed85a3f9d8b4a9dfcbe45d21",
+    "failure": {
+      "reason": "SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET",
+      "status": "INDETERMINATE",
+      "termination_scope": "CANDIDATE",
+      "can_continue_candidates": true,
+      "budget_domain": "LOCAL_CARTESIAN_SAMPLES",
+      "required": 121,
+      "allocated": 80,
+      "consumed": 0,
+      "candidate_remaining": 80,
+      "shared_remaining": 240,
+      "request_budget_remaining": null,
+      "request_budget_unit": "VALIDATION_CHECKS_OR_UNLIMITED_NULL",
+      "sample_unit": "ATTEMPTED_CARTESIAN_IK_SAMPLES"
+    },
+    "evidence": {
+      "stage": "transit",
+      "method": "BOUNDED_EXISTING_CARTESIAN_WITH_OUTWARD_ESCAPE",
+      "attempts": [
+        {
+          "outward_steps": 0,
+          "failure": {
+            "reason": "SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET",
+            "status": "INDETERMINATE",
+            "termination_scope": "CANDIDATE",
+            "can_continue_candidates": true,
+            "budget_domain": "LOCAL_CARTESIAN_SAMPLES",
+            "required": 121,
+            "allocated": 80,
+            "consumed": 0,
+            "candidate_remaining": 80,
+            "shared_remaining": 240,
+            "request_budget_remaining": null,
+            "request_budget_unit": "VALIDATION_CHECKS_OR_UNLIMITED_NULL",
+            "sample_unit": "ATTEMPTED_CARTESIAN_IK_SAMPLES"
+          },
+          "searches": []
+        }
+      ],
+      "shared_sample_budget": 240,
+      "remaining_samples": 80,
+      "allocated": 80,
+      "consumed": 0,
+      "candidate_remaining": 80,
+      "shared_remaining": 240,
+      "request_budget_remaining": null,
+      "request_budget_unit": "VALIDATION_CHECKS_OR_UNLIMITED_NULL",
+      "sample_unit": "ATTEMPTED_CARTESIAN_IK_SAMPLES",
+      "allocated_sample_budget": 80
+    },
+    "status": "INDETERMINATE",
+    "interrupts_request": false,
+    "elapsed_seconds": 0.004155481234192848,
+    "statistics_delta": {
+      "state_validations": 0,
+      "edge_validation_calls": 0,
+      "edge_state_samples": 0,
+      "ik_calls": 0,
+      "ik_seeds_attempted": 0,
+      "ik_iterations_consumed": 0,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 0,
+      "placement_candidates_generated": 0,
+      "placement_candidate_generation_wall_seconds": 0.0,
+      "state_cache_hits": 0,
+      "state_cache_misses": 0,
+      "trajectory_ik_wall_seconds": 0.0,
+      "path_connection_wall_seconds_inclusive": 0.0,
+      "collision_validation_wall_seconds_nested": 0.0,
+      "kinematics_and_joint_checks_wall_seconds": 0.0,
+      "final_recheck_wall_seconds": 0.0
+    },
+    "shared_after": 240
+  },
+  "baseline_connection_seconds": 16.51715674996376,
+  "baseline_connection_state_checks": 1065,
+  "baseline_total_seconds": 161.22587704658508,
+  "baseline_rrt_expanded": false,
+  "patched_status": "INDETERMINATE",
+  "patched_failure": {
+    "reason": "OFFLINE_CONNECTION_RESOURCE_LIMIT"
+  },
+  "patched_total_seconds": 442.27923307567835,
+  "patched_connection_seconds": 299.9883557651192,
+  "patched_connection_state_checks": 10948,
+  "patched_total_state_checks": 17896,
+  "rrt_connections_started": [
+    {
+      "elapsed_s": 158.8386562280357,
+      "event": "connection_started",
+      "stage": "transit",
+      "purpose": "FREE_LOADED_TRANSFER",
+      "strategy": "RRT_CONNECT",
+      "iteration_budget": 200,
+      "seed": 2106872244
+    }
+  ],
+  "rrt_connections_finished": [],
+  "last_rrt_checkpoint": {
+    "elapsed_s": 435.9613347649574,
+    "stage": "transit",
+    "purpose": "FREE_LOADED_TRANSFER",
+    "strategy": "RRT_CONNECT",
+    "event": "rrt_checkpoint",
+    "extension_attempts": 29,
+    "edge_validation_calls": 29,
+    "edge_state_samples": 9690
+  },
+  "rrt_extension_count_semantics": "LOWER_BOUND_AT_LAST_FLUSHED_CHECKPOINT_WHEN_INTERRUPTED",
+  "completed_rrt_iterations": null,
+  "local_shared_after": 240,
+  "source_unchanged": true,
+  "inputs_unchanged": true,
+  "cpu": {
+    "passed": 346,
+    "skipped": 22,
+    "failed": 0,
+    "seconds": 24.55,
+    "run": {
+      "commit": "01a92826b005a8590599cfa4cdefa557dba8e4ba",
+      "command": [
+        "/root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-rs",
+        "tests/test_rrt_status_propagation.py",
+        "tests/test_stage_single_carton_observability.py",
+        "tests/test_stage_motion_policy.py",
+        "tests/test_motion_validation.py",
+        "tests/test_validation_prefix.py",
+        "tests/test_validation_kernel_official.py",
+        "tests/test_planner.py",
+        "tests/test_layout_trajectory.py",
+        "tests/test_feasible_result_budget.py",
+        "tests/test_pinocchio_broadphase.py",
+        "tests/test_lookahead_contact.py",
+        "tests/test_validation_binding.py",
+        "tests/test_extraction_boundary_guard.py",
+        "tests/test_conveyor_placement.py",
+        "tests/test_adaptive_release_motion.py",
+        "tests/test_default_history_adaptation.py",
+        "tests/test_wrist_transfer_quality.py",
+        "tests/test_contact_unloading_runner.py",
+        "tests/test_proof_of_concept.py",
+        "tests/test_poc_release_reserves.py",
+        "tests/test_ideal_release_handoff.py",
+        "tests/test_approach_entry_schedule.py",
+        "tests/test_local_transit_budget_scope.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 24.804845590144396,
+      "archive_files_unchanged": true
+    }
+  },
+  "full_new_cycle": false,
+  "execution_export": false,
+  "independent_preflight": false,
+  "bundle_readback": false,
+  "isaac_executed": false,
+  "full_cycle_not_started_reason": "NO_VALID_LOADED_CONNECTION",
+  "setup_note": "One premature archive extraction caused an import SyntaxError before planning. Log retained; complete archive and all 269 files verified before the actual patched fragment run."
+}

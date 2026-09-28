@@ -1,0 +1,66 @@
+{
+  "server_directory": "/root/autodl-tmp/m710-local-transit-budget-20260928/evidence",
+  "source_directory": "/root/autodl-tmp/m710-local-transit-budget-20260928/source-01a9282",
+  "files": {
+    "summary.json": {
+      "sha256": "b6654137c4cb6893f782160cce295832dfbf54874a4feb7b9c7499991827bfe6",
+      "bytes": 24878
+    },
+    "source_01a9282.json": {
+      "sha256": "87e1e20aef32911b6d91b82db0ecc25be3c176ee084a566daa6be12372d6acda",
+      "bytes": 30160
+    },
+    "cpu_01a9282.txt": {
+      "sha256": "8381ff097b3fdce5fa5f3cb614f0fa4c2a1cc6e198245f8d4854963863462caf",
+      "bytes": 1565
+    },
+    "cpu_run_01a9282.json": {
+      "sha256": "3f65300dc1ece4fa198f8d37eddea1b1f36e025414d5c9aeeacca92e03f5ec86",
+      "bytes": 1277
+    },
+    "baseline.json": {
+      "sha256": "19d4ae08254b0da2b7ded058c9b0f6d57af138168ff44ac47edb671e47bd0ab2",
+      "bytes": 120904
+    },
+    "baseline.frozen.json": {
+      "sha256": "e7f3fd755ad82a758867f5cbd4d0d3339a3b5ab0ed85a3f9d8b4a9dfcbe45d21",
+      "bytes": 77061
+    },
+    "baseline.progress.jsonl": {
+      "sha256": "0cce2e809d523e28d8f5d70b9940414f55bd12de668a61dc2f24e2942c36710e",
+      "bytes": 69230
+    },
+    "patched.json": {
+      "sha256": "ea5e949e379f00955c9a88d370628bd58d13d588e498a1d5f9f195cd96c07787",
+      "bytes": 78497
+    },
+    "patched.frozen.json": {
+      "sha256": "d4779c4e9cb66fa60ac89e6e8128e66f595b135d80252bfb3c6f08df9a586d96",
+      "bytes": 77289
+    },
+    "patched.progress.jsonl": {
+      "sha256": "644648a31864cfca3103443d199969651b8f9f85cc7201938c632c597333ba02",
+      "bytes": 139788
+    },
+    "account_baseline.json": {
+      "sha256": "0f0b1926f60479b52bc47b01b7bb2338bae9796b0c5340488b674e837f4d7713",
+      "bytes": 6114
+    },
+    "account_patched.json": {
+      "sha256": "51568e1ba2d454a24f4edb7eb40e0a6e75fe5feefc43f02783943333d1201e77",
+      "bytes": 7157
+    },
+    "account_probe.py": {
+      "sha256": "48f233d2fb86ad656db16563aafb02f6932f4ad75096d804bbdc161aacc5f81b",
+      "bytes": 2753
+    },
+    "summarize.py": {
+      "sha256": "ac9d596e4aff24955d85c9bc22fd883729fe66cd26fa464c7b526cd5a2317df8",
+      "bytes": 3383
+    },
+    "setup_incomplete_upload.log": {
+      "sha256": "b2c8e65bcfcbc6047127c9a59e37cd6dd83bdb9efe9dbc1b1a2aebb80b21eb2d",
+      "bytes": 1033
+    }
+  }
+}

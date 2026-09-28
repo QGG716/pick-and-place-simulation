@@ -1,0 +1,6 @@
+# Preserve raw evidence and source hashes across Windows/Linux checkouts.
+*.json -text
+*.jsonl -text
+*.log -text
+*.txt -text
+*.py -text

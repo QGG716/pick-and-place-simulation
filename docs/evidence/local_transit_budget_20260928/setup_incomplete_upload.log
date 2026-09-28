@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/root/autodl-tmp/m710-local-transit-budget-20260928/source-01a9282/tools/probe_m710_loaded_transit.py", line 18, in <module>
+    from tools.probe_m710_free_approach import rebuild, write
+  File "/root/autodl-tmp/m710-local-transit-budget-20260928/source-01a9282/tools/probe_m710_free_approach.py", line 18, in <module>
+    from unloading_sim.layout_single_carton import (load_layout_motion_policy, build_verified_motion_input,
+  File "/root/autodl-tmp/m710-local-transit-budget-20260928/source-01a9282/src/unloading_sim/__init__.py", line 6, in <module>
+    from .grasp import PickPlan, SuctionGraspCandidate, plan_pick
+  File "/root/autodl-tmp/m710-local-transit-budget-20260928/source-01a9282/src/unloading_sim/grasp.py", line 13, in <module>
+    from .planner import PlanResult, RRTConnectPlanner
+  File "/root/autodl-tmp/m710-local-transit-budget-20260928/source-01a9282/src/unloading_sim/planner.py", line 361
+    def shortcut(self,
+                ^
+SyntaxError: '(' was never closed

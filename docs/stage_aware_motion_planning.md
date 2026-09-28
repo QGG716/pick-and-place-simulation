@@ -622,3 +622,72 @@ fresh tracker and the unchanged reserve. It runs only the first production
 receiver connection and records an external resource interruption separately
 from geometric failure. Prefix reuse is explicitly offline evidence, not a new
 full-cycle plan or measured physical state.
+
+The final implementation tested is **01a92826b005a8590599cfa4cdefa557dba8e4ba**.
+The immutable server archive SHA-256 is
+`260a12b542cd5650f5a239c22c1ff80a3258945197adca0cfb1582a0f64268c1`;
+all 269 archived source/config/test/tool files matched after the tests and
+fragment run. The later evidence/documentation commit changes no implementation.
+The final combined 23-file CPU run passed **346**, skipped **22**, failed **0**
+in **24.55 s**. This includes the 17 new regressions; earlier subset runs are
+not added to that count. Skips still require unavailable private historical
+inputs. The five previously identified seam failures were not included or fixed.
+
+Original-scene evidence is under
+[evidence/local_transit_budget_20260928](evidence/local_transit_budget_20260928/).
+The baseline executable archive is `0bfd708`, whose `src/tests/tools/configs`
+and `pyproject.toml` are identical to review baseline `20c7a375`. Its production
+branch reconstructs only the missing 42-node controlled extraction from the
+saved successful contact endpoint, retaining actual contact selection and
+attachment capture. The patched run rechecks those extraction edges with a
+fresh production tracker and the original reserve before `_finish_place_branch`.
+Both recover the exact original start (radians):
+`[0.9862454563859637, -0.6632776457504109, -0.4577065817616128,
+-1.7051491620249044, 0.9999112930290731, -1.3257242474822586]`.
+The original first longitudinal receiver, 0.025 m ideal release-height
+candidate, preplace transform, three IK endpoint attempts, mask and remaining
+scene are preserved in the frozen input. The transit context remains
+`f1510ea7db557b10af16da59f42e17d90840def9227e280c83f918507feb0bb6`.
+No `fully_released` flag was manually assigned. Missing original request work
+counter data is explicitly unknown; the current POC request work limit is
+unlimited (null). These are planned states, not physically measured extraction.
+
+| Original local producer account | Before | After |
+| --- | ---: | ---: |
+| Required / allocated samples | 121 / 80 | 121 / 80 |
+| Actually consumed / candidate remaining | 0 / 80 | 0 / 80 |
+| Shared remaining | 240 | 240 |
+| Status | INDETERMINATE | INDETERMINATE |
+| Interrupt request | yes | no (CANDIDATE, continuation allowed) |
+
+The same-input producer comparison invokes the real method with the recovered
+attachment and checks the exact transit context ID. The baseline connection
+stopped after **16.517 s / 1,065 state checks**, with no RRT. The patched
+production receiver connection reached real `RRT_CONNECT`, seed **2106872244**,
+candidate allowance **200** within the unchanged 600 receiver / 1,800 placement
+iteration accounts. Its last flushed checkpoint recorded **29 extensions
+started**, **29 edge-validation calls**, and **9,690 edge state samples**.
+These are lower bounds at that checkpoint; completed RRT iterations are unknown
+because interruption precedes normal planner return. In particular, the
+connector's zero *completed-return* iteration counter is not zero search work.
+
+The patched connection used **299.988 s / 10,948 actual state checks** before
+the explicit **300 s offline connection resource limit** interrupted it. Total
+probe time was **442.279 s**, including extraction revalidation; total state
+checks were 17,896. It returned **INDETERMINATE /
+OFFLINE_CONNECTION_RESOURCE_LIMIT**. This longer duration represents newly
+allowed search, not a matched successful-path speed comparison. The shared
+Cartesian pool remains 240. Cancellation, stale bindings and request exhaustion
+still stop subsequent generation in the final CPU regressions. Analytic RRT
+regressions obtained valid detours; the original FANUC fragment has **not** yet
+obtained a valid loaded connection and is not proven unreachable.
+
+Accordingly, no new normal full single-carton run, execution export, independent
+preflight, bundle readback or Isaac run was started this round. The remaining
+blocker is the expensive unresolved original loaded connection; placement and
+departure were not reworked. One premature archive extraction failed at import
+before planning; its setup log is retained separately. The actual patched run
+started only after complete archive/file verification, and its source and all
+inputs still matched at exit. Raw progress, frozen data, comparison script,
+source manifest and final CPU invocation are included; no prior fingerprint was
+rewritten and no whole-cycle success is inferred from prefix reuse.
