@@ -11,7 +11,15 @@ from unloading_sim.qualification import (
 
 
 def _passing_inputs() -> dict:
+    from unloading_sim.joint_effort import CONDITIONS, JointEffortMonitor, projected_source
+    effort = JointEffortMonitor(["J1", "J2"], [10., 10.], "unit fixture", .01,
+        projected_source(isaac_version="6.0.1.0", tensor_version="110.1.13", backend="CPU_PhysX"))
+    effort.observe(joint_names=["J1", "J2"], physics_step=1, simulation_time=.01,
+        observation_phase="post_physics_step", raw_values=[2., 8.],
+        applicability=dict.fromkeys(CONDITIONS, True))
     return {
+        "joint_effort_monitor": effort,
+        "required_effort_steps": 1,
         "policy": ReplayQualificationPolicy(),
         "full_schedule_replayed": True,
         "collision_scope_complete": True,

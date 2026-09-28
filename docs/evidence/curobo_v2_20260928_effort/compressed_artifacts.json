@@ -1,0 +1,23 @@
+[
+  {
+    "raw_path": "probe_02/probe.json",
+    "raw_bytes": 1860407,
+    "raw_sha256": "d9c712ed16ea0d9a5071efbe2aae7af64c4d304914adc292025692d74dcb3ee6",
+    "stored_path": "probe_02\\probe.json.gz",
+    "stored_sha256": "39a34826cfd0f3113d02c1becb5a4bbad9912a4a3d300dc791f32f1bf75d82a8"
+  },
+  {
+    "raw_path": "probe_03/probe.json",
+    "raw_bytes": 1866967,
+    "raw_sha256": "2d6bc6ac476eec39657752fd7c55a0ca5e30be83d4d9dc8d42f04b8543c96dc3",
+    "stored_path": "probe_03\\probe.json.gz",
+    "stored_sha256": "4ace9f963e36fca2416efdab620b7829035ed1f9f33e5342831a29845b163a31"
+  },
+  {
+    "raw_path": "probe_03/joint_effort_observations.jsonl",
+    "raw_bytes": 1725776,
+    "raw_sha256": "e52fa40d42e509372136fe6d8bc87255100957541137ceebc26745a226d82c8e",
+    "stored_path": "probe_03\\joint_effort_observations.jsonl.gz",
+    "stored_sha256": "5f3ecb13254bcc05de26a24246d29f2b234aa142074215c60490ac6799149f4a"
+  }
+]

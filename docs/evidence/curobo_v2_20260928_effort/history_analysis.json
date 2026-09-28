@@ -1,0 +1,410 @@
+{
+  "schema": "saved_joint_effort_analysis_v1",
+  "analysis_mode": "OFFLINE_REANALYSIS_NOT_HISTORICAL_RUNTIME_MONITOR",
+  "sources": [
+    {
+      "path": "docs/evidence/curobo_v2_20260928_isaac/trial/isaac_after_import_fix/joint_tracking.csv.gz",
+      "sha256": "6377f7957d18811d1232f4eddaf4cbf753c230b03757327ac6430472e08cc615"
+    },
+    {
+      "path": "docs/evidence/curobo_v2_20260928_isaac/physical_trial_summary.json",
+      "sha256": "0c175ef8ec1a951cdf4e70aa3940c0373a86068371c0cf1478782cb9c948132c"
+    },
+    {
+      "path": "docs/evidence/curobo_v2_20260928_isaac/trial/execution/replay_bundle.json",
+      "sha256": "0a3c117b3eb14b45df88f0f1eb59949002715e5c6cd04e860f60d505b2e95ada"
+    },
+    {
+      "path": "docs/evidence/curobo_v2_20260928_isaac/trial/isaac_after_import_fix/runtime_feedback.json",
+      "sha256": "b9167fb7e74a3d47e552df53a4c1dec61440c11e9e60d8342545485035cacf92"
+    }
+  ],
+  "decompressed_csv_sha256": "faff91916bfd1460ae93bb22edf581bab20c8d121bf0a7161072cdcfc4bb66c9",
+  "csv_header": [
+    "time_s",
+    "command_J1_rad",
+    "command_J2_rad",
+    "command_J3_rad",
+    "command_J4_rad",
+    "command_J5_rad",
+    "command_J6_rad",
+    "measured_J1_rad",
+    "measured_J2_rad",
+    "measured_J3_rad",
+    "measured_J4_rad",
+    "measured_J5_rad",
+    "measured_J6_rad",
+    "measured_velocity_J1_rad_s",
+    "measured_velocity_J2_rad_s",
+    "measured_velocity_J3_rad_s",
+    "measured_velocity_J4_rad_s",
+    "measured_velocity_J5_rad_s",
+    "measured_velocity_J6_rad_s",
+    "drive_input_effort_J1_nm",
+    "drive_input_effort_J2_nm",
+    "drive_input_effort_J3_nm",
+    "drive_input_effort_J4_nm",
+    "drive_input_effort_J5_nm",
+    "drive_input_effort_J6_nm",
+    "model_inverse_dynamics_J1_nm",
+    "model_inverse_dynamics_J2_nm",
+    "model_inverse_dynamics_J3_nm",
+    "model_inverse_dynamics_J4_nm",
+    "model_inverse_dynamics_J5_nm",
+    "model_inverse_dynamics_J6_nm",
+    "projected_constraint_reaction_J1_nm",
+    "projected_constraint_reaction_J2_nm",
+    "projected_constraint_reaction_J3_nm",
+    "projected_constraint_reaction_J4_nm",
+    "projected_constraint_reaction_J5_nm",
+    "projected_constraint_reaction_J6_nm",
+    "external_joint_load_residual_J1_nm",
+    "external_joint_load_residual_J2_nm",
+    "external_joint_load_residual_J3_nm",
+    "external_joint_load_residual_J4_nm",
+    "external_joint_load_residual_J5_nm",
+    "external_joint_load_residual_J6_nm",
+    "gravity_compensation_J1_nm",
+    "gravity_compensation_J2_nm",
+    "gravity_compensation_J3_nm",
+    "gravity_compensation_J4_nm",
+    "gravity_compensation_J5_nm",
+    "gravity_compensation_J6_nm",
+    "command_velocity_J1_rad_s",
+    "command_velocity_J2_rad_s",
+    "command_velocity_J3_rad_s",
+    "command_velocity_J4_rad_s",
+    "command_velocity_J5_rad_s",
+    "command_velocity_J6_rad_s",
+    "attached_payload_gravity_feedforward_J1_nm",
+    "attached_payload_gravity_feedforward_J2_nm",
+    "attached_payload_gravity_feedforward_J3_nm",
+    "attached_payload_gravity_feedforward_J4_nm",
+    "attached_payload_gravity_feedforward_J5_nm",
+    "attached_payload_gravity_feedforward_J6_nm"
+  ],
+  "joint_names": [
+    "J1",
+    "J2",
+    "J3",
+    "J4",
+    "J5",
+    "J6"
+  ],
+  "physics_steps": 47361,
+  "first_time_s": 0.004166666666666667,
+  "last_time_s": 197.3375,
+  "maximum_grid_error_s": 2.842170943040401e-14,
+  "physics_step_origin": "inferred from ordered CSV rows and verified 240Hz time grid; not originally a CSV column",
+  "observation_phase_basis": "archived adapter reads after world.step; simulation_time=(step+1)*physics_dt",
+  "channels": {
+    "drive_input_effort": {
+      "J1": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 0.0,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J2": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 0.0,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J3": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 0.0,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J4": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 0.0,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J5": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 0.0,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J6": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 0.0,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      }
+    },
+    "projected_constraint_reaction": {
+      "J1": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 86.85906982421875,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J2": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 1557.962158203125,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J3": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 1298.963623046875,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J4": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 372.9794616699219,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J5": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 320.432373046875,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J6": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 65.80720520019531,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      }
+    },
+    "model_inverse_dynamics": {
+      "J1": {
+        "finite_samples": 47360,
+        "missing_samples": 1,
+        "peak_abs_nm": 85.18645387162512,
+        "first_valid_time_s": 0.008333333333333333,
+        "last_valid_time_s": 197.3375
+      },
+      "J2": {
+        "finite_samples": 47360,
+        "missing_samples": 1,
+        "peak_abs_nm": 1389.2266895214855,
+        "first_valid_time_s": 0.008333333333333333,
+        "last_valid_time_s": 197.3375
+      },
+      "J3": {
+        "finite_samples": 47360,
+        "missing_samples": 1,
+        "peak_abs_nm": 690.1055782433882,
+        "first_valid_time_s": 0.008333333333333333,
+        "last_valid_time_s": 197.3375
+      },
+      "J4": {
+        "finite_samples": 47360,
+        "missing_samples": 1,
+        "peak_abs_nm": 56.85577069346213,
+        "first_valid_time_s": 0.008333333333333333,
+        "last_valid_time_s": 197.3375
+      },
+      "J5": {
+        "finite_samples": 47360,
+        "missing_samples": 1,
+        "peak_abs_nm": 69.18861735615222,
+        "first_valid_time_s": 0.008333333333333333,
+        "last_valid_time_s": 197.3375
+      },
+      "J6": {
+        "finite_samples": 47360,
+        "missing_samples": 1,
+        "peak_abs_nm": 24.05769456554532,
+        "first_valid_time_s": 0.008333333333333333,
+        "last_valid_time_s": 197.3375
+      }
+    },
+    "external_joint_load_residual": {
+      "J1": {
+        "finite_samples": 0,
+        "missing_samples": 47361,
+        "peak_abs_nm": null,
+        "first_valid_time_s": null,
+        "last_valid_time_s": null
+      },
+      "J2": {
+        "finite_samples": 0,
+        "missing_samples": 47361,
+        "peak_abs_nm": null,
+        "first_valid_time_s": null,
+        "last_valid_time_s": null
+      },
+      "J3": {
+        "finite_samples": 0,
+        "missing_samples": 47361,
+        "peak_abs_nm": null,
+        "first_valid_time_s": null,
+        "last_valid_time_s": null
+      },
+      "J4": {
+        "finite_samples": 0,
+        "missing_samples": 47361,
+        "peak_abs_nm": null,
+        "first_valid_time_s": null,
+        "last_valid_time_s": null
+      },
+      "J5": {
+        "finite_samples": 0,
+        "missing_samples": 47361,
+        "peak_abs_nm": null,
+        "first_valid_time_s": null,
+        "last_valid_time_s": null
+      },
+      "J6": {
+        "finite_samples": 0,
+        "missing_samples": 47361,
+        "peak_abs_nm": null,
+        "first_valid_time_s": null,
+        "last_valid_time_s": null
+      }
+    },
+    "gravity_compensation": {
+      "J1": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 0.0005091605708003044,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J2": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 1386.6650390625,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J3": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 601.5339965820312,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J4": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 55.20477294921875,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J5": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 67.53871154785156,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      },
+      "J6": {
+        "finite_samples": 47361,
+        "missing_samples": 0,
+        "peak_abs_nm": 0.31057941913604736,
+        "first_valid_time_s": 0.004166666666666667,
+        "last_valid_time_s": 197.3375
+      }
+    }
+  },
+  "effort_evidence": {
+    "schema": "joint_effort_evidence_v1",
+    "status": "NOT_EVALUATED",
+    "reason": "observation semantics, applicability or required coverage incomplete",
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "source": {
+      "quantity_kind": "dof_projected_joint_effort",
+      "units": "Nm",
+      "axis": "signed_positive_DOF_motion_axis_child_joint_frame",
+      "source_api": "isaacsim.core.experimental.prims.Articulation.get_dof_projected_joint_forces",
+      "isaac_version": "6.0.1.0",
+      "tensor_version": "110.1.13",
+      "backend": "CPU_PhysX",
+      "conversion": "identity_no_sign_or_scale_adjustment",
+      "semantics_evidence": "docs/evidence/curobo_v2_20260928_effort/README.md"
+    },
+    "limits_nm": [
+      8000.0,
+      10000.0,
+      5000.0,
+      2000.0,
+      1000.0,
+      900.0
+    ],
+    "limit_source": "docs/evidence/curobo_v2_20260928_isaac/trial/execution/replay_bundle.json:metadata.joint_effort_limits_nm",
+    "configured_limit_readback_nm": null,
+    "configured_limits_read_back": false,
+    "physics_dt": 0.004166666666666667,
+    "observation_phase": "post_physics_step",
+    "comparison_scope": "implicit drive output only under all documented source conditions",
+    "required_steps": 47361,
+    "observed_samples": 47361,
+    "valid_observation_samples": 47361,
+    "comparable_samples": 0,
+    "full_coverage": false,
+    "maximum_ratio": null,
+    "first_failure": null,
+    "invalid_reasons": {
+      "UNPROVEN_ZERO_JOINT_FRICTION": 47361,
+      "UNPROVEN_INACTIVE_POSITION_LIMITS": 47361,
+      "UNPROVEN_INACTIVE_VELOCITY_LIMITS": 47361,
+      "UNPROVEN_NO_CONTACT_OR_EXTERNAL_JOINT_CONSTRAINTS": 47361,
+      "UNPROVEN_REVOLUTE_TREE_AXIS_MAPPING_VERIFIED": 47361
+    }
+  },
+  "projected_diagnostic_peak_ratios": [
+    0.010857383728027343,
+    0.1557962158203125,
+    0.259792724609375,
+    0.18648973083496093,
+    0.320432373046875,
+    0.0731191168891059
+  ],
+  "projected_diagnostic_is_drive_qualification": false,
+  "inverse_dynamics_missing_reason": "first post-step sample has no previous velocity; subsequent samples retained",
+  "external_residual_missing_reason": "deliberately unavailable; no calibrated subtraction identifying external load",
+  "historical_conclusions": {
+    "workflow_cycle_completed": true,
+    "physical_cycle_completed": false,
+    "qualification_passed": false,
+    "new_target_execution_counts": {
+      "target": "carton_l07_c04",
+      "actual_grasp": 1,
+      "actual_release": 1,
+      "actual_received": 0,
+      "ideal_received": 1,
+      "ideal_outfed": 1,
+      "workflow_completed": 1
+    },
+    "runtime_stop_reason": null
+  },
+  "qualification_measured_failures": [],
+  "qualification_not_evaluated": [
+    "joint_efforts_within_limit"
+  ],
+  "missing_evidence": [
+    "per-step separated implicit drive output or validated multi-DOF decomposition",
+    "historical joint friction/limit contribution readback and applicability",
+    "historical incoming 6D wrench and external attachment reaction decomposition"
+  ],
+  "no_measured_overload_conclusion": true
+}

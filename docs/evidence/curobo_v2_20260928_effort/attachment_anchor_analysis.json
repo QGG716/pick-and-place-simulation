@@ -1,0 +1,94 @@
+{
+  "analysis_mode": "OFFLINE_ANCHOR_RECONSTRUCTION_NOT_SOLVER_IMPULSE_MEASUREMENT",
+  "source_sha256": {
+    "docs\\evidence\\curobo_v2_20260928_isaac\\trial\\isaac_after_import_fix\\execution_events.json": "0e11e6f6372480ef294f66a6220e2de12524f3ce409ba2e648d743f2715f3127",
+    "docs\\evidence\\curobo_v2_20260928_isaac\\trial\\execution\\replay_bundle.json": "0a3c117b3eb14b45df88f0f1eb59949002715e5c6cd04e860f60d505b2e95ada"
+  },
+  "event_time_s": 35.55416666666667,
+  "body0": "J6_link",
+  "body1": "same original carton_l07_c04",
+  "exclude_from_articulation": true,
+  "body1_anchor": "identity at original carton body frame",
+  "grasp_from_contact": [
+    [
+      0,
+      0,
+      1,
+      0.39249999999999996
+    ],
+    [
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      -1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "reconstructed_body0_anchor_world": [
+    [
+      0.9999999696189739,
+      -0.00024641866309223014,
+      6.316152803888605e-06,
+      0.2993111014366151
+    ],
+    [
+      0.00024641866766393324,
+      0.9999999696386587,
+      -7.230433767883978e-07,
+      0.840065598487854
+    ],
+    [
+      -6.315974440739426e-06,
+      7.245997727802844e-07,
+      0.9999999999797918,
+      2.250040054321289
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "recorded_body1_anchor_world": [
+    [
+      0.9999999696189739,
+      -0.00024641866309223003,
+      6.316152803888596e-06,
+      0.299311101436615
+    ],
+    [
+      0.0002464186676639332,
+      0.9999999696386582,
+      -7.23043376788396e-07,
+      0.840065598487854
+    ],
+    [
+      -6.315974440739455e-06,
+      7.245997727802924e-07,
+      0.9999999999797917,
+      2.250040054321289
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "position_residual_m": 1.1102230246251565e-16,
+  "rotation_matrix_max_abs_residual": 4.440892098500626e-16,
+  "warning_preserved": "docs\\evidence\\curobo_v2_20260928_isaac\\trial\\isaac_after_import_fix.log:408",
+  "conclusion": "Recorded same-step anchors coincide numerically. This does not establish solver creation-time equality or quantify the CreateJoint warning impulse. No attachment transform changed. External fixed-joint reaction acts on J6 and the carton; no separate historical solver-constraint wrench was saved."
+}

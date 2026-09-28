@@ -91,6 +91,7 @@ EXECUTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/stack_clearance.py",
     "src/unloading_sim/m710_replay_contract.py",
     "src/unloading_sim/qualification.py",
+    "src/unloading_sim/joint_effort.py",
     "scripts/export_isaac_fanuc_replay.py",
     "scripts/isaacsim_fanuc_replay.py",
 )

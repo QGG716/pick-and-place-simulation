@@ -1,0 +1,208 @@
+{
+  "python": "3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]",
+  "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+  "distributions": {
+    "isaacsim": "6.0.1.0",
+    "isaacsim-kernel": "6.0.1.0",
+    "torch": "2.11.0+cu128",
+    "numpy": "2.3.1",
+    "warp-lang": "1.13.0"
+  },
+  "sources": [
+    {
+      "path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/exts/isaacsim.core.experimental.prims/isaacsim/core/experimental/prims/impl/articulation.py",
+      "sha256": "372ab35464b340b0bce7d0a06f856f6485dc8776e566662241e5746086707d0a",
+      "methods": [
+        {
+          "name": "set_dof_efforts",
+          "line": 1752,
+          "forwarded_calls": [
+            "get_dof_actuation_forces",
+            "set_dof_actuation_forces"
+          ]
+        },
+        {
+          "name": "get_dof_efforts",
+          "line": 1812,
+          "forwarded_calls": [
+            "get_dof_actuation_forces"
+          ]
+        },
+        {
+          "name": "get_dof_projected_joint_forces",
+          "line": 1855,
+          "forwarded_calls": [
+            "get_dof_projected_joint_forces"
+          ]
+        },
+        {
+          "name": "get_link_incoming_joint_force",
+          "line": 1901,
+          "forwarded_calls": [
+            "get_link_incoming_joint_force"
+          ]
+        },
+        {
+          "name": "get_dof_max_efforts",
+          "line": 2917,
+          "forwarded_calls": [
+            "get_dof_max_forces"
+          ]
+        }
+      ],
+      "license_identifier": "Apache-2.0"
+    },
+    {
+      "path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/extscache/omni.physics.tensors-110.1.13+110.1.2.lx64.r.cp312.u7f4/omni/physics/tensors/api.py",
+      "sha256": "b913fdb1a3c0cf04b62aa01d6ceaf7d96cfe577a510d0e02b71485018661c903",
+      "methods": [
+        {
+          "name": "get_dof_actuation_forces",
+          "line": 1963,
+          "forwarded_calls": [
+            "get_dof_actuation_forces"
+          ]
+        },
+        {
+          "name": "get_dof_projected_joint_forces",
+          "line": 1991,
+          "forwarded_calls": [
+            "get_dof_projected_joint_forces"
+          ]
+        },
+        {
+          "name": "get_link_incoming_joint_force",
+          "line": 2224,
+          "forwarded_calls": [
+            "get_link_incoming_joint_force"
+          ]
+        }
+      ],
+      "license_identifier": "BSD-3-Clause"
+    }
+  ],
+  "extensions": [
+    {
+      "path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/exts/isaacsim.core.experimental.prims/config/extension.toml",
+      "package": {
+        "version": "1.8.9",
+        "category": "Simulation",
+        "title": "Isaac Sim Core (Prims)",
+        "description": "The Core Prims extension provides a set of APIs to wrap one or more USD prims in the stage in order to manipulate (read/write) their attributes and perform other operations during the simulation.",
+        "authors": [
+          "NVIDIA"
+        ],
+        "repository": "",
+        "keywords": [
+          "isaacsim",
+          "core",
+          "prims"
+        ],
+        "changelog": "docs/CHANGELOG.md",
+        "readme": "docs/Overview.md",
+        "preview_image": "data/preview.png",
+        "icon": "data/icon.png",
+        "writeTarget": {
+          "kit": true
+        }
+      },
+      "sha256": "d45aaea7fc0d7c23f099198c06ab83467eec6837a18b16cc07f65908d4432f27"
+    },
+    {
+      "path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/extscache/omni.physx-110.1.13+110.1.2.lx64.r.cp312.u7f4/config/extension.toml",
+      "package": {
+        "title": "PhysX Core",
+        "description": "PhysX 5 integration code.",
+        "version": "110.1.13",
+        "authors": [
+          "NVIDIA"
+        ],
+        "repository": "",
+        "keywords": [
+          "physics",
+          "physx"
+        ],
+        "category": "simulation",
+        "icon": "data/icon.png",
+        "preview_image": "data/preview.png",
+        "changelog": "docs/CHANGELOG.md",
+        "readme": "docs/README.md",
+        "support_level": "Core",
+        "writeTarget": {
+          "kit": true,
+          "python": true,
+          "usd": true
+        }
+      },
+      "sha256": "36fecddd676f1e5de19157684113afe94a4a90b8fbedd59827c164abaf7b2f9e"
+    },
+    {
+      "path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/extscache/omni.physx.tensors-110.1.13+110.1.2.lx64.r.cp312.u7f4/config/extension.toml",
+      "package": {
+        "version": "110.1.13",
+        "authors": [
+          "NVIDIA"
+        ],
+        "title": "PhysX Tensor API Implementation",
+        "description": "PhysX Tensor API Implementation",
+        "repository": "",
+        "keywords": [
+          "omniverse",
+          "kit",
+          "physics",
+          "physx",
+          "tensors"
+        ],
+        "category": "simulation",
+        "icon": "data/icon.png",
+        "preview_image": "data/preview.png",
+        "changelog": "docs/CHANGELOG.md",
+        "readme": "docs/README.md",
+        "support_level": "Example",
+        "writeTarget": {
+          "kit": true,
+          "python": true,
+          "usd": true
+        }
+      },
+      "sha256": "52507315b15bf3118396120e4747cf0695317808ddf8f3c0b7175aad4bfc060f"
+    },
+    {
+      "path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/extscache/omni.physics.tensors-110.1.13+110.1.2.lx64.r.cp312.u7f4/config/extension.toml",
+      "package": {
+        "version": "110.1.13",
+        "authors": [
+          "NVIDIA"
+        ],
+        "title": "Tensor Interface for Physics Simulations",
+        "description": "Tensor Interface for Physics Simulations",
+        "repository": "",
+        "keywords": [
+          "omniverse",
+          "kit",
+          "physics",
+          "tensors"
+        ],
+        "category": "simulation",
+        "icon": "data/icon.png",
+        "preview_image": "data/preview.png",
+        "changelog": "docs/CHANGELOG.md",
+        "readme": "docs/README.md",
+        "support_level": "Example",
+        "writeTarget": {
+          "kit": true,
+          "python": true,
+          "usd": true
+        }
+      },
+      "sha256": "1ac0ebd2fde3c3e722cba2614d638034d0b48f2d6cb3f0bb0e840d2dc0a8843d"
+    }
+  ],
+  "native_backend": {
+    "path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/extscache/omni.physx.tensors-110.1.13+110.1.2.lx64.r.cp312.u7f4/bin/libomni.physx.tensors.plugin.so",
+    "sha256": "109a05de8818894e16b026135743f010ada31c490009c01489d9b0f836882adc",
+    "implementation_visibility": "compiled binary; Python forwarding inspected, native contribution decomposition not exposed"
+  },
+  "unabridged_audit_server_path": "/root/autodl-tmp/curobo-v2-20260928-effort/installed_api.json",
+  "unabridged_audit_sha256": "317ce1e7d1fa9c9cd39b147913ba06b306afb629768376c1e2733cd0e1e51555"
+}

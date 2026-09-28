@@ -2696,6 +2696,13 @@ try:
         effort_limits = effort_limits[command_order]
         articulation.set_dof_max_efforts(effort_limits[None, :])
     articulation.set_dof_max_velocities(velocity_limits[None, :])
+    from unloading_sim.joint_effort import (
+        JointEffortMonitor, collect_isaac_effort_context, collect_isaac_effort_sample)
+    import omni.physics.tensors
+    effort_context = collect_isaac_effort_context(articulation, omni.physics.tensors,
+        world.get_physics_context(), [prim for prim in stage.Traverse() if prim.IsA(UsdPhysics.Joint)])
+    effort_source = effort_context["source"]
+    effort_readback = effort_context["configured_limit_readback_nm"]
     # These well-damped gains avoid payload shake.  Contact preload belongs
     # in the geometric grasp plan; increasing J3 stiffness to manufacture
     # contact clearance changed the post-release posture enough for a carton
@@ -2823,6 +2830,7 @@ try:
         "adapter_sha256": _sha256_path(Path(__file__)),
         "physics_helpers_sha256": _sha256_path(project_root / "src/unloading_sim/m710_replay_physics.py"),
         "qualification_sha256": _sha256_path(project_root / "src/unloading_sim/qualification.py"),
+        "joint_effort_sha256": _sha256_path(project_root / "src/unloading_sim/joint_effort.py"),
         "execution_source_commit": os.environ.get("M710_EXECUTION_SOURCE_COMMIT"),
     }
 
@@ -3482,6 +3490,11 @@ try:
         if final_ideal_segment:
             physical_runtime_limit += 60.0
         physics_steps = int(math.ceil(physical_runtime_limit / physics_dt)) + 1
+        effort_monitor = JointEffortMonitor(discovered_joint_names, effort_limits.tolist(),
+            "replay_bundle.metadata.joint_effort_limits_nm in discovered DOF order", physics_dt,
+            effort_source, effort_readback)
+        effort_records = open(args.output / "joint_effort_observations.jsonl", "w", encoding="utf-8", buffering=1)
+        (args.output / "joint_effort_context.json").write_text(json.dumps(effort_context, indent=2), encoding="utf-8")
         measured_rows: list[np.ndarray] = []
         commanded_rows: list[np.ndarray] = []
         commanded_velocity_rows: list[np.ndarray] = []
@@ -4899,18 +4912,19 @@ try:
             # explicit effort-control input channel, not the realized output of an
             # implicit position drive.  Keep it as telemetry, but never pass zeros
             # from that channel as proof that the position drive respected effort.
-            drive_effort_tensor = articulation.get_dof_efforts()
-            drive_effort_source = (
-                "isaac_articulation_commanded_effort_channel_"
-                "not_position_drive_output"
-            )
-            drive_effort = np.asarray(drive_effort_tensor.numpy(), dtype=float)[0]
-            # Projected joint forces are reactions transmitted along each revolute
-            # DOF.  They are logged independently and are not compared with the
-            # official actuator effort limit.
-            projected_forces = np.asarray(
-                articulation.get_dof_projected_joint_forces().numpy(), dtype=float
-            )[0]
+            effort_observation = collect_isaac_effort_sample(
+                articulation, effort_monitor, step + 1, simulation_time)
+            effort_observation["grasp_enabled"] = bool(grasp_enabled)
+            effort_observation["release_commanded"] = bool(release_commanded)
+            effort_records.write(json.dumps(effort_observation, allow_nan=False) + "\n")
+            drive_effort_source = "isaac_articulation_commanded_effort_channel_not_position_drive_output"
+            drive_values = effort_observation["explicit_input_nm"]
+            projected_values = effort_observation["raw_values"]
+            drive_effort = np.asarray(drive_values if drive_values is not None else
+                                     [float("nan")] * len(discovered_joint_names))
+            # Legacy CSV name retained; net active DOF effort, not passive-only reaction.
+            projected_forces = np.asarray(projected_values if projected_values is not None else
+                                         [float("nan")] * len(discovered_joint_names))
             gravity_forces = np.asarray(
                 articulation.get_dof_gravity_compensation_forces().numpy(), dtype=float
             )[0]
@@ -4968,6 +4982,10 @@ try:
             if release_clearance_failure:
                 runtime_stop_reason = release_clearance_failure
                 break
+            if effort_observation["stop_reason"]:
+                runtime_stop_reason = effort_observation["stop_reason"]
+                event_log.append(dict(event="joint_effort_stop", **effort_observation))
+                break
             if not hold_trajectory:
                 trajectory_time = (free_transit_gate.advance(trajectory_time, physics_dt, requested_duration)
                                    if free_transit_gate is not None else min(requested_duration, trajectory_time + physics_dt))
@@ -5005,6 +5023,9 @@ try:
                                   "time_s": simulation_time, "target": str(metadata["target"]),
                                   "full_pick_place_cycle_claimed": False})
                 break
+        effort_records.close()
+        (args.output / "joint_effort_evidence.json").write_text(
+            json.dumps(effort_monitor.summary(len(measured_times)), indent=2), encoding="utf-8")
         replay_wall_s = time.perf_counter() - replay_started_at
         if runtime_stop_reason is not None:
             if feedback_monitor.first_failure is None:
@@ -5271,6 +5292,8 @@ try:
             ),
             peak_joint_error_rad=float(np.max(peak_error)),
             effort_limit_ratios=effort_ratios,
+            joint_effort_monitor=effort_monitor,
+            required_effort_steps=len(measured_times),
             grasp_expected=grasp_event_time is not None,
             grasp_enabled=grasp_enabled,
             attachment_lost=surface_grip_lost_time is not None,
@@ -5564,7 +5587,7 @@ try:
                     "Isaac explicit effort-control input channel; not the realized "
                     "position-drive output torque"
                 ),
-                "projected_constraint_reaction": "Isaac PhysX projected DOF force",
+                "projected_constraint_reaction": "legacy column: net active DOF effort projected on motion axis; not isolated drive output",
                 "external_joint_load_residual": (
                     "UNAVAILABLE: projected reaction is not calibrated actuator torque"
                 ),
@@ -5818,6 +5841,10 @@ try:
             "qualification_check_details": qualification["qualification_check_details"],
             "qualification_model": qualification["model"],
             "qualification_failures": qualification_failures,
+            "qualification_measured_failures": qualification["qualification_measured_failures"],
+            "qualification_not_evaluated": qualification["qualification_not_evaluated"],
+            "qualification_blocked": qualification["qualification_blocked"],
+            "joint_effort_evidence": effort_monitor.summary(len(measured_times)),
             "grasp_frame_position_error_m": grasp_frame_position_error_m,
             "grasp_frame_rotation_error_rad": grasp_frame_rotation_error_rad,
             "gripper_attachment_raycast_distances_m": attachment_raycast_distances_m,

@@ -97,6 +97,8 @@ def evaluate_replay_qualification(
     conveyor_transport_engaged: bool | None = None,
     conveyor_transport_speed_within_tolerance: bool | None = None,
     machine_certification_status: str = "NOT_EVALUATED",
+    joint_effort_monitor=None,
+    required_effort_steps: int = 0,
 ) -> dict[str, Any]:
     """Evaluate a payload replay and retain causal dependencies in the result."""
     checks: dict[str, dict[str, Any]] = {}
@@ -154,19 +156,17 @@ def evaluate_replay_qualification(
             unit="rad",
         )
 
-    ratios = None if effort_limit_ratios is None else np.asarray(effort_limit_ratios, dtype=float)
-    if ratios is None or ratios.size == 0 or not np.all(np.isfinite(ratios)):
-        checks["joint_efforts_within_limit"] = _detail(
-            NOT_EVALUATED, "joint effort ratios are unavailable"
-        )
+    # Compatibility input is retained, but untyped ratios cannot establish a
+    # measured quantity, its applicability, or full observation coverage.
+    if joint_effort_monitor is not None:
+        from .joint_effort import JointEffortMonitor
+        if not isinstance(joint_effort_monitor, JointEffortMonitor):
+            raise TypeError("joint_effort_monitor must carry typed source and coverage evidence")
+        checks["joint_efforts_within_limit"] = joint_effort_monitor.summary(required_effort_steps)
     else:
-        maximum_ratio = float(np.max(ratios))
         checks["joint_efforts_within_limit"] = _detail(
-            PASS if maximum_ratio <= 1.0 else FAIL,
-            "joint efforts are within configured limits"
-            if maximum_ratio <= 1.0
-            else "joint effort exceeds a configured limit",
-            maximum_ratio=maximum_ratio,
+            NOT_EVALUATED, "typed joint effort source and coverage evidence are unavailable",
+            legacy_ratios_used_for_qualification=False,
         )
 
     if not grasp_expected:
@@ -335,7 +335,10 @@ def evaluate_replay_qualification(
         "model": "fail_closed_payload_qualification_v2",
         "qualification_checks": boolean_checks,
         "qualification_check_details": checks,
-        "qualification_failures": failures,
+        "qualification_failures": failures,  # compatibility: all non-passing required checks
+        "qualification_measured_failures": [name for name, detail in checks.items() if detail["status"] == FAIL],
+        "qualification_not_evaluated": [name for name, detail in checks.items() if detail["status"] == NOT_EVALUATED],
+        "qualification_blocked": [name for name, detail in checks.items() if detail["status"] == BLOCKED_BY],
         "qualification_passed": not failures,
         "simulation_qualification_passed": not failures,
         "machine_certification_status": str(machine_certification_status),

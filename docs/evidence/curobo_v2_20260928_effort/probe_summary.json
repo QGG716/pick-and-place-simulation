@@ -1,0 +1,134 @@
+{
+  "scope": "independent_channel_probe_not_business_sample",
+  "completed_physical_probes": 2,
+  "pre_physics_setup_failures": 1,
+  "first_setup_error": "probe_01 articulation path /Probe/base did not contain root API on /Probe/fixed; corrected to /Probe before physical stepping",
+  "phase_statistics": {
+    "gravity_hold": {
+      "samples": 480,
+      "first_time_s": 0.004166666666666667,
+      "last_time_s": 2.0,
+      "post_step_analytic_max_error_nm": 2.1318013827098525e-05,
+      "last_100_mean_projected_nm": -9.810018062591553,
+      "last_100_mean_analytic_nm": -9.809999861582508,
+      "last_100_mean_explicit_input_nm": 0.0,
+      "first_acceleration_missing_samples": 1
+    },
+    "external_plus_3Nm": {
+      "samples": 480,
+      "first_time_s": 2.0041666666666664,
+      "last_time_s": 4.0,
+      "post_step_analytic_max_error_nm": 0.000607803371110549,
+      "last_100_mean_projected_nm": -12.809398641586304,
+      "last_100_mean_analytic_nm": -12.809999761653211,
+      "last_100_mean_explicit_input_nm": 0.0,
+      "first_acceleration_missing_samples": 0
+    },
+    "explicit_plus_2Nm": {
+      "samples": 480,
+      "first_time_s": 4.004166666666666,
+      "last_time_s": 6.0,
+      "post_step_analytic_max_error_nm": 2.732003330407906e-05,
+      "last_100_mean_projected_nm": -9.81002140045166,
+      "last_100_mean_analytic_nm": -9.809999799388073,
+      "last_100_mean_explicit_input_nm": 2.0,
+      "first_acceleration_missing_samples": 0
+    },
+    "small_motion": {
+      "samples": 480,
+      "first_time_s": 6.004166666666666,
+      "last_time_s": 8.0,
+      "post_step_analytic_max_error_nm": 0.0010725974896725887,
+      "last_100_mean_projected_nm": -9.48836646080017,
+      "last_100_mean_analytic_nm": -9.488089931247984,
+      "last_100_mean_explicit_input_nm": 0.0,
+      "first_acceleration_missing_samples": 0
+    }
+  },
+  "shared_collector_gravity_hold": {
+    "schema": "joint_effort_evidence_v1",
+    "status": "PASS",
+    "reason": "valid comparable observation covers every required physics step",
+    "joint_names": [
+      "hinge"
+    ],
+    "source": {
+      "quantity_kind": "dof_projected_joint_effort",
+      "units": "Nm",
+      "axis": "signed_positive_DOF_motion_axis_child_joint_frame",
+      "source_api": "isaacsim.core.experimental.prims.Articulation.get_dof_projected_joint_forces",
+      "isaac_version": "6.0.1.0",
+      "tensor_version": "110.1.13",
+      "backend": "CPU_PhysX",
+      "conversion": "identity_no_sign_or_scale_adjustment",
+      "semantics_evidence": "docs/evidence/curobo_v2_20260928_effort/README.md",
+      "implementation_path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/exts/isaacsim.core.experimental.prims/isaacsim/core/experimental/prims/impl/articulation.py",
+      "implementation_sha256": "372ab35464b340b0bce7d0a06f856f6485dc8776e566662241e5746086707d0a",
+      "tensor_api_path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/extscache/omni.physics.tensors-110.1.13+110.1.2.lx64.r.cp312.u7f4/omni/physics/tensors/api.py",
+      "tensor_api_sha256": "b913fdb1a3c0cf04b62aa01d6ceaf7d96cfe577a510d0e02b71485018661c903"
+    },
+    "limits_nm": [
+      100.0
+    ],
+    "limit_source": "probe authored finite drive limit",
+    "configured_limit_readback_nm": [
+      100.0
+    ],
+    "configured_limits_read_back": true,
+    "physics_dt": 0.004166666666666667,
+    "observation_phase": "post_physics_step",
+    "comparison_scope": "implicit drive output only under all documented source conditions",
+    "required_steps": 480,
+    "observed_samples": 480,
+    "valid_observation_samples": 480,
+    "comparable_samples": 480,
+    "full_coverage": true,
+    "maximum_ratio": 0.09820616722106934,
+    "first_failure": null,
+    "invalid_reasons": {}
+  },
+  "mixed_scope_summary": {
+    "schema": "joint_effort_evidence_v1",
+    "status": "NOT_EVALUATED",
+    "reason": "observation semantics, applicability or required coverage incomplete",
+    "joint_names": [
+      "hinge"
+    ],
+    "source": {
+      "quantity_kind": "dof_projected_joint_effort",
+      "units": "Nm",
+      "axis": "signed_positive_DOF_motion_axis_child_joint_frame",
+      "source_api": "isaacsim.core.experimental.prims.Articulation.get_dof_projected_joint_forces",
+      "isaac_version": "6.0.1.0",
+      "tensor_version": "110.1.13",
+      "backend": "CPU_PhysX",
+      "conversion": "identity_no_sign_or_scale_adjustment",
+      "semantics_evidence": "docs/evidence/curobo_v2_20260928_effort/README.md",
+      "implementation_path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/exts/isaacsim.core.experimental.prims/isaacsim/core/experimental/prims/impl/articulation.py",
+      "implementation_sha256": "372ab35464b340b0bce7d0a06f856f6485dc8776e566662241e5746086707d0a",
+      "tensor_api_path": "/root/autodl-tmp/envs/isaacsim-clean/lib/python3.12/site-packages/isaacsim/extscache/omni.physics.tensors-110.1.13+110.1.2.lx64.r.cp312.u7f4/omni/physics/tensors/api.py",
+      "tensor_api_sha256": "b913fdb1a3c0cf04b62aa01d6ceaf7d96cfe577a510d0e02b71485018661c903"
+    },
+    "limits_nm": [
+      100.0
+    ],
+    "limit_source": "probe authored finite drive limit",
+    "configured_limit_readback_nm": [
+      100.0
+    ],
+    "configured_limits_read_back": true,
+    "physics_dt": 0.004166666666666667,
+    "observation_phase": "post_physics_step",
+    "comparison_scope": "implicit drive output only under all documented source conditions",
+    "required_steps": 1920,
+    "observed_samples": 1920,
+    "valid_observation_samples": 1920,
+    "comparable_samples": 1440,
+    "full_coverage": false,
+    "maximum_ratio": 0.128129243850708,
+    "first_failure": null,
+    "invalid_reasons": {
+      "UNPROVEN_ZERO_EXPLICIT_EFFORT": 480
+    }
+  }
+}

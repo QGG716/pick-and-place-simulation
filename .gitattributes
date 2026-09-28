@@ -52,3 +52,6 @@ docs/evidence/curobo_v2_20260928/** text eol=lf
 
 # Preserve raw physical-trial evidence (including video) byte-for-byte.
 docs/evidence/curobo_v2_20260928_isaac/** -text
+
+# Preserve joint-effort audit/probe source fingerprints and raw evidence.
+docs/evidence/curobo_v2_20260928_effort/** -text
