@@ -1,0 +1,17 @@
+{
+  "commit": "0bfd708489219b8635b836ab307c186faa7f03e6",
+  "command": [
+    "/root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python",
+    "tools/validate_stage_motion_single_carton.py",
+    "--history",
+    "/root/autodl-tmp/m710-validation-kernel-20260922/delivery",
+    "--output",
+    "../evidence/single_carton_0bfd708.json",
+    "--offline-resource-seconds",
+    "900"
+  ],
+  "cwd": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708",
+  "condition": "production original-scene approach plus original terminal contact VALID",
+  "external_resource_rationale": "Measured approach 403.82 seconds, remaining allowance observes downstream stages; no production deadline change",
+  "attempts_authorized": 1
+}

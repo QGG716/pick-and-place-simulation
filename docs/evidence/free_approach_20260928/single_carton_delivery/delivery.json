@@ -1,0 +1,17 @@
+{
+  "simulation_profile": {
+    "name": "proof_of_concept",
+    "ideal_suction": true,
+    "ideal_reception": true,
+    "ideal_outfeed": true,
+    "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+    "machine_qualification_claimed": false
+  },
+  "planning_seconds": 600.5731516126543,
+  "serialization_seconds": 0.02109651453793049,
+  "preflight_seconds": null,
+  "export_seconds": null,
+  "isaac_executed": false,
+  "actual_state_sha256": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+  "archived_or_live_state_not_modified": true
+}

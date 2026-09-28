@@ -1,0 +1,5 @@
+# Preserve evidence fingerprints across Windows and Linux checkouts.
+*.json -text
+*.jsonl -text
+*.log -text
+*.txt -text

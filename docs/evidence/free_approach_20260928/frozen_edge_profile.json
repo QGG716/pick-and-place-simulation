@@ -1,0 +1,2633 @@
+{
+  "seconds": 19.58541096560657,
+  "hot_seconds": 0.00028900615870952606,
+  "strict_samples": 18143,
+  "result": {
+    "status": "INVALID",
+    "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+    "guarantee": "NONE",
+    "failure": {
+      "reason": "RIGID_TOOL_COLLISION",
+      "classification": "CLEARANCE_INSUFFICIENT",
+      "accepted": false,
+      "stage": "pregrasp",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l05_c02"
+      ],
+      "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+      "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+      "geometry_intersection_confirmed": false,
+      "original_cad_intersection_confirmed": false,
+      "surface_distance_m": 0.0049653753380203836,
+      "required_pair_clearance_m": 0.005,
+      "numerical_gap_tolerance_m": 1e-09,
+      "contact_permission_source": null,
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "type": "GEOMETRY",
+      "fraction": 0.09557931870797046,
+      "q_rad": [
+        -0.4301239010906871,
+        0.067570394108256,
+        -0.20514181539126858,
+        -2.9975013536399104,
+        1.1923431071670538,
+        0.33484950958215276
+      ],
+      "motion_start": [
+        -0.5284209847450256,
+        0.09451229125261307,
+        -0.21063973009586334,
+        -3.1416585445404053,
+        1.2654187679290771,
+        0.5286964774131775
+      ],
+      "motion_end": [
+        0.5000136701898126,
+        -0.1873676960558794,
+        -0.15311771823268097,
+        -1.633411856353104,
+        0.5008636136357513,
+        -1.499430218313726
+      ],
+      "first_failure_sample": 1734
+    },
+    "interval": [
+      0.09464226656377467,
+      0.09563443942233492
+    ],
+    "statistics": {
+      "state_samples": 1735,
+      "edge_calls": 0,
+      "subdivisions": 104,
+      "certified_intervals": 0,
+      "pair_certificates": 2078160,
+      "state_seconds": 18.075119083747268,
+      "edge_seconds": 19.585329085588455,
+      "repeated_failed_edges": 0,
+      "batch_calls": 295,
+      "skipped_suffix_states": 16408,
+      "state_cache_reuses": 97,
+      "state_cache_hits": 97,
+      "state_cache_misses": 1736,
+      "state_cache_evictions": 0,
+      "edge_cache_hits": 0,
+      "edge_cache_evictions": 0
+    },
+    "cache_hit": false,
+    "interval_certificate": false
+  },
+  "hot": {
+    "status": "INVALID",
+    "context_id": "dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542",
+    "guarantee": "NONE",
+    "failure": {
+      "reason": "RIGID_TOOL_COLLISION",
+      "classification": "CLEARANCE_INSUFFICIENT",
+      "accepted": false,
+      "stage": "pregrasp",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l05_c02"
+      ],
+      "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+      "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+      "geometry_intersection_confirmed": false,
+      "original_cad_intersection_confirmed": false,
+      "surface_distance_m": 0.0049653753380203836,
+      "required_pair_clearance_m": 0.005,
+      "numerical_gap_tolerance_m": 1e-09,
+      "contact_permission_source": null,
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "type": "GEOMETRY",
+      "fraction": 0.09557931870797046,
+      "q_rad": [
+        -0.4301239010906871,
+        0.067570394108256,
+        -0.20514181539126858,
+        -2.9975013536399104,
+        1.1923431071670538,
+        0.33484950958215276
+      ],
+      "motion_start": [
+        -0.5284209847450256,
+        0.09451229125261307,
+        -0.21063973009586334,
+        -3.1416585445404053,
+        1.2654187679290771,
+        0.5286964774131775
+      ],
+      "motion_end": [
+        0.5000136701898126,
+        -0.1873676960558794,
+        -0.15311771823268097,
+        -1.633411856353104,
+        0.5008636136357513,
+        -1.499430218313726
+      ],
+      "first_failure_sample": 1734
+    },
+    "interval": [
+      0.09464226656377467,
+      0.09563443942233492
+    ],
+    "statistics": {
+      "state_samples": 0,
+      "edge_cache_hits": 1,
+      "reused_proof_state_samples": 1735
+    },
+    "cache_hit": true,
+    "interval_certificate": false
+  },
+  "kernel": {
+    "fk_states": 1736,
+    "native_batches": 295,
+    "native_array_operations": 23305,
+    "kinematics_seconds": 0.44882617332041264,
+    "ordered_scalar_state_checks": 1735,
+    "tool_obb_constructions": 350470,
+    "tool_template_preparations": 1,
+    "tool_transform_constructions": 350470
+  },
+  "context": {
+    "full_context_builds": 2,
+    "full_context_seconds": 0.004763152450323105,
+    "light_guard_calls": 2627,
+    "light_guard_seconds": 2.028702987357974,
+    "prepared_context_hits": 0
+  },
+  "functions": [
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 475,
+      "function": "_environment_collision",
+      "calls": 5205,
+      "exclusive_s": 1.6219419160000002,
+      "inclusive_s": 6.32690456
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+      "calls": 685151,
+      "exclusive_s": 1.612740011,
+      "inclusive_s": 1.612740011
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 113,
+      "function": "arrays",
+      "calls": 6940,
+      "exclusive_s": 1.549529774,
+      "inclusive_s": 1.7241186940000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 28,
+      "function": "exact_snapshot",
+      "calls": 1444300,
+      "exclusive_s": 1.009678557,
+      "inclusive_s": 1.734125131
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/geometry.py",
+      "line": 82,
+      "function": "__post_init__",
+      "calls": 350470,
+      "exclusive_s": 0.8127052130000001,
+      "inclusive_s": 1.86802638
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.asarray>",
+      "calls": 2400075,
+      "exclusive_s": 0.6245182730000001,
+      "inclusive_s": 0.6245182730000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/lib/_twodim_base_impl.py",
+      "line": 176,
+      "function": "eye",
+      "calls": 511948,
+      "exclusive_s": 0.611396311,
+      "inclusive_s": 0.846408452
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 45,
+      "function": "__getitem__",
+      "calls": 375156,
+      "exclusive_s": 0.607103092,
+      "inclusive_s": 3.044809679
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/geometry.py",
+      "line": 55,
+      "function": "make_transform",
+      "calls": 442425,
+      "exclusive_s": 0.529770523,
+      "inclusive_s": 1.334726027
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 63,
+      "function": "_world_aabb",
+      "calls": 43420,
+      "exclusive_s": 0.5138184840000001,
+      "inclusive_s": 0.834668272
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 89,
+      "function": "_wrapreduction_any_all",
+      "calls": 452764,
+      "exclusive_s": 0.477847666,
+      "inclusive_s": 1.1768697810000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 108,
+      "function": "possible_inflated_obb_pairs",
+      "calls": 3470,
+      "exclusive_s": 0.46569363,
+      "inclusive_s": 2.457388159
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 310,
+      "function": "<genexpr>",
+      "calls": 1019151,
+      "exclusive_s": 0.399713378,
+      "inclusive_s": 0.399713378
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.isinstance>",
+      "calls": 4793322,
+      "exclusive_s": 0.39892797900000004,
+      "inclusive_s": 0.39892797900000004
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 17,
+      "function": "world_from_local",
+      "calls": 371478,
+      "exclusive_s": 0.33444480000000004,
+      "inclusive_s": 1.602934354
+    },
+    {
+      "file": "<string>",
+      "line": 2,
+      "function": "__init__",
+      "calls": 350470,
+      "exclusive_s": 0.314563725,
+      "inclusive_s": 2.182590105
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 124,
+      "function": "_world_vertex_extrema",
+      "calls": 12145,
+      "exclusive_s": 0.28682022,
+      "inclusive_s": 1.0676411510000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 670,
+      "function": "_plane_failure",
+      "calls": 1735,
+      "exclusive_s": 0.270605896,
+      "inclusive_s": 2.0049762230000003
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 36,
+      "function": "<genexpr>",
+      "calls": 1265732,
+      "exclusive_s": 0.232827154,
+      "inclusive_s": 1.277469671
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'tobytes' of 'numpy.ndarray' objects>",
+      "calls": 1353853,
+      "exclusive_s": 0.216880644,
+      "inclusive_s": 0.216880644
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 272,
+      "function": "body",
+      "calls": 21736,
+      "exclusive_s": 0.208399791,
+      "inclusive_s": 0.541589587
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 95,
+      "function": "_separated_from_local_box",
+      "calls": 4697,
+      "exclusive_s": 0.20498331800000003,
+      "inclusive_s": 0.418502168
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 73,
+      "function": "lookup",
+      "calls": 435689,
+      "exclusive_s": 0.194368962,
+      "inclusive_s": 0.26208046500000004
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 627,
+      "function": "_self_clearance_failure",
+      "calls": 1735,
+      "exclusive_s": 0.184739857,
+      "inclusive_s": 0.49979816800000004
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2477,
+      "function": "any",
+      "calls": 418013,
+      "exclusive_s": 0.18404324800000002,
+      "inclusive_s": 1.099770527
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 285,
+      "function": "_matrix",
+      "calls": 65983,
+      "exclusive_s": 0.18301002100000002,
+      "inclusive_s": 0.37519213700000004
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.zeros>",
+      "calls": 538962,
+      "exclusive_s": 0.167374706,
+      "inclusive_s": 0.167374706
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 719,
+      "function": "__call__",
+      "calls": 1735,
+      "exclusive_s": 0.159008899,
+      "inclusive_s": 15.260603735
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'get' of 'dict' objects>",
+      "calls": 924225,
+      "exclusive_s": 0.157534598,
+      "inclusive_s": 0.157534598
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.getattr>",
+      "calls": 1058940,
+      "exclusive_s": 0.157021121,
+      "inclusive_s": 0.15703060500000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 69,
+      "function": "_wrapreduction",
+      "calls": 183993,
+      "exclusive_s": 0.156539659,
+      "inclusive_s": 0.985644018
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/collision_policy.py",
+      "line": 104,
+      "function": "wrist_tool_pairs",
+      "calls": 1735,
+      "exclusive_s": 0.155025554,
+      "inclusive_s": 0.155025554
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.len>",
+      "calls": 972831,
+      "exclusive_s": 0.15234972100000002,
+      "inclusive_s": 0.21419019600000003
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 81,
+      "function": "put",
+      "calls": 357461,
+      "exclusive_s": 0.151631129,
+      "inclusive_s": 0.19649638300000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 586,
+      "function": "collision_world_axis_extrema",
+      "calls": 1735,
+      "exclusive_s": 0.134426926,
+      "inclusive_s": 1.3217055720000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 2622,
+      "function": "norm",
+      "calls": 61344,
+      "exclusive_s": 0.131367804,
+      "inclusive_s": 0.24586808000000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 89,
+      "function": "get",
+      "calls": 432015,
+      "exclusive_s": 0.126151873,
+      "inclusive_s": 0.386208812
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/geometry.py",
+      "line": 93,
+      "function": "world_from_local",
+      "calls": 442425,
+      "exclusive_s": 0.12379614300000001,
+      "inclusive_s": 1.4585221700000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 157,
+      "function": "prepare_states",
+      "calls": 399,
+      "exclusive_s": 0.12344305800000001,
+      "inclusive_s": 0.482941412
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'extend' of 'list' objects>",
+      "calls": 3678,
+      "exclusive_s": 0.11864128400000001,
+      "inclusive_s": 0.518354662
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 58,
+      "function": "<genexpr>",
+      "calls": 86658,
+      "exclusive_s": 0.117557379,
+      "inclusive_s": 1.98884568
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'move_to_end' of 'collections.OrderedDict' objects>",
+      "calls": 782239,
+      "exclusive_s": 0.111329727,
+      "inclusive_s": 0.111329727
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'setflags' of 'numpy.ndarray' objects>",
+      "calls": 430305,
+      "exclusive_s": 0.106839051,
+      "inclusive_s": 0.106839051
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 112,
+      "function": "point_motion_bound",
+      "calls": 21736,
+      "exclusive_s": 0.106007896,
+      "inclusive_s": 0.258431686
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'items' of 'dict' objects>",
+      "calls": 650242,
+      "exclusive_s": 0.099247527,
+      "inclusive_s": 0.099247527
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 38,
+      "function": "_transform",
+      "calls": 39905,
+      "exclusive_s": 0.09702238,
+      "inclusive_s": 0.11752561800000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy._core._multiarray_umath.c_einsum>",
+      "calls": 9984,
+      "exclusive_s": 0.09431692200000001,
+      "inclusive_s": 0.09431692200000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 38,
+      "function": "plane_bounds",
+      "calls": 3470,
+      "exclusive_s": 0.0919243,
+      "inclusive_s": 0.21470206600000002
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.id>",
+      "calls": 702720,
+      "exclusive_s": 0.090299398,
+      "inclusive_s": 0.090299398
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3052,
+      "function": "max",
+      "calls": 136022,
+      "exclusive_s": 0.08567000300000001,
+      "inclusive_s": 0.6966553870000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 221,
+      "function": "scope",
+      "calls": 798,
+      "exclusive_s": 0.08123014,
+      "inclusive_s": 0.564387498
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'append' of 'list' objects>",
+      "calls": 485335,
+      "exclusive_s": 0.07877078800000001,
+      "inclusive_s": 0.07877078800000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 259,
+      "function": "proof",
+      "calls": 104,
+      "exclusive_s": 0.078203356,
+      "inclusive_s": 1.3354216840000002
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method _operator.index>",
+      "calls": 1034583,
+      "exclusive_s": 0.076409533,
+      "inclusive_s": 0.076409533
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/collision_policy.py",
+      "line": 83,
+      "function": "poc_pair_clearance",
+      "calls": 1113028,
+      "exclusive_s": 0.069852093,
+      "inclusive_s": 0.069852093
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 315,
+      "function": "_update_geometry",
+      "calls": 6940,
+      "exclusive_s": 0.064456182,
+      "inclusive_s": 0.1364021
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 36,
+      "function": "__len__",
+      "calls": 378834,
+      "exclusive_s": 0.06276179700000001,
+      "inclusive_s": 0.093716645
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'nonzero' of 'numpy.ndarray' objects>",
+      "calls": 40113,
+      "exclusive_s": 0.062382574,
+      "inclusive_s": 0.062382574
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 276,
+      "function": "within_limits",
+      "calls": 6940,
+      "exclusive_s": 0.061462732000000006,
+      "inclusive_s": 0.132976123
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1433,
+      "function": "_checked_state_failure",
+      "calls": 1735,
+      "exclusive_s": 0.060103214,
+      "inclusive_s": 15.524887176000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/lib/_stride_tricks_impl.py",
+      "line": 340,
+      "function": "_broadcast_to",
+      "calls": 7057,
+      "exclusive_s": 0.056777703000000006,
+      "inclusive_s": 0.079636259
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 494,
+      "function": "__new__",
+      "calls": 60568,
+      "exclusive_s": 0.055845564,
+      "inclusive_s": 0.07843683900000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/collision_policy.py",
+      "line": 87,
+      "function": "pair_clearance",
+      "calls": 374337,
+      "exclusive_s": 0.054489939,
+      "inclusive_s": 0.076754472
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 333,
+      "function": "_profile_call",
+      "calls": 13880,
+      "exclusive_s": 0.053173450000000004,
+      "inclusive_s": 7.030155393
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 72,
+      "function": "batch_kinematics",
+      "calls": 295,
+      "exclusive_s": 0.051000099,
+      "inclusive_s": 0.16345219600000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 680,
+      "function": "flatnonzero",
+      "calls": 36435,
+      "exclusive_s": 0.050202522000000006,
+      "inclusive_s": 0.168909523
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 1689,
+      "function": "svd",
+      "calls": 1735,
+      "exclusive_s": 0.049206929,
+      "inclusive_s": 0.070622185
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 633,
+      "function": "_profile_call",
+      "calls": 10410,
+      "exclusive_s": 0.048279659,
+      "inclusive_s": 11.673759062
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2472,
+      "function": "_any_dispatcher",
+      "calls": 418013,
+      "exclusive_s": 0.046484317000000004,
+      "inclusive_s": 0.046484317000000004
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/robot.py",
+      "line": 698,
+      "function": "tool_collision_obbs",
+      "calls": 1839,
+      "exclusive_s": 0.043343478000000005,
+      "inclusive_s": 2.035290356
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 37,
+      "function": "<genexpr>",
+      "calls": 199576,
+      "exclusive_s": 0.041596262,
+      "inclusive_s": 0.182286105
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.next>",
+      "calls": 798,
+      "exclusive_s": 0.038506030000000004,
+      "inclusive_s": 0.6028935280000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'dot' of 'numpy.ndarray' objects>",
+      "calls": 56417,
+      "exclusive_s": 0.036371974,
+      "inclusive_s": 0.036371974
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 661,
+      "function": "collision_result",
+      "calls": 5205,
+      "exclusive_s": 0.033599051000000005,
+      "inclusive_s": 7.155097939
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 303,
+      "function": "certify_group",
+      "calls": 208,
+      "exclusive_s": 0.031971321000000004,
+      "inclusive_s": 0.530247268
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'reshape' of 'numpy.ndarray' objects>",
+      "calls": 66011,
+      "exclusive_s": 0.030616123000000002,
+      "inclusive_s": 0.030616123000000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 1904,
+      "function": "ravel",
+      "calls": 36435,
+      "exclusive_s": 0.02825294,
+      "inclusive_s": 0.052499883000000004
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 54,
+      "function": "current",
+      "calls": 2626,
+      "exclusive_s": 0.028209821000000003,
+      "inclusive_s": 2.030419503
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'ravel' of 'numpy.ndarray' objects>",
+      "calls": 96392,
+      "exclusive_s": 0.027616548,
+      "inclusive_s": 0.027616548
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2338,
+      "function": "sum",
+      "calls": 34014,
+      "exclusive_s": 0.026502377,
+      "inclusive_s": 0.09529255
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 327,
+      "function": "interval",
+      "calls": 202,
+      "exclusive_s": 0.026353795000000003,
+      "inclusive_s": 19.583740072
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 51,
+      "function": "_wrapfunc",
+      "calls": 43627,
+      "exclusive_s": 0.026281287,
+      "inclusive_s": 0.113856442
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/geometry.py",
+      "line": 110,
+      "function": "corners",
+      "calls": 9382,
+      "exclusive_s": 0.025573143000000003,
+      "inclusive_s": 0.025573143000000003
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 153,
+      "function": "get",
+      "calls": 15927,
+      "exclusive_s": 0.024124458,
+      "inclusive_s": 0.045096141000000006
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 656,
+      "function": "_compliant_boxes",
+      "calls": 1839,
+      "exclusive_s": 0.023760868,
+      "inclusive_s": 1.087576734
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 35,
+      "function": "<genexpr>",
+      "calls": 70902,
+      "exclusive_s": 0.023057979000000003,
+      "inclusive_s": 0.120308048
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 557,
+      "function": "inv",
+      "calls": 1735,
+      "exclusive_s": 0.022953212,
+      "inclusive_s": 0.042461362
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2589,
+      "function": "all",
+      "calls": 34751,
+      "exclusive_s": 0.022574076000000002,
+      "inclusive_s": 0.283716578
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 754,
+      "function": "<genexpr>",
+      "calls": 352205,
+      "exclusive_s": 0.022099611,
+      "inclusive_s": 0.022099611
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1077,
+      "function": "<genexpr>",
+      "calls": 120796,
+      "exclusive_s": 0.021780428,
+      "inclusive_s": 0.038760848
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 1556,
+      "function": "cross",
+      "calls": 1781,
+      "exclusive_s": 0.019789916,
+      "inclusive_s": 0.064255057
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 445,
+      "function": "<genexpr>",
+      "calls": 5202,
+      "exclusive_s": 0.019734779,
+      "inclusive_s": 0.049668646000000004
+    },
+    {
+      "file": "<string>",
+      "line": 2,
+      "function": "__repr__",
+      "calls": 1735,
+      "exclusive_s": 0.019580272000000003,
+      "inclusive_s": 0.021401482000000003
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 430,
+      "function": "_poc_pair_result",
+      "calls": 1735,
+      "exclusive_s": 0.019162827,
+      "inclusive_s": 0.085110671
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.any>",
+      "calls": 9789,
+      "exclusive_s": 0.018934115,
+      "inclusive_s": 2.0115694
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1075,
+      "function": "box",
+      "calls": 120796,
+      "exclusive_s": 0.017376047000000002,
+      "inclusive_s": 0.017376047000000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 1935,
+      "function": "cond",
+      "calls": 1735,
+      "exclusive_s": 0.017014543,
+      "inclusive_s": 0.10380465700000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 98,
+      "function": "zeros_like",
+      "calls": 4719,
+      "exclusive_s": 0.016952977,
+      "inclusive_s": 0.021040558
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2018,
+      "function": "nonzero",
+      "calls": 40113,
+      "exclusive_s": 0.016175727,
+      "inclusive_s": 0.106585315
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3047,
+      "function": "_max_dispatcher",
+      "calls": 136022,
+      "exclusive_s": 0.01564642,
+      "inclusive_s": 0.01564642
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 1420,
+      "function": "normalize_axis_tuple",
+      "calls": 10686,
+      "exclusive_s": 0.014914696000000002,
+      "inclusive_s": 0.023689457
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/robot.py",
+      "line": 370,
+      "function": "dof",
+      "calls": 61396,
+      "exclusive_s": 0.01457044,
+      "inclusive_s": 0.021802079000000002
+    },
+    {
+      "file": "<string>",
+      "line": 2,
+      "function": "__eq__",
+      "calls": 2626,
+      "exclusive_s": 0.014081943000000001,
+      "inclusive_s": 0.014081943000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.issubclass>",
+      "calls": 128173,
+      "exclusive_s": 0.013922149000000002,
+      "inclusive_s": 0.013922149000000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 187,
+      "function": "isComplexType",
+      "calls": 63357,
+      "exclusive_s": 0.013336365000000001,
+      "inclusive_s": 0.019037831
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.sorted>",
+      "calls": 13221,
+      "exclusive_s": 0.012896978000000002,
+      "inclusive_s": 0.012896978000000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1077,
+      "function": "<lambda>",
+      "calls": 2626,
+      "exclusive_s": 0.01252571,
+      "inclusive_s": 0.051286558
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 221,
+      "function": "check_states",
+      "calls": 98,
+      "exclusive_s": 0.012331641,
+      "inclusive_s": 18.075221232
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 1482,
+      "function": "moveaxis",
+      "calls": 5343,
+      "exclusive_s": 0.011261535000000001,
+      "inclusive_s": 0.039553271
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'copy' of 'numpy.ndarray' objects>",
+      "calls": 28417,
+      "exclusive_s": 0.010865317000000001,
+      "inclusive_s": 0.010865317000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 41,
+      "function": "_wrapit",
+      "calls": 3470,
+      "exclusive_s": 0.010424057,
+      "inclusive_s": 0.017491734000000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 764,
+      "function": "<genexpr>",
+      "calls": 15615,
+      "exclusive_s": 0.010128361,
+      "inclusive_s": 0.076084208
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 625,
+      "function": "argwhere",
+      "calls": 3470,
+      "exclusive_s": 0.009774241000000001,
+      "inclusive_s": 0.080100129
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'all' of 'numpy.ndarray' objects>",
+      "calls": 25432,
+      "exclusive_s": 0.009552585,
+      "inclusive_s": 0.041164492000000004
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method time.perf_counter>",
+      "calls": 59825,
+      "exclusive_s": 0.009409421000000001,
+      "inclusive_s": 0.009409421000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'transpose' of 'numpy.ndarray' objects>",
+      "calls": 20450,
+      "exclusive_s": 0.00928291,
+      "inclusive_s": 0.00928291
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3190,
+      "function": "min",
+      "calls": 13957,
+      "exclusive_s": 0.009030427,
+      "inclusive_s": 0.320072462
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/robot.py",
+      "line": 567,
+      "function": "within_limits",
+      "calls": 1840,
+      "exclusive_s": 0.008916415,
+      "inclusive_s": 0.019151254
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 266,
+      "function": "dof",
+      "calls": 8675,
+      "exclusive_s": 0.00865079,
+      "inclusive_s": 0.00865079
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pair_clearance.py",
+      "line": 82,
+      "function": "obb_pair_failure",
+      "calls": 1197,
+      "exclusive_s": 0.008532544000000001,
+      "inclusive_s": 0.019240665
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1395,
+      "function": "_state_failure",
+      "calls": 1735,
+      "exclusive_s": 0.008336207,
+      "inclusive_s": 15.535081478
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1063,
+      "function": "robot_values",
+      "calls": 5252,
+      "exclusive_s": 0.007842439,
+      "inclusive_s": 0.019993143
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/_ufunc_config.py",
+      "line": 446,
+      "function": "__enter__",
+      "calls": 5205,
+      "exclusive_s": 0.007825833,
+      "inclusive_s": 0.014968574
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1057,
+      "function": "<lambda>",
+      "calls": 39390,
+      "exclusive_s": 0.00782551,
+      "inclusive_s": 0.013337679000000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1064,
+      "function": "<genexpr>",
+      "calls": 36764,
+      "exclusive_s": 0.007042689,
+      "inclusive_s": 0.012150704
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/_methods.py",
+      "line": 66,
+      "function": "_all",
+      "calls": 25432,
+      "exclusive_s": 0.006745362,
+      "inclusive_s": 0.031611907
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 2618,
+      "function": "_norm_dispatcher",
+      "calls": 61344,
+      "exclusive_s": 0.0066483770000000005,
+      "inclusive_s": 0.0066483770000000005
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/einsumfunc.py",
+      "line": 1049,
+      "function": "_einsum_dispatcher",
+      "calls": 49920,
+      "exclusive_s": 0.006319328000000001,
+      "inclusive_s": 0.006319328000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 207,
+      "function": "_commonType",
+      "calls": 3470,
+      "exclusive_s": 0.006148494,
+      "inclusive_s": 0.010604702
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.array>",
+      "calls": 8830,
+      "exclusive_s": 0.005981771,
+      "inclusive_s": 0.005981771
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/lib/_stride_tricks_impl.py",
+      "line": 367,
+      "function": "broadcast_to",
+      "calls": 7057,
+      "exclusive_s": 0.0056410520000000006,
+      "inclusive_s": 0.08527731100000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1071,
+      "function": "<lambda>",
+      "calls": 28886,
+      "exclusive_s": 0.005633867000000001,
+      "inclusive_s": 0.009275025000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.asanyarray>",
+      "calls": 38500,
+      "exclusive_s": 0.005454977000000001,
+      "inclusive_s": 0.005454977000000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1069,
+      "function": "<lambda>",
+      "calls": 2626,
+      "exclusive_s": 0.005412846000000001,
+      "inclusive_s": 0.011343576000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.hasattr>",
+      "calls": 21305,
+      "exclusive_s": 0.0053091300000000004,
+      "inclusive_s": 0.0053091300000000004
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1069,
+      "function": "<genexpr>",
+      "calls": 23634,
+      "exclusive_s": 0.005246246,
+      "inclusive_s": 0.005246246
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 245,
+      "function": "check_prefix",
+      "calls": 295,
+      "exclusive_s": 0.005212254,
+      "inclusive_s": 17.475503831
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2584,
+      "function": "_all_dispatcher",
+      "calls": 34751,
+      "exclusive_s": 0.0052056210000000006,
+      "inclusive_s": 0.0052056210000000006
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 255,
+      "function": "interrupted",
+      "calls": 2030,
+      "exclusive_s": 0.005138488,
+      "inclusive_s": 1.5538296900000002
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'astype' of 'numpy.ndarray' objects>",
+      "calls": 7033,
+      "exclusive_s": 0.005116594,
+      "inclusive_s": 0.005116594
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy._core._multiarray_umath._make_extobj>",
+      "calls": 5205,
+      "exclusive_s": 0.0049915310000000004,
+      "inclusive_s": 0.0049915310000000004
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'any' of 'numpy.generic' objects>",
+      "calls": 1735,
+      "exclusive_s": 0.00494203,
+      "inclusive_s": 0.009466399
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1140,
+      "function": "state",
+      "calls": 1735,
+      "exclusive_s": 0.004809347,
+      "inclusive_s": 15.539890825
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/einsumfunc.py",
+      "line": 1057,
+      "function": "einsum",
+      "calls": 9984,
+      "exclusive_s": 0.0047163150000000004,
+      "inclusive_s": 0.09903323700000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 910,
+      "function": "outer",
+      "calls": 1770,
+      "exclusive_s": 0.0047054440000000005,
+      "inclusive_s": 0.005748693
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/dataclasses.py",
+      "line": 255,
+      "function": "wrapper",
+      "calls": 1735,
+      "exclusive_s": 0.004515249000000001,
+      "inclusive_s": 0.028160208000000003
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 676,
+      "function": "_flatnonzero_dispatcher",
+      "calls": 36435,
+      "exclusive_s": 0.004469278,
+      "inclusive_s": 0.004469278
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1463,
+      "function": "finish",
+      "calls": 1735,
+      "exclusive_s": 0.004403600000000001,
+      "inclusive_s": 0.00662507
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 652,
+      "function": "_mesh_pair_options",
+      "calls": 5205,
+      "exclusive_s": 0.004185585,
+      "inclusive_s": 0.005400666
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2014,
+      "function": "_nonzero_dispatcher",
+      "calls": 40113,
+      "exclusive_s": 0.004115036,
+      "inclusive_s": 0.004115036
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2333,
+      "function": "_sum_dispatcher",
+      "calls": 34014,
+      "exclusive_s": 0.004058072,
+      "inclusive_s": 0.004058072
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 127,
+      "function": "aabb_distance_lower",
+      "calls": 1560,
+      "exclusive_s": 0.004005818,
+      "inclusive_s": 0.009219029
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 132,
+      "function": "certify_pair",
+      "calls": 1560,
+      "exclusive_s": 0.003975019000000001,
+      "inclusive_s": 0.011231213
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 1900,
+      "function": "_ravel_dispatcher",
+      "calls": 36435,
+      "exclusive_s": 0.003920563,
+      "inclusive_s": 0.003920563
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'min' of 'numpy.ndarray' objects>",
+      "calls": 8150,
+      "exclusive_s": 0.003847056,
+      "inclusive_s": 0.07036328600000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 381,
+      "function": "named_link_frames",
+      "calls": 1735,
+      "exclusive_s": 0.0037948150000000004,
+      "inclusive_s": 0.008765722
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.all>",
+      "calls": 3299,
+      "exclusive_s": 0.0037816720000000002,
+      "inclusive_s": 0.006857564
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/lib/_stride_tricks_impl.py",
+      "line": 345,
+      "function": "<genexpr>",
+      "calls": 28228,
+      "exclusive_s": 0.0036761380000000002,
+      "inclusive_s": 0.0036761380000000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/shape_base.py",
+      "line": 380,
+      "function": "stack",
+      "calls": 295,
+      "exclusive_s": 0.003587036,
+      "inclusive_s": 0.003942353
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'max' of 'numpy.ndarray' objects>",
+      "calls": 8150,
+      "exclusive_s": 0.003459363,
+      "inclusive_s": 0.066219756
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.sum>",
+      "calls": 1838,
+      "exclusive_s": 0.00344012,
+      "inclusive_s": 0.057539199000000006
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'reset' of '_contextvars.ContextVar' objects>",
+      "calls": 5205,
+      "exclusive_s": 0.003326863,
+      "inclusive_s": 0.003326863
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 213,
+      "function": "_guard",
+      "calls": 2626,
+      "exclusive_s": 0.003311511,
+      "inclusive_s": 2.0390295540000003
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 1469,
+      "function": "<genexpr>",
+      "calls": 21372,
+      "exclusive_s": 0.0032807590000000003,
+      "inclusive_s": 0.004723571
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 179,
+      "function": "interrupted",
+      "calls": 4064,
+      "exclusive_s": 0.003223371,
+      "inclusive_s": 0.005484527
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 182,
+      "function": "_makearray",
+      "calls": 3470,
+      "exclusive_s": 0.002838166,
+      "inclusive_s": 0.0038001230000000003
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py",
+      "line": 358,
+      "function": "iterable",
+      "calls": 7057,
+      "exclusive_s": 0.002823901,
+      "inclusive_s": 0.004302118000000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pair_clearance.py",
+      "line": 6,
+      "function": "obb_surface_distance",
+      "calls": 11,
+      "exclusive_s": 0.002795477,
+      "inclusive_s": 0.005621567
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 170,
+      "function": "status",
+      "calls": 3221,
+      "exclusive_s": 0.0027395540000000004,
+      "inclusive_s": 0.003443746
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/lib/_stride_tricks_impl.py",
+      "line": 24,
+      "function": "_maybe_view_as_subclass",
+      "calls": 7057,
+      "exclusive_s": 0.0026581870000000002,
+      "inclusive_s": 0.0026581870000000002
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method '__exit__' of 'numpy.nditer' objects>",
+      "calls": 7057,
+      "exclusive_s": 0.0024572220000000002,
+      "inclusive_s": 0.0024572220000000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 675,
+      "function": "<genexpr>",
+      "calls": 13880,
+      "exclusive_s": 0.002443001,
+      "inclusive_s": 0.002443001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'as_arrays' of 'numpy._core._multiarray_umath._array_converter' objects>",
+      "calls": 3471,
+      "exclusive_s": 0.002436527,
+      "inclusive_s": 0.002436527
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.lib.array_utils.normalize_axis_index>",
+      "calls": 16324,
+      "exclusive_s": 0.0023982870000000002,
+      "inclusive_s": 0.0023982870000000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1273,
+      "function": "_deadline_reached",
+      "calls": 3469,
+      "exclusive_s": 0.002392471,
+      "inclusive_s": 0.003002967
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/_ufunc_config.py",
+      "line": 462,
+      "function": "__exit__",
+      "calls": 5205,
+      "exclusive_s": 0.002317076,
+      "inclusive_s": 0.005643939000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'conj' of 'numpy.ndarray' objects>",
+      "calls": 4927,
+      "exclusive_s": 0.0022750210000000003,
+      "inclusive_s": 0.0022750210000000003
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 203,
+      "function": "_result",
+      "calls": 1832,
+      "exclusive_s": 0.002234877,
+      "inclusive_s": 0.0056487360000000006
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/_methods.py",
+      "line": 45,
+      "function": "_amin",
+      "calls": 8150,
+      "exclusive_s": 0.0022059090000000003,
+      "inclusive_s": 0.06651623000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'set' of '_contextvars.ContextVar' objects>",
+      "calls": 5205,
+      "exclusive_s": 0.00215121,
+      "inclusive_s": 0.00215121
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'wrap' of 'numpy._core._multiarray_umath._array_converter' objects>",
+      "calls": 3471,
+      "exclusive_s": 0.0021010300000000003,
+      "inclusive_s": 0.0021010300000000003
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.repr>",
+      "calls": 1735,
+      "exclusive_s": 0.001991362,
+      "inclusive_s": 0.030151570000000003
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 201,
+      "function": "_realType",
+      "calls": 5205,
+      "exclusive_s": 0.001991213,
+      "inclusive_s": 0.0032061560000000004
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1172,
+      "function": "<lambda>",
+      "calls": 2626,
+      "exclusive_s": 0.001854794,
+      "inclusive_s": 2.0322742970000003
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'join' of 'str' objects>",
+      "calls": 1751,
+      "exclusive_s": 0.001827229,
+      "inclusive_s": 0.001827229
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1078,
+      "function": "<lambda>",
+      "calls": 2626,
+      "exclusive_s": 0.0018112920000000002,
+      "inclusive_s": 0.002987019
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/_methods.py",
+      "line": 41,
+      "function": "_amax",
+      "calls": 8150,
+      "exclusive_s": 0.0017255830000000002,
+      "inclusive_s": 0.062760393
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 629,
+      "function": "transpose",
+      "calls": 3470,
+      "exclusive_s": 0.001705969,
+      "inclusive_s": 0.024997818
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 30,
+      "function": "__init__",
+      "calls": 5208,
+      "exclusive_s": 0.00163502,
+      "inclusive_s": 0.00163502
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3185,
+      "function": "_min_dispatcher",
+      "calls": 13957,
+      "exclusive_s": 0.0016330300000000002,
+      "inclusive_s": 0.0016330300000000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1068,
+      "function": "<lambda>",
+      "calls": 2626,
+      "exclusive_s": 0.0015972340000000001,
+      "inclusive_s": 0.010377159
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 351,
+      "function": "geometric_jacobian",
+      "calls": 1735,
+      "exclusive_s": 0.001589385,
+      "inclusive_s": 0.007973759
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.iter>",
+      "calls": 7057,
+      "exclusive_s": 0.001478217,
+      "inclusive_s": 0.001478217
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 300,
+      "function": "certify",
+      "calls": 1560,
+      "exclusive_s": 0.00143432,
+      "inclusive_s": 0.022084737
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 966,
+      "function": "<lambda>",
+      "calls": 2627,
+      "exclusive_s": 0.001381932,
+      "inclusive_s": 0.002439876
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 421,
+      "function": "_distance",
+      "calls": 4,
+      "exclusive_s": 0.0013568170000000002,
+      "inclusive_s": 0.001360569
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 256,
+      "function": "_assert_stacked_square",
+      "calls": 1735,
+      "exclusive_s": 0.0013435530000000002,
+      "inclusive_s": 0.0013435530000000002
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1067,
+      "function": "<lambda>",
+      "calls": 2626,
+      "exclusive_s": 0.001334013,
+      "inclusive_s": 0.013096776000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'rpartition' of 'str' objects>",
+      "calls": 1735,
+      "exclusive_s": 0.0013014340000000002,
+      "inclusive_s": 0.0013014340000000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/_ufunc_config.py",
+      "line": 436,
+      "function": "__init__",
+      "calls": 5205,
+      "exclusive_s": 0.001260363,
+      "inclusive_s": 0.001260363
+    },
+    {
+      "file": "<frozen importlib._bootstrap>",
+      "line": 645,
+      "function": "parent",
+      "calls": 1735,
+      "exclusive_s": 0.001113693,
+      "inclusive_s": 0.002415127
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method '__array_wrap__' of 'numpy.ndarray' objects>",
+      "calls": 1735,
+      "exclusive_s": 0.001110909,
+      "inclusive_s": 0.001110909
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/_methods.py",
+      "line": 57,
+      "function": "_any",
+      "calls": 1735,
+      "exclusive_s": 0.0010851980000000001,
+      "inclusive_s": 0.004524369
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 641,
+      "function": "_collision_failure",
+      "calls": 5205,
+      "exclusive_s": 0.000987063,
+      "inclusive_s": 0.000987063
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3523,
+      "function": "ndim",
+      "calls": 3471,
+      "exclusive_s": 0.000977165,
+      "inclusive_s": 0.000977165
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 267,
+      "function": "<genexpr>",
+      "calls": 936,
+      "exclusive_s": 0.0009495990000000001,
+      "inclusive_s": 0.004430433
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1085,
+      "function": "<lambda>",
+      "calls": 2626,
+      "exclusive_s": 0.000921735,
+      "inclusive_s": 0.001434664
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/lib/_stride_tricks_impl.py",
+      "line": 363,
+      "function": "_broadcast_to_dispatcher",
+      "calls": 7057,
+      "exclusive_s": 0.0008955160000000001,
+      "inclusive_s": 0.0008955160000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'insert' of 'list' objects>",
+      "calls": 5343,
+      "exclusive_s": 0.0008867510000000001,
+      "inclusive_s": 0.0008867510000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 250,
+      "function": "_assert_stacked_2d",
+      "calls": 1735,
+      "exclusive_s": 0.0008860840000000001,
+      "inclusive_s": 0.0008860840000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/dataclasses.py",
+      "line": 1533,
+      "function": "replace",
+      "calls": 99,
+      "exclusive_s": 0.000869649,
+      "inclusive_s": 0.0014554190000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 271,
+      "function": "_is_empty_2d",
+      "calls": 1735,
+      "exclusive_s": 0.000817408,
+      "inclusive_s": 0.000817408
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'index' of 'list' objects>",
+      "calls": 2394,
+      "exclusive_s": 0.0007933910000000001,
+      "inclusive_s": 0.0007933910000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'values' of 'dict' objects>",
+      "calls": 4766,
+      "exclusive_s": 0.00078678,
+      "inclusive_s": 0.00078678
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/multiarray.py",
+      "line": 188,
+      "function": "concatenate",
+      "calls": 5004,
+      "exclusive_s": 0.000771699,
+      "inclusive_s": 0.000771699
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/contextlib.py",
+      "line": 141,
+      "function": "__exit__",
+      "calls": 399,
+      "exclusive_s": 0.0007333190000000001,
+      "inclusive_s": 0.039251922
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'add' of 'set' objects>",
+      "calls": 1735,
+      "exclusive_s": 0.0007079590000000001,
+      "inclusive_s": 0.0007079590000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'discard' of 'set' objects>",
+      "calls": 1735,
+      "exclusive_s": 0.00069326,
+      "inclusive_s": 0.00069326
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.empty>",
+      "calls": 1781,
+      "exclusive_s": 0.0006900140000000001,
+      "inclusive_s": 0.0006900140000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/contextlib.py",
+      "line": 104,
+      "function": "__init__",
+      "calls": 399,
+      "exclusive_s": 0.000679977,
+      "inclusive_s": 0.0008164310000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/multiarray.py",
+      "line": 1106,
+      "function": "copyto",
+      "calls": 4719,
+      "exclusive_s": 0.000679179,
+      "inclusive_s": 0.000679179
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 316,
+      "function": "<genexpr>",
+      "calls": 4680,
+      "exclusive_s": 0.000630985,
+      "inclusive_s": 0.000630985
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1268,
+      "function": "_remaining_wall_time",
+      "calls": 3469,
+      "exclusive_s": 0.0006104960000000001,
+      "inclusive_s": 0.0006104960000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 1478,
+      "function": "_moveaxis_dispatcher",
+      "calls": 5343,
+      "exclusive_s": 0.000593138,
+      "inclusive_s": 0.000593138
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 92,
+      "function": "_zeros_like_dispatcher",
+      "calls": 4719,
+      "exclusive_s": 0.0005909450000000001,
+      "inclusive_s": 0.0005909450000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/contextlib.py",
+      "line": 299,
+      "function": "helper",
+      "calls": 399,
+      "exclusive_s": 0.000584918,
+      "inclusive_s": 0.001401349
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1382,
+      "function": "_progress",
+      "calls": 1735,
+      "exclusive_s": 0.0005703910000000001,
+      "inclusive_s": 0.000931258
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method _thread.get_ident>",
+      "calls": 1735,
+      "exclusive_s": 0.000564479,
+      "inclusive_s": 0.000564479
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 140,
+      "function": "valid",
+      "calls": 4257,
+      "exclusive_s": 0.0005422070000000001,
+      "inclusive_s": 0.0005422070000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/multiarray.py",
+      "line": 115,
+      "function": "empty_like",
+      "calls": 4719,
+      "exclusive_s": 0.0005293230000000001,
+      "inclusive_s": 0.0005293230000000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 156,
+      "function": "<lambda>",
+      "calls": 4657,
+      "exclusive_s": 0.000521373,
+      "inclusive_s": 0.000521373
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 164,
+      "function": "available",
+      "calls": 590,
+      "exclusive_s": 0.000497678,
+      "inclusive_s": 0.000497678
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1159,
+      "function": "prefix",
+      "calls": 295,
+      "exclusive_s": 0.000491641,
+      "inclusive_s": 17.476067978
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 160,
+      "function": "consume",
+      "calls": 590,
+      "exclusive_s": 0.00048760100000000005,
+      "inclusive_s": 0.00048760100000000005
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/contextlib.py",
+      "line": 132,
+      "function": "__enter__",
+      "calls": 399,
+      "exclusive_s": 0.00048093900000000005,
+      "inclusive_s": 0.564855864
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 621,
+      "function": "_argwhere_dispatcher",
+      "calls": 3470,
+      "exclusive_s": 0.00045646,
+      "inclusive_s": 0.00045646
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.promote_types>",
+      "calls": 1781,
+      "exclusive_s": 0.00042332800000000005,
+      "inclusive_s": 0.00042332800000000005
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 625,
+      "function": "_transpose_dispatcher",
+      "calls": 3470,
+      "exclusive_s": 0.00041491000000000005,
+      "inclusive_s": 0.00041491000000000005
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3519,
+      "function": "_ndim_dispatcher",
+      "calls": 3471,
+      "exclusive_s": 0.00037611000000000003,
+      "inclusive_s": 0.00037611000000000003
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/geometry.py",
+      "line": 205,
+      "function": "signed_distance_obb",
+      "calls": 11,
+      "exclusive_s": 0.000312807,
+      "inclusive_s": 0.001218841
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 906,
+      "function": "_outer_dispatcher",
+      "calls": 1770,
+      "exclusive_s": 0.000302664,
+      "inclusive_s": 0.000302664
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 553,
+      "function": "_unary_dispatcher",
+      "calls": 1735,
+      "exclusive_s": 0.000285314,
+      "inclusive_s": 0.000285314
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/shape_base.py",
+      "line": 370,
+      "function": "_stack_dispatcher",
+      "calls": 295,
+      "exclusive_s": 0.000281451,
+      "inclusive_s": 0.000599376
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/json/encoder.py",
+      "line": 205,
+      "function": "iterencode",
+      "calls": 16,
+      "exclusive_s": 0.000279559,
+      "inclusive_s": 0.000279559
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 1931,
+      "function": "_cond_dispatcher",
+      "calls": 1735,
+      "exclusive_s": 0.00027643400000000004,
+      "inclusive_s": 0.00027643400000000004
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 1552,
+      "function": "_cross_dispatcher",
+      "calls": 1781,
+      "exclusive_s": 0.000266348,
+      "inclusive_s": 0.000266348
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/dataclasses.py",
+      "line": 1325,
+      "function": "_asdict_inner",
+      "calls": 345,
+      "exclusive_s": 0.00025594,
+      "inclusive_s": 0.00045839000000000003
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/linalg/_linalg.py",
+      "line": 1685,
+      "function": "_svd_dispatcher",
+      "calls": 1735,
+      "exclusive_s": 0.00021772700000000002,
+      "inclusive_s": 0.00021772700000000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/shape_base.py",
+      "line": 208,
+      "function": "_arrays_for_stack_dispatcher",
+      "calls": 295,
+      "exclusive_s": 0.000187662,
+      "inclusive_s": 0.00031792500000000004
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 45,
+      "function": "_local_geometry_aabb",
+      "calls": 8,
+      "exclusive_s": 0.00011081300000000001,
+      "inclusive_s": 0.000194329
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/validation_kernel.py",
+      "line": 271,
+      "function": "<genexpr>",
+      "calls": 728,
+      "exclusive_s": 0.000108349,
+      "inclusive_s": 0.000108349
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/dataclasses.py",
+      "line": 1289,
+      "function": "_is_dataclass_instance",
+      "calls": 159,
+      "exclusive_s": 0.000101842,
+      "inclusive_s": 0.000161445
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/_methods.py",
+      "line": 98,
+      "function": "_clip",
+      "calls": 44,
+      "exclusive_s": 9.163300000000001e-05,
+      "inclusive_s": 9.163300000000001e-05
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/collision_policy.py",
+      "line": 79,
+      "function": "fingerprint",
+      "calls": 15,
+      "exclusive_s": 8.930400000000001e-05,
+      "inclusive_s": 0.001125488
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pair_clearance.py",
+      "line": 50,
+      "function": "classify_pair_distance",
+      "calls": 15,
+      "exclusive_s": 8.539100000000001e-05,
+      "inclusive_s": 0.001210879
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method _hashlib.openssl_sha256>",
+      "calls": 15,
+      "exclusive_s": 7.389e-05,
+      "inclusive_s": 7.389e-05
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pair_clearance.py",
+      "line": 74,
+      "function": "obb_pair_evidence",
+      "calls": 11,
+      "exclusive_s": 7.313400000000001e-05,
+      "inclusive_s": 0.006463834000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/json/__init__.py",
+      "line": 183,
+      "function": "dumps",
+      "calls": 16,
+      "exclusive_s": 6.5745e-05,
+      "inclusive_s": 0.00041883
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/dataclasses.py",
+      "line": 1271,
+      "function": "fields",
+      "calls": 15,
+      "exclusive_s": 6.0532e-05,
+      "inclusive_s": 0.00010868100000000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 303,
+      "function": "check_motion",
+      "calls": 1,
+      "exclusive_s": 5.6992000000000006e-05,
+      "inclusive_s": 19.585359832
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2241,
+      "function": "clip",
+      "calls": 44,
+      "exclusive_s": 4.5390000000000004e-05,
+      "inclusive_s": 0.00020039500000000002
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/json/encoder.py",
+      "line": 183,
+      "function": "encode",
+      "calls": 16,
+      "exclusive_s": 4.4759e-05,
+      "inclusive_s": 0.000336822
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/dataclasses.py",
+      "line": 1286,
+      "function": "<genexpr>",
+      "calls": 285,
+      "exclusive_s": 4.1565e-05,
+      "inclusive_s": 4.1565e-05
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/function_base.py",
+      "line": 26,
+      "function": "linspace",
+      "calls": 1,
+      "exclusive_s": 2.96e-05,
+      "inclusive_s": 4.7821e-05
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'hexdigest' of '_hashlib.HASH' objects>",
+      "calls": 15,
+      "exclusive_s": 2.7828000000000002e-05,
+      "inclusive_s": 2.7828000000000002e-05
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'clip' of 'numpy.ndarray' objects>",
+      "calls": 44,
+      "exclusive_s": 2.5526000000000003e-05,
+      "inclusive_s": 0.00011715900000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/dataclasses.py",
+      "line": 1366,
+      "function": "<genexpr>",
+      "calls": 90,
+      "exclusive_s": 2.3663e-05,
+      "inclusive_s": 3.3495000000000004e-05
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/collision_policy.py",
+      "line": 92,
+      "function": "_data",
+      "calls": 15,
+      "exclusive_s": 2.3230000000000003e-05,
+      "inclusive_s": 0.0005198560000000001
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 550,
+      "function": "_init",
+      "calls": 1,
+      "exclusive_s": 2.1484000000000003e-05,
+      "inclusive_s": 7.0417e-05
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/dataclasses.py",
+      "line": 1301,
+      "function": "asdict",
+      "calls": 15,
+      "exclusive_s": 2.0542e-05,
+      "inclusive_s": 0.0004934270000000001
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 121,
+      "function": "samples",
+      "calls": 1,
+      "exclusive_s": 1.9934000000000003e-05,
+      "inclusive_s": 3.7318000000000004e-05
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/json/encoder.py",
+      "line": 105,
+      "function": "__init__",
+      "calls": 16,
+      "exclusive_s": 1.6263e-05,
+      "inclusive_s": 1.6263e-05
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.min>",
+      "calls": 11,
+      "exclusive_s": 1.2695000000000001e-05,
+      "inclusive_s": 1.2695000000000001e-05
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'disable' of '_lsprof.Profiler' objects>",
+      "calls": 1,
+      "exclusive_s": 1.2472e-05,
+      "inclusive_s": 1.2472e-05
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.arange>",
+      "calls": 1,
+      "exclusive_s": 1.0119000000000001e-05,
+      "inclusive_s": 1.0119000000000001e-05
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 313,
+      "function": "_get_machar",
+      "calls": 1,
+      "exclusive_s": 8.686000000000001e-06,
+      "inclusive_s": 1.5984e-05
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2236,
+      "function": "_clip_dispatcher",
+      "calls": 44,
+      "exclusive_s": 7.767e-06,
+      "inclusive_s": 7.767e-06
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 468,
+      "function": "<genexpr>",
+      "calls": 12,
+      "exclusive_s": 7.605000000000001e-06,
+      "inclusive_s": 1.3130000000000001e-05
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'encode' of 'str' objects>",
+      "calls": 15,
+      "exclusive_s": 7.32e-06,
+      "inclusive_s": 7.32e-06
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 113,
+      "function": "_float_to_str",
+      "calls": 1,
+      "exclusive_s": 7.219000000000001e-06,
+      "inclusive_s": 9.139e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.max>",
+      "calls": 13,
+      "exclusive_s": 6.380000000000001e-06,
+      "inclusive_s": 6.380000000000001e-06
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 1184,
+      "function": "_validation_request",
+      "calls": 1,
+      "exclusive_s": 6.355e-06,
+      "inclusive_s": 8.900000000000001e-06
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 68,
+      "function": "__init__",
+      "calls": 2,
+      "exclusive_s": 4.096e-06,
+      "inclusive_s": 4.096e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'view' of 'numpy.generic' objects>",
+      "calls": 1,
+      "exclusive_s": 3.906e-06,
+      "inclusive_s": 3.906e-06
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 64,
+      "function": "smallest_subnormal",
+      "calls": 2,
+      "exclusive_s": 3.6800000000000003e-06,
+      "inclusive_s": 1.2859e-05
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 93,
+      "function": "_float_to_float",
+      "calls": 2,
+      "exclusive_s": 3.168e-06,
+      "inclusive_s": 9.179000000000001e-06
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 287,
+      "function": "<genexpr>",
+      "calls": 4,
+      "exclusive_s": 3.0990000000000003e-06,
+      "inclusive_s": 3.592e-06
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 26,
+      "function": "_fr1",
+      "calls": 2,
+      "exclusive_s": 2.571e-06,
+      "inclusive_s": 3.4890000000000004e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'result_type' of 'numpy._core._multiarray_umath._array_converter' objects>",
+      "calls": 1,
+      "exclusive_s": 2.4500000000000003e-06,
+      "inclusive_s": 2.4500000000000003e-06
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numerictypes.py",
+      "line": 239,
+      "function": "obj2sctype",
+      "calls": 1,
+      "exclusive_s": 2.324e-06,
+      "inclusive_s": 3.248e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.setattr>",
+      "calls": 9,
+      "exclusive_s": 2.0830000000000002e-06,
+      "inclusive_s": 2.0830000000000002e-06
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/pinocchio_backend.py",
+      "line": 464,
+      "function": "<genexpr>",
+      "calls": 12,
+      "exclusive_s": 1.906e-06,
+      "inclusive_s": 1.906e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'tolist' of 'numpy.ndarray' objects>",
+      "calls": 3,
+      "exclusive_s": 1.892e-06,
+      "inclusive_s": 1.892e-06
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 88,
+      "function": "_str_smallest_subnormal",
+      "calls": 1,
+      "exclusive_s": 1.872e-06,
+      "inclusive_s": 1.4386e-05
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/multiarray.py",
+      "line": 391,
+      "function": "where",
+      "calls": 11,
+      "exclusive_s": 1.8230000000000002e-06,
+      "inclusive_s": 1.8230000000000002e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'strip' of 'str' objects>",
+      "calls": 7,
+      "exclusive_s": 1.762e-06,
+      "inclusive_s": 1.762e-06
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 366,
+      "function": "<lambda>",
+      "calls": 1,
+      "exclusive_s": 1.636e-06,
+      "inclusive_s": 4.099e-06
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/motion_validation.py",
+      "line": 207,
+      "function": "<genexpr>",
+      "calls": 6,
+      "exclusive_s": 1.526e-06,
+      "inclusive_s": 1.526e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.round>",
+      "calls": 2,
+      "exclusive_s": 1.3460000000000001e-06,
+      "inclusive_s": 1.3460000000000001e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'update' of 'dict' objects>",
+      "calls": 1,
+      "exclusive_s": 1.288e-06,
+      "inclusive_s": 1.288e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'tobytes' of 'numpy.generic' objects>",
+      "calls": 1,
+      "exclusive_s": 1.027e-06,
+      "inclusive_s": 1.027e-06
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 18,
+      "function": "_fr0",
+      "calls": 1,
+      "exclusive_s": 1.021e-06,
+      "inclusive_s": 1.54e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'newbyteorder' of 'numpy.dtype' objects>",
+      "calls": 1,
+      "exclusive_s": 9.53e-07,
+      "inclusive_s": 9.53e-07
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "line": 103,
+      "function": "_float_conv",
+      "calls": 2,
+      "exclusive_s": 9.200000000000001e-07,
+      "inclusive_s": 2.522e-06
+    },
+    {
+      "file": "/root/autodl-tmp/m710-free-approach-20260928/source-0bfd708/src/unloading_sim/layout_trajectory.py",
+      "line": 973,
+      "function": "_limit",
+      "calls": 1,
+      "exclusive_s": 8.63e-07,
+      "inclusive_s": 8.63e-07
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method __new__ of type object at 0x935660>",
+      "calls": 1,
+      "exclusive_s": 7.410000000000001e-07,
+      "inclusive_s": 7.410000000000001e-07
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "line": 1964,
+      "function": "isscalar",
+      "calls": 1,
+      "exclusive_s": 7.19e-07,
+      "inclusive_s": 8.66e-07
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'clear' of 'collections.OrderedDict' objects>",
+      "calls": 2,
+      "exclusive_s": 6.29e-07,
+      "inclusive_s": 6.29e-07
+    },
+    {
+      "file": "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/function_base.py",
+      "line": 21,
+      "function": "_linspace_dispatcher",
+      "calls": 1,
+      "exclusive_s": 1.42e-07,
+      "inclusive_s": 1.42e-07
+    }
+  ]
+}

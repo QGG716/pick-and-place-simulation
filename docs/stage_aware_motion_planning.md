@@ -365,3 +365,227 @@ localizes native calls to the last observation, not an unobserved internal cause
 The five seam failures and 22 unavailable-history skips remain separate from
 passing regressions. No full-row stability, continuous-motion safety proof,
 physical reception success or machine qualification is claimed.
+
+## September 28: original-scene free approach
+
+This follow-up starts at `d74b53fa0901720b79426970ac351615b7b3da39`;
+the worktree and fetched branch were clean and equal. The implementation/test
+archive is `0bfd708489219b8635b836ab307c186faa7f03e6` (267 archived files,
+SHA256 `705a5d92a2a3fe7a576d82b2ff44a441a4d585e9c7e1a57aea6f8c6ac933a56e`).
+All measurements use the existing server CPU environment, with no dependency,
+collision, sampling, joint-limit, contact-policy or receiver-policy changes.
+
+### Frozen input and diagnosis
+
+`tools/probe_m710_free_approach.py --mode freeze` stops the ordinary new-plan
+entry at its first `_connect_pose`. It reconstructs the original candidate;
+it does not supply a historical path. The frozen JSON contains the complete
+actual start, four grasp candidates, target/contact transforms, first gate,
+IK seeds, solver budgets, official joint limits, all obstacle poses, 72-bit
+mask, named stack membership and full semantic validation binding. Rebuild
+checks the original actual-state hash, geometry, mask, solver configuration
+and validation binding before any planning.
+
+The actual-state SHA256 is
+`c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a`;
+the frozen case SHA256 is
+`391796d1af3f8f94f4211cdfd7e2ed2f69a2630481a2c7d0973db45a15d3d345`.
+It retains all **37 actual remaining cartons**. Target `carton_l07_c04` uses
+the first front/90-degree grasp branch
+`a2fe9288df95bda9a1da120b70c6eb203043dd13273754facbb7580daf4ef9cb`;
+path seed is 2106872174 and approach seed is 2106872184. Start radians:
+
+```text
+[-0.5284209847450256, 0.09451229125261307, -0.21063973009586334,
+ -3.1416585445404053, 1.2654187679290771, 0.5286964774131775]
+```
+
+Requested physical contact position is approximately
+`[-0.000745664929, 0.840006481564, 2.250029521781] m`; the full rotation and
+virtual-task transform are in the frozen input. The original near gate is
+35.0008889 mm outward, derived from the same projected tool depth, runtime
+reserve and IK/contact tolerances. No new mandatory process station is added.
+
+All three first-gate IK endpoints match the previous progress log exactly.
+Their ordinary (not angle-wrapped) joint L2 changes are 2.84835, 11.21182 and
+7.80330 rad. All endpoints are valid, but all direct edges fail. The shorter
+first solution **already received a chance**; simply avoiding the large wrist
+winding is insufficient. The third reproduces the exact reported pair and
+gap: `tool_rigid_0 / carton_l05_c02`, 0.004984748077057233 m < 0.005 m.
+This remains a clearance rejection, not a claim of original-CAD penetration.
+
+Previously the first near gate entered RRT before any adaptive entry. There
+was no applicable template or local candidate at that entry. A bounded probe
+of the unchanged existing entries (35.0009 mm, its existing adaptive duplicate,
+100 mm and 140.0036 mm) checks twelve finite IK/direct attempts: all reject,
+including one exact cache reuse. Thus entry fairness alone does not solve this
+scene. Moving only the start away before a joint connection also still sweeps
+into the stack; that diagnostic was stopped after its observed rejection,
+with its partial results retained as incomplete, not globally infeasible.
+
+### Two local changes
+
+1. `_connect_pose(allow_rrt=False)` exposes its existing finite cheap pass.
+   `_approach` gives every existing entry that pass before local alternatives
+   and RRT. Existing seeds stay attached to their entry, all original IK and
+   adaptive possibilities remain, and later RRT reuses exact edge evidence.
+   Candidate-local exhaustion remains resumable; request invalidation stops.
+2. After these direct rejections, `_approach_clearance_candidate` generates
+   a bounded free-space transition from the current stack support plane and
+   complete tool radius about the physical contact frame. It moves outward,
+   translates/turns outside that plane, then returns to the **original gate**.
+   The existing Cartesian solver and MotionValidator check every edge with
+   `pregrasp` permissions; only the original terminal arc uses CONTACT_PROCESS.
+   Long waypoint legs are chunked with the existing per-stage sample cap; all
+   local attempts share the existing 240-sample local-candidate allowance.
+   A failed candidate leaves the original bounded RRT available.
+
+The candidate is `LOCAL_CARTESIAN_CANDIDATE`, never VERIFIED_TEMPLATE or a
+history hint. The plane is a waypoint heuristic, **not a clearance certificate**
+for the robot or a continuous-motion proof. Here the full tool radius is
+0.33208594 m and the transition plane coordinate along the outward normal is
+0.33767070 m. Geometry and actual joint/IK checks still decide validity.
+The request retains its original input lease across entry/candidate changes;
+stale input cannot publish a completed approach. Original merged `contact`
+output and free/terminal indices retain their meanings.
+
+### Directed checks and short measurements
+
+The final-source combined CPU invocation is **329 passed, 22 skipped, zero
+failed**, 24.43 s. This is one non-overlapping total including six new tests;
+the skips still require unavailable legacy history files. Tests cover actual
+adaptive-entry opportunity with real IK/MotionValidator, request cancellation,
+work exhaustion/context change, deferred-search uncertainty, complete-tool
+candidate geometry/free permissions and bounded Cartesian work. Existing real
+RRT, binding, early-stop, process, reception and baseline-protection regressions
+remain included. The five earlier seam failures are not changed or reclassified.
+
+Same-server, same-input short medians (three cold/hot repetitions, milliseconds):
+
+| Case | d74 cold / hot | 0bfd cold / hot |
+| --- | ---: | ---: |
+| Official empty direct | 133.703 / 79.057 | 140.087 / 79.076 |
+| Official loaded historical endpoints, new connection | 469.072 / 4.924 | 466.908 / 5.210 |
+| Analytic loaded obstruction, real RRT | 12.838 / 2.408 | 12.137 / 2.397 |
+| Official contact process | 185.084 / 133.259 | 191.920 / 138.191 |
+
+Cold expensive-state counts remain 397 / 16 / 50 / 27; hot counts are zero.
+Only the real detour expands RRT (six extensions, three iterations). Both
+100-lookup binding probes retain 100 prepared hits, 200 lightweight guards,
+zero full context rebuilds and zero JSON/SHA calls. Timing includes small
+regressions as well as improvements; no general speedup is claimed.
+
+A separately profiled original first direct edge requires 18,143 strict grid
+states but stops at sample 1,734, leaving 16,408 suffix states unobserved.
+It prepares 1,736 FK states and executes 1,735 expensive checks (including the
+start); hot edge reuse takes 0.289 ms with zero new checks. Profiled wall time
+is 19.585 s. Inclusive component times are: lightweight context guards 2.030 s,
+FK/geometry preparation 0.483 s, environment collision 6.327 s, interval-proof
+preparation 1.335 s, and the entire scalar state predicate 15.525 s. These
+**overlap and must not be added**. Batch kinematics accounts for 0.449 s inside
+preparation. Full remaining profile/counters are retained in the evidence.
+Scalar collision organization, tool-object materialization and dense strict
+sampling remain hotspots; this patch does not reopen validation-kernel work.
+
+### Production approach result
+
+The fixed-source production `_approach` invocation returns **VALID** in
+403.819 s. The four existing entry cheap passes take 25.225, 21.836, 111.499
+and 50.750 s; then the first clearance candidate plus original terminal arc
+succeeds in 194.464 s. There are **zero RRT iterations/expansions**. This is a
+newly generated original-scene FANUC path, not an analytic-robot substitute or
+historical path replay. Source, frozen case and actual-state hashes still match.
+
+The merged direct-mode output contains 126 nodes, with free connection end and
+terminal contact start both at index **122**, and final contact at 125. The
+free candidate's four Cartesian chunks use 9 / 46 / 46 / 21 samples and
+1,088 / 7,326 / 14,654 / 3,318 expensive checks. The terminal arc adds three
+samples. All free chunks use the original `pregrasp` validation contract
+`dff1fcd583753ffafa387b58588351f4232a67db55c463c0b8ec14035c80b542`;
+contact uses its existing target-scoped contract. The final actual FK error
+is 0.0000821882 m / 0.0000201098 rad, within the unchanged 0.0001 m / 0.0002 rad
+tolerances. Final full-ring selection retains the same **48/72 commanded cups**,
+target and mask, and the actual endpoint collision check passes.
+
+Total connector work is 56,902 state checks, four endpoint IK streams plus
+125 Cartesian IK calls (154 seeds and 2,571 IK iterations in all). The 26,743
+`edge_state_samples` counter covers the Cartesian path checks; it is not the
+same counter as all 56,902 state checks and must not be added to it. Local
+candidate work is bounded at 122 of the existing 240 samples. Original direct
+failures still stop early and remain invalid cached edges; none becomes valid
+merely because another route succeeds.
+
+The previous 300.008 s result was externally censored inside first-entry RRT
+(96 extensions, 36,727 edge samples), so it provides **no baseline time to
+success**. The new 403.819 s successful connection is not a speedup ratio.
+Existing adaptive direct checks add substantial work before the new candidate;
+this is an explicit scheduling cost. It preserves their opportunities and
+avoids attributing the old unfinished run to one algorithmic cause. Neither
+global RRT reachability nor all possible IK alternatives have been decided.
+
+Reproduce the scoped check on the server's fixed archive:
+
+```sh
+PYTHONPATH=src /root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python \
+  tools/probe_m710_free_approach.py --mode approach \
+  --case ../evidence/frozen/frozen_case.json --output /fresh/path/approach.json
+```
+
+Repository evidence is under
+[evidence/free_approach_20260928](evidence/free_approach_20260928/). The frozen
+case and actual scene are included unchanged; `production_approach.json` retains
+path, endpoint checks, attempts, failures and counters. Its compact copy omits
+only repetitive `checked` interval lists; the full originals and diagnostic
+scripts remain in `/root/autodl-tmp/m710-free-approach-20260928/evidence`.
+`source_0bfd708.json` binds the archived files, and `cpu_run_0bfd708.json` records
+the exact combined test invocation and post-test source check.
+
+### One subsequent normal single-carton attempt
+
+After the production approach passed, exactly one ordinary single-carton run
+used the same immutable `source-0bfd708` archive, original actual scene, target
+and paired POC motion/execution policies. It supplied neither the successful
+approach path nor a historical path/contact seed. The external experimental
+allowance was 900 s, justified by the measured 404 s approach; this did not
+change production deadlines or reset any search budget.
+
+The ordinary run completed `_approach` at **429.052 s** with the same work
+counts, accepted its actual contact endpoint, and passed `_support_release`
+at 429.076 s. Under the existing POC policy no separate support lift is required.
+The first controlled extraction completed at **582.529 s** and passed the
+existing release/clearance boundary into FREE_LOADED_TRANSFER. It then stopped
+naturally at **600.894 s**, exit code 2, with **INDETERMINATE**:
+`SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET`, stage `transit`. The external 900 s alarm
+did **not** trigger, and no second full attempt was started.
+
+The new stop is precise: the existing loaded local candidate needs 121 samples
+but its per-candidate allocation is 80 from the configured shared 240-sample
+pool. Its trace still reports all 80 allocated samples remaining. This is
+**not evidence that all 240 samples were consumed**, and the new approach's
+122-sample allowance is local and separate; the original loaded pool is
+initialized after approach/extraction entry as before. The existing propagation
+classifies this candidate rejection as a request stop, so loaded RRT is not
+expanded. This downstream quota/stop behavior is retained for a later scoped
+fix, not changed or repeatedly retried in this free-approach round.
+
+The failure records 64,914 total state checks, 166 Cartesian samples and zero
+RRT iterations. Only one of 108 generated candidates was attempted; 107 remain
+unsearched. No global geometric infeasibility is claimed. The normal failure
+`motion.json`, scene snapshot, delivery timings and flushed progress are saved,
+but there is **no complete trajectory, execution bundle export, independent
+preflight or bundle readback**. `execution_ready` stays false. **Isaac was not
+run.** The full single-carton chain remains unaccepted beyond the new stop.
+
+See `single_carton_summary.json`, `single_carton_0bfd708.json`,
+`single_carton_run_0bfd708.json` and `single_carton_delivery/` in the evidence
+directory. Original failure JSON is preserved byte-for-byte with its original
+new-run evidence fingerprint. `server_raw_manifest.json` locates and hashes
+the unabridged diagnostic records. All 267 archived source/config/test files
+and the inputs still match after this final attempt. The later documentation
+commit does not change the tested implementation.
+
+Remaining limits are the loaded candidate quota/stop issue above, dense
+scalar clearance work, and the unverified downstream placement/export/physics
+chain. This closes the measured original free-approach plus terminal-contact
+gap; it does not establish whole-row stability, continuous collision proof or
+machine qualification.

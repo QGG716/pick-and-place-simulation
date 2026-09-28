@@ -1,0 +1,22 @@
+{
+  "server_root": "/root/autodl-tmp/m710-free-approach-20260928/evidence",
+  "commit": "0bfd708489219b8635b836ab307c186faa7f03e6",
+  "files": {
+    "frozen/frozen_case.json": "391796d1af3f8f94f4211cdfd7e2ed2f69a2630481a2c7d0973db45a15d3d345",
+    "direct_gates.json": "0e3bdcf716335700b3820cef8780dfd39a4b9ac4866aa5833e1f059f5cb32998",
+    "direct_gates.partial.json": "0c8b5a0c04df80d0ef4fcac8bf5f8d4101e2ae19c1a2c3677043df5007bc9630",
+    "buffered_gates.partial.json": "9000f97696eae2daf79833d9869518ff37580962c4d7e8e58c043c7d38ca2c5f",
+    "buffered_gates_stop.json": "a500ff17dc2d349ca13afb6b2f41ef6ce91df362809e45b0c758bd38b449f267",
+    "clearance_candidate_probe.py": "28186b670a8d67d445143ba74fe9b008727c507a93eb3696343d292ac054a29c",
+    "clearance_candidate.json": "da89c3f6a07920118daacaf56a813662c063e5ec47452fa93627719bc5a11ec3",
+    "profile_frozen_edge.py": "2be39f24e763112d39e4953afec13a692db1405a3c5c1ad061ad396e62a7a776",
+    "frozen_edge_profile_0bfd708.json": "55fbbc3363ce7bc99e2eb4635a10ee40faabedf24728b73ad4e88a27d696a68b",
+    "production_approach_0bfd708.json": "544f761e20fb8a0575bf2bf8bc2c7184c16be04140e1208eb64fcbd54e4325ae",
+    "production_approach_0bfd708.progress.jsonl": "27d3aad7fff07b46b38111ccc87e40fee87176e08a2a38f58d38f1dadd42dc4b",
+    "short_d74b53f.json": "63bd92edf2fac139768c1748cac973bea48afa00c5e2ad8092ac8790e7b769cc",
+    "short_0bfd708.json": "7b3e2f309a380ac5f3081691cfd098fa7dab6c6c26d6fe7041f0140742906040",
+    "single_carton_0bfd708.json": "c471b2c9e9d3ff15682660bc3aa12be4d5154df9706fc4a2729f1b3c32437ae3",
+    "single_carton_0bfd708_delivery/motion.json": "b7b60cb297badac3dea64e76f142dd8353a3cfb43a72e9d5be8a685a486c3699",
+    "single_carton_0bfd708_delivery/planning_progress.jsonl": "eab8b6ca0edb0859bc2fd499b63993d22afa5db99ebea46f06bbf78d35c6d648"
+  }
+}
