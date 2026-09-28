@@ -589,3 +589,36 @@ scalar clearance work, and the unverified downstream placement/export/physics
 chain. This closes the measured original free-approach plus terminal-contact
 gap; it does not establish whole-row stability, continuous collision proof or
 machine qualification.
+
+### Local Cartesian quota scope correction (2026-09-28, baseline 20c7a375)
+
+The loaded Cartesian producer now reports `INDETERMINATE` with an explicit
+`LOCAL_CARTESIAN_SAMPLES` budget domain and candidate scope. The small
+`_bounded_local_transit` allocation owner, used by the existing receiver branch,
+adds the shared account and marks an exhausted local pool as method scope.
+Neither condition exhausts the independent RRT or request validation budget.
+The original 80-candidate / 240-shared configuration is unchanged. A predicted
+121-sample edge consumes zero samples; no speculative reservation is charged.
+Cartesian counters count attempted IK samples, separately from collision checks
+and RRT iterations. Unlimited request checks are recorded as null, never as 240.
+
+Actual completed sample work is settled in `finally`, including partial failure,
+cancellation and exceptions. The outer allocation is settled once. Request
+work counters are neither refunded nor restarted. `ValidationResult.evidence`
+preserves producer termination metadata through wrapping; the dispatch reads
+candidate/method scope and retains explicit compatibility with the old named
+local producer format. Unknown request budget stops remain conservative.
+An inexpensive post-producer validator guard catches cancellation, stale input
+and exhausted request work/deadline before another candidate or RRT can run.
+
+`test_local_transit_budget_scope.py` exercises the real producer, actual attached
+OBB, production dispatch and real RRT on the existing analytic robot fixture.
+It covers zero/partial consumption, zero shared pool, later candidate success,
+RRT success/exhaustion, request stops, exception settlement and nested/outer
+plan wrappers. These analytic routes are not FANUC original-scene evidence.
+`probe_m710_loaded_transit.py` reconstructs missing extraction nodes from the
+saved successful contact endpoint, then rechecks any saved extraction with a
+fresh tracker and the unchanged reserve. It runs only the first production
+receiver connection and records an external resource interruption separately
+from geometric failure. Prefix reuse is explicitly offline evidence, not a new
+full-cycle plan or measured physical state.

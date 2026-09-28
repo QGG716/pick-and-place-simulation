@@ -3055,6 +3055,31 @@ class LayoutTrajectoryConnector:
                       "attempts": all_exit_attempts,
                       "extraction_attempts": getattr(self, "_last_extraction_attempts", [])}, trace
 
+    def _bounded_local_transit(self, start, destination, obstacles, attachment, *, seed):
+        """Lend one finite method allocation; settle actual work exactly once."""
+        pool = self._local_transit_remaining
+        allocation = min(pool, max(1, self.budget.local_transit_cartesian_sample_budget
+                                   // self.budget.stage_connection_attempts))
+        self._local_transit_remaining = allocation
+        try:
+            path, failure, evidence = self._local_cartesian_transit(
+                start, destination, obstacles, attachment, seed=seed)
+            consumed = allocation - self._local_transit_remaining
+            account = dict(allocated=allocation, consumed=consumed,
+                candidate_remaining=self._local_transit_remaining,
+                shared_remaining=pool-consumed,
+                request_budget_remaining=self._validation_request().available(),
+                request_budget_unit='VALIDATION_CHECKS_OR_UNLIMITED_NULL',
+                sample_unit='ATTEMPTED_CARTESIAN_IK_SAMPLES')
+            evidence.update(account, allocated_sample_budget=allocation)
+            if failure is not None and failure.get('reason') == 'SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET':
+                failure.update(account,
+                    termination_scope='METHOD' if pool-consumed == 0 else 'CANDIDATE')
+            return path, failure, evidence
+        finally:
+            consumed = allocation - self._local_transit_remaining
+            self._local_transit_remaining = pool - consumed
+
     def _local_cartesian_transit(self, start, destination, obstacles, attachment, *, seed):
         """Reuse strict Cartesian continuation with a shared finite sample pool.
 
@@ -3065,6 +3090,16 @@ class LayoutTrajectoryConnector:
         evidence = {"stage": "transit", "method": "BOUNDED_EXISTING_CARTESIAN_WITH_OUTWARD_ESCAPE",
                     "attempts": [], "shared_sample_budget": self.budget.local_transit_cartesian_sample_budget}
         prefix = [np.asarray(start, dtype=float).copy()]
+        allocated = self._local_transit_remaining
+
+        def shortage(required):
+            return dict(reason='SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET', status='INDETERMINATE',
+                termination_scope='CANDIDATE', can_continue_candidates=True,
+                budget_domain='LOCAL_CARTESIAN_SAMPLES', required=required,
+                allocated=allocated, consumed=allocated-self._local_transit_remaining,
+                candidate_remaining=self._local_transit_remaining,
+                shared_remaining=None,  # The allocation owner supplies the shared account.
+                request_budget_remaining=self._validation_request().available())
 
         def connect(origin_q, goal, attempt_seed):
             origin = self.robot.fk(origin_q)
@@ -3072,7 +3107,7 @@ class LayoutTrajectoryConnector:
             needed = max(1, int(np.ceil(distance / self.budget.cartesian_step_m)),
                          int(np.ceil(angle / self.budget.cartesian_orientation_step_rad)))
             if needed > self._local_transit_remaining:
-                return [], {"reason": "SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET", "required": needed}, []
+                return [], shortage(needed), []
             # Leave one sample of headroom for the previous strict FK residual
             # when determining the next chunk's actual required sample count.
             capacity = max(1, self.budget.cartesian_max_samples_per_stage - 1)
@@ -3088,12 +3123,14 @@ class LayoutTrajectoryConnector:
                 chunk_needed = max(1, int(np.ceil(chunk_distance / self.budget.cartesian_step_m)),
                                    int(np.ceil(chunk_angle / self.budget.cartesian_orientation_step_rad)))
                 if chunk_needed > self._local_transit_remaining:
-                    return [], {"reason": "SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET", "required": chunk_needed}, searches
+                    return [], shortage(chunk_needed), searches
                 before = self._statistics["cartesian_samples"]
-                path, failure, search = self._cartesian(full[-1], waypoint, obstacles,
-                    attachment=attachment, seed=attempt_seed + chunk, stage="transit",
-                    purpose=MotionPurpose.FREE_LOADED_TRANSFER)
-                self._local_transit_remaining -= self._statistics["cartesian_samples"] - before
+                try:
+                    path, failure, search = self._cartesian(full[-1], waypoint, obstacles,
+                        attachment=attachment, seed=attempt_seed + chunk, stage="transit",
+                        purpose=MotionPurpose.FREE_LOADED_TRANSFER)
+                finally:
+                    self._local_transit_remaining -= self._statistics["cartesian_samples"] - before
                 searches.append(search)
                 if failure is not None:
                     return [], failure, searches
@@ -3473,18 +3510,10 @@ class LayoutTrajectoryConnector:
                     dict(source='HISTORICAL_LOADED_PREFIX_CURRENT_CONTRACT_RECHECK'))
             if getattr(self, '_local_transit_remaining', 0) > 0:
                 def local():
-                    pool = self._local_transit_remaining
-                    allocation = min(pool, max(1, self.budget.local_transit_cartesian_sample_budget
-                                               // self.budget.stage_connection_attempts))
-                    self._local_transit_remaining = allocation
-                    try:
-                        path, failure, evidence = self._local_cartesian_transit(extraction[-1],
-                            self.robot.fk(goal_q), payload_obstacles, attachment, seed=seed + 55)
-                        evidence['allocated_sample_budget'] = allocation
-                        trace['stages']['local_transit'] = evidence
-                        return path, failure, evidence
-                    finally:
-                        self._local_transit_remaining = pool-(allocation-self._local_transit_remaining)
+                    path, failure, evidence = self._bounded_local_transit(extraction[-1],
+                        self.robot.fk(goal_q), payload_obstacles, attachment, seed=seed + 55)
+                    trace['stages']['local_transit'] = evidence
+                    return path, failure, evidence
                 yield GenerationMethod.LOCAL_CARTESIAN_CANDIDATE, local
 
         preplace_q, transit, failure, evidence = self._connect_pose(

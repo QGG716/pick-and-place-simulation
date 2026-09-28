@@ -9,7 +9,7 @@ from time import perf_counter
 
 import numpy as np
 
-from .motion_validation import Status
+from .motion_validation import Status, termination_metadata
 
 
 class MotionPurpose(str, Enum):
@@ -94,7 +94,15 @@ def interrupts_generation(failure):
     if any(word in reason for word in ('CONTEXT_CHANGED', 'STALE', 'CANCEL', 'DEADLINE',
                                       'UNKNOWN', 'VALIDATION_WORK_BUDGET')):
         return True
-    outcome = failure.get('validation') or failure
+    outcome = {**(failure.get('validation') or failure), **termination_metadata(failure)}
+    # Compatibility for the old local producer, including ValidationResult
+    # wrappers. This named method quota is not a request work/deadline budget.
+    legacy = failure
+    while isinstance(legacy, dict):
+        if (not termination_metadata(failure) and
+                legacy.get('reason') == 'SHARED_LOCAL_TRANSIT_SAMPLE_BUDGET'):
+            return False
+        legacy = legacy.get('failure') or (legacy.get('validation') or {}).get('failure')
     if 'termination_scope' not in outcome and (
             reason in {'CARTESIAN_SAMPLE_BUDGET_EXCEEDED', 'PATH_SEARCH_EXHAUSTED',
                        'NO_STRICT_GRASP_CANDIDATE'} or reason.endswith('_NO_IK')):
@@ -104,7 +112,7 @@ def interrupts_generation(failure):
         # but also no request stop. Explicit unknown/budget/input stops bind.
         return 'BUDGET' in reason
     return status == 'INDETERMINATE' and not (
-        outcome.get('termination_scope') == 'CANDIDATE' and
+        outcome.get('termination_scope') in {'CANDIDATE', 'METHOD'} and
         outcome.get('can_continue_candidates') is True)
 
 
@@ -166,6 +174,12 @@ def free_connection_prefix(start, goal, validator, budget, *, purpose, candidate
         points, failure, evidence = producer()
         attempt = dict(method=method.value, generation=evidence, failure=failure)
         trace['attempts'].append(attempt)
+        # A recoverable method shortage cannot hide a stop raised during its
+        # generation, including the last producer before the RRT fallback.
+        guard = validator._guard(budget)
+        if guard is not None:
+            attempt['status'] = failure_status(failure)
+            return finish([], guard)
         if failure is not None:
             status = failure_status(failure)
             attempt['status'] = status

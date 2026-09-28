@@ -142,10 +142,22 @@ class ValidationResult:
         return self.status == Status.VALID
 
     def evidence(self):
-        return dict(status=self.status.value, context_id=self.context_id, guarantee=self.guarantee,
+        return dict(**termination_metadata(self.failure),
+                    status=self.status.value, context_id=self.context_id, guarantee=self.guarantee,
                     failure=self.failure, interval=self.interval, checked=self.checked,
                     statistics=self.statistics, cache_hit=self.cache_hit,
                     interval_certificate=self.interval_certificate)
+
+
+def termination_metadata(failure):
+    """Keep producer scope through result/evidence wrappers without reclassifying it."""
+    if not isinstance(failure, dict):
+        return {}
+    for item in (failure.get('validation'), failure):
+        if isinstance(item, dict) and 'termination_scope' in item:
+            return {key: item[key] for key in
+                    ('termination_scope', 'can_continue_candidates', 'budget_domain') if key in item}
+    return termination_metadata(failure.get('failure'))
 
 
 @dataclass
