@@ -1,7 +1,7 @@
 """Small reproducible real-layout backend experiment; no population sweep."""
 from __future__ import annotations
 import argparse
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import json
 from pathlib import Path
 import sys
@@ -25,8 +25,12 @@ def main():
     p.add_argument('--config',default='configs/validation/m710id70_proof_of_concept.yaml')
     p.add_argument('--fixture',default='tests/fixtures/moveit2/frozen_candidate.json')
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--diagnostic-only',action='store_true',help='One loaded segment: 120s per solver, one OMPL attempt; not a budget comparison')
+    p.add_argument('--preserve-first-path',type=Path,help='Exclusive-create evidence for the first fully accepted loaded path')
     args=p.parse_args();started=perf_counter();args.output.parent.mkdir(parents=True,exist_ok=True)
-    report=dict(schema='m710_moveit_experiment_v1',suite=args.suite,backend=args.backend,results=[],isaac='NOT_RUN')
+    if args.diagnostic_only and (args.suite!='stages' or args.case!=['loaded_fixed_transit'] or args.backend!='moveit2'):
+        p.error('--diagnostic-only requires exactly the moveit2 loaded_fixed_transit stage')
+    report=dict(diagnostic_only=args.diagnostic_only,schema='m710_moveit_experiment_v1',suite=args.suite,backend=args.backend,results=[],isaac='NOT_RUN')
     c=None
     def save(): args.output.write_text(json.dumps(report,indent=2,allow_nan=False),encoding='utf-8')
     try:
@@ -40,6 +44,19 @@ def main():
         if built.connector is None: raise RuntimeError(built.failure_reason)
         c=built.connector
         if args.backend=='moveit2': c=MoveItLayoutConnector.from_existing(c,scene)
+        if args.backend=='moveit2':
+            native_request=c.native.request
+            def checkpoint_request(payload,**kwargs):
+                value=native_request(payload,**kwargs)
+                if payload.get('op')=='plan':
+                    # Preserve the actual native candidate before a potentially
+                    # long authority check; this is explicitly not acceptance.
+                    with args.output.with_suffix('.native.jsonl').open('a',encoding='utf-8') as f:
+                        f.write(json.dumps(dict(authority_status='NOT_YET_CHECKED',native=value),allow_nan=False)+'\n')
+                    print('native',value.get('planner_id'),value['status'],
+                        'plan_s',value.get('mtc_plan_s'),'output_s',value.get('native_output_check_s'),flush=True)
+                return value
+            c.native.request=checkpoint_request
         from unloading_sim.conveyor_placement import PlacementPolicy
         strategy=policy.data["search_strategy"]
         c.placement_policy=PlacementPolicy(maximum_candidates=int(strategy["placement_candidates"]),
@@ -51,6 +68,8 @@ def main():
             process_family_by_support=dict(strategy["surface_process_families"]),
             allowed_families_by_process={k:tuple(v) for k,v in strategy["allowed_placement_families"].items()},
             overlap_process_priority=tuple(strategy["overlap_process_priority"]))
+        if args.diagnostic_only:
+            c.native_stage_seconds=120.;c.budget=replace(c.budget,stage_connection_attempts=1)
         c.start_planning_request()
         c.stack_carton_names={b.name for b in scene.cartons}
         c.robot_state_validator.stack_carton_names=frozenset(c.stack_carton_names)
@@ -83,7 +102,18 @@ def main():
                 result,failure,evidence=values
                 row=dict(case=name,fixture_kind=kind,q_start=q0.tolist(),q_goal=None if q1 is None else q1.tolist(),
                     goal_pose=None if pose is None else pose.tolist(),path=[q.tolist() for q in result],failure=failure,
+                    authority_statistics=dict(c._statistics),
                     authoritative_status='PASS' if failure is None else 'FAIL',evidence=evidence,end_to_end_s=perf_counter()-case_started)
+                if name=='loaded_fixed_transit' and failure is None and args.preserve_first_path:
+                    accepted=dict(row,scope='single loaded segment, no complete cycle or physical execution',
+                        scene_fingerprint=report['scene_fingerprint'],policy_fingerprint=report['policy_fingerprint'],
+                        diagnostic_only=args.diagnostic_only,startup=report.get('startup'),
+                        checks=['native final actual output dense edges','original Python full edges including attachment',
+                            'native result endpoint/joint-order/time/velocity/acceleration contract','joint limits in state validity'])
+                    args.preserve_first_path.parent.mkdir(parents=True,exist_ok=True)
+                    try:
+                        with args.preserve_first_path.open('x',encoding='utf-8') as f:json.dump(accepted,f,indent=2,allow_nan=False)
+                    except FileExistsError: pass  # Never overwrite the first accepted path.
                 report['results'].append(row);save();print(name,row['authoritative_status'],row['end_to_end_s'],flush=True)
         else:
             from unloading_sim.history_candidates import compatible_hint, HistoryPolicy

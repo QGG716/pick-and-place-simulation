@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/root/autodl-tmp/m710-clearance-perf-20260928/repo/tools/check_m710_loaded_timing.py", line 52, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/root/autodl-tmp/m710-clearance-perf-20260928/repo/tools/check_m710_loaded_timing.py", line 39, in main
+    assert np.all(np.diff(timed.time_from_start)>=np.asarray(floors))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

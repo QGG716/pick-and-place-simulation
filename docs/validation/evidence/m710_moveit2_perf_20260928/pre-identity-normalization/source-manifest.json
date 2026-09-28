@@ -1,0 +1,21 @@
+{
+  "review_baseline": "baeb2a7056e8af0397855e9f54c0d9d421472e6d",
+  "files": {
+    "ros2/m710_moveit_backend/src/worker.cpp": "0a08305183ce56808540d477efc3671345c03347af2cb51e55d901ac19e9af0d",
+    "ros2/m710_moveit_backend/src/clearance.h": "f77db1dbf8e2693b358800a8d62746b5e27fc73603e979096df0b38bfce009b2",
+    "ros2/m710_moveit_backend/src/clearance_workspace.h": "fc0df336381805c51bb23ff895a9263ec2a232c97a53ae29e2dbebeae5c0e2a2",
+    "ros2/m710_moveit_backend/src/clearance_test.cpp": "6049228a1d19ee923e1349b27d571c068685d5e2b5ee5108d6f7511d92f2d177",
+    "src/unloading_sim/moveit2_backend.py": "b66cc8086ee46ff104f48eeefab1bbbfe4fe3bedeef93c5589097372f3c39947",
+    "src/unloading_sim/layout_single_carton.py": "3ad01e03225b51d48513717fc2c809083dae07f555a5c8f262f6571ec101fdee",
+    "tools/profile_m710_clearance.py": "03fea57b2b9a41e576f2778a96f2b215f5983a301770b8d7d5e27391c64825bd",
+    "tools/run_m710_moveit_integration.py": "78cc16c28fbd1b03dc91d94365cf45a0625ed41f23610e92b56f3f4f0c377191",
+    "tools/check_m710_moveit_clearance.py": "515e559e6deaf1bcf7d5c3dfeec1033114b3625e34528f6179e8a7e19e699c67",
+    "tests/fixtures/moveit2/frozen_candidate.json": "13a3d6389c124ccec5f72bb9fb83257fd7cd9aedbad19fb6c48cbc4106329c8e",
+    "tests/fixtures/moveit2/clearance_rejections.json": "bde2527dba6130060a7424c47a8783f1a4389fb8d5480509a6bba7a1e87e06a3",
+    "configs/validation/m710id70_proof_of_concept.yaml": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0"
+  },
+  "build": "Release -O3 -DNDEBUG; no fast-math",
+  "resident_seed": 71070,
+  "loaded_request_seed": 71072,
+  "order": "synthetic reference, optimized; fixed_set reference, optimized; historical reference, optimized; loaded reference, optimized; optional one diagnostic; PTP, LIN, early TCP; focused pytest"
+}

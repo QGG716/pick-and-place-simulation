@@ -212,13 +212,30 @@ public:
       if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
       if(req.at("clearance_policy").at("source_policy")!=bound_policy || req.at("clearance_policy").at("tool_links")!=bound_tools)
         throw std::runtime_error("EXECUTABLE_POLICY_MISMATCH");
-      clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"));
+      clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")));
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
       scene->setStateFeasibilityPredicate([clearance](const moveit::core::RobotState& current,bool verbose){return clearance->check(current,verbose);});
     }
     auto path_check=[&](const J& path) {return clearance->checkPath(scene->getCurrentState(),path,req.at("clearance_policy").at("edge_resolution_rad"));};
     if(op=="validate") {
+      if(req.contains("probe_states")) {
+        J results=J::array();auto probe=scene->getCurrentState();clearance->phase="fixed_set";
+        const auto t=Clock::now();double legacy_s=0;size_t legacy_queries=0;
+        for(const auto& row:req.at("probe_states")) {
+          auto values=row.get<std::vector<double>>();
+          if(values.size()!=names.size()) throw std::runtime_error("INVALID_PROBE_STATE");
+          for(double x:values) if(!std::isfinite(x)) throw std::runtime_error("INVALID_PROBE_STATE");
+          probe.setJointGroupPositions("manipulator",values);probe.update();
+          auto one=Clock::now();const bool valid=clearance->check(probe);double check_s=seconds(one);
+          const J failure=clearance->last_failure;
+          collision_detection::CollisionRequest cr;collision_detection::CollisionResult collision;
+          auto lt=Clock::now();scene->checkCollision(cr,collision,probe);legacy_s+=seconds(lt);++legacy_queries;
+          results.push_back({{"valid",valid},{"failure",failure},{"check_s",check_s},{"legacy_intersection_valid",!collision.collision}});
+        }
+        return {{"status","SUCCESS"},{"states",results},{"clearance",clearance->evidence()},
+          {"legacy_intersection_s",legacy_s},{"legacy_intersection_queries",legacy_queries},{"batch_s",seconds(t)}};
+      }
       collision_detection::CollisionRequest old_request;old_request.contacts=true;old_request.max_contacts=20;
       collision_detection::CollisionResult old_result;scene->checkCollision(old_request,old_result);
       clearance->phase="diagnostic";

@@ -46,3 +46,6 @@ src/unloading_sim/isaac_bridge.py binary
 
 # Shell entry points must remain runnable after a Windows checkout.
 ros2/m710_moveit_backend/** text eol=lf
+
+# Preserve raw performance evidence and its recorded hashes; log whitespace is data.
+docs/validation/evidence/m710_moveit2_perf_20260928/** -text -whitespace

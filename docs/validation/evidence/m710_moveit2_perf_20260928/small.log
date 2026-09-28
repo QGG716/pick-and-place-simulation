@@ -1,0 +1,4 @@
+native PTP SUCCESS plan_s 0.010083326 output_s 0.018861477
+empty_short PASS 0.5091264266520739
+native LIN SUCCESS plan_s 0.007765498 output_s 0.017091271
+linear_fixed_orientation PASS 0.45821766555309296

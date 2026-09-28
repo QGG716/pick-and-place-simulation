@@ -1,0 +1,18 @@
+{
+  "schema": "m710_clearance_performance_summary_v1",
+  "status": "PASS",
+  "same_requests_except_mode": true,
+  "fixed_count": 166,
+  "unique_states": 164,
+  "maximum_positive_failure_distance_difference_native_m": 1.7780915628762273e-17,
+  "loaded_reference_failure": "MOVEIT2_SEARCH_EXHAUSTED",
+  "loaded_optimized_status": "PASS",
+  "diagnostic_only": "NOT_RUN: optimized passed within the original fixed budget",
+  "first_final_path_sha256": "16e6cb3d8d79d8c2b87c56c0b45a86dcea0fe3b02d68e47c8335a457b70f59d5",
+  "capability": {
+    "end_to_end_s": 0.9304716344922781,
+    "candidate_s": 0.004125935956835747,
+    "native_calls": 0,
+    "heavy_checks": 0
+  }
+}

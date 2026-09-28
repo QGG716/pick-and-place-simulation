@@ -25,24 +25,24 @@ moveit_msgs::msg::CollisionObject box(const std::string& name,double x) {
   geometry_msgs::msg::Pose pose;pose.orientation.w=1;pose.position.x=x;b.primitive_poses.push_back(pose);return b;
 }
 int main(int argc,char** argv) {
-  rclcpp::init(argc,argv);J out;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
+  const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
   for(double gap:{.004,.005-2e-9,.005-.5e-9,.005,.005+.5e-9,.006}) {
-    auto s=scene(gap);m710::Clearance c(s,policy());bool valid=c.check(s->getCurrentState());
+    auto s=scene(gap);m710::Clearance c(s,policy(),mode);bool valid=c.check(s->getCurrentState());
     require(valid==(gap+1e-9>=.005),"THRESHOLD_CLASSIFICATION");out["threshold_cases"].push_back({{"gap",gap},{"valid",valid},{"failure",c.last_failure}});
   }
   auto s=scene(.002);auto p=policy();p["tool_links"]=J::array();
-  m710::Clearance ordinary(s,p);require(ordinary.check(s->getCurrentState()),"ORDINARY_SELF_MUST_NOT_GET_5MM");
-  m710::Clearance tool(s,policy());require(!tool.check(s->getCurrentState()),"ROBOT_TOOL_MUST_GET_5MM");
+  m710::Clearance ordinary(s,p,mode);require(ordinary.check(s->getCurrentState()),"ORDINARY_SELF_MUST_NOT_GET_5MM");
+  m710::Clearance tool(s,policy(),mode);require(!tool.check(s->getCurrentState()),"ROBOT_TOOL_MUST_GET_5MM");
   auto diff=s->diff();diff->decoupleParent();diff->getAllowedCollisionMatrixNonConst().setEntry("robot","tool",true);
-  m710::Clearance exempt(diff,policy());require(exempt.check(diff->getCurrentState()),"SCOPED_ASSEMBLY_ALLOWANCE");
+  m710::Clearance exempt(diff,policy(),mode);require(exempt.check(diff->getCurrentState()),"SCOPED_ASSEMBLY_ALLOWANCE");
   require(!tool.check(s->getCurrentState()),"ACM_LEAK");out["self_tool_and_diff"]="PASS";
   s=scene(.02);s->processCollisionObjectMsg(box("neighbor",.042));
   auto cupdiff=s->diff();cupdiff->decoupleParent();cupdiff->getAllowedCollisionMatrixNonConst().setEntry("tool","neighbor",true);
-  m710::Clearance cup(cupdiff,policy()),rigid(s,policy());
+  m710::Clearance cup(cupdiff,policy(),mode),rigid(s,policy(),mode);
   require(cup.check(cupdiff->getCurrentState()),"EXACT_CUP_PAIR");require(!rigid.check(s->getCurrentState()),"RIGID_NOT_EXEMPT");
   out["cup_permission_not_rigid"]="PASS";
   s=scene(.02);s->processCollisionObjectMsg(box("wall",.07));
-  m710::Clearance edge(s,policy());auto state=s->getCurrentState();
+  m710::Clearance edge(s,policy(),mode);auto state=s->getCurrentState();
   for(double q:{-.1,.1}) {state.setJointGroupPositions("manipulator",std::vector<double>{q});state.update();require(edge.check(state),"EDGE_ENDPOINT");}
   edge.phase="output";auto failure=edge.checkPath(s->getCurrentState(),J::array({J::array({-.1}),J::array({.1})}),.04);
   require(!failure.is_null(),"EDGE_INTERIOR_MISSED");out["valid_endpoints_invalid_edge"]=failure;out["edge_counts"]=edge.evidence();
@@ -51,8 +51,25 @@ int main(int argc,char** argv) {
   auto attached=s->diff();attached->decoupleParent();attached->getWorldNonConst()->removeObject("payload");
   moveit_msgs::msg::AttachedCollisionObject a;a.link_name="robot";a.object=box("payload",.08);a.object.header.frame_id="robot";
   require(attached->processAttachedCollisionObjectMsg(a),"ATTACH");attached->processCollisionObjectMsg(box("neighbor",.092));
-  p=policy();p["payload_id"]="payload";m710::Clearance payload(attached,p);
+  p=policy();p["payload_id"]="payload";m710::Clearance payload(attached,p,mode);
   require(!payload.check(attached->getCurrentState()),"ATTACHED_PAYLOAD_GAP");
   require(!attached->getWorld()->hasObject("payload") && s->getWorld()->hasObject("payload"),"ATTACH_DIFF_LEAK");
-  out["attached_failure"]=payload.last_failure;out["status"]="PASS";std::cout<<out.dump(2)<<std::endl;rclcpp::shutdown();
+  out["attached_failure"]=payload.last_failure;
+  // Same geometry, different stage/policy thresholds must not share results.
+  auto receiver=attached->diff();receiver->decoupleParent();
+  receiver->getWorldNonConst()->removeObject("neighbor");receiver->processCollisionObjectMsg(box("conveyor",.096));
+  p["conveyor_ids"]={"conveyor"};p["receiver_reserve_m"]=.003;
+  m710::Clearance transit(receiver,p,mode);require(!transit.check(receiver->getCurrentState()),"PAYLOAD_RECEIVER_RESERVE");
+  p["stage"]="pregrasp";m710::Clearance pregrasp(receiver,p,mode);
+  require(pregrasp.check(receiver->getCurrentState()),"STAGE_THRESHOLD_LEAK");
+  require(!transit.check(receiver->getCurrentState()),"POLICY_CACHE_LEAK");
+  out["payload_receiver_stage_thresholds"]="PASS";
+  if(mode=="optimized") {
+    auto changed=receiver->getCurrentState();changed.clearAttachedBody("payload");changed.update();
+    require(!transit.check(changed),"STALE_ATTACHMENT_ACCEPTED");
+    require(transit.last_failure.at("reason")=="DISTANCE_QUERY_FAILED","STALE_ATTACHMENT_REASON");
+    require(!transit.check(receiver->getCurrentState()),"RESTORED_ATTACHMENT_LEAK");
+    out["stale_attachment_fail_closed"]="PASS";
+  }
+out["status"]="PASS";std::cout<<out.dump(2)<<std::endl;rclcpp::shutdown();
 }

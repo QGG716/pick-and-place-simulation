@@ -147,7 +147,7 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
     # Owned tool solids form one assembly. Wrist exceptions retain exact ownership.
     for first, second in itertools.combinations(tool_names, 2):
         ET.SubElement(srdf, "disable_collisions", link1=first, link2=second, reason="Owned_tool_assembly")
-    for first, second in connector.collision_policy.wrist_tool_pairs(tool_names):
+    for first, second in sorted(connector.collision_policy.wrist_tool_pairs(tool_names)):
         ET.SubElement(srdf, "disable_collisions", link1=first, link2=second, reason="Approved_owned_wrist_tool")
     params = {"robot_description": ET.tostring(urdf, encoding="unicode"),
         "robot_description_semantic": ET.tostring(srdf, encoding="unicode"),
@@ -171,7 +171,7 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
         params[f"robot_description_planning.joint_limits.{joint}.max_acceleration"] = .5
         # Humble Pilz derives deceleration=-acceleration. Do not predeclare
         # its extension parameters: 2.5.10 redeclares them internally.
-    identity = dict(schema=SCHEMA, baseline_sha="575ad763e04f500f5413e9b103b0835687024403",
+    identity = dict(schema=SCHEMA, baseline_sha="baeb2a7056e8af0397855e9f54c0d9d421472e6d",
         scene_version="m710id70_unloading_layout_v1", scene_fingerprint=scene.snapshot.get("scene_fingerprint"),
         policy_fingerprint=scene.policy.policy_fingerprint, validator_identity=connector.validator_identity,
         model_tool_fingerprint=digest(params), policy_scope="native_POC_free_pair_clearance_search_and_edges_plus_existing_authority")
@@ -272,6 +272,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         request=dict(schema=SCHEMA,op="plan",identity=self.native_identity,q_start=np.asarray(start).tolist(),
             world=world,scene_fingerprint=digest(world),allowed_pairs=pairs,attachment=attached,stage=stage,
             candidate_id=getattr(self,"_candidate_identity",None) or f"directed:{stage}:{seed}",start_velocity=[0.]*6,path_constraints={},
+            clearance_mode=os.environ.get("M710_CLEARANCE_MODE","optimized"),
             seed=int(seed),cancelled=False,allowed_planning_time_s=getattr(self,"native_stage_seconds",12.),velocity_scale=.2,acceleration_scale=.2,
             flange_from_task_tcp=self.flange_from_virtual_task_tcp.tolist())
         if goal_pose is None: request["q_goal"]=np.asarray(goal).tolist()
