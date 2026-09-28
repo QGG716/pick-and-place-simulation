@@ -1,0 +1,6 @@
+# Preserve raw server evidence and runtime fingerprints.
+*.json -text
+*.jsonl -text
+*.log -text
+*.txt -text
+*.py -text

@@ -1,0 +1,20 @@
+{
+  "commit": "192f139b28652f8ae139e833d2884ff49e1f6428",
+  "command": [
+    "/root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python",
+    "tools/validate_stage_motion_single_carton.py",
+    "--history",
+    "/root/autodl-tmp/m710-validation-kernel-20260922/delivery",
+    "--output",
+    "../evidence/single_carton_192f139.json",
+    "--offline-resource-seconds",
+    "3600"
+  ],
+  "source_directory": "/root/autodl-tmp/m710-loaded-candidate-20260928/allocation-complete",
+  "single_new_attempt": true,
+  "historical_path_supplied": false,
+  "reason_for_resource_limit": "Measured 953-second loaded connection plus previous 583-second approach/extraction, with allowance for receiver/final/export checks; external experiment only",
+  "exit_code": 0,
+  "elapsed_seconds": 1626.0970550999045,
+  "runtime_files_unchanged": true
+}

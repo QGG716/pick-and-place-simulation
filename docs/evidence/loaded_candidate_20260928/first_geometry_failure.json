@@ -1,0 +1,254 @@
+{
+  "scope": "FK_OF_RECORDED_REJECTED_PLANNING_SAMPLE_NOT_EXECUTED_STATE",
+  "failure": {
+    "reason": "PAYLOAD_COLLISION",
+    "classification": "CLEARANCE_INSUFFICIENT",
+    "accepted": false,
+    "stage": "transit",
+    "pair": [
+      "carton_l07_c04",
+      "carton_l06_c04"
+    ],
+    "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+    "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+    "geometry_intersection_confirmed": false,
+    "original_cad_intersection_confirmed": false,
+    "surface_distance_m": 0.004998676186487472,
+    "required_pair_clearance_m": 0.005,
+    "numerical_gap_tolerance_m": 1e-09,
+    "contact_permission_source": null,
+    "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "type": "GEOMETRY",
+    "fraction": 0.40287769784172667,
+    "q_rad": [
+      0.904320427810409,
+      -0.7209328340110887,
+      -0.499484542451271,
+      -1.824623828545284,
+      0.9440443086807736,
+      -1.242511842079961
+    ],
+    "motion_start": [
+      0.9110688329970665,
+      -0.7168215197879452,
+      -0.49653259641471614,
+      -1.8150514085088938,
+      0.948438509072066,
+      -1.2495201193881342
+    ],
+    "motion_end": [
+      0.8943183272658988,
+      -0.7270263890203905,
+      -0.5038597481840219,
+      -1.8388115225277912,
+      0.9375314759579653,
+      -1.2321245739267759
+    ],
+    "first_failure_sample": 112,
+    "edge": 0,
+    "validation": {
+      "status": "INVALID",
+      "context_id": "f1510ea7db557b10af16da59f42e17d90840def9227e280c83f918507feb0bb6",
+      "guarantee": "NONE",
+      "failure": {
+        "reason": "PAYLOAD_COLLISION",
+        "classification": "CLEARANCE_INSUFFICIENT",
+        "accepted": false,
+        "stage": "transit",
+        "pair": [
+          "carton_l07_c04",
+          "carton_l06_c04"
+        ],
+        "geometry_scope": "FROZEN_SCENE_BOX_SOLIDS",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": false,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.004998676186487472,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "type": "GEOMETRY",
+        "fraction": 0.40287769784172667,
+        "q_rad": [
+          0.904320427810409,
+          -0.7209328340110887,
+          -0.499484542451271,
+          -1.824623828545284,
+          0.9440443086807736,
+          -1.242511842079961
+        ],
+        "motion_start": [
+          0.9110688329970665,
+          -0.7168215197879452,
+          -0.49653259641471614,
+          -1.8150514085088938,
+          0.948438509072066,
+          -1.2495201193881342
+        ],
+        "motion_end": [
+          0.8943183272658988,
+          -0.7270263890203905,
+          -0.5038597481840219,
+          -1.8388115225277912,
+          0.9375314759579653,
+          -1.2321245739267759
+        ],
+        "first_failure_sample": 112,
+        "edge": 0
+      },
+      "interval": [
+        0.37410071942446044,
+        0.4352517985611511
+      ],
+      "checked": [
+        [
+          0.0,
+          0.06115107913669065,
+          "DISCRETE_LEGACY_STRICT"
+        ],
+        [
+          0.06115107913669065,
+          0.1223021582733813,
+          "DISCRETE_LEGACY_STRICT"
+        ],
+        [
+          0.1223021582733813,
+          0.18345323741007194,
+          "DISCRETE_LEGACY_STRICT"
+        ],
+        [
+          0.18345323741007194,
+          0.24820143884892087,
+          "DISCRETE_LEGACY_STRICT"
+        ],
+        [
+          0.24820143884892087,
+          0.30935251798561153,
+          "DISCRETE_LEGACY_STRICT"
+        ],
+        [
+          0.30935251798561153,
+          0.37410071942446044,
+          "DISCRETE_LEGACY_STRICT"
+        ],
+        [
+          0.37410071942446044,
+          0.40287769784172667,
+          "OBSERVED_THROUGH_FAILURE"
+        ]
+      ],
+      "statistics": {
+        "state_samples": 112,
+        "edge_calls": 0,
+        "subdivisions": 8,
+        "certified_intervals": 0,
+        "pair_certificates": 158228,
+        "state_seconds": 1.4542207513004541,
+        "edge_seconds": 1.7532033156603575,
+        "repeated_failed_edges": 0,
+        "batch_calls": 19,
+        "skipped_suffix_states": 166,
+        "state_cache_reuses": 7,
+        "state_cache_hits": 118,
+        "state_cache_misses": 2478,
+        "state_cache_evictions": 0,
+        "edge_cache_hits": 1,
+        "edge_cache_evictions": 0
+      },
+      "cache_hit": false,
+      "interval_certificate": false
+    }
+  },
+  "cartesian_sample": 6,
+  "virtual_pose": [
+    [
+      0.06959291596267944,
+      0.0001897149483030304,
+      0.9975754558207865,
+      -0.5663475141818783
+    ],
+    [
+      7.321915612262812e-05,
+      -0.9999999801943736,
+      0.00018506811578966606,
+      0.7755947685482181
+    ],
+    [
+      0.9975754711733678,
+      6.0162203214308985e-05,
+      -0.06959292847511658,
+      2.203113693921873
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "physical_contact_pose": [
+    [
+      0.06959291596267944,
+      0.0001897149483030304,
+      0.9975754558207865,
+      -0.598768716496054
+    ],
+    [
+      7.321915612262812e-05,
+      -0.9999999801943736,
+      0.00018506811578966606,
+      0.7755887538344549
+    ],
+    [
+      0.9975754711733678,
+      6.0162203214308985e-05,
+      -0.06959292847511658,
+      2.2053754640973144
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "payload_pose": [
+    [
+      0.9975768522528944,
+      -0.00019010615626836383,
+      0.06957289492939657,
+      -0.2995052846147264
+    ],
+    [
+      0.00018554363319695175,
+      0.9999999801918086,
+      7.204125899535152e-05,
+      0.7756943943571076
+    ],
+    [
+      -0.06957290724677016,
+      -5.895788468365385e-05,
+      0.9975768677656879,
+      2.1845674692832886
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "work_estimate": {
+    "required": 121,
+    "chunks": 2,
+    "estimated_chunk_samples": 122
+  },
+  "existing_outward_step_m": 0.12,
+  "existing_outward_direction": [
+    -0.9999999760553142,
+    -0.00021683065104299848,
+    2.9560786664606375e-05
+  ],
+  "geometry_or_permission_changes": false
+}

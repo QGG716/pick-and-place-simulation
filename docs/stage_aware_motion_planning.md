@@ -713,3 +713,84 @@ with a genuinely limited 80-sample pool. New regressions cover executable loans,
 residual headroom, partial geometry rejection followed by real RRT, insufficient
 pools and request cancellation/context/work stops during borrowed interpolation.
 Valid direct edges still bypass the local producer entirely.
+
+The original `carton_l07_c04` fragment now succeeds on implementation
+**192f139b28652f8ae139e833d2884ff49e1f6428**. Its 121 initial samples become a
+122-sample two-chunk estimate; the *actual scene configuration* has three
+0.12 m outward retries, whose bounded allowance adds 30. Thus it borrows 72
+above the default share and receives **152**, below the 160 cap, leaving 88
+unallocated. It actually consumes **136** and returns 16 unused allocation:
+**240 = 136 consumed + 104 remaining**. RRT allowance and request validation
+work remain separate. The estimate is not used to charge work.
+
+The first real Cartesian attempt fails at sample 6: the payload versus
+`carton_l06_c04` has **0.004998676186487472 m** surface clearance, below the
+unchanged 0.005 m requirement (1e-9 numerical gap tolerance). This is a
+clearance rejection, not claimed solid penetration. The rejected joint state,
+FK poses, edge fraction 0.40287769784172667 and edge sample 112 are recorded.
+The already-existing 0.12 m outward escape then succeeds in eight samples;
+its two subsequent 61-sample chunks both pass. **No new geometric route,
+clearance exception, tool/payload simplification or receiver orientation was
+needed.** The only production behavior change is demand-aware allocation.
+
+The production `_finish_place_branch` → `_connect_pose` → `_transit` chain
+accepts **LOCAL_CARTESIAN_CANDIDATE**, with 131 local nodes and 133 connector
+nodes including checked endpoint bridges. It makes **zero RRT calls and zero
+extensions**. The transit context is still
+`f1510ea7db557b10af16da59f42e17d90840def9227e280c83f918507feb0bb6`, with
+`DISCRETE_LEGACY_STRICT` guarantees. Actual endpoint FK matches the original
+preplace within **1.117592e-6 m / 1.936471e-6 rad**, inside the unchanged
+1e-4 m / 2e-4 rad tolerances. This establishes compatibility with the original
+placement process entry, not completion of placement or physical reception.
+
+The complete connection takes **953.721 s / 34,081 state checks**, and the
+offline probe including fresh-tracker extraction revalidation takes
+**1095.921 s / 41,029 state checks**. An initial allocation pilot retained the
+old 300 s connection experiment window, stopped after 44 attempted samples,
+and correctly left 196 shared samples. Its detailed progress already contained
+the initial rejection and successful outward escape. A separate fixed-source
+fragment run used a 1500 s *external experiment* allowance justified by the
+measured work; it completed naturally without changing input, seed, production
+budgets or geometry. Neither the earlier zero-work rejection nor an interrupted
+300 s run is a successful timing baseline; no speedup factor is claimed.
+
+The final combined 24-file CPU run is **356 passed, 22 skipped, 0 failed** in
+**25.75 s**. The 22 skips retain their missing private-history prerequisites;
+the five known seam failures were not rerun or changed. Raw runtime file hashes
+and the committed archive are both recorded for 270 files. The sole byte-level
+checkout difference is CRLF/LF in `layout_trajectory.py`; normalized content
+matches the commit, and tests and the fragment run use the same unchanged raw
+runtime file. No historical fingerprint is rewritten. Evidence is retained in
+[evidence/loaded_candidate_20260928](evidence/loaded_candidate_20260928/) and
+the immutable server snapshot
+`/root/autodl-tmp/m710-loaded-candidate-20260928/allocation-complete`.
+
+After that fragment passed, exactly one **normal new single-carton plan** ran
+on the same fixed implementation and actual scene, without a supplied historical
+path or archived contact seed. It completed naturally: **1622.844 s planning**,
+**1625.698 s total**, exit 0. The 3600 s external experiment allowance was not
+reached and is not a production deadline. The normal loaded connection also
+selected the existing local route: **136 Cartesian samples, 34,081 state checks,
+1032.893 s**, no RRT construction/call/extension. Its different enclosing-run
+timing is reported separately from the 953.721 s focused fragment, not as a
+speedup or a controlled performance comparison.
+
+The complete path has **315 nodes**: contact [0,125], extraction [125,166],
+transit [166,298], place [298,299], withdrawal [299,314]. Events remain
+ATTACH at 125, RELEASE at 299, RELEASE_RETREAT_COMPLETE at 314. Existing final
+checks return `complete_trajectory_status=PASS`; the normal independent preflight
+returns `READY`, `simulation_execution_ready=true`, with no readiness blockers.
+The existing execution export and independent bundle readback both complete;
+readback is `PASS`. Source and input identities still match at exit.
+
+Raw outputs are under `evidence/loaded_candidate_20260928/`:
+`single_carton_192f139_delivery/{motion,preflight,replay_bundle,delivery}.json`,
+along with progress and invocation receipts. `raw_manifest.json` hashes every
+included raw file and records the identical immutable `first_feasible` copies
+retained on the server, without duplicating those large JSON files in Git.
+`summary.json` links source, input, quota, geometry, CPU and normal-chain evidence.
+No Isaac run was made. This closes the original loaded planning connection and
+one normal CPU plan/export/preflight/readback chain, not physical reception,
+whole-row reliability or machine qualification (`machine_qualified=false`).
+Strict discrete collision validation remains the dominant measured cost;
+continuous guarantees and broader performance changes are outside this patch.

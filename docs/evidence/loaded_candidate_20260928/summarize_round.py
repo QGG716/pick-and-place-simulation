@@ -1,0 +1,16 @@
+import pathlib,json,hashlib
+p=pathlib.Path(__file__).resolve().parent
+read=lambda n:json.loads((p/n).read_text())
+d=read('allocated_connection.json');local=d['local_candidates'][0]['evidence'];m=read('source_192f139.json');root=pathlib.Path(m['source_directory'])
+unchanged=all(hashlib.sha256((root/n).read_bytes()).hexdigest()==v['runtime_sha256'] for n,v in m['files'].items());assert unchanged
+s=dict(start_head='09dbd951e2a41ead6ba7c97ac284de8131c89150',review_code='01a92826b005a8590599cfa4cdefa557dba8e4ba',implementation_commit=m['commit'],source_manifest='source_192f139.json',runtime_files_unchanged=unchanged,target='carton_l07_c04',input_sha256=d['inputs'],start_q=d['start_q'],preplace_virtual=d['preplace_virtual'],placement=d['placement'],tracker=d['tracker'],offline_prefix_reused=True,extraction_revalidated_with_fresh_tracker=True,physical_execution=False,local_account={k:local[k] for k in ['shared_sample_budget','work_estimate','default_fair_share','estimated_outward_retry_samples','allocated','consumed','candidate_remaining','shared_remaining','reserved_for_later_candidates','request_budget_remaining']},first_geometry_failure=read('first_geometry_failure.json'),selected_method=d['evidence']['selected_method'],status=d['status'],local_path_nodes=len(d['local_candidates'][0]['path']),connection_path_nodes=len(d['path']),rrt_called=d['evidence']['rrt_called'],rrt_expanded=d['evidence']['rrt_expanded'],extension_attempts=d['evidence']['extension_attempts'],validation_context=d['evidence']['validation_context'],guarantee=d['evidence']['guarantee'],validation_completed=d['evidence']['validation_completed'],connection_seconds=d['evidence']['elapsed_seconds'],connection_state_checks=d['evidence']['expensive_states'],probe_total_seconds=d['elapsed_seconds'],probe_total_state_checks=d['statistics']['state_validations'],endpoint=read('endpoint_compatibility.json'),source_unchanged=d['source_unchanged'],inputs_unchanged=d['inputs_unchanged'],cpu=dict(passed=356,skipped=22,failed=0,seconds=25.75,run=read('cpu_run_192f139.json')),isaac_executed=False)
+if (p/'single_carton_192f139.json').exists():s['normal_single_carton']=read('single_carton_192f139.json')
+if (p/'single_carton_run_192f139.json').exists():s['normal_single_carton_run']=read('single_carton_run_192f139.json')
+(p/'summary.json').write_text(json.dumps(s,indent=2))
+print(s['status'],s.get('normal_single_carton',{}).get('status'))
+q=p/'single_carton_192f139_delivery'
+if (q/'motion.json').exists():
+ motion=json.loads((q/'motion.json').read_text());seg=motion['selected_trajectory_segment'];pf=json.loads((q/'preflight.json').read_text())
+ s['normal_chain_result']=dict(complete_trajectory_status=motion['complete_trajectory_status'],planning_success=motion['planning_success'],path_nodes=len(seg['path']),stage_ranges=seg['stage_ranges'],events=seg['events'],loaded_generation=next(x['generation'] for x in seg['motion_subsegments'] if x['purpose']=='FREE_LOADED_TRANSFER'),preflight_status=pf['status'],preflight_blockers=pf['simulation_readiness_blockers'],simulation_execution_ready=pf['simulation_execution_ready'],machine_qualified=pf['machine_qualified'],delivery=json.loads((q/'delivery.json').read_text()))
+ (p/'summary.json').write_text(json.dumps(s,indent=2))
+ print('NORMAL',s['normal_chain_result']['complete_trajectory_status'],pf['status'])

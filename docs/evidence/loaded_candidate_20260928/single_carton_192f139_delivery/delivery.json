@@ -1,0 +1,30 @@
+{
+  "simulation_profile": {
+    "name": "proof_of_concept",
+    "ideal_suction": true,
+    "ideal_reception": true,
+    "ideal_outfeed": true,
+    "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+    "machine_qualification_claimed": false
+  },
+  "planning_seconds": 1622.8442560099065,
+  "serialization_seconds": 0.042818861082196236,
+  "preflight_seconds": 0.3501083478331566,
+  "export_seconds": 0.597961688414216,
+  "isaac_executed": false,
+  "actual_state_sha256": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+  "archived_or_live_state_not_modified": true,
+  "simulation_execution_ready": true,
+  "bundle_readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "c1115a78f41e64748531a076b1d516913c6b2d04b3d8ede72d67578a964c9dbe",
+    "source_preflight_fingerprint": "39b4c01b768642d78f43bcbe4fe569015d3976998144193bbf8d3d4ee30951c5",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "bundle_readback_seconds": 1.5315105523914099,
+  "bundle_path": "/root/autodl-tmp/m710-loaded-candidate-20260928/evidence/single_carton_192f139_delivery/replay_bundle.json",
+  "first_complete_feasible_result_seconds": 1622.8442560099065,
+  "first_exportable_result_seconds": 1625.6883468180895,
+  "subsequent_optimization_seconds": 0.0,
+  "immutable_baseline_directory": "/root/autodl-tmp/m710-loaded-candidate-20260928/evidence/single_carton_192f139_delivery/first_feasible"
+}

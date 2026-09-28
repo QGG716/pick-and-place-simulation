@@ -1,0 +1,252 @@
+{
+  "scope": "ONE_NORMAL_NEW_SINGLE_CARTON_PLANNING_ATTEMPT",
+  "status": "NORMAL_EXIT",
+  "source": {
+    "implementation": {
+      "source_sha256": {
+        "src/unloading_sim/motion_validation.py": "a650d1267992fe21f6451d4acad9662f05ab0b13e14755db4a45ea3d0ccf3752",
+        "src/unloading_sim/stage_motion_policy.py": "ec2df9bf973d181d36b04eef0e6374b704feb601c287f3aa4f04d00ac8b256e0",
+        "src/unloading_sim/validation_kernel.py": "f3c6de1746dd352050d0a024608f5274413afff184b2ce62fc3b5d2fa8041202",
+        "src/unloading_sim/search_diagnostics.py": "4ecb355246a00c4caf67c6f2800124024ccc5cc890773f88b21b4abc8d84b5d3",
+        "src/unloading_sim/wrist_transfer.py": "325ca2f61f220c68f26fc9d4cbaafdb2bc6d3d6075a600f4c8e378dd25c30c69",
+        "src/unloading_sim/history_candidates.py": "b801bb46c2128bcb681c079f37dc46f7674dc373f948f0d4e7aca364068f311a",
+        "src/unloading_sim/history_adaptation.py": "6fbb1ce41f56620152865ce4bb2143c6d8dc4439766edc88e3967c4f11624298",
+        "src/unloading_sim/contact_scheduler.py": "7ab9a8bf8e6e9d961d599846ab00d87b30c1bc2c0d5079ed090c3caee270a427",
+        "src/unloading_sim/motion_quality.py": "cb8ab84a9b747b3dd0709d1e0a3ad5a8e2a42e1d78e6816d82c90f01ec7e0d82",
+        "src/unloading_sim/release_motion.py": "d714fa20c533fdc9c1c919fd1bb059c03527f35f7fbe4e6d19c776f425042422",
+        "src/unloading_sim/collision_policy.py": "62d8a9f4068cbc09e7b3950e1df09d54aec7d191aab853e4042daff6c2614136",
+        "src/unloading_sim/pair_clearance.py": "ae95facc52fcba0c40f674a9527dca6e856bdff3528e5101bf6b020308c4e2e5",
+        "src/unloading_sim/conveyor_placement.py": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503",
+        "src/unloading_sim/unloading_sequence.py": "1881b114d280286ffaaf22d9ad306040bcf435dd64efad0a4d3b41fcee6ae915",
+        "src/unloading_sim/tool_geometry.py": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d",
+        "src/unloading_sim/depalletizing.py": "aef4ff69219ca4ff27d1da9cd3b7f7567b5de5c4b0f59310b44b821f070f59e3",
+        "src/unloading_sim/fanuc_m710id70.py": "f60871dccd361c6d6a6da32ef55b0f67f02f1a76f9f18268fe4783bae8b7eff3",
+        "src/unloading_sim/geometry.py": "78f1deed2f8e0d9fc637cb7b5ee931947f13da72e7f0d68950e5688dcc59bf40",
+        "src/unloading_sim/grasp.py": "4f5856d1c36f78ad8c58c0df7f23e7c280a83a7c84bdefe2a6a3461026b50a60",
+        "src/unloading_sim/independent_cups.py": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d",
+        "src/unloading_sim/ik.py": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5",
+        "src/unloading_sim/layout_single_carton.py": "770e9c06b5257d90b476994ee22f35ffcfa22359b283e70c227e2a74b3021f00",
+        "src/unloading_sim/layout_trajectory.py": "791ef9df36c4693b01ee016be91e407dc71de7c4e5438e82a0ef91da593cb5e2",
+        "src/unloading_sim/pinocchio_backend.py": "699de06e0eb467a4e33076bde649fbcc2f7844c93d27b01795060935800ab4a2",
+        "src/unloading_sim/planner.py": "02b67186376a2b45e236baf3c5f43f0a81623a79edce68536e72ac05aed95a9b",
+        "src/unloading_sim/robot.py": "5069f0064bebda6b02ad772b3fd5d9e8db15c9b68146123ef32e75268c0d03d6",
+        "src/unloading_sim/robot_load/model.py": "6fd02fe472b4c142689f12420b145e7a41ea837ebe449d2bcee00e87379f8979",
+        "src/unloading_sim/robot_load/spatial.py": "2d56858234b59e5ef239a39b8fd7d924e4c4148f4b72d17d582819306a10d363",
+        "src/unloading_sim/robot_load/task.py": "6ca40eb357be668ece73fbdf5540ee9efb5c364df60cf53f79c9c62e331df363",
+        "src/unloading_sim/scene.py": "6178c10ab83b561613399d5fd710a165cfe49762550b769780b249578e91017a",
+        "src/unloading_sim/serial_unloading.py": "e3451a69b770a513731cfdceb2bd5551cbb9a840440dcd8e0c21e187d6aec8be",
+        "src/unloading_sim/planning_profile.py": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee",
+        "src/unloading_sim/post_landing_transport.py": "1db1de76dcbcae6e0f45c811707f245f7fe9d21f662526270ff6210e8ace1223",
+        "src/unloading_sim/support.py": "c752893bb3f94a620d2921b6c2a93d1bb34c1102f1521cdba8d1b72e703ae4cf",
+        "src/unloading_sim/timing.py": "9e8951093f357b2eba05d8670bbf21b93be1f17016d08e4a4bc889eafebc13a9",
+        "src/unloading_sim/validation_motion.py": "5d79a2a7ee8897249db52ede23f48529356a89ddaacf1539003944c382d52d0e",
+        "src/unloading_sim/validation_physics.py": "770cbc4acc32d58eb8fc4f422d18d03b56c3a4eb54f4f1cae380d4e8939e7ab8",
+        "src/unloading_sim/workcell_layout.py": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2"
+      },
+      "runtime": {
+        "python": "3.12.3",
+        "python_implementation": "CPython",
+        "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+        "numpy": "2.3.2"
+      }
+    },
+    "entry_files": {
+      "tools/validate_stage_motion_single_carton.py": "5a47c8240ffa8a5ee64862b2eefbcfc57223d1b93764ea3a3d1868a73b145db6",
+      "tools/run_m710_contact_unloading.py": "6f3fa8a7bd351fb67cfdbaedbdcd934715719d63e46a8f06fe61bde1d315b4ca"
+    }
+  },
+  "input_sha256": {
+    "/root/autodl-tmp/m710-validation-kernel-20260922/delivery/planning/motion.json": "e5fe909900bac61e9a0a381324bacbd496fc82b75d87025592cb26928b790715",
+    "/root/autodl-tmp/m710-validation-kernel-20260922/delivery/inputs/actual_remaining_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "/root/autodl-tmp/m710-loaded-candidate-20260928/allocation-complete/configs/validation/m710id70_proof_of_concept.yaml": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0",
+    "/root/autodl-tmp/m710-loaded-candidate-20260928/allocation-complete/configs/simulation/m710id70_proof_of_concept.yaml": "a6b9c9c71f6e7ee55e61bb63d46710e6168648a6bd97eec208fa5f1116e2f7d0"
+  },
+  "target": "carton_l07_c04",
+  "source_snapshot": "/root/autodl-tmp/m710-loaded-candidate-20260928/allocation-complete",
+  "historical_path_supplied": false,
+  "historical_path_revalidation": false,
+  "archived_contact_seed_supplied": false,
+  "planning_entry": "tools.run_m710_contact_unloading.main",
+  "progress_path": "/root/autodl-tmp/m710-loaded-candidate-20260928/evidence/single_carton_192f139_delivery/planning_progress.jsonl",
+  "offline_resource_limit_seconds": 3600.0,
+  "resource_limit_scope": "EXTERNAL_EXPERIMENT_ONLY_NOT_PRODUCTION_BUDGET",
+  "checkpoint_interval_seconds": 5,
+  "isaac_executed": false,
+  "complete_planning": true,
+  "independent_preflight_run": true,
+  "bundle_readback": {
+    "status": "PASS",
+    "bundle_payload_sha256": "c1115a78f41e64748531a076b1d516913c6b2d04b3d8ede72d67578a964c9dbe",
+    "source_preflight_fingerprint": "39b4c01b768642d78f43bcbe4fe569015d3976998144193bbf8d3d4ee30951c5",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "entry_exit_code": 0,
+  "elapsed_seconds": 1625.6981503926218,
+  "source_unchanged_at_exit": true,
+  "inputs_unchanged_at_exit": true,
+  "motion_path": "/root/autodl-tmp/m710-loaded-candidate-20260928/evidence/single_carton_192f139_delivery/motion.json",
+  "motion_failure": null,
+  "delivery": {
+    "simulation_profile": {
+      "name": "proof_of_concept",
+      "ideal_suction": true,
+      "ideal_reception": true,
+      "ideal_outfeed": true,
+      "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+      "machine_qualification_claimed": false
+    },
+    "planning_seconds": 1622.8442560099065,
+    "serialization_seconds": 0.042818861082196236,
+    "preflight_seconds": 0.3501083478331566,
+    "export_seconds": 0.597961688414216,
+    "isaac_executed": false,
+    "actual_state_sha256": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a",
+    "archived_or_live_state_not_modified": true,
+    "simulation_execution_ready": true,
+    "bundle_readback": {
+      "status": "PASS",
+      "bundle_payload_sha256": "c1115a78f41e64748531a076b1d516913c6b2d04b3d8ede72d67578a964c9dbe",
+      "source_preflight_fingerprint": "39b4c01b768642d78f43bcbe4fe569015d3976998144193bbf8d3d4ee30951c5",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+    },
+    "bundle_readback_seconds": 1.5315105523914099,
+    "bundle_path": "/root/autodl-tmp/m710-loaded-candidate-20260928/evidence/single_carton_192f139_delivery/replay_bundle.json",
+    "first_complete_feasible_result_seconds": 1622.8442560099065,
+    "first_exportable_result_seconds": 1625.6883468180895,
+    "subsequent_optimization_seconds": 0.0,
+    "immutable_baseline_directory": "/root/autodl-tmp/m710-loaded-candidate-20260928/evidence/single_carton_192f139_delivery/first_feasible"
+  },
+  "last_progress": {
+    "elapsed_s": 1623.117341980338,
+    "event": "CONTACT_CANDIDATE_FINISHED",
+    "target": "carton_l07_c04",
+    "scheduler": {
+      "candidate_id": "65f627cd7c9ceb1e6bb23c6b15e2ff17bc5a160b645ed8ef4f5f8755ef1b3054",
+      "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+      "attempt_id": "65f627cd7c9ceb1e6bb23c6b15e2ff17bc5a160b645ed8ef4f5f8755ef1b3054:attempt_0",
+      "retry_index": 0,
+      "retry_reason": null,
+      "variant": {
+        "variant": "nominal",
+        "face_offset_local_xy_m": [
+          0.0,
+          0.0
+        ],
+        "orientation_offset_local_xy_rad": [
+          0.0,
+          0.0
+        ],
+        "height_face_prior": 0.9,
+        "rigid_tool_bottom_above_box_bottom_m": 0.00600516867127876,
+        "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+      },
+      "face": "front",
+      "roll_deg": 90,
+      "pose_ordinal": 0,
+      "batch_index": 0,
+      "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+      "ik_seed": 3962398224,
+      "path_seed": 2106872174,
+      "candidate_wall_budget_s": null,
+      "actual_complete_connection_attempted": true,
+      "elapsed_s": 1622.4583761859685,
+      "failure_stage": "complete",
+      "failure_reason": null,
+      "search_status": "COMPLETE_TRAJECTORY_FOUND"
+    }
+  },
+  "last_known_stage": {
+    "elapsed_s": 1614.7753450516611,
+    "event": "work_checkpoint",
+    "target": "carton_l07_c04",
+    "candidate": "a2fe9288df95bda9a1da120b70c6eb203043dd13273754facbb7580daf4ef9cb",
+    "active_entries": [
+      {
+        "entry": "_plan_branch_search",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_finish_place_branch",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_departure_search",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      },
+      {
+        "entry": "_cartesian",
+        "stage": "withdrawal",
+        "purpose": "DEPARTURE_PROCESS",
+        "strategy": "PROCESS_INTERPOLATION"
+      }
+    ],
+    "statistics": {
+      "state_validations": 99222,
+      "edge_validation_calls": 315,
+      "edge_state_samples": 67965,
+      "ik_calls": 320,
+      "ik_seeds_attempted": 351,
+      "ik_iterations_consumed": 3612,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 315,
+      "placement_candidates_generated": 12,
+      "placement_candidate_generation_wall_seconds": 0.03387400321662426,
+      "state_cache_hits": 2,
+      "state_cache_misses": 92275,
+      "trajectory_ik_wall_seconds": 0.6645016763359308,
+      "path_connection_wall_seconds_inclusive": 0,
+      "collision_validation_wall_seconds_nested": 1481.4678539074957,
+      "kinematics_and_joint_checks_wall_seconds": 8.8217907641083,
+      "final_recheck_wall_seconds": 0
+    },
+    "stage": "withdrawal"
+  },
+  "last_completed_stage": {
+    "elapsed_s": 1623.0989443380386,
+    "event": "stage_exit",
+    "target": "carton_l07_c04",
+    "candidate": "a2fe9288df95bda9a1da120b70c6eb203043dd13273754facbb7580daf4ef9cb",
+    "active_entries": [
+      {
+        "entry": "_plan_branch_search",
+        "stage": null,
+        "purpose": null,
+        "strategy": "CONTROLLED_PROCESS"
+      }
+    ],
+    "statistics": {
+      "state_validations": 101454,
+      "edge_validation_calls": 319,
+      "edge_state_samples": 70226,
+      "ik_calls": 323,
+      "ik_seeds_attempted": 354,
+      "ik_iterations_consumed": 3621,
+      "connection_attempts": 0,
+      "rrt_iterations_consumed": 0,
+      "cartesian_samples": 318,
+      "placement_candidates_generated": 12,
+      "placement_candidate_generation_wall_seconds": 0.03387400321662426,
+      "state_cache_hits": 2,
+      "state_cache_misses": 94507,
+      "trajectory_ik_wall_seconds": 0.6645016763359308,
+      "path_connection_wall_seconds_inclusive": 0,
+      "collision_validation_wall_seconds_nested": 1487.4746611136943,
+      "kinematics_and_joint_checks_wall_seconds": 9.01107937656343,
+      "final_recheck_wall_seconds": 0.015698716044425964
+    },
+    "entry": "_plan_branch_search",
+    "stage": null,
+    "purpose": null,
+    "strategy": "CONTROLLED_PROCESS",
+    "success": true,
+    "failure": null
+  },
+  "location_is_last_observed_only": true
+}
