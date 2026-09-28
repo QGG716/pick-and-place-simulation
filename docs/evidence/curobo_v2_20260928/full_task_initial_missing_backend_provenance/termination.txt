@@ -1,0 +1,1 @@
+Stopped own run after identifying injected connector lost its verified BuildResult. History compatibility lacked source_identity. Preserved all original logs; corrected evidence forwarding before rerun. No Isaac started.

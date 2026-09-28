@@ -1,0 +1,1 @@
+Stopped after source inspection: fixture attachment uses the verified lightweight URDF object, but cache qualification required the mesh object. No benchmark speedup claimed.

@@ -48,3 +48,4 @@ src/unloading_sim/isaac_bridge.py binary
 fixtures/curobo_v2/*.json text eol=lf
 docs/evidence/curobo_v2_20260922/** text eol=lf
 docs/evidence/curobo_v2_20260926/** text eol=lf
+docs/evidence/curobo_v2_20260928/** text eol=lf

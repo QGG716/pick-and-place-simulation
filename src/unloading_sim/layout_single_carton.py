@@ -93,6 +93,7 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/ik.py",
     "src/unloading_sim/layout_single_carton.py",
     "src/unloading_sim/layout_trajectory.py",
+    "src/unloading_sim/validation_context.py",
     "src/unloading_sim/stage_backend.py",
     "src/unloading_sim/stage_export.py",
     "src/unloading_sim/curobo_v2_backend.py",
@@ -1495,6 +1496,7 @@ def run_layout_single_carton_audit(
     *,
     project_root: str | Path | None = None,
     trajectory_connector: LayoutTrajectoryConnector | None = None,
+    trajectory_connector_build: LayoutTrajectoryConnectorBuildResult | None = None,
     progress_callback: Callable[[Mapping[str, Any]], None] | None = None,
     motion_input: FrozenLayoutMotionInput | None = None,
     row_state: RowUnloadingState | None = None,
@@ -1508,6 +1510,9 @@ def run_layout_single_carton_audit(
     assets.  Dependency or consistency failures are serialized and fail closed;
     the legacy proxy audit is never used to certify a complete path.
     """
+    if (trajectory_connector_build is not None
+            and (trajectory_connector is None or trajectory_connector_build.connector is not trajectory_connector)):
+        raise ValueError("connector build evidence must belong to the injected connector")
     planning_request_started = perf_counter()
     policy = (
         config_path
@@ -1551,6 +1556,10 @@ def run_layout_single_carton_audit(
             scene, lightweight_robot
         )
         trajectory_connector = connector_build.connector
+    elif trajectory_connector_build is not None:
+        # Preserve the official model qualification and source fingerprints when
+        # the caller installs an optional TRANSIT adapter before this audit.
+        connector_build = trajectory_connector_build
     elif trajectory_connector is not None:
         connector_build = LayoutTrajectoryConnectorBuildResult(
             trajectory_connector,

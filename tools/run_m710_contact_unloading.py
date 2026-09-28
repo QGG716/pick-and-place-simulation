@@ -39,8 +39,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--execution-bundle", type=Path, metavar="JSON",
                         help="export a ready motion through scripts/export_isaac_fanuc_replay.py")
     parser.add_argument("--target-id", help="select one member of the current legal row candidate set")
+    parser.add_argument("--transit-backend", choices=("baseline", "curobo_v2"), default="baseline",
+                        help="replace only extracted-to-preplace fixed-joint TRANSIT")
+    parser.add_argument("--gpu-python", type=Path, help="isolated pinned cuRobo v0.8.0 Python")
+    parser.add_argument("--geometry-fit-seed", type=int, default=716)
     parser.add_argument("--diagnostics", action="store_true", help="save bounded production rejection evidence")
     args = parser.parse_args(argv)
+    if args.transit_backend == "curobo_v2" and args.gpu_python is None:
+        parser.error("--gpu-python is required for curobo_v2; no CPU fallback")
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     if (output / "motion.json").exists() or (output / "first_feasible").exists():
@@ -52,7 +58,11 @@ def main(argv: list[str] | None = None) -> int:
     scene = None
     planning_policy = load_layout_motion_policy(args.config)
     if args.execution_config is None and profile_evidence(planning_policy.data)["name"] == POC:
-        args.execution_config = ROOT / DEFAULT_EXECUTION
+        # The repository ships a paired execution configuration for continuation.
+        # Preserve that motion policy rather than defaulting it to a different search budget.
+        paired = ROOT / "configs" / "simulation" / Path(args.config).name
+        args.execution_config = (paired if paired.is_file() and Path(args.config).resolve().parent == ROOT / "configs" / "validation"
+                                 else ROOT / DEFAULT_EXECUTION)
     if args.history_source is not None and args.reuse_motion is not None:
         raise ValueError("choose one history source")
     if (args.approach_mode is not None or args.planning_wall_time_s is not None
@@ -91,6 +101,22 @@ def main(argv: list[str] | None = None) -> int:
         implementation=motion_implementation_identity(ROOT), policy=planning_policy.policy_fingerprint,
         scene=None if scene is None else scene.snapshot["scene_fingerprint"],
         target_id=args.target_id)) if args.diagnostics else None
+    connector = adapter = built = None
+    if args.transit_backend == "curobo_v2":
+        from unloading_sim.layout_single_carton import _build_automatic_trajectory_connector
+        from unloading_sim.curobo_transit import install_curobo_transit
+        if scene is None:
+            scene = build_verified_motion_input(planning_policy)
+        built = _build_automatic_trajectory_connector(scene, planning_policy.layout_validation.layout.robot())
+        if built.connector is None:
+            raise RuntimeError(f"execution-qualified connector unavailable: {built}")
+        connector = built.connector
+        adapter = install_curobo_transit(scene, connector, args.gpu_python, output / "curobo_transit",
+                                        geometry_fit_seed=args.geometry_fit_seed)
+    (output / "backend_selection.json").write_text(json.dumps(dict(
+        transit_backend=args.transit_backend, gpu_python=None if args.gpu_python is None else str(args.gpu_python),
+        geometry_fit_seed=args.geometry_fit_seed, scope="extraction_end_to_preplace_only",
+        cpu_fallback=False, final_task_and_replay_validation_required=True), indent=2), encoding="utf-8")
     with (output / "planning_progress.jsonl").open("w", encoding="utf-8") as stream:
         def progress(item):
             record = {"elapsed_s": time.monotonic() - start, **dict(item)}
@@ -105,7 +131,8 @@ def main(argv: list[str] | None = None) -> int:
         try:
             result = run_layout_single_carton_audit(
                 planning_policy, progress_callback=progress, motion_input=scene, row_state=row_state,
-                diagnostics=diagnostics, target_id=args.target_id)
+                diagnostics=diagnostics, target_id=args.target_id, trajectory_connector=connector,
+                trajectory_connector_build=built)
         except BaseException as exc:
             progress({"event": "CANCELLED" if isinstance(exc, KeyboardInterrupt) else "ERROR",
                       "reason": str(exc), "exception_type": type(exc).__name__,
@@ -114,6 +141,8 @@ def main(argv: list[str] | None = None) -> int:
                       "progress_evidence": "planning_progress.jsonl"})
             raise
         finally:
+            if adapter is not None:
+                adapter.close()
             if diagnostics is not None:
                 diagnostics.flush()
     serialize_started = time.monotonic()
@@ -121,7 +150,10 @@ def main(argv: list[str] | None = None) -> int:
     delivery = {"simulation_profile": profile_evidence(planning_policy.data), "planning_seconds": result["planning_performance"]["planning_total_wall_seconds"],
         "serialization_seconds": time.monotonic()-serialize_started,
         "preflight_seconds": None, "export_seconds": None, "isaac_executed": False,
-        "actual_state_sha256": None, "archived_or_live_state_not_modified": True}
+        "actual_state_sha256": None, "archived_or_live_state_not_modified": True,
+        "transit_backend": args.transit_backend,
+        "complete_trajectory_status": result["complete_trajectory_status"],
+        "first_failure": result.get("complete_trajectory_failure_reason")}
     if args.actual_state:
         import hashlib
         delivery["actual_state_sha256"] = hashlib.sha256(actual_state_bytes).hexdigest()
@@ -134,11 +166,20 @@ def main(argv: list[str] | None = None) -> int:
     if result["complete_trajectory_status"] == "PASS":
         from unloading_sim.m710_execution import build_m710_execution_preflight, write_m710_execution_preflight
         preflight_started = time.monotonic()
-        preflight = build_m710_execution_preflight(
-            args.execution_config, motion_result=result, motion_input=scene)
+        try:
+            preflight = build_m710_execution_preflight(
+                args.execution_config, motion_result=result, motion_input=scene)
+        except (ValueError, RuntimeError) as exc:
+            delivery.update(status="PREFLIGHT_REJECTED", preflight_seconds=time.monotonic()-preflight_started,
+                first_failure=dict(stage="preflight", reason=type(exc).__name__, detail=str(exc)))
+            (output / "delivery.json").write_text(json.dumps(delivery, indent=2), encoding="utf-8")
+            return 3
         write_m710_execution_preflight(preflight, output / "preflight.json")
         delivery["preflight_seconds"] = time.monotonic()-preflight_started
         delivery["simulation_execution_ready"] = preflight.get("simulation_execution_ready", False)
+        if not delivery["simulation_execution_ready"]:
+            delivery.update(status="PREFLIGHT_REJECTED", first_failure=dict(
+                stage="preflight", blockers=preflight["blockers"]))
         (output / "delivery.json").write_text(json.dumps(delivery, indent=2), encoding="utf-8")
         print(json.dumps({"preflight": preflight["status"], "blockers": preflight["blockers"]}), flush=True)
         if not preflight.get("simulation_execution_ready", False):
@@ -170,6 +211,16 @@ def main(argv: list[str] | None = None) -> int:
                 json.loads(args.execution_bundle.read_text(encoding="utf-8")), project_root=ROOT)
             delivery["bundle_readback_seconds"] = time.monotonic()-readback_started
             delivery["bundle_path"] = str(args.execution_bundle.resolve())
+            if adapter is not None:
+                from unloading_sim.curobo_execution import validate_execution_handoff
+                handoff = validate_execution_handoff(scene, connector, result,
+                    json.loads(args.execution_bundle.read_text(encoding="utf-8")))
+                (output / "execution_handoff.json").write_text(json.dumps(handoff, indent=2), encoding="utf-8")
+                delivery["execution_handoff"] = handoff
+                if not handoff["accepted"]:
+                    delivery.update(status="EXECUTION_HANDOFF_REJECTED", first_failure=handoff["failure"])
+                    (output / "delivery.json").write_text(json.dumps(delivery, indent=2), encoding="utf-8")
+                    return 4
             baseline = output / "first_feasible"
             baseline.mkdir(exist_ok=False)
             for source, name in ((output / "motion.json", "motion.json"),

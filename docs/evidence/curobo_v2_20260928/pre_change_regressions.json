@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src python -m pytest tests/test_validation_context_reuse.py -q",
+  "passed": 1,
+  "failed": 3,
+  "findings": [
+    "attachment half_extents and name omitted from old state key",
+    "no explicit interpolation binding at path entry",
+    "context mutation during validation can return accepted"
+  ]
+}

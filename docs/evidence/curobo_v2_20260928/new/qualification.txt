@@ -1,0 +1,2 @@
+precomputed accepted pairs 202
+{'attached_pair_prepare_seconds': 0.048165882006287575, 'attached_pair_precomputed': 202}

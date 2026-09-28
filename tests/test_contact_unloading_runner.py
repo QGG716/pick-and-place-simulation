@@ -25,7 +25,7 @@ def setup_planner(monkeypatch, tmp_path, *, ready=True):
         path.write_text(json.dumps(value), encoding="utf-8")
     monkeypatch.setattr(runner, "run_layout_single_carton_audit", plan)
     monkeypatch.setattr(runner, "load_layout_motion_policy", lambda path: SimpleNamespace(
-        data={"search_strategy": {"row_height_fraction": .08}}))
+        data={"search_strategy": {"row_height_fraction": .08}, "suction": {"mode": "ideal_independent_cups"}}))
     monkeypatch.setattr(runner, "write_layout_single_carton_audit", write)
     monkeypatch.setattr("unloading_sim.m710_execution.build_m710_execution_preflight", preflight)
     monkeypatch.setattr("unloading_sim.m710_execution.write_m710_execution_preflight", write)
@@ -56,7 +56,7 @@ def test_actual_state_is_passed_through_to_planning_and_preflight(monkeypatch, t
     source = tmp_path / "actual.json"
     source.write_text(json.dumps(actual), encoding="utf-8")
     initial = SimpleNamespace(cartons=(), support_graph=None)
-    actual_scene = SimpleNamespace(policy=SimpleNamespace(data={"search_strategy": {}}),
+    actual_scene = SimpleNamespace(policy=SimpleNamespace(data={"search_strategy": {}, "suction": {"mode": "ideal_independent_cups"}}),
                                    snapshot={"scene_fingerprint": "actual-snapshot"})
     monkeypatch.setattr(runner, "build_verified_motion_input", lambda policy: initial)
     def apply(scene, state, **kwargs):
@@ -93,7 +93,7 @@ def test_blocked_preflight_does_not_export_and_geometry_failure_has_nonzero_stat
     assert "export" not in calls
     result["complete_trajectory_status"] = "FAIL_CLOSED"
     calls.clear()
-    assert runner.main(["--output", str(tmp_path)]) == 2
+    assert runner.main(["--output", str(tmp_path / "failed")]) == 2
     assert "preflight" not in calls
 
 
@@ -106,3 +106,70 @@ def test_missing_or_malformed_actual_state_cannot_fall_back_to_initial_scene(mon
     with pytest.raises(ValueError, match="one actual-state JSON"):
         runner.main(["--output", str(tmp_path), "--actual-state", str(source)])
     assert "plan" not in calls
+
+
+@pytest.mark.parametrize("ready", [False, True])
+def test_curobo_cli_installs_actual_scene_adapter_and_closes_it(monkeypatch,tmp_path,ready):
+    # Wiring test only. Real complete-task evidence is produced by the CLI on the server.
+    calls,_=setup_planner(monkeypatch,tmp_path,ready=ready)
+    robot=object(); connector=object()
+    policy=SimpleNamespace(data={"search_strategy":{},"suction":{"mode":"ideal_independent_cups"}},
+        layout_validation=SimpleNamespace(layout=SimpleNamespace(robot=lambda:robot)))
+    scene=SimpleNamespace(snapshot={"scene_fingerprint":"fresh"})
+    monkeypatch.setattr(runner,'load_layout_motion_policy',lambda _:policy)
+    monkeypatch.setattr(runner,'build_verified_motion_input',lambda _:scene)
+    monkeypatch.setattr('unloading_sim.layout_single_carton._build_automatic_trajectory_connector',
+        lambda s,r:SimpleNamespace(connector=connector))
+    def install(s,c,python,output,**kwargs):
+        assert s is scene and c is connector
+        calls['install']=kwargs
+        return SimpleNamespace(close=lambda:calls.update(closed=True))
+    monkeypatch.setattr('unloading_sim.curobo_transit.install_curobo_transit',install)
+    def handoff(s,c,result,bundle):
+        assert s is scene and c is connector
+        calls['handoff']=True
+        return dict(accepted=False,failure={'reason':'TEST_CHANGED_EXECUTION_GEOMETRY'})
+    monkeypatch.setattr('unloading_sim.curobo_execution.validate_execution_handoff',handoff)
+    assert runner.main(['--output',str(tmp_path),'--transit-backend','curobo_v2','--gpu-python','gpu-python'])==(4 if ready else 3)
+    assert calls['plan'][1]['trajectory_connector'] is connector
+    assert calls['plan'][1]['trajectory_connector_build'].connector is connector
+    assert calls['preflight'][1]['motion_input'] is scene
+    assert calls['install']['geometry_fit_seed']==716 and calls['closed']
+    assert ('handoff' in calls)==ready
+    assert ('export' in calls)==ready
+    assert not (tmp_path/'first_feasible').exists()
+
+
+def test_curobo_cli_requires_explicit_gpu_python(tmp_path):
+    with pytest.raises(SystemExit):
+        runner.main(['--output',str(tmp_path),'--transit-backend','curobo_v2'])
+
+
+def test_injected_connector_cannot_borrow_other_model_build_evidence():
+    from unloading_sim.layout_single_carton import run_layout_single_carton_audit
+    with pytest.raises(ValueError, match="must belong"):
+        run_layout_single_carton_audit(None, trajectory_connector=object(),
+            trajectory_connector_build=SimpleNamespace(connector=object()))
+
+
+def test_continuation_entry_selects_its_existing_paired_execution_policy(monkeypatch,tmp_path):
+    calls,_=setup_planner(monkeypatch,tmp_path,ready=False)
+    policy=SimpleNamespace(data=dict(search_strategy=dict(profile='proof_of_concept',
+        post_landing_transport=dict(mode='ideal_outfeed',reception_mode='ideal')),
+        suction=dict(mode='ideal_independent_cups')))
+    monkeypatch.setattr(runner,'load_layout_motion_policy',lambda _:policy)
+    assert runner.main(['--output',str(tmp_path),'--config',str(runner.ROOT/
+        'configs/validation/m710id70_handoff_continuation.yaml')])==3
+    assert calls['preflight'][0]==runner.ROOT/'configs/simulation/m710id70_handoff_continuation.yaml'
+
+
+def test_preflight_exception_is_recorded_and_cannot_export(monkeypatch,tmp_path):
+    calls,_=setup_planner(monkeypatch,tmp_path)
+    def reject(*a,**k):raise ValueError('actual motion input policy mismatch')
+    monkeypatch.setattr('unloading_sim.m710_execution.build_m710_execution_preflight',reject)
+    assert runner.main(['--output',str(tmp_path)])==3
+    assert 'export' not in calls
+    delivery=json.loads((tmp_path/'delivery.json').read_text())
+    assert delivery['first_failure']==dict(stage='preflight',reason='ValueError',
+        detail='actual motion input policy mismatch')
+    assert not delivery['isaac_executed']

@@ -1,0 +1,2 @@
+{"elapsed_s": 0.8017028942704201, "event": "HISTORY_CANDIDATE_STARTED", "target": "carton_l07_c04", "candidate_id": "c285f75820ec17825d0c07d280adccf13bef4e466e64db83a76cac7112030e81", "offset": {"normal_outward_m": 0.0, "frame": "CURRENT_PHYSICAL_CONTACT", "offset_local_m": [0.0, 0.0, -0.0]}, "seed": 3263559512, "round": 0, "stage": "history_adaptation"}
+{"elapsed_s": 911.5176359042525, "event": "HISTORY_CANDIDATE_FINISHED", "target": "carton_l07_c04", "candidate_id": "c285f75820ec17825d0c07d280adccf13bef4e466e64db83a76cac7112030e81", "success": true, "failure": null}

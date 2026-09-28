@@ -1,0 +1,60 @@
+{"elapsed_s": 0.7991831824183464, "event": "CONTACT_CANDIDATE_STARTED", "stage": "grasp_ik", "target": "carton_l07_c04", "failure": null}
+{"elapsed_s": 0.9290161356329918, "target": "carton_l07_c04", "face": "front", "roll": 90, "pose": 0, "valid_grasps": 4, "failure": "TRAJECTORY_SEARCH_PENDING"}
+{"elapsed_s": 0.9578541312366724, "event": "connection_started", "stage": "pregrasp", "failure": null}
+{"elapsed_s": 73.88323502615094, "event": "connection_finished", "stage": "pregrasp", "success": true, "iterations": 2519, "failure": null}
+{"elapsed_s": 314.1697652153671, "event": "CANCELLED", "failure": null}
+Traceback (most recent call last):
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/tools/run_m710_contact_unloading.py", line 224, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/tools/run_m710_contact_unloading.py", line 128, in main
+    result = run_layout_single_carton_audit(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_single_carton.py", line 1822, in run_layout_single_carton_audit
+    outcome = trajectory_connector.plan(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 3388, in plan
+    result = self._plan_candidate(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 3467, in _plan_candidate
+    segment, failure, trace = branch(
+                              ^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 2489, in _plan_branch
+    return self._plan_branch_search(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 2529, in _plan_branch_search
+    pregrasp, contact, failure, evidence = self._approach(
+                                           ^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 2456, in _approach
+    q, prefix, failure, search = self._connect_pose(self.virtual_from_physical(gate),
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 1882, in _connect_pose
+    path, candidate_failure, connection = self._transit(
+                                          ^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 1660, in _transit
+    failure = self._path_failure(
+              ^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 1567, in _path_failure
+    failure=self._state_failure(q,obstacles,**options,initial_proximity=initial_proximity,
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 1270, in _state_failure
+    failure = self._checked_state_failure(q, obstacles, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 1395, in _checked_state_failure
+    backend_failure = self.robot_state_validator(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/layout_trajectory.py", line 766, in __call__
+    list(self.tool_transform_robot.tool_collision_obbs(q)), self._compliant_boxes(q))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/robot.py", line 694, in tool_collision_obbs
+    OBB(
+  File "<string>", line 8, in __init__
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/src/unloading_sim/geometry.py", line 88, in __post_init__
+    if self.half_extents.shape != (3,) or np.any(self.half_extents <= 0):
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py", line 2472, in _any_dispatcher
+    def _any_dispatcher(a, axis=None, out=None, keepdims=None, *,
+    
+  File "/root/autodl-tmp/curobo-v2-20260928/candidate/tools/run_m710_contact_unloading.py", line 56, in cancelled
+    raise KeyboardInterrupt(f"signal {signum}")
+KeyboardInterrupt: signal 15

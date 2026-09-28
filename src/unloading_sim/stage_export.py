@@ -43,7 +43,7 @@ def box_spheres(dimensions, pitch=.06):
 
 
 def export_request(scene, connector, attachment, start, goal, *, request_id, seed=716,
-                   attempts=3, num_seeds=4):
+                   attempts=3, num_seeds=4, geometry_fit_seed=716):
     from .m710_dynamics import load_m710id70_dynamics
     dynamics = load_m710id70_dynamics()
     robot = connector.robot
@@ -106,10 +106,10 @@ def export_request(scene, connector, attachment, start, goal, *, request_id, see
              boundary_velocity=None, boundary_acceleration=None, limits=limits,
              transforms=dict(world_from_base=base.tolist(), flange_from_tcp=connector.flange_from_virtual_task_tcp.tolist(),
                              flange_from_contact=connector.flange_from_physical_contact.tolist()),
-             payload=pd, seed=seed, resources=dict(attempts=attempts,num_seeds=num_seeds),
+             payload=pd, seed=seed, planning_seed=seed, resources=dict(attempts=attempts,num_seeds=num_seeds),
              deadline_monotonic=None, cancellation_token=None, goal_tolerance_rad=1e-4)
     request = StageRequest(d)
-    bundle = dict(request=request.to_dict(), model_identity=model_identity, urdf_path=str(urdf),
+    bundle = dict(request=request.to_dict(), geometry_fit_seed=geometry_fit_seed, model_identity=model_identity, urdf_path=str(urdf),
                   meshes=meshes, self_collision_ignore=ignored, tool=tool, obstacles=obstacles,
                   tool_dynamics=tool_dynamics,
                   world_count_before=len(scene.all_obstacles), world_count_attached=len(obstacles),

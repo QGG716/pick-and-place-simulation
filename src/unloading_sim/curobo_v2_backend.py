@@ -20,6 +20,8 @@ CUROBO_COMMIT = '4ea77366ca48ee453e7df139e39fa6532af49f3b'
 
 
 GEOMETRY_SCHEMA = 'curobo_geometry_v3_robot_local_cover'
+# Preserve the successful 2026-09-26 fit, independently of request/retry RNG.
+DEFAULT_GEOMETRY_FIT_SEED = 716
 FIT_SETTINGS = dict(method='MORPHIT', num_spheres=64, iterations=100,
                     surface_samples=20000, local_cover_padding_m=0.000002)
 
@@ -28,7 +30,14 @@ def geometry_cache_key(bundle, settings=None):
     # No policy, limits, attachment, default q or assembled robot_cfg is cached.
     return fingerprint(dict(schema=GEOMETRY_SCHEMA, commit=CUROBO_COMMIT,
         meshes=[{k:v for k,v in x.items() if k!='path'} for x in bundle['meshes']],
-        settings=FIT_SETTINGS if settings is None else settings, seed=bundle['request']['seed']))
+        settings=FIT_SETTINGS if settings is None else settings, seed=geometry_fit_seed(bundle)))
+
+
+def geometry_fit_seed(bundle):
+    value = bundle.get('geometry_fit_seed', DEFAULT_GEOMETRY_FIT_SEED)
+    if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value < 2**32:
+        raise ValueError('geometry_fit_seed must be an unsigned 32-bit integer')
+    return value
 
 
 def local_cover(centers, radii, points, padding):
@@ -48,12 +57,13 @@ def prepare_geometry(bundle, directory, settings=None):
         record=json.loads(target.read_text())
         if record.get('schema')!=GEOMETRY_SCHEMA or record.get('key')!=key or 'robot_cfg' in record:
             raise ValueError('MODEL_MISMATCH: invalid geometry cache schema')
-        return record,dict(cache_hit=True,geometry_s=perf_counter()-start,key=key)
+        return record,dict(cache_hit=True,geometry_s=perf_counter()-start,key=key,geometry_fit_seed=geometry_fit_seed(bundle))
     import torch,trimesh
     from curobo._src.geom.sphere_fit import fit_spheres_to_mesh,SphereFitType
     from curobo._src.geom.sphere_fit.metrics import compute_sphere_fit_metrics
     from .geometry import rotation_matrix_from_rpy
-    np.random.seed(bundle['request']['seed']);torch.manual_seed(bundle['request']['seed'])
+    fit_seed=geometry_fit_seed(bundle)
+    np.random.seed(fit_seed);torch.manual_seed(fit_seed)
     spheres,quality={},{}
     for item in bundle['meshes']:
         if file_hash(item['path'])!=item['sha256']:raise ValueError('MODEL_MISMATCH: mesh changed')
@@ -72,9 +82,9 @@ def prepare_geometry(bundle, directory, settings=None):
             method='nearest_sphere_local_sample_cover_no_radius_shrinking')
     torch.cuda.synchronize()
     record=dict(schema=GEOMETRY_SCHEMA,key=key,settings=settings,spheres=spheres,quality=quality,
-                source_commit=CUROBO_COMMIT,fitting_s=perf_counter()-start)
+                source_commit=CUROBO_COMMIT,geometry_fit_seed=fit_seed,fitting_s=perf_counter()-start)
     target.write_text(json.dumps(record,allow_nan=False))
-    return record,dict(cache_hit=False,geometry_s=perf_counter()-start,key=key)
+    return record,dict(cache_hit=False,geometry_s=perf_counter()-start,key=key,geometry_fit_seed=geometry_fit_seed(bundle))
 
 
 def assemble_runtime(bundle, geometry):
@@ -209,7 +219,7 @@ class CuroboWorker:
         self.pair_collision=install_pair_costs(self.planner,bundle,self.prepared)
         if self.planner.kinematics.joint_names != self.d['joint_names']:
             raise ValueError('MODEL_MISMATCH: GPU joint order')
-        self.backend['configuration']=dict(num_trajopt_seeds=self.d['resources']['num_seeds'],use_cuda_graph=False,
+        self.backend['configuration']=dict(planning_seed=self.d['seed'],geometry_fit_seed=geometry_fit_seed(bundle),num_trajopt_seeds=self.d['resources']['num_seeds'],use_cuda_graph=False,
             self_collision_check=True,hard_environment_gap_m=gap,optimizer_activation_distance_m=.01,
             graph_config_sha256=file_hash(Path(get_task_configs_path())/'graph_planner/exact_graph_planner.yml'),
             metrics_config_sha256=file_hash(metrics_path),dynamics_constraints_enabled=False)

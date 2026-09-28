@@ -1,0 +1,12 @@
+{
+  "schema": "curobo_complete_execution_handoff_v1",
+  "accepted": false,
+  "failure": {
+    "reason": "EXECUTION_HANDOFF_INVALID",
+    "detail": "'joint_names'"
+  },
+  "stages": [],
+  "native_spline_derivatives_used": false,
+  "physical_execution_completed": false,
+  "wall_s": 0.0015094522386789322
+}

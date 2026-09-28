@@ -1,0 +1,22 @@
+{
+  "complete_task_geometry_status": "PASS",
+  "source_full_points": 358,
+  "native_transit_points": 261,
+  "delivered_transit_points": 263,
+  "native_points_preserved": true,
+  "added_endpoint_edges": 2,
+  "transit_delivery_equals_full_task_slice": true,
+  "source_transit_range": [
+    79,
+    341
+  ],
+  "execution_retained_points": 349,
+  "execution_transit_retained_points": 261,
+  "execution_command_count": 10186,
+  "execution_duration_s": 196.6900472379469,
+  "interpolation": "C2_piecewise_quintic_rest_to_rest",
+  "timing_within_limits": true,
+  "native_derivatives_apply_to": "NATIVE_BSPLINE_ONLY",
+  "execution_derivatives_apply_to": "EXPORTED_C2_QUINTIC_ONLY",
+  "physical_execution_completed": false
+}

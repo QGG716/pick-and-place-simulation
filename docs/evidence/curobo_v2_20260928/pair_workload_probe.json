@@ -1,0 +1,29 @@
+[
+  {
+    "index": 0,
+    "broadphase_pairs": {
+      "own_payload": 60
+    },
+    "local_laptop_probe_seconds": {
+      "own_payload": 0.011113300221040845
+    }
+  },
+  {
+    "index": 130,
+    "broadphase_pairs": {
+      "own_payload": 175
+    },
+    "local_laptop_probe_seconds": {
+      "own_payload": 0.0861836998956278
+    }
+  },
+  {
+    "index": 260,
+    "broadphase_pairs": {
+      "own_payload": 60
+    },
+    "local_laptop_probe_seconds": {
+      "own_payload": 0.011529399896971881
+    }
+  }
+]

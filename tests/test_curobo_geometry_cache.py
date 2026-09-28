@@ -66,3 +66,29 @@ def test_worker_context_covers_configuration_but_reuses_for_new_endpoints():
         else:new['self_collision_ignore']=[]
         assert worker_context_key(new)!=key
         assert geometry_cache_key(new)==geometry_cache_key(b)
+
+
+def test_planning_rng_does_not_refit_successful_geometry(tmp_path):
+    from unloading_sim.stage_export import worker_context_key
+    b=bundle();g=geometry(b)
+    (tmp_path/(g['key']+'.json')).write_text(json.dumps(g))
+    changed=deepcopy(b);changed['request']['seed']+=1
+    assert geometry_cache_key(changed)==g['key']
+    assert prepare_geometry(changed,tmp_path)[1]['cache_hit']
+    # No unsupported in-place planner RNG reset: recreate the worker on seed change.
+    assert worker_context_key(changed)!=worker_context_key(b)
+    changed['geometry_fit_seed']=717
+    assert geometry_cache_key(changed)!=g['key']
+    fixed=json.loads((ROOT/'docs/evidence/curobo_v2_20260926/business/bundle.json').read_text())
+    assert geometry_cache_key(fixed)=='497d64641b11956d0e11a1863a05f3d4cfbd09688360e2a42fc7af7700603da7'
+
+
+def test_native_endpoints_are_preserved_as_checked_bridge_edges():
+    from unloading_sim.curobo_transit import connected_delivery_path
+    start=np.zeros(6);goal=np.ones(6)
+    native=[start+1e-8,goal-1e-8]
+    path=connected_delivery_path(start,native,goal)
+    assert len(path)==4
+    assert np.array_equal(path[0],start) and np.array_equal(path[-1],goal)
+    assert np.array_equal(path[1],native[0]) and np.array_equal(path[2],native[1])
+    assert len(connected_delivery_path(start,[start,goal],goal))==2

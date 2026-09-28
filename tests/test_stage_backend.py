@@ -131,7 +131,7 @@ def test_production_edge_checker_rejects_legal_endpoints_with_colliding_middle()
     connector._state_failure=lambda q,obstacles,**kwargs: {'reason':'PAYLOAD_COLLISION'} if .49<q[0]<.51 else None
     assert connector._state_failure(np.zeros(6),[]) is None
     assert connector._state_failure(np.array([1.,0,0,0,0,0]),[]) is None
-    failure=connector._path_failure([np.zeros(6),[1,0,0,0,0,0]],[],stage='transit')
+    failure=connector._legacy_path_failure([np.zeros(6),[1,0,0,0,0,0]],[],stage='transit')
     assert failure['reason']=='PAYLOAD_COLLISION' and 0<failure['fraction']<1
 
 
@@ -160,3 +160,8 @@ def test_no_candidate_preserves_native_first_cause():
     error={'reason':'NATIVE_OPTIMIZATION_OR_CONVERGENCE_FAILED'}
     result=run(lambda r,a:dict(status='BACKEND_NO_CANDIDATE',trajectory=None,error=error))
     assert result['status']=='RESOURCE_EXHAUSTED' and result['first_failure']==error
+
+
+def test_explicit_planning_seed_cannot_disagree_with_legacy_request_field():
+    d=request().to_dict();d['planning_seed']=d['seed']+1
+    with pytest.raises(ValueError,match='planning_seed'): StageRequest(d)

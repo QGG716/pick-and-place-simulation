@@ -1,0 +1,27 @@
+{
+  "baseline": "570955d80009d0d1f0ad05d744a83edbac6db005",
+  "sources": {
+    "docs/evidence/curobo_v2_20260926/business/result.json": "053ea93c28e2c1d89b473bc128b0b93b6bdc85fd0774ee6d4a3ce314aa7ff8de",
+    "docs/evidence/curobo_v2_20260926/business/request.json": "b332c172bda38900d6e7394bece32ece258a97872dcd65c72dc0f600a6acbaf5",
+    "docs/evidence/curobo_v2_20260926/business/bundle.json": "06715d6d65b98a4a831e085bf74b02c4d9e64ed2b81c6420e969b205a4720f0b",
+    "docs/evidence/curobo_v2_20260926/business/gpu_model.json": "ef7b43b5b89874713f26e984370e7881204f59f08c95ae70bf643a7ac575d04d",
+    "docs/evidence/curobo_v2_20260926/business/provenance.json": "566d18035ff284819f5a4e0ace84d976c8cf58c702baef402a2e9e79be35ac4f",
+    "fixtures/curobo_v2/source_motion.json": "4514c342791455f18e735d141f3146fb99db9de43a964e514e63b115c841f0e9",
+    "fixtures/curobo_v2/actual_remaining_state.json": "c2478fbd880806d8499cdc26a4f5613548709e7e76aab4af7731c67d430b2b1a"
+  },
+  "feasibility_core_review": {
+    "commit": "aa525e873c6a6c8618355923d01f05c9162e87cb",
+    "merge_performed": false,
+    "public_boundaries": [
+      "ValidationContext",
+      "ContextLease",
+      "LRU",
+      "ValidationKernel"
+    ]
+  },
+  "measurement": {
+    "planning_invoked": false,
+    "threads": 1,
+    "old_source_directory": "/root/autodl-tmp/curobo-v2-20260928/baseline"
+  }
+}

@@ -42,6 +42,7 @@ from .ik import iter_ik_solutions, pose_error, solve_ik_multistart
 from .release_motion import release_flight_envelope
 from .motion_quality import path_quality, QualityDeadline, quality_improves
 from .planner import RRTConnectPlanner
+from .validation_context import ContextLease, LRU, exact_snapshot, authority_version
 from .pinocchio_backend import PinocchioHppFclBackend
 from .validation_physics import (
     InitialProximityTracker,
@@ -581,6 +582,7 @@ class ExactM710LayoutStateValidator:
         if not self.base_support_obstacle_name or not self.tool_mount_link_name:
             raise ValueError("fixed-contact pair names must be non-empty")
         zero = np.zeros(int(mesh_robot.dof), dtype=float)
+        self._plane_robot_names = tuple(b.name for b in robot_world_boxes(zero))
         tool_boxes = list(tool_transform_robot.tool_all_physical_obbs(zero))
         self.required_tool_names = frozenset(box.name for box in tool_boxes)
         if not tool_boxes or len(self.required_tool_names) != len(tool_boxes):
@@ -629,16 +631,77 @@ class ExactM710LayoutStateValidator:
                               half, box.rotation, box.name, box.category))
         return result
 
+    def _attachment_frame_binding(self):
+        tool=self.tool_transform_robot
+        return exact_snapshot((id(self.mesh_robot), id(tool),
+            *(getattr(self.mesh_robot,k,None) for k in ('base_transform','tip_from_tcp','geometry_revision')),
+            *(getattr(tool,k,None) for k in ('base_transform','tip_from_tcp')),
+            tuple((j.name,j.joint_type,j.origin,j.axis) for j in getattr(tool,'joints',()))))
+
+    def prepare_attached_pair_cache(self, attachment, stage, context_id):
+        """Evaluate rigidly co-moving pairs once in their common virtual TCP frame.
+
+        This is exact relative geometry reuse, not a contact exemption. All
+        environment pairs remain state-dependent. Near classification boundaries
+        use the original world-frame query to avoid caching roundoff decisions.
+        """
+        from .robot import URDFRobot
+        if (stage != 'transit' or not self.collision_policy.poc_pair_clearance
+                or type(attachment) is not PhysicalContactAttachment
+                or (attachment.robot is not self.mesh_robot and attachment.robot is not self.tool_transform_robot)
+                or not isinstance(self.tool_transform_robot, URDFRobot)
+                or getattr(self, '_verified_attachment_frames', None) != self._attachment_frame_binding()):
+            return None
+        if not hasattr(self, '_attached_contexts'): self._attached_contexts=LRU(32)
+        hit, result=self._attached_contexts.lookup(context_id)
+        if hit:return result
+        started=perf_counter()
+        local_contact=np.linalg.inv(attachment.flange_from_virtual_task_tcp) @ attachment.flange_from_physical_contact
+        payload=attachment.rigid.box_at(local_contact)
+        tool=self.tool_transform_robot
+        rows=[(row,f'tool_rigid_{i}',False) for i,row in enumerate(tool.tool_collision_local_boxes)]
+        rows += [(row,f'tool_compliant_bellows_{i}',True) for i,row in enumerate(tool.tool_compliant_collision_local_boxes)]
+        result={}
+        for row,name,compliant in rows:
+            center=np.asarray(row[:3],float).copy();half=np.asarray(row[3:],float)/2
+            if compliant:
+                center[2]-=self.nominal_cup_compression_m/2
+                half[2]-=self.nominal_cup_compression_m/2
+            body=OBB(center,half,np.eye(3),name,'robot')
+            if compliant:
+                distance=body.signed_distance_obb(payload)
+                boundary=-self.collision_policy.maximum_compliant_cup_additional_compression_m
+                if abs(distance-boundary)<=1e-8:
+                    continue
+                if distance > boundary:
+                    result[name]=None
+                    continue
+            failure=obb_pair_failure(body,payload,self.collision_policy,self.collision_margin_m,
+                                     stage=stage,proxy=True,reason='RIGID_TOOL_COLLISION')
+            distance=obb_surface_distance(body,payload)
+            required=(self.collision_policy.pair_clearance('external',self.collision_margin_m)
+                      if self.collision_policy.poc_pair_clearance else 2*self.collision_margin_m)
+            if failure is None and abs(distance-required)>1e-8:
+                result[name]=None
+        self.performance_counters['attached_pair_prepare_seconds']=self.performance_counters.get('attached_pair_prepare_seconds',0.)+perf_counter()-started
+        self.performance_counters['attached_pair_precomputed']=self.performance_counters.get('attached_pair_precomputed',0)+len(rows)
+        self._attached_contexts.put(context_id,(payload.name,result))
+        return payload.name,result
+
     def _plane_failure(
         self, q: np.ndarray, payload: OBB | None, stage: str
     ) -> Mapping[str, Any] | None:
         robot_bounds_provider = getattr(self.mesh_robot, "collision_world_axis_extrema", None)
         robot_bounds = robot_bounds_provider(q) if robot_bounds_provider is not None else {}
-        robot_boxes = list(self.robot_world_boxes(q))
-        body_bounds = [(box.name, *(
-            (np.asarray(robot_bounds[box.name]["lower_m"]), np.asarray(robot_bounds[box.name]["upper_m"]))
-            if box.name in robot_bounds else (box.corners().min(axis=0), box.corners().max(axis=0))))
-            for box in robot_boxes]
+        if (isinstance(self.mesh_robot, PinocchioHppFclBackend)
+                and all(name in robot_bounds for name in self._plane_robot_names)):
+            body_bounds=[(name,np.asarray(robot_bounds[name]['lower_m']),np.asarray(robot_bounds[name]['upper_m']))
+                         for name in self._plane_robot_names]
+        else:
+            robot_boxes=list(self.robot_world_boxes(q))
+            body_bounds=[(box.name, *((np.asarray(robot_bounds[box.name]['lower_m']),
+                np.asarray(robot_bounds[box.name]['upper_m'])) if box.name in robot_bounds
+                else (box.corners().min(axis=0),box.corners().max(axis=0)))) for box in robot_boxes]
         cached = self._geometry_cache.get(np.asarray(q, float).tobytes())
         bodies = ([*cached[0], *cached[1]] if cached is not None else
                   [*self.tool_transform_robot.tool_collision_obbs(q), *self._compliant_boxes(q)])
@@ -686,7 +749,8 @@ class ExactM710LayoutStateValidator:
         environment = list(obstacles)
         if payload is not None and payload.name not in set(names):
             environment.append(payload)
-        signature = (getattr(self.mesh_robot, "geometry_revision", 0),
+        context_token=getattr(self, "_validation_context_token", None)
+        signature = context_token if context_token is not None else (getattr(self.mesh_robot, "geometry_revision", 0),
             np.asarray(getattr(self.tool_transform_robot, "tool_collision_local_boxes", [])).tobytes(),
             np.asarray(getattr(self.tool_transform_robot, "tool_compliant_collision_local_boxes", [])).tobytes(),
             np.asarray(getattr(self.tool_transform_robot, "base_transform", [])).tobytes(),
@@ -712,9 +776,10 @@ class ExactM710LayoutStateValidator:
             }
         fixed = [box for box in environment if box.category not in {"carton", "payload"}]
         dynamic = [box for box in environment if box.category in {"carton", "payload"}]
-        static_key = (q_key, repr(self.collision_policy), self.collision_margin_m,
+        static_key = ((q_key, context_token) if context_token is not None else
+                     (q_key, repr(self.collision_policy), self.collision_margin_m,
                       self.floor_z_m, self.right_wall_y_m, self.left_wall_y_m,
-                      getattr(self.mesh_robot, "geometry_revision", 0), tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in fixed))
+                      getattr(self.mesh_robot, "geometry_revision", 0), tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in fixed)))
         if static_key not in self._static_cache:
             if len(self._static_cache) >= 4096:
                 self._static_cache.clear()
@@ -750,6 +815,13 @@ class ExactM710LayoutStateValidator:
             tool_boxes, dynamic, self.collision_margin_m
         ):
             tool, obstacle = tool_boxes[tool_index], dynamic[obstacle_index]
+            attached_cache=getattr(self, '_attached_pair_cache', None)
+            if (attached_cache is not None and payload is not None and obstacle is payload
+                    and attached_cache[0]==payload.name and tool.name in attached_cache[1]):
+                self.performance_counters['attached_pair_cache_hits']=self.performance_counters.get('attached_pair_cache_hits',0)+1
+                failure=attached_cache[1][tool.name]
+                if failure is not None:return deepcopy(failure)
+                continue
             if tool.name in compliant_names:
                 target_name = (payload.name if payload is not None else
                                target_contact.name if target_contact is not None else self.contact_target_name)
@@ -893,6 +965,8 @@ class LayoutTrajectoryConnector:
         }
         self._state_cache: dict[tuple[Any, ...], Mapping[str, Any] | None] = {}
         self._state_cache_limit = 4096
+        self._validation_edges = LRU(2048)
+        self.context_statistics = {}
         self._deadline_monotonic: float | None = None
         self.next_contact_provider = None
         self.stack_carton_names = None
@@ -945,33 +1019,65 @@ class LayoutTrajectoryConnector:
             None if comparison else deadline_after(now, self.budget.postprocess_wall_time_s),
             None if remaining is None else now + max(0., remaining - reserve))
 
-    def _context_identity(self, obstacles, *, attachment=None, support_names=(),
-                          target_contact=None, stage):
-        """Exact same-request identity for retained evidence, never a global cache."""
+    def _context_binding(self, obstacles, *, attachment=None, support_names=(),
+                         target_contact=None, stage):
+        """Live dependencies; detached once at the validation boundary."""
         def box(value):
             return None if value is None else (value.name, value.category,
-                value.world_from_local.tolist(), value.half_extents.tolist())
+                value.center, value.rotation, value.half_extents)
+        def model(value):
+            return (id(value), *(getattr(value, name, None) for name in
+                ('base_transform', 'tip_from_tcp', 'joint_limits', 'geometry_revision',
+                 'tool_collision_local_boxes', 'tool_compliant_collision_local_boxes')),
+                tuple((j.name, j.joint_type, j.parent, j.child, j.origin, j.axis)
+                      for j in getattr(value, 'joints', ())))
         v = self.robot_state_validator
-        values = (self._request_generation, getattr(self, "_candidate_identity", None),
-            self.validator_identity, id(self.robot), id(getattr(v, "mesh_robot", None)),
-            self.collision_policy.to_mapping(), self.budget.proof_of_concept, self.post_landing_transport,
-            self.budget.execution_reserves(), self.budget.release_policy().to_mapping(),
+        return ('authority_context_v1', authority_version(), self._request_generation,
+            self.validator_identity, id(v), id(self.tool_collision_obbs_provider),
+            id(getattr(v, "robot_world_boxes", None)), model(self.robot), model(getattr(v, 'mesh_robot', None)),
+            model(getattr(v, 'tool_transform_robot', None)),
+            self.collision_policy, self.budget, self.post_landing_transport,
             self.collision_margin_m, self.contact_tolerance_m, self.joint_margin_rad,
             self.maximum_jacobian_condition, self.official_radial_reach_m,
-            self.radial_guard_tolerance_m, self.budget.edge_resolution_rad, dict(self.ik),
-            np.asarray(getattr(self.robot, "base_transform", np.eye(4))).tolist(),
-            np.asarray(self.robot.joint_limits).tolist(),
-            self.flange_from_virtual_task_tcp.tolist(), self.flange_from_physical_contact.tolist(),
-            getattr(getattr(v, "mesh_robot", None), "geometry_revision", 0),
-            np.asarray(getattr(getattr(v, "tool_transform_robot", None), "tool_collision_local_boxes", [])).tolist(),
-            np.asarray(getattr(getattr(v, "tool_transform_robot", None), "tool_compliant_collision_local_boxes", [])).tolist(),
-            getattr(v, "nominal_cup_compression_m", None),
-            None if getattr(v, "commanded_cup_mask", None) is None else list(v.commanded_cup_mask),
-            getattr(v, "contact_target_name", None), sorted(getattr(v, "stack_carton_names", ())),
-            sorted(self.stack_carton_names or ()), [box(b) for b in obstacles], box(target_contact),
-            None if attachment is None else attachment.rigid.tcp_from_box.tolist(),
-            list(support_names), stage)
-        return hashlib.sha256(repr(values).encode()).hexdigest()
+            self.radial_guard_tolerance_m, self.ik,
+            self.flange_from_virtual_task_tcp, self.flange_from_physical_contact,
+            tuple(getattr(v, name, None) for name in
+                  ('nominal_cup_compression_m', 'commanded_cup_mask', 'contact_target_name',
+                   'stack_carton_names', 'collision_policy', 'collision_margin_m',
+                   'floor_z_m', 'right_wall_y_m', 'left_wall_y_m',
+                   'base_support_obstacle_name', 'tool_mount_link_name', 'required_tool_names')),
+            self.stack_carton_names, tuple(box(b) for b in obstacles), box(target_contact),
+            None if attachment is None else (model(attachment.robot), attachment.rigid.name,
+                attachment.rigid.half_extents, attachment.rigid.tcp_from_box,
+                attachment.flange_from_virtual_task_tcp, attachment.flange_from_physical_contact),
+            tuple(support_names), stage, 'linear_joint_samples', 'legacy_grid_v1')
+
+    def _context_identity(self, obstacles, **options):
+        started = perf_counter()
+        value = hashlib.sha256(repr(exact_snapshot(self._context_binding(obstacles, **options))).encode()).hexdigest()
+        stats = self.context_statistics
+        stats['build_calls'] = stats.get('build_calls', 0) + 1
+        stats['build_seconds'] = stats.get('build_seconds', 0.) + perf_counter()-started
+        return value
+
+    def _invalidate_validation_context(self):
+        self._state_cache.clear()
+        self._validation_edges.clear()
+        for name in ('_kinematics_key', '_geometry_key'):
+            if hasattr(self.robot, name): setattr(self.robot, name, None)
+        for name in ('_geometry_cache', '_static_cache'):
+            cache = getattr(self.robot_state_validator, name, None)
+            if cache is not None: cache.clear()
+
+    def _activate_validation_context(self, identity):
+        if getattr(self, '_bound_validation_context', None) == identity:
+            return
+        for name in ('_kinematics_key', '_geometry_key'):
+            if hasattr(self.robot, name): setattr(self.robot, name, None)
+        for name in ('_geometry_cache', '_static_cache'):
+            cache = getattr(self.robot_state_validator, name, None)
+            if cache is not None: cache.clear()
+        self._bound_validation_context = identity
 
     def _remember_path(self, path, context, stage, level, quality=None):
         completed = perf_counter()
@@ -1207,6 +1313,7 @@ class LayoutTrajectoryConnector:
         target_contact: OBB | None = None,
         initial_proximity: InitialProximityTracker | None = None,
         stage: str,
+        validation_context_id: str | None = None,
     ) -> Mapping[str, Any] | None:
         if self._deadline_reached():
             return {"reason": "PLANNING_WALL_CLOCK_DEADLINE", "stage": stage}
@@ -1214,27 +1321,12 @@ class LayoutTrajectoryConnector:
         cacheable = initial_proximity is None
         cache_key = None
         if cacheable and q_array.shape == (6,) and np.all(np.isfinite(q_array)):
-            commanded_mask = getattr(self.robot_state_validator, "commanded_cup_mask", None)
-            attachment_key = () if attachment is None else tuple(
-                attachment.rigid.tcp_from_box.flatten()
-            )
-            cache_key = (
-                stage, q_array.tobytes(), attachment_key,
-                repr(self.collision_policy), self.collision_margin_m, self.contact_tolerance_m,
-                tuple(self.budget.execution_reserves().items()),
-                self.joint_margin_rad, self.maximum_jacobian_condition, self.official_radial_reach_m,
-                self.radial_guard_tolerance_m,
-                getattr(self.robot_state_validator, "nominal_cup_compression_m", None),
-                None if commanded_mask is None else tuple(commanded_mask),
-                getattr(self.robot_state_validator, "contact_target_name", None),
-                tuple(sorted(getattr(self.robot_state_validator, "stack_carton_names", []))),
-                self.validator_identity, np.asarray(self.robot.base_transform).tobytes(),
-                getattr(getattr(self.robot_state_validator, "mesh_robot", None), "geometry_revision", 0),
-                np.asarray(getattr(getattr(self.robot_state_validator, "tool_transform_robot", None), "tool_collision_local_boxes", [])).tobytes(),
-                np.asarray(getattr(getattr(self.robot_state_validator, "tool_transform_robot", None), "tool_compliant_collision_local_boxes", [])).tobytes(),
-                tuple((box.name, box.category, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in obstacles), tuple(support_names),
-                None if target_contact is None else (target_contact.name, target_contact.world_from_local.tobytes(), target_contact.half_extents.tobytes()),
-            )
+            key_started = perf_counter()
+            context_id = validation_context_id or self._context_identity(obstacles,
+                attachment=attachment, support_names=support_names, target_contact=target_contact, stage=stage)
+            self._activate_validation_context(context_id)
+            cache_key = (context_id, q_array.tobytes())
+            self.context_statistics['state_key_seconds'] = self.context_statistics.get('state_key_seconds', 0.) + perf_counter()-key_started
             if cache_key in self._state_cache:
                 self._statistics["state_cache_hits"] += 1
                 cached = self._state_cache[cache_key]
@@ -1354,7 +1446,7 @@ class LayoutTrajectoryConnector:
                 return finish(failure)
         return finish(None)
 
-    def _path_failure(
+    def _legacy_path_failure(
         self,
         path: Sequence[Sequence[float]],
         obstacles: Sequence[OBB],
@@ -1415,6 +1507,77 @@ class LayoutTrajectoryConnector:
                         "q_rad": q.tolist(),
                     }
         return None
+
+    def _path_failure(self, path, obstacles, *, attachment=None, support_names=(),
+                      target_contact=None, initial_proximity=None, stage,
+                      diagnostic_origin="full_edge_recheck", interpolation="linear_joint_samples"):
+        """The original ordered grid, in bounded blocks under one context lease."""
+        if interpolation != "linear_joint_samples":
+            return dict(reason="UNSUPPORTED_VALIDATION_INTERPOLATION", stage=stage)
+        self._statistics["edge_validation_calls"] += 1
+        arrays = [np.asarray(q, dtype=float) for q in path]
+        if not arrays:
+            return dict(reason="EMPTY_VALIDATION_PATH", stage=stage)
+        options = dict(attachment=attachment, support_names=support_names,
+                       target_contact=target_contact, stage=stage)
+        lease = ContextLease([lambda:self._context_binding(obstacles, **options)],
+                             self.context_statistics, self._invalidate_validation_context)
+        context_id = self._context_identity(obstacles, **options)
+        self._activate_validation_context(context_id)
+        validator = self.robot_state_validator
+        prepare = getattr(validator, 'prepare_attached_pair_cache', None)
+        previous_pairs = getattr(validator, '_attached_pair_cache', None)
+        previous_token = getattr(validator, '_validation_context_token', None)
+        if prepare is not None:
+            validator._attached_pair_cache = prepare(attachment, stage, context_id)
+            validator._validation_context_token = context_id
+        def guard():
+            if not lease.current():
+                return dict(reason="VALIDATION_CONTEXT_CHANGED", stage=stage)
+            if self._deadline_reached():
+                return dict(reason="PLANNING_WALL_CLOCK_DEADLINE", stage=stage)
+            return None
+        try:
+            failure=guard()
+            if failure is not None: return failure
+            edges=list(zip(arrays[:-1],arrays[1:])) if len(arrays)>1 else [(arrays[0],arrays[0])]
+            for edge,(start,goal) in enumerate(edges):
+                if start.shape!=(6,) or goal.shape!=(6,) or not np.isfinite([start,goal]).all():
+                    return dict(reason="JOINT_VECTOR_INVALID",stage=stage,edge=edge,fraction=0.)
+                samples=max(1,int(np.ceil(np.max(np.abs(goal-start))/self.budget.edge_resolution_rad)))
+                if self.collision_policy.poc_pair_clearance:
+                    samples=max(samples,int(np.ceil(4.*np.sum(np.abs(goal-start))/.0025)))
+                fractions=np.linspace(0.,1.,2*samples+1) if len(arrays)>1 else np.array([0.])
+                key=(context_id,start.tobytes(),goal.tobytes(),len(fractions),interpolation)
+                if initial_proximity is None:
+                    hit,_=self._validation_edges.lookup(key)
+                    if hit:
+                        self._statistics['edge_state_samples']+=len(fractions)
+                        self._statistics['edge_cached_samples']=self._statistics.get('edge_cached_samples',0)+len(fractions)
+                        failure=guard()
+                        if failure is not None:return failure
+                        continue
+                for begin in range(0,len(fractions),64):
+                    failure=guard()
+                    if failure is not None:return failure
+                    for fraction in fractions[begin:begin+64]:
+                        # Keep the legacy arithmetic and order bit-for-bit.
+                        q=start+float(fraction)*(goal-start)
+                        self._statistics['edge_state_samples']+=1
+                        failure=self._state_failure(q,obstacles,**options,initial_proximity=initial_proximity,
+                            validation_context_id=context_id,diagnostic_origin=diagnostic_origin,
+                            diagnostic_edge=dict(start_q_rad=start.tolist(),end_q_rad=goal.tolist(),
+                                                 index=edge,fraction=float(fraction)))
+                        if failure is not None:
+                            return dict(failure,edge=edge,fraction=float(fraction),q_rad=q.tolist())
+                    failure=guard()
+                    if failure is not None:return failure
+                if initial_proximity is None:self._validation_edges.put(key,None)
+            return guard()
+        finally:
+            if prepare is not None:
+                validator._attached_pair_cache=previous_pairs
+                validator._validation_context_token=previous_token
 
     def _transit(
         self,
@@ -3645,6 +3808,9 @@ def build_m710_layout_trajectory_connector(
     except (AttributeError, FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
         return unavailable("EXACT_STATE_VALIDATOR_CONSTRUCTION_FAILED", str(exc))
 
+    # Only the official constructor's already verified common FK chain can
+    # use co-moving pair evidence. Subsequent frame/model edits disable it.
+    validator._verified_attachment_frames = validator._attachment_frame_binding()
     zero_tool_boxes = lightweight_robot.tool_collision_obbs(np.zeros(6))
     tool_compound_q0 = [
         {

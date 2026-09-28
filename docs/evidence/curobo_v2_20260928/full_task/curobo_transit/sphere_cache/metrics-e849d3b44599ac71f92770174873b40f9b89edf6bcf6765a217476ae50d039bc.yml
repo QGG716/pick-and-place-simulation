@@ -1,0 +1,38 @@
+rollout:
+  constraint_cfg:
+    cspace_cfg:
+      activation_distance:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      cost_type: STATE
+      weight:
+      - 5000.0
+      - 5000.0
+      - 5000.0
+      - 5000.0
+      - 5000.0
+    scene_collision_cfg:
+      activation_distance: 0.005
+      convert_to_binary: true
+      use_sweep: false
+      weight: 5000.0
+    self_collision_cfg:
+      convert_to_binary: true
+      weight: 5000.0
+  convergence_cfg:
+    start_cspace_dist_cfg:
+      weight: 0.001
+    target_cspace_dist_cfg:
+      weight: 0.0
+    tool_pose_cfg:
+      use_lie_group: false
+      weight:
+      - 1.0
+      - 1.0
+scene_collision_checker_cfg:
+  cache: null
+  checker_type: PRIMITIVE
+  max_distance: 10.0

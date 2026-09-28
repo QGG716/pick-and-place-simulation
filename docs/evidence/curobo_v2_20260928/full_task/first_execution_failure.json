@@ -1,0 +1,14 @@
+{
+  "geometry_status": "PASS",
+  "first_execution_precondition_failure": {
+    "stage": "preflight",
+    "reason": "EXECUTION_POLICY_MISMATCH",
+    "exception": "ValueError: actual motion input policy mismatch",
+    "configured_execution": "configs/simulation/m710id70_proof_of_concept.yaml",
+    "actual_motion": "configs/validation/m710id70_handoff_continuation.yaml"
+  },
+  "isaac_launched": false,
+  "physical_trial_count": 0,
+  "physical_stop_reason": "USER_REQUEST_STOP_AFTER_FIRST_FULL_TASK_OR_EXECUTION_PREFLIGHT_FAILURE",
+  "correction": "CLI now chooses the repository paired execution config. Offline finalization uses the same saved motion and explicit handoff execution config, without planning or physical execution."
+}

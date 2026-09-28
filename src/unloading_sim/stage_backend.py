@@ -103,6 +103,8 @@ class StageRequest:
             raise ValueError('invalid payload geometry or physical inertia')
         if type(d['seed']) is not int or not 0<=d['seed']<2**32:
             raise ValueError('invalid deterministic seed')
+        if d.get('planning_seed',d['seed']) != d['seed']:
+            raise ValueError('planning_seed must equal the legacy seed field')
         for name in ('boundary_velocity','boundary_acceleration'):
             if d.get(name) is not None and np.asarray(d[name],float).shape!=(2,len(names)):
                 raise ValueError('invalid '+name)

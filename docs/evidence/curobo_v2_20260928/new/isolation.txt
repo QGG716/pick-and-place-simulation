@@ -1,0 +1,56 @@
+   PID %CPU COMMAND
+   797  2.4 /bin/supervisord -c /init/supervisor/supervisor.ini
+   817  0.1 /root/miniconda3/bin/python /root/miniconda3/bin/tensorboard --host 0.0.0.0 --port 6007 --logdir /root/tf-logs
+   819  0.1 proxy -c /init/proxy/proxy-hot-backup.ini
+   821  0.1 autopanel serve --work-dir=/root/autodl-tmp --cache-dir=/root/autodl-tmp
+   885  0.1 /root/miniconda3/lib/python3.12/site-packages/tensorboard_data_server/bin/server --logdir=/root/tf-logs --reload=5 --samples-per-plugin= --port=0 --port-file=/tmp/tensorboard_data_server_nl34mq89/port --die-after-stdin --error-file=/tmp/tensorboard_data_server_nl34mq89/startup_error
+     1  0.0 bash /init/boot/boot.sh
+   815  0.0 sshd: /usr/sbin/sshd -D [listener] 1 of 10-100 startups
+   816  0.0 /root/miniconda3/bin/python /root/miniconda3/bin/jupyter-lab --allow-root --config=/init/jupyter/jupyter_config.py
+   820  0.0 proxy -c /init/proxy/proxy.ini
+  6593  0.0 sshd: root@notty
+  9312  0.0 sshd: root@pts/0
+  9435  0.0 -bash
+  9823  0.0 bash -c cd /root/autodl-tmp/curobo-v2-20260928/candidate; cat evidence/new_initial_cache_not_engaged/qualification.txt; mkdir -p evidence/new; env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src:tools /root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python -c "from run_curobo_v2_transit import context; _,s,c,a,q,t=context('fixtures/curobo_v2/source_motion.json','fixtures/curobo_v2/actual_remaining_state.json','configs/validation/m710id70_handoff_continuation.yaml'); v=c.robot_state_validator; cache=v.prepare_attached_pair_cache(a,'transit','probe'); print('precomputed accepted pairs',len(cache[1]) if cache else None); print(v.performance_counters); assert cache is not None" > evidence/new/qualification.txt; cat evidence/new/qualification.txt; (ps -eo pid,pcpu,args --sort=-pcpu | head -15; lscpu; sha256sum src/unloading_sim/layout_trajectory.py src/unloading_sim/pinocchio_backend.py src/unloading_sim/validation_context.py outputs/curobo26/business/result.json) > evidence/new/isolation.txt; nohup env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src /root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python tools/validate_saved_curobo_transit.py --result outputs/curobo26/business/result.json --output evidence/new > evidence/new/run.log 2>&1 </dev/null & echo $!
+  9827  0.0 sshd: [accepted]
+Architecture:                    x86_64
+CPU op-mode(s):                  32-bit, 64-bit
+Address sizes:                   52 bits physical, 57 bits virtual
+Byte Order:                      Little Endian
+CPU(s):                          208
+On-line CPU(s) list:             0-207
+Vendor ID:                       GenuineIntel
+Model name:                      Intel(R) Xeon(R) Platinum 8470Q
+CPU family:                      6
+Model:                           143
+Thread(s) per core:              2
+Core(s) per socket:              52
+Socket(s):                       2
+Stepping:                        8
+CPU max MHz:                     3800.0000
+CPU min MHz:                     800.0000
+BogoMIPS:                        4200.00
+Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 invpcid_single intel_ppin cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hwp hwp_act_window hwp_epp hwp_pkg_req avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize tsxldtrk pconfig arch_lbr amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities
+Virtualization:                  VT-x
+L1d cache:                       4.9 MiB (104 instances)
+L1i cache:                       3.3 MiB (104 instances)
+L2 cache:                        208 MiB (104 instances)
+L3 cache:                        210 MiB (2 instances)
+NUMA node(s):                    2
+NUMA node0 CPU(s):               0-51,104-155
+NUMA node1 CPU(s):               52-103,156-207
+Vulnerability Itlb multihit:     Not affected
+Vulnerability L1tf:              Not affected
+Vulnerability Mds:               Not affected
+Vulnerability Meltdown:          Not affected
+Vulnerability Mmio stale data:   Not affected
+Vulnerability Retbleed:          Not affected
+Vulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp
+Vulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:        Mitigation; Enhanced IBRS, IBPB conditional, RSB filling, PBRSB-eIBRS SW sequence
+Vulnerability Srbds:             Not affected
+Vulnerability Tsx async abort:   Not affected
+3a2599e014016ae97bff8de28075665be7eabd10225207b86135eab0b20cb45b  src/unloading_sim/layout_trajectory.py
+3dcb8b4af6201f2319579aab9acd0611d0ad98c0a4f6ad784fe42f84e084c167  src/unloading_sim/pinocchio_backend.py
+14893a8dffc6621a047c3c7b914e640a32225164d1e6bd4e10c6ec8249b0e463  src/unloading_sim/validation_context.py
+053ea93c28e2c1d89b473bc128b0b93b6bdc85fd0774ee6d4a3ce314aa7ff8de  outputs/curobo26/business/result.json

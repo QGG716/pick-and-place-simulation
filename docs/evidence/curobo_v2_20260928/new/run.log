@@ -1,0 +1,26 @@
+samples 1000 unique 956
+samples 2000 unique 1944
+samples 3000 unique 2934
+samples 4000 unique 3925
+samples 5000 unique 4915
+samples 6000 unique 5906
+samples 7000 unique 6897
+samples 8000 unique 7888
+samples 9000 unique 8879
+samples 10000 unique 9871
+samples 11000 unique 10862
+samples 12000 unique 11854
+samples 13000 unique 12846
+samples 14000 unique 13839
+samples 15000 unique 14832
+samples 16000 unique 15825
+samples 17000 unique 16819
+samples 18000 unique 17812
+samples 19000 unique 18805
+samples 20000 unique 19799
+samples 21000 unique 20791
+samples 22000 unique 21784
+samples 23000 unique 22775
+samples 24000 unique 23764
+{"kind": "cold", "failure": null, "accepted": true, "wall_s": 270.91596364043653, "cpu_s": 270.787731943, "expanded_samples": 24464, "unique_states": 24198, "sample_sha256": "a084a3b87e0289fcb3a7ce9627e1ff7988480b35dd734f1526788f3487f1cd0a", "connector": {"state_validations": 24198, "edge_validation_calls": 1, "edge_state_samples": 24464, "ik_calls": 0, "ik_seeds_attempted": 0, "ik_iterations_consumed": 0, "connection_attempts": 0, "rrt_iterations_consumed": 0, "cartesian_samples": 0, "placement_candidates_generated": 0, "placement_candidate_generation_wall_seconds": 0.0, "state_cache_hits": 266, "state_cache_misses": 24198, "trajectory_ik_wall_seconds": 0.0, "path_connection_wall_seconds_inclusive": 0.0, "collision_validation_wall_seconds_nested": 269.7801849488169, "kinematics_and_joint_checks_wall_seconds": 6.653477296233177, "final_recheck_wall_seconds": 0.0}, "exact_validator": {"attached_pair_prepare_seconds": 0.04464029148221016, "attached_pair_precomputed": 202, "robot_fixed_including_self_seconds": 23.937911231070757, "robot_fixed_including_self_calls": 24198, "robot_tool_seconds": 78.27481042779982, "robot_tool_calls": 24198, "tool_fixed_broadphase_seconds": 12.618158958852291, "tool_fixed_broadphase_calls": 24198, "plane_bounds_seconds": 39.34112981148064, "plane_bounds_calls": 24198, "robot_dynamic_seconds": 10.009432757273316, "robot_dynamic_calls": 24198, "tool_dynamic_broadphase_seconds": 21.34734127111733, "tool_dynamic_broadphase_calls": 24198, "attached_pair_cache_hits": 4084391}, "mesh": {"geometry_update_seconds": 0.2689873781055212, "geometry_update_calls": 96792, "self_collision_seconds": 15.274840937927365, "self_collision_calls": 24198, "robot_environment_seconds": 95.33242746815085, "robot_environment_calls": 72594, "rigid_motion_clearance_certificates": 40112}, "obb_inclusive": {"obb_pair_failure": {"calls": 1064842, "inclusive_s": 6.638750858604908}, "obb_surface_distance": {"calls": 48526, "inclusive_s": 17.12631256133318}, "possible_inflated_obb_pairs": {"calls": 48396, "inclusive_s": 33.8989345934242}}, "state_cache_size": 4096, "state_cache_capacity": 4096, "edge_cache": {"hits": 0, "misses": 260, "evictions": 0}, "context": {"build_calls": 1, "build_seconds": 0.0007648821920156479, "guard_calls": 1056, "guard_seconds": 0.2868742551654577, "state_key_seconds": 0.03211592510342598}, "authority_calls": {"path": 1, "state": 24464}}
+{"kind": "same_context_warm", "failure": null, "accepted": true, "wall_s": 0.06766243278980255, "cpu_s": 0.06764868799996293, "expanded_samples": 0, "unique_states": 0, "sample_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "connector": {"state_validations": 0, "edge_validation_calls": 1, "edge_state_samples": 24464, "ik_calls": 0, "ik_seeds_attempted": 0, "ik_iterations_consumed": 0, "connection_attempts": 0, "rrt_iterations_consumed": 0, "cartesian_samples": 0, "placement_candidates_generated": 0, "placement_candidate_generation_wall_seconds": 0.0, "state_cache_hits": 0, "state_cache_misses": 0, "trajectory_ik_wall_seconds": 0.0, "path_connection_wall_seconds_inclusive": 0.0, "collision_validation_wall_seconds_nested": 0.0, "kinematics_and_joint_checks_wall_seconds": 0.0, "final_recheck_wall_seconds": 0.0, "edge_cached_samples": 24464}, "exact_validator": {"attached_pair_prepare_seconds": 0.0, "attached_pair_precomputed": 0, "robot_fixed_including_self_seconds": 0.0, "robot_fixed_including_self_calls": 0, "robot_tool_seconds": 0.0, "robot_tool_calls": 0, "tool_fixed_broadphase_seconds": 0.0, "tool_fixed_broadphase_calls": 0, "plane_bounds_seconds": 0.0, "plane_bounds_calls": 0, "robot_dynamic_seconds": 0.0, "robot_dynamic_calls": 0, "tool_dynamic_broadphase_seconds": 0.0, "tool_dynamic_broadphase_calls": 0, "attached_pair_cache_hits": 0}, "mesh": {"geometry_update_seconds": 0.0, "geometry_update_calls": 0, "self_collision_seconds": 0.0, "self_collision_calls": 0, "robot_environment_seconds": 0.0, "robot_environment_calls": 0, "rigid_motion_clearance_certificates": 0}, "obb_inclusive": {}, "state_cache_size": 4096, "state_cache_capacity": 4096, "edge_cache": {"hits": 260, "misses": 0, "evictions": 0}, "context": {"build_calls": 1, "build_seconds": 0.0007052700966596603, "guard_calls": 262, "guard_seconds": 0.06062174215912819, "state_key_seconds": 0.0}, "authority_calls": {"path": 1, "state": 0}}

@@ -1,0 +1,8 @@
+{
+  "transit_backend": "curobo_v2",
+  "gpu_python": "/root/autodl-tmp/curobo-v2-20260922/venv/bin/python",
+  "geometry_fit_seed": 716,
+  "scope": "extraction_end_to_preplace_only",
+  "cpu_fallback": false,
+  "final_task_and_replay_validation_required": true
+}

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/root/autodl-tmp/curobo-v2-20260928/baseline/tools/validate_saved_curobo_transit.py", line 86, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/root/autodl-tmp/curobo-v2-20260928/baseline/tools/validate_saved_curobo_transit.py", line 35, in main
+    if request.data[name]!=saved['request'][name]: raise ValueError('saved request mismatch: '+name)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: saved request mismatch: q_start
