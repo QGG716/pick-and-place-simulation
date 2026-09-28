@@ -1,0 +1,14 @@
+{
+  "status": "ACCEPTED",
+  "pid": 31320,
+  "request": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/geometry-task/request.json",
+    "sha256": "343025ac16d523bb63c313a65b9837529f03b98abdbce8ae0168c0fc85301b20"
+  },
+  "timing_seconds": {
+    "launch": 0.0013038869947195053,
+    "child_wait": 39.42634309642017,
+    "parent_accept": 0.6699601542204618,
+    "dispatch_total": 40.136509058997035
+  }
+}

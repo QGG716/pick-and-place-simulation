@@ -1,0 +1,167 @@
+{
+  "frozen_plan.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/frozen_plan.json",
+    "sha256": "69ce1121b6393f1f374ebbf673f2d48dbf49870a7a3aad5f146ff33dd82495a5",
+    "bytes": 61689
+  },
+  "launch.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/launch.json",
+    "sha256": "ba7208f43f3af8bd2290d0da34499392bffad666f79372fbbf997295ea12bd5b",
+    "bytes": 917
+  },
+  "run-exit.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/run-exit.json",
+    "sha256": "7f4894d66604a7d78a6d87ca315179aea756935e8639485749c011d07b278863",
+    "bytes": 411
+  },
+  "build-test.log": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/build-test.log",
+    "sha256": "1bef0b32534d3e1f95ef71ed37f4df193543162a10b6461289e05ffeeec2e48b",
+    "bytes": 4765
+  },
+  "demo-01/expected-config.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/expected-config.json",
+    "sha256": "34ff3326446a05f103918c7da768fa4b540d44dc9a3aee91db9a8c000c82b73e",
+    "bytes": 5744
+  },
+  "demo-01/worker-command.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/worker-command.json",
+    "sha256": "c9d4e57d017cee661e1b0db640e0cf31606f7cec20e90b4db237a88aa0bd7eaa",
+    "bytes": 559
+  },
+  "demo-01/demo-finished.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/demo-finished.json",
+    "sha256": "42c437218f216aea22124dd6c0d5c3fad4a9deeb2dff4c2f6311b69122123d4a",
+    "bytes": 4275
+  },
+  "demo-01/display-status.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/display-status.json",
+    "sha256": "61e520021d120dd6776654bf38153436732e37f1d1d2fae0319afd002639b9fa",
+    "bytes": 4625
+  },
+  "demo-01/rviz-final.png": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/rviz-final.png",
+    "sha256": "a885a577d6fed55ac36183b06a3edecee6b4d126ee56b166cf0c0b53b16c805c",
+    "bytes": 544787
+  },
+  "demo-01/video_00/worker-result.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/worker-result.json",
+    "sha256": "ee86d643633674e8e16fc8fd5aef7d9c59a3b584d1acfd1a7b6c48f7822c8da5",
+    "bytes": 29018
+  },
+  "demo-01/receipts/video_00.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/receipts/video_00.json",
+    "sha256": "9426dfb0fb187e1ea3ac980dd7198115f5be3fd7bd7f819921c14e71718db0c0",
+    "bytes": 18635
+  },
+  "demo-01/video_00/algorithm/module_0_upper/geometry-task/completed.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/geometry-task/completed.json",
+    "sha256": "08026e8bac8b060ce9c56eb73e84b285e6be55087c26e25dbc6522bc740a2296",
+    "bytes": 3225
+  },
+  "demo-01/video_00/algorithm/module_0_upper/geometry-task/parent_acceptance.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/geometry-task/parent_acceptance.json",
+    "sha256": "1b190853396b8fb22ee7e9c6a51f0c35c01949d0e5f7f8d029f0d12b2846e8d8",
+    "bytes": 474
+  },
+  "demo-01/video_00/algorithm/module_0_upper/geometry-task/thread_report.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/geometry-task/thread_report.json",
+    "sha256": "d330405df32bb6e9003b71a3ee2a8405c1bb5ffb43fe465ad99284198d0b9575",
+    "bytes": 16371
+  },
+  "demo-01/video_00/algorithm/module_0_upper/mode_b1_worker_response.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/mode_b1_worker_response.json",
+    "sha256": "c236b92e3c9528fe9f0023efad130bb30d3fe2ad7cfb6a6bf7a8ffcf02d2e3e3",
+    "bytes": 709
+  },
+  "demo-01/video_00/algorithm/sam-runs/carton-assets-recording-01-000032-fcb02c5e3fd148f4859910c6384ce43a-module_0_upper/metrics.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/sam-runs/carton-assets-recording-01-000032-fcb02c5e3fd148f4859910c6384ce43a-module_0_upper/metrics.json",
+    "sha256": "6501532d04b8ac1d9d4f5ccc683b6e130dc8d9ca427c6f97c6b65eacd02e0b94",
+    "bytes": 3412
+  },
+  "demo-01/video_00/algorithm/module_1_lower/geometry-task/completed.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_1_lower/geometry-task/completed.json",
+    "sha256": "33dfa203f404d9d8cd3fce0b265a49da6cae29d7bd2b05d7f3255ed9a9392773",
+    "bytes": 3301
+  },
+  "demo-01/video_00/algorithm/module_1_lower/geometry-task/parent_acceptance.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_1_lower/geometry-task/parent_acceptance.json",
+    "sha256": "e7054b3bfb2df81670fc7548e518c6917a7539f2687b5d9357fd32872ebba43c",
+    "bytes": 473
+  },
+  "demo-01/video_00/algorithm/module_1_lower/geometry-task/thread_report.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_1_lower/geometry-task/thread_report.json",
+    "sha256": "4d6abb600172edf917557ef341348b1849e0c77687f8243c868f12b531626234",
+    "bytes": 16394
+  },
+  "demo-01/video_00/algorithm/module_1_lower/mode_b1_worker_response.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_1_lower/mode_b1_worker_response.json",
+    "sha256": "1851de60317f78411243e054f387abc35ef82486980434640d890af1472e6fe5",
+    "bytes": 709
+  },
+  "demo-01/video_00/algorithm/sam-runs/carton-assets-recording-01-000032-fcb02c5e3fd148f4859910c6384ce43a-module_1_lower/metrics.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/sam-runs/carton-assets-recording-01-000032-fcb02c5e3fd148f4859910c6384ce43a-module_1_lower/metrics.json",
+    "sha256": "b0eb3132013e9ba3c2bc6afd4b96d629ba7c0d3ffa0989cbbbf28d91a6a3414d",
+    "bytes": 3412
+  },
+  "demo-01/video_01/worker-result.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/worker-result.json",
+    "sha256": "755bbeeb4c298597edd209ecf4be45071ea9726034b6b0a1b6205768aad9dc42",
+    "bytes": 29171
+  },
+  "demo-01/receipts/video_01.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/receipts/video_01.json",
+    "sha256": "5354203e88fe990e44817f1afbc30765c3f0650e37402bbdf352bfb21f3cf298",
+    "bytes": 30660
+  },
+  "demo-01/video_01/algorithm/module_0_upper/geometry-task/completed.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/module_0_upper/geometry-task/completed.json",
+    "sha256": "cd27dbf8e10f211f39cdf67bca302576de5e562a39ae5fe0a9ae841349bddae0",
+    "bytes": 3243
+  },
+  "demo-01/video_01/algorithm/module_0_upper/geometry-task/parent_acceptance.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/module_0_upper/geometry-task/parent_acceptance.json",
+    "sha256": "657ebebb189acbfbecd669642e3f993001bdb695c82adf364d458b13b439bfac",
+    "bytes": 474
+  },
+  "demo-01/video_01/algorithm/module_0_upper/geometry-task/thread_report.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/module_0_upper/geometry-task/thread_report.json",
+    "sha256": "7f0e4f69cf5ebefe89d4970e3881d0e4a55039e0a9df815a152bbfd60896c366",
+    "bytes": 16398
+  },
+  "demo-01/video_01/algorithm/module_0_upper/mode_b1_worker_response.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/module_0_upper/mode_b1_worker_response.json",
+    "sha256": "2b8267f534d0e1b64dbd66fb940bcfec2c7f9e9ea9074780458319fc5281c9d2",
+    "bytes": 708
+  },
+  "demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_0_upper/metrics.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_0_upper/metrics.json",
+    "sha256": "acbbea3a664c009e72f75999bc5fd2253edeed403a673fc82320ad4f83ba8dd6",
+    "bytes": 3412
+  },
+  "demo-01/video_01/algorithm/module_1_lower/geometry-task/completed.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/module_1_lower/geometry-task/completed.json",
+    "sha256": "0a619e7be5ef56d22917156e9ebc31896aabbf0f64d6bdd1f331f2b8cf0dfedb",
+    "bytes": 3316
+  },
+  "demo-01/video_01/algorithm/module_1_lower/geometry-task/parent_acceptance.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/module_1_lower/geometry-task/parent_acceptance.json",
+    "sha256": "e017307871143b478e319009c2542246ef2f3438354f4f6647a27ce69886ef1c",
+    "bytes": 474
+  },
+  "demo-01/video_01/algorithm/module_1_lower/geometry-task/thread_report.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/module_1_lower/geometry-task/thread_report.json",
+    "sha256": "e4e3b1b37d7b35a5228ec43b97d5e9f161313defd1867e780254b86619bb3f20",
+    "bytes": 16392
+  },
+  "demo-01/video_01/algorithm/module_1_lower/mode_b1_worker_response.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/module_1_lower/mode_b1_worker_response.json",
+    "sha256": "768b01869692b9a9b4919074009eb1611d5aafc2d73bc3329c8049d93408a180",
+    "bytes": 707
+  },
+  "demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_1_lower/metrics.json": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_1_lower/metrics.json",
+    "sha256": "dbc11a3eafe904dbbc92f6b5e88f4aab476fce9be7867cbd875f1b9829de6730",
+    "bytes": 3411
+  }
+}

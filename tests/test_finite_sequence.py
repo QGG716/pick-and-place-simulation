@@ -128,3 +128,28 @@ def test_manifest_is_finite_and_unambiguous(tmp_path,groups):
     path=tmp_path/'manifest.json'
     atomic_json(path,{'schema_version':'finite_capture_sequence_v1','sequence_kind':'INDEPENDENT_CAPTURE_GROUPS','groups':groups})
     with pytest.raises(ValueError): manifest_groups(path)
+
+
+@pytest.mark.parametrize('fault',[None,'backend','threads','old_task','capture','hash','module'])
+def test_subprocess_verify_result_uses_expected_config_and_task_root(tmp_path,monkeypatch,fault):
+    from test_workcell_perception_once import prepare
+    from test_workcell_geometry_process import install_dispatch_double
+    from geometry_runtime_config import effective_config
+    capture,_,_,main,argv=prepare(tmp_path,monkeypatch)
+    install_dispatch_double(monkeypatch,[])
+    assert main(argv+['--geometry-backend','subprocess','--geometry-blas-threads','1','--geometry-timeout','23'])==0
+    root=capture/'perception-once';summary=root/'summary.json'
+    inputs=verify_capture(capture)
+    models=read_json(tmp_path/'models.json')
+    config=effective_config(yaml.safe_load((ROOT/'configs/isaac/perception_validation.yaml').read_text(encoding='utf-8')),'subprocess',1)
+    expected=root
+    if fault=='backend':config.pop('geometry_runtime')
+    elif fault=='threads':config['metric_runtime_policy']['requested_blas_threads']=2
+    elif fault=='old_task':expected=tmp_path/'different-task'
+    elif fault=='capture':inputs[next(iter(inputs))]['capture_id']='foreign'
+    elif fault=='hash':(root/'fusion_result.json').write_text('{}')
+    elif fault=='module':inputs.pop(next(iter(inputs)))
+    if fault is None:
+        assert verify_result(summary,inputs,models,config,expected_output=expected)[0]['overall_status']=='COMPLETED'
+    else:
+        with pytest.raises(ValueError):verify_result(summary,inputs,models,config,expected_output=expected)

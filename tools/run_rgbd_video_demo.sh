@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+# Forward geometry options unchanged; Python validates them before launching ROS/model processes.
+# Omitted geometry-python inherits --algorithm-python, never this system ROS interpreter.
 set +u
 source /opt/ros/humble/setup.bash
 source "${HUMBLE_INSTALL:?set HUMBLE_INSTALL to the existing colcon install}/setup.bash"

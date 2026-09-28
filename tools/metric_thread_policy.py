@@ -9,28 +9,14 @@ from pathlib import Path
 import platform
 import sys
 from time import process_time, perf_counter
+if __package__:
+    from .geometry_runtime_config import positive_int, policy
+else:
+    from geometry_runtime_config import positive_int, policy
 
 
 THREAD_ENV = ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS',
               'GOTO_NUM_THREADS', 'NUMEXPR_NUM_THREADS', 'VECLIB_MAXIMUM_THREADS')
-
-
-def positive_int(value):
-    import argparse
-    try:
-        result = int(value)
-    except (ValueError, TypeError):
-        raise argparse.ArgumentTypeError('BLAS threads must be a positive integer')
-    if result < 1:
-        raise argparse.ArgumentTypeError('BLAS threads must be a positive integer')
-    return result
-
-
-def policy(threads):
-    return {'schema_version': 'metric_blas_policy_v1', 'requested_blas_threads': threads,
-            'scope': 'standalone_metric_geometry_process', 'targets': ['numpy', 'scipy'],
-            'mechanism': 'inherit' if threads is None else 'native_openblas_runtime_api',
-            'non_target_thread_settings': 'unchanged'}
 
 
 def read_optional(path):
@@ -148,6 +134,16 @@ def snapshot():
         'created_threads': threads, 'simultaneously_executing_threads': None,
         'load_average': os.getloadavg() if hasattr(os, 'getloadavg') else None,
         'cgroup': cgroup_snapshot(), 'process_cpu_seconds': process_time(), 'monotonic_seconds': perf_counter(), **cpu}
+
+
+def loaded_thread_state():
+    """Read resident evidence without loading numeric libraries or calling setters."""
+    cv2 = sys.modules.get('cv2')
+    getter = getattr(cv2, 'getNumThreads', None)
+    return {'pid': os.getpid(), 'blas': discover_blas(),
+            'opencv_threads': getter() if getter else None,
+            'thread_environment': {key: os.environ.get(key) for key in THREAD_ENV},
+            'affinity': sorted(os.sched_getaffinity(0)) if hasattr(os, 'sched_getaffinity') else None}
 
 
 def verify_non_targets(before, after):

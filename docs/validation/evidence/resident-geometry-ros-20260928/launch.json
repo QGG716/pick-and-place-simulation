@@ -1,0 +1,32 @@
+{
+  "command": [
+    "bash",
+    "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/code/tools/run_rgbd_video_demo.sh",
+    "--recording",
+    "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/sequence-prefix.json",
+    "--output",
+    "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01",
+    "--models",
+    "/root/autodl-tmp/v05-acceptance/model-manifest.json",
+    "--vision",
+    "/root/vision-fixed",
+    "--algorithm-python",
+    "/root/v05-gpu-venv/bin/python",
+    "--geometry-backend",
+    "subprocess",
+    "--geometry-blas-threads",
+    "1",
+    "--geometry-timeout",
+    "1200",
+    "--domain-id",
+    "179",
+    "--record",
+    "--auto-start",
+    "--auto-close"
+  ],
+  "environment_overrides": {
+    "DISPLAY": ":100",
+    "LIBGL_ALWAYS_SOFTWARE": "1",
+    "HUMBLE_INSTALL": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install"
+  }
+}

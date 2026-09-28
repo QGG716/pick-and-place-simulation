@@ -103,7 +103,8 @@ def test_resident_model_reused_across_two_real_orchestrations(tmp_path, monkeypa
         cache(SimpleNamespace(upstream_root=tmp_path, sam_model='OTHER_MODEL', output_root=tmp_path/'unused'))
 
 
-def test_launcher_preserves_venv_interpreter_and_does_not_launch_truth_adapter(tmp_path, monkeypatch):
+@pytest.mark.parametrize('geometry_args', [[], ['--geometry-backend','subprocess','--geometry-blas-threads','1','--geometry-timeout','321']])
+def test_launcher_preserves_venv_interpreter_and_does_not_launch_truth_adapter(tmp_path, monkeypatch, geometry_args):
     launcher = runpy.run_path(str(ROOT/'tools/run_rgbd_video_demo.py'))
     calls = []
     output = tmp_path/'demo'
@@ -125,9 +126,50 @@ def test_launcher_preserves_venv_interpreter_and_does_not_launch_truth_adapter(t
     launcher['main'].__globals__['recording_frames'] = lambda _: None
     monkeypatch.setattr(sys, 'argv', ['demo', '--recording', str(tmp_path/'source/index.json'),
         '--output', str(output), '--models', str(tmp_path/'models'), '--vision', str(tmp_path/'vision'),
-        '--algorithm-python', str(interpreter)])
+        '--algorithm-python', str(interpreter)]+geometry_args)
     with pytest.raises(RuntimeError, match='process exited'): launcher['main']()
     video = next(c for c in calls if 'video_demo_node' in c)
     assert 'algorithm_python:='+str(interpreter.absolute()) in video
+    assert 'geometry_python:='+str(interpreter.absolute()) in video
+    assert ('geometry_backend:=subprocess' if geometry_args else 'geometry_backend:=inline') in video
+    assert ('geometry_blas_threads:=1' if geometry_args else 'geometry_blas_threads:=0') in video
     assert not any('isaac_sensor_adapter_node' in c for c in calls)
     assert any('observation_mode:=replay_display_only' in c for c in calls)
+
+
+@pytest.mark.parametrize('options', [['--geometry-blas-threads','1'],
+    ['--geometry-backend','bad'],['--geometry-backend','subprocess','--geometry-blas-threads','0'],
+    ['--geometry-timeout','-1']])
+def test_top_level_geometry_options_fail_before_any_process(tmp_path,monkeypatch,options):
+    launcher=runpy.run_path(str(ROOT/'tools/run_rgbd_video_demo.py'))
+    monkeypatch.setattr(launcher['subprocess'],'Popen',lambda *a,**k:pytest.fail('invalid options launched a process'))
+    with pytest.raises(SystemExit) as exc:
+        launcher['main'](['--recording','missing','--output',str(tmp_path/'unused'),'--models','missing',
+                         '--vision','missing','--algorithm-python',sys.executable]+options)
+    assert exc.value.code==2 and not (tmp_path/'unused').exists()
+
+
+def test_shared_config_ros_roundtrip_and_worker_command_without_numeric_imports():
+    import subprocess
+    from geometry_runtime_config import from_ros_parameters,ros_parameters,worker_command,effective_config
+    values=dict(geometry_backend='subprocess',geometry_blas_threads=1,geometry_python='',geometry_timeout=1200)
+    args=from_ros_parameters(values.__getitem__,sys.executable)
+    roundtrip=from_ros_parameters(ros_parameters(args).__getitem__,sys.executable)
+    command=worker_command(ROOT,sys.executable,'output','models','vision',roundtrip)
+    assert command[1]==str(ROOT/'tools/workcell_video_worker.py')
+    assert command[command.index('--geometry-blas-threads')+1]=='1'
+    assert effective_config({},args.geometry_backend,args.geometry_blas_threads)==effective_config({},roundtrip.geometry_backend,roundtrip.geometry_blas_threads)
+    values.update(geometry_backend='inline',geometry_blas_threads=0)
+    inherited=from_ros_parameters(values.__getitem__,sys.executable)
+    assert '--geometry-blas-threads' not in worker_command(ROOT,sys.executable,'output','models','vision',inherited)
+    assert effective_config({},inherited.geometry_backend,inherited.geometry_blas_threads)=={}
+    code="import sys;sys.path.insert(0,'tools');import geometry_runtime_config;assert not any(n in sys.modules for n in ('numpy','scipy','torch','cv2','metric_thread_policy','vision_resident_worker'))"
+    assert subprocess.run([sys.executable,'-c',code],cwd=ROOT).returncode==0
+
+
+@pytest.mark.parametrize('values', [dict(geometry_backend='inline',geometry_blas_threads=1),
+    dict(geometry_backend='subprocess',geometry_blas_threads=-1),dict(geometry_backend='bad',geometry_blas_threads=0)])
+def test_ros_sentinel_and_invalid_combinations(values):
+    from geometry_runtime_config import from_ros_parameters
+    values.update(geometry_python='',geometry_timeout=1200)
+    with pytest.raises(ValueError):from_ros_parameters(values.__getitem__,sys.executable)

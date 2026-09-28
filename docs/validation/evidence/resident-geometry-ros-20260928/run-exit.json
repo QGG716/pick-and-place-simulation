@@ -1,0 +1,29 @@
+{
+  "exit_code": 0,
+  "owned_processes_remaining": [],
+  "owned_pids": [
+    30517,
+    30556,
+    30557,
+    30558,
+    30559,
+    30560,
+    30570,
+    30572,
+    30573,
+    30574,
+    30690,
+    30754,
+    31217,
+    31310,
+    31320,
+    31890,
+    31977,
+    32011,
+    32351,
+    32448,
+    32720,
+    32846
+  ],
+  "sampling_scope": "only launcher descendants; GPU CSV may include shared-host processes"
+}

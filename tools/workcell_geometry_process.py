@@ -15,6 +15,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'src'), str(ROOT/'packages/unloading_contracts/src')]
 from metric_thread_policy import positive_int, policy
+from geometry_runtime_config import add_arguments, validate_arguments, forwarded_arguments, effective_config
 
 
 def read(path):
@@ -34,38 +35,6 @@ def checked(ref, root=None):
     if hashlib.sha256(raw).hexdigest() != ref['sha256']:
         raise ValueError('GEOMETRY_HASH_MISMATCH: '+str(path))
     return raw
-
-
-def add_arguments(parser):
-    parser.add_argument('--geometry-backend', choices=('inline', 'subprocess'), default='inline')
-    parser.add_argument('--geometry-blas-threads', type=positive_int)
-    parser.add_argument('--geometry-python', type=Path, default=Path(sys.executable))
-    parser.add_argument('--geometry-timeout', type=positive_int, default=1200,
-                        help='seconds for the entire geometry child, including input validation')
-
-
-def validate_arguments(parser, args):
-    if args.geometry_backend == 'inline' and args.geometry_blas_threads is not None:
-        parser.error('--geometry-blas-threads requires --geometry-backend subprocess')
-
-
-def forwarded_arguments(args):
-    result = ['--geometry-backend', args.geometry_backend, '--geometry-python', str(args.geometry_python),
-              '--geometry-timeout', str(args.geometry_timeout)]
-    if args.geometry_blas_threads is not None:
-        result += ['--geometry-blas-threads', str(args.geometry_blas_threads)]
-    return result
-
-
-def effective_config(config, backend, threads):
-    if backend == 'inline':
-        if threads is not None: raise ValueError('inline cannot set BLAS threads')
-        return config
-    if backend != 'subprocess': raise ValueError('unknown geometry backend')
-    if threads is not None and (type(threads) is not int or threads < 1):
-        raise ValueError('invalid BLAS threads')
-    return {**config, 'metric_runtime_policy': policy(threads),
-            'geometry_runtime': {'backend': 'subprocess', 'protocol': 'workcell_geometry_v1'}}
 
 
 def capture_identity(payload):

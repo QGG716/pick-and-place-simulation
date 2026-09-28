@@ -84,15 +84,23 @@ def input_identity(provenance):
         'consumed_files': {name: ref['sha256'] for name,ref in provenance['consumed_files'].items()}}
 
 
-def verify_result(summary_path, inputs, models, config):
+def verify_result(summary_path, inputs, models, config, *, expected_output=None):
     """Reuse and new runs obey the same input/model/config/complete-result checks."""
     summary = read_json(summary_path)
     if not summary.get('finalized') or summary.get('exit_code') != 0 or summary.get('overall_status') != 'COMPLETED':
         raise ValueError('single-capture run did not complete technically')
     reference = summary['algorithm_artifact']  # Trusted expected value from original run, never repaired.
+    if expected_output is not None:
+        root=Path(expected_output).resolve()
+        if (Path(summary_path).resolve()!=root/'summary.json' or
+                Path(reference['path']).resolve()!=root/'algorithm_artifact.json'):
+            raise ValueError('algorithm artifact belongs to another task output')
     observation,index = load_algorithm_artifact(reference['path'],reference['sha256'])
     if (index['run_id']!=summary['run_id'] or canonical_fingerprint(models)!=index['model_manifest_identity']
             or canonical_fingerprint(config)!=index['config_identity']
+            or canonical_fingerprint(index['config'])!=canonical_fingerprint(config)
+            or (config.get('geometry_runtime',{}).get('backend')=='subprocess'
+                and observation.config_identity!=canonical_fingerprint(config))
             or canonical_fingerprint(index['model_manifest'])!=canonical_fingerprint(models)):
         raise ValueError('algorithm run/model/config identity mismatch')
     coverage = observation.coverage['module_coverage']

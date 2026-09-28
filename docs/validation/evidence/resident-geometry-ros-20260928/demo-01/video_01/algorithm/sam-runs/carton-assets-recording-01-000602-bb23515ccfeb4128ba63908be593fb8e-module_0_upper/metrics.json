@@ -1,0 +1,62 @@
+{
+  "config": {
+    "mode": "RGBD_PRIMARY_2D_PREREQUISITES",
+    "comparison": false,
+    "sam_model": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+    "sam_revision": "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+    "proposal_sha256": "a0d5014c27fd57604ac3e8ee38a0d3e6f993987df3cc877af9b7527bed0e9a26",
+    "input_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+    "capture_frame": {
+      "source": "isaac-sim-6.0.1",
+      "stream": "perception_validation",
+      "epoch": "carton-assets-recording-01",
+      "sequence": 602,
+      "capture_time": 10.033333856612444,
+      "receive_time": 10.033333856612444,
+      "clock_domain": "ros_sim_time",
+      "frame_id": "module_0_upper_rgb_optical",
+      "width": 2592,
+      "height": 1944,
+      "encoding": "rgb8",
+      "rgb_uri": "file:///root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/module_0_upper/sensor_rgb.png",
+      "rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf"
+    },
+    "result_cache_reused": false,
+    "upstream_sha": "1d208f2ed380a207e6e46b4a62d2ac640edfe477"
+  },
+  "artifacts": {
+    "sam_crossvalidated.jpg": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_0_upper/sam_crossvalidated.jpg",
+      "sha256": "952119d685fcd945e5e0c28f66877ae263f725940a9544116f75a6f9d6ab2e74"
+    },
+    "cargo_masks.npz": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_0_upper/cargo_masks.npz",
+      "sha256": "169f08f53b05bcc76468328ccfaf46e558245c39218dd248eaf76f9221ea4e41"
+    },
+    "cargo_instances.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_0_upper/cargo_instances.json",
+      "sha256": "7f50a45490c80859151ac87feb390016d1c92b0d1e8c118e771d6eac080076a1"
+    },
+    "box_geometry_2d.json": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_0_upper/box_geometry_2d.json",
+      "sha256": "5bfb10399d76a2d2bebd8d1d3d20cf3e91ccc022771c8e7658d6fadfb7350a26"
+    }
+  },
+  "timings_seconds": {
+    "sam": 7.410466279834509,
+    "geometry_2d": 1.4380228091031313,
+    "request_total": 8.932364812120795
+  },
+  "logs": {
+    "sam": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_0_upper/sam.log",
+      "sha256": "0231c18654cc055dae9a9a9c010aba38b9cf67a4192f365282ab2d3f6b83bf82",
+      "returncode": 0
+    },
+    "geometry_2d": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_01/algorithm/sam-runs/carton-assets-recording-01-000602-bb23515ccfeb4128ba63908be593fb8e-module_0_upper/geometry_2d.log",
+      "sha256": "33218010868c417891e2d14e176a9d6abda7b9a2ccfc492d5050daac1f7420eb",
+      "returncode": 0
+    }
+  }
+}

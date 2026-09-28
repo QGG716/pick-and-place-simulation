@@ -9,19 +9,23 @@ import time
 import uuid
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path[:0]=[str(ROOT/'src'),str(ROOT/'packages/unloading_contracts/src')]
+sys.path[:0]=[str(ROOT/'src'),str(ROOT/'packages/unloading_contracts/src'),str(ROOT/'tools')]
+from geometry_runtime_config import add_arguments, validate_arguments, ros_parameters
 from unloading_perception.finite_sequence import atomic_json,read_json
 from unloading_perception.video_demo import recording_frames
 
 
-def main():
+def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
+    add_arguments(p, python_default=None)
     for name in ('recording','output','models','vision','algorithm-python'):p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--domain-id',type=int,default=177)
     p.add_argument('--record',action='store_true',help='Record the actual X11 desktop at original wall-clock speed')
     p.add_argument('--auto-start',action='store_true')
     p.add_argument('--auto-close',action='store_true',help='Close 15 seconds after finite processing completes')
-    args=p.parse_args()
+    args=p.parse_args(argv)
+    args.geometry_python=(args.geometry_python or args.algorithm_python).absolute()
+    validate_arguments(p,args)
     if args.record and not args.auto_start:
         p.error('--record requires --auto-start so recording starts before the START gate')
     recording_frames(args.recording)
@@ -46,7 +50,8 @@ def main():
         command=['ros2','run','unloading_ros_bridge','video_demo_node','--ros-args']
         # Resolving this symlink would bypass pyvenv.cfg and lose the GPU environment.
         for key,value in {'recording':args.recording.resolve(),'output':args.output,'project':ROOT,
-                          'models':args.models.resolve(),'vision':args.vision.resolve(),'algorithm_python':args.algorithm_python.absolute()}.items():
+                          'models':args.models.resolve(),'vision':args.vision.resolve(),'algorithm_python':args.algorithm_python.absolute(),
+                          **ros_parameters(args)}.items():
             command+=['-p',key+':='+str(value)]
         launch('video',command)
         launch('rviz',['rviz2','-d',str(ROOT/'ros2_ws/src/unloading_bringup/rviz/rgbd_video_demo.rviz')])

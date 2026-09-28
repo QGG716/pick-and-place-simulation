@@ -27,6 +27,17 @@ def test_inherit_never_invokes_setter_or_changes_environment(monkeypatch):
     assert dict(os.environ) == original
 
 
+def test_resident_snapshot_reads_loaded_pools_without_initialization_or_setters(monkeypatch):
+    original = dict(os.environ)
+    monkeypatch.setattr(policy, 'discover_blas', lambda: pools())
+    monkeypatch.setattr(policy, 'configure_blas', lambda *a: pytest.fail('resident setter'))
+    monkeypatch.setattr(policy, 'snapshot', lambda: pytest.fail('resident must not initialize libraries'))
+    monkeypatch.setitem(sys.modules, 'cv2', SimpleNamespace(getNumThreads=lambda: 22))
+    actual = policy.loaded_thread_state()
+    assert actual['blas'] == pools() and actual['opencv_threads'] == 22
+    assert actual['pid'] == os.getpid() and dict(os.environ) == original
+
+
 def test_native_getter_checks_all_loaded_target_pools(monkeypatch):
     values = {'numpy': 64, 'scipy': 64, 'opencv': 1}
     calls = []

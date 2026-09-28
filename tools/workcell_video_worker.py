@@ -1,5 +1,6 @@
 """One GPU process, one resident SAM, serial immutable RGB-D jobs from the demo."""
 import argparse
+import os
 from pathlib import Path
 import sys
 import time
@@ -23,11 +24,13 @@ class RuntimeCache:
             self.runtime.args=args
             self.runtime.output_root=args.output_root.resolve()
             self.runtime.output_root.mkdir(exist_ok=False)
+        from metric_thread_policy import loaded_thread_state
+        self.task_initial_threads=loaded_thread_state()
         return self.runtime
 
 
 def main(argv=None):
-    from workcell_geometry_process import add_arguments, validate_arguments, forwarded_arguments
+    from geometry_runtime_config import add_arguments, validate_arguments, forwarded_arguments
     parser=argparse.ArgumentParser(description=__doc__)
     add_arguments(parser)
     parser.add_argument('--output',type=Path,required=True)
@@ -46,6 +49,7 @@ def main(argv=None):
         if len(seen)>16: raise ValueError('finite demonstration exceeded 16 jobs')
         started=time.monotonic()
         result={'task_id':identity,'frame_sequence':request['frame_sequence'],'source_time':request['source_time'],
+                'worker_pid':os.getpid(), 'capture':request['capture'], 'algorithm_output':request['algorithm_output'],
                 'started_monotonic':started,'status':'RUNNING'}
         atomic_json(args.output/'worker-status.json',result)
         try:
@@ -64,6 +68,13 @@ def main(argv=None):
             raise
         result.update(finished_monotonic=time.monotonic(),wall_seconds=time.monotonic()-started,
                       resident_model_loads=cache.loads)
+        from metric_thread_policy import loaded_thread_state
+        result['parent_threads_before_task']=getattr(cache,'task_initial_threads',None)
+        result['parent_threads_after_task']=loaded_thread_state()
+        result['resident_sam_object_id']=id(cache.runtime.sam_model) if getattr(cache.runtime,'sam_model',None) is not None else None
+        result['resident_startup_seconds']=getattr(cache.runtime,'startup_seconds',None)
+        result['model_load_seconds']=getattr(cache.runtime,'model_load_seconds',None)
+        atomic_json(Path(request['algorithm_output']).parent/'worker-result.json',result)
         atomic_json(args.output/'worker-status.json',result)
     return 0
 

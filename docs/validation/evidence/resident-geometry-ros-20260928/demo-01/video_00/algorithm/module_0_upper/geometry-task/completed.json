@@ -1,0 +1,100 @@
+{
+  "status": "COMPLETED",
+  "task_id": "d46b73b1578b4d36ae6e729412487d6c",
+  "run_id": "fcb02c5e3fd148f4859910c6384ce43a",
+  "capture": {
+    "module_id": "module_0_upper",
+    "capture_id": "carton-assets-recording-01:module_0_upper:32",
+    "source_epoch": "carton-assets-recording-01",
+    "source_sequence": 32,
+    "capture_time": 0.5333333611488342,
+    "calibration_identity": "372d53029e85bd0e617ee1a2e523319c0d818ee4f47bc60f0d06f637ec7fe3b0",
+    "K": [
+      748.2459488697552,
+      0.0,
+      1295.5,
+      0.0,
+      1525.7343809582005,
+      971.5,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "T_W_C_at_capture": [
+      [
+        0.0,
+        -0.0,
+        1.0,
+        -1.325
+      ],
+      [
+        -1.0,
+        -0.0,
+        0.0,
+        0.75
+      ],
+      [
+        0.0,
+        -1.0,
+        -0.0,
+        2.4
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "pid": 31320,
+  "request": {
+    "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/geometry-task/request.json",
+    "sha256": "343025ac16d523bb63c313a65b9837529f03b98abdbce8ae0168c0fc85301b20"
+  },
+  "files": {
+    "thread_report": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/geometry-task/thread_report.json",
+      "sha256": "d330405df32bb6e9003b71a3ee2a8405c1bb5ffb43fe465ad99284198d0b9575"
+    },
+    "face_sets": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/geometry-task/face_sets.json",
+      "sha256": "5266389eb75142f639e1758e0e34a7864748841c9d5356b0adffe406b9405e4d"
+    },
+    "observation": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/geometry-task/observation.json",
+      "sha256": "dada220da06599be2b0a6079ebdb608849ca9771f3bcb2461154031eabf620a7"
+    },
+    "geometry": {
+      "path": "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01/video_00/algorithm/module_0_upper/rgbd_cuboids.json",
+      "sha256": "c9a5b6001c131113de5fce858708c71df1379dec4d8c3f842005b2c845482df0"
+    }
+  },
+  "result_metadata": {
+    "elapsed_seconds": 15.080445462837815,
+    "timing_seconds": {
+      "input_validation_and_snapshot": 0.00020169652998447418,
+      "pointmap_build_including_filter_audits": 14.666059801355004,
+      "pointmap_write": 0.966324221342802,
+      "legacy_geometry": 15.080445462837815,
+      "legacy_cuboid_diagnostic": 0.0,
+      "final_metric_faces": 15.078448839485645,
+      "final_validation_and_observation": 5.389466341584921,
+      "evaluation_and_observation_write": 0.5815105605870485,
+      "filter_audit_json_write": 0.0006112102419137955,
+      "module_total_before_timing_record": 36.71025441028178
+    },
+    "legacy_cuboid_diagnostic": {
+      "status": "DISABLED",
+      "enabled": false,
+      "seconds": 0.0,
+      "command": null
+    }
+  },
+  "timing_seconds": {
+    "input_validation": 1.7603050451725721,
+    "thread_initialization": 0.1895392294973135,
+    "geometry": 36.71391701325774,
+    "child_before_index": 39.30912351235747
+  }
+}

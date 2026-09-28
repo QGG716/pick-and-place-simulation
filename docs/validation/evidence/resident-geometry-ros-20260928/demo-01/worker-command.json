@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/root/v05-gpu-venv/bin/python",
+    "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/code/tools/workcell_video_worker.py",
+    "--output",
+    "/root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/demo-01",
+    "--models",
+    "/root/autodl-tmp/v05-acceptance/model-manifest.json",
+    "--vision",
+    "/root/vision-fixed",
+    "--geometry-backend",
+    "subprocess",
+    "--geometry-python",
+    "/root/v05-gpu-venv/bin/python",
+    "--geometry-timeout",
+    "1200",
+    "--geometry-blas-threads",
+    "1"
+  ]
+}

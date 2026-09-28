@@ -1,0 +1,51 @@
+[0.305s] WARNING:colcon.colcon_core.package_selection:Some selected packages are already built in one or more underlay workspaces:
+	'unloading_ros_bridge' is in: /root/autodl-tmp/v05-acceptance/cancel-order-20260922/install/unloading_ros_bridge
+If a package in a merged underlay workspace is overridden and it installs headers, then all packages in the overlay must sort their include directories by workspace order. Failure to do so may result in build failures or undefined behavior at run time.
+If the overridden package is used by another package in any underlay, then the overriding package in the overlay must be API and ABI compatible or undefined behavior at run time may occur.
+
+If you understand the risks and want to override a package anyways, add the following to the command line:
+	--allow-overriding unloading_ros_bridge
+
+This may be promoted to an error in a future release of colcon-override-check.
+Starting >>> unloading_ros_bridge
+[0.313s] WARNING:colcon.colcon_core.shell:The following packages are in the workspace but haven't been built:
+- unloading_interfaces
+They are being used from the following locations instead:
+- /root/autodl-tmp/v05-acceptance/cancel-order-20260922/install/unloading_interfaces
+To suppress this warning ignore these packages in the workspace:
+--packages-ignore unloading_interfaces
+running develop
+running egg_info
+creating unloading_ros_bridge.egg-info
+writing unloading_ros_bridge.egg-info/PKG-INFO
+writing dependency_links to unloading_ros_bridge.egg-info/dependency_links.txt
+writing entry points to unloading_ros_bridge.egg-info/entry_points.txt
+writing requirements to unloading_ros_bridge.egg-info/requires.txt
+writing top-level names to unloading_ros_bridge.egg-info/top_level.txt
+writing manifest file 'unloading_ros_bridge.egg-info/SOURCES.txt'
+reading manifest file 'unloading_ros_bridge.egg-info/SOURCES.txt'
+writing manifest file 'unloading_ros_bridge.egg-info/SOURCES.txt'
+running build_ext
+Creating /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/python3.10/site-packages/unloading-ros-bridge.egg-link (link to .)
+Installing execution_bridge_node script to /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/unloading_ros_bridge
+Installing finite_replay_node script to /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/unloading_ros_bridge
+Installing isaac_sensor_adapter_node script to /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/unloading_ros_bridge
+Installing marker_demo script to /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/unloading_ros_bridge
+Installing mock_follow_joint_trajectory script to /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/unloading_ros_bridge
+Installing mock_state_publisher script to /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/unloading_ros_bridge
+Installing perception_node script to /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/unloading_ros_bridge
+Installing video_demo_node script to /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/unloading_ros_bridge
+Installing world_bridge_node script to /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/lib/unloading_ros_bridge
+
+Installed /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/build/unloading_ros_bridge
+running symlink_data
+creating /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/share/ament_index
+creating /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/share/ament_index/resource_index
+creating /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/share/ament_index/resource_index/packages
+symbolically linking /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/build/unloading_ros_bridge/resource/unloading_ros_bridge -> /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/share/ament_index/resource_index/packages
+symbolically linking /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/build/unloading_ros_bridge/package.xml -> /root/autodl-tmp/v05-acceptance/resident-geometry-ros-20260928/install/unloading_ros_bridge/share/unloading_ros_bridge
+Finished <<< unloading_ros_bridge [0.89s]
+
+Summary: 1 package finished [1.11s]
+.....                                                                    [100%]
+5 passed in 25.08s

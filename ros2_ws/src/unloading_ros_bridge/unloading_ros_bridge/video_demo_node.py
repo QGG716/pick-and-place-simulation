@@ -4,6 +4,7 @@ from collections import deque
 import os
 from pathlib import Path
 import subprocess
+import sys
 import time
 import uuid
 
@@ -27,14 +28,21 @@ class VideoDemoNode(Node):
     def __init__(self):
         super().__init__('rgbd_video_demo')
         for name,default in (('recording',''),('output',''),('project',''),('models',''),('vision',''),
-                             ('algorithm_python',''),('max_results',2),('fps',10.)):
+                             ('algorithm_python',''),('max_results',2),('fps',10.),
+                             ('geometry_backend','inline'),('geometry_blas_threads',0),
+                             ('geometry_python',''),('geometry_timeout',1200)):
             self.declare_parameter(name,default)
         def value(name): return self.get_parameter(name).value
         self.output=Path(value('output')); self.project=Path(value('project'))
+        sys.path.insert(0,str(self.project/'tools'))
+        from geometry_runtime_config import from_ros_parameters, effective_config, worker_command
+        self.geometry=from_ros_parameters(value,value('algorithm_python'))
         self.record,self.frames=recording_frames(value('recording'))
         self.models=read_json(value('models'));verify_sam_files(self.models)
         import yaml
-        self.config=yaml.safe_load((self.project/'configs/isaac/perception_validation.yaml').read_text(encoding='utf-8'))
+        self.config=effective_config(yaml.safe_load((self.project/'configs/isaac/perception_validation.yaml').read_text(encoding='utf-8')),
+                                     self.geometry.geometry_backend,self.geometry.geometry_blas_threads)
+        atomic_json(self.output/'expected-config.json',self.config)
         self.limit=int(value('max_results'))
         if not 2<=self.limit<=16: raise ValueError('finite demo requires 2..16 results')
         self.state=read_json(self.output/'progress.json')
@@ -62,8 +70,9 @@ class VideoDemoNode(Node):
         env={k:v for k,v in os.environ.items() if k not in ('PYTHONPATH','PYTHONHOME')}
         env['PYTHONPATH']=os.pathsep.join((str(self.project/'src'),str(self.project/'packages/unloading_contracts/src'),str(self.project/'tools')))
         self.log=(self.output/'algorithm-worker.log').open('w',encoding='utf-8')
-        self.worker=subprocess.Popen([str(value('algorithm_python')),str(self.project/'tools/workcell_video_worker.py'),
-            '--output',str(self.output),'--models',str(value('models')),'--vision',str(value('vision'))],
+        command=worker_command(self.project,value('algorithm_python'),self.output,value('models'),value('vision'),self.geometry)
+        atomic_json(self.output/'worker-command.json',{'command':command})
+        self.worker=subprocess.Popen(command,
             env=env,stdout=self.log,stderr=subprocess.STDOUT)
         self.timer=self.create_timer(1./float(value('fps')),self.tick)
 
@@ -91,7 +100,10 @@ class VideoDemoNode(Node):
         return inputs,self.frame_cloud(frame) if self.last is None else None
 
     def accept(self,request,summary_path,inputs):
-        summary,reference,counts=verify_result(summary_path,inputs,self.models,self.config)
+        started=time.monotonic()
+        summary,reference,counts=verify_result(summary_path,inputs,self.models,self.config,
+            expected_output=request['algorithm_output'])
+        request['artifact_validation_seconds']=time.monotonic()-started
         return reference,counts,*self.frame_cloud(request)
 
     def frame_cloud(self,request):
@@ -174,7 +186,8 @@ class VideoDemoNode(Node):
                     rejected=[x for r in report['runs'] for x in r.get('patch_construction_rejections',[])]
                     if rejected:quality=f"{len(rejected)} patch candidate(s) REJECTED: {rejected[0]['reason']}; instances retained"
                 except (ValueError,OSError):pass
-        text(15,800,timings)
+        budget=self.geometry.geometry_blas_threads
+        text(15,800,timings+f" | {self.geometry.geometry_backend} BLAS={budget if budget is not None else 'inherit'}")
         unknown=self.results[-1].get('ros',{}).get('unknown_regions','N/A') if self.results else 'N/A'
         text(15,830,f'3D depth frame: {self.cloud_frame} | faces: {last} | unknown: {unknown} | no cuboids', '#5edbd1')
         text(15,860,'HISTORICAL_REPLAY_DISPLAY_ONLY | planning_admissible=false | NO EXECUTION','#ffd174')
@@ -182,6 +195,7 @@ class VideoDemoNode(Node):
         if self.record.get('source_warning'):text(15,915,'SOURCE: verified continuous prefix; acquisition interrupted at the next incomplete pair','#ffd174',True)
         self.image_pub.publish(self.image(canvas))
         atomic_json(self.output/'display-status.json',{'mode':state,'input_fps':fps,'new_result_hz':hz,
+            'geometry_backend':self.geometry.geometry_backend,'geometry_blas_threads':budget,
             'input_frame':source['frame_sequence'],'processing_frame':None if not self.active else self.active['frame_sequence'],
             'last_completed_frame':None if not self.last else self.last['frame_sequence'],'dropped_pending_pairs':self.slot.dropped,
             'error':self.error,'results':self.results,'wall_elapsed':now-(self.source_started or now),
@@ -200,6 +214,7 @@ class VideoDemoNode(Node):
                     for module in ('module_0_upper','module_1_lower'):
                         folder=Path(frame['capture'])/'FULL_STACK_NOMINAL/modules'/module
                         with PILImage.open(folder/'preview_rgb.jpg') as im:previews[module]=im.convert('RGB')
+                    frame={**frame,'preview_monotonic':now}
                     self.preview=previews;self.current_frame=frame
                     self.index+=1;self.samples.append(now);self.slot.offer(frame)
                     for module,short in (('module_0_upper','upper'),('module_1_lower','lower')):
@@ -233,6 +248,7 @@ class VideoDemoNode(Node):
                         self.cloud_pub.publish(preview_cloud[0]);self.tf_pub.publish(preview_cloud[1])
                         self.cloud_frame=self.active['frame_sequence']
                     self.state['groups'][self.done].update(status='ALGORITHM_RUNNING',stage='algorithm')
+                    self.active['worker_submitted_monotonic']=time.monotonic()
                     atomic_json(self.output/'worker-request.json',self.active);self.save()
                 else:
                     ref,counts,self.cloud,self.transforms=value
@@ -251,8 +267,10 @@ class VideoDemoNode(Node):
                 if row['status']=='ALGORITHM_RUNNING' and worker.exists():
                     result=read_json(worker)
                     if result['task_id']==self.active['task_id'] and result['status']!='RUNNING':
-                        if result['status']=='FAILED':
+                        if result['status']!='COMPLETED' or result.get('exit_code')!=0:
                             raise RuntimeError(worker_failure(result))
+                        if (result['frame_sequence']!=self.active['frame_sequence'] or
+                                result['source_time']!=self.active['source_time']):raise ValueError('wrong worker capture identity')
                         self.active['algorithm_seconds']=result['wall_seconds'];self.active['resident_model_loads']=result['resident_model_loads']
                         self.future=self.pool.submit(self.accept,self.active,Path(self.active['algorithm_output'])/'summary.json',self.inputs)
                         self.future_kind='accept';row['stage']='artifact_validation'
@@ -261,7 +279,10 @@ class VideoDemoNode(Node):
                     if receipt.exists():
                         received=read_json(receipt)
                         if received['status']!='ROS_ACCEPTED':raise RuntimeError(received.get('error','ROS rejected'))
-                        if any(received[k]!=self.state['delivery'][k] for k in ('session','artifact','task_id')):raise ValueError('wrong ROS receipt')
+                        if any(received[k]!=self.state['delivery'][k] for k in ('batch_id','order','session','artifact','task_id')):raise ValueError('wrong ROS receipt')
+                        self.active['ros_accepted_monotonic']=received['accepted_monotonic']
+                        self.active['submit_to_ros_seconds']=received['accepted_monotonic']-self.active['submitted_monotonic']
+                        self.active['preview_to_ros_seconds']=received['accepted_monotonic']-self.active['preview_monotonic']
                         self.cloud_pub.publish(self.cloud);self.tf_pub.publish(self.transforms)
                         self.cloud_frame=self.active['frame_sequence']
                         self.switching=False
@@ -273,6 +294,7 @@ class VideoDemoNode(Node):
             if self.active is None and self.future is None and self.slot.pending is not None and self.done<self.limit:
                 frame=self.slot.take();task=f'video_{self.done:02d}'
                 self.active={**frame,'task_id':task,'algorithm_output':str(self.output/task/'algorithm'),'submitted_monotonic':now}
+                self.active['scheduling_wait_seconds']=now-frame['preview_monotonic']
                 (self.output/task).mkdir(exist_ok=False)
                 self.state['target_task']=task;self.state['delivery']=None
                 self.state['groups'][self.done].update(status='VALIDATING_INPUT',stage='capture_validation',frame=frame)
