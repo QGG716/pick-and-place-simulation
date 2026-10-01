@@ -1,0 +1,5 @@
+a337d7169c2fd8a87f9712c74c48e9631d0d04813c938c18930d080de8a2dc16  /proc/41803/exe
+/root/autodl-tmp/m710-moveit2-20260922/rootfs/work/build/moveit/m710_moveit_worker (deleted)
+   PID   PPID ELAPSED %CPU COMMAND
+ 41739      1    1676 98.9 /root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python tools/run_m710_moveit_integration.py --suite task --backend moveit2 --output ../evidence/native-task.json
+ 41803  41739    1675  0.0 /work/build/moveit/m710_moveit_worker

@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 from unloading_sim.isaac_bridge import build_fanuc_isaac_replay_bundle
-from unloading_sim.m710_replay_contract import verify_m710_preflight_contract
+from unloading_sim.m710_replay_contract import verify_m710_preflight_contract, verify_m710_replay_bundle
 from unloading_sim.scene import load_scene_config
 
 
@@ -49,6 +49,8 @@ def main() -> None:
         controller_period_seconds=args.period,
         preflight=preflight,
     )
+    if preflight is not None:
+        verify_m710_replay_bundle(bundle.to_dict(),project_root=Path(__file__).resolve().parents[1])
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(bundle.to_dict(), indent=2), encoding="utf-8")
     print(

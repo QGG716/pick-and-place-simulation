@@ -1,0 +1,1589 @@
+{
+  "schema": "m710_moveit_experiment_v1",
+  "suite": "capability",
+  "backend": "moveit2",
+  "results": [
+    {
+      "success": false,
+      "failure": {
+        "schema": "m710_native_capability_v1",
+        "supported": false,
+        "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+        "stage": "transit",
+        "location": "after_contact_ik_before_contact_or_prefix_collision",
+        "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "start_pose_world": [
+          [
+            0.9985663333507129,
+            3.656036772409221e-05,
+            0.05352827815138661,
+            -0.3488951477521684
+          ],
+          [
+            4.2194726079469704e-05,
+            -0.9999999936883406,
+            -0.00010412936127807139,
+            -0.5891242655538573
+          ],
+          [
+            0.05352827400652667,
+            0.0001062386855197571,
+            -0.9985663285907571,
+            1.229278643684021
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "goal_pose_world": [
+          [
+            0.9999999984745669,
+            4.678663891710678e-05,
+            2.9357737479918104e-05,
+            -0.33614422408984207
+          ],
+          [
+            4.6792704379128255e-05,
+            -0.9999999775554729,
+            -0.00020663856607272546,
+            -0.6098865263011107
+          ],
+          [
+            2.9348068897059923e-05,
+            0.00020663993948540486,
+            -0.999999978219313,
+            1.1925386164650047
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "native_planning_calls": 0,
+        "release_height_m": 0.025,
+        "all_release_alternatives_unsupported": [
+          {
+            "schema": "m710_native_capability_v1",
+            "supported": false,
+            "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+            "stage": "transit",
+            "location": "after_contact_ik_before_contact_or_prefix_collision",
+            "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+            "flange_from_task_tcp": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.25
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "start_pose_world": [
+              [
+                0.9985663333507129,
+                3.656036772409221e-05,
+                0.05352827815138661,
+                -0.3488951477521684
+              ],
+              [
+                4.2194726079469704e-05,
+                -0.9999999936883406,
+                -0.00010412936127807139,
+                -0.5891242655538573
+              ],
+              [
+                0.05352827400652667,
+                0.0001062386855197571,
+                -0.9985663285907571,
+                1.229278643684021
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "goal_pose_world": [
+              [
+                0.9999999984745669,
+                4.678663891710678e-05,
+                2.9357737479918104e-05,
+                -0.33614422408984207
+              ],
+              [
+                4.6792704379128255e-05,
+                -0.9999999775554729,
+                -0.00020663856607272546,
+                -0.6098865263011107
+              ],
+              [
+                2.9348068897059923e-05,
+                0.00020663993948540486,
+                -0.999999978219313,
+                1.1925386164650047
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "native_planning_calls": 0,
+            "release_height_m": 0.025
+          },
+          {
+            "schema": "m710_native_capability_v1",
+            "supported": false,
+            "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+            "stage": "transit",
+            "location": "after_contact_ik_before_contact_or_prefix_collision",
+            "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+            "flange_from_task_tcp": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.25
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "start_pose_world": [
+              [
+                0.9985663333507129,
+                3.656036772409221e-05,
+                0.05352827815138661,
+                -0.3488951477521684
+              ],
+              [
+                4.2194726079469704e-05,
+                -0.9999999936883406,
+                -0.00010412936127807139,
+                -0.5891242655538573
+              ],
+              [
+                0.05352827400652667,
+                0.0001062386855197571,
+                -0.9985663285907571,
+                1.229278643684021
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "goal_pose_world": [
+              [
+                0.9999999984745669,
+                4.678663891710678e-05,
+                2.9357737479918104e-05,
+                -0.33614422408984207
+              ],
+              [
+                4.6792704379128255e-05,
+                -0.9999999775554729,
+                -0.00020663856607272546,
+                -0.6098865263011107
+              ],
+              [
+                2.9348068897059923e-05,
+                0.00020663993948540486,
+                -0.999999978219313,
+                1.202538616465005
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "native_planning_calls": 0,
+            "release_height_m": 0.035
+          },
+          {
+            "schema": "m710_native_capability_v1",
+            "supported": false,
+            "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+            "stage": "transit",
+            "location": "after_contact_ik_before_contact_or_prefix_collision",
+            "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+            "flange_from_task_tcp": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.25
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "start_pose_world": [
+              [
+                0.9985663333507129,
+                3.656036772409221e-05,
+                0.05352827815138661,
+                -0.3488951477521684
+              ],
+              [
+                4.2194726079469704e-05,
+                -0.9999999936883406,
+                -0.00010412936127807139,
+                -0.5891242655538573
+              ],
+              [
+                0.05352827400652667,
+                0.0001062386855197571,
+                -0.9985663285907571,
+                1.229278643684021
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "goal_pose_world": [
+              [
+                0.9999999984745669,
+                4.678663891710678e-05,
+                2.9357737479918104e-05,
+                -0.33614422408984207
+              ],
+              [
+                4.6792704379128255e-05,
+                -0.9999999775554729,
+                -0.00020663856607272546,
+                -0.6098865263011107
+              ],
+              [
+                2.9348068897059923e-05,
+                0.00020663993948540486,
+                -0.999999978219313,
+                1.2125386164650047
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "native_planning_calls": 0,
+            "release_height_m": 0.045000000000000005
+          }
+        ]
+      },
+      "segment": null,
+      "attempts": [
+        {
+          "branch": 0,
+          "candidate_id": "fixed_candidate",
+          "success": false,
+          "failure": {
+            "schema": "m710_native_capability_v1",
+            "supported": false,
+            "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+            "stage": "transit",
+            "location": "after_contact_ik_before_contact_or_prefix_collision",
+            "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+            "flange_from_task_tcp": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.25
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "start_pose_world": [
+              [
+                0.9985663333507129,
+                3.656036772409221e-05,
+                0.05352827815138661,
+                -0.3488951477521684
+              ],
+              [
+                4.2194726079469704e-05,
+                -0.9999999936883406,
+                -0.00010412936127807139,
+                -0.5891242655538573
+              ],
+              [
+                0.05352827400652667,
+                0.0001062386855197571,
+                -0.9985663285907571,
+                1.229278643684021
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "goal_pose_world": [
+              [
+                0.9999999984745669,
+                4.678663891710678e-05,
+                2.9357737479918104e-05,
+                -0.33614422408984207
+              ],
+              [
+                4.6792704379128255e-05,
+                -0.9999999775554729,
+                -0.00020663856607272546,
+                -0.6098865263011107
+              ],
+              [
+                2.9348068897059923e-05,
+                0.00020663993948540486,
+                -0.999999978219313,
+                1.1925386164650047
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "native_planning_calls": 0,
+            "release_height_m": 0.025,
+            "all_release_alternatives_unsupported": [
+              {
+                "schema": "m710_native_capability_v1",
+                "supported": false,
+                "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+                "stage": "transit",
+                "location": "after_contact_ik_before_contact_or_prefix_collision",
+                "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+                "flange_from_task_tcp": [
+                  [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.25
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    -1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "start_pose_world": [
+                  [
+                    0.9985663333507129,
+                    3.656036772409221e-05,
+                    0.05352827815138661,
+                    -0.3488951477521684
+                  ],
+                  [
+                    4.2194726079469704e-05,
+                    -0.9999999936883406,
+                    -0.00010412936127807139,
+                    -0.5891242655538573
+                  ],
+                  [
+                    0.05352827400652667,
+                    0.0001062386855197571,
+                    -0.9985663285907571,
+                    1.229278643684021
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "goal_pose_world": [
+                  [
+                    0.9999999984745669,
+                    4.678663891710678e-05,
+                    2.9357737479918104e-05,
+                    -0.33614422408984207
+                  ],
+                  [
+                    4.6792704379128255e-05,
+                    -0.9999999775554729,
+                    -0.00020663856607272546,
+                    -0.6098865263011107
+                  ],
+                  [
+                    2.9348068897059923e-05,
+                    0.00020663993948540486,
+                    -0.999999978219313,
+                    1.1925386164650047
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "native_planning_calls": 0,
+                "release_height_m": 0.025
+              },
+              {
+                "schema": "m710_native_capability_v1",
+                "supported": false,
+                "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+                "stage": "transit",
+                "location": "after_contact_ik_before_contact_or_prefix_collision",
+                "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+                "flange_from_task_tcp": [
+                  [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.25
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    -1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "start_pose_world": [
+                  [
+                    0.9985663333507129,
+                    3.656036772409221e-05,
+                    0.05352827815138661,
+                    -0.3488951477521684
+                  ],
+                  [
+                    4.2194726079469704e-05,
+                    -0.9999999936883406,
+                    -0.00010412936127807139,
+                    -0.5891242655538573
+                  ],
+                  [
+                    0.05352827400652667,
+                    0.0001062386855197571,
+                    -0.9985663285907571,
+                    1.229278643684021
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "goal_pose_world": [
+                  [
+                    0.9999999984745669,
+                    4.678663891710678e-05,
+                    2.9357737479918104e-05,
+                    -0.33614422408984207
+                  ],
+                  [
+                    4.6792704379128255e-05,
+                    -0.9999999775554729,
+                    -0.00020663856607272546,
+                    -0.6098865263011107
+                  ],
+                  [
+                    2.9348068897059923e-05,
+                    0.00020663993948540486,
+                    -0.999999978219313,
+                    1.202538616465005
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "native_planning_calls": 0,
+                "release_height_m": 0.035
+              },
+              {
+                "schema": "m710_native_capability_v1",
+                "supported": false,
+                "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+                "stage": "transit",
+                "location": "after_contact_ik_before_contact_or_prefix_collision",
+                "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+                "flange_from_task_tcp": [
+                  [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.25
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    -1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "start_pose_world": [
+                  [
+                    0.9985663333507129,
+                    3.656036772409221e-05,
+                    0.05352827815138661,
+                    -0.3488951477521684
+                  ],
+                  [
+                    4.2194726079469704e-05,
+                    -0.9999999936883406,
+                    -0.00010412936127807139,
+                    -0.5891242655538573
+                  ],
+                  [
+                    0.05352827400652667,
+                    0.0001062386855197571,
+                    -0.9985663285907571,
+                    1.229278643684021
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "goal_pose_world": [
+                  [
+                    0.9999999984745669,
+                    4.678663891710678e-05,
+                    2.9357737479918104e-05,
+                    -0.33614422408984207
+                  ],
+                  [
+                    4.6792704379128255e-05,
+                    -0.9999999775554729,
+                    -0.00020663856607272546,
+                    -0.6098865263011107
+                  ],
+                  [
+                    2.9348068897059923e-05,
+                    0.00020663993948540486,
+                    -0.999999978219313,
+                    1.2125386164650047
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "native_planning_calls": 0,
+                "release_height_m": 0.045000000000000005
+              }
+            ]
+          },
+          "trace": {
+            "seed": 71070,
+            "stages": {},
+            "history": {
+              "candidate_id": "71070000fixed_candidate",
+              "source": "frozen_candidate.json"
+            },
+            "capability_preflight": {
+              "location": "after_contact_ik_before_contact_or_prefix_collision",
+              "failure": {
+                "schema": "m710_native_capability_v1",
+                "supported": false,
+                "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+                "stage": "transit",
+                "location": "after_contact_ik_before_contact_or_prefix_collision",
+                "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+                "flange_from_task_tcp": [
+                  [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.25
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    -1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "start_pose_world": [
+                  [
+                    0.9985663333507129,
+                    3.656036772409221e-05,
+                    0.05352827815138661,
+                    -0.3488951477521684
+                  ],
+                  [
+                    4.2194726079469704e-05,
+                    -0.9999999936883406,
+                    -0.00010412936127807139,
+                    -0.5891242655538573
+                  ],
+                  [
+                    0.05352827400652667,
+                    0.0001062386855197571,
+                    -0.9985663285907571,
+                    1.229278643684021
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "goal_pose_world": [
+                  [
+                    0.9999999984745669,
+                    4.678663891710678e-05,
+                    2.9357737479918104e-05,
+                    -0.33614422408984207
+                  ],
+                  [
+                    4.6792704379128255e-05,
+                    -0.9999999775554729,
+                    -0.00020663856607272546,
+                    -0.6098865263011107
+                  ],
+                  [
+                    2.9348068897059923e-05,
+                    0.00020663993948540486,
+                    -0.999999978219313,
+                    1.1925386164650047
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "native_planning_calls": 0,
+                "release_height_m": 0.025,
+                "all_release_alternatives_unsupported": [
+                  {
+                    "schema": "m710_native_capability_v1",
+                    "supported": false,
+                    "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+                    "stage": "transit",
+                    "location": "after_contact_ik_before_contact_or_prefix_collision",
+                    "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+                    "flange_from_task_tcp": [
+                      [
+                        0.0,
+                        0.0,
+                        1.0,
+                        0.25
+                      ],
+                      [
+                        0.0,
+                        1.0,
+                        0.0,
+                        0.0
+                      ],
+                      [
+                        -1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                      ]
+                    ],
+                    "start_pose_world": [
+                      [
+                        0.9985663333507129,
+                        3.656036772409221e-05,
+                        0.05352827815138661,
+                        -0.3488951477521684
+                      ],
+                      [
+                        4.2194726079469704e-05,
+                        -0.9999999936883406,
+                        -0.00010412936127807139,
+                        -0.5891242655538573
+                      ],
+                      [
+                        0.05352827400652667,
+                        0.0001062386855197571,
+                        -0.9985663285907571,
+                        1.229278643684021
+                      ],
+                      [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                      ]
+                    ],
+                    "goal_pose_world": [
+                      [
+                        0.9999999984745669,
+                        4.678663891710678e-05,
+                        2.9357737479918104e-05,
+                        -0.33614422408984207
+                      ],
+                      [
+                        4.6792704379128255e-05,
+                        -0.9999999775554729,
+                        -0.00020663856607272546,
+                        -0.6098865263011107
+                      ],
+                      [
+                        2.9348068897059923e-05,
+                        0.00020663993948540486,
+                        -0.999999978219313,
+                        1.1925386164650047
+                      ],
+                      [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                      ]
+                    ],
+                    "native_planning_calls": 0,
+                    "release_height_m": 0.025
+                  },
+                  {
+                    "schema": "m710_native_capability_v1",
+                    "supported": false,
+                    "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+                    "stage": "transit",
+                    "location": "after_contact_ik_before_contact_or_prefix_collision",
+                    "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+                    "flange_from_task_tcp": [
+                      [
+                        0.0,
+                        0.0,
+                        1.0,
+                        0.25
+                      ],
+                      [
+                        0.0,
+                        1.0,
+                        0.0,
+                        0.0
+                      ],
+                      [
+                        -1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                      ]
+                    ],
+                    "start_pose_world": [
+                      [
+                        0.9985663333507129,
+                        3.656036772409221e-05,
+                        0.05352827815138661,
+                        -0.3488951477521684
+                      ],
+                      [
+                        4.2194726079469704e-05,
+                        -0.9999999936883406,
+                        -0.00010412936127807139,
+                        -0.5891242655538573
+                      ],
+                      [
+                        0.05352827400652667,
+                        0.0001062386855197571,
+                        -0.9985663285907571,
+                        1.229278643684021
+                      ],
+                      [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                      ]
+                    ],
+                    "goal_pose_world": [
+                      [
+                        0.9999999984745669,
+                        4.678663891710678e-05,
+                        2.9357737479918104e-05,
+                        -0.33614422408984207
+                      ],
+                      [
+                        4.6792704379128255e-05,
+                        -0.9999999775554729,
+                        -0.00020663856607272546,
+                        -0.6098865263011107
+                      ],
+                      [
+                        2.9348068897059923e-05,
+                        0.00020663993948540486,
+                        -0.999999978219313,
+                        1.202538616465005
+                      ],
+                      [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                      ]
+                    ],
+                    "native_planning_calls": 0,
+                    "release_height_m": 0.035
+                  },
+                  {
+                    "schema": "m710_native_capability_v1",
+                    "supported": false,
+                    "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+                    "stage": "transit",
+                    "location": "after_contact_ik_before_contact_or_prefix_collision",
+                    "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+                    "flange_from_task_tcp": [
+                      [
+                        0.0,
+                        0.0,
+                        1.0,
+                        0.25
+                      ],
+                      [
+                        0.0,
+                        1.0,
+                        0.0,
+                        0.0
+                      ],
+                      [
+                        -1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                      ]
+                    ],
+                    "start_pose_world": [
+                      [
+                        0.9985663333507129,
+                        3.656036772409221e-05,
+                        0.05352827815138661,
+                        -0.3488951477521684
+                      ],
+                      [
+                        4.2194726079469704e-05,
+                        -0.9999999936883406,
+                        -0.00010412936127807139,
+                        -0.5891242655538573
+                      ],
+                      [
+                        0.05352827400652667,
+                        0.0001062386855197571,
+                        -0.9985663285907571,
+                        1.229278643684021
+                      ],
+                      [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                      ]
+                    ],
+                    "goal_pose_world": [
+                      [
+                        0.9999999984745669,
+                        4.678663891710678e-05,
+                        2.9357737479918104e-05,
+                        -0.33614422408984207
+                      ],
+                      [
+                        4.6792704379128255e-05,
+                        -0.9999999775554729,
+                        -0.00020663856607272546,
+                        -0.6098865263011107
+                      ],
+                      [
+                        2.9348068897059923e-05,
+                        0.00020663993948540486,
+                        -0.999999978219313,
+                        1.2125386164650047
+                      ],
+                      [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                      ]
+                    ],
+                    "native_planning_calls": 0,
+                    "release_height_m": 0.045000000000000005
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "statistics": {
+        "state_validations": 0,
+        "edge_validation_calls": 0,
+        "edge_state_samples": 0,
+        "ik_calls": 1,
+        "ik_seeds_attempted": 1,
+        "ik_iterations_consumed": 1,
+        "connection_attempts": 0,
+        "rrt_iterations_consumed": 0,
+        "cartesian_samples": 0,
+        "placement_candidates_generated": 0,
+        "placement_candidate_generation_wall_seconds": 0,
+        "state_cache_hits": 0,
+        "state_cache_misses": 0,
+        "trajectory_ik_wall_seconds": 0.00011443905532360077,
+        "path_connection_wall_seconds_inclusive": 0,
+        "collision_validation_wall_seconds_nested": 0,
+        "kinematics_and_joint_checks_wall_seconds": 0,
+        "final_recheck_wall_seconds": 0,
+        "termination": "GRASP_CANDIDATES_EXHAUSTED",
+        "budget_policy": {
+          "task_pose_connection_attempts": 12,
+          "task_pose_batch_size": 12,
+          "task_complete_connection_attempt_limit": null,
+          "candidate_schedule": "UNVISITED_FAMILY_VARIANTS_THEN_BOUNDED_RETRIES",
+          "stage_wall_time_s": null,
+          "postprocess_wall_time_s": null,
+          "final_export_reserve_s": 0.0,
+          "final_reserve_scope": "COMPLETE_TASK_VALIDATION_AND_IN_PROCESS_BINDING_ONLY",
+          "independent_preflight_export_in_request_budget": false,
+          "optional_continuation_reserve_s": 0.0,
+          "deadline_boundary": "completion < deadline; new work requires now < deadline",
+          "task_pose_scope": "shared_by_one_task_across_faces_rolls_and_task_set_variants",
+          "grasp_branches_per_pose": 4,
+          "stage_ik_candidates": 3,
+          "stage_connection_attempts": 3,
+          "stage_connection_iterations": 600,
+          "stage_connection_scope": "shared_across_lazy_ik_candidates_for_one_stage_endpoint",
+          "cartesian_policy": "one_continuation_seed_per_bounded_cartesian_sample",
+          "cartesian_max_samples_per_stage": 80,
+          "extraction_direction_attempts": 5,
+          "local_transit_cartesian_sample_budget": 240,
+          "local_transit_budget_scope": "shared_by_all_placement_candidates_of_one_grasp_prefix",
+          "local_transit_outward_step_m": 0.12,
+          "local_transit_outward_attempts": 3,
+          "maximum_extraction_m": 0.8,
+          "planning_execution_reserves": {
+            "approach_runtime_clearance_reserve_m": 0.003,
+            "receiver_runtime_clearance_reserve_m": 0.003,
+            "departure_runtime_clearance_reserve_m": 0.003,
+            "extraction_runtime_clearance_reserve_m": 0.003
+          },
+          "release_policy": {
+            "maximum_drop_m": 0.05,
+            "ideal_release_min_height_m": 0.02,
+            "ideal_release_max_height_m": 0.05,
+            "ideal_release_height_reserve_m": 0.005,
+            "maximum_flight_s": 0.25,
+            "maximum_angular_speed_rad_s": 0.08,
+            "maximum_landing_speed_m_s": 1.1,
+            "position_uncertainty_m": 0.002,
+            "velocity_uncertainty_m_s": 0.01,
+            "prediction_step_s": 0.005,
+            "gravity_m_s2": 9.81
+          },
+          "extraction_runtime_clearance_reserve_m": 0.003,
+          "withdrawal_distance_m": 0.0,
+          "post_release_vertical_lift_m": 0.0,
+          "post_release_conveyor_escape_clearance_m": 0.008400000000000001,
+          "planning_wall_time_s": null,
+          "wall_clock_scope": "one_shared_first_carton_planning_request"
+        },
+        "candidate_wall_seconds": 0.003840820863842964,
+        "candidate_wall_budget_s": null,
+        "request_final_export_reserve_s": 0.0,
+        "result_retention": {
+          "events": [],
+          "planning_success": false,
+          "execution_ready": false,
+          "execution_readiness_status": "INDEPENDENT_PREFLIGHT_NOT_RUN",
+          "request_deadline_monotonic": null,
+          "search_deadline_monotonic": null,
+          "candidate_search_deadline_monotonic": null,
+          "candidate_final_deadline_monotonic": null,
+          "returned_monotonic": 9749823.72354327,
+          "final_reserve_scope": "COMPLETE_TASK_VALIDATION_AND_IN_PROCESS_BINDING_ONLY",
+          "return_after_search_deadline": false,
+          "return_after_request_hard_deadline": false
+        },
+        "validation_profile_request_cumulative": {
+          "validator": {},
+          "mesh_backend": {},
+          "nested_timers_overlap": true
+        }
+      },
+      "end_to_end_s": 0.003878466784954071,
+      "scope": "one fixed historical candidate, current process reconstruction and authoritative checks; no new candidate sweep"
+    }
+  ],
+  "isaac": "NOT_RUN",
+  "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+  "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+  "obstacle_count": 48,
+  "cartons": 40,
+  "fixture_provenance": {
+    "source": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/initial_plan/motion.json",
+    "sha256": "fbc3148c23a886b8ee1155090cc2ab897e1f691e6ef65a3afa41388c37cdf266",
+    "role": "historical_candidate_only_current_authority_required"
+  },
+  "setup_s": 0.7673479951918125,
+  "seed": 71070,
+  "effective_policy": {
+    "schema": "m710_poc_pair_collision_policy_v4",
+    "wrist_tool_exempt_links": [
+      "J5_link",
+      "J6_link"
+    ],
+    "stack_contact_mode": "planner_relaxed_physics_checked",
+    "stack_contact_stages": [
+      "support-release",
+      "extraction"
+    ],
+    "maximum_planned_stack_penetration_m": 0.01,
+    "free_space_clearance_m": 0.0052,
+    "free_space_clearance_loss_tolerance_m": 0.0002,
+    "maximum_actual_penetration_m": 0.01,
+    "maximum_neighbor_displacement_m": 0.06,
+    "maximum_neighbor_tilt_rad": 0.2,
+    "progress_timeout_s": 3.0,
+    "minimum_progress_m": 0.002,
+    "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+    "compliant_cup_neighbor_contact_mode": "ignore",
+    "maximum_compliant_cup_additional_compression_m": 0.005,
+    "required_pair_clearance_m": 0.005,
+    "self_collision_clearance_m": 0.0,
+    "boundary_mode": "finite_frozen_scene_walls",
+    "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+    "box_box_physics_enabled": true
+  },
+  "startup": {
+    "cold_start_s": 0.126484671,
+    "identity": {
+      "baseline_sha": "575ad763e04f500f5413e9b103b0835687024403",
+      "model_tool_fingerprint": "2aeb86922eed9263db4b72e4cb7c2dca72f285bf14e22c5f282273a92d7092d3",
+      "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+      "policy_scope": "native_POC_free_pair_clearance_search_and_edges_plus_existing_authority",
+      "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+      "scene_version": "m710id70_unloading_layout_v1",
+      "schema": "m710_native_stage_v1",
+      "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129"
+    },
+    "joint_names": [
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "pipelines": [
+      "pilz_industrial_motion_planner",
+      "ompl"
+    ],
+    "request_id": "1",
+    "seed": 71070,
+    "status": "READY",
+    "versions": {
+      "moveit": "2.5.10",
+      "mtc": "0.1.3",
+      "pilz": "2.5.10"
+    },
+    "transport_and_worker_s": 0.27541930973529816
+  },
+  "fk": [
+    {
+      "q": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max_matrix_error": 2.220446049250313e-16,
+      "links": [
+        "base_link",
+        "J3_link",
+        "J6_link",
+        "flange",
+        "fanuc_flange",
+        "tool0"
+      ]
+    },
+    {
+      "q": [
+        0.2,
+        -0.3,
+        0.4,
+        0.5,
+        -0.6,
+        0.7
+      ],
+      "max_matrix_error": 2.220446049250313e-16,
+      "links": [
+        "base_link",
+        "J3_link",
+        "J6_link",
+        "flange",
+        "fanuc_flange",
+        "tool0"
+      ]
+    },
+    {
+      "q": [
+        -0.4,
+        0.2,
+        -0.35,
+        -0.6,
+        0.4,
+        -0.8
+      ],
+      "max_matrix_error": 2.220446049250313e-16,
+      "links": [
+        "base_link",
+        "J3_link",
+        "J6_link",
+        "flange",
+        "fanuc_flange",
+        "tool0"
+      ]
+    }
+  ],
+  "heavy_state_or_edge_checks": 0,
+  "capability_checks": [
+    {
+      "schema": "m710_native_capability_v1",
+      "supported": false,
+      "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+      "stage": "transit",
+      "location": "after_contact_ik_before_contact_or_prefix_collision",
+      "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+      "flange_from_task_tcp": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.25
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "start_pose_world": [
+        [
+          0.9985663333507129,
+          3.656036772409221e-05,
+          0.05352827815138661,
+          -0.3488951477521684
+        ],
+        [
+          4.2194726079469704e-05,
+          -0.9999999936883406,
+          -0.00010412936127807139,
+          -0.5891242655538573
+        ],
+        [
+          0.05352827400652667,
+          0.0001062386855197571,
+          -0.9985663285907571,
+          1.229278643684021
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "goal_pose_world": [
+        [
+          0.9999999984745669,
+          4.678663891710678e-05,
+          2.9357737479918104e-05,
+          -0.33614422408984207
+        ],
+        [
+          4.6792704379128255e-05,
+          -0.9999999775554729,
+          -0.00020663856607272546,
+          -0.6098865263011107
+        ],
+        [
+          2.9348068897059923e-05,
+          0.00020663993948540486,
+          -0.999999978219313,
+          1.1925386164650047
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "native_planning_calls": 0
+    },
+    {
+      "schema": "m710_native_capability_v1",
+      "supported": false,
+      "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+      "stage": "transit",
+      "location": "after_contact_ik_before_contact_or_prefix_collision",
+      "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+      "flange_from_task_tcp": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.25
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "start_pose_world": [
+        [
+          0.9985663333507129,
+          3.656036772409221e-05,
+          0.05352827815138661,
+          -0.3488951477521684
+        ],
+        [
+          4.2194726079469704e-05,
+          -0.9999999936883406,
+          -0.00010412936127807139,
+          -0.5891242655538573
+        ],
+        [
+          0.05352827400652667,
+          0.0001062386855197571,
+          -0.9985663285907571,
+          1.229278643684021
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "goal_pose_world": [
+        [
+          0.9999999984745669,
+          4.678663891710678e-05,
+          2.9357737479918104e-05,
+          -0.33614422408984207
+        ],
+        [
+          4.6792704379128255e-05,
+          -0.9999999775554729,
+          -0.00020663856607272546,
+          -0.6098865263011107
+        ],
+        [
+          2.9348068897059923e-05,
+          0.00020663993948540486,
+          -0.999999978219313,
+          1.202538616465005
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "native_planning_calls": 0
+    },
+    {
+      "schema": "m710_native_capability_v1",
+      "supported": false,
+      "reason": "UNSUPPORTED_ROTATING_TASK_TCP_LIN",
+      "stage": "transit",
+      "location": "after_contact_ik_before_contact_or_prefix_collision",
+      "implementation_scope": "adapter_constant_orientation_only_not_a_Pilz_limitation",
+      "flange_from_task_tcp": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.25
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "start_pose_world": [
+        [
+          0.9985663333507129,
+          3.656036772409221e-05,
+          0.05352827815138661,
+          -0.3488951477521684
+        ],
+        [
+          4.2194726079469704e-05,
+          -0.9999999936883406,
+          -0.00010412936127807139,
+          -0.5891242655538573
+        ],
+        [
+          0.05352827400652667,
+          0.0001062386855197571,
+          -0.9985663285907571,
+          1.229278643684021
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "goal_pose_world": [
+        [
+          0.9999999984745669,
+          4.678663891710678e-05,
+          2.9357737479918104e-05,
+          -0.33614422408984207
+        ],
+        [
+          4.6792704379128255e-05,
+          -0.9999999775554729,
+          -0.00020663856607272546,
+          -0.6098865263011107
+        ],
+        [
+          2.9348068897059923e-05,
+          0.00020663993948540486,
+          -0.999999978219313,
+          1.2125386164650047
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "native_planning_calls": 0
+    }
+  ],
+  "status": "COMPLETED",
+  "native_calls": [],
+  "end_to_end_s": 0.9361831117421389
+}

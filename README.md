@@ -1,3 +1,29 @@
+# Optional MoveIt 2 backend experiment
+
+2026-09-28 正式执行检查收口：最终关节参考的 LIN/TCP 合同现在由标准导出入口和 Isaac 监督入口强制验证，不依赖旁路请求日志或外部 PASS 文件。标准导出已经包含自检：
+
+```bash
+PYTHONPATH=src python scripts/export_isaac_fanuc_replay.py --preflight preflight.json --output replay-bundle.json
+```
+
+可单独复核实际包（无需请求日志）：
+
+```bash
+python tools/check_m710_moveit_execution_tcp.py --bundle replay-bundle.json --output bundle-check.json
+```
+
+正式 `scripts/isaacsim_fanuc_replay.py --bundle ...` 加载包后，先调用同一公共验证入口，再允许进入 SimulationApp；不需要人工先产生一个外部 PASS。旧 MoveIt LIN 包缺合同会明确拒绝，需要显式生成派生副本。迁移、离线证据、源码绑定与复现见[本轮正式执行合同说明](docs/m710_moveit2_execution_gate_20260928.md)。本轮未重新规划、未启动 Isaac。
+
+上一轮固定历史候选完整几何任务 PASS；单次 Isaac workflow 完成，理想接收 1、理想出料 1，物理接收未验证，驱动力矩 NOT_EVALUATED。它不是无历史提示的新任务成功率，也不是完整物理资格通过。原始证据和录像见[旋转 TCP 单箱报告](docs/m710_moveit2_rotating_tcp_20260928.md)。以下早期记录保留原口径。
+
+2026-09-26 更新：5 mm 对偶净空已进入真实原生搜索与输出边检查；三处历史失配回归通过，旋转 TCP 不支持请求在重型前缀检查前退出。固定带载段仍在原有 OMPL 预算内未找到路径，未启动 Isaac。详见[本轮净空与能力预检报告](docs/m710_moveit2_clearance_20260926.md)。
+
+2026-09-22 首轮：本分支为 `feat/v0.5-backend-moveit2-mtc-pilz`。真实 Humble C++ 常驻后端、MTC 阶段、Pilz PTP/LIN 和 OMPL RRTConnect 已接入；候选仍须通过原有权威验收。带载测试的三条 OMPL 候选因未满足 5 mm 净空而被拒绝；固定完整任务停在尚不支持的旋转偏移 TCP LIN 请求，Isaac 为 NOT_RUN，不能称为完整取放成功。
+
+普通入口支持 `python tools/run_m710id70_layout_single_carton.py --backend moveit2 --target carton_l07_c02`，默认 `--backend core` 保留原方式。环境、复现命令、语义边界与真实证据见 [开发/验证报告](docs/m710_moveit2_backend_20260922.md)。
+
+---
+
 # Trailer Unloading Geometric Simulator v0.5 feasibility core
 
 当前入口：固定布局 `m710id70_unloading_layout_v1`，官方 FANUC M-710iD/70，20 kg 工具、42.5 kg 箱体，`ideal_independent_cups` 和 `ideal_outfeed`。仅采用已批准的 J5/J6 自有工具碰撞例外和阶段限定的脱垛接触策略。

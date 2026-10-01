@@ -1,0 +1,23 @@
+[37;1m2026-09-22 19:26:10.847 [31;1m[[37;1mRTPS_TRANSPORT_SHM[31;1m Error] [37mFailed to create segment 2ef4b7762344b2a1: No such file or directory[34;1m -> Function [36mcompute_per_allocation_extra_size[m
+[37;1m2026-09-22 19:26:10.847 [31;1m[[37;1mRTPS_TRANSPORT_SHM[31;1m Error] [37mFailed to create Shared Memory Manager for domain fastrtps: No such file or directory[34;1m -> Function [36mcreate[m
+[37;1m2026-09-22 19:26:10.847 [31;1m[[37;1mRTPS_PARTICIPANT[31;1m Error] [37mUnable to Register SHM Transport. SHM Transport is not supported in the current platform.[34;1m -> Function [36mRTPSParticipantImpl[m
+[INFO] [1790076370.893395254] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.0284858 seconds
+[INFO] [1790076370.893479301] [moveit_robot_model.robot_model]: Loading robot model 'fanuc_m710id_70'...
+[INFO] [1790076370.893486311] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790076370.917462426] [moveit.pilz_industrial_motion_planner.joint_limits_aggregator]: Reading limits from namespace robot_description_planning
+[WARN] [1790076370.917669544] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790076370.917826626] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790076370.917918321] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790076370.918009039] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790076370.918102533] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790076370.918199801] [m710_moveit_worker]: Failed loading deceleration limits
+[INFO] [1790076370.918391589] [moveit.pilz_industrial_motion_planner]: Available plugins: pilz_industrial_motion_planner/PlanningContextLoaderCIRC pilz_industrial_motion_planner/PlanningContextLoaderLIN pilz_industrial_motion_planner/PlanningContextLoaderPTP 
+[INFO] [1790076370.918396803] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderCIRC
+[INFO] [1790076370.919084017] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [CIRC]
+[INFO] [1790076370.919089297] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderLIN
+[INFO] [1790076370.919553880] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [LIN]
+[INFO] [1790076370.919558170] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderPTP
+[INFO] [1790076370.919981013] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [PTP]
+[INFO] [1790076370.919988900] [moveit.ros_planning.planning_pipeline]: Using planning interface 'Pilz Industrial Motion Planner'
+[INFO] [1790076370.926945673] [moveit.ros_planning.planning_pipeline]: Using planning interface 'OMPL'
+[INFO] [1790076371.011666781] [rclcpp]: signal_handler(SIGINT/SIGTERM)

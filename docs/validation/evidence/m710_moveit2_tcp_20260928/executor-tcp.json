@@ -1,0 +1,52 @@
+{
+  "status": "PASS",
+  "isaac": "NOT_RUN",
+  "entry_verification": {
+    "status": "PASS",
+    "bundle_payload_sha256": "a7f994711fa016b31fd3d7bcf9a134e5fde95e68c4b6147c0ee086ad549e444a",
+    "source_preflight_fingerprint": "5a8cfbef47df6f5a7a5653f4dd9e2ea67bfb89b3bbc88eabc1e4165d089205ac",
+    "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE"
+  },
+  "audits": [
+    {
+      "stage": "transit",
+      "reference_range": [
+        144,
+        160
+      ],
+      "audit": {
+        "passed": true,
+        "reason": null,
+        "maximum_line_error_m": 5.822868602313926e-06,
+        "maximum_orientation_error_rad": 8.846831179575685e-06,
+        "maximum_translation_rotation_progress_difference": 7.910091432122845e-05,
+        "endpoint_errors": [
+          {
+            "position_m": 0.0,
+            "orientation_rad": 0.0
+          },
+          {
+            "position_m": 1.6168334852064963e-07,
+            "orientation_rad": 2.400723498453031e-07
+          }
+        ],
+        "first_failure": null,
+        "samples": 617,
+        "progress_semantics": "line_projection",
+        "sampling": "existing_conservative_joint_edge_grid_2x_max_joint_and_4m_sweep",
+        "continuous_sweep_proof": false,
+        "position_tolerance_m": 0.0001,
+        "orientation_tolerance_rad": 0.0002
+      },
+      "native_path_nodes": 18,
+      "executor_path_nodes": 17,
+      "request_fingerprint": "5a4858adf28c133209be8c8a93042cab06b4d8764aec1800321af955e2b4ec0d"
+    }
+  ],
+  "reference_semantics": "C2_piecewise_quintic_rest_to_rest",
+  "actual_executor_edges_checked": true,
+  "continuous_sweep_proof": false,
+  "wall_s": 0.6091230269521475,
+  "bundle_sha256": "693a3b375b413edf8928713152a53c1b1ce7c5c552ecded439b5fa1ab09298c9",
+  "requests_sha256": "28b3502c0175753f3327ebe80719df48f333a1df056d25accc884c9b797bc6ee"
+}

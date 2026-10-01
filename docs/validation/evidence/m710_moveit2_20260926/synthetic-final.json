@@ -1,0 +1,147 @@
+{
+  "attached_failure": {
+    "numerical_gap_tolerance_m": 1e-09,
+    "pair": [
+      "neighbor",
+      "payload"
+    ],
+    "query_range_m": 0.006,
+    "query_scope": "robot_tool_payload_to_world",
+    "reason": "CLEARANCE_INSUFFICIENT",
+    "required_pair_clearance_m": 0.005,
+    "surface_distance_m": 0.001999999999999988
+  },
+  "cup_permission_not_rigid": "PASS",
+  "edge_counts": {
+    "continuous_swept_proof": false,
+    "counts": {
+      "endpoint": {
+        "clearance_rejected": 0,
+        "distance_api_calls": 4,
+        "legacy_witness_checks": 0,
+        "queries": 2,
+        "rejected": 0,
+        "seconds": 7.029e-06
+      },
+      "output": {
+        "clearance_rejected": 1,
+        "distance_api_calls": 804,
+        "legacy_witness_checks": 0,
+        "queries": 402,
+        "rejected": 1,
+        "seconds": 0.0007895459999999999
+      }
+    },
+    "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+    "policy": {
+      "conveyor_ids": [],
+      "numerical_gap_tolerance_m": 1e-09,
+      "payload_id": "",
+      "receiver_reserve_m": 0.0,
+      "schema": "m710_native_free_clearance_v1",
+      "source_policy": {
+        "required_pair_clearance_m": 0.005,
+        "schema": "m710_poc_pair_collision_policy_v4",
+        "self_collision_clearance_m": 0.0
+      },
+      "stage": "transit",
+      "tool_links": [
+        "tool"
+      ]
+    },
+    "query_range_m": 0.006,
+    "rejected_examples": [
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "wall",
+          "tool"
+        ],
+        "phase": "output",
+        "q_rad": [
+          0.025312500000000016
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.00468749999999999
+      }
+    ],
+    "search_gap_witness": null
+  },
+  "scope": "synthetic implementation checks only",
+  "self_tool_and_diff": "PASS",
+  "status": "PASS",
+  "threshold_cases": [
+    {
+      "failure": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "robot",
+          "tool"
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.004000000000000001
+      },
+      "gap": 0.004,
+      "valid": false
+    },
+    {
+      "failure": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "robot",
+          "tool"
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.004999997999999999
+      },
+      "gap": 0.004999998,
+      "valid": false
+    },
+    {
+      "failure": null,
+      "gap": 0.0049999995,
+      "valid": true
+    },
+    {
+      "failure": null,
+      "gap": 0.005,
+      "valid": true
+    },
+    {
+      "failure": null,
+      "gap": 0.0050000005,
+      "valid": true
+    },
+    {
+      "failure": null,
+      "gap": 0.006,
+      "valid": true
+    }
+  ],
+  "valid_endpoints_invalid_edge": {
+    "edge": 0,
+    "fraction": 0.6265625,
+    "numerical_gap_tolerance_m": 1e-09,
+    "pair": [
+      "wall",
+      "tool"
+    ],
+    "q_rad": [
+      0.025312500000000016
+    ],
+    "query_range_m": 0.006,
+    "query_scope": "robot_tool_payload_to_world",
+    "reason": "CLEARANCE_INSUFFICIENT",
+    "required_pair_clearance_m": 0.005,
+    "surface_distance_m": 0.00468749999999999
+  }
+}

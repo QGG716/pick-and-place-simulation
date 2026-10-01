@@ -1,0 +1,115 @@
+[37;1m2026-09-22 19:16:51.863 [31;1m[[37;1mRTPS_TRANSPORT_SHM[31;1m Error] [37mFailed to create segment b9d7fb3a89efd707: No such file or directory[34;1m -> Function [36mcompute_per_allocation_extra_size[m
+[37;1m2026-09-22 19:16:51.863 [31;1m[[37;1mRTPS_TRANSPORT_SHM[31;1m Error] [37mFailed to create Shared Memory Manager for domain fastrtps: No such file or directory[34;1m -> Function [36mcreate[m
+[37;1m2026-09-22 19:16:51.863 [31;1m[[37;1mRTPS_PARTICIPANT[31;1m Error] [37mUnable to Register SHM Transport. SHM Transport is not supported in the current platform.[34;1m -> Function [36mRTPSParticipantImpl[m
+[INFO] [1790075811.905660396] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.0275028 seconds
+[INFO] [1790075811.905736917] [moveit_robot_model.robot_model]: Loading robot model 'fanuc_m710id_70'...
+[INFO] [1790075811.905743512] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790075811.928246395] [moveit.pilz_industrial_motion_planner.joint_limits_aggregator]: Reading limits from namespace robot_description_planning
+[WARN] [1790075811.928392129] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075811.928511085] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075811.928564426] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075811.928613538] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075811.928663390] [m710_moveit_worker]: Failed loading deceleration limits
+[WARN] [1790075811.928717487] [m710_moveit_worker]: Failed loading deceleration limits
+[INFO] [1790075811.928892711] [moveit.pilz_industrial_motion_planner]: Available plugins: pilz_industrial_motion_planner/PlanningContextLoaderCIRC pilz_industrial_motion_planner/PlanningContextLoaderLIN pilz_industrial_motion_planner/PlanningContextLoaderPTP 
+[INFO] [1790075811.928896863] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderCIRC
+[INFO] [1790075811.929522829] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [CIRC]
+[INFO] [1790075811.929528639] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderLIN
+[INFO] [1790075811.929949772] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [LIN]
+[INFO] [1790075811.929953616] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderPTP
+[INFO] [1790075811.930344574] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [PTP]
+[INFO] [1790075811.930350148] [moveit.ros_planning.planning_pipeline]: Using planning interface 'Pilz Industrial Motion Planner'
+[INFO] [1790075811.936784900] [moveit.ros_planning.planning_pipeline]: Using planning interface 'OMPL'
+[INFO] [1790075812.022086630] [moveit.pilz_industrial_motion_planner.trajectory_generator_ptp]: Initialized Point-to-Point Trajectory Generator.
+[INFO] [1790075812.022141117] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Generating PTP trajectory...
+[ERROR] [1790075812.054897605] [moveit.ros_planning.planning_pipeline]: Computed path is not valid. Invalid states at index locations: [ 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 ] out of 74. Explanations follow in command line. Contacts are published on /display_contacts
+[INFO] [1790075812.055022569] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.055028411] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.055948344] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.055962584] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.056844818] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.056852441] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.057687006] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.057692438] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.058525287] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.058530624] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.059357674] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.059363589] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.060175819] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.060180809] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.061014692] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.061022134] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.061833541] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.061838735] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.062642861] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.062648002] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.063487330] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.063492431] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.064301505] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.064310324] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.065138819] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l07_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.065145298] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.065965052] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l06_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.065970013] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.066780628] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l06_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.066785494] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.067558915] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l06_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.067563578] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.068336713] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l06_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.068341615] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.069180811] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l06_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.069188161] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.070002675] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l06_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.070007822] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.070291858] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l06_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.070301686] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.071073267] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l05_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.071077898] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.071367197] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l05_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.071369903] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.072170085] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l05_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.072174781] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.072464478] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l05_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.072468740] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.073297768] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l05_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.073302622] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.074167684] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l05_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.074172826] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.075056550] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l05_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.075061870] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.075955817] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l04_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.075961096] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.076948840] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l04_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.076956862] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.077935130] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l04_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.077946985] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.078906695] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l04_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.078912272] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.079849667] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l04_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.079854844] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.080798728] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l04_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.080805407] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.081763254] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l03_c00' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.081768272] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.082060545] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l03_c00' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.082063535] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.082984723] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l03_c00' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.082989661] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.083925177] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l03_c00' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.083930361] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.084862992] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l03_c00' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.084869505] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.085785687] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l03_c00' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.085790907] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[INFO] [1790075812.086716870] [moveit_collision_detection_fcl.collision_common]: Found a contact between 'carton_l03_c01' (type 'Object') and 'carton_l07_c02' (type 'Robot attached'), which constitutes a collision. Contact information is not stored.
+[INFO] [1790075812.086722901] [moveit_collision_detection_fcl.collision_common]: Collision checking is considered complete (collision was found and 0 contacts are stored)
+[ERROR] [1790075812.087560455] [moveit.ros_planning.planning_pipeline]: Completed listing of explanations for invalid states.
+  0  - ←   0 →   -  0 / transit
+    1  - ←   1 →   -  0 / frozen_start
+    -  0 →   0 →   -  0 / transit
+Failing stage(s):
+transit (0/1)
+[WARN] [1790075812.107282905] [moveit.ompl_planning.model_based_planning_context]: It looks like the planning volume was not specified.
+[INFO] [1790075812.107635033] [moveit.ompl_planning.model_based_planning_context]: Planner configuration 'manipulator[RRTConnectkConfigDefault]' will use planner 'geometric::RRTConnect'. Additional configuration parameters will be set when the planner is constructed.
+[INFO] [1790075815.660406097] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Generating LIN trajectory...
+[INFO] [1790075816.103705917] [rclcpp]: signal_handler(SIGINT/SIGTERM)

@@ -1,0 +1,301 @@
+{
+  "schema": "m710_moveit_experiment_v1",
+  "suite": "stages",
+  "backend": "core",
+  "results": [
+    {
+      "case": "empty_short",
+      "fixture_kind": "real_layout_small_perturbation",
+      "q_start": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "q_goal": [
+        -0.4638507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "goal_pose": null,
+      "path": [
+        [
+          -0.4738507840476061,
+          -0.46642585435191586,
+          -0.35455135903520246,
+          1.7851535539041579,
+          0.48589729025839207,
+          -3.3829904117272847
+        ],
+        [
+          -0.4638507840476061,
+          -0.46642585435191586,
+          -0.35455135903520246,
+          1.7851535539041579,
+          0.48589729025839207,
+          -3.3829904117272847
+        ]
+      ],
+      "failure": null,
+      "authoritative_status": "PASS",
+      "evidence": {
+        "stage": "pregrasp",
+        "seed": 71070,
+        "iteration_budget": 600,
+        "success": true,
+        "search_success": true,
+        "planning_iteration_budget": 600,
+        "planning_iterations_consumed": 0,
+        "extension_attempts": 0,
+        "state_validations": 3,
+        "edge_validation_calls": 1,
+        "edge_state_samples": 1,
+        "state_validation_budget": null,
+        "edge_validation_budget": null,
+        "termination": "DIRECT_EDGE",
+        "validation_level": "B_STRICT_LOCAL_CONNECTION",
+        "validation_completed_monotonic": 20403123.79045791,
+        "validation_context": "7dc67f4f793521f1b9d6952a3b0c31c54283a913136d58c617dc2523807fdf19",
+        "fallback_to_verified": true,
+        "simplification": {
+          "adopted": false,
+          "reason": "DEFERRED_UNTIL_BASELINE_DELIVERY"
+        }
+      },
+      "end_to_end_s": 0.39172181487083435
+    },
+    {
+      "case": "empty_fixed_approach",
+      "fixture_kind": "frozen_candidate_endpoints",
+      "q_start": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "q_goal": [
+        -0.37183334454120454,
+        -0.245641902048464,
+        -0.17740205572363327,
+        1.7438672860074798,
+        0.37775574769199,
+        -4.898300480640961
+      ],
+      "goal_pose": null,
+      "path": [
+        [
+          -0.4738507840476061,
+          -0.46642585435191586,
+          -0.35455135903520246,
+          1.7851535539041579,
+          0.48589729025839207,
+          -3.3829904117272847
+        ],
+        [
+          -0.37183334454120454,
+          -0.245641902048464,
+          -0.17740205572363327,
+          1.7438672860074798,
+          0.37775574769199,
+          -4.898300480640961
+        ]
+      ],
+      "failure": null,
+      "authoritative_status": "PASS",
+      "evidence": {
+        "stage": "pregrasp",
+        "seed": 71071,
+        "iteration_budget": 600,
+        "success": true,
+        "search_success": true,
+        "planning_iteration_budget": 600,
+        "planning_iterations_consumed": 0,
+        "extension_attempts": 0,
+        "state_validations": 78,
+        "edge_validation_calls": 1,
+        "edge_state_samples": 76,
+        "state_validation_budget": null,
+        "edge_validation_budget": null,
+        "termination": "DIRECT_EDGE",
+        "validation_level": "B_STRICT_LOCAL_CONNECTION",
+        "validation_completed_monotonic": 20403202.66537168,
+        "validation_context": "7dc67f4f793521f1b9d6952a3b0c31c54283a913136d58c617dc2523807fdf19",
+        "fallback_to_verified": true,
+        "simplification": {
+          "adopted": false,
+          "reason": "DEFERRED_UNTIL_BASELINE_DELIVERY"
+        }
+      },
+      "end_to_end_s": 78.87452147528529
+    },
+    {
+      "case": "loaded_fixed_transit",
+      "fixture_kind": "frozen_candidate_endpoints",
+      "q_start": [
+        -0.847862919608377,
+        -0.7813072467331367,
+        -0.4789129694501762,
+        1.8277814235216392,
+        0.8872283109314466,
+        -5.106661645797671
+      ],
+      "q_goal": [
+        -0.7704942234539639,
+        0.2837638953904058,
+        -0.27184952289560693,
+        3.1417431315819426,
+        1.0150179257641823,
+        -5.5127236764052086
+      ],
+      "goal_pose": null,
+      "path": [],
+      "failure": {
+        "reason": "PATH_SEARCH_EXHAUSTED",
+        "stage": "transit",
+        "detail": "maximum iterations reached",
+        "iterations": 600
+      },
+      "authoritative_status": "FAIL",
+      "evidence": {
+        "stage": "transit",
+        "seed": 71072,
+        "iteration_budget": 600,
+        "success": false,
+        "search_success": false,
+        "planning_iteration_budget": 600,
+        "planning_iterations_consumed": 600,
+        "extension_attempts": 631,
+        "state_validations": 1755,
+        "edge_validation_calls": 632,
+        "edge_state_samples": 1753,
+        "state_validation_budget": null,
+        "edge_validation_budget": null,
+        "termination": "MAXIMUM_ITERATIONS_REACHED"
+      },
+      "end_to_end_s": 62.042668633162975
+    },
+    {
+      "case": "linear_fixed_orientation",
+      "fixture_kind": "real_layout_small_translation",
+      "q_start": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "q_goal": null,
+      "goal_pose": [
+        [
+          2.5804258646899915e-06,
+          -1.284217051917729e-07,
+          0.9999999999966624,
+          -0.21750126843448975
+        ],
+        [
+          0.9999999999963267,
+          -8.294742018521983e-07,
+          -2.5804259710104915e-06,
+          2.9998804872187e-08
+        ],
+        [
+          8.2947453319826e-07,
+          0.9999999999996478,
+          1.2841956477382936e-07,
+          2.251999680290739
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "path": [
+        [
+          -0.4738507840476061,
+          -0.46642585435191586,
+          -0.35455135903520246,
+          1.7851535539041579,
+          0.48589729025839207,
+          -3.3829904117272847
+        ],
+        [
+          -0.4738536871513952,
+          -0.4658128061833949,
+          -0.3522276833328149,
+          1.788285373963976,
+          0.4862641478654924,
+          -3.3865376878313405
+        ]
+      ],
+      "failure": null,
+      "authoritative_status": "PASS",
+      "evidence": {
+        "stage": "pregrasp",
+        "samples": [
+          {
+            "sample": 1,
+            "fraction": 1.0,
+            "success": true,
+            "position_error_m": 4.431693903198173e-06,
+            "orientation_error_rad": 1.4016454666681548e-05,
+            "maximum_joint_step_rad": 0.0035472761040558076
+          }
+        ]
+      },
+      "end_to_end_s": 0.36899735406041145
+    }
+  ],
+  "isaac": "NOT_RUN",
+  "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+  "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+  "obstacle_count": 48,
+  "cartons": 40,
+  "fixture_provenance": {
+    "source": "/root/autodl-tmp/m710-poc-handoff-20260918/repo/outputs/initial_plan/motion.json",
+    "sha256": "fbc3148c23a886b8ee1155090cc2ab897e1f691e6ef65a3afa41388c37cdf266",
+    "role": "historical_candidate_only_current_authority_required"
+  },
+  "setup_s": 0.4558064341545105,
+  "seed": 71070,
+  "effective_policy": {
+    "schema": "m710_poc_pair_collision_policy_v4",
+    "wrist_tool_exempt_links": [
+      "J5_link",
+      "J6_link"
+    ],
+    "stack_contact_mode": "planner_relaxed_physics_checked",
+    "stack_contact_stages": [
+      "support-release",
+      "extraction"
+    ],
+    "maximum_planned_stack_penetration_m": 0.01,
+    "free_space_clearance_m": 0.0052,
+    "free_space_clearance_loss_tolerance_m": 0.0002,
+    "maximum_actual_penetration_m": 0.01,
+    "maximum_neighbor_displacement_m": 0.06,
+    "maximum_neighbor_tilt_rad": 0.2,
+    "progress_timeout_s": 3.0,
+    "minimum_progress_m": 0.002,
+    "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+    "compliant_cup_neighbor_contact_mode": "ignore",
+    "maximum_compliant_cup_additional_compression_m": 0.005,
+    "required_pair_clearance_m": 0.005,
+    "self_collision_clearance_m": 0.0,
+    "boundary_mode": "finite_frozen_scene_walls",
+    "fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+    "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+    "box_box_physics_enabled": true
+  },
+  "status": "COMPLETED",
+  "end_to_end_s": 142.13646651431918
+}

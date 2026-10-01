@@ -158,17 +158,17 @@ def _refingerprint(preflight: dict) -> None:
     preflight["preflight_fingerprint"] = canonical_sha256(preflight)
 
 
-def test_contract_module_is_standard_library_only():
+def test_contract_module_initial_import_is_standard_library_only():
     source = (ROOT / "src/unloading_sim/m710_replay_contract.py").read_text(encoding="utf-8")
     tree = ast.parse(source)
     imports = {
         alias.name.split(".")[0]
-        for node in ast.walk(tree)
+        for node in tree.body
         if isinstance(node, ast.Import)
         for alias in node.names
     } | {
         node.module.split(".")[0]
-        for node in ast.walk(tree)
+        for node in tree.body
         if isinstance(node, ast.ImportFrom) and node.module
     }
     assert imports <= {

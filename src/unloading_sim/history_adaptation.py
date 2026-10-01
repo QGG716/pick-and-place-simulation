@@ -12,8 +12,15 @@ from .validation_physics import RigidAttachment
 from .stage_motion_policy import MotionPurpose, GenerationMethod, interrupts_generation
 
 
+def _require_history_allowed(c):
+    """Reject historical motion before reading it in strict native requests."""
+    if getattr(c, "native_cold", False) or getattr(c, "require_native_motion", False):
+        raise ValueError("NATIVE_COLD_HISTORY_ADAPTATION_FORBIDDEN")
+
+
 def solve_local(c, pose, seed):
     """Tighter numerical target, unchanged acceptance/clearance/contact rules."""
+    _require_history_allowed(c)
     started = perf_counter()
     result = solve_ik(
         c.robot, pose, seed, max_iterations=min(100, int(c.ik["max_iterations"])),
@@ -38,6 +45,7 @@ def _slice(hint, stage):
 
 def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, home_q,
                  all_obstacles, receiver, support_names, suction, seed):
+    _require_history_allowed(c)
     from .layout_trajectory import PhysicalContactAttachment
     trace = {"seed": seed, "stages": {}, "history": dict(hint["attempt_provenance"])}
     old = hint["segment"]
@@ -50,6 +58,12 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
     q = solution.q
     if np.max(np.abs(q - grasp_q)) > hint["policy"].maximum_joint_adaptation_rad:
         return rejected({"reason": "HISTORY_JOINT_ADAPTATION_BOUND", "stage": "contact"})
+    capability = getattr(c, "history_capability_check", None)
+    if capability is not None:
+        failure = capability(hint, target, q, all_obstacles)
+        trace["capability_preflight"] = dict(location="after_contact_ik_before_contact_or_prefix_collision",failure=failure)
+        if failure:
+            return rejected(failure)
     try:
         selection = c._contact_selection(q, target, face, suction)
     except ValueError as exc:
@@ -164,6 +178,7 @@ def adapt_branch(c, *, hint, target, face, requested_virtual_contact, grasp_q, h
 
 def free_loaded_hint(c, hint, attachment, obstacles, support_names):
     """Historical free nodes only; no old verdict or receiver endpoint inherited."""
+    _require_history_allowed(c)
     old = _slice(hint, 'transit')
     if not c.budget.proof_of_concept:
         return old
@@ -174,6 +189,68 @@ def free_loaded_hint(c, hint, attachment, obstacles, support_names):
     safe_height = c.budget.ideal_release_max_height_m + c.budget.receiver_runtime_clearance_reserve_m
     cuts = [i for i, q in enumerate(old) if attachment.box_at(q).corners()[:, 2].min() >= top + safe_height]
     return old[:(cuts[-1] if cuts else 0)+1]
+
+
+def loaded_prefix_geometry(c, hint, extraction_end, obstacles, attachment, support_names):
+    """Pure fixed-history cut selection shared by capability and execution path."""
+    _require_history_allowed(c)
+    old = _slice(hint, "transit")
+    supports = [b for b in obstacles if b.name in support_names]
+    if not supports:
+        raise ValueError("HISTORY_RECEIVER_MISSING")
+    top = max(float(b.corners()[:, 2].max()) for b in supports)
+    safe_height = c.budget.ideal_release_max_height_m + c.budget.receiver_runtime_clearance_reserve_m
+    cuts = [i for i, q in enumerate(old) if attachment.box_at(q).corners()[:, 2].min() >= top + safe_height]
+    cut = cuts[-1] if cuts else 0
+    return [extraction_end.copy(), *old[1:cut+1]], safe_height, len(old)
+
+
+def loaded_suffix(c, hint, extraction, preplace_virtual, place_virtual, obstacles, attachment, support_names):
+    """Re-solve both receiver endpoints under the new attachment; check every edge."""
+    _require_history_allowed(c)
+    if c.budget.proof_of_concept:
+        # Retain only the early loaded prefix. Rebuild well before the old low
+        # receiver approach; never edit the old release nodes in place.
+        prefix, safe_height, old_count = loaded_prefix_geometry(c, hint, extraction[-1], obstacles, attachment, support_names)
+        capability = getattr(c, "capability_check", None)
+        if capability is not None:
+            failure = capability(c.robot.fk(prefix[-1]), preplace_virtual, stage="transit", location="before_loaded_prefix_collision")
+            if failure:
+                return [], [], failure
+        failure = c._path_failure(prefix, obstacles, attachment=attachment, stage="transit")
+        if failure:
+            return [], [], failure
+        suffix, failure, evidence = c._cartesian(prefix[-1], preplace_virtual, obstacles,
+            seed=int(hint["attempt_provenance"]["candidate_id"][:8], 16), attachment=attachment, stage="transit")
+        hint["attempt_provenance"]["loaded_prefix_reconstruction"] = dict(
+            retained_nodes=len(prefix), old_nodes=old_count, safe_height_m=safe_height, suffix=evidence)
+        if failure:
+            return [], [], failure
+        transit = [*prefix, *suffix[1:]]
+        place, failure, _ = c._cartesian(transit[-1], place_virtual, obstacles,
+            seed=0, attachment=attachment, support_names=support_names, stage="place")
+        return transit, place, failure
+    paths = []
+    previous = extraction[-1]
+    for stage, goal in (("transit", preplace_virtual), ("place", place_virtual)):
+        points = _slice(hint, stage)
+        result = solve_local(c, goal, points[-1])
+        if not result.success:
+            return [], [], {"reason": result.message, "stage": stage}
+        if np.max(np.abs(result.q - points[-1])) > hint["policy"].maximum_joint_adaptation_rad:
+            return [], [], {"reason": "HISTORY_RELEASE_ADAPTATION_BOUND", "stage": stage}
+        points[0] = previous.copy()
+        if len(points) == 1:
+            points.append(result.q.copy())
+        else:
+            points[-1] = result.q.copy()
+        failure = c._path_failure(points, obstacles, attachment=attachment, stage=stage,
+                                 support_names=support_names if stage == "place" else ())
+        if failure:
+            return [], [], failure
+        paths.append(points)
+        previous = points[-1]
+    return *paths, None
 
 
 def current_release_sweep(c, placed, prediction, start, direction):
@@ -207,6 +284,7 @@ def recheck_current_release(segment, connector, payload_obstacles, placed):
 
 
 def checked_departure(c, hint, start, placed, obstacles, direction, prediction):
+    _require_history_allowed(c)
     if c.budget.proof_of_concept:
         return c._departure(start, placed, obstacles, direction,
             seed=int(hint["attempt_provenance"]["candidate_id"][:8], 16),

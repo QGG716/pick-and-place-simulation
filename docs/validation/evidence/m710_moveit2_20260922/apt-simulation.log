@@ -1,0 +1,541 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  autoconf automake autotools-dev cpp-11 g++-11 gcc-11 gcc-11-base gfortran-11
+  icu-devtools libaec-dev libasan6 libboost-all-dev libboost-atomic-dev
+  libboost-atomic1.74-dev libboost-atomic1.74.0 libboost-chrono-dev
+  libboost-chrono1.74-dev libboost-chrono1.74.0 libboost-container-dev
+  libboost-container1.74-dev libboost-container1.74.0 libboost-context-dev
+  libboost-context1.74-dev libboost-context1.74.0 libboost-coroutine-dev
+  libboost-coroutine1.74-dev libboost-coroutine1.74.0 libboost-date-time-dev
+  libboost-date-time1.74-dev libboost-date-time1.74.0 libboost-dev
+  libboost-exception-dev libboost-exception1.74-dev libboost-fiber-dev
+  libboost-fiber1.74-dev libboost-fiber1.74.0 libboost-filesystem-dev
+  libboost-filesystem1.74-dev libboost-filesystem1.74.0 libboost-graph-dev
+  libboost-graph-parallel-dev libboost-graph-parallel1.74-dev
+  libboost-graph-parallel1.74.0 libboost-graph1.74-dev libboost-graph1.74.0
+  libboost-iostreams-dev libboost-iostreams1.74-dev libboost-iostreams1.74.0
+  libboost-locale-dev libboost-locale1.74-dev libboost-locale1.74.0
+  libboost-log-dev libboost-log1.74-dev libboost-log1.74.0 libboost-math-dev
+  libboost-math1.74-dev libboost-math1.74.0 libboost-mpi-dev
+  libboost-mpi-python-dev libboost-mpi-python1.74-dev
+  libboost-mpi-python1.74.0 libboost-mpi1.74-dev libboost-mpi1.74.0
+  libboost-nowide-dev libboost-nowide1.74-dev libboost-nowide1.74.0
+  libboost-numpy-dev libboost-numpy1.74-dev libboost-numpy1.74.0
+  libboost-program-options-dev libboost-program-options1.74-dev
+  libboost-program-options1.74.0 libboost-python-dev libboost-python1.74-dev
+  libboost-python1.74.0 libboost-random-dev libboost-random1.74-dev
+  libboost-random1.74.0 libboost-regex-dev libboost-regex1.74-dev
+  libboost-regex1.74.0 libboost-serialization-dev
+  libboost-serialization1.74-dev libboost-serialization1.74.0
+  libboost-stacktrace-dev libboost-stacktrace1.74-dev
+  libboost-stacktrace1.74.0 libboost-system-dev libboost-system1.74-dev
+  libboost-system1.74.0 libboost-test-dev libboost-test1.74-dev
+  libboost-test1.74.0 libboost-thread-dev libboost-thread1.74-dev
+  libboost-thread1.74.0 libboost-timer-dev libboost-timer1.74-dev
+  libboost-timer1.74.0 libboost-tools-dev libboost-type-erasure-dev
+  libboost-type-erasure1.74-dev libboost-type-erasure1.74.0 libboost-wave-dev
+  libboost-wave1.74-dev libboost-wave1.74.0 libboost1.74-dev
+  libboost1.74-tools-dev libccd-dev libccd2 libdw-dev libelf-dev
+  libevent-2.1-7 libevent-core-2.1-7 libevent-dev libevent-extra-2.1-7
+  libevent-openssl-2.1-7 libevent-pthreads-2.1-7 libexpected-dev libfcl-dev
+  libfcl0.7 libflann-dev libflann1.9 libgcc-11-dev libgfortran-11-dev
+  libhdf5-mpi-dev libhdf5-openmpi-103-1 libhdf5-openmpi-cpp-103-1
+  libhdf5-openmpi-dev libhdf5-openmpi-fortran-102 libhdf5-openmpi-hl-100
+  libhdf5-openmpi-hl-cpp-100 libhdf5-openmpi-hl-fortran-100 libhwloc-dev
+  libibverbs-dev libicu-dev libjs-jquery-ui libllvm14 libltdl-dev liblz4-dev
+  libnl-3-dev libnl-route-3-dev libnuma-dev liboctomap-dev liboctomap1.9
+  libomp-14-dev libomp-dev libomp5-14 libopenmpi-dev libpmix-dev libqhull-dev
+  libqhull8.0 libqhullcpp8.0 libsigsegv2 libstdc++-11-dev libtsan0 m4
+  mpi-default-bin mpi-default-dev openmpi-bin openmpi-common python3-jinja2
+  python3-markupsafe python3-typeguard ros-humble-angles
+  ros-humble-backward-ros ros-humble-eigen-stl-containers
+  ros-humble-generate-parameter-library
+  ros-humble-generate-parameter-library-py ros-humble-geometric-shapes
+  ros-humble-moveit-common ros-humble-moveit-core ros-humble-moveit-msgs
+  ros-humble-moveit-ros-move-group ros-humble-moveit-ros-occupancy-map-monitor
+  ros-humble-moveit-ros-planning ros-humble-moveit-ros-planning-interface
+  ros-humble-moveit-ros-warehouse ros-humble-moveit-task-constructor-msgs
+  ros-humble-object-recognition-msgs ros-humble-octomap
+  ros-humble-octomap-msgs ros-humble-ompl ros-humble-parameter-traits
+  ros-humble-py-binding-tools ros-humble-random-numbers ros-humble-rsl
+  ros-humble-ruckig ros-humble-rviz-marker-tools ros-humble-srdfdom
+  ros-humble-tcb-span ros-humble-tl-expected ros-humble-urdfdom-py
+  ros-humble-warehouse-ros
+Suggested packages:
+  autoconf-archive gnu-standards autoconf-doc libtool gettext gcc-11-locales
+  g++-11-multilib gcc-11-doc gcc-11-multilib gfortran-11-multilib
+  gfortran-11-doc libcoarrays-dev libboost-doc libboost1.74-doc gccxml
+  libboost-contract1.74-dev libmpfrc++-dev libntl-dev xsltproc doxygen
+  docbook-xml docbook-xsl default-jdk fop libhdf5-doc icu-doc
+  libjs-jquery-ui-docs libtool-doc libomp-14-doc openmpi-doc libstdc++-11-doc
+  m4-doc gfortran | fortran-compiler python-jinja2-doc
+Recommended packages:
+  libtool libcoarrays-openmpi-dev
+The following NEW packages will be installed:
+  autoconf automake autotools-dev gfortran-11 icu-devtools libaec-dev
+  libboost-all-dev libboost-atomic-dev libboost-atomic1.74-dev
+  libboost-atomic1.74.0 libboost-chrono-dev libboost-chrono1.74-dev
+  libboost-chrono1.74.0 libboost-container-dev libboost-container1.74-dev
+  libboost-container1.74.0 libboost-context-dev libboost-context1.74-dev
+  libboost-context1.74.0 libboost-coroutine-dev libboost-coroutine1.74-dev
+  libboost-coroutine1.74.0 libboost-date-time-dev libboost-date-time1.74-dev
+  libboost-date-time1.74.0 libboost-dev libboost-exception-dev
+  libboost-exception1.74-dev libboost-fiber-dev libboost-fiber1.74-dev
+  libboost-fiber1.74.0 libboost-filesystem-dev libboost-filesystem1.74-dev
+  libboost-filesystem1.74.0 libboost-graph-dev libboost-graph-parallel-dev
+  libboost-graph-parallel1.74-dev libboost-graph-parallel1.74.0
+  libboost-graph1.74-dev libboost-graph1.74.0 libboost-iostreams-dev
+  libboost-iostreams1.74-dev libboost-iostreams1.74.0 libboost-locale-dev
+  libboost-locale1.74-dev libboost-locale1.74.0 libboost-log-dev
+  libboost-log1.74-dev libboost-log1.74.0 libboost-math-dev
+  libboost-math1.74-dev libboost-math1.74.0 libboost-mpi-dev
+  libboost-mpi-python-dev libboost-mpi-python1.74-dev
+  libboost-mpi-python1.74.0 libboost-mpi1.74-dev libboost-mpi1.74.0
+  libboost-nowide-dev libboost-nowide1.74-dev libboost-nowide1.74.0
+  libboost-numpy-dev libboost-numpy1.74-dev libboost-numpy1.74.0
+  libboost-program-options-dev libboost-program-options1.74-dev
+  libboost-program-options1.74.0 libboost-python-dev libboost-python1.74-dev
+  libboost-python1.74.0 libboost-random-dev libboost-random1.74-dev
+  libboost-random1.74.0 libboost-regex-dev libboost-regex1.74-dev
+  libboost-regex1.74.0 libboost-serialization-dev
+  libboost-serialization1.74-dev libboost-serialization1.74.0
+  libboost-stacktrace-dev libboost-stacktrace1.74-dev
+  libboost-stacktrace1.74.0 libboost-system-dev libboost-system1.74-dev
+  libboost-system1.74.0 libboost-test-dev libboost-test1.74-dev
+  libboost-test1.74.0 libboost-thread-dev libboost-thread1.74-dev
+  libboost-thread1.74.0 libboost-timer-dev libboost-timer1.74-dev
+  libboost-timer1.74.0 libboost-tools-dev libboost-type-erasure-dev
+  libboost-type-erasure1.74-dev libboost-type-erasure1.74.0 libboost-wave-dev
+  libboost-wave1.74-dev libboost-wave1.74.0 libboost1.74-dev
+  libboost1.74-tools-dev libccd-dev libccd2 libdw-dev libelf-dev
+  libevent-2.1-7 libevent-dev libevent-extra-2.1-7 libevent-openssl-2.1-7
+  libexpected-dev libfcl-dev libfcl0.7 libflann-dev libflann1.9
+  libgfortran-11-dev libhdf5-mpi-dev libhdf5-openmpi-103-1
+  libhdf5-openmpi-cpp-103-1 libhdf5-openmpi-dev libhdf5-openmpi-fortran-102
+  libhdf5-openmpi-hl-100 libhdf5-openmpi-hl-cpp-100
+  libhdf5-openmpi-hl-fortran-100 libhwloc-dev libibverbs-dev libicu-dev
+  libjs-jquery-ui libllvm14 libltdl-dev liblz4-dev libnl-3-dev
+  libnl-route-3-dev libnuma-dev liboctomap-dev liboctomap1.9 libomp-14-dev
+  libomp-dev libomp5-14 libopenmpi-dev libpmix-dev libqhull-dev libqhull8.0
+  libqhullcpp8.0 libsigsegv2 m4 mpi-default-bin mpi-default-dev
+  nlohmann-json3-dev openmpi-bin openmpi-common python3-jinja2
+  python3-markupsafe python3-typeguard ros-humble-angles
+  ros-humble-backward-ros ros-humble-eigen-stl-containers
+  ros-humble-generate-parameter-library
+  ros-humble-generate-parameter-library-py ros-humble-geometric-shapes
+  ros-humble-moveit-common ros-humble-moveit-core ros-humble-moveit-kinematics
+  ros-humble-moveit-msgs ros-humble-moveit-planners-ompl
+  ros-humble-moveit-ros-move-group ros-humble-moveit-ros-occupancy-map-monitor
+  ros-humble-moveit-ros-planning ros-humble-moveit-ros-planning-interface
+  ros-humble-moveit-ros-warehouse ros-humble-moveit-task-constructor-core
+  ros-humble-moveit-task-constructor-msgs ros-humble-object-recognition-msgs
+  ros-humble-octomap ros-humble-octomap-msgs ros-humble-ompl
+  ros-humble-parameter-traits ros-humble-pilz-industrial-motion-planner
+  ros-humble-py-binding-tools ros-humble-random-numbers ros-humble-rsl
+  ros-humble-ruckig ros-humble-rviz-marker-tools ros-humble-srdfdom
+  ros-humble-tcb-span ros-humble-tl-expected ros-humble-urdfdom-py
+  ros-humble-warehouse-ros
+The following packages will be upgraded:
+  cpp-11 g++-11 gcc-11 gcc-11-base libasan6 libevent-core-2.1-7
+  libevent-pthreads-2.1-7 libgcc-11-dev libstdc++-11-dev libtsan0
+10 upgraded, 189 newly installed, 0 to remove and 277 not upgraded.
+Inst libsigsegv2 (2.13-1ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst m4 (1.4.18-5ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst autoconf (2.71-2 Ubuntu:22.04/jammy [all])
+Inst autotools-dev (20220109.1 Ubuntu:22.04/jammy [all])
+Inst automake (1:1.16.5-1.3 Ubuntu:22.04/jammy [all])
+Inst g++-11 [11.4.0-1ubuntu1~22.04] (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64]) []
+Inst libstdc++-11-dev [11.4.0-1ubuntu1~22.04] (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64]) []
+Inst libasan6 [11.4.0-1ubuntu1~22.04] (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64]) []
+Inst gcc-11 [11.4.0-1ubuntu1~22.04] (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64]) []
+Inst libgcc-11-dev [11.4.0-1ubuntu1~22.04] (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64]) []
+Inst libtsan0 [11.4.0-1ubuntu1~22.04] (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64]) []
+Inst cpp-11 [11.4.0-1ubuntu1~22.04] (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64]) []
+Inst gcc-11-base [11.4.0-1ubuntu1~22.04] (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libgfortran-11-dev (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst gfortran-11 (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst icu-devtools (70.1-2ubuntu1 Ubuntu:22.04/jammy-proposed [amd64])
+Inst libboost1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost1.74-tools-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-tools-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-atomic1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-atomic1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-atomic-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-chrono1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-chrono1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-chrono-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-container1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-container1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-container-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-date-time1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-serialization1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-serialization1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-date-time1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-system1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-system1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-thread1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-thread1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-context1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-context1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-context-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-coroutine1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-coroutine1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-coroutine-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-date-time-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-exception1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-exception-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-filesystem1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-filesystem1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-fiber1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-fiber1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-fiber-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-filesystem-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-regex1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-graph1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libicu-dev (70.1-2ubuntu1 Ubuntu:22.04/jammy-proposed [amd64])
+Inst libboost-regex1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-test1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-test1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-graph1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-graph-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-mpi1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-graph-parallel1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-graph-parallel1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-graph-parallel-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-iostreams1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-iostreams1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-iostreams-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-locale1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-locale1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-locale-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-log1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-log1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-log-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-math1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-math1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-math-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst openmpi-common (4.1.2-2ubuntu1 Ubuntu:22.04/jammy [all])
+Inst libnl-3-dev (3.5.0-0.1 Ubuntu:22.04/jammy [amd64])
+Inst libnl-route-3-dev (3.5.0-0.1 Ubuntu:22.04/jammy [amd64])
+Inst libibverbs-dev (39.0-1 Ubuntu:22.04/jammy [amd64])
+Inst libnuma-dev (2.0.14-3ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst libltdl-dev (2.4.6-15build2 Ubuntu:22.04/jammy [amd64])
+Inst libhwloc-dev (2.7.0-2ubuntu1 Ubuntu:22.04/jammy-updates [amd64])
+Inst libevent-2.1-7 (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libevent-pthreads-2.1-7 [2.1.12-stable-1build3] (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64]) []
+Inst libevent-core-2.1-7 [2.1.12-stable-1build3] (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libevent-extra-2.1-7 (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libevent-openssl-2.1-7 (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libevent-dev (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libpmix-dev (4.1.2-2ubuntu1 Ubuntu:22.04/jammy [amd64])
+Inst libjs-jquery-ui (1.13.1+dfsg-1 Ubuntu:22.04/jammy [all])
+Inst openmpi-bin (4.1.2-2ubuntu1 Ubuntu:22.04/jammy [amd64])
+Inst libopenmpi-dev (4.1.2-2ubuntu1 Ubuntu:22.04/jammy [amd64])
+Inst mpi-default-dev (1.14 Ubuntu:22.04/jammy [amd64])
+Inst libboost-mpi1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-mpi-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-python1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst mpi-default-bin (1.14 Ubuntu:22.04/jammy [amd64])
+Inst libboost-mpi-python1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-mpi-python1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-mpi-python-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-numpy1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-numpy1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-numpy-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-program-options1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-program-options1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-program-options-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-python1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-python-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-random1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-random1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-random-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-regex-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-serialization-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-stacktrace1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-stacktrace1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-stacktrace-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-system-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-test-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-thread-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-timer1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-timer1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-timer-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-type-erasure1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-type-erasure1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-type-erasure-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-wave1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-wave1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-wave-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-nowide1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-nowide1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Inst libboost-nowide-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libboost-all-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Inst libelf-dev (0.186-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libdw-dev (0.186-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libexpected-dev (1.0.0~dfsg-2 Ubuntu:22.04/jammy [all])
+Inst libccd2 (2.1-2 Ubuntu:22.04/jammy [amd64])
+Inst liboctomap1.9 (1.9.7+dfsg-3 Ubuntu:22.04/jammy [amd64])
+Inst libfcl0.7 (0.7.0-3 Ubuntu:22.04/jammy [amd64])
+Inst libflann1.9 (1.9.1+dfsg-11 Ubuntu:22.04/jammy [amd64])
+Inst libhdf5-openmpi-103-1 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst libhdf5-openmpi-fortran-102 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst libhdf5-openmpi-hl-100 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst libhdf5-openmpi-hl-fortran-100 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst libhdf5-openmpi-cpp-103-1 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst libhdf5-openmpi-hl-cpp-100 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst libaec-dev (1.0.6-1 Ubuntu:22.04/jammy [amd64])
+Inst libhdf5-openmpi-dev (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst libhdf5-mpi-dev (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Inst liblz4-dev (1.9.3-2build2 Ubuntu:22.04/jammy [amd64])
+Inst libflann-dev (1.9.1+dfsg-11 Ubuntu:22.04/jammy [amd64])
+Inst libllvm14 (1:14.0.0-1ubuntu1.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst liboctomap-dev (1.9.7+dfsg-3 Ubuntu:22.04/jammy [amd64])
+Inst libomp5-14 (1:14.0.0-1ubuntu1.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libomp-14-dev (1:14.0.0-1ubuntu1.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Inst libqhull8.0 (2020.2-4 Ubuntu:22.04/jammy [amd64])
+Inst libqhullcpp8.0 (2020.2-4 Ubuntu:22.04/jammy [amd64])
+Inst libqhull-dev (2020.2-4 Ubuntu:22.04/jammy [amd64])
+Inst nlohmann-json3-dev (3.10.5-2 Ubuntu:22.04/jammy [all])
+Inst python3-markupsafe (2.0.1-2build1 Ubuntu:22.04/jammy [amd64])
+Inst python3-jinja2 (3.0.3-1ubuntu0.4 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [all])
+Inst python3-typeguard (2.2.2-1.1 Ubuntu:22.04/jammy [all])
+Inst ros-humble-angles (1.15.0-1jammy.20260304.075013 ROS jammy:jammy [amd64])
+Inst ros-humble-backward-ros (1.0.8-2jammy.20260226.010809 ROS jammy:jammy [amd64])
+Inst ros-humble-eigen-stl-containers (1.1.0-1jammy.20260304.090336 ROS jammy:jammy [amd64])
+Inst ros-humble-generate-parameter-library-py (0.7.6-1jammy.20260810.134224 ROS jammy:jammy [amd64])
+Inst ros-humble-tcb-span (1.3.2-1jammy.20260611.075323 ROS jammy:jammy [amd64])
+Inst ros-humble-rsl (1.3.0-1jammy.20260907.222817 ROS jammy:jammy [amd64])
+Inst ros-humble-tl-expected (1.3.2-1jammy.20260611.075453 ROS jammy:jammy [amd64])
+Inst ros-humble-parameter-traits (0.7.6-1jammy.20260908.004149 ROS jammy:jammy [amd64])
+Inst ros-humble-generate-parameter-library (0.7.6-1jammy.20260908.010843 ROS jammy:jammy [amd64])
+Inst ros-humble-random-numbers (2.0.5-1jammy.20260616.085807 ROS jammy:jammy [amd64])
+Inst ros-humble-geometric-shapes (2.3.4-1jammy.20260907.223227 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-common (2.5.10-1jammy.20260902.113342 ROS jammy:jammy [amd64])
+Inst ros-humble-octomap (1.9.8-1jammy.20260226.005011 ROS jammy:jammy [amd64])
+Inst ros-humble-urdfdom-py (1.2.1-1jammy.20260907.220847 ROS jammy:jammy [amd64])
+Inst ros-humble-srdfdom (2.0.7-1jammy.20260908.002942 ROS jammy:jammy [amd64])
+Inst libccd-dev (2.1-2 Ubuntu:22.04/jammy [amd64])
+Inst libfcl-dev (0.7.0-3 Ubuntu:22.04/jammy [amd64])
+Inst ros-humble-object-recognition-msgs (2.0.0-3jammy.20260908.065709 ROS jammy:jammy [amd64])
+Inst ros-humble-octomap-msgs (2.0.1-1jammy.20260907.212327 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-msgs (2.2.3-1jammy.20260908.070153 ROS jammy:jammy [amd64])
+Inst ros-humble-ruckig (0.9.2-1jammy.20260226.012139 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-core (2.5.10-1jammy.20260908.071525 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-ros-occupancy-map-monitor (2.5.10-1jammy.20260908.074943 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-ros-planning (2.5.10-1jammy.20260908.081349 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-kinematics (2.5.10-1jammy.20260908.083918 ROS jammy:jammy [amd64])
+Inst ros-humble-ompl (1.7.0-4jammy.20260226.011457 ROS jammy:jammy [amd64])
+Inst libomp-dev (1:14.0-55~exp2 Ubuntu:22.04/jammy [amd64])
+Inst ros-humble-moveit-planners-ompl (2.5.10-1jammy.20260908.084213 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-ros-move-group (2.5.10-1jammy.20260908.090034 ROS jammy:jammy [amd64])
+Inst ros-humble-warehouse-ros (2.0.9-1jammy.20260907.230447 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-ros-warehouse (2.5.10-1jammy.20260908.083936 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-ros-planning-interface (2.5.10-1jammy.20260908.090719 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-task-constructor-msgs (0.1.3-1jammy.20260908.071527 ROS jammy:jammy [amd64])
+Inst ros-humble-py-binding-tools (2.0.1-1jammy.20260907.235014 ROS jammy:jammy [amd64])
+Inst ros-humble-rviz-marker-tools (0.1.3-1jammy.20260908.012414 ROS jammy:jammy [amd64])
+Inst ros-humble-moveit-task-constructor-core (0.1.3-1jammy.20260908.101449 ROS jammy:jammy [amd64])
+Inst ros-humble-pilz-industrial-motion-planner (2.5.10-1jammy.20260908.093641 ROS jammy:jammy [amd64])
+Conf libsigsegv2 (2.13-1ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf m4 (1.4.18-5ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf autoconf (2.71-2 Ubuntu:22.04/jammy [all])
+Conf autotools-dev (20220109.1 Ubuntu:22.04/jammy [all])
+Conf automake (1:1.16.5-1.3 Ubuntu:22.04/jammy [all])
+Conf g++-11 (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libstdc++-11-dev (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libasan6 (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf gcc-11 (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libgcc-11-dev (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libtsan0 (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf cpp-11 (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf gcc-11-base (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libgfortran-11-dev (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf gfortran-11 (11.4.0-1ubuntu1~22.04.3 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf icu-devtools (70.1-2ubuntu1 Ubuntu:22.04/jammy-proposed [amd64])
+Conf libboost1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost1.74-tools-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-tools-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-atomic1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-atomic1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-atomic-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-chrono1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-chrono1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-chrono-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-container1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-container1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-container-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-date-time1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-serialization1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-serialization1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-date-time1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-system1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-system1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-thread1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-thread1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-context1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-context1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-context-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-coroutine1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-coroutine1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-coroutine-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-date-time-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-exception1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-exception-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-filesystem1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-filesystem1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-fiber1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-fiber1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-fiber-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-filesystem-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-regex1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-graph1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libicu-dev (70.1-2ubuntu1 Ubuntu:22.04/jammy-proposed [amd64])
+Conf libboost-regex1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-test1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-test1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-graph1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-graph-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-mpi1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-graph-parallel1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-graph-parallel1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-graph-parallel-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-iostreams1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-iostreams1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-iostreams-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-locale1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-locale1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-locale-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-log1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-log1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-log-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-math1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-math1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-math-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf openmpi-common (4.1.2-2ubuntu1 Ubuntu:22.04/jammy [all])
+Conf libnl-3-dev (3.5.0-0.1 Ubuntu:22.04/jammy [amd64])
+Conf libnl-route-3-dev (3.5.0-0.1 Ubuntu:22.04/jammy [amd64])
+Conf libibverbs-dev (39.0-1 Ubuntu:22.04/jammy [amd64])
+Conf libnuma-dev (2.0.14-3ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf libltdl-dev (2.4.6-15build2 Ubuntu:22.04/jammy [amd64])
+Conf libhwloc-dev (2.7.0-2ubuntu1 Ubuntu:22.04/jammy-updates [amd64])
+Conf libevent-2.1-7 (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libevent-pthreads-2.1-7 (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libevent-core-2.1-7 (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libevent-extra-2.1-7 (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libevent-openssl-2.1-7 (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libevent-dev (2.1.12-stable-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libpmix-dev (4.1.2-2ubuntu1 Ubuntu:22.04/jammy [amd64])
+Conf libjs-jquery-ui (1.13.1+dfsg-1 Ubuntu:22.04/jammy [all])
+Conf openmpi-bin (4.1.2-2ubuntu1 Ubuntu:22.04/jammy [amd64])
+Conf libopenmpi-dev (4.1.2-2ubuntu1 Ubuntu:22.04/jammy [amd64])
+Conf mpi-default-dev (1.14 Ubuntu:22.04/jammy [amd64])
+Conf libboost-mpi1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-mpi-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-python1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf mpi-default-bin (1.14 Ubuntu:22.04/jammy [amd64])
+Conf libboost-mpi-python1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-mpi-python1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-mpi-python-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-numpy1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-numpy1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-numpy-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-program-options1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-program-options1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-program-options-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-python1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-python-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-random1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-random1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-random-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-regex-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-serialization-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-stacktrace1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-stacktrace1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-stacktrace-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-system-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-test-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-thread-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-timer1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-timer1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-timer-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-type-erasure1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-type-erasure1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-type-erasure-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-wave1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-wave1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-wave-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-nowide1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-nowide1.74-dev (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libboost-nowide-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libboost-all-dev (1.74.0.3ubuntu7 Ubuntu:22.04/jammy [amd64])
+Conf libelf-dev (0.186-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libdw-dev (0.186-1ubuntu0.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libexpected-dev (1.0.0~dfsg-2 Ubuntu:22.04/jammy [all])
+Conf libccd2 (2.1-2 Ubuntu:22.04/jammy [amd64])
+Conf liboctomap1.9 (1.9.7+dfsg-3 Ubuntu:22.04/jammy [amd64])
+Conf libfcl0.7 (0.7.0-3 Ubuntu:22.04/jammy [amd64])
+Conf libflann1.9 (1.9.1+dfsg-11 Ubuntu:22.04/jammy [amd64])
+Conf libhdf5-openmpi-103-1 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf libhdf5-openmpi-fortran-102 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf libhdf5-openmpi-hl-100 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf libhdf5-openmpi-hl-fortran-100 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf libhdf5-openmpi-cpp-103-1 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf libhdf5-openmpi-hl-cpp-100 (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf libaec-dev (1.0.6-1 Ubuntu:22.04/jammy [amd64])
+Conf libhdf5-openmpi-dev (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf libhdf5-mpi-dev (1.10.7+repack-4ubuntu2 Ubuntu:22.04/jammy [amd64])
+Conf liblz4-dev (1.9.3-2build2 Ubuntu:22.04/jammy [amd64])
+Conf libflann-dev (1.9.1+dfsg-11 Ubuntu:22.04/jammy [amd64])
+Conf libllvm14 (1:14.0.0-1ubuntu1.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf liboctomap-dev (1.9.7+dfsg-3 Ubuntu:22.04/jammy [amd64])
+Conf libomp5-14 (1:14.0.0-1ubuntu1.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libomp-14-dev (1:14.0.0-1ubuntu1.1 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [amd64])
+Conf libqhull8.0 (2020.2-4 Ubuntu:22.04/jammy [amd64])
+Conf libqhullcpp8.0 (2020.2-4 Ubuntu:22.04/jammy [amd64])
+Conf libqhull-dev (2020.2-4 Ubuntu:22.04/jammy [amd64])
+Conf nlohmann-json3-dev (3.10.5-2 Ubuntu:22.04/jammy [all])
+Conf python3-markupsafe (2.0.1-2build1 Ubuntu:22.04/jammy [amd64])
+Conf python3-jinja2 (3.0.3-1ubuntu0.4 Ubuntu:22.04/jammy-security, Ubuntu:22.04/jammy-updates [all])
+Conf python3-typeguard (2.2.2-1.1 Ubuntu:22.04/jammy [all])
+Conf ros-humble-angles (1.15.0-1jammy.20260304.075013 ROS jammy:jammy [amd64])
+Conf ros-humble-backward-ros (1.0.8-2jammy.20260226.010809 ROS jammy:jammy [amd64])
+Conf ros-humble-eigen-stl-containers (1.1.0-1jammy.20260304.090336 ROS jammy:jammy [amd64])
+Conf ros-humble-generate-parameter-library-py (0.7.6-1jammy.20260810.134224 ROS jammy:jammy [amd64])
+Conf ros-humble-tcb-span (1.3.2-1jammy.20260611.075323 ROS jammy:jammy [amd64])
+Conf ros-humble-rsl (1.3.0-1jammy.20260907.222817 ROS jammy:jammy [amd64])
+Conf ros-humble-tl-expected (1.3.2-1jammy.20260611.075453 ROS jammy:jammy [amd64])
+Conf ros-humble-parameter-traits (0.7.6-1jammy.20260908.004149 ROS jammy:jammy [amd64])
+Conf ros-humble-generate-parameter-library (0.7.6-1jammy.20260908.010843 ROS jammy:jammy [amd64])
+Conf ros-humble-random-numbers (2.0.5-1jammy.20260616.085807 ROS jammy:jammy [amd64])
+Conf ros-humble-geometric-shapes (2.3.4-1jammy.20260907.223227 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-common (2.5.10-1jammy.20260902.113342 ROS jammy:jammy [amd64])
+Conf ros-humble-octomap (1.9.8-1jammy.20260226.005011 ROS jammy:jammy [amd64])
+Conf ros-humble-urdfdom-py (1.2.1-1jammy.20260907.220847 ROS jammy:jammy [amd64])
+Conf ros-humble-srdfdom (2.0.7-1jammy.20260908.002942 ROS jammy:jammy [amd64])
+Conf libccd-dev (2.1-2 Ubuntu:22.04/jammy [amd64])
+Conf libfcl-dev (0.7.0-3 Ubuntu:22.04/jammy [amd64])
+Conf ros-humble-object-recognition-msgs (2.0.0-3jammy.20260908.065709 ROS jammy:jammy [amd64])
+Conf ros-humble-octomap-msgs (2.0.1-1jammy.20260907.212327 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-msgs (2.2.3-1jammy.20260908.070153 ROS jammy:jammy [amd64])
+Conf ros-humble-ruckig (0.9.2-1jammy.20260226.012139 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-core (2.5.10-1jammy.20260908.071525 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-ros-occupancy-map-monitor (2.5.10-1jammy.20260908.074943 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-ros-planning (2.5.10-1jammy.20260908.081349 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-kinematics (2.5.10-1jammy.20260908.083918 ROS jammy:jammy [amd64])
+Conf ros-humble-ompl (1.7.0-4jammy.20260226.011457 ROS jammy:jammy [amd64])
+Conf libomp-dev (1:14.0-55~exp2 Ubuntu:22.04/jammy [amd64])
+Conf ros-humble-moveit-planners-ompl (2.5.10-1jammy.20260908.084213 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-ros-move-group (2.5.10-1jammy.20260908.090034 ROS jammy:jammy [amd64])
+Conf ros-humble-warehouse-ros (2.0.9-1jammy.20260907.230447 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-ros-warehouse (2.5.10-1jammy.20260908.083936 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-ros-planning-interface (2.5.10-1jammy.20260908.090719 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-task-constructor-msgs (0.1.3-1jammy.20260908.071527 ROS jammy:jammy [amd64])
+Conf ros-humble-py-binding-tools (2.0.1-1jammy.20260907.235014 ROS jammy:jammy [amd64])
+Conf ros-humble-rviz-marker-tools (0.1.3-1jammy.20260908.012414 ROS jammy:jammy [amd64])
+Conf ros-humble-moveit-task-constructor-core (0.1.3-1jammy.20260908.101449 ROS jammy:jammy [amd64])
+Conf ros-humble-pilz-industrial-motion-planner (2.5.10-1jammy.20260908.093641 ROS jammy:jammy [amd64])

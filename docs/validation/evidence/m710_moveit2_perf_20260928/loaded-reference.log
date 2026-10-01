@@ -1,0 +1,5 @@
+native PTP SEARCH_EXHAUSTED plan_s 0.838169007 output_s None
+native RRTConnectkConfigDefault SEARCH_EXHAUSTED plan_s 12.020549929 output_s None
+native RRTConnectkConfigDefault SEARCH_EXHAUSTED plan_s 12.007554264 output_s None
+native RRTConnectkConfigDefault SEARCH_EXHAUSTED plan_s 12.055323204 output_s None
+loaded_fixed_transit FAIL 37.213992735370994

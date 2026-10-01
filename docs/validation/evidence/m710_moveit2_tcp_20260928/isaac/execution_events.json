@@ -1,0 +1,710 @@
+{
+  "format": "isaacsim_fanuc_execution_events_v1",
+  "events": [
+    {
+      "event": "actual_attachment_capture",
+      "simulation_time_s": 4.125,
+      "trajectory_time_s": 4.020833333333425,
+      "target": "carton_l07_c02",
+      "physical_contact_pose_world": [
+        [
+          0.000317530519738883,
+          -0.0001326401222657669,
+          0.9999999407904817,
+          -0.00025538265097557744
+        ],
+        [
+          0.00025064622850313355,
+          -0.9999999597809726,
+          -0.0001327197126165876,
+          -0.0002517680471995692
+        ],
+        [
+          0.9999999181754156,
+          0.0002506883562218178,
+          -0.00031749726122172006,
+          2.2735706128089794
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "actual_box_pose_world": [
+        [
+          0.9999999995423892,
+          1.4538740918584436e-05,
+          2.6530108760282825e-05,
+          0.299818754196167
+        ],
+        [
+          -1.453887061805971e-05,
+          0.9999999998823615,
+          4.888578995955375e-06,
+          3.9290840504691005e-05
+        ],
+        [
+          -2.653003768337838e-05,
+          -4.888964711537057e-06,
+          0.9999999996361275,
+          2.250020742416382
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "physical_contact_from_box": [
+        [
+          0.00029099683996792124,
+          0.00024576188065610836,
+          0.9999999274609656,
+          -0.02345451281619315
+        ],
+        [
+          -0.0001181079029432862,
+          -0.9999999628173604,
+          0.0002457962583743879,
+          -0.00033676442449631123
+        ],
+        [
+          0.99999995068568,
+          -0.00011817942031031591,
+          -0.00029096780272754307,
+          0.3000815574699973
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "joint_local_position0_m": [
+        0.6925815574699972,
+        -0.0003367644253343005,
+        0.023454512816182972
+      ],
+      "joint_local_quaternion0_wxyz": [
+        -0.00012288953720060667,
+        0.9999999801205006,
+        -5.907183198771899e-05,
+        -0.00014549116356615764
+      ],
+      "actual_contact_mask": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sample_source": "SAME_ATTACHMENT_STATE_NO_INTERVENING_PHYSICS_STEP"
+    },
+    {
+      "event": "grasp_contact_attempt",
+      "simulation_time_s": 4.125,
+      "trajectory_time_s": 4.020833333333425,
+      "accepted": true,
+      "target": "carton_l07_c02",
+      "actual_contact_count": 40
+    },
+    {
+      "event": "actual_stack_geometry_free_space_entered",
+      "step": 7163,
+      "time_s": 29.849999999999998,
+      "from_free": false,
+      "to_free": true,
+      "clearance_m": 0.005239972707731189,
+      "nearest_neighbor": "carton_l06_c02",
+      "shape_fingerprint": "e81a91d3432f74b9b26571542d222e02557623d2665d20e3bd0eb2aacd2c0666",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "contact_evidence_status": "RESOLVED",
+      "basis": "POST_STEP_VERIFIED_BOX_GEOMETRY"
+    },
+    {
+      "event": "actual_free_transit_gate_passed",
+      "time_s": 30.8125,
+      "wait_elapsed_s": 0.0
+    },
+    {
+      "event": "ideal_release_actual_height_check",
+      "simulation_time_s": 93.1,
+      "trajectory_time_s": 92.99541371452791,
+      "target": "carton_l07_c02",
+      "accepted": true,
+      "height_m": 0.024789166521496986,
+      "reason": "IDEAL_RECEPTION_REGION_ACCEPTED",
+      "pose_world": [
+        [
+          0.00023256513548541857,
+          0.00020360828838311945,
+          0.9999999522285603,
+          -0.35961952805519104
+        ],
+        [
+          -1.1449741695752089e-05,
+          0.999999979206825,
+          -0.00020360563106526207,
+          -0.6095905900001526
+        ],
+        [
+          -0.9999999728911804,
+          -1.1402389577607136e-05,
+          0.00023256746191191446,
+          0.9248263239860535
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
+      "event": "actual_constraint_removed",
+      "simulation_time_s": 93.1,
+      "trajectory_time_s": 92.99541371452791,
+      "target": "carton_l07_c02",
+      "height_m": 0.024789166521496986,
+      "height_sample_source": "SAME_PRE_REMOVAL_STATE_NO_INTERVENING_PHYSICS_STEP"
+    },
+    {
+      "event": "release_region_attempt",
+      "release_mode": "IDEAL_RECEPTION_RELEASE",
+      "actual_release_prediction": {
+        "mode": "IDEAL_RECEPTION_RELEASE",
+        "accepted": true,
+        "reason": "IDEAL_RECEPTION_REGION_ACCEPTED",
+        "release_pose_world": [
+          [
+            0.00023256513548541857,
+            0.00020360828838311945,
+            0.9999999522285603,
+            -0.35961952805519104
+          ],
+          [
+            -1.1449741695752089e-05,
+            0.999999979206825,
+            -0.00020360563106526207,
+            -0.6095905900001526
+          ],
+          [
+            -0.9999999728911804,
+            -1.1402389577607136e-05,
+            0.00023256746191191446,
+            0.9248263239860535
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "linear_velocity_m_s": [
+          0.0002614995464682579,
+          -0.00021105725318193436,
+          0.02076079323887825
+        ],
+        "angular_velocity_rad_s": [
+          0.002582040149718523,
+          0.0013513769954442978,
+          -0.0005516649689525366
+        ],
+        "policy": {
+          "maximum_drop_m": 0.05,
+          "ideal_release_min_height_m": 0.02,
+          "ideal_release_max_height_m": 0.05,
+          "ideal_release_height_reserve_m": 0.005,
+          "maximum_flight_s": 0.25,
+          "maximum_angular_speed_rad_s": 0.08,
+          "maximum_landing_speed_m_s": 1.1,
+          "position_uncertainty_m": 0.002,
+          "velocity_uncertainty_m_s": 0.01,
+          "prediction_step_s": 0.005,
+          "gravity_m_s2": 9.81
+        },
+        "actual_landing_state": null,
+        "predicted_landing_pose_world": [
+          [
+            0.00023256513548541857,
+            0.00020360828838311945,
+            0.9999999522285603,
+            -0.35961952805519104
+          ],
+          [
+            -1.1449741695752089e-05,
+            0.999999979206825,
+            -0.00020360563106526207,
+            -0.6095905900001526
+          ],
+          [
+            -0.9999999728911804,
+            -1.1402389577607136e-05,
+            0.00023256746191191446,
+            0.9000371574645565
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "landing_support": {
+          "schema": "ideal_receiver_projection_v1",
+          "supported": true,
+          "reason": "IDEAL_FOOTPRINT_COVERED",
+          "receiver_names": [
+            "conveyor_longitudinal"
+          ],
+          "support_z_m": 0.6000000000000001,
+          "footprint_area_m2": 0.11999999674694173,
+          "unsupported_area_m2": 0,
+          "support_face_local_axis": 0,
+          "support_face_local_sign": 1,
+          "payload_half_extents_m": [
+            0.3,
+            0.2,
+            0.15
+          ],
+          "actual_box_pose": [
+            [
+              0.00023256513548541857,
+              0.00020360828838311945,
+              0.9999999522285603,
+              -0.35961952805519104
+            ],
+            [
+              -1.1449741695752089e-05,
+              0.999999979206825,
+              -0.00020360563106526207,
+              -0.6095905900001526
+            ],
+            [
+              -0.9999999728911804,
+              -1.1402389577607136e-05,
+              0.00023256746191191446,
+              0.9248263239860535
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "support_obbs": [
+            {
+              "name": "conveyor_transverse",
+              "category": "conveyor",
+              "pose_world": [
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  -0.55
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.35
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.54
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "half_extents_m": [
+                0.35,
+                0.75,
+                0.06
+              ]
+            },
+            {
+              "name": "conveyor_longitudinal",
+              "category": "conveyor",
+              "pose_world": [
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  -1.6
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0,
+                  -0.7500000000000001
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.54
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "half_extents_m": [
+                1.4,
+                0.35,
+                0.06
+              ]
+            }
+          ],
+          "tolerance_m": 0.0,
+          "edge_tolerance_m": 0.002,
+          "physical_support_observed": false
+        },
+        "actual_support": null,
+        "height_m": 0.024789166521496986,
+        "reception_region": {
+          "accepted": true,
+          "reason": "IDEAL_RECEPTION_REGION_ACCEPTED",
+          "support": {
+            "schema": "ideal_receiver_projection_v1",
+            "supported": true,
+            "reason": "IDEAL_FOOTPRINT_COVERED",
+            "receiver_names": [
+              "conveyor_longitudinal"
+            ],
+            "support_z_m": 0.6000000000000001,
+            "footprint_area_m2": 0.11999999674694173,
+            "unsupported_area_m2": 0,
+            "support_face_local_axis": 0,
+            "support_face_local_sign": 1,
+            "payload_half_extents_m": [
+              0.3,
+              0.2,
+              0.15
+            ],
+            "actual_box_pose": [
+              [
+                0.00023256513548541857,
+                0.00020360828838311945,
+                0.9999999522285603,
+                -0.35961952805519104
+              ],
+              [
+                -1.1449741695752089e-05,
+                0.999999979206825,
+                -0.00020360563106526207,
+                -0.6095905900001526
+              ],
+              [
+                -0.9999999728911804,
+                -1.1402389577607136e-05,
+                0.00023256746191191446,
+                0.9248263239860535
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "support_obbs": [
+              {
+                "name": "conveyor_transverse",
+                "category": "conveyor",
+                "pose_world": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0,
+                    -0.55
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    0.0,
+                    0.35
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.54
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "half_extents_m": [
+                  0.35,
+                  0.75,
+                  0.06
+                ]
+              },
+              {
+                "name": "conveyor_longitudinal",
+                "category": "conveyor",
+                "pose_world": [
+                  [
+                    1.0,
+                    0.0,
+                    0.0,
+                    -1.6
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    0.0,
+                    -0.7500000000000001
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.54
+                  ],
+                  [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                  ]
+                ],
+                "half_extents_m": [
+                  1.4,
+                  0.35,
+                  0.06
+                ]
+              }
+            ],
+            "tolerance_m": 0.0,
+            "edge_tolerance_m": 0.002,
+            "physical_support_observed": false
+          },
+          "actual_release_pose_world": [
+            [
+              0.00023256513548541857,
+              0.00020360828838311945,
+              0.9999999522285603,
+              -0.35961952805519104
+            ],
+            [
+              -1.1449741695752089e-05,
+              0.999999979206825,
+              -0.00020360563106526207,
+              -0.6095905900001526
+            ],
+            [
+              -0.9999999728911804,
+              -1.1402389577607136e-05,
+              0.00023256746191191446,
+              0.9248263239860535
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "reception_pose_world": [
+            [
+              0.00023256513548541857,
+              0.00020360828838311945,
+              0.9999999522285603,
+              -0.35961952805519104
+            ],
+            [
+              -1.1449741695752089e-05,
+              0.999999979206825,
+              -0.00020360563106526207,
+              -0.6095905900001526
+            ],
+            [
+              -0.9999999728911804,
+              -1.1402389577607136e-05,
+              0.00023256746191191446,
+              0.9000371574645565
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "vertical_correction_m": -0.024789166521496986,
+          "height_policy": {
+            "maximum_drop_m": 0.05,
+            "ideal_release_min_height_m": 0.02,
+            "ideal_release_max_height_m": 0.05,
+            "ideal_release_height_reserve_m": 0.005,
+            "maximum_flight_s": 0.25,
+            "maximum_angular_speed_rad_s": 0.08,
+            "maximum_landing_speed_m_s": 1.1,
+            "position_uncertainty_m": 0.002,
+            "velocity_uncertainty_m_s": 0.01,
+            "prediction_step_s": 0.005,
+            "gravity_m_s2": 9.81
+          },
+          "gap_m": 0.024789166521496986,
+          "actual_top_contact_observed": false,
+          "physical_landing_qualified": false
+        },
+        "flight_time_s": 0.0,
+        "prediction_source": "BOUNDED_IDEAL_RECEPTION_REGION_NOT_PHYSICAL_LANDING"
+      },
+      "simulation_time_s": 93.1,
+      "trajectory_time_s": 92.99541371452791,
+      "support": "conveyor_longitudinal",
+      "support_geometry_accepted": false,
+      "support_contact_report_observed": false,
+      "support_release_accepted": true,
+      "support_reason": "PAYLOAD_NOT_IN_SUPPORT_CONTACT",
+      "release_executed": false
+    },
+    {
+      "event": "target_cup_release_clearance_started",
+      "time_s": 93.1,
+      "maximum_wait_s": 1.0
+    },
+    {
+      "event": "release_constraint_removal_confirmed",
+      "simulation_time_s": 93.12083333333334,
+      "request_time_s": 93.1,
+      "relative_position_delta_m": 0.0021245722258732237,
+      "relative_rotation_delta_rad": 4.166091792751234e-05,
+      "support_contact_still_active": false
+    },
+    {
+      "event": "IDEAL_RECEPTION_ACCEPTED",
+      "carton_id": "carton_l07_c02",
+      "time_s": 93.12083333333334,
+      "takeover_pose_world": [
+        [
+          0.0002089676607649471,
+          0.00020351885645077822,
+          0.9999999574562952,
+          -0.359614759683609
+        ],
+        [
+          3.531230665860093e-05,
+          0.9999999786650551,
+          -0.00020352623989759361,
+          -0.6095905900001526
+        ],
+        [
+          -0.9999999775427788,
+          3.53548355585403e-05,
+          0.00020896046958640557,
+          0.9227091670036316
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "release_height_m": 0.024789166521496986,
+      "release_height_semantics": "ACTUAL_PRE_REMOVAL_LOWEST_CORNER_HEIGHT",
+      "actual_release_height_m": 0.024789166521496986,
+      "first_takeover_height_m": 0.022670758703248195,
+      "source": "RECEPTION_ASSUMED",
+      "model": "SAME_BODY_BOUNDED_IDEAL_RECEPTION",
+      "disabled_collider_paths": [
+        "/Validation/Scene/carton_l07_c02"
+      ]
+    },
+    {
+      "event": "target_cup_clearance_ended_by_assumed_reception",
+      "time_s": 93.12083333333334,
+      "physical_clearance_certified": false
+    }
+  ]
+}

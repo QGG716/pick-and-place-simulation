@@ -1,0 +1,34 @@
+{
+  "native_call": "PASS",
+  "rotating_task_tcp": "PASS",
+  "complete_geometric_task": "PASS",
+  "independent_preflight": "READY",
+  "executor_tcp_audit": "PASS",
+  "isaac_runs": 1,
+  "isaac_workflow_cycle_completed": true,
+  "isaac_physical_cycle_completed": false,
+  "isaac_qualification_passed": false,
+  "isaac_qualification_failures": [
+    "joint_efforts_within_limit"
+  ],
+  "joint_effort_check_detail": {
+    "status": "NOT_EVALUATED",
+    "reason": "joint effort ratios are unavailable"
+  },
+  "execution_counts": {
+    "actual_reception": 0,
+    "ideal_reception": 1,
+    "ideal_outfeed": 1,
+    "workflow_processed": 1,
+    "downstream_physical_qualification_claimed": false,
+    "actual_grasp": 1,
+    "actual_release": 1
+  },
+  "runtime_stop_reason": null,
+  "planning_wall_s": 740.7942608799785,
+  "isaac_replay_wall_s": 1226.9220279417932,
+  "isaac_physical_s": 106.27083333333333,
+  "physical_tcp_tracking_peak_m": 0.0020274542402238947,
+  "physical_tcp_tracking_peak_rad": 0.0017174927945727296,
+  "no_physical_tcp_process_tolerance_claim": true
+}

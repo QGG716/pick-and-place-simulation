@@ -1,0 +1,39 @@
+{
+  "review_baseline": "baeb2a7056e8af0397855e9f54c0d9d421472e6d",
+  "files": {
+    "ros2/m710_moveit_backend/src/worker.cpp": "b452bfddda760b3d05504502a59dda6773fc6f63b7962cad73c86a70275a4113",
+    "ros2/m710_moveit_backend/src/clearance.h": "d1dc40dc081f5b9ca8ce604a1ef43db2d4a20d58508eca7a01b08a0a58f67ec8",
+    "ros2/m710_moveit_backend/src/clearance_workspace.h": "ff621ef624b4b96e0cc6292bd401deb8a7fcae54975a204deeca4ef2c0851eed",
+    "ros2/m710_moveit_backend/src/clearance_test.cpp": "9305b343fd5f0eae177fd7b54a782e17c2102ad4979e596ee229ffb0dcf33ffc",
+    "src/unloading_sim/moveit2_backend.py": "28758a79380761d35926aced445bd234cadea195f2e7b405833a24e3a5e80f50",
+    "src/unloading_sim/layout_single_carton.py": "e6fdab24ee5d62fdbf64736e9b41d600f0ff61317ebab8508113153eb01cb355",
+    "tools/profile_m710_clearance.py": "3bc0d768136e7d4645f7895880e516ab8c186d311f0ba73ca1e87c7797f7764b",
+    "tools/run_m710_moveit_integration.py": "99a7ccca2fadb9f527763c8dca9f96b0c26368b27dc4ef63e664019a844693c6",
+    "tools/check_m710_moveit_clearance.py": "515e559e6deaf1bcf7d5c3dfeec1033114b3625e34528f6179e8a7e19e699c67",
+    "tests/fixtures/moveit2/frozen_candidate.json": "13a3d6389c124ccec5f72bb9fb83257fd7cd9aedbad19fb6c48cbc4106329c8e",
+    "tests/fixtures/moveit2/clearance_rejections.json": "bde2527dba6130060a7424c47a8783f1a4389fb8d5480509a6bba7a1e87e06a3",
+    "configs/validation/m710id70_proof_of_concept.yaml": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0"
+  },
+  "build": "Release -O3 -DNDEBUG; no fast-math",
+  "resident_seed": 71070,
+  "loaded_request_seed": 71072,
+  "order": "synthetic reference, optimized; fixed_set reference, optimized; historical reference, optimized; loaded reference, optimized; optional one diagnostic; PTP, LIN, early TCP; focused pytest",
+  "normalized_lf_sha256": {
+    "ros2/m710_moveit_backend/src/worker.cpp": "b452bfddda760b3d05504502a59dda6773fc6f63b7962cad73c86a70275a4113",
+    "ros2/m710_moveit_backend/src/clearance.h": "d1dc40dc081f5b9ca8ce604a1ef43db2d4a20d58508eca7a01b08a0a58f67ec8",
+    "ros2/m710_moveit_backend/src/clearance_workspace.h": "ff621ef624b4b96e0cc6292bd401deb8a7fcae54975a204deeca4ef2c0851eed",
+    "ros2/m710_moveit_backend/src/clearance_test.cpp": "9305b343fd5f0eae177fd7b54a782e17c2102ad4979e596ee229ffb0dcf33ffc",
+    "src/unloading_sim/moveit2_backend.py": "28758a79380761d35926aced445bd234cadea195f2e7b405833a24e3a5e80f50",
+    "src/unloading_sim/layout_single_carton.py": "e6fdab24ee5d62fdbf64736e9b41d600f0ff61317ebab8508113153eb01cb355",
+    "tools/profile_m710_clearance.py": "3bc0d768136e7d4645f7895880e516ab8c186d311f0ba73ca1e87c7797f7764b",
+    "tools/run_m710_moveit_integration.py": "99a7ccca2fadb9f527763c8dca9f96b0c26368b27dc4ef63e664019a844693c6",
+    "tools/check_m710_moveit_clearance.py": "515e559e6deaf1bcf7d5c3dfeec1033114b3625e34528f6179e8a7e19e699c67",
+    "tests/fixtures/moveit2/frozen_candidate.json": "98a08520a46ac200c50be3925ddfbf800d311b2456c105141c9695d0384a215a",
+    "tests/fixtures/moveit2/clearance_rejections.json": "08de65486d449c8fd8b11f3319aa73feaae3d041c553b4558358a724a275f713",
+    "configs/validation/m710id70_proof_of_concept.yaml": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0"
+  },
+  "line_endings_note": "Runtime modified sources are exact byte matches. Some unchanged fixtures inherited CRLF from the prior Windows upload; normalized_lf_sha256 identifies their committed LF content without changing numeric text or parsed values.",
+  "post_validation_sources": {
+    "tools/check_m710_loaded_timing.py": "84b5f6aef14d15ccc7b661a4567c482d5017e604ae028275e1640d08b3d14c7c"
+  }
+}

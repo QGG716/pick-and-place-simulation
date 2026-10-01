@@ -1,0 +1,9 @@
+Collecting py-spy
+  Downloading py_spy-0.4.2-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl.metadata (510 bytes)
+Downloading py_spy-0.4.2-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl (2.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.9/2.9 MB 14.5 kB/s eta 0:00:00
+Installing collected packages: py-spy
+Successfully installed py-spy-0.4.2
+
+[notice] A new release of pip is available: 24.0 -> 26.2.1
+[notice] To update, run: /root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python -m pip install --upgrade pip

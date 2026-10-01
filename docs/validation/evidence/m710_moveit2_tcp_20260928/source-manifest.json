@@ -1,0 +1,46 @@
+{
+  "review_baseline": "85e968fd5b3e12a05938e9ff1a00f1807e532904",
+  "source_sha256": {
+    "ros2/m710_moveit_backend/src/worker.cpp": "faa3cf7b7a1bac636c3f20fe9addf01995b8f08465c2b2890ac021ef4dcf54d5",
+    "ros2/m710_moveit_backend/src/clearance.h": "d1dc40dc081f5b9ca8ce604a1ef43db2d4a20d58508eca7a01b08a0a58f67ec8",
+    "ros2/m710_moveit_backend/src/clearance_workspace.h": "ff621ef624b4b96e0cc6292bd401deb8a7fcae54975a204deeca4ef2c0851eed",
+    "src/unloading_sim/moveit2_backend.py": "254126b359eac170458e3fc54e14b8e035011e256f056a3961893d0beec265a5",
+    "src/unloading_sim/moveit2_tcp.py": "cdfa206487db529cda9cee581ba78e6ae5c2cefdee9f5416783249f5639f99dc",
+    "src/unloading_sim/layout_single_carton.py": "3c2f4c2f2cbdb30e705eaae027c021dae9612b856fc593c928ffea9d06fb7a1f",
+    "tools/check_m710_rotating_tcp.py": "5335fd213fa69b4db480fcb6e07a65d931e37ea7b28035fc3fdb37419d3f2cf0",
+    "tools/check_m710_moveit_execution_tcp.py": "9a5442d24e138f43aa05c7f25c2496ebd3b31b1cd0a133a6878e9d5f8943c1a4",
+    "tools/run_m710id70_layout_single_carton.py": "63a316de18d80cb5adc148e2c303f8adff51c739800e418168998283ff9861a7",
+    "tools/run_m710_moveit_integration.py": "280e6663ee02b3f8a0473bccac98a4ff178d15cc9a8be0d1b03bdc3837a45763",
+    "tests/test_moveit2_backend.py": "79adf446b112c2a213f9ea1769523e49ee261aaabe2a2a3c78b7fb7994d1c8ae",
+    "tests/test_moveit2_tcp.py": "f9367644f4105ecd24345fd1760bf21297d4cc5ffb670fcc205efdf304e517a4",
+    "tests/fixtures/moveit2/frozen_candidate.json": "13a3d6389c124ccec5f72bb9fb83257fd7cd9aedbad19fb6c48cbc4106329c8e",
+    "configs/validation/m710id70_proof_of_concept.yaml": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0",
+    "configs/simulation/m710id70_proof_of_concept.yaml": "a6b9c9c71f6e7ee55e61bb63d46710e6168648a6bd97eec208fa5f1116e2f7d0"
+  },
+  "normalized_lf_sha256": {
+    "ros2/m710_moveit_backend/src/worker.cpp": "faa3cf7b7a1bac636c3f20fe9addf01995b8f08465c2b2890ac021ef4dcf54d5",
+    "ros2/m710_moveit_backend/src/clearance.h": "d1dc40dc081f5b9ca8ce604a1ef43db2d4a20d58508eca7a01b08a0a58f67ec8",
+    "ros2/m710_moveit_backend/src/clearance_workspace.h": "ff621ef624b4b96e0cc6292bd401deb8a7fcae54975a204deeca4ef2c0851eed",
+    "src/unloading_sim/moveit2_backend.py": "254126b359eac170458e3fc54e14b8e035011e256f056a3961893d0beec265a5",
+    "src/unloading_sim/moveit2_tcp.py": "cdfa206487db529cda9cee581ba78e6ae5c2cefdee9f5416783249f5639f99dc",
+    "src/unloading_sim/layout_single_carton.py": "3c2f4c2f2cbdb30e705eaae027c021dae9612b856fc593c928ffea9d06fb7a1f",
+    "tools/check_m710_rotating_tcp.py": "5335fd213fa69b4db480fcb6e07a65d931e37ea7b28035fc3fdb37419d3f2cf0",
+    "tools/check_m710_moveit_execution_tcp.py": "9a5442d24e138f43aa05c7f25c2496ebd3b31b1cd0a133a6878e9d5f8943c1a4",
+    "tools/run_m710id70_layout_single_carton.py": "63a316de18d80cb5adc148e2c303f8adff51c739800e418168998283ff9861a7",
+    "tools/run_m710_moveit_integration.py": "280e6663ee02b3f8a0473bccac98a4ff178d15cc9a8be0d1b03bdc3837a45763",
+    "tests/test_moveit2_backend.py": "79adf446b112c2a213f9ea1769523e49ee261aaabe2a2a3c78b7fb7994d1c8ae",
+    "tests/test_moveit2_tcp.py": "f9367644f4105ecd24345fd1760bf21297d4cc5ffb670fcc205efdf304e517a4",
+    "tests/fixtures/moveit2/frozen_candidate.json": "98a08520a46ac200c50be3925ddfbf800d311b2456c105141c9695d0384a215a",
+    "configs/validation/m710id70_proof_of_concept.yaml": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0",
+    "configs/simulation/m710id70_proof_of_concept.yaml": "a6b9c9c71f6e7ee55e61bb63d46710e6168648a6bd97eec208fa5f1116e2f7d0"
+  },
+  "native_build": "Release -O3 -DNDEBUG; no fast-math",
+  "resident_seed": 71070,
+  "order": [
+    "semantics: constant_orientation, offset_pure_rotation, offset_translation_rotation, second_context_zero_translation_offset_rotation, first_context_FK_reuse",
+    "real_fixed_suffix: one LIN, original first release height",
+    "one complete fixed historical candidate through standard entry"
+  ],
+  "binary_unchanged_after_LF_rebuild": true,
+  "prior_loaded_sha256": "16e6cb3d8d79d8c2b87c56c0b45a86dcea0fe3b02d68e47c8335a457b70f59d5"
+}

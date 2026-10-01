@@ -1,0 +1,6 @@
+{
+  "run_status": "BLOCKED",
+  "backend": "moveit2",
+  "complete_trajectory_status": "NOT_RUN",
+  "reason": "MOVEIT2_UNAVAILABLE: set M710_MOVEIT_COMMAND to the resident worker launcher"
+}
