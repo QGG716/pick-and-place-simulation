@@ -39,8 +39,22 @@ def main(argv: list[str] | None = None, *, source_guard=None) -> int:
     parser.add_argument("--execution-bundle", type=Path, metavar="JSON",
                         help="export a ready motion through scripts/export_isaac_fanuc_replay.py")
     parser.add_argument("--target-id", help="select one member of the current legal row candidate set")
+    parser.add_argument("--backend", choices=("core", "moveit2"), default="core")
+    parser.add_argument("--moveit-command", help="Resident native JSONL worker launcher")
+    parser.add_argument("--native-cold", action="store_true", help="All motion and IK generated natively in this request; no historical inputs")
+    parser.add_argument("--initial-ready", type=Path, help="Current retained native-cold world's initial_ready.json")
+    parser.add_argument("--native-task-budget-s", type=float, default=3600.)
+    parser.add_argument("--native-stage-budget-s", type=float, default=300.)
+    parser.add_argument("--native-ipc-timeout-s", type=float, default=360.)
     parser.add_argument("--diagnostics", action="store_true", help="save bounded production rejection evidence")
     args = parser.parse_args(argv)
+    if args.native_cold:
+        if args.history_source is not None or args.reuse_motion is not None:
+            raise ValueError("NATIVE_COLD_FORBIDDEN_HISTORY_INPUT")
+        if args.target_id is None:
+            args.target_id = "carton_l07_c02"
+        if args.planning_wall_time_s is not None:
+            raise ValueError("NATIVE_COLD_USE_NATIVE_TASK_BUDGET")
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     if (output / "motion.json").exists() or (output / "first_feasible").exists():
@@ -51,6 +65,11 @@ def main(argv: list[str] | None = None, *, source_guard=None) -> int:
     signal.signal(signal.SIGTERM, cancelled)
     scene = None
     planning_policy = load_layout_motion_policy(args.config)
+    if args.native_cold:
+        from unloading_sim.native_cold_entry import validate_native_cold_inputs, native_budget_config
+        validate_native_cold_inputs(planning_policy.data, backend=args.backend, target_id=args.target_id)
+        native_budget_config({"task_wall_time_s": args.native_task_budget_s,
+            "stage_wall_time_s": args.native_stage_budget_s, "ipc_timeout_s": args.native_ipc_timeout_s})
     if args.execution_config is None and profile_evidence(planning_policy.data)["name"] == POC:
         args.execution_config = ROOT / DEFAULT_EXECUTION
     if args.history_source is not None and args.reuse_motion is not None:
@@ -73,8 +92,12 @@ def main(argv: list[str] | None = None, *, source_guard=None) -> int:
     row_state = RowUnloadingState(RowSequencePolicy(
         row_height_fraction=float(strategy.get("row_height_fraction", 0.05))))
     if args.actual_state is not None:
-        actual_state_bytes = args.actual_state.read_bytes()
-        actual_state = json.loads(actual_state_bytes)
+        if args.native_cold:
+            from unloading_sim.native_cold_entry import read_native_initial_state
+            actual_state, actual_state_bytes = read_native_initial_state(args.actual_state, args.initial_ready)
+        else:
+            actual_state_bytes = args.actual_state.read_bytes()
+            actual_state = json.loads(actual_state_bytes)
         if not isinstance(actual_state, dict):
             raise ValueError("--actual-state must contain one actual-state JSON object")
         initial_scene = build_verified_motion_input(planning_policy)
@@ -85,6 +108,8 @@ def main(argv: list[str] | None = None, *, source_guard=None) -> int:
         planning_policy = scene.policy
         (output / "actual_scene_snapshot.json").write_text(
             json.dumps(scene.snapshot, indent=2), encoding="utf-8")
+    elif args.native_cold:
+        raise ValueError("NATIVE_COLD_REQUIRES_ACTUAL_STATE_AND_INITIAL_READY")
     from unloading_sim.search_diagnostics import SearchDiagnostics
     from unloading_sim.layout_single_carton import motion_implementation_identity
     diagnostics = SearchDiagnostics(output / "search_diagnostics.json", identity=dict(
@@ -105,8 +130,18 @@ def main(argv: list[str] | None = None, *, source_guard=None) -> int:
         try:
             result = run_layout_single_carton_audit(
                 planning_policy, progress_callback=progress, motion_input=scene, row_state=row_state,
-                diagnostics=diagnostics, target_id=args.target_id)
+                diagnostics=diagnostics, target_id=args.target_id, backend=args.backend,
+                moveit_command=args.moveit_command, native_cold=args.native_cold,
+                native_budget={"task_wall_time_s": args.native_task_budget_s,
+                    "stage_wall_time_s": args.native_stage_budget_s, "ipc_timeout_s": args.native_ipc_timeout_s})
         except BaseException as exc:
+            if args.native_cold:
+                (output / "motion.json").write_text(json.dumps({
+                    "run_status": "BLOCKED", "complete_trajectory_status": "NOT_RUN",
+                    "native_cold": True, "require_native_motion": True,
+                    "reason": str(exc), "exception_type": type(exc).__name__,
+                    "native_failure_evidence": getattr(exc, "native_cold_failure_evidence", None),
+                    "isaac_executed": False}, indent=2), encoding="utf-8")
             progress({"event": "CANCELLED" if isinstance(exc, KeyboardInterrupt) else "ERROR",
                       "reason": str(exc), "exception_type": type(exc).__name__,
                       "simulation_profile": profile_evidence(planning_policy.data),

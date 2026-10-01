@@ -22,6 +22,10 @@ from pathlib import Path
 class DiagnosticSettlingComplete(Exception):
     """A requested short dynamics diagnostic is not a qualified pick cycle."""
 
+
+class NativeColdPlanningStopped(Exception):
+    """Initialization succeeded but no executable native plan was accepted."""
+
 def _sha256_path(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -75,7 +79,10 @@ def _load_workspace_module(path: Path, module_name: str):
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--bundle", required=True, type=Path)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--bundle", type=Path)
+    source.add_argument("--bootstrap-contract", type=Path,
+                        help="initialize and retain a new world, awaiting one native-cold bundle")
     parser.add_argument("--project-root", required=True, type=Path)
     parser.add_argument("--usd-directory", required=True, type=Path)
     parser.add_argument("--reuse-usd-entrypoint", type=Path)
@@ -157,6 +164,12 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _validate_args(args: argparse.Namespace) -> None:
+    if args.bootstrap_contract is not None:
+        if args.continuation_dir is None or args.maximum_segments != 1 or args.diagnostic_only:
+            raise ValueError("bootstrap requires continuation-dir and exactly one physical segment")
+        if any(value is not None for value in (args.reuse_usd_entrypoint, args.reuse_usd_run_evidence,
+                                               args.reuse_usd_source_contract)):
+            raise ValueError("bootstrap does not consume prior-world USD evidence")
     if args.diagnostic_only != (args.diagnostic_settling_steps is not None):
         raise ValueError("diagnostic-only and diagnostic-settling-steps must be specified together")
     if args.diagnostic_settling_steps is not None and args.diagnostic_settling_steps <= 0:
@@ -332,10 +345,14 @@ def _quaternion_angle_wxyz(quaternion):
 
 args = _parser().parse_args()
 _validate_args(args)
-bundle = json.loads(args.bundle.resolve().read_text(encoding="utf-8"))
-if bundle.get("format") != "isaacsim_fanuc_replay_v1":
+bootstrap_mode = args.bootstrap_contract is not None
+bootstrap_contract = None
+bundle = json.loads((args.bootstrap_contract if bootstrap_mode else args.bundle).resolve().read_text(encoding="utf-8"))
+if not bootstrap_mode and bundle.get("format") != "isaacsim_fanuc_replay_v1":
     raise ValueError("unsupported replay bundle format")
 metadata = bundle["metadata"]
+if bootstrap_mode and metadata.get("robot_model") != "fanuc_m710id_70":
+    raise ValueError("bootstrap supports only the official M-710 world")
 expected_joint_names = list(metadata["joint_names"])
 pre_simulation_integrity_gate = None
 if metadata.get("robot_model") == "fanuc_m710id_70":
@@ -347,10 +364,15 @@ if metadata.get("robot_model") == "fanuc_m710id_70":
     # The standard-library gate checks bundle, implementation and manifest
     # identities before Kit startup. The full CAD audit now imports NumPy;
     # run that by its real package name after SimulationApp, before any World.
-    pre_simulation_integrity_gate = contract_module.verify_m710_replay_bundle(
-        bundle,
-        project_root=project_root,
-    )
+    if bootstrap_mode:
+        bootstrap_module = _load_workspace_module(
+            project_root / "src/unloading_sim/m710_bootstrap.py", "_m710_bootstrap_pre_simulation_gate")
+        bootstrap_contract = bundle
+        pre_simulation_integrity_gate = bootstrap_module.verify_bootstrap_contract(
+            bootstrap_contract, project_root=project_root)
+    else:
+        pre_simulation_integrity_gate = contract_module.verify_m710_replay_bundle(
+            bundle, project_root=project_root)
     execution_blockers = metadata.get("execution_blockers")
     execution_fingerprint = metadata.get("execution_asset_fingerprint_sha256")
     if not isinstance(execution_blockers, list) or any(
@@ -365,7 +387,7 @@ if metadata.get("robot_model") == "fanuc_m710id_70":
         "simulation_execution_qualified",
         metadata.get("simulation_execution_ready") is True and not execution_blockers,
     )
-    if (
+    if not bootstrap_mode and (
         metadata.get("simulation_execution_ready") is not True
         or execution_blockers
         or simulation_execution_qualified is not True
@@ -542,9 +564,13 @@ try:
     if metadata.get("robot_model") == "fanuc_m710id_70":
         from unloading_sim.m710_execution import audit_m710_replay_assets
         from unloading_sim import m710_replay_contract as contract_module
-        current_asset_audit = audit_m710_replay_assets(project_root, metadata)
-        pre_simulation_integrity_gate = contract_module.verify_m710_replay_bundle(
-            bundle, project_root=project_root, current_asset_audit=current_asset_audit)
+        if bootstrap_mode:
+            from unloading_sim.m710_bootstrap import audit_bootstrap_assets
+            current_asset_audit = audit_bootstrap_assets(bootstrap_contract, project_root=project_root)
+        else:
+            current_asset_audit = audit_m710_replay_assets(project_root, metadata)
+            pre_simulation_integrity_gate = contract_module.verify_m710_replay_bundle(
+                bundle, project_root=project_root, current_asset_audit=current_asset_audit)
         print("FANUC_REPLAY_STAGE=current_assets_verified", flush=True)
     from unloading_sim.qualification import (
         ReplayQualificationPolicy,
@@ -798,7 +824,11 @@ try:
         draw.text((left + pad_x, y), assumption, font=small_font, fill=(190, 202, 214, 255))
         return np.asarray(Image.alpha_composite(image, overlay).convert("RGB"), dtype=np.uint8)
 
-    timestamps, positions = replay_command_arrays(bundle, expected_joint_names)
+    if bootstrap_mode:
+        timestamps = np.asarray([0.0])
+        positions = np.asarray([metadata["initial_q_rad"]], dtype=float)
+    else:
+        timestamps, positions = replay_command_arrays(bundle, expected_joint_names)
 
     args.usd_directory.mkdir(parents=True, exist_ok=True)
     urdf_path = (args.project_root.resolve() / metadata["urdf_path"]).resolve()
@@ -1894,7 +1924,7 @@ try:
         if (
             len(cup_bit_order) != physical_cup_count
             or len(set(cup_bit_order)) != physical_cup_count
-            or not any(commanded_cup_mask)
+            or (not bootstrap_mode and not any(commanded_cup_mask))
             or any(active and not eligible for active, eligible in zip(
                 commanded_cup_mask, eligible_cup_mask, strict=True
             ))
@@ -1922,7 +1952,7 @@ try:
         active_cup_indices = list(gripper_cfg.get("active_sealed_cup_indices", []))
     if (
         physical_cup_centers.shape != (physical_cup_count, 2)
-        or not active_cup_indices
+        or (not bootstrap_mode and not active_cup_indices)
         or len(set(active_cup_indices)) != len(active_cup_indices)
         or any(index < 0 or index >= physical_cup_count for index in active_cup_indices)
     ):
@@ -2271,7 +2301,9 @@ try:
                     and (contact_runtime_context["stage"] in {"settling", "pregrasp", "approach", "contact"}
                          or contact_runtime_context["attached"] and effective_collision_policy.allows_stack_planning_contact(contact_runtime_context["stage"]))):
                 reason = "APPROVED_TARGET_STACK_CONTACT_BEFORE_FREE_TRANSIT"
-            receiver_paths = {f"/Validation/Scene/{_safe_prim_name(name)}" for name in metadata.get("selected_place_support_names", [metadata.get("place_surface")])}
+            receiver_paths = {f"/Validation/Scene/{_safe_prim_name(name)}" for name in (
+                metadata.get("selected_place_support_names")
+                or ([metadata.get("place_surface")] if metadata.get("place_surface") else []))}
             if reason is None:
                 reason = declared_receiver_top_contact(
                     actor0=actor0, actor1=actor1, collider0=collider0, collider1=collider1,
@@ -3319,6 +3351,140 @@ try:
         if not ideal_independent_mode:
             raise ValueError("same-world continuation currently requires ideal_independent_cups")
     initial_archive_binding = None
+    if bootstrap_mode:
+        from unloading_sim.m710_bootstrap import (READY, measured_initial_state,
+            verify_initial_plan_request, verify_initial_bundle_scope)
+        from unloading_sim.m710_replay_physics import validate_same_world_continuation
+        # Reuse the executor's real, multi-frame rest gate. Raw solver velocity
+        # stays measured; this permits an explicit planning rest assumption
+        # only after stable actual positions have independently been observed.
+        bootstrap_rest_gate = RestStartGate()
+        rest_reference = initial.astype(float).copy()
+        rest_started_physical_time = float(world.current_time)
+        rest_carton_positions = {c["name"]: np.asarray(c["center_m"], float)
+                                 for c in _capture_carton_states()}
+        bootstrap_rest_evidence = dict(schema="m710_native_rest_start_evidence_v1", gate="RestStartGate",
+            implementation_sha256=_sha256_path(project_root / "src/unloading_sim/m710_replay_physics.py"),
+            world_session_id=str(run_started_unix_s), passed=False,
+            parameters={name: getattr(bootstrap_rest_gate, name) for name in (
+                "maximum_wait_s", "position_tolerance_rad", "velocity_tolerance_rad_s",
+                "position_derived_speed_tolerance_rad_s", "required_stable_s")}, samples=[])
+        for rest_step in range(int(math.ceil(bootstrap_rest_gate.maximum_wait_s / physics_dt)) + 1):
+            rest_time = float(world.current_time) - rest_started_physical_time
+            actual_rest_q = np.asarray(articulation.get_dof_positions().numpy(), dtype=float)[0]
+            actual_rest_qd = np.asarray(articulation.get_dof_velocities().numpy(), dtype=float)[0]
+            rest_result = bootstrap_rest_gate.evaluate(rest_time, actual_rest_q, actual_rest_qd, rest_reference)
+            bootstrap_rest_evidence["samples"].append(dict(time_s=rest_time,
+                q_rad=actual_rest_q.tolist(), qd_rad_s=actual_rest_qd.tolist(),
+                reference_q_rad=rest_reference.tolist(), result=rest_result))
+            bootstrap_rest_evidence["passed"] = bool(bootstrap_rest_gate.passed)
+            (args.output / "native_rest_start_evidence.json").write_text(
+                json.dumps(bootstrap_rest_evidence, indent=2, allow_nan=False), encoding="utf-8")
+            if rest_result["reason"]:
+                raise RuntimeError(rest_result["reason"])
+            if bootstrap_rest_gate.passed:
+                break
+            if not _runtime_feedback_checkpoint("before_native_initial_rest", rest_step, rest_time,
+                                                initial, np.zeros_like(initial), 0.):
+                raise RuntimeError(runtime_stop_reason)
+            resting_drive_target = _drive_target(initial)
+            articulation.set_dof_position_targets(resting_drive_target[None, :])
+            last_issued_command = dict(reference_q_rad=initial.tolist(), reference_qd_rad_s=np.zeros_like(initial).tolist(),
+                drive_position_target_rad=resting_drive_target.tolist(), trajectory_time_s=0., simulation_time_s=rest_time)
+            world.step(render=False, update_fabric=True)
+            if not _runtime_feedback_checkpoint("after_native_initial_rest", rest_step + 1, rest_time + physics_dt,
+                                                initial, np.zeros_like(initial), 0.):
+                raise RuntimeError(runtime_stop_reason)
+            rest_cartons = _capture_carton_states()
+            if any(np.linalg.norm(c["linear_velocity_m_s"]) > max_linear_speed
+                    or np.linalg.norm(c["angular_velocity_rad_s"]) > max_angular_speed
+                    or np.linalg.norm(np.asarray(c["center_m"]) - rest_carton_positions[c["name"]]) > max_position_drift
+                    for c in rest_cartons):
+                raise RuntimeError("BOOTSTRAP_CARTON_SETTLING_LOST_DURING_REST_GATE")
+            rest_boxes = [(np.asarray(c["center_m"]), .5 * np.asarray(c["size_m"]),
+                           _rotation_matrix_from_quaternion_wxyz(c["quaternion_wxyz"])) for c in rest_cartons]
+            for index, first in enumerate(rest_boxes):
+                other_boxes = [*rest_boxes[index + 1:], *[(np.asarray(c["center_m"]), .5 * np.asarray(c["size_m"]),
+                    np.asarray(c["rotation_matrix"])) for c in static_scene_records]]
+                if any(_obb_penetration_depth(*first, *second) > max_penetration for second in other_boxes):
+                    raise RuntimeError("BOOTSTRAP_CARTON_PENETRATION_DURING_REST_GATE")
+        if not bootstrap_rest_gate.passed:
+            raise RuntimeError("ACTUAL_START_SETTLING_TIMEOUT")
+        def capture_bootstrap_state():
+            return measured_initial_state(metadata,
+                q_rad=np.asarray(articulation.get_dof_positions().numpy(), dtype=float)[0].tolist(),
+                qd_rad_s=np.asarray(articulation.get_dof_velocities().numpy(), dtype=float)[0].tolist(),
+                joint_names=discovered_joint_names, cartons=_capture_carton_states(),
+                world_session_id=str(run_started_unix_s), time_s=float(world.current_time),
+                native_rest_start_evidence=bootstrap_rest_evidence)
+        settled_actual_state = capture_bootstrap_state()
+        actual_state_path = args.output / "initialized_actual_state.json"
+        with actual_state_path.open("x", encoding="utf-8") as stream:
+            json.dump(settled_actual_state, stream, indent=2, allow_nan=False)
+        actual_state_sha256 = _sha256_path(actual_state_path)
+        request_path = args.continuation_dir / "initial_request.json"
+        ready_path = args.continuation_dir / "initial_ready.json"
+        if request_path.exists() or ready_path.exists():
+            raise ValueError("bootstrap handshake destination already exists")
+        ready = dict(status=READY, world_session_id=str(run_started_unix_s), completed_segments=0,
+            target=metadata["target"], actual_state_path=str(actual_state_path),
+            actual_state_sha256=actual_state_sha256, request_path=str(request_path),
+            bootstrap_contract_sha256=bootstrap_contract["contract_sha256"],
+            physics_time_paused_for_offline_planning=True, no_reset_no_body_replacement=True,
+            motion_execution_permitted=False, attachment_permitted=False)
+        ready_path.write_text(json.dumps(ready, indent=2), encoding="utf-8")
+        run_status_path.write_text(json.dumps(ready, indent=2), encoding="utf-8")
+        print("FANUC_REPLAY_STAGE=awaiting_native_cold_initial_plan " + str(ready_path), flush=True)
+        wait_started = time.monotonic()
+        while not request_path.is_file():
+            if args.continuation_wait_seconds is not None and time.monotonic() - wait_started >= args.continuation_wait_seconds:
+                raise NativeColdPlanningStopped("INITIAL_NATIVE_PLAN_WAIT_BUDGET_ENDED")
+            # No World.step, reset, pose write, or simulator update occurs while
+            # offline planning owns this immutable measured initial state.
+            time.sleep(0.2)
+        request = json.loads(request_path.read_text(encoding="utf-8"))
+        if _sha256_path(actual_state_path) != actual_state_sha256 or capture_bootstrap_state() != settled_actual_state:
+            raise ValueError("BOOTSTRAP_ACTUAL_WORLD_CHANGED_DURING_PLANNING")
+        verify_initial_plan_request(request, world_session_id=str(run_started_unix_s),
+                                    actual_state_sha256=actual_state_sha256)
+        validate_continuation_request(request, world_session_id=str(run_started_unix_s),
+                                      actual_state_sha256=actual_state_sha256)
+        if request.get("stop") is True:
+            (args.output / "initial_planning_stop.json").write_text(json.dumps(request, indent=2), encoding="utf-8")
+            raise NativeColdPlanningStopped(str(request.get("reason", "NATIVE_COLD_PLANNING_FAILED")))
+        next_bundle_path = Path(request["bundle_path"]).resolve()
+        if not next_bundle_path.is_relative_to(args.project_root.resolve()):
+            raise ValueError("bootstrap plan must remain inside the selected project")
+        next_bundle = json.loads(next_bundle_path.read_text(encoding="utf-8"))
+        verify_initial_bundle_scope(next_bundle, settled_actual_state)
+        initial_native_binding = validate_same_world_continuation(metadata, next_bundle, settled_actual_state)
+        if initial_native_binding["recording_output_changed"]:
+            raise ValueError("bootstrap plan changed the selected recording profile")
+        pre_simulation_integrity_gate = contract_module.verify_m710_replay_bundle(next_bundle,
+            project_root=args.project_root.resolve(), current_asset_audit=audit_m710_replay_assets(
+                args.project_root.resolve(), next_bundle["metadata"]))
+        metadata, bundle, args.bundle = next_bundle["metadata"], next_bundle, next_bundle_path
+        timestamps, positions = replay_command_arrays(bundle, expected_joint_names)
+        initial = positions[0, command_order].astype(np.float32)
+        scene_primitives = list(metadata["scene_primitives"])
+        target_primitive = next(item for item in scene_primitives if item["name"] == str(metadata["target"]))
+        gripper_cfg = metadata["gripper"]
+        cup_bit_order = list(gripper_cfg["mask_bit_order_cup_ids"])
+        eligible_cup_mask = list(gripper_cfg["geometrically_eligible_mask"])
+        commanded_cup_mask = list(gripper_cfg["commanded_active_mask"])
+        planned_fk_contact_mask = list(gripper_cfg["planned_fk_contact_mask"])
+        actual_contact_mask = [False] * physical_cup_count
+        active_cup_indices = [index for index, active in enumerate(commanded_cup_mask) if active]
+        physical_contact_offsets = physical_cup_centers[np.asarray(active_cup_indices, dtype=int)]
+        for cup_index, active in enumerate(commanded_cup_mask):
+            cup_prim = stage.GetPrimAtPath(f"{grasp_body_path}/FG42CupVisual_{cup_index:02d}")
+            UsdShade.MaterialBindingAPI.Apply(cup_prim).Bind(active_rubber_material if active else rubber_material)
+        session_time_offset_s = float(settled_actual_state["time_s"])
+        (args.output / "initial_native_plan_binding.json").write_text(json.dumps(dict(
+            **initial_native_binding, integrity=pre_simulation_integrity_gate,
+            bootstrap_contract_sha256=bootstrap_contract["contract_sha256"],
+            actual_state_sha256=actual_state_sha256, physical_segments_permitted=1), indent=2), encoding="utf-8")
+        bootstrap_mode = False
     if archive_initialization is not None:
         from unloading_sim.m710_replay_physics import validate_same_world_continuation, archived_world_actual_state
         settled_actual_state = archived_world_actual_state(metadata, archive_initialization,
@@ -6063,6 +6229,17 @@ try:
             }
         result["execution_counts"] = {**reception_counts(completed_carton_ids, ideal_transport_records),
             "actual_grasp": int(bool(grasp_enabled)), "actual_release": int(bool(release_open_confirmed))}
+        if bootstrap_contract is not None:
+            result["native_cold_initialization"] = {
+                "world_scope": "NEW_WORLD_NATIVE_COLD",
+                "world_session_id": str(run_started_unix_s),
+                "bootstrap_contract_sha256": bootstrap_contract["contract_sha256"],
+                "actual_initial_state_sha256": actual_state_sha256,
+                "same_world_retained_for_planning_and_execution": True,
+                "historical_motion_inputs_read": 0,
+                "initial_completed_segments": 0,
+                "maximum_physical_segments": 1,
+            }
         result["post_landing_transport"] = {
             "policy": post_landing_policy, "states": ideal_transport_records,
             "events": session_transport_events, "actual_received_ids": completed_carton_ids,
@@ -6188,7 +6365,7 @@ try:
 except BaseException as exc:
     # Preserve the first observation before screenshot, telemetry or Kit cleanup.
     if globals().get("feedback_monitor") is not None:
-        if feedback_monitor.first_failure is None and not isinstance(exc, DiagnosticSettlingComplete):
+        if feedback_monitor.first_failure is None and not isinstance(exc, (DiagnosticSettlingComplete, NativeColdPlanningStopped)):
             feedback_monitor.latch([dict(reason=globals().get("runtime_stop_reason") or "RUNTIME_EXCEPTION",
                                          exception=str(exc))], feedback_monitor.last_observation or {})
         if feedback_monitor.first_failure is not None:
@@ -6210,7 +6387,8 @@ except BaseException as exc:
     run_status_path.write_text(
         json.dumps(
             {
-                "status": "diagnostic_complete" if isinstance(exc, DiagnosticSettlingComplete) else "failed",
+                "status": ("diagnostic_complete" if isinstance(exc, DiagnosticSettlingComplete) else
+                           "planning_stopped_before_motion" if isinstance(exc, NativeColdPlanningStopped) else "failed"),
                 "started_unix_s": run_started_unix_s,
                 ("completed_unix_s" if isinstance(exc, DiagnosticSettlingComplete) else "failed_unix_s"): time.time(),
                 "exception_type": type(exc).__name__,

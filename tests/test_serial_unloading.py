@@ -169,6 +169,32 @@ def test_cpu_planned_rollout_has_distinct_nonphysical_provenance(scene):
         apply_actual_motion_state(scene, state)
 
 
+def test_actual_binding_preserves_raw_velocity_and_current_rest_provenance(scene):
+    state = actual(scene)
+    state["qd_rad_s"] = [0.0005, -0.0002, 0., 0., 0., 0.]
+    state["initialization_provenance"] = dict(world_scope="NEW_WORLD_NATIVE_COLD",
+        historical_motion_inputs_read=0, historical_events_counted_as_new_task_completion=False)
+    # This transport test does not certify the proof. The native backend
+    # independently replays its real multi-frame RestStartGate samples.
+    evidence = dict(schema="m710_native_rest_start_evidence_v1", samples=[dict(qd_rad_s=state["qd_rad_s"])])
+    state["native_rest_start_evidence"] = evidence
+    changed = apply_actual_motion_state(scene, state)
+    assert changed.snapshot["robot"]["qd_rad_s"] == state["qd_rad_s"]
+    assert changed.snapshot["robot"]["native_rest_start_evidence"] == evidence
+    context = changed.snapshot["actual_state_context"]
+    assert context["initialization_provenance"] == state["initialization_provenance"]
+    assert context["native_rest_start_evidence"] == evidence
+    assert context["actual_state_fingerprint"] == canonical_digest(state)
+    evidence["samples"].clear()
+    assert changed.snapshot["robot"]["native_rest_start_evidence"]["samples"]
+    assert context["native_rest_start_evidence"]["samples"]
+    later = actual(changed)
+    later["time_s"] = 3.
+    updated = apply_actual_motion_state(changed, later)
+    assert "native_rest_start_evidence" not in updated.snapshot["robot"]
+    assert "native_rest_start_evidence" not in updated.snapshot["actual_state_context"]
+
+
 def test_actual_pose_alone_never_completes_or_removes_a_box_and_sessions_do_not_reset(scene):
     state = actual(scene)
     state["cartons"][0]["position_m"] = [-10, 0, .15]

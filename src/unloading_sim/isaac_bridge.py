@@ -1243,15 +1243,21 @@ def _insert_command_hold(
     return held_times, held_positions
 
 
-def build_fanuc_isaac_replay_bundle(
+def _build_fanuc_runtime_context(
     plan: dict[str, Any],
     cfg: dict[str, Any],
     *,
     segment_index: int = 0,
     controller_period_seconds: float | None = None,
     preflight: dict[str, Any] | None = None,
-) -> IsaacReplayBundle:
+    _initialization_q: Sequence[float] | None = None,
+    _initialization_target: str | None = None,
+) -> IsaacReplayBundle | dict[str, Any]:
     """Build a limit-audited FANUC command stream from one planned segment."""
+    initialization_only = _initialization_q is not None
+    if initialization_only and (preflight is not None or plan.get("segments")
+            or plan.get("simulation_execution_ready") is not False):
+        raise ValueError("initialization context cannot consume or authorize a motion plan")
     robot = plan.get("robot")
     if not isinstance(robot, dict):
         raise ValueError("Isaac replay requires a supported six-axis FANUC plan")
@@ -1304,7 +1310,12 @@ def build_fanuc_isaac_replay_bundle(
         if official_model is None
         else official_model["joint_names"]
     )
-    segments = plan.get("segments")
+    # A repeated initial q is an internal stationary hold used to share static
+    # limit/configuration checks. It has no grasp/release events or motion
+    # qualification and is never returned as an executable replay bundle.
+    segments = ([{"target": _initialization_target,
+                  "path": [list(_initialization_q), list(_initialization_q)]}]
+                if initialization_only else plan.get("segments"))
     if not isinstance(segments, list) or not segments:
         raise ValueError("plan contains no trajectory segments")
     if segment_index < 0 or segment_index >= len(segments):
@@ -1312,7 +1323,7 @@ def build_fanuc_isaac_replay_bundle(
 
     segment = segments[segment_index]
     m710_replay_contract = None
-    if robot_model_id == "fanuc_m710id_70":
+    if robot_model_id == "fanuc_m710id_70" and not initialization_only:
         if preflight is None:
             raise ValueError("M-710 replay requires a full verified execution preflight")
         if segment_index != 0 or len(segments) != 1:
@@ -1719,11 +1730,22 @@ def build_fanuc_isaac_replay_bundle(
     )
     ideal_cup_selection = None
     if ideal_independent_mode:
-        ideal_cup_selection = _validated_ideal_cup_selection(
-            segment,
-            physical_cup_count=physical_cup_count,
-            path=path,
-        )
+        if initialization_only:
+            ideal_cup_selection = dict(
+                mask_bit_order_cup_ids=list(build_m710_independent_cup_array().cup_ids),
+                geometrically_eligible_mask=[False] * physical_cup_count,
+                commanded_active_mask=[False] * physical_cup_count,
+                planned_fk_contact_mask=[False] * physical_cup_count,
+                actual_contact_mask=[False] * physical_cup_count,
+                commanded_active_indices=[], actual_contact_mask_source="NOT_COMMANDED_INITIALIZATION_ONLY",
+                target_id=_initialization_target, target_face=None, pose_source="NO_CONTACT_CANDIDATE_YET",
+            )
+        else:
+            ideal_cup_selection = _validated_ideal_cup_selection(
+                segment,
+                physical_cup_count=physical_cup_count,
+                path=path,
+            )
         active_cup_indices = tuple(ideal_cup_selection["commanded_active_indices"])
     else:
         active_cup_indices = tuple(int(index) for index in segment.get("sealed_cup_indices", []))
@@ -1757,7 +1779,10 @@ def build_fanuc_isaac_replay_bundle(
     }:
         raise ValueError("vacuum solver attachment model is unsupported")
     active_cup_centers = cup_centers_tool_yz[np.asarray(active_cup_indices, dtype=int)]
-    if solver_attachment_model in {
+    if initialization_only:
+        solver_attachment_offsets = np.empty((0, 2))
+        solver_attachment_cup_counts = []
+    elif solver_attachment_model in {
         "equivalent_center_of_pressure",
         "single_same_body_fixed_constraint_after_actual_contact",
     }:
@@ -2227,6 +2252,7 @@ def build_fanuc_isaac_replay_bundle(
         "initial_actual_state_context": copy.deepcopy(plan.get("initial_actual_state_context")),
         "trajectory_stage_ranges": dict(segment.get("stage_ranges", {})),
         "native_backend": copy.deepcopy(segment.get("native_backend")),
+        **({key: plan[key] for key in ("native_cold", "require_native_motion") if key in plan}),
         "free_transit_start_time_seconds": (
             float(replay_motion_times[segment["stage_ranges"]["extraction"][1]])
             + pre_grasp_settle_seconds + vacuum_establish_seconds
@@ -2383,6 +2409,25 @@ def build_fanuc_isaac_replay_bundle(
             ),
         },
     }
+    if initialization_only:
+        if robot_model_id != "fanuc_m710id_70" or not ideal_independent_mode or physical_cup_count != 72:
+            raise ValueError("bootstrap requires the official M-710 and 72 independent cups")
+        # Retain the entire static physical context; remove all timed trajectory
+        # and contact/placement products so this artifact grants no motion.
+        for key in ("source_plan_sha256", "time_parameterization_wall_seconds", "source_waypoint_count",
+                "command_count", "duration_seconds", "motion_duration_seconds", "source_motion_duration_seconds",
+                "timing_audit", "joint_reference", "trajectory_stage_ranges", "native_backend", "stage_windows",
+                "free_transit_start_time_seconds", "motion_semantics", "placement_semantics", "approach",
+                "departure", "release_mode", "release_prediction", "planned_actual_box_pose_world",
+                "planned_place_support_audit", "place_center_m", "release_center_m", "place_surface",
+                "place_process_family", "place_placement_family", "place_working_normal_world",
+                "selected_place_support_names", "planning_execution_reserves"):
+            metadata.pop(key, None)
+        metadata.update(initialization_only=True, motion_execution_permitted=False,
+            attachment_permitted=False, initial_q_rad=list(_initialization_q),
+            initialization_inputs_sha256=_canonical_digest(plan),
+            grasp_time_seconds=None, release_time_seconds=None, release_retreat_time_seconds=None)
+        return metadata
     if robot_model_id == "fanuc_m710id_70":
         metadata["m710_execution_preflight"] = copy.deepcopy(preflight)
         metadata["m710_replay_contract"] = m710_replay_contract
@@ -2391,3 +2436,16 @@ def build_fanuc_isaac_replay_bundle(
         metadata['lin_reference_bindings']=bind_reference(segment,analytic_reference)
         metadata['final_reference_tcp_audit']=audit_bundle_tcp({'metadata':metadata})
     return IsaacReplayBundle(command_times, commands, metadata)
+
+
+def build_fanuc_isaac_replay_bundle(plan, cfg, *, segment_index=0,
+        controller_period_seconds=None, preflight=None) -> IsaacReplayBundle:
+    """Build only a complete, preflight-bound executable command stream."""
+    return _build_fanuc_runtime_context(plan, cfg, segment_index=segment_index,
+        controller_period_seconds=controller_period_seconds, preflight=preflight)
+
+
+def build_m710_initialization_metadata(plan, cfg, *, initial_q, target):
+    """Reuse static physical validation without accepting any motion solution."""
+    return _build_fanuc_runtime_context(plan, cfg,
+        _initialization_q=initial_q, _initialization_target=target)

@@ -246,6 +246,10 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
     snapshot["robot"]["q_rad"] = q.tolist()
     if "qd_rad_s" in state:
         snapshot["robot"]["qd_rad_s"] = list(state["qd_rad_s"])
+    # A prior rest observation cannot qualify a later measured state.
+    snapshot["robot"].pop("native_rest_start_evidence", None)
+    if "native_rest_start_evidence" in state:
+        snapshot["robot"]["native_rest_start_evidence"] = copy.deepcopy(state["native_rest_start_evidence"])
     snapshot["robot"]["flange_pose_world"] = robot.named_link_frames(q)["flange"].tolist()
     snapshot["robot"]["tcp_pose_world"] = robot.fk(q).tolist()
     snapshot["robot"]["link_collision_obbs"] = [_record(box) for box in world_link_boxes(robot, q, urdf_collision_shapes(robot))]
@@ -279,6 +283,8 @@ def _apply_motion_state(scene: FrozenLayoutMotionInput, state: Mapping[str, Any]
         if not np.allclose(direction, expected, atol=1e-12, rtol=0):
             raise ValueError("receiver transport direction disagrees with fixed conveyor policy")
     snapshot["actual_state_context"] = {
+        **{field: copy.deepcopy(state[field]) for field in
+           ("initialization_provenance", "native_rest_start_evidence") if field in state},
         "schema": expected_schema, "source": source,
         "parent_scene_fingerprint": scene.snapshot["scene_fingerprint"],
         "initial_carton_registry": registry, "initial_carton_count": len(initial_names),

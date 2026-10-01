@@ -30,14 +30,15 @@ public:
   Json last_failure = nullptr, rejected_examples = Json::array(), search_gap_witness = nullptr;
   Clearance(const planning_scene::PlanningSceneConstPtr& scene, const Json& policy, const std::string& mode="optimized")
     : env_(scene->getCollisionEnvUnpadded()), acm_(scene->getAllowedCollisionMatrix()), policy_(policy), mode_(mode) {
-    if(policy.at("schema")!="m710_native_free_clearance_v1" ||
+    const bool process=policy.at("schema")=="m710_native_process_clearance_v1";
+    if((policy.at("schema")!="m710_native_free_clearance_v1" && !process) ||
        policy.at("source_policy").at("schema")!="m710_poc_pair_collision_policy_v4" ||
        policy.at("source_policy").at("required_pair_clearance_m")!=.005 ||
        policy.at("source_policy").at("self_collision_clearance_m")!=0. ||
        policy.at("numerical_gap_tolerance_m")!=1e-9)
       throw std::runtime_error("UNSUPPORTED_CLEARANCE_POLICY");
     const std::string stage=policy.at("stage");
-    if(stage!="transit" && stage!="pregrasp" && stage!="residence")
+    if(!process && stage!="transit" && stage!="pregrasp" && stage!="residence")
       throw std::runtime_error("UNSUPPORTED_CLEARANCE_STAGE");
     tools_=policy.at("tool_links").get<std::set<std::string>>();
     conveyors_=policy.at("conveyor_ids").get<std::set<std::string>>();

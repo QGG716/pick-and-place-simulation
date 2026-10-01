@@ -64,6 +64,7 @@ from .workcell_layout import (
 
 
 from .planning_profile import POC, profile_evidence, deadline_after, optional_seconds
+from .native_cold_entry import preserve_native_failure, bind_native_run
 
 MOTION_SCHEMA = "m710id70_layout_single_carton_motion_v1"
 RESULT_SCHEMA = "m710id70_layout_single_carton_motion_audit_v1"
@@ -99,6 +100,10 @@ MOTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/moveit2_backend.py",
     "src/unloading_sim/moveit2_timing.py",
     "src/unloading_sim/moveit2_tcp.py",
+    "src/unloading_sim/native_cold_entry.py",
+    "src/unloading_sim/moveit2_native_cold.py",
+    "ros2/m710_moveit_backend/src/process_geometry.h",
+    "ros2/m710_moveit_backend/src/process_policy.h",
     "ros2/m710_moveit_backend/src/worker.cpp",
     "ros2/m710_moveit_backend/src/clearance.h",
     "ros2/m710_moveit_backend/src/clearance_workspace.h",
@@ -1112,6 +1117,7 @@ def _audit_pose(
     exact_state_failure: Callable[[np.ndarray], Mapping[str, Any] | None] | None = None,
     deadline_monotonic: float | None = None,
     consume_candidate: Callable[[Mapping[str, Any]], Any] | None = None,
+    native_connector=None,
 ) -> dict[str, Any]:
     policy = scene.policy.data
     coverage_started = perf_counter()
@@ -1161,7 +1167,14 @@ def _audit_pose(
 
     ik = policy["ik"]
     seeds = grasp_seed_configurations(robot, [scene.policy.layout_validation.initial_q])
-    stream = iter_ik_solutions(
+    if native_connector is not None:
+        stream = native_connector.native_ik_stream(
+            requested_virtual_task_tcp_pose, seeds, scene.all_obstacles,
+            seed=rng_seed, target_contact=target, stage="contact_endpoint",
+            contact_candidate={"target": target, "face": face, "suction": policy["suction"]},
+        )
+    else:
+        stream = iter_ik_solutions(
         robot,
         requested_virtual_task_tcp_pose,
         seeds,
@@ -1494,6 +1507,7 @@ def _blocked_initial_state_result(
     return result
 
 
+@preserve_native_failure
 def run_layout_single_carton_audit(
     config_path: str | Path | LayoutMotionPolicy,
     *,
@@ -1507,6 +1521,8 @@ def run_layout_single_carton_audit(
     backend: str = "core",
     moveit_command: str | None = None,
     fixed_history_fixture: str | Path | None = None,
+    native_cold: bool = False,
+    native_budget: Mapping[str, float] | None = None,
 ) -> dict[str, Any]:
     """Search the initial top layer and expose one replay-ready full segment.
 
@@ -1525,6 +1541,15 @@ def run_layout_single_carton_audit(
         if isinstance(config_path, LayoutMotionPolicy)
         else load_layout_motion_policy(config_path)
     )
+    if native_cold:
+        from .native_cold_entry import validate_native_cold_inputs, native_budget_config
+        validate_native_cold_inputs(policy.data, backend=backend, target_id=target_id,
+                                    fixed_history_fixture=fixed_history_fixture)
+        native_budget = native_budget_config(native_budget)
+        actual = {} if motion_input is None else motion_input.snapshot.get("actual_state_context", {})
+        if (not actual.get("world_session_id") or actual.get("initialization_provenance", {}).get(
+                "world_scope") != "NEW_WORLD_NATIVE_COLD"):
+            raise ValueError("NATIVE_COLD_REQUIRES_CURRENT_MEASURED_INITIAL_STATE")
     if motion_input is not None:
         if motion_input.policy.policy_fingerprint != policy.policy_fingerprint:
             raise ValueError("actual motion input belongs to a different search policy")
@@ -1533,8 +1558,18 @@ def run_layout_single_carton_audit(
     initial = (audit_initial_state(policy.layout_validation) if motion_input is None
                else dict(motion_input.snapshot["initial_state_audit"]))
     if motion_input is None and initial["status"] != "PASS":
-        return _blocked_initial_state_result(policy, root, initial)
+        result = _blocked_initial_state_result(policy, root, initial)
+        if native_cold:
+            result.update(native_cold=True, require_native_motion=True,
+                          native_cold_status="BLOCKED_INITIAL_STATE", native_budget=native_budget)
+            result["evidence_fingerprint"] = canonical_digest({k: v for k, v in result.items()
+                                                              if k != "evidence_fingerprint"})
+        return result
     scene = motion_input or build_verified_motion_input(policy, root)
+    if native_cold:
+        if len(scene.cartons) != 40 or (scene.remaining_stack_names is not None
+                                       and len(scene.remaining_stack_names) != 40):
+            raise ValueError("NATIVE_COLD_REQUIRES_COMPLETE_40_CARTON_INITIAL_SCENE")
     strategy = policy.data.get("search_strategy", {})
     sequence = row_state or RowUnloadingState(config=RowSequencePolicy(
         row_height_fraction=float(strategy.get("row_height_fraction", 0.05)),
@@ -1584,7 +1619,15 @@ def run_layout_single_carton_audit(
         if trajectory_connector is None:
             raise RuntimeError("MOVEIT2_AUTHORITY_UNAVAILABLE: " + str(connector_build.failure_reason))
         from .moveit2_backend import MoveItLayoutConnector
-        trajectory_connector = MoveItLayoutConnector.from_existing(trajectory_connector, scene, moveit_command)
+        if native_cold:
+            trajectory_connector.budget = replace(trajectory_connector.budget,
+                planning_wall_time_s=native_budget["task_wall_time_s"],
+                candidate_wall_time_s=None, stage_wall_time_s=native_budget["stage_wall_time_s"],
+                postprocess_wall_time_s=native_budget["stage_wall_time_s"])
+        trajectory_connector = MoveItLayoutConnector.from_existing(trajectory_connector, scene, moveit_command,
+            **({"native_cold": True, "native_budget": native_budget} if native_cold else {}))
+        if native_cold:
+            bind_native_run(trajectory_connector)
         connector_build = LayoutTrajectoryConnectorBuildResult(trajectory_connector, "AVAILABLE", None,
             {**dict(connector_build.evidence), "planning_backend": "moveit2",
              "native_startup": trajectory_connector.native_startup, "fk_checks": trajectory_connector.native_fk})
@@ -1692,7 +1735,11 @@ def run_layout_single_carton_audit(
         history_deadline = trajectory_connector._limit(trajectory_connector._deadline_monotonic,
             deadline_after(history_started, trajectory_connector._limit(history_config.wall_time_s,
                 None if remaining_seconds is None else max(0., remaining_seconds)*history_config.request_fraction)))
-    history_source = HistorySource(history_config, deadline=history_deadline)
+    if native_cold:
+        from .native_cold_entry import DisabledHistorySource
+        history_source = DisabledHistorySource()
+    else:
+        history_source = HistorySource(history_config, deadline=history_deadline)
     for task_index, target_name in enumerate(scene.removable_cartons):
         target = cartons_by_name[target_name]
         attempts: list[dict[str, Any]] = []
@@ -1723,9 +1770,12 @@ def run_layout_single_carton_audit(
             pose_cap = len(scheduled_contact_poses) * 3  # full finite pool plus two seeded retries
         connection_limit = (pose_cap if strategy.get("profile") == POC else
             trajectory_connector.budget.task_complete_connection_attempt_limit if trajectory_connector else pose_cap)
-        history_attempts, history_segment = evaluate_history(history_source, scene,
-            trajectory_connector, target, connector_build.evidence, deadline=history_deadline,
-            attempt_limit=1 if fixed_history_fixture is not None else max(0, min(pose_cap, connection_limit)//2))
+        if native_cold:
+            history_attempts, history_segment = [], None
+        else:
+            history_attempts, history_segment = evaluate_history(history_source, scene,
+                trajectory_connector, target, connector_build.evidence, deadline=history_deadline,
+                attempt_limit=1 if fixed_history_fixture is not None else max(0, min(pose_cap, connection_limit)//2))
         attempts.extend(history_attempts)
         trajectory_pose_attempts += len(history_attempts)
         trajectory_search_seconds += sum(item["elapsed_s"] for item in history_attempts)
@@ -1807,6 +1857,7 @@ def run_layout_single_carton_audit(
                                         trajectory_connector._limit(trajectory_connector._deadline_monotonic,
                                             None if strategy.get("profile") == POC else perf_counter() + 3.)),
                     consume_candidate=None,
+                    native_connector=trajectory_connector if native_cold else None,
                 )
             attempt.update({key: schedule_record[key] for key in ("family_id", "candidate_id", "attempt_id")})
             attempt["exact_endpoint_checks"] = dict(endpoint_checks)
@@ -2240,6 +2291,10 @@ def run_layout_single_carton_audit(
         result["native_backend_evidence"] = list(trajectory_connector.native_evidence)
         result["authority_path_checks"] = list(trajectory_connector.authority_path_evidence)
         trajectory_connector.native.close()
+    if native_cold:
+        result.update(native_cold=True, require_native_motion=True, native_budget=dict(native_budget),
+                      history_enabled=False, history_inputs_read=0)
+        result["native_cold_audit"] = trajectory_connector.native_cold_evidence()
     result["evidence_fingerprint"] = canonical_digest(result)
     return result
 

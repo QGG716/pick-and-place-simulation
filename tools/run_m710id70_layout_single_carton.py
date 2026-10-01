@@ -30,6 +30,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=ROOT / "outputs/m710id70_layout_v1/single_carton_motion_audit.json",
     )
     parser.add_argument("--backend", choices=("core", "moveit2"), default="core")
+    parser.add_argument("--native-cold", action="store_true", help="Require current-run native IK and every motion edge; reject history inputs")
+    parser.add_argument("--actual-state", type=Path, help="This retained world's measured initial state")
+    parser.add_argument("--initial-ready", type=Path, help="This world's initial_ready.json, binding the actual state")
+    parser.add_argument("--native-task-budget-s", type=float, default=3600.)
+    parser.add_argument("--native-stage-budget-s", type=float, default=300.)
+    parser.add_argument("--native-ipc-timeout-s", type=float, default=360.)
     parser.add_argument("--moveit-command", help="JSONL resident worker launcher; alternatively M710_MOVEIT_COMMAND")
     parser.add_argument("--target", help="One legal carton from the unchanged frozen scene")
     parser.add_argument("--fixed-history-fixture", type=Path, help="Validate only this fixed candidate; requires --target, no candidate sweep")
@@ -39,6 +45,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
+        if args.native_cold and args.fixed_history_fixture is not None:
+            raise ValueError("NATIVE_COLD_FORBIDDEN_HISTORY_FIXTURE")
+        if args.native_cold and args.target is None:
+            args.target = "carton_l07_c02"
+        motion_input = None
+        if args.native_cold:
+            from unloading_sim.native_cold_entry import read_native_initial_state, validate_native_cold_inputs
+            from unloading_sim.layout_single_carton import load_layout_motion_policy, build_verified_motion_input
+            from unloading_sim.serial_unloading import apply_actual_motion_state
+            policy = load_layout_motion_policy(args.config)
+            validate_native_cold_inputs(policy.data, backend=args.backend, target_id=args.target)
+            actual, _ = read_native_initial_state(args.actual_state, args.initial_ready)
+            motion_input = apply_actual_motion_state(build_verified_motion_input(policy, ROOT), actual)
+            args.config = motion_input.policy
+        elif args.actual_state is not None or args.initial_ready is not None:
+            raise ValueError("actual initial state options on this entry require --native-cold")
         if args.fixed_history_fixture is not None:
             # The repository fixture is an extracted hint, not a complete prior
             # audit document. Seal a separate derivative; never overwrite it or
@@ -65,11 +87,18 @@ def main(argv: list[str] | None = None) -> int:
             derived.parent.mkdir(parents=True,exist_ok=True)
             derived.write_text(json.dumps(hint,indent=2,allow_nan=False),encoding="utf-8")
             args.fixed_history_fixture = derived
-        result = run_layout_single_carton_audit(args.config, project_root=ROOT, backend=args.backend, moveit_command=args.moveit_command, target_id=args.target, fixed_history_fixture=args.fixed_history_fixture)
+        result = run_layout_single_carton_audit(args.config, project_root=ROOT,
+            backend=args.backend, moveit_command=args.moveit_command, target_id=args.target,
+            fixed_history_fixture=args.fixed_history_fixture, native_cold=args.native_cold,
+            motion_input=motion_input,
+            native_budget={"task_wall_time_s": args.native_task_budget_s,
+                "stage_wall_time_s": args.native_stage_budget_s, "ipc_timeout_s": args.native_ipc_timeout_s})
         output = write_layout_single_carton_audit(result, args.output)
     except Exception as exc:
         failure={"run_status": "BLOCKED", "backend": args.backend,
-            "complete_trajectory_status": "NOT_RUN", "reason": str(exc)}
+            "native_cold": args.native_cold, "require_native_motion": args.native_cold,
+            "complete_trajectory_status": "NOT_RUN", "reason": str(exc),
+            "native_failure_evidence": getattr(exc, "native_cold_failure_evidence", None)}
         args.output.parent.mkdir(parents=True,exist_ok=True)
         args.output.write_text(json.dumps(failure,ensure_ascii=False,indent=2),encoding="utf-8")
         print(json.dumps(failure,ensure_ascii=False))

@@ -81,6 +81,7 @@ EXECUTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/independent_cups.py",
     "src/unloading_sim/isaac_bridge.py",
     "src/unloading_sim/moveit2_timing.py",
+    "src/unloading_sim/moveit2_native_cold.py",
     "src/unloading_sim/m710_execution_tcp.py",
     "src/unloading_sim/moveit2_tcp.py",
     "src/unloading_sim/robot.py",
@@ -91,6 +92,8 @@ EXECUTION_IMPLEMENTATION_FILES = (
     "src/unloading_sim/m710_replay_physics.py",
     "src/unloading_sim/stack_clearance.py",
     "src/unloading_sim/m710_replay_contract.py",
+    "src/unloading_sim/m710_bootstrap.py",
+    "src/unloading_sim/serial_unloading.py",
     "src/unloading_sim/qualification.py",
     "scripts/export_isaac_fanuc_replay.py",
     "scripts/isaacsim_fanuc_replay.py",
@@ -1272,6 +1275,10 @@ def build_m710_execution_preflight(
     trajectory_segment = trajectory_candidate if simulation_execution_ready else None
     trajectory_segment_status = "VERIFIED" if trajectory_segment is not None else "NOT_AVAILABLE"
     plan_common = {
+        **({key: motion.get(key, trajectory_candidate.get(key, False) if trajectory_candidate else False)
+            for key in ("native_cold", "require_native_motion")}
+           if any(motion.get(key) or (trajectory_candidate or {}).get(key)
+                  for key in ("native_cold", "require_native_motion")) else {}),
         "planning_time_seconds": motion.get("planning_performance", {}).get(
             "planning_total_wall_seconds"
         ),

@@ -16,6 +16,7 @@
 #include <map>
 #include <set>
 #include "clearance.h"
+#include "process_policy.h"
 
 using J = nlohmann::json;
 namespace mtc = moveit::task_constructor;
@@ -103,6 +104,46 @@ public:
     ++count; return PipelinePlanner::plan(from,link,offset,target,group,timeout,result,constraints);
   }
 };
+
+// Cache is native-owned and scoped to this resident task. It can only be
+// populated by a solver invocation inside computeForward(), never JSON paths.
+struct NativeStageRecord {
+  J request,result;
+  planning_scene::PlanningScenePtr start,end;
+  robot_trajectory::RobotTrajectoryPtr trajectory;
+  std::shared_ptr<m710::Clearance> clearance;
+  std::shared_ptr<m710::ProcessPolicy> process;
+  std::string parent;
+  size_t cache_hits=0;
+};
+class NativeProcessStage : public mtc::PropagatingForward {
+  std::shared_ptr<NativeStageRecord> record_;
+  std::function<void(NativeStageRecord&)> generate_;
+  std::function<void(const planning_scene::PlanningSceneConstPtr&,const planning_scene::PlanningSceneConstPtr&,const J&)> verify_scene_;
+public:
+  NativeProcessStage(std::shared_ptr<NativeStageRecord> record,std::function<void(NativeStageRecord&)> generate,
+    std::function<void(const planning_scene::PlanningSceneConstPtr&,const planning_scene::PlanningSceneConstPtr&,const J&)> verify_scene)
+    :mtc::PropagatingForward(record->request.at("stage_id").get<std::string>()),record_(std::move(record)),generate_(std::move(generate)),verify_scene_(std::move(verify_scene)) {}
+  void computeForward(const mtc::InterfaceState& from) override {
+    auto& r=*record_;std::vector<double> q;
+    from.scene()->getCurrentState().copyJointGroupPositions("manipulator",q);
+    const auto expected=r.request.at("q_start").get<std::vector<double>>();
+    if(q.size()!=expected.size()) throw std::runtime_error("NATIVE_TASK_JOINT_COUNT_MISMATCH");
+    for(size_t i=0;i<q.size();++i) if(std::abs(q[i]-expected[i])>1e-9) throw std::runtime_error("NATIVE_TASK_UNPLANNED_CONNECTION");
+    verify_scene_(from.scene(),r.start,r.request);
+    if(r.trajectory) ++r.cache_hits;else generate_(r);
+    if(!r.trajectory) return;
+    mtc::SubTrajectory solution(r.trajectory);solution.setComment("native_task_generated:"+r.request.at("stage_id").get<std::string>());
+    sendForward(from,mtc::InterfaceState(r.end),std::move(solution));
+  }
+};
+struct NativeTaskSession {
+  std::unique_ptr<mtc::Task> task;
+  std::map<std::string,std::shared_ptr<NativeStageRecord>> records;
+  std::vector<std::string> active;
+  J initial_q,initial_world;
+  size_t solve_calls=0,backtracks=0;
+};
 class Worker {
   rclcpp::Node::SharedPtr node;
   std::shared_ptr<robot_model_loader::RobotModelLoader> loader;
@@ -110,8 +151,153 @@ class Worker {
   planning_scene::PlanningScenePtr base;
   std::map<std::string,planning_pipeline::PlanningPipelinePtr> pipelines;
   std::vector<std::string> names;
-  J identity, scene_content, bound_policy, bound_tools; std::string scene_key;
+  J identity, scene_content, bound_policy, bound_tools, bound_compliant, bound_process_geometry; std::string scene_key;
   uint32_t seed=0; size_t requests=0; std::map<std::string,size_t> calls;
+  std::map<std::string,std::unique_ptr<NativeTaskSession>> tasks;
+  size_t ik_calls=0;
+  static bool samePose(const Eigen::Isometry3d& a,const Eigen::Isometry3d& b) {return (a.matrix()-b.matrix()).cwiseAbs().maxCoeff()<=1e-7;}
+  // Between adjacent motions only the selected target may change ownership.
+  // Its actual pose must be identical on both sides of attach/release.
+  void checkTransition(const planning_scene::PlanningSceneConstPtr& before,const planning_scene::PlanningSceneConstPtr& after,const J& req) {
+    const std::string target=req.at("clearance_policy").at("target_id");
+    auto ids=before->getWorld()->getObjectIds(),next=after->getWorld()->getObjectIds();
+    std::set<std::string> a(ids.begin(),ids.end()),b(next.begin(),next.end());a.erase(target);b.erase(target);
+    if(a!=b) throw std::runtime_error("NATIVE_TASK_WORLD_IDENTITY_CHANGED");
+    for(const auto& id:a) {
+      const auto x=before->getWorld()->getObject(id),y=after->getWorld()->getObject(id);
+      if(x->shapes_.size()!=y->shapes_.size() || x->shape_poses_.size()!=y->shape_poses_.size()) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
+      for(size_t i=0;i<x->shapes_.size();++i) {
+        if(x->shapes_[i]->type!=shapes::BOX || y->shapes_[i]->type!=shapes::BOX) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_UNSUPPORTED");
+        const auto* sx=static_cast<const shapes::Box*>(x->shapes_[i].get());const auto* sy=static_cast<const shapes::Box*>(y->shapes_[i].get());
+        for(int k=0;k<3;++k) if(sx->size[k]!=sy->size[k]) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
+        if(!samePose(x->shape_poses_[i],y->shape_poses_[i])) throw std::runtime_error("NATIVE_TASK_WORLD_POSE_CHANGED");
+      }
+    }
+    auto targetPose=[&](const planning_scene::PlanningSceneConstPtr& s) {
+      const auto* attached=s->getCurrentState().getAttachedBody(target);const auto world=s->getWorld()->getObject(target);
+      if(bool(attached)==bool(world)) throw std::runtime_error("NATIVE_TASK_TARGET_OWNERSHIP_INVALID");
+      return attached?attached->getGlobalCollisionBodyTransforms().at(0):world->shape_poses_.at(0);
+    };
+    if(!samePose(targetPose(before),targetPose(after))) throw std::runtime_error("NATIVE_TASK_ATTACHMENT_TELEPORT");
+    auto targetSize=[&](const planning_scene::PlanningSceneConstPtr& s) {
+      const auto* attached=s->getCurrentState().getAttachedBody(target);const auto world=s->getWorld()->getObject(target);
+      const auto& shapes=attached?attached->getShapes():world->shapes_;
+      if(shapes.size()!=1 || shapes[0]->type!=shapes::BOX) throw std::runtime_error("NATIVE_TASK_TARGET_SHAPE_INVALID");
+      const auto* box=static_cast<const shapes::Box*>(shapes[0].get());return std::vector<double>{box->size[0],box->size[1],box->size[2]};
+    };
+    if(targetSize(before)!=targetSize(after)) throw std::runtime_error("NATIVE_TASK_TARGET_GEOMETRY_CHANGED");
+  }
+  J nativeTaskPlan(const J& req,const planning_scene::PlanningScenePtr& scene,
+      const std::shared_ptr<m710::Clearance>& clearance,const std::shared_ptr<m710::ProcessPolicy>& process) {
+    if(req.contains("path") || req.contains("stages")) throw std::runtime_error("NATIVE_COLD_EXTERNAL_PATH_FORBIDDEN");
+    m710::validateNativeMotionScope(req);
+    const std::string task_id=req.at("task_id"),stage_id=req.at("stage_id");
+    const std::string parent=req.value("parent_stage_id",std::string());
+    if(task_id.empty() || stage_id.empty()) throw std::runtime_error("NATIVE_TASK_ID_REQUIRED");
+    if(!tasks.count(task_id)) {
+      if(!parent.empty()) throw std::runtime_error("NATIVE_TASK_PARENT_MISSING");
+      if(!req.at("attachment").is_null()) throw std::runtime_error("NATIVE_COLD_INITIAL_ATTACHMENT_FORBIDDEN");
+      if(tasks.size()>=8) throw std::runtime_error("NATIVE_TASK_SESSION_CAPACITY");
+      auto session=std::make_unique<NativeTaskSession>();session->task=std::make_unique<mtc::Task>("",false);
+      session->task->setRobotModel(model);session->task->setName(task_id);session->initial_q=req.at("q_start");session->initial_world=req.at("world");
+      auto initial=std::make_unique<mtc::stages::FixedState>("frozen_actual_initial_state");initial->setState(scene);session->task->add(std::move(initial));
+      tasks[task_id]=std::move(session);
+    }
+    auto& session=*tasks.at(task_id);
+    if(session.records.count(stage_id)) throw std::runtime_error("NATIVE_STAGE_ID_REUSED");
+    if(session.records.size()>=4096) throw std::runtime_error("NATIVE_TASK_STAGE_CAPACITY");
+    std::vector<std::string> ancestors;std::string cursor=parent;std::set<std::string> seen;
+    while(!cursor.empty()) {
+      if(!seen.insert(cursor).second || !session.records.count(cursor) || !session.records.at(cursor)->trajectory) throw std::runtime_error("NATIVE_TASK_PARENT_INVALID");
+      ancestors.push_back(cursor);cursor=session.records.at(cursor)->parent;
+    }
+    std::reverse(ancestors.begin(),ancestors.end());
+    if(ancestors.empty()) {
+      if(req.at("q_start")!=session.initial_q || req.at("world")!=session.initial_world) throw std::runtime_error("NATIVE_TASK_INITIAL_STATE_CHANGED");
+    } else {
+      const auto& previous=*session.records.at(parent);checkTransition(previous.end,scene,req);
+      if(previous.process && req.contains("process_policy") && !req.at("process_policy").at("initial_proximity").is_null()) {
+        const auto terminal=previous.process->terminalProximity();const auto& next=req.at("process_policy").at("initial_proximity");
+        if(!terminal.is_null() && terminal.value("fully_released",false) && !next.value("fully_released",false))
+          throw std::runtime_error("NATIVE_TASK_PROXIMITY_HISTORY_RESET");
+        if(!terminal.is_null() && terminal.contains("pairs") && next.contains("pairs")) {
+          std::map<std::string,J> by_name;for(const auto& pair:next.at("pairs")) by_name[pair.at("obstacle").get<std::string>()]=pair;
+          for(const auto& pair:terminal.at("pairs")) {
+            const std::string name=pair.at("obstacle");
+            if(!by_name.count(name) || std::abs(pair.at("last_signed_distance_m").get<double>()-by_name.at(name).at("last_signed_distance_m").get<double>())>1e-7 ||
+               (pair.at("released").get<bool>()&&!by_name.at(name).at("released").get<bool>())) throw std::runtime_error("NATIVE_TASK_PROXIMITY_HISTORY_CHANGED");
+          }
+        }
+      }
+    }
+    size_t common=0;while(common<ancestors.size()&&common<session.active.size()&&ancestors[common]==session.active[common]) ++common;
+    session.task->reset();
+    if(common<session.active.size()) ++session.backtracks;
+    while(session.active.size()>common) {session.task->stages()->remove(-1);session.active.pop_back();}
+    auto generate=[this](NativeStageRecord& r) {
+      const auto& req=r.request;const std::string pipeline=req.at("pipeline_id"),planner=req.at("planner_id");
+      if(!pipelines.count(pipeline)||!((pipeline=="ompl"&&planner=="RRTConnectkConfigDefault") ||
+          (pipeline=="pilz_industrial_motion_planner"&&(planner=="PTP"||planner=="LIN")))) throw std::runtime_error("PLANNER_UNAVAILABLE");
+      const std::string stage=req.at("stage");
+      if(pipeline=="ompl" && (req.contains("goal_pose") || !(stage=="pregrasp" || stage=="transit" || stage=="residence")))
+        throw std::runtime_error("CONSTRAINED_PROCESS_OMPL_FORBIDDEN");
+      auto solver=std::make_shared<CountedPlanner>(pipelines.at(pipeline),calls[pipeline+"/"+planner]);
+      solver->setPlannerId(planner);solver->setProperty("goal_joint_tolerance",1e-12);solver->setProperty("goal_position_tolerance",1e-6);
+      solver->setProperty("goal_orientation_tolerance",1e-6);solver->setProperty("max_velocity_scaling_factor",req.at("velocity_scale").get<double>());
+      solver->setProperty("max_acceleration_scaling_factor",req.at("acceleration_scale").get<double>());
+      solver->setTimeout(req.at("allowed_planning_time_s").get<double>());solver->init(model);
+      const auto* group=model->getJointModelGroup("manipulator");robot_trajectory::RobotTrajectoryPtr trajectory;
+      r.clearance->phase="search";const auto begin=Clock::now();
+      mtc::solvers::PlannerInterface::Result result;
+      if(req.contains("goal_pose")) {
+        if(req.at("flange_from_task_tcp")!=identity.at("flange_from_task_tcp")) throw std::runtime_error("TASK_TCP_CONTEXT_MISMATCH");
+        const auto* tcp=model->getLinkModel(identity.at("task_tcp_link").get<std::string>());
+        if(!tcp) throw std::runtime_error("TASK_TCP_UNAVAILABLE");
+        result=solver->plan(r.start,*tcp,Eigen::Isometry3d::Identity(),matrix(req.at("goal_pose")),group,req.at("allowed_planning_time_s").get<double>(),trajectory,moveit_msgs::msg::Constraints{});
+      } else {
+        auto goal=r.start->diff();auto state=goal->getCurrentState();state.setJointGroupPositions(group,req.at("q_goal").get<std::vector<double>>());state.update();goal->setCurrentState(state);
+        result=solver->plan(r.start,goal,group,req.at("allowed_planning_time_s").get<double>(),trajectory,moveit_msgs::msg::Constraints{});
+      }
+      r.result={{"status","NATIVE_PLANNING_FAILED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_plan_s",seconds(begin)},
+        {"mtc_generation",true},{"generated_during_task",true},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
+        {"parent_stage_id",r.parent},{"native_solver_calls",{{pipeline=="ompl"?"OMPL":planner,1}}},{"pipeline_calls",calls},{"request_id",req.at("request_id")}};
+      if(!result || !trajectory || trajectory->getWayPointCount()<2) return;
+      if(pipeline=="ompl") {trajectory_processing::IterativeParabolicTimeParameterization iptp;
+        if(!iptp.computeTimeStamps(*trajectory,req.at("velocity_scale").get<double>(),req.at("acceleration_scale").get<double>())) throw std::runtime_error("TIME_PARAMETERIZATION_FAILED");}
+      moveit_msgs::msg::RobotTrajectory msg;trajectory->getRobotTrajectoryMsg(msg);
+      if(msg.joint_trajectory.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
+      J points=J::array(),path=J::array();
+      for(const auto& p:msg.joint_trajectory.points) {points.push_back({{"q",p.positions},{"v",p.velocities},{"a",p.accelerations},{"t",p.time_from_start.sec+p.time_from_start.nanosec*1e-9}});path.push_back(p.positions);}
+      const auto checking=Clock::now();r.clearance->phase="output";const double resolution=req.at("clearance_policy").at("edge_resolution_rad");
+      J failure=r.clearance->checkPath(r.start->getCurrentState(),path,resolution);
+      if(failure.is_null() && r.process) failure=r.process->checkPath(r.start->getCurrentState(),path,resolution);
+      r.result["native_output_check_s"]=seconds(checking);r.result["clearance"]=r.clearance->evidence();
+      if(r.process) r.result["process_policy"]=r.process->evidence();
+      r.result["points"]=points;r.result["joint_names"]=names;
+      if(!failure.is_null()) {r.result["status"]="NATIVE_PATH_REJECTED";r.result["failure"]=failure;return;}
+      r.trajectory=trajectory;r.end=r.start->diff();r.end->decoupleParent();r.end->setCurrentState(trajectory->getLastWayPoint());
+      r.result["status"]="SUCCESS";r.result["native_output_status"]="PASS";
+      r.result["process_semantics_checked"]=bool(r.process);
+      r.result["time_parameterization"]=pipeline=="ompl"?"IPTP_preserves_waypoints":"Pilz_original";
+      r.result["task_tcp_identity"]=identity.at("task_tcp_fingerprint");r.result["interpolated_link"]=req.contains("goal_pose")?identity.at("task_tcp_link"):J(nullptr);
+    };
+    auto verify_scene=[this](const planning_scene::PlanningSceneConstPtr& before,const planning_scene::PlanningSceneConstPtr& after,const J& request) {
+      checkTransition(before,after,request);
+    };
+    for(size_t i=common;i<ancestors.size();++i) {session.task->add(std::make_unique<NativeProcessStage>(session.records.at(ancestors[i]),generate,verify_scene));session.active.push_back(ancestors[i]);}
+    auto record=std::make_shared<NativeStageRecord>();record->request=req;record->start=scene;record->clearance=clearance;record->process=process;record->parent=parent;
+    session.records[stage_id]=record;session.task->add(std::make_unique<NativeProcessStage>(record,generate,verify_scene));session.active.push_back(stage_id);
+    ++session.solve_calls;++requests;session.task->plan(1);
+    if(record->result.is_null()) record->result={{"status","MTC_GENERATION_NOT_REACHED"}};
+    record->result["mtc_task_solution_count"]=session.task->solutions().size();
+    if(record->trajectory && session.task->solutions().empty()) {
+      record->result["status"]="NATIVE_MTC_CONNECTION_FAILED";record->result["failure"]={{"reason","MTC_FULL_PREFIX_HAS_NO_SOLUTION"}};
+      record->trajectory.reset();record->end.reset();
+    }
+    record->result["mtc_attempt_index"]=requests;record->result["task_solve_calls"]=session.solve_calls;record->result["task_backtracks"]=session.backtracks;
+    record->result["retained_native_subsolutions"]=session.records.size();record->result["task_stage_ids"]=session.active;
+    return record->result;
+  }
 public:
   J run(const J& req) {
     auto begin=Clock::now(); auto op=req.at("op").get<std::string>();
@@ -151,14 +337,42 @@ public:
         }
       }
       bound_policy=req.at("collision_policy");bound_tools=req.at("tool_links");
+      bound_compliant=req.value("compliant_tool_links",J::array());bound_process_geometry=req.value("process_geometry",J(nullptr));
       base=std::make_shared<planning_scene::PlanningScene>(model);
       identity=req.at("identity");
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},
-              {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}}};
+              {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
+              {"capabilities",{{"native_ik",true},{"native_task_session",true},{"process_policy_schema","m710_native_process_v1"},
+                {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
+                {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
-    if(op!="fk" && op!="plan" && op!="compose" && op!="inspect" && op!="validate") throw std::runtime_error("UNKNOWN_OPERATION");
+    if(op!="fk" && op!="ik" && op!="task_audit" && op!="plan" && op!="compose" && op!="inspect" && op!="validate") throw std::runtime_error("UNKNOWN_OPERATION");
     if(req.at("identity")!=identity) throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
+    if(op=="task_audit") {
+      const std::string id=req.at("task_id");if(!tasks.count(id)) throw std::runtime_error("NATIVE_TASK_UNKNOWN");
+      const auto& session=*tasks.at(id);const auto ids=req.at("stage_ids").get<std::vector<std::string>>();
+      if(ids.empty()) throw std::runtime_error("NATIVE_TASK_EMPTY");
+      std::string previous;size_t edges=0,attach=0,release=0;J stages=J::array();
+      bool was_attached=false;std::set<std::string> phase_names;
+      for(const auto& stage_id:ids) {
+        if(!session.records.count(stage_id)) throw std::runtime_error("NATIVE_TASK_STAGE_UNKNOWN");
+        const auto& r=*session.records.at(stage_id);
+        if(r.parent!=previous || !r.trajectory || r.result.at("status")!="SUCCESS") throw std::runtime_error("NATIVE_TASK_SOURCE_CHAIN_INVALID");
+        const std::string target=r.request.at("clearance_policy").at("target_id");const bool attached=r.start->getCurrentState().hasAttachedBody(target);
+        if(attached&&!was_attached) ++attach;if(!attached&&was_attached) ++release;was_attached=attached;
+        phase_names.insert(r.request.at("stage").get<std::string>());
+        size_t motion_edges=0;for(size_t i=1;i<r.trajectory->getWayPointCount();++i)
+          if(r.trajectory->getWayPoint(i-1).distance(r.trajectory->getWayPoint(i))>1e-12) ++motion_edges;
+        edges+=motion_edges;stages.push_back({{"stage_id",stage_id},{"parent_stage_id",r.parent},{"request_id",r.request.at("request_id")},
+          {"native_solver_calls",r.result.at("native_solver_calls")},{"nonzero_motion_edges",motion_edges},{"native_cache_reuses",r.cache_hits}});previous=stage_id;
+      }
+      if(attach!=1 || release!=1 || was_attached || !phase_names.count("contact") || !phase_names.count("extraction"))
+        throw std::runtime_error("NATIVE_TASK_CYCLE_EVENTS_INCOMPLETE");
+      return {{"status","SUCCESS"},{"task_id",id},{"generated_during_task",true},{"stage_ids",ids},{"complete_task",true},
+        {"stage_sources",stages},{"nonzero_native_motion_edges",edges},{"attach_transitions",attach},{"release_transitions",release},
+        {"task_solve_calls",session.solve_calls},{"task_backtracks",session.backtracks},{"external_path_imports",0}};
+    }
     auto state=base->getCurrentState();
     auto q=req.at("q_start").get<std::vector<double>>();
     if(q.size()!=names.size()) throw std::runtime_error("INVALID_JOINT_VECTOR");
@@ -170,6 +384,29 @@ public:
       return {{"status","SUCCESS"},{"frames",frames}};
     }
     if(req.value("cancelled",false)) throw std::runtime_error("CANCELLED");
+    if(op=="ik") {
+      if(req.contains("history") || req.contains("path") || req.contains("q_goal")) throw std::runtime_error("NATIVE_IK_FORBIDDEN_INPUT");
+      const auto* group=model->getJointModelGroup("manipulator");const auto& solver=group->getSolverInstance();
+      if(!solver || solver->getJointNames()!=names || solver->getTipFrame()!=identity.at("task_tcp_link").get<std::string>()) throw std::runtime_error("NATIVE_IK_SOLVER_CONTEXT_MISMATCH");
+      const auto target=matrix(req.at("goal_pose"));const auto base_frame=solver->getBaseFrame();
+      const auto local=state.getGlobalLinkTransform(base_frame).inverse()*target;
+      std::vector<double> solution;moveit_msgs::msg::MoveItErrorCodes error;const auto started=Clock::now();++ik_calls;
+      // getPositionIK performs one seed-directed solve; do not call the
+      // timeout-based random-restart searchPositionIK API in native-cold.
+      const bool success=solver->getPositionIK(pose(serial(local)),q,solution,error);
+      J result={{"status","NATIVE_IK_FAILED"},{"native_ik_calls",1},{"resident_native_ik_calls",ik_calls},
+        {"solver","MoveIt_KDL_getPositionIK"},{"ik_collision_checked",false},{"ik_s",seconds(started)},{"error_code",error.val},
+        {"seed",req.at("seed")},{"random_restarts",0}};
+      if(!success || solution.size()!=names.size()) return result;
+      for(double x:solution) if(!std::isfinite(x)) return result;
+      state.setJointGroupPositions(group,solution);state.update();if(!state.satisfiesBounds()) return result;
+      const auto actual=state.getGlobalLinkTransform(identity.at("task_tcp_link").get<std::string>());
+      const double position=(actual.translation()-target.translation()).norm();
+      const double rotation=Eigen::AngleAxisd(actual.linear().transpose()*target.linear()).angle();
+      result["position_error_m"]=position;result["orientation_error_rad"]=rotation;
+      if(position>req.value("position_tolerance_m",1e-6) || rotation>req.value("orientation_tolerance_rad",1e-6)) return result;
+      result["status"]="SUCCESS";result["q"]=solution;return result;
+    }
     if(req.at("start_velocity").size()!=names.size()) throw std::runtime_error("INVALID_START_VELOCITY");
     for(double v:req.at("start_velocity")) if(v!=0.0) throw std::runtime_error("UNSUPPORTED_NONZERO_START_VELOCITY");
     if(!req.at("path_constraints").empty()) throw std::runtime_error("UNSUPPORTED_PATH_CONSTRAINTS");
@@ -211,14 +448,27 @@ public:
         {"permissions",permissions},{"base_attached_count",base_bodies.size()}};
     }
     std::shared_ptr<m710::Clearance> clearance;
+    std::shared_ptr<m710::ProcessPolicy> process;
     if(op=="plan" || op=="validate") {
       if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
       if(req.at("clearance_policy").at("source_policy")!=bound_policy || req.at("clearance_policy").at("tool_links")!=bound_tools)
         throw std::runtime_error("EXECUTABLE_POLICY_MISMATCH");
+      if(req.contains("process_policy")) {
+        if(bound_compliant.empty() || req.at("clearance_policy").at("compliant_tool_links")!=bound_compliant)
+          throw std::runtime_error("PROCESS_COLLIDER_OWNERSHIP_MISMATCH");
+        if(bound_process_geometry.is_null()) throw std::runtime_error("PROCESS_CUP_GEOMETRY_BINDING_REQUIRED");
+        if(req.at("process_policy").at("cups")!=bound_process_geometry.at("cups") ||
+           req.at("process_policy").at("flange_from_physical_contact")!=bound_process_geometry.at("flange_from_physical_contact"))
+          throw std::runtime_error("PROCESS_CUP_GEOMETRY_BINDING_MISMATCH");
+        process=std::make_shared<m710::ProcessPolicy>(scene,req);
+      }
+      if(req.at("clearance_policy").at("schema")=="m710_native_process_clearance_v1" && !process)
+        throw std::runtime_error("PROCESS_POLICY_REQUIRED");
+      if(req.value("require_native_motion",false) && op=="plan" && !process) throw std::runtime_error("NATIVE_COLD_PROCESS_CONTEXT_REQUIRED");
       clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")));
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
-      scene->setStateFeasibilityPredicate([clearance](const moveit::core::RobotState& current,bool verbose){return clearance->check(current,verbose);});
+      scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){return clearance->check(current,verbose) && (!process || process->check(current));});
     }
     auto path_check=[&](const J& path) {return clearance->checkPath(scene->getCurrentState(),path,req.at("clearance_policy").at("edge_resolution_rad"));};
     if(op=="validate") {
@@ -230,32 +480,39 @@ public:
           if(values.size()!=names.size()) throw std::runtime_error("INVALID_PROBE_STATE");
           for(double x:values) if(!std::isfinite(x)) throw std::runtime_error("INVALID_PROBE_STATE");
           probe.setJointGroupPositions("manipulator",values);probe.update();
-          auto one=Clock::now();const bool valid=clearance->check(probe);double check_s=seconds(one);
-          const J failure=clearance->last_failure;
+          auto one=Clock::now();const bool clearance_valid=clearance->check(probe);
+          const bool process_valid=!process || process->check(probe,true);const bool valid=clearance_valid&&process_valid;double check_s=seconds(one);
+          const J failure=clearance_valid&&process?process->last_failure:clearance->last_failure;
           collision_detection::CollisionRequest cr;collision_detection::CollisionResult collision;
           auto lt=Clock::now();scene->checkCollision(cr,collision,probe);legacy_s+=seconds(lt);++legacy_queries;
-          results.push_back({{"valid",valid},{"failure",failure},{"check_s",check_s},{"legacy_intersection_valid",!collision.collision}});
+          results.push_back({{"valid",valid},{"failure",failure},{"process_valid",process_valid},{"check_s",check_s},{"legacy_intersection_valid",!collision.collision}});
         }
-        return {{"status","SUCCESS"},{"states",results},{"clearance",clearance->evidence()},
+        return {{"status","SUCCESS"},{"states",results},{"clearance",clearance->evidence()},{"process_policy_evidence",process?process->evidence():J(nullptr)},
           {"legacy_intersection_s",legacy_s},{"legacy_intersection_queries",legacy_queries},{"batch_s",seconds(t)}};
       }
       collision_detection::CollisionRequest old_request;old_request.contacts=true;old_request.max_contacts=20;
       collision_detection::CollisionResult old_result;scene->checkCollision(old_request,old_result);
       clearance->phase="diagnostic";
-      const bool valid=clearance->check(scene->getCurrentState());const J failure=clearance->last_failure;
-      J path_failure=nullptr;if(req.contains("probe_path")) {clearance->phase="output";path_failure=path_check(req.at("probe_path"));}
-      return {{"status","SUCCESS"},{"legacy_intersection_valid",!old_result.collision},{"native_valid",valid},
+      const bool clearance_valid=clearance->check(scene->getCurrentState());const J failure=clearance->last_failure;
+      const bool process_valid=!process || process->check(scene->getCurrentState(),true);
+      const J process_failure=process?process->last_failure:J(nullptr);
+      J path_failure=nullptr,process_path_failure=nullptr;if(req.contains("probe_path")) {clearance->phase="output";path_failure=path_check(req.at("probe_path"));
+        if(process) process_path_failure=process->checkPath(scene->getCurrentState(),req.at("probe_path"),req.at("clearance_policy").at("edge_resolution_rad"));}
+      return {{"status","SUCCESS"},{"legacy_intersection_valid",!old_result.collision},{"native_valid",clearance_valid&&process_valid},
         {"failure",failure},{"path_failure",path_failure},{"clearance",clearance->evidence()},
+        {"process_valid",process_valid},{"process_failure",process_failure},{"process_path_failure",process_path_failure},{"process_policy_evidence",process?process->evidence():J(nullptr)},
         {"world_count",scene->getWorld()->size()},{"attached_id",attached_id},{"pipeline_calls",calls}};
     }
     if(op=="plan") {
       if(!clearance->check(scene->getCurrentState())) return {{"status","INVALID_START_CLEARANCE"},{"failure",clearance->last_failure},{"clearance",clearance->evidence()},{"pipeline_calls",calls}};
+      if(process && !process->check(scene->getCurrentState())) return {{"status","INVALID_START_PROCESS"},{"failure",process->last_failure},{"process_policy",process->evidence()},{"pipeline_calls",calls}};
       if(req.contains("q_goal")) {
         auto goal=req.at("q_goal").get<std::vector<double>>();
         if(goal.size()!=names.size()) throw std::runtime_error("INVALID_GOAL");
         for(double x:goal) if(!std::isfinite(x)) throw std::runtime_error("INVALID_GOAL");
         auto end=scene->getCurrentState();end.setJointGroupPositions("manipulator",goal);end.update();
         if(!clearance->check(end)) return {{"status","INVALID_GOAL_CLEARANCE"},{"failure",clearance->last_failure},{"clearance",clearance->evidence()},{"pipeline_calls",calls}};
+        if(process && !process->check(end,true)) return {{"status","INVALID_GOAL_PROCESS"},{"failure",process->last_failure},{"process_policy",process->evidence()},{"pipeline_calls",calls}};
       }
     }
     collision_detection::CollisionRequest cr; cr.contacts=true; cr.max_contacts=20;
@@ -265,6 +522,7 @@ public:
       return {{"status","INVALID_START_COLLISION"},{"collision_pairs",pairs},{"scene_import_s",import_s}};
     }
     if(op=="compose") {
+      if(req.value("require_native_motion",false)) throw std::runtime_error("NATIVE_COLD_COMPOSITION_FORBIDDEN");
       mtc::Task task("",false);task.setRobotModel(model);task.setName("checked_complete_cycle");
       auto initial=std::make_unique<mtc::stages::FixedState>("frozen_start");initial->setState(scene);task.add(std::move(initial));
       for(const auto& spec:req.at("stages")) task.add(std::make_unique<CheckedProcessStage>(spec));
@@ -274,6 +532,7 @@ public:
       return {{"status","SUCCESS"},{"stage_count",req.at("stages").size()}, {"world_count",last->getWorld()->size()},
         {"attached_objects",attached},{"mtc_composition_s",seconds(begin)},{"physical_execution","NOT_RUN"}};
     }
+    if(req.value("require_native_motion",false)) return nativeTaskPlan(req,scene,clearance,process);
     const auto pipeline=req.at("pipeline_id").get<std::string>(); const auto planner=req.at("planner_id").get<std::string>();
     if(!pipelines.count(pipeline) || !((pipeline=="ompl"&&planner=="RRTConnectkConfigDefault") ||
        (pipeline=="pilz_industrial_motion_planner"&&(planner=="PTP"||planner=="LIN")))) throw std::runtime_error("PLANNER_UNAVAILABLE");

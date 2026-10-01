@@ -158,7 +158,39 @@ def validate_trajectory_segment(segment: Mapping[str, Any]) -> dict[str, Any]:
         raise M710ReplayContractError(
             "trajectory event order must be grasp <= release <= release_retreat"
         )
+    native = item.get("native_backend") or {}
+    if not isinstance(native, Mapping):
+        raise M710ReplayContractError("native_backend must be a mapping")
+    if any(item.get(key) or native.get(key) for key in ("native_cold", "require_native_motion")):
+        if __package__:
+            from .moveit2_native_cold import verify_native_cold_segment
+        else:
+            # The supervised loader executes this file outside the package to
+            # keep NumPy and Kit out of the parent before SimulationApp starts.
+            import importlib.util
+            source = Path(__file__).with_name("moveit2_native_cold.py")
+            spec = importlib.util.spec_from_file_location("_m710_native_cold_gate", source)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            verify_native_cold_segment = module.verify_native_cold_segment
+        failure = verify_native_cold_segment(item)
+        if failure is not None:
+            raise M710ReplayContractError(
+                "NATIVE_COLD_SOURCE_REJECTED: " + json.dumps(failure, sort_keys=True, allow_nan=False)
+            )
     return copy.deepcopy(dict(item))
+
+
+def _validate_native_mode_binding(plan: Mapping[str, Any], segment: Mapping[str, Any] | None) -> None:
+    """A strict request cannot lose its native contract during preflight export."""
+    if segment is None:
+        return  # Blocked preflights have no executable trajectory.
+    for key in ("native_cold", "require_native_motion"):
+        expected, actual = plan.get(key, False), segment.get(key, False)
+        if type(expected) is not bool or type(actual) is not bool:
+            raise M710ReplayContractError(f"{key} must be a boolean")
+        if expected != actual:
+            raise M710ReplayContractError(f"NATIVE_COLD_MODE_BINDING_MISMATCH: {key}")
 
 
 def build_replay_input_binding(
@@ -194,6 +226,7 @@ def build_replay_input_binding(
         raise M710ReplayContractError("unsupported trajectory segment status")
 
     plan = _mapping(plan_common, "plan_common")
+    _validate_native_mode_binding(plan, trajectory_segment)
     cfg = _mapping(configuration, "configuration")
     primitives = list(scene_primitives)
     if plan.get("scene_primitives") != primitives:
@@ -642,6 +675,9 @@ def _verify_m710_replay_bundle_integrity(
         raise M710ReplayContractError("bundle scene primitives disagree with preflight")
     for field in ("simulation_profile", "post_landing_transport", "collision_policy", "initial_actual_state_context"):
         if metadata.get(field) != preflight["replay_adapter_inputs"]["plan_common"].get(field):
+            raise M710ReplayContractError(f"bundle {field} differs from bound preflight")
+    for field in ("native_cold", "require_native_motion"):
+        if metadata.get(field, False) != preflight["replay_adapter_inputs"]["plan_common"].get(field, False):
             raise M710ReplayContractError(f"bundle {field} differs from bound preflight")
     segment = preflight["replay_adapter_inputs"].get("trajectory_segment", {})
     if segment.get("motion_semantics") is not None:

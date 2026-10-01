@@ -311,6 +311,12 @@ def _ready_m710_inputs(
 
     configuration = copy.deepcopy(_m710_config() if cfg is None else cfg)
     plan = _m710_plan()
+    # Bind the same explicit legacy physical defaults that the exporter emits;
+    # the final gate deliberately rejects unspecified or mismatched profiles.
+    plan.setdefault("simulation_profile", {})
+    plan.setdefault("post_landing_transport", {"mode": "strict_physics"})
+    plan.setdefault("collision_policy", {})
+    plan.setdefault("initial_actual_state_context", None)
     if segment is not None:
         plan["segments"] = [copy.deepcopy(segment)]
     selected = copy.deepcopy(plan["segments"][0])
