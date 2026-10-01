@@ -247,3 +247,63 @@ def test_native_nominal_compression_matches_authority_and_preserves_rigid_geomet
     assert tools[1].signed_distance_obb(target)==pytest.approx(0.,abs=1e-12)
     assert audit["compliant_replacements"]==["bellows_18"]
     assert audit["rigid_links_unchanged"]==["rigid_insert_18"]
+
+
+@pytest.mark.parametrize("stage,loaded",[("pregrasp",False),("transit",True)])
+def test_connected_pose_carries_exact_native_endpoint_into_next_stage(stage,loaded):
+    """Exercise the real core selection code with a numeric solver test double.
+
+    This is a regression for the retained failed run, not a native rerun or a
+    reuse of its path. These six-joint numbers are an independent minimal case.
+    """
+    from contextlib import nullcontext
+    from unloading_sim.ik import IKResult
+    c=connector();c.native_task_id="task-now"
+    initial=np.zeros(6)
+    ik_goal=np.array([.1,.1,.2,.1,.1,1.25])
+    emitted=ik_goal.copy()
+    emitted[2]=np.nextafter(emitted[2],np.inf)
+    emitted[5]+=8.881784197001252e-16
+    assert emitted[2]-ik_goal[2]==2.7755575615628914e-17
+    assert emitted[5]-ik_goal[5]==8.881784197001252e-16
+    native_path=[initial.copy(),emitted.copy()]
+    c.native_verified=[record([point.tolist() for point in native_path])]
+    before=deepcopy(c.native_verified)
+    c._statistics={name:0 for name in ("trajectory_ik_wall_seconds","ik_calls","ik_seeds_attempted",
+        "ik_iterations_consumed","cartesian_samples","state_validations","state_cache_hits")}
+    c.budget=SimpleNamespace(stage_connection_attempts=1,stage_connection_iterations=10,proof_of_concept=True)
+    validator=SimpleNamespace(check_states=lambda states,budget:[SimpleNamespace(valid=True)]*len(states),
+        context=SimpleNamespace(context_id="current-scene",guarantee="unit-test-context"),
+        context_current=lambda:"current-scene")
+    c._motion_validator=lambda *a,**k:validator
+    c._validation_request=lambda:None
+    c._deadline_monotonic=None;c._deadline_reached=lambda:False
+    c._budget_scope=lambda *a,**k:nullcontext()
+    c._optional_deadline=lambda:None;c._optional_quality=lambda *a,**k:None
+    class Stream:
+        def __init__(self):self.results=iter([IKResult(True,ik_goal,1,0.,0.,search_evidence={"candidate_id":"current-native-ik"})])
+        def __iter__(self):return self
+        def __next__(self):return next(self.results)
+        def evidence(self):return dict(seeds_attempted=1,iterations_consumed=0)
+    c._ik_stream=lambda *a,**k:Stream()
+    def solved_transit(start,goal,*args,**kwargs):
+        np.testing.assert_array_equal(start,initial)
+        np.testing.assert_array_equal(goal,ik_goal)
+        return native_path,None,dict(selected_method=GenerationMethod.JOINT_DIRECT.value,
+                                    planning_iterations_consumed=0)
+    c._transit=solved_transit
+    selected,path,failure,evidence=c._connect_pose(np.eye(4),[initial],initial,[],stage=stage,
+        purpose=MotionPurpose.FREE_LOADED_TRANSFER if loaded else MotionPurpose.FREE_APPROACH,
+        attachment=SimpleNamespace() if loaded else None,ik_seed=1,connection_seed=2)
+    assert failure is None
+    np.testing.assert_array_equal(selected,emitted)
+    np.testing.assert_array_equal(path[-1],emitted)
+    assert c._native_parent_stage_id(selected)=="stage-1"
+    assert c._native_parent_stage_id(ik_goal)==""  # No tolerance was added to parent lookup.
+    assert evidence["returned_endpoint"]["source"]=="NATIVE_PATH_FINAL_SAMPLE"
+    assert evidence["returned_endpoint"]["differs_from_ik_goal"] is True
+    coverage=audit_native_motion_coverage(path,c.native_verified,task_id=c.native_task_id)
+    assert coverage["passed"] and coverage["nonzero_edge_count"]==1
+    assert c.native_verified==before  # Native points and receipt remain untouched.
+    selected[0]+=1.
+    np.testing.assert_array_equal(path[-1],emitted)  # The next-stage state owns a copy.

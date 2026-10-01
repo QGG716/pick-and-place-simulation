@@ -534,6 +534,26 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         self._cold_counters["legacy_motion_generator_calls"] += 1
         return super()._ik_stream(*args, **kwargs)
 
+    def _connect_pose(self, *args, **kwargs):
+        selected,path,failure,evidence=super()._connect_pose(*args,**kwargs)
+        if not getattr(self,"require_native_motion",False) or failure is not None or selected is None:
+            return selected,path,failure,evidence
+        if not path:
+            raise MoveItUnavailable("NATIVE_CONNECTION_SUCCESS_WITHOUT_PATH")
+        # The core returns its IK goal as `selected`. A native planner can emit
+        # a numerically distinct, already checked endpoint. Carry that actual
+        # sample into the next stage, without modifying either native path or
+        # relaxing the exact source/parent match.
+        endpoint=np.asarray(path[-1],dtype=float).copy()
+        evidence={**evidence,"returned_endpoint":dict(source="NATIVE_PATH_FINAL_SAMPLE",
+            ik_goal_q_rad=np.asarray(selected).tolist(),q_rad=endpoint.tolist(),
+            differs_from_ik_goal=not np.array_equal(endpoint,np.asarray(selected)))}
+        return endpoint,path,failure,evidence
+
+    def _native_parent_stage_id(self,start):
+        return next((record["stage_id"] for record in reversed(self.native_verified)
+            if np.array_equal(np.asarray(record["points"][-1]["q"]),start)), "")
+
     def _rrt_transit(self, *args, **kwargs):
         self._forbid_legacy("core_rrt")
         self._cold_counters["legacy_motion_generator_calls"] += 1
@@ -708,8 +728,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             support_names=support_names,target_contact=target_contact,initial_proximity=initial_proximity,
             stage=stage,goal_pose=goal_pose)
         if strict:
-            request["parent_stage_id"] = next((r["stage_id"] for r in reversed(self.native_verified)
-                if np.array_equal(np.asarray(r["points"][-1]["q"]), start)), "")
+            request["parent_stage_id"] = self._native_parent_stage_id(start)
             request["purpose"] = getattr(purpose, "value", purpose)
         endpoint_started=perf_counter();endpoints=[]
         for name,q in (("start",start),("goal",goal)):
