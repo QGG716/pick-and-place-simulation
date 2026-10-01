@@ -1,0 +1,60 @@
+........................................................................ [ 64%]
+...........F...........................                                  [100%]
+=================================== FAILURES ===================================
+________ test_m710_bundle_payload_hash_round_trip_and_tamper_detection _________
+
+    def test_m710_bundle_payload_hash_round_trip_and_tamper_detection():
+        plan, cfg, preflight = _ready_m710_inputs()
+        payload = build_fanuc_isaac_replay_bundle(
+            plan, cfg, preflight=preflight
+        ).to_dict()
+    
+        assert verify_bundle_payload_sha256(payload) == payload["bundle_payload_sha256"]
+>       assert verify_m710_replay_bundle(payload)["status"] == "PASS"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_isaac_bridge.py:656: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/unloading_sim/m710_replay_contract.py:716: in verify_m710_replay_bundle
+    result = _verify_m710_replay_bundle_integrity(bundle_payload)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+bundle_payload = {'format': 'isaacsim_fanuc_replay_v1', 'timestamps_seconds': [0.0, 0.02, 0.04, 0.06, 0.08, 0.1, ...], 'positions_rad':...ae9b400114f061a3f765437cb4aeb876404a872bb285f617068cc', 'joint_names': ['J1', 'J2', 'J3', 'J4', 'J5', 'J6'], ...}, ...}
+project_root = None, current_asset_audit = None
+
+    def _verify_m710_replay_bundle_integrity(
+        bundle_payload: Mapping[str, Any],
+        *,
+        project_root: str | Path | None = None,
+        current_asset_audit: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Validate an executable M-710 bundle before constructing SimulationApp."""
+        bundle_hash = verify_bundle_payload_sha256(bundle_payload)
+        metadata = _mapping(bundle_payload.get("metadata"), "replay bundle metadata")
+        if metadata.get("robot_model") != "fanuc_m710id_70":
+            raise M710ReplayContractError("M-710 replay contract used for a different robot")
+        preflight = _mapping(
+            metadata.get("m710_execution_preflight"), "embedded M-710 execution preflight"
+        )
+        contract = _mapping(metadata.get("m710_replay_contract"), "embedded M-710 replay contract")
+        verify_m710_replay_contract(contract, preflight)
+        if metadata.get("execution_asset_fingerprint_sha256") != preflight.get(
+            "execution_asset_fingerprint_sha256"
+        ):
+            raise M710ReplayContractError("bundle execution asset identity disagrees with preflight")
+        if metadata.get("simulation_execution_ready") is not True or metadata.get(
+            "execution_blockers"
+        ) != []:
+            raise M710ReplayContractError("M-710 bundle is not simulation-execution ready")
+        if metadata.get("scene_primitives") != preflight["scene"]["primitives"]:
+            raise M710ReplayContractError("bundle scene primitives disagree with preflight")
+        for field in ("simulation_profile", "post_landing_transport", "collision_policy", "initial_actual_state_context"):
+            if metadata.get(field) != preflight["replay_adapter_inputs"]["plan_common"].get(field):
+>               raise M710ReplayContractError(f"bundle {field} differs from bound preflight")
+E               unloading_sim.m710_replay_contract.M710ReplayContractError: bundle simulation_profile differs from bound preflight
+
+src/unloading_sim/m710_replay_contract.py:678: M710ReplayContractError
+=========================== short test summary info ============================
+FAILED tests/test_isaac_bridge.py::test_m710_bundle_payload_hash_round_trip_and_tamper_detection
+1 failed, 110 passed in 0.95s

@@ -1,0 +1,72 @@
+-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found moveit_task_constructor_core: 0.1.3 (/opt/ros/humble/share/moveit_task_constructor_core/cmake)
+-- Found rosidl_generator_c: 3.1.9 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.9 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.9 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: chrono date_time filesystem iostreams program_options regex serialization system thread 
+-- Found rclcpp: 16.0.21 (/opt/ros/humble/share/rclcpp/cmake)
+-- Found rmw_implementation_cmake: 6.1.4 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.10 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found tcb_span: 1.3.2 (/opt/ros/humble/share/tcb_span/cmake)
+-- Found rclcpp_lifecycle: 16.0.21 (/opt/ros/humble/share/rclcpp_lifecycle/cmake)
+-- Found parameter_traits: 0.7.6 (/opt/ros/humble/share/parameter_traits/cmake)
+-- library: /usr/lib/x86_64-linux-gnu/libcurl.so
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: system filesystem date_time program_options thread chrono 
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: date_time filesystem program_options system thread 
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: thread system filesystem regex date_time program_options 
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: system filesystem date_time program_options thread 
+-- Found moveit_planners_ompl: 2.5.10 (/opt/ros/humble/share/moveit_planners_ompl/cmake)
+-- Found pilz_industrial_motion_planner: 2.5.10 (/opt/ros/humble/share/pilz_industrial_motion_planner/cmake)
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /work-native-cold-20261001/build
+Consolidate compiler generated dependencies of target m710_clearance_test
+Consolidate compiler generated dependencies of target m710_moveit_worker
+[ 25%] Built target m710_clearance_test
+[ 37%] Building CXX object CMakeFiles/m710_moveit_worker.dir/src/worker.cpp.o
+Consolidate compiler generated dependencies of target m710_process_geometry_test
+[ 50%] Building CXX object CMakeFiles/m710_process_geometry_test.dir/src/process_geometry_test.cpp.o
+[ 62%] Linking CXX executable m710_process_geometry_test
+[ 62%] Built target m710_process_geometry_test
+[ 75%] Building CXX object CMakeFiles/m710_process_policy_test.dir/src/process_policy_test.cpp.o
+/work-native-cold-20261001/ros2/m710_moveit_backend/src/process_policy_test.cpp: In function 'moveit_msgs::msg::CollisionObject object(const J&)':
+/work-native-cold-20261001/ros2/m710_moveit_backend/src/process_policy_test.cpp:12:101: error: no match for 'operator=' (operand types are 'shape_msgs::msg::SolidPrimitive_<std::allocator<void> >::_dimensions_type' {aka 'rosidl_runtime_cpp::BoundedVector<double, 3, std::allocator<double> >'} and 'std::vector<double>')
+   12 |   shape_msgs::msg::SolidPrimitive s;s.type=s.BOX;s.dimensions=b.at("size").get<std::vector<double>>();o.primitives.push_back(s);
+      |                                                                                                     ^
+In file included from /opt/ros/humble/include/moveit_msgs/moveit_msgs/msg/detail/joint_limits__struct.hpp:15,
+                 from /opt/ros/humble/include/moveit_msgs/moveit_msgs/msg/joint_limits.hpp:7,
+                 from /opt/ros/humble/include/moveit/robot_model/joint_model.h:44,
+                 from /opt/ros/humble/include/moveit/robot_model/joint_model_group.h:40,
+                 from /opt/ros/humble/include/moveit/robot_model/robot_model.h:45,
+                 from /opt/ros/humble/include/moveit/planning_scene/planning_scene.h:39,
+                 from /work-native-cold-20261001/ros2/m710_moveit_backend/src/clearance.h:2,
+                 from /work-native-cold-20261001/ros2/m710_moveit_backend/src/process_policy.h:3,
+                 from /work-native-cold-20261001/ros2/m710_moveit_backend/src/process_policy_test.cpp:2:
+/opt/ros/humble/include/rosidl_runtime_cpp/rosidl_runtime_cpp/bounded_vector.hpp:208:3: note: candidate: 'rosidl_runtime_cpp::BoundedVector<Tp, UpperBound, Alloc>& rosidl_runtime_cpp::BoundedVector<Tp, UpperBound, Alloc>::operator=(const rosidl_runtime_cpp::BoundedVector<Tp, UpperBound, Alloc>&) [with Tp = double; long unsigned int UpperBound = 3; Alloc = std::allocator<double>]'
+  208 |   operator=(const BoundedVector & x)
+      |   ^~~~~~~~
+/opt/ros/humble/include/rosidl_runtime_cpp/rosidl_runtime_cpp/bounded_vector.hpp:208:35: note:   no known conversion for argument 1 from 'std::vector<double>' to 'const rosidl_runtime_cpp::BoundedVector<double, 3, std::allocator<double> >&'
+  208 |   operator=(const BoundedVector & x)
+      |             ~~~~~~~~~~~~~~~~~~~~~~^
+/opt/ros/humble/include/rosidl_runtime_cpp/rosidl_runtime_cpp/bounded_vector.hpp:219:3: note: candidate: 'rosidl_runtime_cpp::BoundedVector<Tp, UpperBound, Alloc>& rosidl_runtime_cpp::BoundedVector<Tp, UpperBound, Alloc>::operator=(rosidl_runtime_cpp::BoundedVector<Tp, UpperBound, Alloc>&&) [with Tp = double; long unsigned int UpperBound = 3; Alloc = std::allocator<double>]'
+  219 |   operator=(BoundedVector && x)
+      |   ^~~~~~~~
+/opt/ros/humble/include/rosidl_runtime_cpp/rosidl_runtime_cpp/bounded_vector.hpp:219:30: note:   no known conversion for argument 1 from 'std::vector<double>' to 'rosidl_runtime_cpp::BoundedVector<double, 3, std::allocator<double> >&&'
+  219 |   operator=(BoundedVector && x)
+      |             ~~~~~~~~~~~~~~~~~^
+/opt/ros/humble/include/rosidl_runtime_cpp/rosidl_runtime_cpp/bounded_vector.hpp:238:3: note: candidate: 'rosidl_runtime_cpp::BoundedVector<Tp, UpperBound, Alloc>& rosidl_runtime_cpp::BoundedVector<Tp, UpperBound, Alloc>::operator=(std::initializer_list<typename std::vector<Tp, Alloc>::value_type>) [with Tp = double; long unsigned int UpperBound = 3; Alloc = std::allocator<double>; typename std::vector<Tp, Alloc>::value_type = double]'
+  238 |   operator=(std::initializer_list<typename Base::value_type> l)
+      |   ^~~~~~~~
+/opt/ros/humble/include/rosidl_runtime_cpp/rosidl_runtime_cpp/bounded_vector.hpp:238:62: note:   no known conversion for argument 1 from 'std::vector<double>' to 'std::initializer_list<double>'
+  238 |   operator=(std::initializer_list<typename Base::value_type> l)
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+gmake[2]: *** [CMakeFiles/m710_process_policy_test.dir/build.make:76: CMakeFiles/m710_process_policy_test.dir/src/process_policy_test.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:221: CMakeFiles/m710_process_policy_test.dir/all] Error 2
+gmake[1]: *** Waiting for unfinished jobs....
+[ 87%] Linking CXX executable m710_moveit_worker
+[ 87%] Built target m710_moveit_worker
+gmake: *** [Makefile:146: all] Error 2

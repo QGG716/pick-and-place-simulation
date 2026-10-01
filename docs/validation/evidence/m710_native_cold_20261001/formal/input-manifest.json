@@ -1,0 +1,24 @@
+{
+  "run_id": "native-cold-449ad1c9fc0d4dc1bc18b929eb55a311",
+  "source_commit": "3588954fdae9c1829d27e018c8816a1f3299e2ea",
+  "worker_sha256": "5ebd7af181ccfb899d7937c358e24c7a228105d995e4515a36cfa796a9ebe44f",
+  "scene": "m710id70_unloading_layout_v1",
+  "target": "carton_l07_c02",
+  "random_seed": 71070,
+  "carton_count": 40,
+  "tool_mass_kg": 20.0,
+  "target_mass_kg": 42.5,
+  "actual_state_path": "/root/autodl-tmp/m710-native-cold-20261001/repo/outputs/native-cold-20261001-once/physics/initialized_actual_state.json",
+  "actual_state_sha256": "0a82d88dc9cf00f87392b337f64f37d5df261d5072a917e95739dd337c0b06b7",
+  "world_session_id": "1790859213.4127235",
+  "history_enabled": false,
+  "allowed_inputs": [
+    "official model",
+    "frozen current scene",
+    "this measured initial state",
+    "current tool/cup geometry",
+    "current process and receiver/direction policy",
+    "fixed seed"
+  ],
+  "bootstrap_contract_sha256": "676c693a859632ae22d0089e6770414c869ae9fd0ada6d0db1a51846f7ac654c"
+}

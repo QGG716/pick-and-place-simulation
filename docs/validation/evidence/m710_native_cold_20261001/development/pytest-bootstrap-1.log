@@ -1,0 +1,79 @@
+F........................................                                [100%]
+=================================== FAILURES ===================================
+____ test_real_bootstrap_is_static_uncommanded_and_not_an_execution_bundle _____
+
+contract = {'schema': 'm710_native_cold_bootstrap_v1', 'motion_execution_permitted': False, 'attachment_permitted': False, 'scope': 'NEW_WORLD_INITIALIZATION_AND_SETTLING_ONLY', ...}
+
+    def test_real_bootstrap_is_static_uncommanded_and_not_an_execution_bundle(contract):
+>       result = verify_bootstrap_contract(contract, project_root=ROOT)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_m710_bootstrap.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+contract = {'schema': 'm710_native_cold_bootstrap_v1', 'motion_execution_permitted': False, 'attachment_permitted': False, 'scope': 'NEW_WORLD_INITIALIZATION_AND_SETTLING_ONLY', ...}
+project_root = PosixPath('/root/autodl-tmp/m710-native-cold-20261001/repo')
+
+    def verify_bootstrap_contract(contract, *, project_root=None):
+        payload = copy.deepcopy(contract)
+        expected = payload.pop("contract_sha256", None)
+        if payload.get("schema") != SCHEMA or expected != _digest(payload):
+            raise ValueError("BOOTSTRAP_CONTRACT_IDENTITY_MISMATCH")
+        if payload.get("motion_execution_permitted") is not False or payload.get("attachment_permitted") is not False:
+            raise ValueError("BOOTSTRAP_MUST_NOT_AUTHORIZE_MOTION")
+        metadata = payload["metadata"]
+        if (metadata.get("robot_model") != "fanuc_m710id_70" or metadata.get("target") != TARGET
+                or metadata.get("initialization_only") is not True
+                or metadata.get("motion_execution_permitted") is not False
+                or metadata.get("attachment_permitted") is not False
+                or metadata.get("simulation_execution_ready") is not False
+                or metadata.get("simulation_execution_qualified") is not False
+                or metadata.get("execution_qualified") is not False):
+            raise ValueError("BOOTSTRAP_INVALID_SCOPE")
+        if any(key in metadata for key in ("m710_execution_preflight", "m710_replay_contract", "native_backend",
+                                          "joint_reference", "trajectory_stage_ranges")):
+            raise ValueError("BOOTSTRAP_FORBIDDEN_MOTION_INPUT")
+        if any(key in payload for key in ("path", "segments", "timestamps_seconds", "positions_rad")):
+            raise ValueError("BOOTSTRAP_FORBIDDEN_MOTION_INPUT")
+        q = metadata.get("initial_q_rad")
+        if (not isinstance(q, list) or len(q) != 6
+                or any(type(v) not in (int, float) or not math.isfinite(v) for v in q)):
+            raise ValueError("BOOTSTRAP_INVALID_INITIAL_Q")
+        if any(v < lo or v > hi for v, lo, hi in zip(q, metadata["joint_position_lower_limits_rad"],
+                                                   metadata["joint_position_upper_limits_rad"])):
+            raise ValueError("BOOTSTRAP_INITIAL_Q_LIMIT")
+        cartons = [p for p in metadata["scene_primitives"] if p.get("category") == "carton"]
+        if (len(cartons) != 40 or len({p["name"] for p in cartons}) != 40
+                or TARGET not in {p["name"] for p in cartons}
+                or any(p.get("dynamic") is not True or p.get("mass_kg") != 42.5 for p in cartons)):
+            raise ValueError("BOOTSTRAP_REQUIRES_40_UNCHANGED_DYNAMIC_CARTONS")
+        if any(metadata.get(key) for key in ("initial_actual_state_context", "completed_carton_ids",
+                "processed_carton_ids", "handed_off_ids", "receiver_transport_state")):
+            raise ValueError("BOOTSTRAP_FORBIDDEN_PRIOR_WORLD_STATE")
+        gripper = metadata["gripper"]
+        if gripper.get("gripper_mass_kg") != 20.0 or gripper.get("physical_cup_count") != 72:
+            raise ValueError("BOOTSTRAP_TOOL_INVENTORY_MISMATCH")
+        for field in ("geometrically_eligible_mask", "commanded_active_mask", "planned_fk_contact_mask", "actual_contact_mask"):
+            if gripper.get(field) != [False] * 72 or any(type(v) is not bool for v in gripper[field]):
+                raise ValueError("BOOTSTRAP_CUPS_MUST_BE_UNCOMMANDED")
+        if any(metadata.get(key) is not None for key in ("grasp_time_seconds", "release_time_seconds", "release_retreat_time_seconds")):
+            raise ValueError("BOOTSTRAP_FORBIDDEN_EXECUTION_EVENT")
+        output = metadata["rendering"]["required_output"]
+        if (output["width_px"], output["height_px"], output["fps"]) != (640, 360, 5):
+            raise ValueError("BOOTSTRAP_RECORDING_PROFILE_MISMATCH")
+        if payload.get("initial_state_audit", {}).get("status") != "PASS":
+            raise ValueError("BOOTSTRAP_INITIAL_STATE_INVALID")
+        if payload.get("asset_audit", {}).get("execution_qualified") is not True:
+            raise ValueError("BOOTSTRAP_ASSETS_NOT_READY")
+        if project_root is not None:
+            root = Path(project_root).resolve()
+            for relative, expected_hash in payload["source_sha256"].items():
+                path = (root / relative).resolve()
+                if not path.is_relative_to(root) or not path.is_file() or _file_hash(path) != expected_hash:
+>                   raise ValueError("BOOTSTRAP_WORKSPACE_SOURCE_CHANGED: " + relative)
+E                   ValueError: BOOTSTRAP_WORKSPACE_SOURCE_CHANGED: src/unloading_sim/serial_unloading.py
+
+src/unloading_sim/m710_bootstrap.py:84: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_m710_bootstrap.py::test_real_bootstrap_is_static_uncommanded_and_not_an_execution_bundle
+1 failed, 40 passed in 0.44s

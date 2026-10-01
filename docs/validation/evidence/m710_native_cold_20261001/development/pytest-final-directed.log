@@ -1,0 +1,90 @@
+............................F........................................... [ 54%]
+............................................................             [100%]
+=================================== FAILURES ===================================
+____ test_integrated_segment_gate_recomputes_coverage_from_returned_points _____
+
+    def test_integrated_segment_gate_recomputes_coverage_from_returned_points():
+        # Synthetic source bindings exercise the artifact gate only; this fixture
+        # carries no claim of a native worker invocation or robot feasibility.
+        segment = _unproven_segment()
+        path = segment["path"]
+        record = dict(
+            stage_id="synthetic-stage", request_id="synthetic-request", task_id="synthetic-task",
+            solver="pilz/PTP", input_state_sha256=canonical_sha256(path[0]),
+            constraints_sha256=canonical_sha256({}), authoritative_status="PASS",
+            mtc_generation=True, path_sha256=canonical_sha256(path),
+            path_range=[0, 1], points=[dict(q=q.copy(), t=float(i)) for i, q in enumerate(path)],
+        )
+        segment["native_backend"] = dict(
+            native_cold=True, require_native_motion=True, task_id="synthetic-task", stages=[record],
+            cold_audit=dict(history_enabled=False, history_inputs_read=0, legacy_motion_generator_calls=0),
+            mtc_task_audit=dict(status="SUCCESS", task_id="synthetic-task", generated_during_task=True,
+                                complete_task=True, stage_ids=["synthetic-stage"]),
+        )
+>       assert validate_trajectory_segment(segment) == segment
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_native_cold_replay_gate.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+segment = {'target': 'carton_l07_c02', 'path': [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.01, 0.01, 0.01, 0.01, 0.01, 0.01]], 'grasp_index': 0, 'release_index': 1, ...}
+
+    def validate_trajectory_segment(segment: Mapping[str, Any]) -> dict[str, Any]:
+        """Validate the minimum complete-cycle segment consumed by the adapter."""
+        item = _mapping(segment, "trajectory segment")
+        target = item.get("target")
+        if not isinstance(target, str) or not target.strip():
+            raise M710ReplayContractError("trajectory segment target must be non-empty")
+        path = item.get("path")
+        if not isinstance(path, list) or len(path) < 2:
+            raise M710ReplayContractError("trajectory segment path must have at least two waypoints")
+        for row_index, row in enumerate(path):
+            if not isinstance(row, list) or len(row) != 6:
+                raise M710ReplayContractError(
+                    f"trajectory segment path[{row_index}] must contain six joints"
+                )
+            for column_index, value in enumerate(row):
+                _finite_number(value, f"trajectory segment path[{row_index}][{column_index}]")
+    
+        indices: dict[str, int] = {}
+        for name in ("grasp_index", "release_index", "release_retreat_index"):
+            value = item.get(name)
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise M710ReplayContractError(f"trajectory segment {name} must be an integer")
+            if not 0 <= value < len(path):
+                raise M710ReplayContractError(f"trajectory segment {name} is outside the path")
+            indices[name] = value
+        if not (
+            indices["grasp_index"]
+            <= indices["release_index"]
+            <= indices["release_retreat_index"]
+        ):
+            raise M710ReplayContractError(
+                "trajectory event order must be grasp <= release <= release_retreat"
+            )
+        native = item.get("native_backend") or {}
+        if not isinstance(native, Mapping):
+            raise M710ReplayContractError("native_backend must be a mapping")
+        if any(item.get(key) or native.get(key) for key in ("native_cold", "require_native_motion")):
+            if __package__:
+                from .moveit2_native_cold import verify_native_cold_segment
+            else:
+                # The supervised loader executes this file outside the package to
+                # keep NumPy and Kit out of the parent before SimulationApp starts.
+                import importlib.util
+                source = Path(__file__).with_name("moveit2_native_cold.py")
+                spec = importlib.util.spec_from_file_location("_m710_native_cold_gate", source)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                verify_native_cold_segment = module.verify_native_cold_segment
+            failure = verify_native_cold_segment(item)
+            if failure is not None:
+>               raise M710ReplayContractError(
+                    "NATIVE_COLD_SOURCE_REJECTED: " + json.dumps(failure, sort_keys=True, allow_nan=False)
+                )
+E               unloading_sim.m710_replay_contract.M710ReplayContractError: NATIVE_COLD_SOURCE_REJECTED: {"reason": "NATIVE_COLD_TASK_SOURCE_LOG_MISSING", "stage": "native_cold_final_contract"}
+
+src/unloading_sim/m710_replay_contract.py:178: M710ReplayContractError
+=========================== short test summary info ============================
+FAILED tests/test_native_cold_replay_gate.py::test_integrated_segment_gate_recomputes_coverage_from_returned_points
+1 failed, 131 passed in 0.91s

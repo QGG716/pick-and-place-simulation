@@ -1,0 +1,67 @@
+{"elapsed_s": 1.0129856634885073, "event": "work_checkpoint", "stage": "actual_task_start", "target": null, "failure": null}
+{"elapsed_s": 1.053007759153843, "event": "CONTACT_CANDIDATE_STARTED", "stage": "grasp_ik", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 1.3629839401692152, "target": "carton_l07_c02", "face": "front", "roll": 90, "pose": 0, "valid_grasps": 3, "failure": "TRAJECTORY_SEARCH_PENDING"}
+{"elapsed_s": 1.3634999953210354, "event": "plan_enter", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 1.3639431279152632, "event": "stage_enter", "stage": null, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 1.3714289925992489, "event": "stage_enter", "stage": null, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 1.382418118417263, "event": "stage_enter", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 6.385090805590153, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 11.386442111805081, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 16.391912518069148, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 21.396123215556145, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 26.401556754484773, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 31.40521341562271, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 36.40978633798659, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 41.41390425898135, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 46.41505794040859, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 51.41845521889627, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 55.000985719263554, "event": "stage_exit", "stage": "pregrasp", "success": true, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 60.14254376851022, "event": "stage_interrupted", "stage": null, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 60.14295684359968, "event": "stage_interrupted", "stage": null, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 60.16173882037401, "event": "ERROR", "failure": null}
+Traceback (most recent call last):
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/tools/run_m710_contact_unloading.py", line 238, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/tools/run_m710_contact_unloading.py", line 131, in main
+    result = run_layout_single_carton_audit(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/native_cold_entry.py", line 29, in run
+    return function(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/layout_single_carton.py", line 1897, in run_layout_single_carton_audit
+    outcome = trajectory_connector.plan(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/moveit2_backend.py", line 558, in plan
+    return super().plan(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/layout_trajectory.py", line 3779, in plan
+    result = self._plan_candidate(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/layout_trajectory.py", line 3873, in _plan_candidate
+    segment, failure, trace = branch(
+                              ^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/layout_trajectory.py", line 2800, in _plan_branch
+    return self._plan_branch_search(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/layout_trajectory.py", line 75, in observed
+    result = function(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/layout_trajectory.py", line 2841, in _plan_branch_search
+    pregrasp, contact, failure, evidence = self._approach(
+                                           ^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/layout_trajectory.py", line 75, in observed
+    result = function(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/layout_trajectory.py", line 2767, in _approach
+    terminal_path, failure, terminal_search = self._cartesian(q, requested, obstacles,
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/moveit2_backend.py", line 958, in _cartesian
+    path,failure,evidence=self._native_plan(start,None,obstacles,goal_pose=destination,
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/moveit2_backend.py", line 743, in _native_plan
+    raw=self.native.request(submitted,timeout=timeout,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261001/repo/src/unloading_sim/moveit2_backend.py", line 281, in request
+    raise MoveItUnavailable(result.get("detail", "MOVEIT2_ERROR"))
+unloading_sim.moveit2_backend.MoveItUnavailable: NATIVE_TASK_INITIAL_STATE_CHANGED

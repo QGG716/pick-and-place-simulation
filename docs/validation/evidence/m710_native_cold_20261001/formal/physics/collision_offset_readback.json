@@ -1,0 +1,2258 @@
+{
+  "schema": "m710_explicit_collision_offset_readback_v1",
+  "policy": {
+    "contact_offset_m": 0.01,
+    "rest_offset_m": 0.0
+  },
+  "authored_all_colliders": {
+    "status": "PASS",
+    "scope": "all USD collision shapes including static surfaces",
+    "collider_count": 259,
+    "colliders": [
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/j6_1/j6_1",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_000",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_001",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_002",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_003",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_004",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_005",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_006",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_007",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_008",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_009",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_010",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_011",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_012",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_013",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_014",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_015",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_016",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_017",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_018",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_019",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_020",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_021",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_022",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_023",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_024",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_025",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_026",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_027",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_028",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_029",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_030",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_031",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_032",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_033",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_034",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_035",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_036",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_037",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_038",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_039",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_040",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_041",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_042",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_043",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_044",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_045",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_046",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_047",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_048",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_049",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_050",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_051",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_052",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_053",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_054",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_055",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_056",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_057",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_058",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_059",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_060",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_061",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_062",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_063",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_064",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_065",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_066",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_067",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_068",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_069",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_070",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_071",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_072",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_073",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_074",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_075",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_076",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_077",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_078",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_079",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_080",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_081",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_082",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_083",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_084",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_085",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_086",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_087",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_088",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_089",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_090",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_091",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_092",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_093",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_094",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_095",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_096",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_097",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_098",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_099",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_100",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_101",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_102",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_103",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_104",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_105",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_106",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_107",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_108",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_109",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_110",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_111",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_112",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_113",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_114",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_115",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_116",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_117",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_118",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_119",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_120",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_121",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_122",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_123",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_124",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_125",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_126",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_127",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_128",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/SuctionToolRigidCollision_129",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_00",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_01",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_02",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_03",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_04",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_05",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_06",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_07",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_08",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_09",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_10",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_11",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_12",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_13",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_14",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_15",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_16",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_17",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_18",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_19",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_20",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_21",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_22",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_23",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_24",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_25",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_26",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_27",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_28",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_29",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_30",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_31",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_32",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_33",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_34",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_35",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_36",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_37",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_38",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_39",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_40",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_41",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_42",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_43",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_44",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_45",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_46",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_47",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_48",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_49",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_50",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_51",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_52",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_53",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_54",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_55",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_56",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_57",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_58",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_59",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_60",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_61",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_62",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_63",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_64",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_65",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_66",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_67",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_68",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_69",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_70",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/J6_link/CupCompressedCollision_71",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/J5_link/j5_1/j5_1",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/J4_link/j4_1/j4_1",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/J3_link/j3_1/j3_1",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/J2_link/j2_1/j2_1",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/J1_link/j1_1/j1_1",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/fanuc_m710id_70/Geometry/world/base_link/base_1/base_1",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/chassis",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/conveyor_transverse/StructureCollision",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/conveyor_transverse/TopCollision",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/conveyor_longitudinal/StructureCollision",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/conveyor_longitudinal/TopCollision",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/trailer_floor",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/trailer_left_wall",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/trailer_right_wall",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/trailer_ceiling",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/trailer_closed_end_wall",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l00_c00",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l00_c01",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l00_c02",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l00_c03",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l00_c04",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l01_c00",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l01_c01",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l01_c02",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l01_c03",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l01_c04",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l02_c00",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l02_c01",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l02_c02",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l02_c03",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l02_c04",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l03_c00",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l03_c01",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l03_c02",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l03_c03",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l03_c04",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l04_c00",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l04_c01",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l04_c02",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l04_c03",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l04_c04",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l05_c00",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l05_c01",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l05_c02",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l05_c03",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l05_c04",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l06_c00",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l06_c01",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l06_c02",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l06_c03",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l06_c04",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l07_c00",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l07_c01",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l07_c02",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l07_c03",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      },
+      {
+        "collider": "/Validation/Scene/carton_l07_c04",
+        "contact_offset_m": 0.01,
+        "rest_offset_m": 0.0,
+        "newton_contact_gap_m": 0.01
+      }
+    ]
+  },
+  "articulation": {
+    "status": "PASS",
+    "shape_count": 209,
+    "source": "PhysX tensor backend getters",
+    "read_only": true,
+    "contact_offsets_m": [
+      [
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582
+      ]
+    ],
+    "rest_offsets_m": [
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "shape_path_mapping": "backend shape order; no unverified path-order assumption"
+  },
+  "cartons": {
+    "status": "PASS",
+    "shape_count": 40,
+    "source": "PhysX tensor backend getters",
+    "read_only": true,
+    "contact_offsets_m": [
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ],
+      [
+        0.009999999776482582
+      ]
+    ],
+    "rest_offsets_m": [
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ],
+      [
+        0.0
+      ]
+    ],
+    "shape_path_mapping": "backend shape order; no unverified path-order assumption"
+  },
+  "poc_acceptance": {
+    "required_pair_clearance_m": 0.005,
+    "pair_contact_generation_envelope_m": 0.02,
+    "offsets_added_to_acceptance_clearance": false,
+    "solver_offsets_changed_for_poc": false
+  }
+}

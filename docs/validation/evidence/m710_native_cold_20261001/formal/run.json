@@ -1,0 +1,23 @@
+{
+  "schema": "m710_native_cold_single_run_v1",
+  "run_id": "native-cold-449ad1c9fc0d4dc1bc18b929eb55a311",
+  "source_commit": "3588954fdae9c1829d27e018c8816a1f3299e2ea",
+  "worker_sha256": "5ebd7af181ccfb899d7937c358e24c7a228105d995e4515a36cfa796a9ebe44f",
+  "random_seed": 71070,
+  "target": "carton_l07_c02",
+  "carton_count": 40,
+  "planning_requests": 1,
+  "world_launches": 1,
+  "execution_requests": 0,
+  "status": "BLOCKED",
+  "real_machine_commands": false,
+  "timings": {
+    "initialization_wall_s": 32.00595046021044,
+    "planning_and_delivery_wall_s": 61.36418449319899
+  },
+  "wall_seconds": 94.22551548294723,
+  "world_pid": 3898,
+  "world_session_id": "1790859213.4127235",
+  "reason": "NATIVE_COLD_PLANNING_OR_DELIVERY_GATE_FAILED:1",
+  "exception_type": "RuntimeError"
+}

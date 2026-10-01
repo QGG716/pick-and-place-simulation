@@ -1,0 +1,116 @@
+{
+  "status": "BLOCKED",
+  "scope": "one formal request; no execution; post-run fix does not change this result",
+  "source_commit": "3588954fdae9c1829d27e018c8816a1f3299e2ea",
+  "run_id": "native-cold-449ad1c9fc0d4dc1bc18b929eb55a311",
+  "world_session_id": "1790859213.4127235",
+  "world_launches": 1,
+  "planning_requests": 1,
+  "execution_requests": 0,
+  "target": "carton_l07_c02",
+  "carton_count": 40,
+  "failure": "NATIVE_TASK_INITIAL_STATE_CHANGED",
+  "failure_class": "native candidate-stage connection identity",
+  "history_enabled": false,
+  "history_inputs_read": 0,
+  "legacy_motion_generator_calls": 0,
+  "actual_native_calls": {
+    "pregrasp": {
+      "PTP": 1,
+      "LIN": 0,
+      "OMPL": 0,
+      "native_ik": 1
+    },
+    "contact_endpoint": {
+      "PTP": 0,
+      "LIN": 0,
+      "OMPL": 0,
+      "native_ik": 6
+    }
+  },
+  "ompl_invoked": false,
+  "submitted_motion_requests": 2,
+  "contact_request_rejected_before_LIN_solver": true,
+  "accepted_prefix": {
+    "stage": "pregrasp",
+    "stage_id": "native-cold-ac5466d9fa99454c9dd38b56ba91846f:1",
+    "native_status": "PASS",
+    "independent_check": "PASS",
+    "native_points": 78,
+    "path_sha256": "f39cdd4ad172b158fb405c7c8dfc7ea51819ba1712a28afbcd5d57d586f5c597"
+  },
+  "failed_transition": {
+    "native_endpoint_q": [
+      -0.3718745865951869,
+      -0.2515775682054924,
+      -0.20524588808394226,
+      1.6890556190125632,
+      0.3746265802429475,
+      -4.839355963279562
+    ],
+    "next_request_q_start": [
+      -0.3718745865951869,
+      -0.2515775682054924,
+      -0.20524588808394223,
+      1.6890556190125632,
+      0.3746265802429475,
+      -4.839355963279561
+    ],
+    "joint_delta_rad": [
+      0.0,
+      0.0,
+      2.7755575615628914e-17,
+      0.0,
+      0.0,
+      8.881784197001252e-16
+    ],
+    "next_parent_stage_id": "",
+    "expected_parent_stage_id": "native-cold-ac5466d9fa99454c9dd38b56ba91846f:1"
+  },
+  "complete_path_source_coverage": {
+    "status": "NOT_REACHED",
+    "coverage_fraction": null
+  },
+  "complete_native_geometry": "FAIL",
+  "execution_preflight": "NOT_REACHED",
+  "bundle_export_and_final_load": "NOT_REACHED",
+  "isaac_single_carton_execution": "NOT_STARTED",
+  "ideal_reception": "NOT_REACHED",
+  "physical_and_torque_qualification": "NOT_ESTABLISHED",
+  "first_feasible_complete_path": null,
+  "execution_video": null,
+  "failure_frame": "formal/physics/failure.png",
+  "timings_seconds": {
+    "initialization_wall_s": 32.00595046021044,
+    "planning_and_delivery_wall_s": 61.36418449319899,
+    "supervisor_until_blocked": 94.22551548294723,
+    "model_warmup": 0.29241774417459965,
+    "native_ik_compute_sum": 0.001432059,
+    "native_ik_inclusive_sum": 0.20291387476027012,
+    "native_mtc_plan": 0.095276467,
+    "native_output_check": 3.381646118,
+    "independent_prefix_check": 49.97806463576853,
+    "final_complete_path_check": null,
+    "export": null,
+    "isaac_motion_physical": 0.0
+  },
+  "timing_note": "Nested/inclusive timings must not be added to total elapsed time; null means not reached.",
+  "archives": {
+    "formal-evidence.tar.gz": {
+      "sha256": "13e778e605c9bc4bd5fcbd88a3d4315f6ec256345947c87832f1b8332bd1d8aa",
+      "bytes": 2309838
+    },
+    "development-evidence.tar.gz": {
+      "sha256": "dcf7e99487f1268e1f43743ef7959b34b10fa91d27404592f28bd525b9d1ada5",
+      "bytes": 1416896
+    }
+  },
+  "post_run_fix": {
+    "commit": "7701fa64f48a881ad9df49403519724090baaac9",
+    "change": "carry actual native path endpoint across stage connections; exact source matching unchanged",
+    "verification": "43 directed Python tests passed in a separate GPU-server source directory",
+    "formal_request_repeated": false,
+    "full_native_geometry_after_fix": "NOT_RUN",
+    "isaac_execution_after_fix": "NOT_RUN"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "world_session_id": "1790859213.4127235",
+  "actual_state_sha256": "0a82d88dc9cf00f87392b337f64f37d5df261d5072a917e95739dd337c0b06b7",
+  "stop": true,
+  "reason": "NATIVE_COLD_PLANNING_OR_DELIVERY_GATE_FAILED:1"
+}

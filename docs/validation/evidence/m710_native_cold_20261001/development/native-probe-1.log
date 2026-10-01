@@ -1,0 +1,9 @@
+independent_configured_home PASS
+native_ik_current_home PASS
+native_ptp_small_motion PASS
+native_same_task_lin_append PASS
+native_same_task_backtrack PASS
+native_ompl_independent_connectivity PASS
+native_contact_seal_and_compression_counterexample FAIL
+native_transport_cancel_poison PASS
+native_transport_expired_poison PASS

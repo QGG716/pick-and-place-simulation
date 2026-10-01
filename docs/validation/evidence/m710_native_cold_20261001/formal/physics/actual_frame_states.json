@@ -1,0 +1,5 @@
+{
+  "format": "isaac_actual_frame_states_v2",
+  "states": [],
+  "stop_reason": "NATIVE_COLD_PLANNING_OR_DELIVERY_GATE_FAILED:1"
+}

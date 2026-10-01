@@ -1,0 +1,9 @@
+{
+  "status": "planning_stopped_before_motion",
+  "started_unix_s": 1790859213.4127235,
+  "failed_unix_s": 1790859306.9340446,
+  "exception_type": "NativeColdPlanningStopped",
+  "exception": "NATIVE_COLD_PLANNING_OR_DELIVERY_GATE_FAILED:1",
+  "primary_runtime_stop_reason": null,
+  "telemetry_samples": 0
+}

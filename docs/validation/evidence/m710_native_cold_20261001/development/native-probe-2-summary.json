@@ -1,0 +1,89 @@
+{
+  "schema": "m710_native_cold_development_probe_v1",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "independent_configured_home",
+      "passed": true,
+      "failure": null
+    },
+    {
+      "name": "native_ik_current_home",
+      "passed": true
+    },
+    {
+      "name": "native_ptp_small_motion",
+      "passed": true,
+      "failure": null
+    },
+    {
+      "name": "native_same_task_lin_append",
+      "passed": true,
+      "failure": null
+    },
+    {
+      "name": "native_same_task_backtrack",
+      "passed": true,
+      "failure": null
+    },
+    {
+      "name": "native_ompl_independent_connectivity",
+      "passed": true,
+      "failure": null
+    },
+    {
+      "name": "native_ompl_ptp_rejection_fallback_counterexample",
+      "passed": true
+    },
+    {
+      "name": "native_contact_seal_and_compression_counterexample",
+      "passed": true
+    },
+    {
+      "name": "native_transport_cancel_poison",
+      "passed": true
+    },
+    {
+      "name": "native_transport_expired_poison",
+      "passed": true
+    }
+  ],
+  "scope": "configured-home development probes; no measured initial state or complete-cycle acceptance",
+  "history_enabled": false,
+  "history_inputs_read": 0,
+  "isaac": "NOT_RUN",
+  "physical_success_count": 0,
+  "target": "carton_l07_c02",
+  "carton_count": 40,
+  "native_budget": {
+    "history_enabled": false,
+    "history_inputs_read": 0,
+    "legacy_motion_generator_calls": 0,
+    "forbidden_entry_attempts": 0,
+    "task_id": "native-cold-50d5105e54d9404ba472f8e9b5cdb4ad",
+    "per_stage_calls": {},
+    "ompl_invoked": false,
+    "native_stage_seconds": 30.0,
+    "native_ik_seconds": 0.25,
+    "native_task_seconds": 900.0,
+    "ipc_watchdog_seconds": 120.0,
+    "model_warmup_s": 0.2819630391895771,
+    "rest_start_contract": {
+      "schema": "m710_native_rest_start_contract_v1",
+      "source": "CONFIGURED_DEVELOPMENT_REST_STATE",
+      "measured_qd_rad_s": null,
+      "solver_start_velocity_rad_s": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "measured_rest_gate_used": false,
+      "physical_initial_state_claim": false
+    },
+    "zero_length_semantic_events": []
+  },
+  "wall_seconds": 19.399385454133153
+}

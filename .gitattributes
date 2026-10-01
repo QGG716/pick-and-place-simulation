@@ -55,3 +55,6 @@ docs/validation/evidence/m710_moveit2_tcp_20260928/** -text -whitespace
 
 # Preserve final execution-reference audit evidence identities.
 docs/validation/evidence/m710_execution_gate_20260928/** -text -whitespace
+
+# Keep this formal failed run and its source/actual-state identities byte-exact.
+docs/validation/evidence/m710_native_cold_20261001/** -text -whitespace
