@@ -1,0 +1,12 @@
+{
+  "schema": "m710_settling_step_wall_timing_v1",
+  "step_index": 2,
+  "physical_time_s": 0.0125,
+  "drive_target_wall_s": 0.00034452416002750397,
+  "physx_and_fabric_wall_s": 0.0068590156733989716,
+  "actual_tensor_read_and_poses_wall_s": 0.0011429563164710999,
+  "full_penetration_audit_wall_s": 0.037065211683511734,
+  "contact_callback_wall_s": 0.0016421768814325333,
+  "contact_callback_headers": 114,
+  "total_step_wall_s": 0.04541170783340931
+}

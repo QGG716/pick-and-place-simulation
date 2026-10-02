@@ -61,3 +61,6 @@ docs/validation/evidence/m710_native_cold_20261001/** -text -whitespace
 
 # Preserve the second formal native-cold run, its worker and raw evidence.
 docs/validation/evidence/m710_native_cold_20261002/** -text -whitespace
+
+# Preserve validation-optimization measurements and the separate formal run.
+docs/validation/evidence/m710_validation_optimization_20261002/** -text -whitespace

@@ -1,0 +1,29 @@
+{
+  "files": {
+    "native-packages-current.lock": {
+      "sha256": "25b14c043b772f89d51d3cd1512d75ec7210e136ff0b5d2ee1cc06ac3dc76034",
+      "bytes": 24791
+    },
+    "cpu-python-current.lock": {
+      "sha256": "cc802d3b2ae4c004f69047d408fb5e011734daef7d025dd8c5a642bd8b3024ce",
+      "bytes": 5143
+    },
+    "isaac-python-current.lock": {
+      "sha256": "617e4ac5934bba00a966bf9b2545deac22308e45c7418700ff569527f6543f46",
+      "bytes": 3338
+    },
+    "m710_moveit_worker": {
+      "sha256": "e933e868ac5c50879847dc1161046b6b9ad081adf23fe4f6359338bc9caf723c",
+      "bytes": 1066216
+    },
+    "worker.sh": {
+      "sha256": "bf8a34559b85fe871be075991a76e50cc28121a63c913b9d7cf207b71a6b82eb",
+      "bytes": 227
+    }
+  },
+  "native_lock_matches_previous": true,
+  "cpu_lock_matches_previous": true,
+  "packages_installed_or_upgraded_this_round": false,
+  "native_worker_rebuilt_this_round": false,
+  "worker_process": "new per formal request; no previous Task retained"
+}

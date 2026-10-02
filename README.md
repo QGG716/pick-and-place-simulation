@@ -1,4 +1,14 @@
-# 当前状态：native-cold 单箱流程完成（2026-10-02）
+# 当前状态：阶段验证提速通过，新正式执行保留失败（2026-10-02）
+
+本轮在当前集成分支完成阶段级独立验证优化，正式源码为 `58eabd9b872dbb4ba6c1b7849d3298a8cbe971fc`。同硬件、同路径的完整冷验证：transit **510.394 → 91.212 秒（5.596×）**，extraction **156.211 → 70.262 秒（2.223×）**；140 项定向回归通过。复用已检查的工具—附着箱体固定几何，并以保守距离下界排除远邻，采样网格、碰撞裕量及物理监测频率未改。
+
+唯一一次新世界／native-cold 请求完成完整规划、**443/443 非零边原生来源**、preflight、标准导出与包加载，约 **347.868 秒**交付。Isaac 实际抓取和抽离后，在 transit 的 **77.5 秒**因 `STACK_CONTACT_ORIGIN_OR_CONTINUITY_UNRESOLVED` 停止；**抓取 1、释放 0，未完成取放**。理想接收／出料未到达，真实物理接收和实际驱动力矩资格仍未评估。未另开世界补跑。
+
+详见[本轮优化与失败报告](docs/m710_stage_validation_optimization_20261002.md)、[完整证据](docs/validation/evidence/m710_validation_optimization_20261002/README.md)及[本次原始失败录像（640×360 / 5 fps / 1×）](docs/validation/evidence/m710_validation_optimization_20261002/formal/physics/replay.mp4)。下面保留上一轮已完成单箱的成功记录，其结论与原件不变。
+
+---
+
+# 上一轮状态：native-cold 单箱流程完成（2026-10-02）
 
 本轮在 `feat/v0.5-moveit2-native-single-carton`、源码 `f94a1ca4c48b4b4bf5805466549c941ed07dd830` 上完成了一次新世界、一次无历史完整规划和一次 Isaac 单箱运动。显式父阶段身份及 MoveIt 世界坐标修补通过 101 项定向 Python 回归和真实 worker 的 17 项衔接检查；完整路径 **436/436 条非零边**具有本次原生来源，执行前检查、标准导出和最终包加载均通过。
 

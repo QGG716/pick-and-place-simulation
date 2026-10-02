@@ -1,0 +1,14 @@
+{
+  "status": "INITIAL_WORLD_RETAINED_AWAITING_NATIVE_PLAN",
+  "world_session_id": "1790922679.8234546",
+  "completed_segments": 0,
+  "target": "carton_l07_c02",
+  "actual_state_path": "/root/autodl-tmp/m710-validation-opt-20261002/repo/outputs/native-cold-validation-opt-once/physics/initialized_actual_state.json",
+  "actual_state_sha256": "7b5e663e03373e86049bc8e42824c2a4f5383ec1fe5738bfaca14964da8b4efe",
+  "request_path": "/root/autodl-tmp/m710-validation-opt-20261002/repo/outputs/native-cold-validation-opt-once/handshake/initial_request.json",
+  "bootstrap_contract_sha256": "44261819eb33c4bee08ed733dc6b18843969f4deb92b324a880a57fd7bb54168",
+  "physics_time_paused_for_offline_planning": true,
+  "no_reset_no_body_replacement": true,
+  "motion_execution_permitted": false,
+  "attachment_permitted": false
+}

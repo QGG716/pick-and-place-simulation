@@ -1,0 +1,86 @@
+{"elapsed_s": 1.0029417723417282, "event": "work_checkpoint", "stage": "actual_task_start", "target": null, "failure": null}
+{"elapsed_s": 1.0375720374286175, "event": "CONTACT_CANDIDATE_STARTED", "stage": "grasp_ik", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 1.406048471108079, "target": "carton_l07_c02", "face": "front", "roll": 90, "pose": 0, "valid_grasps": 3, "failure": "TRAJECTORY_SEARCH_PENDING"}
+{"elapsed_s": 1.406354008242488, "event": "plan_enter", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 1.4066800586879253, "event": "stage_enter", "stage": null, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 1.4192499537020922, "event": "stage_enter", "stage": null, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 1.428643524646759, "event": "stage_enter", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 6.4327423963695765, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 11.435158912092447, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 16.440512157976627, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 21.445506552234292, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 26.44592660292983, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 31.446869837120175, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 36.45136179216206, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 41.45390124619007, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 46.45521099679172, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 51.45583962276578, "event": "work_checkpoint", "stage": "pregrasp", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 54.29601019062102, "event": "stage_exit", "stage": "pregrasp", "success": true, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 58.39601105265319, "event": "stage_exit", "stage": null, "success": true, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 58.412166353315115, "event": "stage_enter", "stage": null, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 58.41241352446377, "event": "stage_exit", "stage": null, "success": true, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 63.88804813660681, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 68.88896087743342, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 73.89689828827977, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 78.9071592297405, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 83.91457883827388, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 88.92346228472888, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 93.93224880844355, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 98.93875275366008, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 103.93951975740492, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 108.94770845025778, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 113.95777576044202, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 118.95871749892831, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 123.96436898969114, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 128.96918997354805, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 133.97252079099417, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 138.97774649597704, "event": "work_checkpoint", "stage": "extraction", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 141.4398841522634, "event": "stage_enter", "stage": null, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 141.45371769554913, "event": "stage_enter", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 143.7050866689533, "event": "LOCAL_TRANSIT_FINISHED", "stage": "transit", "success": false, "failure": "NATIVE_PLANNING_FAILED"}
+{"elapsed_s": 174.36005854047835, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 179.3867043852806, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 184.38718998245895, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 189.38738233223557, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 194.3958807773888, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 199.4038775023073, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 204.4082295410335, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 209.41431818902493, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 214.41871841438115, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 219.42392234876752, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 224.42775721661747, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 229.43366184830666, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 234.43680548109114, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 239.44233664125204, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 244.44620452076197, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 249.45344404876232, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 254.45572794415057, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 259.4596364405006, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 264.46579518541694, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 269.4955923445523, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 274.5018050763756, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 279.5087417308241, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 284.5113341808319, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 289.51274444162846, "event": "work_checkpoint", "stage": "transit", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 292.3045221194625, "event": "stage_exit", "stage": "transit", "success": true, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 292.4684413019568, "event": "stage_enter", "stage": null, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 297.47359316796064, "event": "work_checkpoint", "stage": "withdrawal", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 302.4761755913496, "event": "work_checkpoint", "stage": "withdrawal", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 307.4805436655879, "event": "work_checkpoint", "stage": "withdrawal", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 312.48607390001416, "event": "work_checkpoint", "stage": "withdrawal", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 317.4890759345144, "event": "work_checkpoint", "stage": "withdrawal", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 322.4896831456572, "event": "work_checkpoint", "stage": "withdrawal", "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 327.0454796254635, "event": "stage_exit", "stage": null, "success": true, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 327.2902634292841, "event": "stage_exit", "stage": null, "success": true, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 327.29335524886847, "event": "stage_exit", "stage": null, "success": true, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 327.7150095682591, "event": "plan_exit", "success": true, "target": "carton_l07_c02", "failure": null}
+{"elapsed_s": 327.7178024202585, "target": "carton_l07_c02", "face": "front", "roll": 90, "trajectory_success": true, "failure": null}
+{"elapsed_s": 327.7930493019521, "event": "CONTACT_CANDIDATE_FINISHED", "target": "carton_l07_c02", "failure": null}
+{"status": "PASS", "elapsed_s": 329.2656752932817, "statistics": {"generated_candidate_count": 72, "unique_candidates_evaluated": 1, "total_attempt_count": 1, "retry_count": 0, "actual_complete_connection_attempt_count": 1, "remaining_unsearched_count": 71, "candidate_count_scope": "GENERATED_POOLS_ONLY_NOT_UNENUMERATED_TASKS", "history_attempt_count": 0, "quality_connection_attempt_count": 0, "quality_generation_statistics": {"ik_calls": 0, "ik_seeds_attempted": 0, "ik_iterations_consumed": 0, "trajectory_ik_wall_seconds": 0}, "history_complete_connection_attempt_count": 0, "combined_actual_attempt_count": 1, "combined_complete_connection_attempt_count": 1, "candidate_schedule_statistics_scope": "ORDINARY_QUEUE_ONLY_HISTORY_ATTEMPTS_REPORTED_SEPARATELY", "ordinary_queue_order_unchanged": true, "unenumerated_task_count": 4, "task_count": 5, "task_success_count": 1, "candidate_pose_attempts": 1, "coverage_rejected": 0, "ik_calls": 1, "ik_seed_pool_available": 15, "ik_seeds_attempted": 8, "ik_iterations_consumed": 0, "ik_converged_pose_results": 3, "ik_valid_solutions": 3, "ik_deduplicated_candidates": 3, "ik_deduplicated_candidate_records": 3, "ik_stream_count_scope": "SUM_OF_ATTEMPT_STREAM_RECORDS_NOT_GLOBAL_UNIQUE_SOLUTIONS", "path_connection_attempts": 0, "trajectory_pose_attempts": 1, "trajectory_pose_attempt_budget_scope": "FAIR_FULL_POOL_AND_SEEDED_RETRIES", "trajectory_pose_attempt_limit_per_task": null, "trajectory_ik_calls": 2, "trajectory_ik_seeds_attempted": 14, "trajectory_ik_iterations_consumed": 0, "trajectory_state_validations": 34677, "trajectory_edge_validation_calls": 7, "trajectory_edge_state_samples": 34664, "trajectory_rrt_iterations_consumed": 0, "trajectory_cartesian_samples": 279, "complete_trajectory_success_count": 1, "placement_candidates_generated": 12, "state_cache_hits": 12, "state_cache_misses": 26936, "task_failure_counts": {"NOT_SELECTED_EXPLICIT_TARGET": 4}, "candidate_failure_counts": {"OK": 1}}}
+{"preflight": "READY", "blockers": []}
+{
+  "output": "/root/autodl-tmp/m710-validation-opt-20261002/repo/outputs/native-cold-validation-opt-once/plan/replay_bundle.json",
+  "commands": 6413,
+  "duration_seconds": 122.4940122648097,
+  "target": "carton_l07_c02"
+}

@@ -1,0 +1,6 @@
+transit ACCEPT 510.394011
+extraction ACCEPT 156.21082
+recorded_insufficient_gap REJECT 0.004986852246589863
+transit ACCEPT 91.211922
+extraction ACCEPT 70.262332
+recorded_insufficient_gap REJECT 0.004986852246589863

@@ -1,0 +1,347 @@
+{
+  "schema": "m710_same_input_stage_validation_v1",
+  "scope": "OFFLINE_SAVED_MOTION_VALIDATOR_BENCHMARK_NOT_NATIVE_COLD",
+  "mode": "reference",
+  "sampled_prefix_edges": 3,
+  "profile_enabled": true,
+  "source_motion_sha256": "58bdcbc40ab83b23c27e61f24079990d925b79ece15a0d89bc2499b24bd121da",
+  "stages": [
+    {
+      "stage": "transit",
+      "identity": {
+        "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:10",
+        "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+        "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+        "request_fingerprint": "bd16dafd0ecf83f40786259a6180e6f05bf1d4bc43ce7e88989886306a1ca6bc",
+        "path_sha256": "f77823b909f0317f368abbb9217368dc2dc91320d287c723b1adcd0b9fec0472",
+        "scene_fingerprint": "888429b71ab80464a08406812725c82ee8b44bbdd0891601f3b79b55d4c8c745",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "tracker_initial": null,
+        "tracker_initial_pose": null,
+        "original_source_commit": "f94a1ca4c48b4b4bf5805466549c941ed07dd830"
+      },
+      "model_preparation_seconds": 0.5209393687546253,
+      "cache_state": "COLD_FRESH_CHECKER_AND_TRACKER_MODEL_BUILT_BEFORE_TIMER",
+      "path_edges": 3,
+      "wall_seconds": 7.998151442036033,
+      "result": "ACCEPT",
+      "failure": null,
+      "validation": {
+        "status": "VALID",
+        "context_id": "e9cccdd60051c04f3416fe204154460028d31b7c1730db966662e9ce8d65fe93",
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "failure": null,
+        "interval": null,
+        "checked": [
+          [
+            0,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            1,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            2,
+            "DISCRETE_LEGACY_STRICT"
+          ]
+        ],
+        "statistics": {},
+        "cache_hit": false,
+        "interval_certificate": false
+      },
+      "context": {
+        "full_context_builds": 1,
+        "full_context_seconds": 0.002711530774831772,
+        "light_guard_calls": 677,
+        "light_guard_seconds": 0.5050300043076277,
+        "prepared_context_hits": 0
+      },
+      "connector": {
+        "state_validations": 457,
+        "edge_validation_calls": 1,
+        "edge_state_samples": 457,
+        "ik_calls": 0,
+        "ik_seeds_attempted": 0,
+        "ik_iterations_consumed": 0,
+        "connection_attempts": 0,
+        "rrt_iterations_consumed": 0,
+        "cartesian_samples": 0,
+        "placement_candidates_generated": 0,
+        "placement_candidate_generation_wall_seconds": 0.0,
+        "state_cache_hits": 0,
+        "state_cache_misses": 457,
+        "trajectory_ik_wall_seconds": 0.0,
+        "path_connection_wall_seconds_inclusive": 0.0,
+        "collision_validation_wall_seconds_nested": 7.0334820337593555,
+        "kinematics_and_joint_checks_wall_seconds": 0.0541024524718523,
+        "final_recheck_wall_seconds": 0.0
+      },
+      "kernel": {
+        "fk_states": 457,
+        "native_batches": 73,
+        "native_array_operations": 5767,
+        "kinematics_seconds": 0.10976404696702957,
+        "ordered_scalar_state_checks": 457,
+        "tool_obb_constructions": 92314,
+        "tool_template_preparations": 1,
+        "tool_transform_constructions": 92314
+      },
+      "state_validator": {
+        "robot_fixed_including_self_seconds": 0.4120978470891714,
+        "robot_fixed_including_self_calls": 457,
+        "robot_tool_seconds": 1.098560620099306,
+        "robot_tool_calls": 457,
+        "tool_fixed_broadphase_seconds": 0.25095347687602043,
+        "tool_fixed_broadphase_calls": 457,
+        "plane_bounds_seconds": 0.5172680653631687,
+        "plane_bounds_calls": 457,
+        "robot_dynamic_seconds": 0.30539928562939167,
+        "robot_dynamic_calls": 457,
+        "tool_dynamic_broadphase_seconds": 0.44578141532838345,
+        "tool_dynamic_broadphase_calls": 457
+      },
+      "mesh": {
+        "geometry_update_seconds": 0.03639829345047474,
+        "geometry_update_calls": 1828,
+        "interval_pair_skips": 5941,
+        "self_collision_seconds": 0.13100137934088707,
+        "self_collision_calls": 457,
+        "robot_environment_seconds": 1.6078746244311333,
+        "robot_environment_calls": 1371,
+        "native_tool_aabb_hits": 92314,
+        "rigid_motion_clearance_certificates": 455
+      },
+      "tracker_final": null
+    },
+    {
+      "stage": "extraction",
+      "identity": {
+        "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+        "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+        "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2",
+        "request_fingerprint": "d308908df2b4b6318202fc5b388fbf7fb32aba7b025f3ffe7e61fd1a105a8a13",
+        "path_sha256": "3d215a88c8bf9d477abc6d2ca29d1e5c4a03f775827b32968fae579a53edab45",
+        "scene_fingerprint": "888429b71ab80464a08406812725c82ee8b44bbdd0891601f3b79b55d4c8c745",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "tracker_initial": {
+          "mode": "planner_relaxed_physics_checked",
+          "target": "carton_l07_c02",
+          "stack_carton_names": [
+            "carton_l00_c00",
+            "carton_l00_c01",
+            "carton_l00_c02",
+            "carton_l00_c03",
+            "carton_l00_c04",
+            "carton_l01_c00",
+            "carton_l01_c01",
+            "carton_l01_c02",
+            "carton_l01_c03",
+            "carton_l01_c04",
+            "carton_l02_c00",
+            "carton_l02_c01",
+            "carton_l02_c02",
+            "carton_l02_c03",
+            "carton_l02_c04",
+            "carton_l03_c00",
+            "carton_l03_c01",
+            "carton_l03_c02",
+            "carton_l03_c03",
+            "carton_l03_c04",
+            "carton_l04_c00",
+            "carton_l04_c01",
+            "carton_l04_c02",
+            "carton_l04_c03",
+            "carton_l04_c04",
+            "carton_l05_c00",
+            "carton_l05_c01",
+            "carton_l05_c02",
+            "carton_l05_c03",
+            "carton_l05_c04",
+            "carton_l06_c00",
+            "carton_l06_c01",
+            "carton_l06_c02",
+            "carton_l06_c03",
+            "carton_l06_c04",
+            "carton_l07_c00",
+            "carton_l07_c01",
+            "carton_l07_c03",
+            "carton_l07_c04"
+          ],
+          "fully_released": false,
+          "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+          "physics_collision_enabled": true
+        },
+        "tracker_initial_pose": [
+          [
+            0.9999999996851792,
+            -7.2190355556883915e-06,
+            2.4031797201427187e-05,
+            0.29987314343452454
+          ],
+          [
+            7.218917255702058e-06,
+            0.999999999961827,
+            4.922727269841269e-06,
+            1.055344364431221e-05
+          ],
+          [
+            -2.4031832737853013e-05,
+            -4.922553784735988e-06,
+            0.9999999996991198,
+            2.250025749206543
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "original_source_commit": "f94a1ca4c48b4b4bf5805466549c941ed07dd830"
+      },
+      "model_preparation_seconds": 0.41507299430668354,
+      "cache_state": "COLD_FRESH_CHECKER_AND_TRACKER_MODEL_BUILT_BEFORE_TIMER",
+      "path_edges": 3,
+      "wall_seconds": 1.4195656813681126,
+      "result": "ACCEPT",
+      "failure": null,
+      "validation": {
+        "status": "VALID",
+        "context_id": "1e86cc0f5d437642050d9756cce1f74f3a5085e063f3571e4d0b4c8fdfd0891e",
+        "guarantee": "DISCRETE_LEGACY_STRICT",
+        "failure": null,
+        "interval": null,
+        "checked": [
+          [
+            0,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            1,
+            "DISCRETE_LEGACY_STRICT"
+          ],
+          [
+            2,
+            "DISCRETE_LEGACY_STRICT"
+          ]
+        ],
+        "statistics": {},
+        "cache_hit": false,
+        "interval_certificate": false
+      },
+      "context": {
+        "full_context_builds": 1,
+        "full_context_seconds": 0.002754857763648033,
+        "light_guard_calls": 72,
+        "light_guard_seconds": 0.0528041273355484,
+        "prepared_context_hits": 0
+      },
+      "connector": {
+        "state_validations": 45,
+        "edge_validation_calls": 1,
+        "edge_state_samples": 45,
+        "ik_calls": 0,
+        "ik_seeds_attempted": 0,
+        "ik_iterations_consumed": 0,
+        "connection_attempts": 0,
+        "rrt_iterations_consumed": 0,
+        "cartesian_samples": 0,
+        "placement_candidates_generated": 0,
+        "placement_candidate_generation_wall_seconds": 0.0,
+        "state_cache_hits": 0,
+        "state_cache_misses": 0,
+        "trajectory_ik_wall_seconds": 0.0,
+        "path_connection_wall_seconds_inclusive": 0.0,
+        "collision_validation_wall_seconds_nested": 1.349304012954235,
+        "kinematics_and_joint_checks_wall_seconds": 0.005567995831370354,
+        "final_recheck_wall_seconds": 0.0
+      },
+      "kernel": {
+        "fk_states": 43,
+        "native_batches": 7,
+        "native_array_operations": 553,
+        "kinematics_seconds": 0.010443270206451416,
+        "ordered_scalar_state_checks": 45,
+        "tool_obb_constructions": 8686,
+        "tool_template_preparations": 1,
+        "tool_transform_constructions": 8686
+      },
+      "state_validator": {
+        "robot_fixed_including_self_seconds": 0.06626148521900177,
+        "robot_fixed_including_self_calls": 43,
+        "robot_tool_seconds": 0.10192752629518509,
+        "robot_tool_calls": 43,
+        "tool_fixed_broadphase_seconds": 0.023545170202851295,
+        "tool_fixed_broadphase_calls": 43,
+        "plane_bounds_seconds": 0.04856552742421627,
+        "plane_bounds_calls": 43,
+        "robot_dynamic_seconds": 0.03104289434850216,
+        "robot_dynamic_calls": 45,
+        "tool_dynamic_broadphase_seconds": 0.042060066014528275,
+        "tool_dynamic_broadphase_calls": 45,
+        "static_cache_hits": 2
+      },
+      "mesh": {
+        "geometry_update_seconds": 0.003490706905722618,
+        "geometry_update_calls": 174,
+        "self_collision_seconds": 0.03983967751264572,
+        "self_collision_calls": 43,
+        "robot_environment_seconds": 0.15200533159077168,
+        "robot_environment_calls": 131,
+        "native_tool_aabb_hits": 8686,
+        "rigid_motion_clearance_certificates": 42
+      },
+      "tracker_final": {
+        "mode": "planner_relaxed_physics_checked",
+        "target": "carton_l07_c02",
+        "stack_carton_names": [
+          "carton_l00_c00",
+          "carton_l00_c01",
+          "carton_l00_c02",
+          "carton_l00_c03",
+          "carton_l00_c04",
+          "carton_l01_c00",
+          "carton_l01_c01",
+          "carton_l01_c02",
+          "carton_l01_c03",
+          "carton_l01_c04",
+          "carton_l02_c00",
+          "carton_l02_c01",
+          "carton_l02_c02",
+          "carton_l02_c03",
+          "carton_l02_c04",
+          "carton_l03_c00",
+          "carton_l03_c01",
+          "carton_l03_c02",
+          "carton_l03_c03",
+          "carton_l03_c04",
+          "carton_l04_c00",
+          "carton_l04_c01",
+          "carton_l04_c02",
+          "carton_l04_c03",
+          "carton_l04_c04",
+          "carton_l05_c00",
+          "carton_l05_c01",
+          "carton_l05_c02",
+          "carton_l05_c03",
+          "carton_l05_c04",
+          "carton_l06_c00",
+          "carton_l06_c01",
+          "carton_l06_c02",
+          "carton_l06_c03",
+          "carton_l06_c04",
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "fully_released": false,
+        "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+        "physics_collision_enabled": true
+      }
+    }
+  ],
+  "isaac": "NOT_RUN",
+  "planning_requests": 0
+}

@@ -1,0 +1,53 @@
+         8733617 function calls (8035996 primitive calls) in 5.286 seconds
+
+   Ordered by: cumulative time
+   List reduced from 349 to 45 due to restriction <45>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    5.292    5.292 layout_trajectory.py:1649(_path_failure)
+        1    0.000    0.000    5.288    5.288 motion_validation.py:395(check_path)
+        1    0.000    0.000    5.288    5.288 motion_validation.py:410(_check_path)
+        3    0.001    0.000    5.288    1.763 motion_validation.py:319(check_motion)
+     45/3    0.004    0.000    5.282    1.761 motion_validation.py:343(interval)
+       24    0.004    0.000    4.970    0.207 motion_validation.py:234(check_states)
+       73    0.000    0.000    4.838    0.066 layout_trajectory.py:1222(prefix)
+       73    0.001    0.000    4.838    0.066 validation_kernel.py:245(check_prefix)
+      457    0.002    0.000    4.337    0.009 layout_trajectory.py:1203(state)
+      457    0.003    0.000    4.335    0.009 layout_trajectory.py:1458(_state_failure)
+      457    0.028    0.000    4.332    0.009 layout_trajectory.py:1496(_checked_state_failure)
+      457    0.044    0.000    4.170    0.009 layout_trajectory.py:725(__call__)
+3656/3199    0.015    0.000    3.269    0.001 layout_trajectory.py:639(_profile_call)
+     1371    0.009    0.000    1.918    0.001 pinocchio_backend.py:671(collision_result)
+     3656    0.014    0.000    1.887    0.001 pinocchio_backend.py:336(_profile_call)
+     1371    0.451    0.000    1.697    0.001 pinocchio_backend.py:482(_environment_collision)
+    97512    0.157    0.000    0.778    0.000 validation_kernel.py:45(__getitem__)
+      914    0.186    0.000    0.718    0.001 layout_trajectory.py:108(possible_inflated_obb_pairs)
+    93249    0.080    0.000    0.568    0.000 <string>:2(__init__)
+      457    0.071    0.000    0.522    0.001 layout_trajectory.py:676(_plane_failure)
+      478    0.011    0.000    0.517    0.001 robot.py:698(tool_collision_obbs)
+      677    0.001    0.000    0.511    0.001 motion_validation.py:226(_guard)
+      677    0.000    0.000    0.510    0.001 layout_trajectory.py:1235(<lambda>)
+     2196    0.005    0.000    0.509    0.000 {built-in method builtins.any}
+      677    0.002    0.000    0.509    0.001 motion_validation.py:54(current)
+      457    0.013    0.000    0.505    0.001 layout_trajectory.py:849(_tool_dynamic_failure)
+    23695    0.030    0.000    0.504    0.000 motion_validation.py:58(<genexpr>)
+    93249    0.219    0.000    0.487    0.000 geometry.py:82(__post_init__)
+     1828    0.408    0.000    0.454    0.000 layout_trajectory.py:113(arrays)
+389850/23052    0.244    0.000    0.439    0.000 motion_validation.py:28(exact_snapshot)
+   184988    0.426    0.000    0.426    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+    96556    0.087    0.000    0.416    0.000 validation_kernel.py:17(world_from_local)
+      530    0.001    0.000    0.408    0.001 motion_validation.py:268(interrupted)
+   118888    0.033    0.000    0.387    0.000 geometry.py:93(world_from_local)
+   118888    0.140    0.000    0.354    0.000 geometry.py:55(make_transform)
+      457    0.037    0.000    0.346    0.001 pinocchio_backend.py:596(collision_world_axis_extrema)
+340356/111192    0.061    0.000    0.318    0.000 motion_validation.py:36(<genexpr>)
+   120485    0.117    0.000    0.303    0.000 fromnumeric.py:89(_wrapreduction_any_all)
+   111437    0.053    0.000    0.285    0.000 fromnumeric.py:2477(any)
+      478    0.006    0.000    0.281    0.001 layout_trajectory.py:662(_compliant_boxes)
+     3199    0.074    0.000    0.277    0.000 pinocchio_backend.py:124(_world_vertex_extrema)
+       21    0.016    0.001    0.275    0.013 validation_kernel.py:259(proof)
+    52049    0.045    0.000    0.265    0.000 fromnumeric.py:69(_wrapreduction)
+    11929    0.141    0.000    0.228    0.000 pinocchio_backend.py:63(_world_aabb)
+   136948    0.162    0.000    0.226    0.000 _twodim_base_impl.py:176(eye)
+
+

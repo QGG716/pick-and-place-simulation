@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "requested": {
+    "mode": "physx_cpu",
+    "device": "cpu",
+    "broadphase_type": "MBP",
+    "gpu_dynamics_enabled": false,
+    "fabric_enabled": true,
+    "ccd_enabled": true
+  },
+  "actual": {
+    "mode": "physx_cpu",
+    "device": "cpu",
+    "broadphase_type": "MBP",
+    "gpu_dynamics_enabled": false,
+    "fabric_enabled": true,
+    "ccd_enabled": true
+  },
+  "source": "SimulationManager_and_PhysicsContext_runtime_readback"
+}
