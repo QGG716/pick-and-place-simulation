@@ -1,0 +1,160 @@
+{
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "result": "COMPLETE_5_OF_5",
+  "run_id": "planning-only-65987c3380ca44908aea4a47eb9e2d88",
+  "source_commit": "b1635ed3a47358f3480b320450a95d966db8d62b",
+  "seed": 71070,
+  "budgets": {
+    "stage_budget_s": 300.0,
+    "box_budget_s": 1800.0,
+    "batch_budget_s": 7200.0,
+    "ipc_timeout_s": 360.0
+  },
+  "initialization_s": 0.8514083232730627,
+  "scene_update_s": 0.4088761303573847,
+  "batch_wall_s": 847.3929630406201,
+  "T_plan_5_s": 846.9820633661002,
+  "cumulative_attempted_plan_s": 846.9820633661002,
+  "completed_count": 5,
+  "completed_targets": [
+    "carton_l07_c02",
+    "carton_l07_c01",
+    "carton_l07_c03",
+    "carton_l07_c00",
+    "carton_l07_c04"
+  ],
+  "missing_targets": [],
+  "boxes": [
+    {
+      "order": 1,
+      "target": "carton_l07_c02",
+      "complete": true,
+      "plan_s": 12.218553595244884,
+      "cumulative_plan_s": 12.218553595244884,
+      "scene_update_s": 0.07717420719563961,
+      "scene_cartons": 40,
+      "calls": {
+        "PTP": 5,
+        "LIN": 5,
+        "OMPL": 1,
+        "IK": 11
+      },
+      "native_solver_s": 10.709357545000001,
+      "ik_solver_s": 0.005971652,
+      "internal_clearance_queries": 14065,
+      "dense_output_queries": 0,
+      "ordered_process_output_queries": 0,
+      "candidate_attempts": 1,
+      "last_failure": null
+    },
+    {
+      "order": 2,
+      "target": "carton_l07_c01",
+      "complete": true,
+      "plan_s": 37.67977953143418,
+      "cumulative_plan_s": 49.89833312667906,
+      "scene_update_s": 0.08542881160974503,
+      "scene_cartons": 39,
+      "calls": {
+        "PTP": 20,
+        "LIN": 11,
+        "OMPL": 4,
+        "IK": 69
+      },
+      "native_solver_s": 32.691095016,
+      "ik_solver_s": 0.069507121,
+      "internal_clearance_queries": 32272,
+      "dense_output_queries": 0,
+      "ordered_process_output_queries": 0,
+      "candidate_attempts": 1,
+      "last_failure": null
+    },
+    {
+      "order": 3,
+      "target": "carton_l07_c03",
+      "complete": true,
+      "plan_s": 60.80855685658753,
+      "cumulative_plan_s": 110.70688998326659,
+      "scene_update_s": 0.08163179084658623,
+      "scene_cartons": 38,
+      "calls": {
+        "PTP": 20,
+        "LIN": 7,
+        "OMPL": 2,
+        "IK": 43
+      },
+      "native_solver_s": 56.726590341000005,
+      "ik_solver_s": 0.022013499,
+      "internal_clearance_queries": 87345,
+      "dense_output_queries": 0,
+      "ordered_process_output_queries": 0,
+      "candidate_attempts": 1,
+      "last_failure": null
+    },
+    {
+      "order": 4,
+      "target": "carton_l07_c00",
+      "complete": true,
+      "plan_s": 539.1781303696334,
+      "cumulative_plan_s": 649.8850203529,
+      "scene_update_s": 0.07738529331982136,
+      "scene_cartons": 37,
+      "calls": {
+        "PTP": 77,
+        "LIN": 39,
+        "OMPL": 19,
+        "IK": 263
+      },
+      "native_solver_s": 518.800104619,
+      "ik_solver_s": 0.166364995,
+      "internal_clearance_queries": 639873,
+      "dense_output_queries": 0,
+      "ordered_process_output_queries": 0,
+      "candidate_attempts": 1,
+      "last_failure": null
+    },
+    {
+      "order": 5,
+      "target": "carton_l07_c04",
+      "complete": true,
+      "plan_s": 197.09704301320016,
+      "cumulative_plan_s": 846.9820633661002,
+      "scene_update_s": 0.08725602738559246,
+      "scene_cartons": 36,
+      "calls": {
+        "PTP": 42,
+        "LIN": 18,
+        "OMPL": 8,
+        "IK": 90
+      },
+      "native_solver_s": 187.560509667,
+      "ik_solver_s": 0.036668623,
+      "internal_clearance_queries": 263638,
+      "dense_output_queries": 0,
+      "ordered_process_output_queries": 0,
+      "candidate_attempts": 1,
+      "last_failure": null
+    }
+  ],
+  "total_calls": {
+    "IK": 476,
+    "PTP": 164,
+    "LIN": 80,
+    "OMPL": 34
+  },
+  "first_box_scene_preparation_s": 0.07717420719563961,
+  "inter_box_scene_update_s": 0.33170192316174507,
+  "native_solver_s": 806.487657188,
+  "native_ik_solver_s": 0.30052588999999996,
+  "native_ik_including_ipc_s": 14.06461245752871,
+  "internal_clearance_queries": 1037193,
+  "python_independent_path_checks_executed": 0,
+  "isaac_launches": 0,
+  "execution_requests": 0,
+  "qualification_status": "NOT_EVALUATED",
+  "artifact_sha256": {
+    "timing.json": "ffe17fb738d4fb2a4b1b9d82f6c91d8d8093e9dac14a414c4cd0bc1b2d78611b",
+    "timing.csv": "577d18626641a2c5e9c1722f5648e2755eb692d60d5435cddf4cde6e65bbf064",
+    "trajectories.json": "21b8a904656926f87533b986e5363a60473a5572cf30458f31a1c7f8efb3e9b9"
+  }
+}

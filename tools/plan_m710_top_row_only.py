@@ -135,6 +135,11 @@ def call_summary(c):
         keep = {k: record[k] for k in ("stage", "status", "stage_id", "parent_stage_id",
             "pipeline_id", "planner_id", "native_solver_calls", "mtc_plan_s", "native_output_check_s",
             "native_output_status", "authoritative_status", "failure", "clearance", "process_policy") if k in record}
+        # Each reply repeats the full tool/ACM policy (up to 146 KB). Its
+        # identity is already retained at batch level; save counters/witnesses
+        # here, not hundreds of copies of this static model metadata.
+        if "clearance" in keep:
+            keep["clearance"] = {k: v for k, v in keep["clearance"].items() if k != "policy"}
         stages.append(keep)
     counts = {name: sum(int(r.get("native_solver_calls", {}).get(name, 0))
                        for r in c.native_evidence) for name in ("PTP", "LIN", "OMPL")}
@@ -280,6 +285,8 @@ def main():
             cumulative_attempted_plan_s=sum(b["plan_s"] for b in summary["boxes"]),
             T_plan_5_s=sum(b["plan_s"] for b in summary["boxes"]) if len(completed)==5 else None,
             scene_update_s=sum(b["scene_update_s"] for b in summary["boxes"]),
+            first_box_scene_preparation_s=summary["boxes"][0]["scene_update_s"] if summary["boxes"] else None,
+            inter_box_scene_update_s=sum(b["scene_update_s"] for b in summary["boxes"][1:]),
             result="COMPLETE_5_OF_5" if len(completed)==5 else "DEVELOPMENT_PRELOAD_ONLY" if args.prepare_only else "INCOMPLETE")
         (args.output / "timing.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False, allow_nan=False), encoding="utf-8")
         (args.output / "trajectories.json").write_text(json.dumps(dict(status=MARKER,

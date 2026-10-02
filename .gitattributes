@@ -64,3 +64,6 @@ docs/validation/evidence/m710_native_cold_20261002/** -text -whitespace
 
 # Preserve validation-optimization measurements and the separate formal run.
 docs/validation/evidence/m710_validation_optimization_20261002/** -text -whitespace
+
+# Preserve the planning-only experiment measurements and generated trajectories.
+docs/experiments/m710_top_row_planning_only_20261002/** -text -whitespace

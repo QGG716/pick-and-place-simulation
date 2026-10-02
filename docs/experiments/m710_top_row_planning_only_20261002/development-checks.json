@@ -1,0 +1,24 @@
+{
+  "formal_source_commit": "b1635ed3a47358f3480b320450a95d966db8d62b",
+  "focused_tests": {
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python -m pytest -q tests/test_planning_only.py tests/test_moveit2_native_cold.py",
+    "passed": 53,
+    "seconds": 0.22,
+    "scope": "mode isolation, input guards, explicit parent identity and cross-box state preparation; not native planning success evidence"
+  },
+  "preload": {
+    "result": "DEVELOPMENT_PRELOAD_ONLY",
+    "initialization_s": 0.8987644761800766,
+    "native_ik_calls": 0,
+    "motion_solver_calls": 0,
+    "complete_trajectories": 0,
+    "retained_task_subsolutions_for_formal": false,
+    "earlier_setup_failures": ["Missing static res CAD file", "Missing scripts/expand_official_m710id70_urdf.py"],
+    "resolution": "Copied current read-only model/CAD inputs and included source scripts; no historical solution loaded"
+  },
+  "formal_batches": 1,
+  "formal_worker_processes": 1,
+  "isaac_launches": 0,
+  "dependencies_compared_to_prior_lock": {"native": "UNCHANGED", "cpu_python": "UNCHANGED"},
+  "post_run_change": "Report serialization only: omit repeated clearance.policy and split initial task preparation from inter-box updates; no new planning batch"
+}
