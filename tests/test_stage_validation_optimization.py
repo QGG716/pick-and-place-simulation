@@ -150,6 +150,11 @@ def test_rotated_bounds_are_conservative_and_unknown_does_not_pass():
         a = OBB(rng.uniform(-1, 1, 3), rng.uniform(.02, .2, 3), rotation_matrix_from_rpy(*rng.uniform(-3, 3, 3)))
         b = OBB(rng.uniform(-1, 1, 3), rng.uniform(.02, .2, 3), rotation_matrix_from_rpy(*rng.uniform(-3, 3, 3)))
         assert obb_aabb_distance_lower(a, b) <= obb_surface_distance(a, b)+1e-12
+    a = OBB([0, 0, 0], [.1]*3, np.eye(3))
+    for invalid_center in ([float('nan'), 0, 0], [float('inf'), 0, 0], [1e308, 0, 0]):
+        b = OBB(invalid_center, [.1]*3, np.eye(3))
+        with np.errstate(all='ignore'):
+            assert obb_aabb_distance_lower(a, b) == 0.
 
 
 def test_ordered_extraction_still_rejects_reentry_and_keeps_direction():

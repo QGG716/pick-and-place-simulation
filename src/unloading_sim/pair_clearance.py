@@ -11,7 +11,9 @@ def obb_aabb_distance_lower(first, second):
     pad = 32 * np.finfo(float).eps * (1 + np.max(np.abs(first.center))
         + np.max(np.abs(second.center)) + np.max(a) + np.max(b))
     gaps = np.maximum(np.abs(first.center - second.center) - a - b - pad, 0.)
-    return max(0., float(np.linalg.norm(gaps)) - pad)
+    lower = float(np.linalg.norm(gaps)) - pad
+    # Overflow or invalid transforms cannot establish a distance certificate.
+    return max(0., lower) if np.isfinite(lower) else 0.
 
 
 def obb_distance_at_least(first, second, required):
