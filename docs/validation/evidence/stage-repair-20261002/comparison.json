@@ -1,0 +1,370 @@
+{
+  "encoder_reuse": {
+    "masks_exact": true,
+    "entries_exact": true,
+    "geometry_exact": true
+  },
+  "resolution": {
+    "gates": {
+      "roster_exact": true,
+      "minimum_mask_iou": 0.97,
+      "maximum_boundary_p95_native_px": 2.0,
+      "maximum_main_normal_degrees": 0.5,
+      "maximum_main_offset_m": 0.003,
+      "minimum_main_support_ratio": 0.95,
+      "no_new_geometric_acceptance_failures": true
+    },
+    "roster_exact": true,
+    "instances": [
+      {
+        "mask_id": 1,
+        "pass_quality": true,
+        "mask_iou": 0.9919543370677354,
+        "boundary_p95_native_px": 1.0,
+        "faces_full": 1,
+        "faces_half": 2,
+        "main_normal_degrees": 0.003249685018946453,
+        "main_offset_m": 6.384574583750968e-05,
+        "main_support_ratio": 1.0232199307541774
+      },
+      {
+        "mask_id": 2,
+        "pass_quality": true,
+        "mask_iou": 0.9896578796388562,
+        "boundary_p95_native_px": 2.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 0.0032161864038156105,
+        "main_offset_m": 5.5760547598371346e-05,
+        "main_support_ratio": 1.0172895007961038
+      },
+      {
+        "mask_id": 3,
+        "pass_quality": true,
+        "mask_iou": 0.9934798059392479,
+        "boundary_p95_native_px": 1.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 0.0,
+        "main_offset_m": 1.0211939294180183e-08,
+        "main_support_ratio": 1.0099413237657435
+      },
+      {
+        "mask_id": 4,
+        "pass_quality": true,
+        "mask_iou": 0.9829108092846316,
+        "boundary_p95_native_px": 2.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 0.0026667985772842674,
+        "main_offset_m": 1.896547370461299e-05,
+        "main_support_ratio": 1.0076390376240452
+      },
+      {
+        "mask_id": 5,
+        "pass_quality": true,
+        "mask_iou": 0.9909059756965496,
+        "boundary_p95_native_px": 1.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 3.7107246062390375e-05,
+        "main_offset_m": 1.0924595650330104e-06,
+        "main_support_ratio": 0.9978060896682495
+      },
+      {
+        "mask_id": 6,
+        "pass_quality": true,
+        "mask_iou": 0.993025551609636,
+        "boundary_p95_native_px": 1.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 0.0,
+        "main_offset_m": 9.49100797953406e-09,
+        "main_support_ratio": 0.9921676314106065
+      },
+      {
+        "mask_id": 7,
+        "pass_quality": true,
+        "mask_iou": 0.9862432485195549,
+        "boundary_p95_native_px": 2.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 0.00042129988069791426,
+        "main_offset_m": 5.116941994565138e-07,
+        "main_support_ratio": 0.9938175232623493
+      },
+      {
+        "mask_id": 8,
+        "pass_quality": true,
+        "mask_iou": 0.9851641016599079,
+        "boundary_p95_native_px": 2.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 0.0058785395770895275,
+        "main_offset_m": 5.997648404565403e-05,
+        "main_support_ratio": 1.023457343493202
+      },
+      {
+        "mask_id": 9,
+        "pass_quality": true,
+        "mask_iou": 0.9915681468971035,
+        "boundary_p95_native_px": 1.4142135623730951,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 4.676310850554341e-06,
+        "main_offset_m": 1.844502883763255e-08,
+        "main_support_ratio": 1.0055076477623215
+      },
+      {
+        "mask_id": 10,
+        "pass_quality": true,
+        "mask_iou": 0.9886363636363636,
+        "boundary_p95_native_px": 2.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 0.0,
+        "main_offset_m": 1.472276078828827e-09,
+        "main_support_ratio": 0.998212241441498
+      },
+      {
+        "mask_id": 11,
+        "pass_quality": false,
+        "mask_iou": 0.9769040811021575,
+        "boundary_p95_native_px": 3.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 2.0913097891518726e-06,
+        "main_offset_m": 2.4062020376192095e-08,
+        "main_support_ratio": 0.9885756374292833
+      },
+      {
+        "mask_id": 12,
+        "pass_quality": true,
+        "mask_iou": 0.9903090688279178,
+        "boundary_p95_native_px": 1.0,
+        "faces_full": 1,
+        "faces_half": 1,
+        "main_normal_degrees": 0.005432606595438633,
+        "main_offset_m": 5.1487133376104666e-05,
+        "main_support_ratio": 1.0228526871401151
+      }
+    ],
+    "pass_quality": false
+  },
+  "arms": [
+    {
+      "name": "A",
+      "session": {
+        "identity": {
+          "rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+          "working_rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+          "proposal_sha256": "54e4354580aa3800b3a39668484a6f6a9c20901114d42ac2458f787a1f2edc61",
+          "model": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+          "upstream": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+          "working_grid": {
+            "source_resolution": [
+              2592,
+              1944
+            ],
+            "working_resolution": [
+              2592,
+              1944
+            ],
+            "divisor": 1,
+            "pixel_centers": "integer centers; work(u,v) reads original(divisor*u,divisor*v)",
+            "bbox": "xyxy half-open pixel-index bounds / divisor; upper image edge allowed",
+            "mask_restore": "nearest cell replication; conservative native-depth verification remains required",
+            "depth_resampling": "NONE: exact strided samples, no interpolated depth",
+            "original_to_working": [
+              [
+                1.0,
+                0,
+                0
+              ],
+              [
+                0,
+                1.0,
+                0
+              ],
+              [
+                0,
+                0,
+                1
+              ]
+            ]
+          }
+        },
+        "reuse_image_embedding": false,
+        "image_preprocess_calls": 12,
+        "image_encoder_calls": 12,
+        "prompt_decoder_calls": 12,
+        "image_encoding_seconds": 0.0,
+        "model_forward_seconds": 1.160933006554842,
+        "image_preprocess_seconds": 0.7151459287852049
+      },
+      "sam_timings": {
+        "sam": 6.138329923152924,
+        "sam_image_encoding": 0.0,
+        "sam_prompt_model_forward": 1.160933006554842,
+        "sam_image_preprocess": 0.7151459287852049,
+        "geometry_2d": 1.271729351952672,
+        "request_total": 7.525765975937247
+      },
+      "geometry_timings": {
+        "evaluation_and_observation_write": 0.35867650993168354,
+        "filter_audit_json_write": 3.5239383578300476e-05,
+        "final_metric_faces": 11.058794476091862,
+        "final_validation_and_observation": 3.3030636440962553,
+        "input_validation_and_snapshot": 0.13992519117891788,
+        "legacy_cuboid_diagnostic": 0.0,
+        "legacy_geometry": 11.06091840006411,
+        "module_total_before_timing_record": 14.878888731822371,
+        "pointmap_build_including_filter_audits": 3.3527612686157227e-07,
+        "pointmap_write": 0.00027141906321048737
+      }
+    },
+    {
+      "name": "B",
+      "session": {
+        "identity": {
+          "rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+          "working_rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+          "proposal_sha256": "54e4354580aa3800b3a39668484a6f6a9c20901114d42ac2458f787a1f2edc61",
+          "model": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+          "upstream": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+          "working_grid": {
+            "source_resolution": [
+              2592,
+              1944
+            ],
+            "working_resolution": [
+              2592,
+              1944
+            ],
+            "divisor": 1,
+            "pixel_centers": "integer centers; work(u,v) reads original(divisor*u,divisor*v)",
+            "bbox": "xyxy half-open pixel-index bounds / divisor; upper image edge allowed",
+            "mask_restore": "nearest cell replication; conservative native-depth verification remains required",
+            "depth_resampling": "NONE: exact strided samples, no interpolated depth",
+            "original_to_working": [
+              [
+                1.0,
+                0,
+                0
+              ],
+              [
+                0,
+                1.0,
+                0
+              ],
+              [
+                0,
+                0,
+                1
+              ]
+            ]
+          }
+        },
+        "reuse_image_embedding": true,
+        "image_preprocess_calls": 1,
+        "image_encoder_calls": 1,
+        "prompt_decoder_calls": 12,
+        "image_encoding_seconds": 0.30908549949526787,
+        "model_forward_seconds": 0.14127166010439396,
+        "image_preprocess_seconds": 0.06004292331635952
+      },
+      "sam_timings": {
+        "sam": 6.120495887473226,
+        "sam_image_encoding": 0.30908549949526787,
+        "sam_prompt_model_forward": 0.14127166010439396,
+        "sam_image_preprocess": 0.06004292331635952,
+        "geometry_2d": 1.285312371328473,
+        "request_total": 7.525766760110855
+      },
+      "geometry_timings": {
+        "evaluation_and_observation_write": 0.3594581037759781,
+        "filter_audit_json_write": 3.748945891857147e-05,
+        "final_metric_faces": 11.066276552155614,
+        "final_validation_and_observation": 3.2089063990861177,
+        "input_validation_and_snapshot": 0.1998611818999052,
+        "legacy_cuboid_diagnostic": 0.0,
+        "legacy_geometry": 11.06772524677217,
+        "module_total_before_timing_record": 14.848736930638552,
+        "pointmap_build_including_filter_audits": 1.6391277313232422e-07,
+        "pointmap_write": 0.0002297721803188324
+      }
+    },
+    {
+      "name": "C",
+      "session": {
+        "identity": {
+          "rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+          "working_rgb_sha256": "7b9c604530d2c9374b17cc6e8073211ca611910b7f2d8c18b504d7f6dfc3a2cc",
+          "proposal_sha256": "54e4354580aa3800b3a39668484a6f6a9c20901114d42ac2458f787a1f2edc61",
+          "model": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+          "upstream": "1d208f2ed380a207e6e46b4a62d2ac640edfe477",
+          "working_grid": {
+            "source_resolution": [
+              2592,
+              1944
+            ],
+            "working_resolution": [
+              1296,
+              972
+            ],
+            "divisor": 2,
+            "pixel_centers": "integer centers; work(u,v) reads original(divisor*u,divisor*v)",
+            "bbox": "xyxy half-open pixel-index bounds / divisor; upper image edge allowed",
+            "mask_restore": "nearest cell replication; conservative native-depth verification remains required",
+            "depth_resampling": "NONE: exact strided samples, no interpolated depth",
+            "original_to_working": [
+              [
+                0.5,
+                0,
+                0
+              ],
+              [
+                0,
+                0.5,
+                0
+              ],
+              [
+                0,
+                0,
+                1
+              ]
+            ]
+          }
+        },
+        "reuse_image_embedding": true,
+        "image_preprocess_calls": 1,
+        "image_encoder_calls": 1,
+        "prompt_decoder_calls": 12,
+        "image_encoding_seconds": 0.32950217835605145,
+        "model_forward_seconds": 0.210269533097744,
+        "image_preprocess_seconds": 0.039351124316453934
+      },
+      "sam_timings": {
+        "sam": 2.348401105031371,
+        "sam_image_encoding": 0.32950217835605145,
+        "sam_prompt_model_forward": 0.210269533097744,
+        "sam_image_preprocess": 0.039351124316453934,
+        "geometry_2d": 1.2912206947803497,
+        "request_total": 4.198967043310404
+      },
+      "geometry_timings": {
+        "evaluation_and_observation_write": 0.3658410832285881,
+        "filter_audit_json_write": 3.523193299770355e-05,
+        "final_metric_faces": 10.852528758347034,
+        "final_validation_and_observation": 3.3025309666991234,
+        "input_validation_and_snapshot": 0.1300937421619892,
+        "legacy_cuboid_diagnostic": 0.0,
+        "legacy_geometry": 10.853497115895152,
+        "module_total_before_timing_record": 14.664722407236695,
+        "pointmap_build_including_filter_audits": 1.862645149230957e-07,
+        "pointmap_write": 0.00021898001432418823
+      }
+    }
+  ],
+  "note": "A restarted only after wrapper failure, its completed SAM reused; failed C mapping attempt retained separately. No fastest-run selection."
+}

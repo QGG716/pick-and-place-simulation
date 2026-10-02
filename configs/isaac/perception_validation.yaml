@@ -69,6 +69,15 @@ vision:
   fallback_scale_status: MONOCULAR_SCALE_UNVERIFIED
   # Fixed-input metric-faces A/B passed; enable explicitly for legacy diagnostics.
   legacy_cuboid_diagnostic: false
+  # 2 is an explicit experimental decimation grid; final validation stays native.
+  processing_divisor: 1
+  sam_image_reuse: true
+  measurement_support_policy: MEASUREMENT_PARENT_V2
+  face_quality:
+    minimum_geometry_short_m: 0.015  # 5 times the unchanged 3 mm plane acceptance bound
+    minimum_geometry_area_m2: 0.0003
+    maximum_normal_condition_ratio: 0.20
+  # Legacy diagnostic only; primary metric faces no longer consume a dense XYZ map.
   pointcloud_filter:
     boundary_erosion_px: 2
     depth_percentile_low: 1.0

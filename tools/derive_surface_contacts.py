@@ -15,7 +15,7 @@ from unloading_contracts import canonical_fingerprint, loads
 from unloading_perception.algorithm_artifact import load_algorithm_artifact, file_reference, _read_reference
 from unloading_perception.finite_sequence import atomic_json
 from unloading_perception.isaac_payload import camera_content_identity
-from unloading_perception.surface_contacts import current_tool, face_candidates, representative_surfaces, BLOCKERS
+from unloading_perception.surface_contacts import current_tool, face_candidates, representative_surfaces, BLOCKERS, ContactSupportInsufficient
 
 
 def module_inputs(index, module, root):
@@ -123,8 +123,11 @@ def main(argv=None):
                         raise ValueError('CONTACT_SOURCE_SURFACE_MISMATCH')
                     if 'record' not in member.raw_result:
                         errors.append(dict(face_id=surface['face_id'],reason='FROZEN_SUPPORT_RECORD_UNAVAILABLE'));continue
-                    items.extend(face_candidates(surface,member.raw_result['record'],depth,masks[member.source_instance_id],K,
-                                                 tool,artifact=group['artifact'],object_id=cargo.source_instance_id))
+                    try:
+                        items.extend(face_candidates(surface,member.raw_result['record'],depth,masks[member.source_instance_id],K,
+                                                     tool,artifact=group['artifact'],object_id=cargo.source_instance_id))
+                    except ContactSupportInsufficient as exc:
+                        errors.append(dict(face_id=surface['face_id'],reason=str(exc),contact_search='NOT_ELIGIBLE'))
                 items.sort(key=lambda item:-item.candidate.score)
                 passing=[i for i in items if i.evidence['support_status']=='GEOMETRIC_SUPPORT']
                 counts=Counter(cup['reason'] for i in items for cup in i.evidence['cups'] if cup['reason'])

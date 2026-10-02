@@ -164,6 +164,8 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
     p=argparse.ArgumentParser(description=__doc__)
     add_arguments(p)
     p.add_argument('--stage-trace', action='store_true', help='save read-only stage snapshots; no algorithm changes')
+    p.add_argument('--processing-divisor',type=int,choices=(1,2),default=1)
+    p.add_argument('--sam-image-reuse',action=argparse.BooleanOptionalAction,default=True)
     p.add_argument('--legacy-cuboid-diagnostic', action=argparse.BooleanOptionalAction, default=None)
     p.add_argument('--capture',type=Path,required=True);p.add_argument('--vision',type=Path,required=True)
     p.add_argument('--models',type=Path,required=True)
@@ -256,6 +258,8 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
         checkpoint('config')
         import yaml
         config = yaml.safe_load((ROOT/'configs/isaac/perception_validation.yaml').read_text(encoding='utf-8'))
+        config['vision']['processing_divisor']=a.processing_divisor
+        config['vision']['sam_image_reuse']=a.sam_image_reuse
         if a.legacy_cuboid_diagnostic is not None:
             config['vision']['legacy_cuboid_diagnostic'] = a.legacy_cuboid_diagnostic
         config = effective_config(config, a.geometry_backend, a.geometry_blas_threads)
@@ -268,7 +272,9 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
         from vision_resident_worker import ResidentRuntime, parser as worker_parser
         checkpoint('runtime_initialize')
         runtime=(runtime_factory or ResidentRuntime)(worker_parser().parse_args(['--upstream-root',str(a.vision),
-            '--output-root',str(output/'sam-runs'),'--input-root',str(output),'--sam-model',models['sam']['snapshot_path']]))
+            '--output-root',str(output/'sam-runs'),'--input-root',str(output),'--sam-model',models['sam']['snapshot_path']]
+            +(['--processing-divisor',str(a.processing_divisor)] if a.processing_divisor!=1 else [])
+            +(['--no-sam-image-reuse'] if not a.sam_image_reuse else [])))
         for camera, row in zip(manifest.cameras, summary['runs']):
             if row['module'] not in prepared:
                 continue

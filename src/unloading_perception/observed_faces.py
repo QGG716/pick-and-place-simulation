@@ -124,7 +124,8 @@ def observed_faces_from_geometry_record(
             {
                 key: source_face[key] for key in (
                     "mask_precision", "mask_coverage", "mask_iou", "metrics_before_joint_refinement",
-                    "final_support", "boundary_kind", "physical_corners_certified", "boundary_evidence"
+                    "final_support", "boundary_kind", "physical_corners_certified", "boundary_evidence",
+                    "quality", "patch_boundary_method"
                 ) if key in source_face
             },
         ))

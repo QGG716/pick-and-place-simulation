@@ -9,8 +9,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'tools'))
 
 
 def test_real_metric_runner_trace_does_not_change_records(tmp_path, monkeypatch):
-    pytest.importorskip('cv2', reason='real OpenCV required; executed in existing GPU vision environment')
+    cv2=pytest.importorskip('cv2', reason='real OpenCV required; executed in existing GPU vision environment')
     import metric_depth_runner as runner
+    # A prior optional-dependency test may have first imported this module with
+    # a display substitute. This test must exercise actual OpenCV regardless of order.
+    monkeypatch.setattr(runner,'cv2',cv2)
     import diagnose_metric_calibration
     from test_rgbd_pipeline import _metadata
     from unloading_perception.rgbd import register_rgbd, masked_metric_pointmap, PointCloudFilterConfig

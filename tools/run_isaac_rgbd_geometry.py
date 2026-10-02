@@ -445,11 +445,20 @@ def _run_secondary_module(
     if not isinstance(diagnostic_enabled, bool):
         raise ValueError('legacy_cuboid_diagnostic must be boolean')
     pointmap_started = perf_counter()
-    pointmap, audits = _build_pointmap(module_dir, manifest, masks_path, config["vision"]["pointcloud_filter"], payload=payload)
+    if diagnostic_enabled:
+        pointmap, audits = _build_pointmap(module_dir, manifest, masks_path, config["vision"]["pointcloud_filter"], payload=payload)
+    else:
+        pointmap,audits=None,[]
     pointmap_build_seconds = perf_counter() - pointmap_started
-    pointmap_path = module_dir / "registered_metric_pointmap.npz"
+    pointmap_path = module_dir / ("registered_metric_pointmap.npz" if diagnostic_enabled else "registered_metric_provenance.json")
     pointmap_write_started = perf_counter()
-    pointmap.write_npz(pointmap_path)
+    if pointmap is not None:pointmap.write_npz(pointmap_path)
+    else:
+        write_json(pointmap_path,{'metadata_json':json.dumps({'source':'ISAAC_IDEAL_REGISTERED_DEPTH',
+            'capture_id':payload.metadata.capture_id,'camera_frame':payload.metadata.rgb_frame_id,
+            'calibration_identity':payload.metadata.calibration_identity}), 'K':np.asarray(payload.camera['K']).reshape(3,3).tolist(),
+            'depth_sha256':payload.binding.extensions['metric_depth_sha256'],
+            'dense_pointmap':'NOT_CONSTRUCTED: primary consumes native depth and measurement support'})
     pointmap_write_seconds = perf_counter() - pointmap_write_started
     raw_json = module_dir / "rgbd_cuboids_baseline_raw.json"
     base_image = module_dir / "rgbd_cuboids_baseline.png"
@@ -467,6 +476,7 @@ def _run_secondary_module(
         'final_geometry_strategy': 'DEPTH_CONSTRAINED_METRIC_FACES_V1',
         'config_identity': canonical_fingerprint(config),
         'derived_pointmap': {'path': str(pointmap_path), 'sha256': sha256(pointmap_path),
+            'kind':'DENSE_POINTMAP_LEGACY_DIAGNOSTIC' if diagnostic_enabled else 'REGISTERED_SOURCE_METADATA_NO_XYZ',
             'parent_depth_sha256': payload.binding.extensions['metric_depth_sha256'],
             'parent_rgb_sha256': payload.binding.rgb_sha256,
             'gt_geometry_used_for_filtering': False}})
@@ -493,6 +503,8 @@ def _run_secondary_module(
         K=camera["K"], metadata=metadata, output=module_dir / "v4_validation",
         vision_root=vision_root, python=upstream_python, timeout=timeout,
         **({'trace': True} if stage_trace else {}),
+        processing_divisor=config['vision'].get('processing_divisor',1),
+        quality_config=config['vision'].get('face_quality'),
     )
     final_metric_seconds = perf_counter() - final_started
     elapsed = perf_counter() - started
@@ -519,7 +531,8 @@ def _run_secondary_module(
     (module_dir / "mode_b_rgbd_observation.json").write_text(dumps(observation), encoding="utf-8")
     evaluation_write_seconds = perf_counter() - evaluation_started
     audit_started = perf_counter()
-    write_json(module_dir / "metric_pointmap_filter_audit.json", audits)
+    if diagnostic_enabled:write_json(module_dir / "legacy_pointmap_filter_audit.json", audits)
+    elif not (module_dir/'metric_pointmap_filter_audit.json').exists():write_json(module_dir/'metric_pointmap_filter_audit.json',audits)
     audit_json_write_seconds = perf_counter() - audit_started
     # Keep elapsed_seconds as the historical geometry-only interval above.
     # The additive total includes input validation, point maps, audits and evaluation,

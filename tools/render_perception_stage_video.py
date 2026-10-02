@@ -20,6 +20,14 @@ def contact_document(folder,obj):
     return json.loads(text[text.index(',')+1:-2])
 
 
+def metric_limits(ax,points):
+    points=np.asarray(points,float)
+    if not len(points):return
+    center=(points.min(0)+points.max(0))/2;radius=max(.1,float(np.ptp(points,axis=0).max())*.65)
+    ax.set(xlim=(center[0]-radius,center[0]+radius),ylim=(center[1]-radius,center[1]+radius),zlim=(center[2]-radius,center[2]+radius))
+    ax.set_box_aspect((1,1,1))
+
+
 def spatial_plot(path,instance,initial=False):
     import matplotlib;matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -41,6 +49,7 @@ def spatial_plot(path,instance,initial=False):
         q=np.asarray(f['corners_3d_m']);ax.plot(*np.vstack([q,q[0]]).T,color='green')
         ax.quiver(*q.mean(0),*(np.asarray(f['plane_normal'])*.1),color='green')
     ax.set(xlabel='camera X (m)',ylabel='camera Y (m)',zlabel='camera Z (m)',title='ACTUAL INITIAL PLANES' if initial else 'FINAL CERTIFIED PATCHES')
+    metric_limits(ax,xyz)
     ax.view_init(25,-70);fig.tight_layout();fig.savefig(path,dpi=140);plt.close(fig)
 
 
@@ -81,6 +90,7 @@ def contact_plots(folder,out,g,obj,c,tool):
 def fusion_plots(out,group,selected):
     import matplotlib;matplotlib.use('Agg')
     import matplotlib.pyplot as plt
+    allpoints=np.array([p for m in group['modules'] for i in m['instances'] for f in i['surfaces'] for p in f['corners_3d_m']])
     for after in (False,True):
         fig=plt.figure(figsize=(10,7));ax=fig.add_subplot(projection='3d');count=0
         if not after:
@@ -96,6 +106,7 @@ def fusion_plots(out,group,selected):
             q=np.asarray(f['corners_3d_m']);ax.plot(*np.vstack([q,q[0]]).T,color=color,linewidth=width);count+=1
         ax.set(xlabel='world X (m)',ylabel='world Y (m)',zlabel='world Z (m)',
             title=('FUSED REPRESENTATIVES' if after else 'UPPER / LOWER OBSERVED FACES')+f' ({count})')
+        metric_limits(ax,allpoints)
         ax.view_init(25,145);fig.tight_layout();fig.savefig(out/('fusion-after.png' if after else 'fusion-before.png'),dpi=140);plt.close(fig)
 
 
@@ -139,9 +150,9 @@ def main(argv=None):
                 note=f"本模组 {len(mod['instances'])} 个实例\n分数按原记录保留\n遮挡/粘连/重复：\n见独立 mask 评价页\n全部实例可检索\n原生裁剪见查看器"
                 elapsed='SAM 阶段 '+str(mod['one_shot_stage_seconds'].get('sam_inference','未拆时'))+' s'
             elif stage==2:
-                pair(a.viewer/inst['images']['raw'],a.viewer/inst['images'].get('filter',inst['images']['retained']),'原始有效深度支持','绿保留 / 橙腐蚀 / 紫分位 / 红分量')
+                pair(a.viewer/inst['images']['raw'],a.viewer/inst['images'].get('filter',inst['images']['retained']),'原始有效深度支持','绿父支持 / 橙边缘 / 紫跳变（新结果）')
                 note=f"原有效点 {inst['raw_cloud']['total']}\n过滤保留 {inst['filtered_cloud']['total']}\n无效深度、孔洞不补平\n点云显示 stride：\n{inst['raw_cloud']['stride']} / {inst['filtered_cloud']['stride']}\n算法保持全分辨率"
-                elapsed='点图/审计 '+str(mod['timings']['pointmap_build_including_filter_audits'])+' s'
+                elapsed='旁路点图 '+format(mod['timings']['pointmap_build_including_filter_audits'],'.3f')+' s；主支持计入面片阶段'
             elif stage==3:
                 pair(a.viewer/inst['images'].get('labels',inst['images']['mask']),gd/'initial-3d.png','拟合前实际标签','初始平面和法向（不是最终平面）')
                 note=f"真实初始标签：\n{len(inst['initial_points'])} 个区域\n冻结后进入拟合\n未分类像素保留\n空间单位 m\n显示范围不代表箱边界"
@@ -165,12 +176,15 @@ def main(argv=None):
                 elapsed='NOT_RUN'
             elif stage==8:
                 pair(gd/'contact-3d.png',gd/'contact-projection.png','世界坐标：杯盘 / TCP / 预接近','原 RGB 投影：支持域与全部杯盘')
-                note=f"最佳候选：\n{c['candidate']['score']:.0f}/{c['required_cups']} 杯\n分区 {c['candidate']['sealed_cups_per_zone']}\n绿：几何支持\n橙：超出面片\n红：孔洞/遮挡/无效\n紫：局部深度误差\n粉：图像裁切\n最佳 ≠ 合格"
+                note=(f"最佳候选：\n{c['candidate']['score']:.0f}/{c['required_cups']} 杯\n分区 {c['candidate']['sealed_cups_per_zone']}\n绿：几何支持\n橙：超出面片\n红：孔洞/遮挡/无效\n紫：局部深度误差\n粉：图像裁切\n最佳 ≠ 合格" if c else
+                      '当前对象无接触候选\n'+str(obj['summary'].get('face_errors') or obj['summary'].get('reason')))
                 elapsed='两组联合适配 '+str(data['contacts_timing']['adapter_wall_seconds'])+' s（非单候选）'
             else:
                 panel(canvas,a.viewer/('rviz-'+g['name']+'.png'),(35,180,1305,740),'本组真实 RViz 截图；完整组切换见 ros-rviz.mp4')
                 note=f"{g['ros']['status']}\nplanning_admissible=false\n旧 Marker 删除：\n{g['ros'].get('previous_marker_deletes','未运行')}\n源时间和发布时间分列\n不授予抓取或执行资格"
                 elapsed='ROS 交付 '+str(g['ros'].get('accepted_monotonic',0)-g['ros'].get('submitted_monotonic',0))+' s（同一单调时钟）'
+            import re
+            elapsed=re.sub(r'\d+\.\d+',lambda m:format(float(m.group()),'.3f'),elapsed)
             text(draw,(1380,195),'输入 → 处理 → 输出',width=21,fill='#7ed7ef')
             text(draw,(1380,255),note,width=21)
             text(draw,(36,966),'实际计算：'+elapsed,width=92,f=small,fill='#ffcf7a')

@@ -1,0 +1,12 @@
+{
+  "root": "outputs/stage-repair-20261002",
+  "server_task_directory": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002",
+  "viewer": "viewer/index.html",
+  "comparison": "viewer/repair-review/index.html",
+  "zip": "stage-repair-viewer.zip",
+  "zip_bytes": 109141026,
+  "zip_sha256": "fac381b3b6d6dbf46eac485ae11a53a60d82a7ec9409b5e53c8424820f923f2a",
+  "algorithm_review": "viewer/algorithm-review.mp4",
+  "real_ros_recording": "viewer/ros-rviz.mp4",
+  "large_files_public_git": "NOT_INCLUDED"
+}

@@ -903,20 +903,21 @@ try:
                 'sensor_epoch':payload['timing']['simulation_epoch'],'fps':args.fps,
                 'algorithm_resolution':[args.width,args.height],'preview_resolution':[640,480],
                 'source_bundle':str(args.bundle_directory.resolve()),'frames':[],
-                'camera_motion':'paired optical cameras translate 0.18 m in world +Y; no tracking or motion compensation',
+                'camera_motion':'entire virtual rig and paired optical cameras translate 0.18 m in world +Y; detached from J1, no tracking or motion compensation',
                 'scene_changes':('LOCAL_ROOF_RIGHT_WALL_INSPECTION_LIGHT; geometry/materials/existing lights retained'
                                  if args.seam_inspection_light else 'NONE: existing geometry/materials/lights retained')}
             camera_prims={module:handle.get_output_prims()['prims'][0] for module,handle in camera_handles.items()}
             started=time.monotonic()
             sim_started=world.current_time
             for ordinal in range(args.continuous_frames):
-                current=deepcopy(payload)
-                shift=.18*ordinal/(args.continuous_frames-1)
+                from unloading_perception.capture_rig_motion import translated_virtual_rig
+                shift=.18*ordinal/max(1,args.continuous_frames-1)
+                current=translated_virtual_rig(payload,shift)
+                rig_transform=np.asarray(current['mechanisms']['vision_rig']['T_W_vision_flange'])
+                UsdGeom.XformCommonAPI(vision_root.GetPrim()).SetTranslate(Gf.Vec3d(*rig_transform[:3,3].tolist()))
+                vision_root.GetPrim().GetAttribute('kinematicParentFrame').Set('VIRTUAL_TRANSLATED_RIG_NOT_J1_ATTACHED')
                 for camera in current['cameras']:
                     transform=np.asarray(camera['T_W_C'],dtype=float)
-                    transform[1,3]+=shift
-                    camera['T_W_C']=transform.tolist()
-                    camera['position_world_m']=transform[:3,3].tolist()
                     # USD cameras look along -Z, optical frames along +Z with +Y down.
                     usd=transform@np.diag([1.,-1.,-1.,1.])
                     prim=camera_prims[camera['module_id']]
@@ -929,7 +930,7 @@ try:
                 render_at_joint_command(command)
                 current['timing'].update(simulation_time=float(world.current_time),simulation_frame=int(world.current_time_step_index))
                 current['provenance'].update(continuous_recording=True,camera_translation_y_m=shift,
-                    sensor_pose_authority='ACTUAL_RENDER_CAMERA_TRANSFORM; VIRTUAL_PAIRED_RIG_TRANSLATION')
+                    sensor_pose_authority='ACTUAL_RENDER_CAMERA_AND_BODY_TRANSFORMS; VIRTUAL_RIG_DETACHED_FROM_J1')
                 current['dynamic_scene_fingerprint']=canonical_digest({'objects':current['objects'],
                     'mechanisms':current['mechanisms'],'camera_calibration':tuple({k:c[k] for k in
                     ('camera_id','frame_id','resolution','K','distortion_model','distortion','T_W_C','near_clip_m','far_clip_m')}

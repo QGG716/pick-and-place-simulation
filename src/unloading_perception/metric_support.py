@@ -30,7 +30,7 @@ def native_pixel_map(shape, native_K, final_K):
 
 
 def observation_support(depth, instance_mask, face_mask, *, erosion_px=2,
-                        discontinuity_m=.02):
+                        discontinuity_m=.02, parent_support=None):
     """Freeze face membership, then remove image boundaries/invalid depth.
 
     The 20 mm neighbour jump is an acquisition discontinuity test, independent
@@ -51,10 +51,21 @@ def observation_support(depth, instance_mask, face_mask, *, erosion_px=2,
     # all values are read afresh, including on independent final validation.
     rows = np.flatnonzero(selected.any(axis=1))
     columns = np.flatnonzero(selected.any(axis=0))
-    window = (slice(max(0, rows[0]-1), min(depth.shape[0], rows[-1]+2)),
-              slice(max(0, columns[0]-1), min(depth.shape[1], columns[-1]+2))) if len(rows) else (slice(0, 0), slice(0, 0))
+    halo=max(1,erosion_px) if parent_support is not None else 1
+    window = (slice(max(0, rows[0]-halo), min(depth.shape[0], rows[-1]+halo+1)),
+              slice(max(0, columns[0]-halo), min(depth.shape[1], columns[-1]+halo+1))) if len(rows) else (slice(0, 0), slice(0, 0))
     local_selected, local_valid, local_depth = selected[window], valid[window], depth[window]
-    interior = _erode_mask(local_selected, erosion_px)
+    if parent_support is None:
+        interior = _erode_mask(local_selected, erosion_px)
+    else:
+        parent = np.asarray(parent_support, bool)
+        if parent.shape != depth.shape or np.any(parent & ~(instance & valid)):
+            raise ValueError('invalid measurement parent support')
+        # The measurement parent has already eroded acquisition boundaries.
+        # Face erosion separates labels inside that parent, without eroding the
+        # same outer acquisition boundary a second time.
+        local_parent = parent[window]
+        interior = _erode_mask(local_selected | ~local_parent, erosion_px) & local_parent
     jumps = np.zeros(local_depth.shape, bool)
     for axis in (0, 1):
         a, b = [slice(None)]*2, [slice(None)]*2
@@ -79,13 +90,14 @@ def observation_support(depth, instance_mask, face_mask, *, erosion_px=2,
 
 
 def check_metric_plane(normal, offset, depth, instance_mask, face_mask, K,
-                       *, maximum_mean_m=.003, minimum_points=50, erosion_px=2):
+                       *, maximum_mean_m=.003, minimum_points=50, erosion_px=2, parent_support=None):
     normal = np.asarray(normal, float)
     if normal.shape != (3,) or not np.isfinite(normal).all() or not np.isclose(np.linalg.norm(normal), 1, atol=1e-6):
         raise ValueError("plane normal must be unit length")
     if not np.isfinite(offset):
         raise ValueError("nonfinite plane offset")
-    raw, retained, audit = observation_support(depth, instance_mask, face_mask, erosion_px=erosion_px)
+    raw, retained, audit = observation_support(depth, instance_mask, face_mask, erosion_px=erosion_px,
+                                               parent_support=parent_support)
     for name, mask in (("raw", raw), ("interior", retained), ("excluded", raw & ~retained)):
         y, x = np.nonzero(mask)
         points = backproject_pixels(np.column_stack((x, y)), np.asarray(depth)[mask], K)

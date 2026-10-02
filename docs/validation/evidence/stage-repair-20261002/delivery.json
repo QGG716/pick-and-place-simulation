@@ -1,0 +1,626 @@
+{
+  "baseline": "5243e566cb407d542ac3e05e30f60198033a1fff",
+  "algorithm_source_archive_sha256": "0fffd82ebefbd3b7f2c0cf2d0b4bd6f7dcd58977a8c0e52a8150efe861fa5b5e",
+  "groups": [
+    {
+      "name": "frame32",
+      "status": "COMPLETED",
+      "capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000",
+      "artifact": {
+        "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/algorithm_artifact.json",
+        "sha256": "878d43506322b544ceced64234a2153563d8588dfa62da028b8b38eddc8b7b42"
+      },
+      "counts": {
+        "objects": 37,
+        "raw_surfaces": 54,
+        "representatives": 54,
+        "conflicts": 0,
+        "unknown_regions": 84
+      },
+      "run_id": "735207fa0f3b4ae495b758fa76838f29",
+      "resident_model_loads": 1,
+      "sam_object_id": 140174425111568,
+      "algorithm_with_trace_wall_seconds": 109.40856022201478,
+      "contacts": {
+        "candidates": 1656,
+        "supported": 0,
+        "objects_with_candidates": 35,
+        "face_errors": [
+          {
+            "object_id": "fusion-770c9865405b396397a7",
+            "errors": [
+              {
+                "face_id": "module_0_upper/carton-assets-recording-01:module_0_upper:32/carton-assets-recording-01/module_0_upper/carton-assets-recording-01%3Amodule_0_upper%3A32/1:face:0",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-54d4c0885201aff09f0d",
+            "errors": [
+              {
+                "face_id": "module_0_upper/carton-assets-recording-01:module_0_upper:32/carton-assets-recording-01/module_0_upper/carton-assets-recording-01%3Amodule_0_upper%3A32/3:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-8e7142029b0cf02438c5",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:32/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A32/24:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-6df1d558c8c13dfd4d25",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:32/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A32/29:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-d81684abe156d5ce753a",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:32/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A32/14:face:0",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-08e03e4c3611528bb89a",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:32/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A32/18:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-87566f319536c373f299",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:32/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A32/19:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-38aa471fde3e79bcbcbb",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:32/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A32/3:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          }
+        ]
+      },
+      "source_members_exact": true,
+      "ros": {
+        "batch_id": "61499df7bc5f4afbab0c725b37909c9c",
+        "task_id": "frame32",
+        "order": 0,
+        "session": "068c0dd67d464556b9d9224c3e3d3147",
+        "artifact": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/algorithm_artifact.json",
+          "sha256": "878d43506322b544ceced64234a2153563d8588dfa62da028b8b38eddc8b7b42"
+        },
+        "submitted_monotonic": 10280114.9712504,
+        "objects": 37,
+        "raw_surfaces": 54,
+        "marker_representatives": 54,
+        "unknown_regions": 121,
+        "previous_marker_deletes": 0,
+        "world_publisher_epoch": "a3ae39b1-9205-4208-9fe4-d1ffe537db24",
+        "mock_state_epoch": "9129898c-49cc-4122-8885-5b02286822fe",
+        "status": "ROS_ACCEPTED",
+        "perception_pid": 24278,
+        "execution_authorizations": 0,
+        "first_world_monotonic": 10280117.01442064,
+        "accepted_monotonic": 10280128.35002117,
+        "switch_latency_seconds": 2.043170239776373,
+        "fixed_initialization_seconds": 5.0,
+        "steady_seconds": 5.0
+      },
+      "modules": [
+        {
+          "module": "module_0_upper",
+          "sam_count": 16,
+          "old_sam_masks_ids_boxes_exact": true,
+          "image_encoder_calls": 1,
+          "prompt_decoder_calls": 16,
+          "sam_seconds": {
+            "sam": 8.335970407351851,
+            "sam_image_encoding": 0.3246207796037197,
+            "sam_prompt_model_forward": 0.16103919595479965,
+            "sam_image_preprocess": 0.07044907659292221,
+            "geometry_2d": 1.6835832502692938,
+            "request_total": 10.21501605771482
+          },
+          "real_perturbation_count": 80,
+          "stages": {
+            "pending": 0.007534142583608627,
+            "payload_validation": 0.5449050031602383,
+            "inputs_ready": 2.858506929129362,
+            "oracle_proposals": 0.17666237615048885,
+            "sam_inference": 10.21948604285717,
+            "worker_artifacts": 1.05871057882905,
+            "mask_evaluation": 1.0265436880290508,
+            "metric_geometry": 22.324975546449423
+          },
+          "geometry": {
+            "input_validation_and_snapshot": 0.2396477535367012,
+            "pointmap_build_including_filter_audits": 1.5087425708770752e-07,
+            "pointmap_write": 0.00027149543166160583,
+            "legacy_geometry": 14.54924650117755,
+            "legacy_cuboid_diagnostic": 0.0,
+            "final_metric_faces": 14.547908540815115,
+            "final_validation_and_observation": 4.322172349318862,
+            "evaluation_and_observation_write": 0.4888859260827303,
+            "filter_audit_json_write": 3.6032870411872864e-05,
+            "module_total_before_timing_record": 19.613976104184985
+          },
+          "geometry_pid": 22626,
+          "support_fit_io": {
+            "fit_including_independent_validation_seconds": 9.395125675946474,
+            "independent_final_validation_seconds": 3.1987373027950525,
+            "measurement_parent_seconds": 0.11083262972533703,
+            "parent_and_initial_extraction_seconds": 3.0947570111602545,
+            "support_audit_write_seconds": 0.9590480029582977
+          },
+          "trace_write_seconds": 0.7122995126992464,
+          "threads": {
+            "before_geometry": [
+              {
+                "owner": "numpy",
+                "num_threads": 1
+              },
+              {
+                "owner": "non_target",
+                "num_threads": 1
+              },
+              {
+                "owner": "scipy",
+                "num_threads": 1
+              }
+            ],
+            "after_geometry": [
+              {
+                "owner": "numpy",
+                "num_threads": 1
+              },
+              {
+                "owner": "non_target",
+                "num_threads": 1
+              },
+              {
+                "owner": "scipy",
+                "num_threads": 1
+              }
+            ]
+          },
+          "thread_status": "COMPLETED"
+        },
+        {
+          "module": "module_1_lower",
+          "sam_count": 31,
+          "old_sam_masks_ids_boxes_exact": true,
+          "image_encoder_calls": 1,
+          "prompt_decoder_calls": 31,
+          "sam_seconds": {
+            "sam": 15.232776243239641,
+            "sam_image_encoding": 0.06449220329523087,
+            "sam_prompt_model_forward": 0.12310797721147537,
+            "sam_image_preprocess": 0.05432630330324173,
+            "geometry_2d": 2.8277093674987555,
+            "request_total": 18.225599322468042
+          },
+          "real_perturbation_count": 155,
+          "stages": {
+            "pending": 0.0017757769674062729,
+            "payload_validation": 0.9198699817061424,
+            "inputs_ready": 0.0024006497114896774,
+            "oracle_proposals": 0.3880028687417507,
+            "sam_inference": 18.231818795204163,
+            "worker_artifacts": 2.1135106328874826,
+            "mask_evaluation": 2.033730324357748,
+            "metric_geometry": 44.94404004700482
+          },
+          "geometry": {
+            "input_validation_and_snapshot": 0.42382417246699333,
+            "pointmap_build_including_filter_audits": 2.0116567611694336e-07,
+            "pointmap_write": 0.000327112153172493,
+            "legacy_geometry": 29.573538675904274,
+            "legacy_cuboid_diagnostic": 0.0,
+            "final_metric_faces": 29.57143152691424,
+            "final_validation_and_observation": 8.976051604375243,
+            "evaluation_and_observation_write": 0.984979435801506,
+            "filter_audit_json_write": 4.1000545024871826e-05,
+            "module_total_before_timing_record": 39.976825723424554
+          },
+          "geometry_pid": 22904,
+          "support_fit_io": {
+            "fit_including_independent_validation_seconds": 19.485116604715586,
+            "independent_final_validation_seconds": 6.326631294563413,
+            "measurement_parent_seconds": 0.19607320241630077,
+            "parent_and_initial_extraction_seconds": 6.187331007793546,
+            "support_audit_write_seconds": 1.8544376902282238
+          },
+          "trace_write_seconds": 1.4096835646778345,
+          "threads": {
+            "before_geometry": [
+              {
+                "owner": "numpy",
+                "num_threads": 1
+              },
+              {
+                "owner": "non_target",
+                "num_threads": 1
+              },
+              {
+                "owner": "scipy",
+                "num_threads": 1
+              }
+            ],
+            "after_geometry": [
+              {
+                "owner": "numpy",
+                "num_threads": 1
+              },
+              {
+                "owner": "non_target",
+                "num_threads": 1
+              },
+              {
+                "owner": "scipy",
+                "num_threads": 1
+              }
+            ]
+          },
+          "thread_status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "frame602",
+      "status": "COMPLETED",
+      "capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095",
+      "artifact": {
+        "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/algorithm_artifact.json",
+        "sha256": "a4b004f8f57fc6b0e9ad28f715216caad0f0a014dfd3cc08d24a0967089d8f89"
+      },
+      "counts": {
+        "objects": 28,
+        "raw_surfaces": 43,
+        "representatives": 43,
+        "conflicts": 0,
+        "unknown_regions": 64
+      },
+      "run_id": "b11fffb074ea4511b772622caf681d46",
+      "resident_model_loads": 1,
+      "sam_object_id": 140174425111568,
+      "algorithm_with_trace_wall_seconds": 83.47172437421978,
+      "contacts": {
+        "candidates": 1296,
+        "supported": 0,
+        "objects_with_candidates": 28,
+        "face_errors": [
+          {
+            "object_id": "fusion-a794a24611526d360a48",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:602/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A602/19:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-68410278c4600057c34f",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:602/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A602/23:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-eb560d6ada77a821e486",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:602/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A602/3:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-be5ec75e8745a8c678a0",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:602/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A602/6:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          },
+          {
+            "object_id": "fusion-1445fce8067043309954",
+            "errors": [
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:602/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A602/7:face:1",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              },
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:602/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A602/7:face:2",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              },
+              {
+                "face_id": "module_1_lower/carton-assets-recording-01:module_1_lower:602/carton-assets-recording-01/module_1_lower/carton-assets-recording-01%3Amodule_1_lower%3A602/7:face:3",
+                "reason": "PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK",
+                "contact_search": "NOT_ELIGIBLE"
+              }
+            ]
+          }
+        ]
+      },
+      "source_members_exact": true,
+      "ros": {
+        "batch_id": "61499df7bc5f4afbab0c725b37909c9c",
+        "task_id": "frame602",
+        "order": 1,
+        "session": "43bee31b606a4dfeae4a8835772defed",
+        "artifact": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/algorithm_artifact.json",
+          "sha256": "a4b004f8f57fc6b0e9ad28f715216caad0f0a014dfd3cc08d24a0967089d8f89"
+        },
+        "submitted_monotonic": 10280138.005231755,
+        "objects": 28,
+        "raw_surfaces": 43,
+        "marker_representatives": 43,
+        "unknown_regions": 92,
+        "previous_marker_deletes": 108,
+        "world_publisher_epoch": "a3ae39b1-9205-4208-9fe4-d1ffe537db24",
+        "mock_state_epoch": "9129898c-49cc-4122-8885-5b02286822fe",
+        "status": "ROS_ACCEPTED",
+        "perception_pid": 24278,
+        "execution_authorizations": 0,
+        "first_world_monotonic": 10280139.910402428,
+        "accepted_monotonic": 10280150.837819932,
+        "switch_latency_seconds": 1.9051706735044718,
+        "fixed_initialization_seconds": 5.0,
+        "steady_seconds": 5.0
+      },
+      "modules": [
+        {
+          "module": "module_0_upper",
+          "sam_count": 12,
+          "old_sam_masks_ids_boxes_exact": true,
+          "image_encoder_calls": 1,
+          "prompt_decoder_calls": 12,
+          "sam_seconds": {
+            "sam": 5.680441748350859,
+            "sam_image_encoding": 0.0648249164223671,
+            "sam_prompt_model_forward": 0.04711931012570858,
+            "sam_image_preprocess": 0.05411442369222641,
+            "geometry_2d": 1.3107262756675482,
+            "request_total": 7.097700506448746
+          },
+          "real_perturbation_count": 60,
+          "stages": {
+            "pending": 0.007280657067894936,
+            "payload_validation": 0.3709908500313759,
+            "inputs_ready": 0.0034039095044136047,
+            "oracle_proposals": 0.13506797328591347,
+            "sam_inference": 7.102660058066249,
+            "worker_artifacts": 0.7896437160670757,
+            "mask_evaluation": 0.7102348729968071,
+            "metric_geometry": 17.400421550497413
+          },
+          "geometry": {
+            "input_validation_and_snapshot": 0.13756979629397392,
+            "pointmap_build_including_filter_audits": 1.8440186977386475e-07,
+            "pointmap_write": 0.0002532731741666794,
+            "legacy_geometry": 11.24206425063312,
+            "legacy_cuboid_diagnostic": 0.0,
+            "final_metric_faces": 11.24018413387239,
+            "final_validation_and_observation": 3.36049279384315,
+            "evaluation_and_observation_write": 0.350976187735796,
+            "filter_audit_json_write": 4.085712134838104e-05,
+            "module_total_before_timing_record": 15.107514560222626
+          },
+          "geometry_pid": 23190,
+          "support_fit_io": {
+            "fit_including_independent_validation_seconds": 7.1957067754119635,
+            "independent_final_validation_seconds": 2.463982490822673,
+            "measurement_parent_seconds": 0.08090165629982948,
+            "parent_and_initial_extraction_seconds": 2.507188966497779,
+            "support_audit_write_seconds": 0.7253094557672739
+          },
+          "trace_write_seconds": 0.5567791368812323,
+          "threads": {
+            "before_geometry": [
+              {
+                "owner": "numpy",
+                "num_threads": 1
+              },
+              {
+                "owner": "non_target",
+                "num_threads": 1
+              },
+              {
+                "owner": "scipy",
+                "num_threads": 1
+              }
+            ],
+            "after_geometry": [
+              {
+                "owner": "numpy",
+                "num_threads": 1
+              },
+              {
+                "owner": "non_target",
+                "num_threads": 1
+              },
+              {
+                "owner": "scipy",
+                "num_threads": 1
+              }
+            ]
+          },
+          "thread_status": "COMPLETED"
+        },
+        {
+          "module": "module_1_lower",
+          "sam_count": 24,
+          "old_sam_masks_ids_boxes_exact": true,
+          "image_encoder_calls": 1,
+          "prompt_decoder_calls": 24,
+          "sam_seconds": {
+            "sam": 12.194006197154522,
+            "sam_image_encoding": 0.06476769968867302,
+            "sam_prompt_model_forward": 0.10058425180613995,
+            "sam_image_preprocess": 0.05246126092970371,
+            "geometry_2d": 2.1719477269798517,
+            "request_total": 14.516579503193498
+          },
+          "real_perturbation_count": 120,
+          "stages": {
+            "pending": 0.0013082996010780334,
+            "payload_validation": 0.6693127043545246,
+            "inputs_ready": 0.002738112583756447,
+            "oracle_proposals": 0.30023146979510784,
+            "sam_inference": 14.52310674265027,
+            "worker_artifacts": 1.6616525501012802,
+            "mask_evaluation": 1.4069903828203678,
+            "metric_geometry": 36.312989354133606
+          },
+          "geometry": {
+            "input_validation_and_snapshot": 0.345401244238019,
+            "pointmap_build_including_filter_audits": 2.477318048477173e-07,
+            "pointmap_write": 0.00033783353865146637,
+            "legacy_geometry": 23.88452034071088,
+            "legacy_cuboid_diagnostic": 0.0,
+            "final_metric_faces": 23.883006643503904,
+            "final_validation_and_observation": 7.14871540106833,
+            "evaluation_and_observation_write": 0.7526322659105062,
+            "filter_audit_json_write": 4.071556031703949e-05,
+            "module_total_before_timing_record": 32.148198775947094
+          },
+          "geometry_pid": 23489,
+          "support_fit_io": {
+            "fit_including_independent_validation_seconds": 15.843848405405879,
+            "independent_final_validation_seconds": 5.248663607984781,
+            "measurement_parent_seconds": 0.1585774701088667,
+            "parent_and_initial_extraction_seconds": 5.080366415902972,
+            "support_audit_write_seconds": 1.4167612176388502
+          },
+          "trace_write_seconds": 1.081822907552123,
+          "threads": {
+            "before_geometry": [
+              {
+                "owner": "numpy",
+                "num_threads": 1
+              },
+              {
+                "owner": "non_target",
+                "num_threads": 1
+              },
+              {
+                "owner": "scipy",
+                "num_threads": 1
+              }
+            ],
+            "after_geometry": [
+              {
+                "owner": "numpy",
+                "num_threads": 1
+              },
+              {
+                "owner": "non_target",
+                "num_threads": 1
+              },
+              {
+                "owner": "scipy",
+                "num_threads": 1
+              }
+            ]
+          },
+          "thread_status": "COMPLETED"
+        }
+      ]
+    }
+  ],
+  "contacts_seconds": 52.781228959560394,
+  "ros_exit": {
+    "processes": [
+      {
+        "pid": 23881,
+        "returncode": 0
+      },
+      {
+        "pid": 23884,
+        "returncode": 1
+      },
+      {
+        "pid": 23885,
+        "returncode": 1
+      },
+      {
+        "pid": 23998,
+        "returncode": 255
+      },
+      {
+        "pid": 23999,
+        "returncode": 0
+      }
+    ]
+  },
+  "viewer": {
+    "status": "PASS",
+    "scope": "PNG decoding, native/crop dimensions, all group/instance/contact references and ROS receipt identities",
+    "native_crops": 664,
+    "groups": 2,
+    "instances": 83,
+    "browser_interaction": "NOT_VERIFIED: both IAB and Chrome unavailable",
+    "empty_objects": 1
+  },
+  "video": {
+    "seconds": 12.892959266901016,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "origin": "CURRENT_RUN_RESULT_REVIEW_NOT_REALTIME",
+    "selection": "first fused object in each fixed group, original best candidate",
+    "frames": 20
+  },
+  "tests": {
+    "local_regression": "203 passed, 3 skipped (OpenCV dependent); see exact commands in validation note",
+    "native_geometry": "28 passed, including actual trace on/off and two-plane independent native-depth validation",
+    "additional_boundary": "10 passed, 1 skipped",
+    "node_smoke": {
+      "cases": 758,
+      "empty_objects": 1,
+      "status": "PASS",
+      "kind": "SIMULATED_DOM_NOT_BROWSER"
+    },
+    "browser_interaction": "NOT_VERIFIED: IAB and Chrome unavailable"
+  }
+}

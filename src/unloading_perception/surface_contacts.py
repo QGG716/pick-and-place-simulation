@@ -13,6 +13,7 @@ from .geometry import validate_transform_parent_child
 from .metric_faces import _binding, _support_mask, MetricFitConfig
 from .metric_support import observation_support, backproject_pixels
 from .planning_geometry import _surface
+from .face_quality import patch_minimum_width
 
 
 BLOCKERS = dict(volume='UNKNOWN', ik='NOT_EVALUATED', collision='NOT_EVALUATED',
@@ -72,6 +73,10 @@ def validate_tool(tool):
     return centers, zones, minimum
 
 
+class ContactSupportInsufficient(ValueError):
+    """Valid evidence that cannot geometrically accommodate even one cup."""
+
+
 @dataclass
 class ContactCandidate:
     """The existing candidate is usable by geometry consumers; never an execution grant."""
@@ -102,7 +107,9 @@ def prepare_support(surface, record, depth, mask, K):
         raise ValueError('CERTIFIED_PATCH_RECORD_MISMATCH')
     f = matching[0]
     region = _support_mask(record['frozen_support_regions'][str(f['support_label'])], np.asarray(depth).shape)
-    _, retained, audit = observation_support(depth, mask, region, erosion_px=MetricFitConfig().erosion_px)
+    erosion=int(record.get('config',{}).get('erosion_px',2))
+    parent=observation_support(depth,mask,mask,erosion_px=erosion)[1] if record.get('support_policy')=='MEASUREMENT_PARENT_V2' else None
+    _, retained, audit = observation_support(depth, mask, region, erosion_px=erosion,parent_support=parent)
     n = T[:3,:3].T@normal
     d = float(surface['plane_offset_m']+normal@T[:3,3])
     projected = camera_points@K.T
@@ -159,6 +166,10 @@ def face_candidates(surface, record, depth, mask, K, tool, *, artifact, object_i
     centers,zones,minimum=validate_tool(tool)
     points,normal,_=_surface(surface)
     support=prepare_support(surface,record,depth,mask,K)
+    if record.get('support_policy')=='MEASUREMENT_PARENT_V2':
+        width=patch_minimum_width(points)
+        if width < 2*(tool['layout']['cup_radius_m']+tool['edge_margin_m']):
+            raise ContactSupportInsufficient('PATCH_CANNOT_CONTAIN_ONE_COMPLETE_CUP_DISK')
     R=make_tool_rotation(-normal)
     uv=points@R[:,:2]; low,high=uv.min(axis=0),uv.max(axis=0)
     origin=points.mean(axis=0)  # Only an observed patch search origin; never a box centre.

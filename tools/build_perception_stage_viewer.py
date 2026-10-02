@@ -149,6 +149,10 @@ def main(argv=None):
             metrics=read(response['metrics_reference']['path'])
             metrics_hash=hashlib.sha256(Path(response['metrics_reference']['path']).read_bytes()).hexdigest()
             if metrics_hash!=response['metrics_reference']['sha256']:raise ValueError('SAM_METRICS_HASH_MISMATCH')
+            session_ref=metrics['artifacts'].get('sam_image_session.json')
+            session=json.loads(_read_reference(session_ref,root)) if session_ref else None
+            gt_raw=_read_reference(inputrefs['gt_instance_masks.npz'],root)
+            with np.load(BytesIO(gt_raw),allow_pickle=False) as ar:gt_masks={k:ar[k] for k in ar.files}
             maskref=next(iter(members.values())).mask_reference if members else None
             # SAM scores and proposal association from current worker artifact, not guessed.
             sam_entries={}
@@ -164,6 +168,9 @@ def main(argv=None):
                 masks=image_file('masks.png',combined),instances=[],timings=timings,sam_metrics=metrics,
                 trace_status='COMPLETED' if trace else 'NOT_RECORDED_IN_HISTORICAL_RUN',trace=trace)
             md['one_shot_stage_seconds']=next(r.get('stage_seconds',{}) for r in run_summary['runs'] if r['module']==module)
+            md['sam_image_session']=session
+            md['pipeline_timing']=read(folder/'metric_pipeline_timing.json') if (folder/'metric_pipeline_timing.json').exists() else None
+            binding_overlay=rgb.copy()
             if (folder/'sam_boundaries.png').exists():
                 shutil.copyfile(folder/'sam_boundaries.png',dest/'sam-boundaries.png')
                 md['sam_boundaries']=(dest/'sam-boundaries.png').relative_to(a.output).as_posix()
@@ -176,6 +183,30 @@ def main(argv=None):
                     path=dest/f'{prefix}-{kind}.png';Image.fromarray(array).crop(bounds).save(path)
                     im[kind]=path.relative_to(a.output).as_posix()
                 cropped('rgb',rgb);cropped('mask',blend(rgb,mask,PALETTE[0]))
+                from unloading_perception.prompt_audit import mask_bbox
+                from unloading_perception.rgbd import _erode_mask
+                entry=sam_entries.get(mid,{})
+                proposal=next((p for p in proposals['instances'] if p['id']==entry.get('proposal_id')),None)
+                selected_prompt=None
+                if proposal:
+                    truth=gt_masks[proposal['simulation_object_id']]
+                    pic=rgb.copy();pic[truth&~_erode_mask(truth,1)]=[50,140,255]
+                    pic[mask&~_erode_mask(mask,1)]=[50,240,150]
+                    binding_overlay[truth&~_erode_mask(truth,1)]=[50,140,255]
+                    binding_overlay[mask&~_erode_mask(mask,1)]=[50,240,150]
+                    picture=Image.fromarray(pic);draw=ImageDraw.Draw(picture)
+                    actual=next((r for r in (session or {}).get('prompts_source_coordinates',[]) if r['base_bbox']==proposal['bbox']),None)
+                    if actual:
+                        for b in actual['variants']:draw.rectangle(b,outline=(255,150,100),width=1)
+                    draw.rectangle(proposal['bbox'],outline=(255,196,64),width=3)
+                    draw.rectangle(mask_bbox(mask),outline=(255,255,255),width=1)
+                    cropped('prompts',np.asarray(picture))
+                    selected_prompt=dict(base_oracle_bbox=proposal['bbox'],rendered_visible_bbox=mask_bbox(truth),
+                        output_sam_bbox=mask_bbox(mask),actual_five_prompts=actual,
+                        proposal_id=proposal['id'],object_id=proposal['simulation_object_id'],
+                        sam_instance_id=mid,supporting_proposal_ids=entry.get('supporting_proposal_ids',[]),
+                        bbox_convention='xyxy half-open; RGB native pixel coordinates',
+                        truth_usage='independent annotation audit, never geometry input')
                 ap=folder/'pointcloud_filter'/f'mask_{mid:04d}.npz'
                 audit=next((r for r in read(folder/'metric_pointmap_filter_audit.json') if r['mask_id']==mid),None)
                 rawmask=mask&valid;retained=np.zeros_like(mask);point_status='NOT_AVAILABLE'
@@ -209,8 +240,11 @@ def main(argv=None):
                     record_path=fp.relative_to(a.output).as_posix(),record={k:v for k,v in record.items() if k!='frozen_support_regions'},
                     surfaces=list(member.observed_surfaces),point_status=point_status,filter_audit=audit,
                     raw_cloud=sampled_points(depth,rawmask,K),filtered_cloud=sampled_points(depth,retained,K),
-                    initial=initial,initial_points=initial_points,
+                    initial=initial,initial_points=initial_points,prompt_audit=selected_prompt,
                     fused_objects=[c.source_instance_id for c in observation.cargo if (module,sid) in c.raw_result['source_members']]))
+            picture=Image.fromarray(binding_overlay);drawing=ImageDraw.Draw(picture)
+            for p in proposals['instances']:drawing.rectangle(p['bbox'],outline=(255,196,64),width=2)
+            md['prompt_binding_overlay']=image_file('prompt-binding-overlay.png',np.asarray(picture))
             gd['modules'].append(md)
         for ordinal,row in enumerate(cg['objects']):
             ref=row['candidate_artifact'];raw=Path(ref['path']).read_bytes()

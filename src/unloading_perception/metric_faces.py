@@ -14,6 +14,7 @@ import numpy as np
 
 from .final_geometry import SIGNS, project
 from .metric_support import backproject_pixels, observation_support, check_metric_plane
+from .face_quality import support_quality
 
 
 @dataclass(frozen=True)
@@ -30,6 +31,16 @@ class MetricFitConfig:
     boundary_auxiliary_weight: float = .05
     normal_pair_tolerance_degrees: float = 10.
     positive_infinity_is_no_hit: bool = False
+    unified_measurement_support: bool = True
+    minimum_geometry_short_m: float = .015
+    minimum_geometry_area_m2: float = .0003
+    maximum_normal_condition_ratio: float = .20
+    local_normal_radius_px: int = 3
+
+    def __post_init__(self):
+        if (not np.isfinite([self.minimum_geometry_short_m,self.minimum_geometry_area_m2,self.maximum_normal_condition_ratio]).all()
+                or min(self.minimum_geometry_short_m,self.minimum_geometry_area_m2,self.maximum_normal_condition_ratio)<=0):
+            raise ValueError('INVALID_PHYSICAL_FACE_QUALITY_CONFIG')
 
 
 def _tls(points):
@@ -90,7 +101,7 @@ def maximum_observation_rectangle(mask):
     return np.array([[left,top],[right,top],[right,bottom],[left,bottom]],float)
 
 
-def extract_observation_labels(depth, mask, K, extractor, config=MetricFitConfig()):
+def extract_observation_labels(depth, mask, K, extractor, config=MetricFitConfig(), *, measurement=None):
     """Initial robust plane segmentation, frozen before constrained fitting.
 
     All valid instance pixels receive their nearest *initial* plane label;
@@ -98,7 +109,11 @@ def extract_observation_labels(depth, mask, K, extractor, config=MetricFitConfig
     as separate patches. Held-out spatial blocks never enter the final fit.
     """
     import cv2
-    raw, interior, audit = observation_support(depth, mask, mask, erosion_px=config.erosion_px)
+    raw, interior, audit = (observation_support(depth, mask, mask, erosion_px=config.erosion_px)
+                            if measurement is None else measurement)
+    audit=dict(audit)
+    audit['support_policy']='MEASUREMENT_PARENT_V2' if config.unified_measurement_support else 'LEGACY_INDEPENDENT'
+    audit['global_depth_percentile_clipping']='NOT_USED: depth is geometry, not an instance-wide outlier score'
     xyz, _ = _points(depth, interior, K)
     if len(xyz) < config.minimum_points:
         return np.full(depth.shape, -1, np.int16), [], audit
@@ -136,14 +151,16 @@ def extract_observation_labels(depth, mask, K, extractor, config=MetricFitConfig
     labels = np.full(depth.shape, -1, np.int16)
     if not planes:
         return labels, [], audit
-    all_xyz, pixels = _points(depth, raw, K)
+    assigned_support=interior if config.unified_measurement_support else raw
+    all_xyz, pixels = _points(depth, assigned_support, K)
     errors = np.stack([np.abs(all_xyz @ n+d) for n, d in planes], axis=1)
     assignment = np.argmin(errors, axis=1)
     # Candidate-independent organised-depth normals disambiguate a thin face
     # even when RANSAC could not recover its plane. In particular, its pixels
     # must not be lifted onto a different face of the same instance.
     neighbours=[]; values=[]; neighbour_membership=[]
-    for delta in ((-3,0),(3,0),(0,-3),(0,3)):
+    radius=config.local_normal_radius_px
+    for delta in ((-radius,0),(radius,0),(0,-radius),(0,radius)):
         xy=pixels+delta
         xy[:,0]=np.clip(xy[:,0],0,depth.shape[1]-1); xy[:,1]=np.clip(xy[:,1],0,depth.shape[0]-1)
         z=depth[xy[:,1],xy[:,0]]; values.append(z)
@@ -176,7 +193,8 @@ def extract_observation_labels(depth, mask, K, extractor, config=MetricFitConfig
             seeds.append({'normal': normal.tolist(), 'offset_m': float(offset),
                           'initial_plane_index': i, 'component': component})
     audit['initial_planes'] = seeds
-    audit['unassigned_pixels'] = int((raw & (labels < 0)).sum())
+    audit['unassigned_pixels'] = int((assigned_support & (labels < 0)).sum())
+    audit['labelled_pixels'] = int((labels >= 0).sum())
     return labels, seeds, audit
 
 
@@ -303,29 +321,45 @@ def _boundary_kinds(polygon, normal, offset, depth, K, *, search_px=6, positive_
 
 
 def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
-                     config=MetricFitConfig(), source_ambiguous=False):
+                     config=MetricFitConfig(), source_ambiguous=False, phase_seconds=None):
     """Produce observed patches first; complete only supported physical bounds."""
     import cv2
     depth, mask, K = np.asarray(depth), np.asarray(mask, bool), np.asarray(K).reshape(3, 3)
     groups = []
+    quality_records=[]
+    parent=observation_support(depth,mask,mask,erosion_px=config.erosion_px)[1] if config.unified_measurement_support else None
     y, x = np.indices(depth.shape)
     holdout = ((x//8+y//8) % 4 == 0)
     rng = np.random.default_rng(config.seed)
     for i, seed in enumerate(seeds):
         region = labels == i
-        _, retained, _ = observation_support(depth, mask, region, erosion_px=config.erosion_px)
+        if parent is not None and np.any(region & ~parent):
+            # External synthetic callers may supply raw labels. Freeze their
+            # intersection with the independently recomputed measurement parent.
+            region=region & parent
+        _, retained, support_audit = observation_support(depth, mask, region, erosion_px=config.erosion_px,parent_support=parent)
         points, _ = _points(depth, retained & ~holdout, K)
+        quality=support_quality(points,minimum_short_m=config.minimum_geometry_short_m,
+            minimum_area_m2=config.minimum_geometry_area_m2,maximum_normal_ratio=config.maximum_normal_condition_ratio)
+        quality.update(label=i,initial=seed,raw_region_pixels=int((labels==i).sum()),retained_pixels=int(retained.sum()),
+            instance_fraction=float(retained.sum()/max(1,mask.sum())),support=support_audit,
+            enters_shared_orientation=False,contact_search='NOT_EVALUATED_AT_FIT_STAGE')
+        quality_records.append(quality)
         if len(points) < config.minimum_points:
+            quality['geometry_eligible']=False;quality['reasons'].append('MINIMUM_TRAINING_POINTS')
             continue
+        if not quality['geometry_eligible']:continue
         points = points[rng.choice(len(points), min(len(points), 4000), replace=False)]
         normal, offset = _tls(points)
         groups.append({'label': i, 'region': region, 'normal': normal, 'offset': offset,
-                       'fit_points': points, 'initial': seed})
+                       'fit_points': points, 'initial': seed,'quality':quality})
     output = {'mask_id': int(mask_id), 'accepted': False, 'method': 'DEPTH_CONSTRAINED_METRIC_FACES_V1',
               'geometry_version': 'DEPTH_METRIC_PATCHES_V1', 'camera_facing_faces': [],
               'final_face_validation': [], 'config': asdict(config),
               'complete_observability': 'UNRESOLVED_PHYSICAL_BOUNDARIES',
               'source_ambiguous': bool(source_ambiguous)}
+    output['face_quality']=quality_records
+    output['support_policy']='MEASUREMENT_PARENT_V2' if parent is not None else 'LEGACY_INDEPENDENT'
     output['support_capture_binding'] = _binding(depth, mask, K)
     output['frozen_support_regions'] = {str(g['label']): _support_runs(g['region']) for g in groups}
     if not groups:
@@ -335,6 +369,7 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
                      or abs(float(a['normal'] @ b['normal'])) > np.cos(np.radians(config.normal_pair_tolerance_degrees))
                      for i, a in enumerate(groups) for b in groups[i+1:])
     if compatible:
+        for g in groups:g['quality']['enters_shared_orientation']=True
         axes, solver = _orthogonal_fit(groups, config)
     else:
         axes, solver = None, {'success': False, 'reason': 'INCOMPATIBLE_INSTANCE_PLANE_NORMALS'}
@@ -344,10 +379,10 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
         region = g['region']
         audit = check_metric_plane(g['normal'], g['offset'], depth, mask, region, K,
                                    maximum_mean_m=config.maximum_mean_m, minimum_points=config.minimum_points,
-                                   erosion_px=config.erosion_px)
+                                   erosion_px=config.erosion_px,parent_support=parent)
         held = check_metric_plane(g['normal'], g['offset'], depth, mask, region & holdout, K,
                                   maximum_mean_m=config.maximum_mean_m, minimum_points=config.minimum_points,
-                                  erosion_px=0)
+                                  erosion_px=0,parent_support=parent)
         audit['spatial_holdout'] = held['interior']
         audit['label'] = g['label']
         if audit['status'] == 'PASS' and (audit['plane_residual_p95_m'] > config.maximum_p95_m or
@@ -357,7 +392,7 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
         if audit['status'] != 'PASS':
             continue
         # Lift actual observed pixels onto their measured plane, not a cuboid.
-        _, boundary_support, _ = observation_support(depth, mask, region, erosion_px=0)
+        _, boundary_support, _ = observation_support(depth, mask, region, erosion_px=0,parent_support=parent)
         _, pixels = _points(depth, boundary_support, K)
         rays = backproject_pixels(pixels, np.ones(len(pixels)), K)
         lifted = rays*(-g['offset']/(rays @ g['normal']))[:, None]
@@ -420,6 +455,7 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
                 'evidence': 'registered_metric_depth_plane', 'final_support': audit,
                 'support_label': g['label'], 'boundary_kind': 'OBSERVED_PATCH_CLASSIFIED',
                 'patch_boundary_method':patch_method,
+                'quality':g['quality'],
                 'boundary_evidence': boundaries, 'physical_corners_certified': False,
                 'axis_index': g.get('axis'), 'side': 'observed',
                 'initial_plane': g['initial']}
@@ -429,8 +465,12 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
     if (axes is not None and len(output['camera_facing_faces']) >= 2 and not source_ambiguous
             and not output.get('patch_construction_rejections')):
         _complete(output, groups, axes, all_boundary_points, depth, K, config, mask)
-    return validate_metric_record(output, depth, mask, K, maximum_mean_m=config.maximum_mean_m,
+    from time import perf_counter
+    validation_started=perf_counter()
+    result=validate_metric_record(output, depth, mask, K, maximum_mean_m=config.maximum_mean_m,
                                   minimum_points=config.minimum_points)
+    if phase_seconds is not None:phase_seconds['independent_final_validation_seconds']=perf_counter()-validation_started
+    return result
 
 
 def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minimum_points=50):
@@ -440,6 +480,8 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
     output = deepcopy(record)
     if output.get('support_capture_binding') != _binding(depth, mask, K):
         raise ValueError('METRIC_SUPPORT_CAPTURE_BINDING_MISMATCH')
+    erosion=int(record.get('config',{}).get('erosion_px',2))
+    parent=observation_support(depth,mask,mask,erosion_px=erosion)[1] if record.get('support_policy')=='MEASUREMENT_PARENT_V2' else None
     accepted = []
     audits = deepcopy(output.get('patch_construction_rejections', []))
     yy, xx = np.indices(np.asarray(depth).shape)
@@ -455,8 +497,9 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
             if np.max(np.abs(p@n+d)) > 1e-5:
                 raise ValueError('NONPLANAR_PATCH')
             region = _support_mask(output['frozen_support_regions'][str(face['support_label'])], np.asarray(depth).shape)
-            audit = check_metric_plane(n,d,depth,mask,region,K,maximum_mean_m=maximum_mean_m,minimum_points=minimum_points)
-            held = check_metric_plane(n,d,depth,mask,region & holdout,K,maximum_mean_m=maximum_mean_m,minimum_points=minimum_points,erosion_px=0)
+            if parent is not None and np.any(region & ~parent):raise ValueError('FACE_SUPPORT_ESCAPES_MEASUREMENT_PARENT')
+            audit = check_metric_plane(n,d,depth,mask,region,K,maximum_mean_m=maximum_mean_m,minimum_points=minimum_points,erosion_px=erosion,parent_support=parent)
+            held = check_metric_plane(n,d,depth,mask,region & holdout,K,maximum_mean_m=maximum_mean_m,minimum_points=minimum_points,erosion_px=0,parent_support=parent)
             audit['spatial_holdout'] = held['interior']; audit['label']=face['support_label']
             if audit['status'] != 'PASS' or held['status'] != 'PASS' or audit['plane_residual_p95_m'] > .006:
                 raise ValueError('FINAL_METRIC_PATCH_RESIDUAL')

@@ -1,0 +1,11 @@
+{
+  "artifact-locations.json": "9765f8f54683b124d6d9aa116969ea05754a28bc55d88aeadcc2c47629a79dbf",
+  "comparison.json": "dea39b29d3b5985ef6fbed31827c41efa68fb5e2642709b7dba466834fa3ac68",
+  "delivery.json": "311e1d3a6e769aaebfcdeab034f8e2198cc4cc5cf2c2be26942d8fdfe4ded7a2",
+  "frame32-lower-prompts.png": "8556b0633539f1523874636d368c4dae5ee6fadb6979da8cfe670c104b0601a9",
+  "input-diagnosis.json": "1d08c4207d27c97763efa09d300c7f9f55e24435f2efdc5f6c0e91cdd693e1c3",
+  "instance-review.json": "5a1387f78d6e86f5a673fa29ea14af1335037c37c7027f49b461156cf24e8812",
+  "mask1-geometry.png": "ebc0bf06a26bbfa4bb952dc65fb0bb8fc13701a4d8a2a47bd128990ba7ba92e0",
+  "mask1-support-faces.png": "d669322a1e797d85097d80c5a86fb14ca35cf9f9c190e8731067e9657aade1d9",
+  "rviz-frame602.png": "d58edb7a2c5a44a5493b808a110b66eaf267b06ed8cf422cea993159da02a77e"
+}

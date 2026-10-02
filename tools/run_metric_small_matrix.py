@@ -26,7 +26,11 @@ def oracle_proposal_document(payload):
     binding=payload.metadata.to_dict()
     annotations=payload.annotations
     camera=payload.camera
+    from unloading_perception.prompt_audit import validate_annotation_masks
+    if payload.instance_masks is not None:
+        validate_annotation_masks(annotations,payload.instance_masks,payload.depth.shape)
     proposals={'schema_version':'isaac_oracle_proposals_v1','coordinate_space':'source_image',
+             'bbox_convention':'xyxy half-open visible rendered mask bounds; not physical box edges',
              'source_size':list(camera['resolution']),'source':'ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL',
              'raw_image_automatic':False,'simulation_epoch':binding['sensor_epoch'],
              'frame_sequence':binding['frame_sequence'],'rgb_sha256':payload.binding.rgb_sha256,

@@ -146,16 +146,39 @@ class ResidentRuntime:
     def _sam(self, source: Path, proposal: Path, sam_image: Path, masks: Path, instances: Path,
              log: Path, timings: dict[str, float], samples: list[dict[str, Any]]) -> None:
         runtime = self
+        from sam_image_session import sam_image_session
+        from unloading_perception.working_resolution import WorkingGrid
+        from PIL import Image
+        import numpy as np
+        source_original,proposal_original=source,proposal
+        original_image=np.asarray(Image.open(source).convert('RGB'))
+        grid=WorkingGrid(*original_image.shape[:2],getattr(self.args,'processing_divisor',1))
+        proposal_data=json.loads(proposal.read_text(encoding='utf-8'))
+        if (proposal_data.get('rgb_sha256') not in (None,sha256(source)) or
+                proposal_data.get('source_size',list(original_image.shape[:2][::-1]))!=list(original_image.shape[:2][::-1])):
+            raise ValueError('SAM_PROPOSAL_IMAGE_BINDING_MISMATCH')
+        boxes=grid.boxes([p['bbox'] for p in proposal_data['instances']])
+        if grid.divisor!=1:
+            source=masks.parent/'working_rgb.png';Image.fromarray(grid.sample(original_image)).save(source)
+            mapped={**proposal_data,'source_size':[grid.width//grid.divisor,grid.height//grid.divisor],
+                'rgb_sha256':sha256(source),'parent_rgb_sha256':sha256(source_original),'working_grid':grid.to_dict(),
+                'instances':[{**p,'bbox':b.tolist()} for p,b in zip(proposal_data['instances'],boxes)]}
+            proposal=masks.parent/'working_proposals.json';proposal.write_text(json.dumps(mapped,indent=2),encoding='utf-8')
+        scope=sam_image_session(self.sam_entry,self.sam_processor,self.sam_model,self.torch,
+            identity={'rgb_sha256':sha256(source_original),'working_rgb_sha256':sha256(source),
+                'proposal_sha256':sha256(proposal_original),'model':self.args.sam_model,'upstream':self.upstream_commit,
+                'working_grid':grid.to_dict()},reuse=getattr(self.args,'sam_image_reuse',True))
+        scoped_processor,scoped_model,session=scope.__enter__()
 
         class CachedProcessor:
             @classmethod
             def from_pretrained(cls, *_args, **_kwargs):
-                return runtime.sam_processor
+                return scoped_processor
 
         class CachedModel:
             @classmethod
             def from_pretrained(cls, *_args, **_kwargs):
-                return runtime.sam_model
+                return scoped_model
 
         old_processor, old_model = self.sam_entry.SamProcessor, self.sam_entry.SamModel
         self.sam_entry.SamProcessor, self.sam_entry.SamModel = CachedProcessor, CachedModel
@@ -173,6 +196,28 @@ class ResidentRuntime:
             self._upstream_main("sam", self.sam_entry, argv, log, timings, samples)
         finally:
             self.sam_entry.SamProcessor, self.sam_entry.SamModel = old_processor, old_model
+            scope.__exit__(*sys.exc_info())
+        session['prompts_source_coordinates']=[{**r,'base_bbox':[v*grid.divisor for v in r['base_bbox']],
+            'variants':[[v*grid.divisor for v in b] for b in r['variants']]} for r in session['actual_prompts']]
+        if grid.divisor!=1:
+            import shutil
+            shutil.copyfile(masks,masks.parent/'working_cargo_masks.npz')
+            shutil.copyfile(instances,masks.parent/'working_cargo_instances.json')
+            with np.load(masks,allow_pickle=False) as archive:values={k:archive[k] for k in archive.files}
+            values['masks']=grid.restore(values['masks']);values['boxes']*=grid.divisor
+            np.savez_compressed(masks,**values)
+            result=json.loads(instances.read_text(encoding='utf-8'))
+            result.update(source=str(source_original),box_source=str(proposal_original),
+                actual_processing_source=str(source),working_grid=grid.to_dict())
+            for r in result['instances']+result['rejected']:
+                r['bbox']=[v*grid.divisor for v in r['bbox']]
+                if 'mask_area' in r:
+                    r['working_mask_area']=r['mask_area']
+                    r['mask_area']*=grid.divisor**2
+            instances.write_text(json.dumps(result,indent=2),encoding='utf-8')
+        (masks.parent/'sam_image_session.json').write_text(json.dumps(session,indent=2),encoding='utf-8')
+        timings.update(sam_image_encoding=session['image_encoding_seconds'],
+            sam_prompt_model_forward=session['model_forward_seconds'],sam_image_preprocess=session['image_preprocess_seconds'])
 
     def _moge(self, source: Path, pointmap: Path, log: Path,
               timings: dict[str, float], samples: list[dict[str, Any]]) -> None:
@@ -281,6 +326,11 @@ class ResidentRuntime:
         sam_image, masks = run_dir / "sam_crossvalidated.jpg", run_dir / "cargo_masks.npz"
         instances = run_dir / "cargo_instances.json"
         self._sam(source, proposal, sam_image, masks, instances, run_dir / "sam.log", timings, samples)
+        session_path=run_dir/'sam_image_session.json'
+        if session_path.exists():
+            session=json.loads(session_path.read_text())
+            session['request_id']=request_id;session['frame_binding']=frame_data
+            session_path.write_text(json.dumps(session,indent=2),encoding='utf-8')
         logs["sam"] = {"path": str(run_dir / "sam.log"), "sha256": sha256(run_dir / "sam.log"), "returncode": 0}
 
         python = sys.executable
@@ -296,12 +346,16 @@ class ResidentRuntime:
 
         if not self.args.comparison:
             artifacts = {p.name: {"path": str(p), "sha256": sha256(p)} for p in (sam_image, masks, instances, faces_json)}
+            session_path=run_dir/'sam_image_session.json'
+            if session_path.exists():artifacts[session_path.name]={'path':str(session_path),'sha256':sha256(session_path)}
             config = {
                 "mode": "RGBD_PRIMARY_2D_PREREQUISITES", "comparison": False,
                 "sam_model": self.args.sam_model, "sam_revision": self.args.sam_revision,
                 "proposal_sha256": sha256(proposal), "input_sha256": input_hash,
                 "capture_frame": frame_data, "result_cache_reused": False,
                 "upstream_sha": self.upstream_commit,
+                "processing_divisor": getattr(self.args,'processing_divisor',1),
+                "sam_image_reuse": getattr(self.args,'sam_image_reuse',True),
             }
             timings["request_total"] = perf_counter() - request_started
             metrics_path = run_dir / "metrics.json"
@@ -400,6 +454,8 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--output-root", type=Path, required=True)
     result.add_argument("--input-root", type=Path, action="append", required=True)
     result.add_argument("--sam-model", required=True)
+    result.add_argument('--processing-divisor',type=int,choices=(1,2),default=1)
+    result.add_argument('--sam-image-reuse',action=argparse.BooleanOptionalAction,default=True)
     result.add_argument("--sam-model-id", default="facebook/sam-vit-base")
     result.add_argument("--sam-revision", default="70c1a07f894ebb5b307fd9eaaee97b9dfc16068f")
     result.add_argument("--comparison", action="store_true", help="Explicitly run the historical monocular MoGe comparison")

@@ -1,0 +1,3893 @@
+{
+  "baseline": "5243e566cb407d542ac3e05e30f60198033a1fff",
+  "groups": [
+    {
+      "group": "frame32",
+      "module": "module_0_upper",
+      "proposal_rows": [
+        {
+          "proposal_id": 1,
+          "object": "carton_l04_c03",
+          "proposal_bbox": [
+            1358.0,
+            1841.0,
+            1366.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            1358,
+            1841,
+            1366,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 437,
+              "bbox": [
+                1358,
+                1841,
+                1366,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            1
+          ],
+          "sam_bboxes": [
+            [
+              1359,
+              1825,
+              1374,
+              1944
+            ]
+          ],
+          "numeric_ids": [
+            86
+          ]
+        },
+        {
+          "proposal_id": 2,
+          "object": "carton_l05_c00",
+          "proposal_bbox": [
+            2057.0,
+            1643.0,
+            2301.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            2057,
+            1643,
+            2301,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 68413,
+              "bbox": [
+                2057,
+                1643,
+                2301,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            2
+          ],
+          "sam_bboxes": [
+            [
+              2065,
+              1658,
+              2300,
+              1943
+            ]
+          ],
+          "numeric_ids": [
+            84
+          ]
+        },
+        {
+          "proposal_id": 3,
+          "object": "carton_l05_c01",
+          "proposal_bbox": [
+            1822.0,
+            1637.0,
+            2063.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            1822,
+            1637,
+            2063,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 67679,
+              "bbox": [
+                1822,
+                1637,
+                2063,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            3
+          ],
+          "sam_bboxes": [
+            [
+              1830,
+              1655,
+              2064,
+              1943
+            ]
+          ],
+          "numeric_ids": [
+            49
+          ]
+        },
+        {
+          "proposal_id": 4,
+          "object": "carton_l05_c02",
+          "proposal_bbox": [
+            1587.0,
+            1620.0,
+            1828.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            1587,
+            1620,
+            1828,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 67821,
+              "bbox": [
+                1587,
+                1620,
+                1828,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            4
+          ],
+          "sam_bboxes": [
+            [
+              1598,
+              1658,
+              1828,
+              1944
+            ]
+          ],
+          "numeric_ids": [
+            33
+          ]
+        },
+        {
+          "proposal_id": 5,
+          "object": "carton_l05_c03",
+          "proposal_bbox": [
+            1355.0,
+            1547.0,
+            1593.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            1355,
+            1547,
+            1593,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 67760,
+              "bbox": [
+                1355,
+                1547,
+                1593,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            5
+          ],
+          "sam_bboxes": [
+            [
+              1367,
+              1658,
+              1593,
+              1944
+            ]
+          ],
+          "numeric_ids": [
+            39
+          ]
+        },
+        {
+          "proposal_id": 6,
+          "object": "carton_l05_c04",
+          "proposal_bbox": [
+            1134.0,
+            1649.0,
+            1358.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            1134,
+            1649,
+            1358,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 64274,
+              "bbox": [
+                1134,
+                1649,
+                1358,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            6
+          ],
+          "sam_bboxes": [
+            [
+              1133,
+              1659,
+              1359,
+              1944
+            ]
+          ],
+          "numeric_ids": [
+            25
+          ]
+        },
+        {
+          "proposal_id": 7,
+          "object": "carton_l06_c00",
+          "proposal_bbox": [
+            2057.0,
+            1306.0,
+            2301.0,
+            1657.0
+          ],
+          "gt_bbox": [
+            2057,
+            1306,
+            2301,
+            1657
+          ],
+          "components": [
+            {
+              "pixels": 81294,
+              "bbox": [
+                2057,
+                1306,
+                2301,
+                1657
+              ]
+            }
+          ],
+          "sam_ids": [
+            7
+          ],
+          "sam_bboxes": [
+            [
+              2066,
+              1317,
+              2300,
+              1655
+            ]
+          ],
+          "numeric_ids": [
+            43
+          ]
+        },
+        {
+          "proposal_id": 8,
+          "object": "carton_l06_c01",
+          "proposal_bbox": [
+            1822.0,
+            1302.0,
+            2063.0,
+            1657.0
+          ],
+          "gt_bbox": [
+            1822,
+            1302,
+            2063,
+            1657
+          ],
+          "components": [
+            {
+              "pixels": 80314,
+              "bbox": [
+                1822,
+                1302,
+                2063,
+                1657
+              ]
+            }
+          ],
+          "sam_ids": [
+            8
+          ],
+          "sam_bboxes": [
+            [
+              1831,
+              1317,
+              2064,
+              1655
+            ]
+          ],
+          "numeric_ids": [
+            29
+          ]
+        },
+        {
+          "proposal_id": 9,
+          "object": "carton_l06_c02",
+          "proposal_bbox": [
+            1587.0,
+            1296.0,
+            1828.0,
+            1657.0
+          ],
+          "gt_bbox": [
+            1587,
+            1296,
+            1828,
+            1657
+          ],
+          "components": [
+            {
+              "pixels": 80233,
+              "bbox": [
+                1587,
+                1296,
+                1828,
+                1657
+              ]
+            }
+          ],
+          "sam_ids": [
+            9
+          ],
+          "sam_bboxes": [
+            [
+              1600,
+              1317,
+              1827,
+              1656
+            ]
+          ],
+          "numeric_ids": [
+            61
+          ]
+        },
+        {
+          "proposal_id": 10,
+          "object": "carton_l06_c03",
+          "proposal_bbox": [
+            1347.0,
+            1215.0,
+            1593.0,
+            1657.0
+          ],
+          "gt_bbox": [
+            1347,
+            1215,
+            1593,
+            1657
+          ],
+          "components": [
+            {
+              "pixels": 80809,
+              "bbox": [
+                1347,
+                1215,
+                1593,
+                1657
+              ]
+            }
+          ],
+          "sam_ids": [
+            10
+          ],
+          "sam_bboxes": [
+            [
+              1367,
+              1318,
+              1592,
+              1656
+            ]
+          ],
+          "numeric_ids": [
+            54
+          ]
+        },
+        {
+          "proposal_id": 11,
+          "object": "carton_l06_c04",
+          "proposal_bbox": [
+            1134.0,
+            1266.0,
+            1358.0,
+            1657.0
+          ],
+          "gt_bbox": [
+            1134,
+            1266,
+            1358,
+            1657
+          ],
+          "components": [
+            {
+              "pixels": 78480,
+              "bbox": [
+                1134,
+                1266,
+                1358,
+                1657
+              ]
+            }
+          ],
+          "sam_ids": [
+            11
+          ],
+          "sam_bboxes": [
+            [
+              1133,
+              1310,
+              1359,
+              1656
+            ]
+          ],
+          "numeric_ids": [
+            35
+          ]
+        },
+        {
+          "proposal_id": 12,
+          "object": "carton_l07_c00",
+          "proposal_bbox": [
+            2057.0,
+            972.0,
+            2301.0,
+            1315.0
+          ],
+          "gt_bbox": [
+            2057,
+            972,
+            2301,
+            1315
+          ],
+          "components": [
+            {
+              "pixels": 81468,
+              "bbox": [
+                2057,
+                972,
+                2301,
+                1315
+              ]
+            }
+          ],
+          "sam_ids": [
+            12
+          ],
+          "sam_bboxes": [
+            [
+              2066,
+              976,
+              2300,
+              1313
+            ]
+          ],
+          "numeric_ids": [
+            45
+          ]
+        },
+        {
+          "proposal_id": 13,
+          "object": "carton_l07_c01",
+          "proposal_bbox": [
+            1822.0,
+            972.0,
+            2063.0,
+            1315.0
+          ],
+          "gt_bbox": [
+            1822,
+            972,
+            2063,
+            1315
+          ],
+          "components": [
+            {
+              "pixels": 80457,
+              "bbox": [
+                1822,
+                972,
+                2063,
+                1315
+              ]
+            }
+          ],
+          "sam_ids": [
+            13
+          ],
+          "sam_bboxes": [
+            [
+              1831,
+              975,
+              2063,
+              1313
+            ]
+          ],
+          "numeric_ids": [
+            56
+          ]
+        },
+        {
+          "proposal_id": 14,
+          "object": "carton_l07_c02",
+          "proposal_bbox": [
+            1587.0,
+            972.0,
+            1828.0,
+            1315.0
+          ],
+          "gt_bbox": [
+            1587,
+            972,
+            1828,
+            1315
+          ],
+          "components": [
+            {
+              "pixels": 80384,
+              "bbox": [
+                1587,
+                972,
+                1828,
+                1315
+              ]
+            }
+          ],
+          "sam_ids": [
+            14
+          ],
+          "sam_bboxes": [
+            [
+              1599,
+              974,
+              1828,
+              1314
+            ]
+          ],
+          "numeric_ids": [
+            36
+          ]
+        },
+        {
+          "proposal_id": 15,
+          "object": "carton_l07_c03",
+          "proposal_bbox": [
+            1347.0,
+            972.0,
+            1593.0,
+            1315.0
+          ],
+          "gt_bbox": [
+            1347,
+            972,
+            1593,
+            1315
+          ],
+          "components": [
+            {
+              "pixels": 82538,
+              "bbox": [
+                1347,
+                972,
+                1593,
+                1315
+              ]
+            }
+          ],
+          "sam_ids": [
+            15
+          ],
+          "sam_bboxes": [
+            [
+              1366,
+              974,
+              1592,
+              1314
+            ]
+          ],
+          "numeric_ids": [
+            24
+          ]
+        },
+        {
+          "proposal_id": 16,
+          "object": "carton_l07_c04",
+          "proposal_bbox": [
+            1137.0,
+            972.0,
+            1349.0,
+            1313.0
+          ],
+          "gt_bbox": [
+            1137,
+            972,
+            1349,
+            1313
+          ],
+          "components": [
+            {
+              "pixels": 69411,
+              "bbox": [
+                1137,
+                972,
+                1349,
+                1313
+              ]
+            }
+          ],
+          "sam_ids": [
+            16
+          ],
+          "sam_bboxes": [
+            [
+              1137,
+              974,
+              1347,
+              1313
+            ]
+          ],
+          "numeric_ids": [
+            63,
+            82
+          ]
+        }
+      ],
+      "black": {
+        "pixels": 178457,
+        "valid_pixels": 150568,
+        "depth_quantiles_m": [
+          1.3249998092651367,
+          1.3351839780807495,
+          2.480372428894043,
+          5.179114818572998,
+          5.314641952514648
+        ],
+        "near_clip": 0.05,
+        "camera_T": [
+          [
+            0.0,
+            -0.0,
+            1.0,
+            -1.325
+          ],
+          [
+            -1.0,
+            -0.0,
+            0.0,
+            0.75
+          ],
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            2.4
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "first_hits_saved": false,
+        "black_gt_carton_pixels": 14903
+      },
+      "capture_binding": {
+        "module_id": "module_0_upper",
+        "instance_masks_sha256": "33626d7bd54608eb7459c96cf3167639f5ccf37e33a088c6c3dfb3d09e053040",
+        "robot_state": {
+          "schema_version": "isaac_robot_state_v1",
+          "source": "KINEMATIC_HOLD_READBACK",
+          "synthetic_fixture": false,
+          "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+          "robot_model_identity": "fanuc_m710id_70",
+          "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 32,
+          "sample_time": 0.5333333611488342,
+          "clock_domain": "ros_sim_time",
+          "joint_names": [
+            "J1",
+            "J2",
+            "J3",
+            "J4",
+            "J5",
+            "J6"
+          ],
+          "position_rad": [
+            -1.5707963705062866,
+            0.785456657409668,
+            0.649621844291687,
+            0.06722349673509598,
+            -1.2117502689361572,
+            -1.9415185451507568
+          ],
+          "velocity_rad_s": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "kinematic_hold": {
+            "render_without_physics_step": true,
+            "position_command_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_command_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+        "capture_id": "carton-assets-recording-01:module_0_upper:32",
+        "clock_domain": "ros_sim_time",
+        "metric_depth_dtype": "float32",
+        "metric_depth_unit": "m",
+        "metric_depth_semantics": "optical_z_m",
+        "metric_depth_sha256": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+        "capture_metadata_sha256": "d797fc4c4ffb3b5caf037edb794e506056e0498ac7db96bc0a74f4622f9ba335",
+        "schema_version": "isaac_capture_binding_v1",
+        "simulation_epoch": "carton-assets-recording-01",
+        "frame_sequence": 32,
+        "simulation_time": 0.5333333611488342,
+        "rgb_sha256": "961faed9467a4b727f03828b1d06c31e1cd24ac966df809930cf7b2e6bb4897a",
+        "camera_calibration_identity": "372d53029e85bd0e617ee1a2e523319c0d818ee4f47bc60f0d06f637ec7fe3b0",
+        "gt_snapshot_sha256": "a3718c71a45aab77b7fa82a8a7d12c95d6b1735a584dc7a5ff69339830ed394a"
+      }
+    },
+    {
+      "group": "frame32",
+      "module": "module_1_lower",
+      "proposal_rows": [
+        {
+          "proposal_id": 1,
+          "object": "carton_l00_c03",
+          "proposal_bbox": [
+            1345.0,
+            1525.0,
+            1350.0,
+            1602.0
+          ],
+          "gt_bbox": [
+            1345,
+            1525,
+            1350,
+            1602
+          ],
+          "components": [
+            {
+              "pixels": 197,
+              "bbox": [
+                1345,
+                1525,
+                1350,
+                1602
+              ]
+            }
+          ],
+          "sam_ids": [
+            1
+          ],
+          "sam_bboxes": [
+            [
+              1342,
+              1523,
+              1353,
+              1604
+            ]
+          ],
+          "numeric_ids": [
+            69
+          ]
+        },
+        {
+          "proposal_id": 2,
+          "object": "carton_l01_c00",
+          "proposal_bbox": [
+            1905.0,
+            1439.0,
+            2127.0,
+            1622.0
+          ],
+          "gt_bbox": [
+            1905,
+            1439,
+            2127,
+            1622
+          ],
+          "components": [
+            {
+              "pixels": 31180,
+              "bbox": [
+                1905,
+                1439,
+                2127,
+                1622
+              ]
+            }
+          ],
+          "sam_ids": [
+            2
+          ],
+          "sam_bboxes": [
+            [
+              1911,
+              1454,
+              2126,
+              1617
+            ]
+          ],
+          "numeric_ids": [
+            65
+          ]
+        },
+        {
+          "proposal_id": 3,
+          "object": "carton_l01_c01",
+          "proposal_bbox": [
+            1721.0,
+            1406.0,
+            1932.0,
+            1620.0
+          ],
+          "gt_bbox": [
+            1721,
+            1406,
+            1932,
+            1620
+          ],
+          "components": [
+            {
+              "pixels": 28619,
+              "bbox": [
+                1721,
+                1406,
+                1932,
+                1620
+              ]
+            }
+          ],
+          "sam_ids": [
+            3
+          ],
+          "sam_bboxes": [
+            [
+              1724,
+              1428,
+              1930,
+              1605
+            ]
+          ],
+          "numeric_ids": [
+            21
+          ]
+        },
+        {
+          "proposal_id": 4,
+          "object": "carton_l01_c02",
+          "proposal_bbox": [
+            1533.0,
+            1404.0,
+            1737.0,
+            1602.0
+          ],
+          "gt_bbox": [
+            1533,
+            1404,
+            1737,
+            1602
+          ],
+          "components": [
+            {
+              "pixels": 30002,
+              "bbox": [
+                1533,
+                1404,
+                1737,
+                1602
+              ]
+            }
+          ],
+          "sam_ids": [
+            4
+          ],
+          "sam_bboxes": [
+            [
+              1539,
+              1438,
+              1735,
+              1603
+            ]
+          ],
+          "numeric_ids": [
+            74
+          ]
+        },
+        {
+          "proposal_id": 5,
+          "object": "carton_l01_c03",
+          "proposal_bbox": [
+            1346.0,
+            1323.0,
+            1542.0,
+            1602.0
+          ],
+          "gt_bbox": [
+            1346,
+            1323,
+            1542,
+            1602
+          ],
+          "components": [
+            {
+              "pixels": 28328,
+              "bbox": [
+                1346,
+                1323,
+                1542,
+                1602
+              ]
+            }
+          ],
+          "sam_ids": [
+            5
+          ],
+          "sam_bboxes": [
+            [
+              1354,
+              1457,
+              1540,
+              1603
+            ]
+          ],
+          "numeric_ids": [
+            75
+          ]
+        },
+        {
+          "proposal_id": 6,
+          "object": "carton_l01_c04",
+          "proposal_bbox": [
+            1161.0,
+            1449.0,
+            1347.0,
+            1602.0
+          ],
+          "gt_bbox": [
+            1161,
+            1449,
+            1347,
+            1602
+          ],
+          "components": [
+            {
+              "pixels": 26488,
+              "bbox": [
+                1161,
+                1449,
+                1347,
+                1602
+              ]
+            }
+          ],
+          "sam_ids": [
+            6
+          ],
+          "sam_bboxes": [
+            [
+              1163,
+              1457,
+              1346,
+              1603
+            ]
+          ],
+          "numeric_ids": [
+            66
+          ]
+        },
+        {
+          "proposal_id": 7,
+          "object": "carton_l02_c00",
+          "proposal_bbox": [
+            1937.0,
+            1190.0,
+            2184.0,
+            1457.0
+          ],
+          "gt_bbox": [
+            1937,
+            1190,
+            2184,
+            1457
+          ],
+          "components": [
+            {
+              "pixels": 51522,
+              "bbox": [
+                1937,
+                1190,
+                2184,
+                1457
+              ]
+            }
+          ],
+          "sam_ids": [
+            7
+          ],
+          "sam_bboxes": [
+            [
+              1940,
+              1203,
+              2184,
+              1455
+            ]
+          ],
+          "numeric_ids": [
+            48
+          ]
+        },
+        {
+          "proposal_id": 8,
+          "object": "carton_l02_c01",
+          "proposal_bbox": [
+            1730.0,
+            1184.0,
+            1975.0,
+            1457.0
+          ],
+          "gt_bbox": [
+            1730,
+            1184,
+            1975,
+            1457
+          ],
+          "components": [
+            {
+              "pixels": 54203,
+              "bbox": [
+                1730,
+                1184,
+                1975,
+                1457
+              ]
+            }
+          ],
+          "sam_ids": [
+            8
+          ],
+          "sam_bboxes": [
+            [
+              1733,
+              1199,
+              1974,
+              1455
+            ]
+          ],
+          "numeric_ids": [
+            27
+          ]
+        },
+        {
+          "proposal_id": 9,
+          "object": "carton_l02_c02",
+          "proposal_bbox": [
+            1546.0,
+            1168.0,
+            1752.0,
+            1457.0
+          ],
+          "gt_bbox": [
+            1546,
+            1168,
+            1752,
+            1457
+          ],
+          "components": [
+            {
+              "pixels": 45733,
+              "bbox": [
+                1546,
+                1168,
+                1752,
+                1457
+              ]
+            }
+          ],
+          "sam_ids": [
+            9
+          ],
+          "sam_bboxes": [
+            [
+              1552,
+              1196,
+              1751,
+              1455
+            ]
+          ],
+          "numeric_ids": [
+            80,
+            81
+          ]
+        },
+        {
+          "proposal_id": 10,
+          "object": "carton_l02_c03",
+          "proposal_bbox": [
+            1349.0,
+            1090.0,
+            1559.0,
+            1457.0
+          ],
+          "gt_bbox": [
+            1349,
+            1090,
+            1559,
+            1457
+          ],
+          "components": [
+            {
+              "pixels": 51050,
+              "bbox": [
+                1349,
+                1090,
+                1559,
+                1457
+              ]
+            }
+          ],
+          "sam_ids": [
+            10
+          ],
+          "sam_bboxes": [
+            [
+              1356,
+              1206,
+              1557,
+              1456
+            ]
+          ],
+          "numeric_ids": [
+            76
+          ]
+        },
+        {
+          "proposal_id": 11,
+          "object": "carton_l02_c04",
+          "proposal_bbox": [
+            1152.0,
+            1196.0,
+            1350.0,
+            1457.0
+          ],
+          "gt_bbox": [
+            1152,
+            1196,
+            1350,
+            1457
+          ],
+          "components": [
+            {
+              "pixels": 48641,
+              "bbox": [
+                1152,
+                1196,
+                1350,
+                1457
+              ]
+            }
+          ],
+          "sam_ids": [
+            11
+          ],
+          "sam_bboxes": [
+            [
+              1153,
+              1205,
+              1350,
+              1456
+            ]
+          ],
+          "numeric_ids": [
+            67
+          ]
+        },
+        {
+          "proposal_id": 12,
+          "object": "carton_l03_c00",
+          "proposal_bbox": [
+            1980.0,
+            905.0,
+            2249.0,
+            1204.0
+          ],
+          "gt_bbox": [
+            1980,
+            905,
+            2249,
+            1204
+          ],
+          "components": [
+            {
+              "pixels": 63427,
+              "bbox": [
+                1980,
+                905,
+                2249,
+                1204
+              ]
+            }
+          ],
+          "sam_ids": [
+            12
+          ],
+          "sam_bboxes": [
+            [
+              1984,
+              912,
+              2249,
+              1202
+            ]
+          ],
+          "numeric_ids": [
+            70
+          ]
+        },
+        {
+          "proposal_id": 13,
+          "object": "carton_l03_c01",
+          "proposal_bbox": [
+            1771.0,
+            899.0,
+            2024.0,
+            1204.0
+          ],
+          "gt_bbox": [
+            1771,
+            899,
+            2024,
+            1204
+          ],
+          "components": [
+            {
+              "pixels": 62955,
+              "bbox": [
+                1771,
+                899,
+                2024,
+                1204
+              ]
+            }
+          ],
+          "sam_ids": [
+            13
+          ],
+          "sam_bboxes": [
+            [
+              1774,
+              912,
+              2023,
+              1202
+            ]
+          ],
+          "numeric_ids": [
+            93
+          ]
+        },
+        {
+          "proposal_id": 14,
+          "object": "carton_l03_c02",
+          "proposal_bbox": [
+            1562.0,
+            888.0,
+            1801.0,
+            1204.0
+          ],
+          "gt_bbox": [
+            1562,
+            888,
+            1801,
+            1204
+          ],
+          "components": [
+            {
+              "pixels": 62898,
+              "bbox": [
+                1562,
+                888,
+                1801,
+                1204
+              ]
+            }
+          ],
+          "sam_ids": [
+            14
+          ],
+          "sam_bboxes": [
+            [
+              1567,
+              914,
+              1800,
+              1202
+            ]
+          ],
+          "numeric_ids": [
+            23
+          ]
+        },
+        {
+          "proposal_id": 15,
+          "object": "carton_l03_c03",
+          "proposal_bbox": [
+            1352.0,
+            835.0,
+            1578.0,
+            1204.0
+          ],
+          "gt_bbox": [
+            1352,
+            835,
+            1578,
+            1204
+          ],
+          "components": [
+            {
+              "pixels": 62820,
+              "bbox": [
+                1352,
+                835,
+                1578,
+                1204
+              ]
+            }
+          ],
+          "sam_ids": [
+            15
+          ],
+          "sam_bboxes": [
+            [
+              1359,
+              914,
+              1576,
+              1203
+            ]
+          ],
+          "numeric_ids": [
+            78
+          ]
+        },
+        {
+          "proposal_id": 16,
+          "object": "carton_l03_c04",
+          "proposal_bbox": [
+            1142.0,
+            907.0,
+            1354.0,
+            1204.0
+          ],
+          "gt_bbox": [
+            1142,
+            907,
+            1354,
+            1204
+          ],
+          "components": [
+            {
+              "pixels": 59870,
+              "bbox": [
+                1142,
+                907,
+                1354,
+                1204
+              ]
+            }
+          ],
+          "sam_ids": [
+            16
+          ],
+          "sam_bboxes": [
+            [
+              1143,
+              916,
+              1355,
+              1203
+            ]
+          ],
+          "numeric_ids": [
+            68
+          ]
+        },
+        {
+          "proposal_id": 17,
+          "object": "carton_l04_c00",
+          "proposal_bbox": [
+            2028.0,
+            574.0,
+            2324.0,
+            913.0
+          ],
+          "gt_bbox": [
+            2028,
+            574,
+            2324,
+            913
+          ],
+          "components": [
+            {
+              "pixels": 78626,
+              "bbox": [
+                2028,
+                574,
+                2324,
+                913
+              ]
+            }
+          ],
+          "sam_ids": [
+            17
+          ],
+          "sam_bboxes": [
+            [
+              2034,
+              581,
+              2324,
+              912
+            ]
+          ],
+          "numeric_ids": [
+            91
+          ]
+        },
+        {
+          "proposal_id": 18,
+          "object": "carton_l04_c01",
+          "proposal_bbox": [
+            1805.0,
+            572.0,
+            2082.0,
+            913.0
+          ],
+          "gt_bbox": [
+            1805,
+            572,
+            2082,
+            913
+          ],
+          "components": [
+            {
+              "pixels": 78017,
+              "bbox": [
+                1805,
+                572,
+                2082,
+                913
+              ]
+            }
+          ],
+          "sam_ids": [
+            18
+          ],
+          "sam_bboxes": [
+            [
+              1808,
+              580,
+              2081,
+              912
+            ]
+          ],
+          "numeric_ids": [
+            89
+          ]
+        },
+        {
+          "proposal_id": 19,
+          "object": "carton_l04_c02",
+          "proposal_bbox": [
+            1581.0,
+            568.0,
+            1841.0,
+            913.0
+          ],
+          "gt_bbox": [
+            1581,
+            568,
+            1841,
+            913
+          ],
+          "components": [
+            {
+              "pixels": 77932,
+              "bbox": [
+                1581,
+                568,
+                1841,
+                913
+              ]
+            }
+          ],
+          "sam_ids": [
+            19
+          ],
+          "sam_bboxes": [
+            [
+              1587,
+              581,
+              1840,
+              913
+            ]
+          ],
+          "numeric_ids": [
+            90
+          ]
+        },
+        {
+          "proposal_id": 20,
+          "object": "carton_l04_c03",
+          "proposal_bbox": [
+            1353.0,
+            546.0,
+            1600.0,
+            913.0
+          ],
+          "gt_bbox": [
+            1353,
+            546,
+            1600,
+            913
+          ],
+          "components": [
+            {
+              "pixels": 77830,
+              "bbox": [
+                1353,
+                546,
+                1600,
+                913
+              ]
+            }
+          ],
+          "sam_ids": [
+            20
+          ],
+          "sam_bboxes": [
+            [
+              1365,
+              581,
+              1599,
+              913
+            ]
+          ],
+          "numeric_ids": [
+            86
+          ]
+        },
+        {
+          "proposal_id": 21,
+          "object": "carton_l04_c04",
+          "proposal_bbox": [
+            1130.0,
+            578.0,
+            1359.0,
+            913.0
+          ],
+          "gt_bbox": [
+            1130,
+            578,
+            1359,
+            913
+          ],
+          "components": [
+            {
+              "pixels": 74139,
+              "bbox": [
+                1130,
+                578,
+                1359,
+                913
+              ]
+            }
+          ],
+          "sam_ids": [
+            21
+          ],
+          "sam_bboxes": [
+            [
+              1130,
+              580,
+              1360,
+              913
+            ]
+          ],
+          "numeric_ids": [
+            83
+          ]
+        },
+        {
+          "proposal_id": 22,
+          "object": "carton_l05_c00",
+          "proposal_bbox": [
+            2081.0,
+            185.0,
+            2413.0,
+            578.0
+          ],
+          "gt_bbox": [
+            2081,
+            185,
+            2413,
+            578
+          ],
+          "components": [
+            {
+              "pixels": 99747,
+              "bbox": [
+                2081,
+                185,
+                2413,
+                578
+              ]
+            }
+          ],
+          "sam_ids": [
+            22
+          ],
+          "sam_bboxes": [
+            [
+              2090,
+              188,
+              2412,
+              578
+            ]
+          ],
+          "numeric_ids": [
+            84
+          ]
+        },
+        {
+          "proposal_id": 23,
+          "object": "carton_l05_c01",
+          "proposal_bbox": [
+            1840.0,
+            185.0,
+            2149.0,
+            578.0
+          ],
+          "gt_bbox": [
+            1840,
+            185,
+            2149,
+            578
+          ],
+          "components": [
+            {
+              "pixels": 98937,
+              "bbox": [
+                1840,
+                185,
+                2149,
+                578
+              ]
+            }
+          ],
+          "sam_ids": [
+            23
+          ],
+          "sam_bboxes": [
+            [
+              1850,
+              188,
+              2148,
+              577
+            ]
+          ],
+          "numeric_ids": [
+            49
+          ]
+        },
+        {
+          "proposal_id": 24,
+          "object": "carton_l05_c02",
+          "proposal_bbox": [
+            1600.0,
+            185.0,
+            1887.0,
+            578.0
+          ],
+          "gt_bbox": [
+            1600,
+            185,
+            1887,
+            578
+          ],
+          "components": [
+            {
+              "pixels": 98780,
+              "bbox": [
+                1600,
+                185,
+                1887,
+                578
+              ]
+            }
+          ],
+          "sam_ids": [
+            24
+          ],
+          "sam_bboxes": [
+            [
+              1609,
+              187,
+              1885,
+              577
+            ]
+          ],
+          "numeric_ids": [
+            33
+          ]
+        },
+        {
+          "proposal_id": 25,
+          "object": "carton_l05_c03",
+          "proposal_bbox": [
+            1360.0,
+            185.0,
+            1626.0,
+            578.0
+          ],
+          "gt_bbox": [
+            1360,
+            185,
+            1626,
+            578
+          ],
+          "components": [
+            {
+              "pixels": 98137,
+              "bbox": [
+                1360,
+                185,
+                1626,
+                578
+              ]
+            }
+          ],
+          "sam_ids": [
+            25
+          ],
+          "sam_bboxes": [
+            [
+              1370,
+              187,
+              1624,
+              577
+            ]
+          ],
+          "numeric_ids": [
+            39
+          ]
+        },
+        {
+          "proposal_id": 26,
+          "object": "carton_l05_c04",
+          "proposal_bbox": [
+            1116.0,
+            185.0,
+            1364.0,
+            578.0
+          ],
+          "gt_bbox": [
+            1116,
+            185,
+            1364,
+            578
+          ],
+          "components": [
+            {
+              "pixels": 94128,
+              "bbox": [
+                1116,
+                185,
+                1364,
+                578
+              ]
+            }
+          ],
+          "sam_ids": [
+            26
+          ],
+          "sam_bboxes": [
+            [
+              1117,
+              187,
+              1365,
+              577
+            ]
+          ],
+          "numeric_ids": [
+            25
+          ]
+        },
+        {
+          "proposal_id": 27,
+          "object": "carton_l06_c00",
+          "proposal_bbox": [
+            2145.0,
+            0.0,
+            2459.0,
+            191.0
+          ],
+          "gt_bbox": [
+            2145,
+            0,
+            2459,
+            191
+          ],
+          "components": [
+            {
+              "pixels": 49949,
+              "bbox": [
+                2145,
+                0,
+                2459,
+                191
+              ]
+            }
+          ],
+          "sam_ids": [
+            27
+          ],
+          "sam_bboxes": [
+            [
+              2154,
+              0,
+              2456,
+              184
+            ]
+          ],
+          "numeric_ids": [
+            43
+          ]
+        },
+        {
+          "proposal_id": 28,
+          "object": "carton_l06_c01",
+          "proposal_bbox": [
+            1883.0,
+            0.0,
+            2184.0,
+            195.0
+          ],
+          "gt_bbox": [
+            1883,
+            0,
+            2184,
+            195
+          ],
+          "components": [
+            {
+              "pixels": 49611,
+              "bbox": [
+                1883,
+                0,
+                2184,
+                195
+              ]
+            }
+          ],
+          "sam_ids": [
+            28
+          ],
+          "sam_bboxes": [
+            [
+              1891,
+              0,
+              2180,
+              185
+            ]
+          ],
+          "numeric_ids": [
+            29
+          ]
+        },
+        {
+          "proposal_id": 29,
+          "object": "carton_l06_c02",
+          "proposal_bbox": [
+            1620.0,
+            0.0,
+            1912.0,
+            199.0
+          ],
+          "gt_bbox": [
+            1620,
+            0,
+            1912,
+            199
+          ],
+          "components": [
+            {
+              "pixels": 49663,
+              "bbox": [
+                1620,
+                0,
+                1912,
+                199
+              ]
+            }
+          ],
+          "sam_ids": [
+            29
+          ],
+          "sam_bboxes": [
+            [
+              1629,
+              0,
+              1909,
+              185
+            ]
+          ],
+          "numeric_ids": [
+            61
+          ]
+        },
+        {
+          "proposal_id": 30,
+          "object": "carton_l06_c03",
+          "proposal_bbox": [
+            1359.0,
+            0.0,
+            1640.0,
+            238.0
+          ],
+          "gt_bbox": [
+            1359,
+            0,
+            1640,
+            238
+          ],
+          "components": [
+            {
+              "pixels": 50060,
+              "bbox": [
+                1359,
+                0,
+                1640,
+                238
+              ]
+            }
+          ],
+          "sam_ids": [
+            30
+          ],
+          "sam_bboxes": [
+            [
+              1376,
+              0,
+              1638,
+              184
+            ]
+          ],
+          "numeric_ids": [
+            54
+          ]
+        },
+        {
+          "proposal_id": 31,
+          "object": "carton_l06_c04",
+          "proposal_bbox": [
+            1108.0,
+            0.0,
+            1367.0,
+            187.0
+          ],
+          "gt_bbox": [
+            1108,
+            0,
+            1367,
+            187
+          ],
+          "components": [
+            {
+              "pixels": 46997,
+              "bbox": [
+                1108,
+                0,
+                1367,
+                187
+              ]
+            }
+          ],
+          "sam_ids": [
+            31
+          ],
+          "sam_bboxes": [
+            [
+              1109,
+              0,
+              1368,
+              184
+            ]
+          ],
+          "numeric_ids": [
+            35
+          ]
+        }
+      ],
+      "black": {
+        "pixels": 303094,
+        "valid_pixels": 303094,
+        "depth_quantiles_m": [
+          1.094534158706665,
+          1.0974657535552979,
+          1.2574121952056885,
+          2.0712687969207764,
+          2.276034116744995
+        ],
+        "near_clip": 0.05,
+        "camera_T": [
+          [
+            0.0,
+            -0.3420201433256687,
+            0.9396926207859084,
+            -1.325
+          ],
+          [
+            -1.0,
+            -0.0,
+            0.0,
+            0.75
+          ],
+          [
+            0.0,
+            -0.9396926207859084,
+            -0.3420201433256687,
+            1.6293411964178086
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "first_hits_saved": false,
+        "black_gt_carton_pixels": 27327
+      },
+      "capture_binding": {
+        "module_id": "module_1_lower",
+        "instance_masks_sha256": "8e9918627af58b3146d35072b0020f63f009909ecedcce46de7ba96ffbfc00ff",
+        "robot_state": {
+          "schema_version": "isaac_robot_state_v1",
+          "source": "KINEMATIC_HOLD_READBACK",
+          "synthetic_fixture": false,
+          "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+          "robot_model_identity": "fanuc_m710id_70",
+          "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 32,
+          "sample_time": 0.5333333611488342,
+          "clock_domain": "ros_sim_time",
+          "joint_names": [
+            "J1",
+            "J2",
+            "J3",
+            "J4",
+            "J5",
+            "J6"
+          ],
+          "position_rad": [
+            -1.5707963705062866,
+            0.785456657409668,
+            0.649621844291687,
+            0.06722349673509598,
+            -1.2117502689361572,
+            -1.9415185451507568
+          ],
+          "velocity_rad_s": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "kinematic_hold": {
+            "render_without_physics_step": true,
+            "position_command_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_command_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+        "capture_id": "carton-assets-recording-01:module_1_lower:32",
+        "clock_domain": "ros_sim_time",
+        "metric_depth_dtype": "float32",
+        "metric_depth_unit": "m",
+        "metric_depth_semantics": "optical_z_m",
+        "metric_depth_sha256": "67aec15192dfb1138c6b6016c54f0d8d28069a68012b813f369098d063cb60f4",
+        "capture_metadata_sha256": "37e440351a2c3e13126d19cb3860b1e9b0df0979cc626080886f43e0d66f3467",
+        "schema_version": "isaac_capture_binding_v1",
+        "simulation_epoch": "carton-assets-recording-01",
+        "frame_sequence": 32,
+        "simulation_time": 0.5333333611488342,
+        "rgb_sha256": "ff4c6c51be77292752d3afb4799e328fb09d255654fd5218e84f785414daa6fa",
+        "camera_calibration_identity": "e6318d1f0cd52b9c8a12ca8df80192da9f5a4cdf7602fcc7b5d0473cd5bf180b",
+        "gt_snapshot_sha256": "fc374aab3cb1f675b584ed6a1c34500b4f31ff72b8ca203b757c1387784dc8cd"
+      }
+    },
+    {
+      "group": "frame602",
+      "module": "module_0_upper",
+      "proposal_rows": [
+        {
+          "proposal_id": 1,
+          "object": "carton_l05_c00",
+          "proposal_bbox": [
+            2137.0,
+            1645.0,
+            2381.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            2137,
+            1645,
+            2381,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 68131,
+              "bbox": [
+                2137,
+                1645,
+                2381,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            1
+          ],
+          "sam_bboxes": [
+            [
+              2145,
+              1658,
+              2381,
+              1942
+            ]
+          ],
+          "numeric_ids": [
+            84
+          ]
+        },
+        {
+          "proposal_id": 2,
+          "object": "carton_l05_c01",
+          "proposal_bbox": [
+            1902.0,
+            1639.0,
+            2144.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            1902,
+            1639,
+            2144,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 67917,
+              "bbox": [
+                1902,
+                1639,
+                2144,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            2
+          ],
+          "sam_bboxes": [
+            [
+              1908,
+              1656,
+              2145,
+              1943
+            ]
+          ],
+          "numeric_ids": [
+            49
+          ]
+        },
+        {
+          "proposal_id": 3,
+          "object": "carton_l05_c02",
+          "proposal_bbox": [
+            1667.0,
+            1627.0,
+            1908.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            1667,
+            1627,
+            1908,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 68034,
+              "bbox": [
+                1667,
+                1627,
+                1908,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            3
+          ],
+          "sam_bboxes": [
+            [
+              1677,
+              1659,
+              1907,
+              1943
+            ]
+          ],
+          "numeric_ids": [
+            33
+          ]
+        },
+        {
+          "proposal_id": 4,
+          "object": "carton_l05_c03",
+          "proposal_bbox": [
+            1553.0,
+            1657.0,
+            1672.0,
+            1944.0
+          ],
+          "gt_bbox": [
+            1553,
+            1657,
+            1672,
+            1944
+          ],
+          "components": [
+            {
+              "pixels": 34111,
+              "bbox": [
+                1553,
+                1657,
+                1672,
+                1944
+              ]
+            }
+          ],
+          "sam_ids": [
+            4
+          ],
+          "sam_bboxes": [
+            [
+              1554,
+              1659,
+              1674,
+              1943
+            ]
+          ],
+          "numeric_ids": [
+            39
+          ]
+        },
+        {
+          "proposal_id": 5,
+          "object": "carton_l06_c00",
+          "proposal_bbox": [
+            2137.0,
+            1306.0,
+            2381.0,
+            1657.0
+          ],
+          "gt_bbox": [
+            2137,
+            1306,
+            2381,
+            1657
+          ],
+          "components": [
+            {
+              "pixels": 80989,
+              "bbox": [
+                2137,
+                1306,
+                2381,
+                1657
+              ]
+            }
+          ],
+          "sam_ids": [
+            5
+          ],
+          "sam_bboxes": [
+            [
+              2149,
+              1318,
+              2381,
+              1655
+            ]
+          ],
+          "numeric_ids": [
+            43
+          ]
+        },
+        {
+          "proposal_id": 6,
+          "object": "carton_l06_c01",
+          "proposal_bbox": [
+            1902.0,
+            1304.0,
+            2144.0,
+            1657.0
+          ],
+          "gt_bbox": [
+            1902,
+            1304,
+            2144,
+            1657
+          ],
+          "components": [
+            {
+              "pixels": 80640,
+              "bbox": [
+                1902,
+                1304,
+                2144,
+                1657
+              ]
+            }
+          ],
+          "sam_ids": [
+            6
+          ],
+          "sam_bboxes": [
+            [
+              1911,
+              1316,
+              2145,
+              1655
+            ]
+          ],
+          "numeric_ids": [
+            29
+          ]
+        },
+        {
+          "proposal_id": 7,
+          "object": "carton_l06_c02",
+          "proposal_bbox": [
+            1667.0,
+            1300.0,
+            1908.0,
+            1657.0
+          ],
+          "gt_bbox": [
+            1667,
+            1300,
+            1908,
+            1657
+          ],
+          "components": [
+            {
+              "pixels": 80579,
+              "bbox": [
+                1667,
+                1300,
+                1908,
+                1657
+              ]
+            }
+          ],
+          "sam_ids": [
+            7
+          ],
+          "sam_bboxes": [
+            [
+              1678,
+              1317,
+              1907,
+              1655
+            ]
+          ],
+          "numeric_ids": [
+            61
+          ]
+        },
+        {
+          "proposal_id": 8,
+          "object": "carton_l06_c03",
+          "proposal_bbox": [
+            1553.0,
+            1315.0,
+            1672.0,
+            1657.0
+          ],
+          "gt_bbox": [
+            1553,
+            1315,
+            1672,
+            1657
+          ],
+          "components": [
+            {
+              "pixels": 40614,
+              "bbox": [
+                1553,
+                1315,
+                1672,
+                1657
+              ]
+            }
+          ],
+          "sam_ids": [
+            8
+          ],
+          "sam_bboxes": [
+            [
+              1554,
+              1317,
+              1672,
+              1656
+            ]
+          ],
+          "numeric_ids": [
+            54
+          ]
+        },
+        {
+          "proposal_id": 9,
+          "object": "carton_l07_c00",
+          "proposal_bbox": [
+            2137.0,
+            972.0,
+            2381.0,
+            1315.0
+          ],
+          "gt_bbox": [
+            2137,
+            972,
+            2381,
+            1315
+          ],
+          "components": [
+            {
+              "pixels": 81165,
+              "bbox": [
+                2137,
+                972,
+                2381,
+                1315
+              ]
+            }
+          ],
+          "sam_ids": [
+            9
+          ],
+          "sam_bboxes": [
+            [
+              2145,
+              974,
+              2382,
+              1313
+            ]
+          ],
+          "numeric_ids": [
+            45
+          ]
+        },
+        {
+          "proposal_id": 10,
+          "object": "carton_l07_c01",
+          "proposal_bbox": [
+            1902.0,
+            972.0,
+            2144.0,
+            1315.0
+          ],
+          "gt_bbox": [
+            1902,
+            972,
+            2144,
+            1315
+          ],
+          "components": [
+            {
+              "pixels": 80801,
+              "bbox": [
+                1902,
+                972,
+                2144,
+                1315
+              ]
+            }
+          ],
+          "sam_ids": [
+            10
+          ],
+          "sam_bboxes": [
+            [
+              1910,
+              974,
+              2144,
+              1313
+            ]
+          ],
+          "numeric_ids": [
+            56
+          ]
+        },
+        {
+          "proposal_id": 11,
+          "object": "carton_l07_c02",
+          "proposal_bbox": [
+            1667.0,
+            972.0,
+            1908.0,
+            1315.0
+          ],
+          "gt_bbox": [
+            1667,
+            972,
+            1908,
+            1315
+          ],
+          "components": [
+            {
+              "pixels": 80727,
+              "bbox": [
+                1667,
+                972,
+                1908,
+                1315
+              ]
+            }
+          ],
+          "sam_ids": [
+            11
+          ],
+          "sam_bboxes": [
+            [
+              1679,
+              973,
+              1907,
+              1313
+            ]
+          ],
+          "numeric_ids": [
+            36
+          ]
+        },
+        {
+          "proposal_id": 12,
+          "object": "carton_l07_c03",
+          "proposal_bbox": [
+            1553.0,
+            972.0,
+            1672.0,
+            1315.0
+          ],
+          "gt_bbox": [
+            1553,
+            972,
+            1672,
+            1315
+          ],
+          "components": [
+            {
+              "pixels": 40728,
+              "bbox": [
+                1553,
+                972,
+                1672,
+                1315
+              ]
+            }
+          ],
+          "sam_ids": [
+            12
+          ],
+          "sam_bboxes": [
+            [
+              1553,
+              973,
+              1673,
+              1314
+            ]
+          ],
+          "numeric_ids": [
+            24
+          ]
+        }
+      ],
+      "black": {
+        "pixels": 3088074,
+        "valid_pixels": 3085524,
+        "depth_quantiles_m": [
+          0.05013063922524452,
+          0.05346572399139404,
+          0.06499999761581421,
+          2.5654139518737793,
+          5.314978122711182
+        ],
+        "near_clip": 0.05,
+        "camera_T": [
+          [
+            0.0,
+            -0.0,
+            1.0,
+            -1.325
+          ],
+          [
+            -1.0,
+            -0.0,
+            0.0,
+            0.8936974789915966
+          ],
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            2.4
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "first_hits_saved": false,
+        "black_gt_carton_pixels": 3474
+      },
+      "capture_binding": {
+        "module_id": "module_0_upper",
+        "instance_masks_sha256": "2de01d90d08139957418eadb7b3ba08f652630eecb7c596ae3b8dff7283b3860",
+        "robot_state": {
+          "schema_version": "isaac_robot_state_v1",
+          "source": "KINEMATIC_HOLD_READBACK",
+          "synthetic_fixture": false,
+          "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+          "robot_model_identity": "fanuc_m710id_70",
+          "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 602,
+          "sample_time": 10.033333856612444,
+          "clock_domain": "ros_sim_time",
+          "joint_names": [
+            "J1",
+            "J2",
+            "J3",
+            "J4",
+            "J5",
+            "J6"
+          ],
+          "position_rad": [
+            -1.5707963705062866,
+            0.785456657409668,
+            0.649621844291687,
+            0.06722349673509598,
+            -1.2117502689361572,
+            -1.9415185451507568
+          ],
+          "velocity_rad_s": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "kinematic_hold": {
+            "render_without_physics_step": true,
+            "position_command_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_command_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+        "capture_id": "carton-assets-recording-01:module_0_upper:602",
+        "clock_domain": "ros_sim_time",
+        "metric_depth_dtype": "float32",
+        "metric_depth_unit": "m",
+        "metric_depth_semantics": "optical_z_m",
+        "metric_depth_sha256": "bfc49ab1579c425ce7088e4ec68083d5a2c3b6e559ba9b2243d13955b0879c33",
+        "capture_metadata_sha256": "95fec3fa30e0f8a334a5da1e15b7a92088b4773143a78ab9965e0b52437d0f47",
+        "schema_version": "isaac_capture_binding_v1",
+        "simulation_epoch": "carton-assets-recording-01",
+        "frame_sequence": 602,
+        "simulation_time": 10.033333856612444,
+        "rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+        "camera_calibration_identity": "181d0e2399fe7bd821eb19ce5b172e801fa903b8d3c471d4c57f56be4ff10146",
+        "gt_snapshot_sha256": "d50cd1ac9b8e3cff1946db0a6c8ecf5c6d7f78d3ccf89a81eddd4ffe869d5475"
+      }
+    },
+    {
+      "group": "frame602",
+      "module": "module_1_lower",
+      "proposal_rows": [
+        {
+          "proposal_id": 1,
+          "object": "carton_l01_c00",
+          "proposal_bbox": [
+            1972.0,
+            1441.0,
+            2193.0,
+            1620.0
+          ],
+          "gt_bbox": [
+            1972,
+            1441,
+            2193,
+            1620
+          ],
+          "components": [
+            {
+              "pixels": 31090,
+              "bbox": [
+                1972,
+                1441,
+                2193,
+                1620
+              ]
+            }
+          ],
+          "sam_ids": [
+            1
+          ],
+          "sam_bboxes": [
+            [
+              1977,
+              1455,
+              2194,
+              1617
+            ]
+          ],
+          "numeric_ids": [
+            65
+          ]
+        },
+        {
+          "proposal_id": 2,
+          "object": "carton_l01_c01",
+          "proposal_bbox": [
+            1785.0,
+            1412.0,
+            1998.0,
+            1604.0
+          ],
+          "gt_bbox": [
+            1785,
+            1412,
+            1998,
+            1604
+          ],
+          "components": [
+            {
+              "pixels": 28488,
+              "bbox": [
+                1785,
+                1412,
+                1998,
+                1604
+              ]
+            }
+          ],
+          "sam_ids": [
+            2
+          ],
+          "sam_bboxes": [
+            [
+              1788,
+              1455,
+              1997,
+              1603
+            ]
+          ],
+          "numeric_ids": [
+            21
+          ]
+        },
+        {
+          "proposal_id": 3,
+          "object": "carton_l01_c02",
+          "proposal_bbox": [
+            1597.0,
+            1412.0,
+            1803.0,
+            1602.0
+          ],
+          "gt_bbox": [
+            1597,
+            1412,
+            1803,
+            1602
+          ],
+          "components": [
+            {
+              "pixels": 29926,
+              "bbox": [
+                1597,
+                1412,
+                1803,
+                1602
+              ]
+            }
+          ],
+          "sam_ids": [
+            3
+          ],
+          "sam_bboxes": [
+            [
+              1601,
+              1438,
+              1801,
+              1603
+            ]
+          ],
+          "numeric_ids": [
+            74
+          ]
+        },
+        {
+          "proposal_id": 4,
+          "object": "carton_l01_c03",
+          "proposal_bbox": [
+            1553.0,
+            1455.0,
+            1608.0,
+            1602.0
+          ],
+          "gt_bbox": [
+            1553,
+            1455,
+            1608,
+            1602
+          ],
+          "components": [
+            {
+              "pixels": 7192,
+              "bbox": [
+                1553,
+                1455,
+                1608,
+                1602
+              ]
+            }
+          ],
+          "sam_ids": [
+            4
+          ],
+          "sam_bboxes": [
+            [
+              1553,
+              1457,
+              1607,
+              1603
+            ]
+          ],
+          "numeric_ids": [
+            75
+          ]
+        },
+        {
+          "proposal_id": 5,
+          "object": "carton_l02_c00",
+          "proposal_bbox": [
+            2004.0,
+            1192.0,
+            2255.0,
+            1457.0
+          ],
+          "gt_bbox": [
+            2004,
+            1192,
+            2255,
+            1457
+          ],
+          "components": [
+            {
+              "pixels": 51522,
+              "bbox": [
+                2004,
+                1192,
+                2255,
+                1457
+              ]
+            }
+          ],
+          "sam_ids": [
+            5
+          ],
+          "sam_bboxes": [
+            [
+              2008,
+              1204,
+              2255,
+              1455
+            ]
+          ],
+          "numeric_ids": [
+            48
+          ]
+        },
+        {
+          "proposal_id": 6,
+          "object": "carton_l02_c01",
+          "proposal_bbox": [
+            1796.0,
+            1186.0,
+            2045.0,
+            1457.0
+          ],
+          "gt_bbox": [
+            1796,
+            1186,
+            2045,
+            1457
+          ],
+          "components": [
+            {
+              "pixels": 54522,
+              "bbox": [
+                1796,
+                1186,
+                2045,
+                1457
+              ]
+            }
+          ],
+          "sam_ids": [
+            6
+          ],
+          "sam_bboxes": [
+            [
+              1800,
+              1201,
+              2046,
+              1455
+            ]
+          ],
+          "numeric_ids": [
+            27
+          ]
+        },
+        {
+          "proposal_id": 7,
+          "object": "carton_l02_c02",
+          "proposal_bbox": [
+            1613.0,
+            1176.0,
+            1822.0,
+            1457.0
+          ],
+          "gt_bbox": [
+            1613,
+            1176,
+            1822,
+            1457
+          ],
+          "components": [
+            {
+              "pixels": 45628,
+              "bbox": [
+                1613,
+                1176,
+                1822,
+                1457
+              ]
+            }
+          ],
+          "sam_ids": [
+            7
+          ],
+          "sam_bboxes": [
+            [
+              1619,
+              1189,
+              1821,
+              1454
+            ]
+          ],
+          "numeric_ids": [
+            80,
+            81
+          ]
+        },
+        {
+          "proposal_id": 8,
+          "object": "carton_l02_c03",
+          "proposal_bbox": [
+            1553.0,
+            1204.0,
+            1629.0,
+            1457.0
+          ],
+          "gt_bbox": [
+            1553,
+            1204,
+            1629,
+            1457
+          ],
+          "components": [
+            {
+              "pixels": 16753,
+              "bbox": [
+                1553,
+                1204,
+                1629,
+                1457
+              ]
+            }
+          ],
+          "sam_ids": [
+            8
+          ],
+          "sam_bboxes": [
+            [
+              1554,
+              1205,
+              1627,
+              1456
+            ]
+          ],
+          "numeric_ids": [
+            76
+          ]
+        },
+        {
+          "proposal_id": 9,
+          "object": "carton_l03_c00",
+          "proposal_bbox": [
+            2051.0,
+            905.0,
+            2325.0,
+            1204.0
+          ],
+          "gt_bbox": [
+            2051,
+            905,
+            2325,
+            1204
+          ],
+          "components": [
+            {
+              "pixels": 63439,
+              "bbox": [
+                2051,
+                905,
+                2325,
+                1204
+              ]
+            }
+          ],
+          "sam_ids": [
+            9
+          ],
+          "sam_bboxes": [
+            [
+              2055,
+              912,
+              2326,
+              1202
+            ]
+          ],
+          "numeric_ids": [
+            70
+          ]
+        },
+        {
+          "proposal_id": 10,
+          "object": "carton_l03_c01",
+          "proposal_bbox": [
+            1842.0,
+            901.0,
+            2100.0,
+            1204.0
+          ],
+          "gt_bbox": [
+            1842,
+            901,
+            2100,
+            1204
+          ],
+          "components": [
+            {
+              "pixels": 63121,
+              "bbox": [
+                1842,
+                901,
+                2100,
+                1204
+              ]
+            }
+          ],
+          "sam_ids": [
+            10
+          ],
+          "sam_bboxes": [
+            [
+              1845,
+              912,
+              2100,
+              1202
+            ]
+          ],
+          "numeric_ids": [
+            93
+          ]
+        },
+        {
+          "proposal_id": 11,
+          "object": "carton_l03_c02",
+          "proposal_bbox": [
+            1633.0,
+            895.0,
+            1877.0,
+            1204.0
+          ],
+          "gt_bbox": [
+            1633,
+            895,
+            1877,
+            1204
+          ],
+          "components": [
+            {
+              "pixels": 62906,
+              "bbox": [
+                1633,
+                895,
+                1877,
+                1204
+              ]
+            }
+          ],
+          "sam_ids": [
+            11
+          ],
+          "sam_bboxes": [
+            [
+              1638,
+              914,
+              1875,
+              1202
+            ]
+          ],
+          "numeric_ids": [
+            23
+          ]
+        },
+        {
+          "proposal_id": 12,
+          "object": "carton_l03_c03",
+          "proposal_bbox": [
+            1553.0,
+            913.0,
+            1653.0,
+            1204.0
+          ],
+          "gt_bbox": [
+            1553,
+            913,
+            1653,
+            1204
+          ],
+          "components": [
+            {
+              "pixels": 25943,
+              "bbox": [
+                1553,
+                913,
+                1653,
+                1204
+              ]
+            }
+          ],
+          "sam_ids": [
+            12
+          ],
+          "sam_bboxes": [
+            [
+              1553,
+              914,
+              1653,
+              1203
+            ]
+          ],
+          "numeric_ids": [
+            78
+          ]
+        },
+        {
+          "proposal_id": 13,
+          "object": "carton_l04_c00",
+          "proposal_bbox": [
+            2105.0,
+            574.0,
+            2406.0,
+            913.0
+          ],
+          "gt_bbox": [
+            2105,
+            574,
+            2406,
+            913
+          ],
+          "components": [
+            {
+              "pixels": 78625,
+              "bbox": [
+                2105,
+                574,
+                2406,
+                913
+              ]
+            }
+          ],
+          "sam_ids": [
+            13
+          ],
+          "sam_bboxes": [
+            [
+              2110,
+              581,
+              2406,
+              912
+            ]
+          ],
+          "numeric_ids": [
+            91
+          ]
+        },
+        {
+          "proposal_id": 14,
+          "object": "carton_l04_c01",
+          "proposal_bbox": [
+            1881.0,
+            572.0,
+            2164.0,
+            913.0
+          ],
+          "gt_bbox": [
+            1881,
+            572,
+            2164,
+            913
+          ],
+          "components": [
+            {
+              "pixels": 78223,
+              "bbox": [
+                1881,
+                572,
+                2164,
+                913
+              ]
+            }
+          ],
+          "sam_ids": [
+            14
+          ],
+          "sam_bboxes": [
+            [
+              1884,
+              580,
+              2163,
+              913
+            ]
+          ],
+          "numeric_ids": [
+            89
+          ]
+        },
+        {
+          "proposal_id": 15,
+          "object": "carton_l04_c02",
+          "proposal_bbox": [
+            1656.0,
+            570.0,
+            1922.0,
+            913.0
+          ],
+          "gt_bbox": [
+            1656,
+            570,
+            1922,
+            913
+          ],
+          "components": [
+            {
+              "pixels": 77973,
+              "bbox": [
+                1656,
+                570,
+                1922,
+                913
+              ]
+            }
+          ],
+          "sam_ids": [
+            15
+          ],
+          "sam_bboxes": [
+            [
+              1662,
+              581,
+              1921,
+              913
+            ]
+          ],
+          "numeric_ids": [
+            90
+          ]
+        },
+        {
+          "proposal_id": 16,
+          "object": "carton_l04_c03",
+          "proposal_bbox": [
+            1553.0,
+            578.0,
+            1681.0,
+            913.0
+          ],
+          "gt_bbox": [
+            1553,
+            578,
+            1681,
+            913
+          ],
+          "components": [
+            {
+              "pixels": 38722,
+              "bbox": [
+                1553,
+                578,
+                1681,
+                913
+              ]
+            }
+          ],
+          "sam_ids": [
+            16
+          ],
+          "sam_bboxes": [
+            [
+              1554,
+              580,
+              1681,
+              913
+            ]
+          ],
+          "numeric_ids": [
+            86
+          ]
+        },
+        {
+          "proposal_id": 17,
+          "object": "carton_l05_c00",
+          "proposal_bbox": [
+            2163.0,
+            185.0,
+            2502.0,
+            578.0
+          ],
+          "gt_bbox": [
+            2163,
+            185,
+            2502,
+            578
+          ],
+          "components": [
+            {
+              "pixels": 99758,
+              "bbox": [
+                2163,
+                185,
+                2502,
+                578
+              ]
+            }
+          ],
+          "sam_ids": [
+            17
+          ],
+          "sam_bboxes": [
+            [
+              2172,
+              187,
+              2501,
+              577
+            ]
+          ],
+          "numeric_ids": [
+            84
+          ]
+        },
+        {
+          "proposal_id": 18,
+          "object": "carton_l05_c01",
+          "proposal_bbox": [
+            1922.0,
+            185.0,
+            2238.0,
+            578.0
+          ],
+          "gt_bbox": [
+            1922,
+            185,
+            2238,
+            578
+          ],
+          "components": [
+            {
+              "pixels": 99230,
+              "bbox": [
+                1922,
+                185,
+                2238,
+                578
+              ]
+            }
+          ],
+          "sam_ids": [
+            18
+          ],
+          "sam_bboxes": [
+            [
+              1932,
+              188,
+              2235,
+              577
+            ]
+          ],
+          "numeric_ids": [
+            49
+          ]
+        },
+        {
+          "proposal_id": 19,
+          "object": "carton_l05_c02",
+          "proposal_bbox": [
+            1681.0,
+            185.0,
+            1976.0,
+            578.0
+          ],
+          "gt_bbox": [
+            1681,
+            185,
+            1976,
+            578
+          ],
+          "components": [
+            {
+              "pixels": 98829,
+              "bbox": [
+                1681,
+                185,
+                1976,
+                578
+              ]
+            }
+          ],
+          "sam_ids": [
+            19
+          ],
+          "sam_bboxes": [
+            [
+              1692,
+              187,
+              1974,
+              577
+            ]
+          ],
+          "numeric_ids": [
+            33
+          ]
+        },
+        {
+          "proposal_id": 20,
+          "object": "carton_l05_c03",
+          "proposal_bbox": [
+            1553.0,
+            185.0,
+            1714.0,
+            578.0
+          ],
+          "gt_bbox": [
+            1553,
+            185,
+            1714,
+            578
+          ],
+          "components": [
+            {
+              "pixels": 57482,
+              "bbox": [
+                1553,
+                185,
+                1714,
+                578
+              ]
+            }
+          ],
+          "sam_ids": [
+            20
+          ],
+          "sam_bboxes": [
+            [
+              1554,
+              187,
+              1713,
+              577
+            ]
+          ],
+          "numeric_ids": [
+            39
+          ]
+        },
+        {
+          "proposal_id": 21,
+          "object": "carton_l06_c00",
+          "proposal_bbox": [
+            2234.0,
+            0.0,
+            2552.0,
+            191.0
+          ],
+          "gt_bbox": [
+            2234,
+            0,
+            2552,
+            191
+          ],
+          "components": [
+            {
+              "pixels": 49935,
+              "bbox": [
+                2234,
+                0,
+                2552,
+                191
+              ]
+            }
+          ],
+          "sam_ids": [
+            21
+          ],
+          "sam_bboxes": [
+            [
+              2242,
+              0,
+              2549,
+              185
+            ]
+          ],
+          "numeric_ids": [
+            43
+          ]
+        },
+        {
+          "proposal_id": 22,
+          "object": "carton_l06_c01",
+          "proposal_bbox": [
+            1972.0,
+            0.0,
+            2277.0,
+            193.0
+          ],
+          "gt_bbox": [
+            1972,
+            0,
+            2277,
+            193
+          ],
+          "components": [
+            {
+              "pixels": 49727,
+              "bbox": [
+                1972,
+                0,
+                2277,
+                193
+              ]
+            }
+          ],
+          "sam_ids": [
+            22
+          ],
+          "sam_bboxes": [
+            [
+              1980,
+              0,
+              2274,
+              185
+            ]
+          ],
+          "numeric_ids": [
+            29
+          ]
+        },
+        {
+          "proposal_id": 23,
+          "object": "carton_l06_c02",
+          "proposal_bbox": [
+            1709.0,
+            0.0,
+            2004.0,
+            197.0
+          ],
+          "gt_bbox": [
+            1709,
+            0,
+            2004,
+            197
+          ],
+          "components": [
+            {
+              "pixels": 49634,
+              "bbox": [
+                1709,
+                0,
+                2004,
+                197
+              ]
+            }
+          ],
+          "sam_ids": [
+            23
+          ],
+          "sam_bboxes": [
+            [
+              1717,
+              0,
+              2002,
+              184
+            ]
+          ],
+          "numeric_ids": [
+            61
+          ]
+        },
+        {
+          "proposal_id": 24,
+          "object": "carton_l06_c03",
+          "proposal_bbox": [
+            1553.0,
+            0.0,
+            1732.0,
+            185.0
+          ],
+          "gt_bbox": [
+            1553,
+            0,
+            1732,
+            185
+          ],
+          "components": [
+            {
+              "pixels": 31563,
+              "bbox": [
+                1553,
+                0,
+                1732,
+                185
+              ]
+            }
+          ],
+          "sam_ids": [
+            24
+          ],
+          "sam_bboxes": [
+            [
+              1554,
+              0,
+              1730,
+              184
+            ]
+          ],
+          "numeric_ids": [
+            54
+          ]
+        }
+      ],
+      "black": {
+        "pixels": 3271266,
+        "valid_pixels": 3271266,
+        "depth_quantiles_m": [
+          0.050130631774663925,
+          0.0536075159907341,
+          0.06499999761581421,
+          1.352884292602539,
+          1.6966108083724976
+        ],
+        "near_clip": 0.05,
+        "camera_T": [
+          [
+            0.0,
+            -0.3420201433256687,
+            0.9396926207859084,
+            -1.325
+          ],
+          [
+            -1.0,
+            -0.0,
+            0.0,
+            0.8936974789915966
+          ],
+          [
+            0.0,
+            -0.9396926207859084,
+            -0.3420201433256687,
+            1.6293411964178086
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "first_hits_saved": false,
+        "black_gt_carton_pixels": 8185
+      },
+      "capture_binding": {
+        "module_id": "module_1_lower",
+        "instance_masks_sha256": "6fe1886d8924cc2add82d3fb2cd35434b5fd6cd12fe31027c37a1a950edf5139",
+        "robot_state": {
+          "schema_version": "isaac_robot_state_v1",
+          "source": "KINEMATIC_HOLD_READBACK",
+          "synthetic_fixture": false,
+          "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+          "robot_model_identity": "fanuc_m710id_70",
+          "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 602,
+          "sample_time": 10.033333856612444,
+          "clock_domain": "ros_sim_time",
+          "joint_names": [
+            "J1",
+            "J2",
+            "J3",
+            "J4",
+            "J5",
+            "J6"
+          ],
+          "position_rad": [
+            -1.5707963705062866,
+            0.785456657409668,
+            0.649621844291687,
+            0.06722349673509598,
+            -1.2117502689361572,
+            -1.9415185451507568
+          ],
+          "velocity_rad_s": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "kinematic_hold": {
+            "render_without_physics_step": true,
+            "position_command_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_command_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+        "capture_id": "carton-assets-recording-01:module_1_lower:602",
+        "clock_domain": "ros_sim_time",
+        "metric_depth_dtype": "float32",
+        "metric_depth_unit": "m",
+        "metric_depth_semantics": "optical_z_m",
+        "metric_depth_sha256": "fc2cfaeeb0ce162b1a468807ed8270fa4260275e1f3eae10c26954eb32d8fd27",
+        "capture_metadata_sha256": "7a302fc8a452e761b0f6b4bbaf7fc44353f2cf6dd7d7593484ce0dd49fffa91e",
+        "schema_version": "isaac_capture_binding_v1",
+        "simulation_epoch": "carton-assets-recording-01",
+        "frame_sequence": 602,
+        "simulation_time": 10.033333856612444,
+        "rgb_sha256": "01524015b8c3687664e4db7eca0e93fd2ebba690e428f3886e55055d43bf1501",
+        "camera_calibration_identity": "0c7fd06ae7cca85f729058fa518bdcad4176a19c60e787737462c3f31cd69057",
+        "gt_snapshot_sha256": "3d309846c14fda9c2c4c34ee7eb623ff36d5c8df20f49b7f1cfaea6ab572ee16"
+      }
+    }
+  ],
+  "exact_occluding_entity": "UNKNOWN: no saved per-pixel first-hit IDs for continuous historical frames",
+  "confirmed_capture_defect": "camera-only virtual translation did not move VisionRig USD body or its manifest transforms; future virtual whole-rig helper CPU tested, no new Isaac run"
+}
