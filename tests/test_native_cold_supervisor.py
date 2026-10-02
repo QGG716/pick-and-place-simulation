@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import subprocess
 from types import SimpleNamespace
 
 import pytest
@@ -89,6 +90,8 @@ def controlled_run(tmp_path, monkeypatch):
         calls.append("plan")
         assert "--native-cold" in command and "--actual-state" in command and "--initial-ready" in command
         assert not any(arg in command for arg in ("--history-source", "--reuse-motion", "--fixed-history-fixture"))
+        if scenario.get("planning_timeout"):
+            raise subprocess.TimeoutExpired(command, kwargs["timeout"])
         _json(output / "plan/motion.json", dict(complete_trajectory_status="PASS", native_cold=True,
             require_native_motion=True))
         _json(output / "plan/delivery.json", dict(simulation_execution_ready=True,
@@ -170,6 +173,19 @@ def test_stop_write_failure_still_terminates_and_reaps_world(controlled_run, mon
     assert supervisor.main() == 1
     assert case.world.terminated and case.world.poll() is not None
     assert case.calls.count("world_launch") == case.calls.count("plan") == 1
+
+
+def test_planner_watchdog_retains_elapsed_time_and_stops_same_world(controlled_run):
+    case = controlled_run
+    case.scenario["planning_timeout"] = True
+    assert supervisor.main() == 1
+    status = json.loads((case.output / "run.json").read_text())
+    assert status["exception_type"] == "TimeoutExpired"
+    assert status["timings"]["planning_and_delivery_wall_s"] >= 0.
+    assert "isaac_execution_wall_s" not in status["timings"]
+    assert status["cleanup_completed"] is True and case.world.poll() is not None
+    assert status["effective_budgets_s"]["planner_process"] < status["effective_budgets_s"]["paused_world"]
+    assert (status["world_launches"], status["planning_requests"], status["execution_requests"]) == (1, 1, 0)
 
 
 @pytest.mark.parametrize("result", [None, dict(workflow_cycle_completed=False, qualification_passed=False)])

@@ -17,6 +17,7 @@
 #include <set>
 #include "clearance.h"
 #include "process_policy.h"
+#include "scene_geometry.h"
 
 using J = nlohmann::json;
 namespace mtc = moveit::task_constructor;
@@ -142,6 +143,7 @@ struct NativeTaskSession {
   std::map<std::string,std::shared_ptr<NativeStageRecord>> records;
   std::vector<std::string> active;
   J initial_q,initial_world;
+  std::string target_id;
   size_t solve_calls=0,backtracks=0;
 };
 class Worker {
@@ -158,27 +160,46 @@ class Worker {
   static bool samePose(const Eigen::Isometry3d& a,const Eigen::Isometry3d& b) {return (a.matrix()-b.matrix()).cwiseAbs().maxCoeff()<=1e-7;}
   // Between adjacent motions only the selected target may change ownership.
   // Its actual pose must be identical on both sides of attach/release.
-  void checkTransition(const planning_scene::PlanningSceneConstPtr& before,const planning_scene::PlanningSceneConstPtr& after,const J& req) {
+  void checkTransition(const planning_scene::PlanningSceneConstPtr& before,const planning_scene::PlanningSceneConstPtr& after,const J& req,
+      const std::string& location="mtc_compute") {
     const std::string target=req.at("clearance_policy").at("target_id");
     auto ids=before->getWorld()->getObjectIds(),next=after->getWorld()->getObjectIds();
     std::set<std::string> a(ids.begin(),ids.end()),b(next.begin(),next.end());a.erase(target);b.erase(target);
     if(a!=b) throw std::runtime_error("NATIVE_TASK_WORLD_IDENTITY_CHANGED");
     for(const auto& id:a) {
       const auto x=before->getWorld()->getObject(id),y=after->getWorld()->getObject(id);
-      if(x->shapes_.size()!=y->shapes_.size() || x->shape_poses_.size()!=y->shape_poses_.size()) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
+      if(x->shapes_.size()!=y->shapes_.size() || x->global_shape_poses_.size()!=x->shapes_.size() ||
+         y->global_shape_poses_.size()!=y->shapes_.size()) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
       for(size_t i=0;i<x->shapes_.size();++i) {
         if(x->shapes_[i]->type!=shapes::BOX || y->shapes_[i]->type!=shapes::BOX) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_UNSUPPORTED");
         const auto* sx=static_cast<const shapes::Box*>(x->shapes_[i].get());const auto* sy=static_cast<const shapes::Box*>(y->shapes_[i].get());
         for(int k=0;k<3;++k) if(sx->size[k]!=sy->size[k]) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
-        if(!samePose(x->shape_poses_[i],y->shape_poses_[i])) throw std::runtime_error("NATIVE_TASK_WORLD_POSE_CHANGED");
+        if(!samePose(m710::worldShapePose(*x,i),m710::worldShapePose(*y,i))) throw std::runtime_error("NATIVE_TASK_WORLD_POSE_CHANGED");
       }
     }
     auto targetPose=[&](const planning_scene::PlanningSceneConstPtr& s) {
       const auto* attached=s->getCurrentState().getAttachedBody(target);const auto world=s->getWorld()->getObject(target);
       if(bool(attached)==bool(world)) throw std::runtime_error("NATIVE_TASK_TARGET_OWNERSHIP_INVALID");
-      return attached?attached->getGlobalCollisionBodyTransforms().at(0):world->shape_poses_.at(0);
+      return attached?attached->getGlobalCollisionBodyTransforms().at(0):m710::worldShapePose(*world,0);
     };
-    if(!samePose(targetPose(before),targetPose(after))) throw std::runtime_error("NATIVE_TASK_ATTACHMENT_TELEPORT");
+    const auto before_pose=targetPose(before),after_pose=targetPose(after);
+    if(!samePose(before_pose,after_pose)) {
+      auto describe=[&](const planning_scene::PlanningSceneConstPtr& scene,const Eigen::Isometry3d& cached) {
+        auto fresh=scene->getCurrentState();fresh.update();fresh.updateCollisionBodyTransforms();
+        std::vector<double> q;fresh.copyJointGroupPositions("manipulator",q);
+        const auto* body=fresh.getAttachedBody(target);
+        J detail={{"q",q},{"in_world",scene->getWorld()->hasObject(target)},{"attached",bool(body)},
+          {"cached_world_pose",serial(cached)},{"flange_world_pose",serial(fresh.getGlobalLinkTransform("flange"))}};
+        if(body) {detail["updated_world_pose"]=serial(body->getGlobalCollisionBodyTransforms().at(0));
+          detail["shape_pose_in_link"]=serial(body->getShapePosesInLinkFrame().at(0));}
+        return detail;
+      };
+      std::cerr<<J({{"diagnostic","NATIVE_TASK_ATTACHMENT_TELEPORT"},{"location",location},{"task_id",req.value("task_id",std::string())},
+        {"stage_id",req.value("stage_id",std::string())},{"parent_stage_id",req.value("parent_stage_id",std::string())},{"target_id",target},
+        {"maximum_matrix_difference",(before_pose.matrix()-after_pose.matrix()).cwiseAbs().maxCoeff()},
+        {"before",describe(before,before_pose)},{"after",describe(after,after_pose)}}).dump()<<std::endl;
+      throw std::runtime_error("NATIVE_TASK_ATTACHMENT_TELEPORT");
+    }
     auto targetSize=[&](const planning_scene::PlanningSceneConstPtr& s) {
       const auto* attached=s->getCurrentState().getAttachedBody(target);const auto world=s->getWorld()->getObject(target);
       const auto& shapes=attached?attached->getShapes():world->shapes_;
@@ -192,18 +213,22 @@ class Worker {
     if(req.contains("path") || req.contains("stages")) throw std::runtime_error("NATIVE_COLD_EXTERNAL_PATH_FORBIDDEN");
     m710::validateNativeMotionScope(req);
     const std::string task_id=req.at("task_id"),stage_id=req.at("stage_id");
-    const std::string parent=req.value("parent_stage_id",std::string());
+    if(!req.contains("parent_stage_id") || !req.at("parent_stage_id").is_string())
+      throw std::runtime_error("NATIVE_TASK_EXPLICIT_PARENT_REQUIRED");
+    const std::string parent=req.at("parent_stage_id");
     if(task_id.empty() || stage_id.empty()) throw std::runtime_error("NATIVE_TASK_ID_REQUIRED");
+    if(parent.empty() && !req.at("attachment").is_null()) throw std::runtime_error("NATIVE_COLD_INITIAL_ATTACHMENT_FORBIDDEN");
     if(!tasks.count(task_id)) {
       if(!parent.empty()) throw std::runtime_error("NATIVE_TASK_PARENT_MISSING");
-      if(!req.at("attachment").is_null()) throw std::runtime_error("NATIVE_COLD_INITIAL_ATTACHMENT_FORBIDDEN");
       if(tasks.size()>=8) throw std::runtime_error("NATIVE_TASK_SESSION_CAPACITY");
       auto session=std::make_unique<NativeTaskSession>();session->task=std::make_unique<mtc::Task>("",false);
       session->task->setRobotModel(model);session->task->setName(task_id);session->initial_q=req.at("q_start");session->initial_world=req.at("world");
+      session->target_id=req.at("clearance_policy").at("target_id");
       auto initial=std::make_unique<mtc::stages::FixedState>("frozen_actual_initial_state");initial->setState(scene);session->task->add(std::move(initial));
       tasks[task_id]=std::move(session);
     }
     auto& session=*tasks.at(task_id);
+    if(req.at("clearance_policy").at("target_id")!=session.target_id) throw std::runtime_error("NATIVE_TASK_TARGET_ID_CHANGED");
     if(session.records.count(stage_id)) throw std::runtime_error("NATIVE_STAGE_ID_REUSED");
     if(session.records.size()>=4096) throw std::runtime_error("NATIVE_TASK_STAGE_CAPACITY");
     std::vector<std::string> ancestors;std::string cursor=parent;std::set<std::string> seen;
@@ -215,7 +240,7 @@ class Worker {
     if(ancestors.empty()) {
       if(req.at("q_start")!=session.initial_q || req.at("world")!=session.initial_world) throw std::runtime_error("NATIVE_TASK_INITIAL_STATE_CHANGED");
     } else {
-      const auto& previous=*session.records.at(parent);checkTransition(previous.end,scene,req);
+      const auto& previous=*session.records.at(parent);checkTransition(previous.end,scene,req,"stage_registration");
       if(previous.process && req.contains("process_policy") && !req.at("process_policy").at("initial_proximity").is_null()) {
         const auto terminal=previous.process->terminalProximity();const auto& next=req.at("process_policy").at("initial_proximity");
         if(!terminal.is_null() && terminal.value("fully_released",false) && !next.value("fully_released",false))
@@ -352,8 +377,9 @@ public:
     if(op=="task_audit") {
       const std::string id=req.at("task_id");if(!tasks.count(id)) throw std::runtime_error("NATIVE_TASK_UNKNOWN");
       const auto& session=*tasks.at(id);const auto ids=req.at("stage_ids").get<std::vector<std::string>>();
+      if(req.contains("target_id") && req.at("target_id")!=session.target_id) throw std::runtime_error("NATIVE_TASK_TARGET_ID_CHANGED");
       if(ids.empty()) throw std::runtime_error("NATIVE_TASK_EMPTY");
-      std::string previous;size_t edges=0,attach=0,release=0;J stages=J::array();
+      std::string previous;size_t edges=0,attach=0,release=0;J stages=J::array(),terminal_transition=nullptr;
       bool was_attached=false;std::set<std::string> phase_names;
       for(const auto& stage_id:ids) {
         if(!session.records.count(stage_id)) throw std::runtime_error("NATIVE_TASK_STAGE_UNKNOWN");
@@ -367,10 +393,44 @@ public:
         edges+=motion_edges;stages.push_back({{"stage_id",stage_id},{"parent_stage_id",r.parent},{"request_id",r.request.at("request_id")},
           {"native_solver_calls",r.result.at("native_solver_calls")},{"nonzero_motion_edges",motion_edges},{"native_cache_reuses",r.cache_hits}});previous=stage_id;
       }
+      if(req.contains("terminal_state_request")) {
+        auto terminal=req.at("terminal_state_request");
+        for(const auto* key:{"path","probe_path","probe_states","stages","q_goal","goal_pose","pipeline_id","planner_id"})
+          if(terminal.contains(key)) throw std::runtime_error("NATIVE_TASK_TERMINAL_MOTION_INPUT_FORBIDDEN");
+        if(terminal.at("identity")!=identity || terminal.at("task_id")!=id || terminal.at("parent_stage_id")!=previous ||
+           terminal.at("clearance_policy").at("target_id")!=session.target_id)
+          throw std::runtime_error("NATIVE_TASK_TERMINAL_IDENTITY_MISMATCH");
+        const std::string terminal_stage=terminal.at("stage");
+        if((terminal_stage!="withdrawal" && terminal_stage!="residence") || !terminal.at("attachment").is_null() ||
+           !terminal.contains("process_policy") || terminal.at("clearance_policy").at("schema")!="m710_native_process_clearance_v1")
+          throw std::runtime_error("NATIVE_TASK_TERMINAL_RELEASE_CONTEXT_REQUIRED");
+        const auto& last=*session.records.at(previous);std::vector<double> last_q;
+        last.end->getCurrentState().copyJointGroupPositions("manipulator",last_q);
+        if(terminal.at("q_start").get<std::vector<double>>()!=last_q) throw std::runtime_error("NATIVE_TASK_TERMINAL_STATE_CHANGED");
+        // Use the same bound-model, scene import, clearance and process gates
+        // as any native state validation. This operation cannot call a solver.
+        terminal["op"]="validate";const auto before_calls=calls;const J checked=run(terminal);
+        if(calls!=before_calls) throw std::runtime_error("NATIVE_TASK_TERMINAL_UNEXPECTED_SOLVER_CALL");
+        if(checked.at("status")!="SUCCESS" || !checked.at("native_valid").get<bool>() || !checked.at("process_valid").get<bool>())
+          return {{"status","NATIVE_TASK_TERMINAL_STATE_REJECTED"},{"task_id",id},{"complete_task",false},{"terminal_validation",checked}};
+        // run(validate) left base bound to exactly the validated world. Its
+        // current state is immutable import state; copy the native endpoint,
+        // remove only this target's attachment, then compare both scenes.
+        auto final_scene=base->diff();final_scene->decoupleParent();auto final_state=last.end->getCurrentState();
+        final_state.clearAttachedBody(session.target_id);final_state.update();final_scene->setCurrentState(final_state);
+        checkTransition(last.end,final_scene,terminal,"terminal_release");
+        if(final_scene->getCurrentState().hasAttachedBody(session.target_id) || !final_scene->getWorld()->hasObject(session.target_id))
+          throw std::runtime_error("NATIVE_TASK_TERMINAL_TARGET_OWNERSHIP_INVALID");
+        const bool released=last.end->getCurrentState().hasAttachedBody(session.target_id);
+        if(released) ++release;was_attached=false;
+        terminal_transition={{"event",released?"RELEASE":"NONE"},{"zero_motion",true},{"native_solver_calls",0},
+          {"parent_stage_id",previous},{"target_id",session.target_id},{"q_rad",last_q},{"native_state_validation",checked}};
+      }
       if(attach!=1 || release!=1 || was_attached || !phase_names.count("contact") || !phase_names.count("extraction"))
         throw std::runtime_error("NATIVE_TASK_CYCLE_EVENTS_INCOMPLETE");
       return {{"status","SUCCESS"},{"task_id",id},{"generated_during_task",true},{"stage_ids",ids},{"complete_task",true},
         {"stage_sources",stages},{"nonzero_native_motion_edges",edges},{"attach_transitions",attach},{"release_transitions",release},
+        {"terminal_transition",terminal_transition},
         {"task_solve_calls",session.solve_calls},{"task_backtracks",session.backtracks},{"external_path_imports",0}};
     }
     auto state=base->getCurrentState();
@@ -443,8 +503,13 @@ public:
         permissions.push_back(found && allowed==collision_detection::AllowedCollision::ALWAYS);
       }
       std::vector<const moveit::core::AttachedBody*> bodies, base_bodies;scene->getCurrentState().getAttachedBodies(bodies);base->getCurrentState().getAttachedBodies(base_bodies);
+      const std::string target=req.contains("clearance_policy") ? req.at("clearance_policy").value("target_id",attached_id) : attached_id;
+      const auto world_target=scene->getWorld()->getObject(target);const auto* attached_target=scene->getCurrentState().getAttachedBody(target);
+      J target_pose=nullptr;
+      if(world_target && !world_target->global_shape_poses_.empty()) target_pose=serial(m710::worldShapePose(*world_target,0));
+      if(attached_target && !attached_target->getGlobalCollisionBodyTransforms().empty()) target_pose=serial(attached_target->getGlobalCollisionBodyTransforms().at(0));
       return {{"status","SUCCESS"},{"world_count",scene->getWorld()->size()},{"attached_count",bodies.size()},
-        {"target_in_world",!attached_id.empty() && scene->getWorld()->hasObject(attached_id)},
+        {"target_id",target},{"target_in_world",bool(world_target)},{"target_attached",bool(attached_target)},{"target_world_pose",target_pose},
         {"permissions",permissions},{"base_attached_count",base_bodies.size()}};
     }
     std::shared_ptr<m710::Clearance> clearance;

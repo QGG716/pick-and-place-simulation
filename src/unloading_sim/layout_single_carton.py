@@ -2289,6 +2289,7 @@ def run_layout_single_carton_audit(
     }
     if backend == "moveit2" and trajectory_connector is not None:
         result["native_backend_evidence"] = list(trajectory_connector.native_evidence)
+        result["native_ik_evidence"] = list(trajectory_connector.native_ik_evidence)
         result["authority_path_checks"] = list(trajectory_connector.authority_path_evidence)
         trajectory_connector.native.close()
     if native_cold:

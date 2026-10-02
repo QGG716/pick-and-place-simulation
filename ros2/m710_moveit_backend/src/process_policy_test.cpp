@@ -1,5 +1,6 @@
 // Ordered-contact counterexamples. Synthetic model; not a carton-run claim.
 #include "process_policy.h"
+#include "scene_geometry.h"
 #include <urdf_parser/urdf_parser.h>
 #include <srdfdom/model.h>
 #include <iostream>
@@ -40,8 +41,36 @@ J request() {
   return {{"stage","extraction"},{"process_policy",spec},{"world",J::array({box("neighbor",.2)})},{"allowed_pairs",J::array()},
     {"clearance_policy",{{"source_policy",source},{"compliant_tool_links",{"cup"}},{"target_id","target"}}}};
 }
+void checkWorldShapePoses() {
+  auto s=scene();
+  auto imported=object(box("frame_probe",.07));
+  imported.pose.orientation.w=1.;imported.pose.position.x=.30;
+  require(s->processCollisionObjectMsg(imported),"WORLD_FRAME_IMPORT");
+  const auto original=s->getWorld()->getObject("frame_probe");
+  const auto world_pose=m710::worldShapePose(*original,0);
+  require(std::abs(world_pose.translation().x()-.37)<1e-12 &&
+    std::abs(original->shape_poses_.at(0).translation().x()-.07)<1e-12,"WORLD_SHAPE_USES_OBJECT_AND_LOCAL_POSES");
+  imported.pose.position.x=.40;
+  require(s->processCollisionObjectMsg(imported),"MOVED_WORLD_FRAME_IMPORT");
+  const auto moved=s->getWorld()->getObject("frame_probe");
+  require((original->shape_poses_.at(0).matrix()-moved->shape_poses_.at(0).matrix()).norm()<1e-12 &&
+    std::abs(m710::worldShapePose(*moved,0).translation().x()-.47)<1e-12 &&
+    (world_pose.matrix()-m710::worldShapePose(*moved,0).matrix()).cwiseAbs().maxCoeff()>1e-7,
+    "NON_TARGET_OBJECT_FRAME_MOTION_IS_VISIBLE");
+  s->getWorldNonConst()->removeObject("frame_probe");
+  auto& state=s->getCurrentStateNonConst();state.setJointGroupPositions("manipulator",std::vector<double>{.11});state.update();
+  moveit_msgs::msg::AttachedCollisionObject attachment;attachment.link_name="flange";
+  attachment.object=object(box("frame_probe",.26));attachment.object.header.frame_id="flange";
+  require(s->processAttachedCollisionObjectMsg(attachment),"WORLD_FRAME_ATTACH");
+  const auto attached_pose=s->getCurrentState().getAttachedBody("frame_probe")->getGlobalCollisionBodyTransforms().at(0);
+  require((world_pose.matrix()-attached_pose.matrix()).cwiseAbs().maxCoeff()<1e-12,"WORLD_TO_ATTACHED_POSE_PRESERVED");
+  s->getCurrentStateNonConst().clearAttachedBody("frame_probe");
+  imported.pose.position.x=.30;require(s->processCollisionObjectMsg(imported),"WORLD_FRAME_RELEASE");
+  require((attached_pose.matrix()-m710::worldShapePose(*s->getWorld()->getObject("frame_probe"),0).matrix()).cwiseAbs().maxCoeff()<1e-12,
+    "ATTACHED_TO_WORLD_POSE_PRESERVED");
+}
 int main(int argc,char** argv) {
-  rclcpp::init(argc,argv);auto s=scene();auto req=request();m710::ProcessPolicy p(s,req);
+  rclcpp::init(argc,argv);checkWorldShapePoses();auto s=scene();auto req=request();m710::ProcessPolicy p(s,req);
   require(p.check(s->getCurrentState()),"INITIAL_STACK_CONTACT_ALLOWED");
   auto q=s->getCurrentState();q.setJointGroupPositions("manipulator",std::vector<double>{.011});q.update();
   require(!p.check(q) && p.last_failure.at("reason")=="GROSS_PLANNED_STACK_PENETRATION","GROSS_STACK_REJECTED");
@@ -59,5 +88,5 @@ int main(int argc,char** argv) {
   req["process_policy"]["support_names"]={"neighbor"};rejected=false;
   try {m710::ProcessPolicy free_support(scene(),req);} catch(const std::exception& e) {rejected=std::string(e.what())=="NATIVE_FREE_SPACE_SUPPORT_PERMISSION_FORBIDDEN";}
   require(rejected,"FREE_TRANSIT_SUPPORT_PERMISSION_REJECTED");
-  std::cout<<J({{"status","PASS"},{"scope","synthetic_native_process_policy_only"},{"cases",7}}).dump()<<std::endl;rclcpp::shutdown();
+  std::cout<<J({{"status","PASS"},{"scope","synthetic_native_process_policy_and_scene_frames_only"},{"cases",11}}).dump()<<std::endl;rclcpp::shutdown();
 }

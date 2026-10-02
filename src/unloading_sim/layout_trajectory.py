@@ -2673,7 +2673,7 @@ class LayoutTrajectoryConnector:
         waypoints.append(gate)
         evidence.update(outward=outward.tolist(), stack_support_plane_m=front,
                         full_tool_radius_m=radius, transition_plane_m=plane)
-        path = [np.asarray(start).copy()]
+        path = [np.asanyarray(start).copy()]
         for index, goal in enumerate(waypoints):
             origin = self.robot.fk(path[-1])
             _, distance, angle = pose_error(origin, goal)
@@ -3119,7 +3119,7 @@ class LayoutTrajectoryConnector:
         """
         evidence = {"stage": "transit", "method": "BOUNDED_EXISTING_CARTESIAN_WITH_OUTWARD_ESCAPE",
                     "attempts": [], "shared_sample_budget": self.budget.local_transit_cartesian_sample_budget}
-        prefix = [np.asarray(start, dtype=float).copy()]
+        prefix = [np.asanyarray(start, dtype=float).copy()]
         allocated = self._local_transit_remaining
 
         def shortage(required):

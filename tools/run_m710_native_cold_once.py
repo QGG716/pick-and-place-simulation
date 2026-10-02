@@ -87,7 +87,11 @@ def main():
         source_commit=args.source_commit, worker_sha256=binary_hash,
         random_seed=71070, target="carton_l07_c02", carton_count=40,
         planning_requests=0, world_launches=0, execution_requests=0,
-        status="PREPARING", real_machine_commands=False, timings={})
+        status="PREPARING", real_machine_commands=False, timings={},
+        effective_budgets_s=dict(shared_task=args.task_budget_s, native_stage=args.stage_budget_s,
+            ipc_watchdog=args.ipc_timeout_s, initialization=1200.,
+            planner_process=args.task_budget_s+600., paused_world=args.task_budget_s+900.,
+            execution_process=3600.))
     write(output / "source-manifest.json", sources)
     write(output / "run.json", status)
     environment = os.environ.copy()
@@ -100,6 +104,7 @@ def main():
     world = None
     ready = None
     world_log = None
+    initialization_started = planning_started = execution_started = None
     def publish(phase, **fields):
         status.update(status=phase, wall_seconds=time.monotonic()-started, **fields)
         write(output / "run.json", status)
@@ -189,6 +194,11 @@ def main():
                 physical_qualification_passed=(status["isaac_result"] or {}).get("qualification_passed"))
         return 0 if completed else 1
     except BaseException as exc:
+        for name, phase_start in (("initialization_wall_s", initialization_started),
+                ("planning_and_delivery_wall_s", planning_started),
+                ("isaac_execution_wall_s", execution_started)):
+            if phase_start is not None and name not in status["timings"]:
+                status["timings"][name] = time.monotonic()-phase_start
         publish("BLOCKED", reason=str(exc), exception_type=type(exc).__name__)
         if world is not None and world.poll() is None:
             try:
@@ -205,6 +215,8 @@ def main():
                     except subprocess.TimeoutExpired:
                         world.kill()
                         world.wait(timeout=30.)
+        publish("BLOCKED", cleanup_completed=True,
+                world_exit_code=None if world is None else world.returncode)
         return 1
     finally:
         if world_log is not None:

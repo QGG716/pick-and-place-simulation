@@ -25,12 +25,22 @@ stage caches. The input state and full private scene/policy remain bound to each
 record. There is no JSON path import. Each context permits eight task sessions;
 each task has a finite 4096-record limit, including failed candidates.
 
+The parent field must be present and a string: omitted/null parents are not
+interpreted as a frozen root. Every empty-parent branch must still use the
+original unattached state and world. A session binds its selected target ID;
+changing targets within that session, including at audit, is rejected. A child
+can reference only a successful native stage stored under that same task ID.
+Selecting another branch requires its explicit native stage identity; matching
+joint values alone does not select a parent.
+
 All strict stages carry `m710_native_process_v1` and
 `m710_native_process_clearance_v1`. The process policy binds the target's current
 pose/size, 72 eligible/commanded/contact mask bits, full-ring geometry, named
 stack objects, named supports, and any initial-proximity state. The target
 exists exactly once in world or attachment. Adjacent stages preserve all other
 world objects and preserve target geometry/pose through attach/release.
+World shape poses are read from MoveIt's `global_shape_poses_`; the similarly
+named `shape_poses_` are object-relative and cannot establish this continuity.
 
 The candidate-private ACM exempts only exact pairs also covered by process
 validation: approved flexible lips against named non-target cartons; target
@@ -48,12 +58,21 @@ and constrained process stages reject OMPL. Pilz LIN uses the bound task TCP
 link including rotation and offset. A zero-motion support/attachment/release
 event does not manufacture a solver call.
 
-`task_audit` receives only the task ID and ordered native stage IDs. It verifies
+`task_audit` receives the task ID and ordered native stage IDs. It verifies
 the native parent chain, real motion records, and one attach/release transition
 on a complete contact/extraction cycle. The caller independently audits all
 final nonzero edges against these outputs, including any resampling or timing
 transformation. This audit cannot replace execution qualification. `compose`
 is rejected when strict native motion is requested.
+
+A final zero-motion withdrawal may supply `terminal_state_request` to the
+audit. It must name the last native stage as parent, retain its exact joint
+state and task/model/target identity, and describe an unattached withdrawal or
+residence scene. Goal/path/planner inputs are forbidden. The worker validates
+that single state with its existing clearance and process gates, then checks
+the same-target ownership conversion and unchanged non-target scene against
+the native endpoint. Only this checked transition can count a terminal RELEASE;
+the event text alone cannot. It creates no trajectory or solver invocation.
 
 Checks are deterministic finite sampling with conservative geometry; evidence
 explicitly records `continuous_swept_proof=false`. Native planning success does

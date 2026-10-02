@@ -42,9 +42,16 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output",type=Path,required=True)
     parser.add_argument("--stage-seconds",type=float,default=30.)
+    mode=parser.add_mutually_exclusive_group()
+    mode.add_argument("--parent-chain-only",action="store_true",
+        help="This round's finite real-worker explicit-parent, ownership and identity probes only")
+    mode.add_argument("--ownership-only",action="store_true",
+        help="Fresh sparse single-carton ownership and identity probes; no earlier probe inputs")
     parser.add_argument("--ompl-counterexample",action="store_true",
         help="Bounded synthetic obstacle counterexample generated from this probe's new PTP output")
     args=parser.parse_args()
+    if (args.parent_chain_only or args.ownership_only) and args.ompl_counterexample:
+        parser.error("targeted parent/ownership modes exclude the broad OMPL counterexample matrix")
     args.output.parent.mkdir(parents=True,exist_ok=True)
     if args.output.exists():
         parser.error("output already exists; retain previous development evidence")
@@ -87,6 +94,13 @@ def main():
         add("independent_configured_home",home_failure is None,failure=home_failure)
         if home_failure is not None:
             raise RuntimeError("CONFIGURED_HOME_REJECTED")
+        if args.parent_chain_only or args.ownership_only:
+            from m710_native_parent_probe import run_parent_chain_probe,run_ownership_only_probe
+            run_probe=run_ownership_only_probe if args.ownership_only else run_parent_chain_probe
+            run_probe(c,scene,q,policy,add,report)
+            report["status"]="PASS" if all(item["passed"] for item in report["checks"]) else "FAIL"
+            return 0 if report["status"]=="PASS" else 1
+        q=c.native_root_state(q,scene.all_obstacles,stage="pregrasp")
         stream=c.native_ik_stream(c.robot.fk(q),[q],scene.all_obstacles,seed=71070,stage="pregrasp")
         solved=next(stream,None)
         add("native_ik_current_home",solved is not None,evidence=stream.evidence(),

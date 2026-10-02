@@ -1,11 +1,12 @@
 """Pure contract regressions. Fabricated records are never native run evidence."""
 from copy import deepcopy
+from dataclasses import replace
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
-from unloading_sim.moveit2_backend import MoveItLayoutConnector, MoveItUnavailable, digest
+from unloading_sim.moveit2_backend import MoveItLayoutConnector, MoveItUnavailable, NativeStageState, digest
 from unloading_sim.moveit2_native_cold import audit_native_motion_coverage, verify_native_cold_segment
 from unloading_sim.stage_motion_policy import GenerationMethod, MotionPurpose
 
@@ -78,6 +79,40 @@ def connector():
     c._cold_counters=dict(history_enabled=False,history_inputs_read=0,legacy_motion_generator_calls=0,forbidden_entry_attempts=0)
     c.budget=SimpleNamespace(stage_connection_attempts=3)
     return c
+
+
+def receipt_connector():
+    """Small independent identity model; never native execution evidence."""
+    c=connector();c.native_task_id="task-now";c.native_identity={"model":"test-model"}
+    c.native_scene=SimpleNamespace(snapshot={"robot":{"q_rad":[0.]*6}},all_obstacles=[])
+    c._native_receipts={};c._native_zero_state_requests={}
+    c._native_root_receipt=None;c._native_final_selection=None
+    c.native_verified=[];c.native_semantic_events=[]
+    target=dict(id="target",size=[.4,.3,.2],category="carton",pose=np.eye(4).tolist())
+    def build(start,goal,obstacles,*,stage,attachment=None,**kwargs):
+        owned_target=deepcopy(target)
+        if attachment is not None: owned_target["category"]="payload"
+        return dict(task_id=c.native_task_id,identity=c.native_identity,stage=stage,
+            q_start=np.asarray(start).tolist(),q_goal=np.asarray(goal).tolist(),
+            world=deepcopy(obstacles),attachment=None if attachment is None else {"id":"target"},
+            process_policy=dict(target_id="target",target=owned_target))
+    c._build_native_request=build
+    c._path_failure=lambda *a,**k:None
+    c.robot=SimpleNamespace(fk=lambda q:np.eye(4))
+    return c
+
+
+def accepted_state(c,start,end,stage_id,*,stage="pregrasp",attachment=None):
+    """Emulate only post-authority receipt issuance with numeric test doubles."""
+    request=c._build_native_request(start,end,[],stage=stage,attachment=attachment)
+    parent,context,_=c._native_parent_for_request(start,request)
+    path=[np.asarray(start).tolist(),np.asarray(end).tolist()]
+    source=record(path,stage_id,request_id="request-"+stage_id)
+    request.update(stage_id=stage_id,parent_stage_id=parent.stage_id)
+    source.update(parent_stage_id=parent.stage_id,submitted_request=request,
+        request_fingerprint=digest(request),constraints_sha256=digest({k:v for k,v in request.items() if k!="q_start"}))
+    c.native_verified.append(source)
+    return c._native_issue_state(end,stage_id,context)
 
 
 @pytest.mark.parametrize("name,args",[
@@ -258,16 +293,16 @@ def test_connected_pose_carries_exact_native_endpoint_into_next_stage(stage,load
     """
     from contextlib import nullcontext
     from unloading_sim.ik import IKResult
-    c=connector();c.native_task_id="task-now"
-    initial=np.zeros(6)
+    c=receipt_connector()
+    initial=c.native_root_state(np.zeros(6),[])
     ik_goal=np.array([.1,.1,.2,.1,.1,1.25])
     emitted=ik_goal.copy()
     emitted[2]=np.nextafter(emitted[2],np.inf)
     emitted[5]+=8.881784197001252e-16
     assert emitted[2]-ik_goal[2]==2.7755575615628914e-17
     assert emitted[5]-ik_goal[5]==8.881784197001252e-16
-    native_path=[initial.copy(),emitted.copy()]
-    c.native_verified=[record([point.tolist() for point in native_path])]
+    endpoint=accepted_state(c,initial,emitted,"stage-1",stage=stage)
+    native_path=[initial.copy(),endpoint]
     before=deepcopy(c.native_verified)
     c._statistics={name:0 for name in ("trajectory_ik_wall_seconds","ik_calls","ik_seeds_attempted",
         "ik_iterations_consumed","cartesian_samples","state_validations","state_cache_hits")}
@@ -299,7 +334,9 @@ def test_connected_pose_carries_exact_native_endpoint_into_next_stage(stage,load
     np.testing.assert_array_equal(selected,emitted)
     np.testing.assert_array_equal(path[-1],emitted)
     assert c._native_parent_stage_id(selected)=="stage-1"
-    assert c._native_parent_stage_id(ik_goal)==""  # No tolerance was added to parent lookup.
+    with pytest.raises(MoveItUnavailable,match="NATIVE_PARENT_IDENTITY_MISSING"):
+        c._native_parent_stage_id(ik_goal)
+    assert selected.native_receipt==endpoint.native_receipt
     assert evidence["returned_endpoint"]["source"]=="NATIVE_PATH_FINAL_SAMPLE"
     assert evidence["returned_endpoint"]["differs_from_ik_goal"] is True
     coverage=audit_native_motion_coverage(path,c.native_verified,task_id=c.native_task_id)
@@ -307,3 +344,197 @@ def test_connected_pose_carries_exact_native_endpoint_into_next_stage(stage,load
     assert c.native_verified==before  # Native points and receipt remain untouched.
     selected[0]+=1.
     np.testing.assert_array_equal(path[-1],emitted)  # The next-stage state owns a copy.
+    with pytest.raises(MoveItUnavailable,match="NATIVE_PARENT_ENDPOINT_CHANGED"):
+        c._native_parent_stage_id(selected)
+
+
+def test_equal_q_distinct_selected_stage_and_backtracking_are_explicit():
+    c=receipt_connector();root=c.native_root_state(np.zeros(6),[])
+    a=accepted_state(c,root,np.full(6,.1),"A")
+    b=accepted_state(c,root,np.full(6,.1),"B")
+    np.testing.assert_array_equal(a,b)
+    assert a.native_receipt["receipt_id"]!=b.native_receipt["receipt_id"]
+    # The saved A branch wins even though B is the latest and exactly equal.
+    selected=a.copy()
+    request=c._build_native_request(selected,np.full(6,.2),[],stage="contact")
+    assert c._native_parent_for_request(selected,request)[0].stage_id=="A"
+    child=accepted_state(c,selected,np.full(6,.2),"C",stage="contact")
+    assert [r["stage_id"] for r in c._native_selected_records(child)]==["A","C"]
+    assert [r["stage_id"] for r in c._native_selected_records(b)]==["B"]
+    assert c._native_parent_stage_id(root)==""
+    assert c._native_parent_stage_id(a)=="A"
+    # Same entire path from B must never enter the selected A→C source audit.
+    sources=c._native_selected_records(child)
+    coverage=audit_native_motion_coverage([root,a,child],sources,task_id=c.native_task_id)
+    assert coverage["passed"] and [r["stage_id"] for r in coverage["records"]]==["A","C"]
+    full=[root.copy()];stages={}
+    c._append_stage(full,stages,"contact",[root,a,child])
+    assert c._native_final_selection[0].native_receipt==child.native_receipt
+    assert c._native_final_selection[1]==digest([q.tolist() for q in full])
+
+
+def test_zero_motion_preserves_parent_and_registers_attach_and_release():
+    c=receipt_connector();root=c.native_root_state(np.zeros(6),[])
+    contact=accepted_state(c,root,np.full(6,.1),"contact",stage="contact")
+    # Real inherited zero support-release branch, followed by zero place and
+    # withdrawal. The native stage identity never resets to the task root.
+    c.collision_policy=SimpleNamespace(allows_stack_planning_contact=lambda stage:True)
+    attachment=SimpleNamespace()
+    attached,failure,_=c._support_release(contact,attachment,[],(),None,seed=1)
+    assert failure is None
+    assert c._native_parent_stage_id(attached[-1])=="contact"
+    assert attached[-1].native_receipt["context"]["attached"] is True
+    placed=c._native_zero_state(attached[-1],[],stage="place",attachment=attachment)
+    withdrawn=c._native_zero_state(placed,[],stage="withdrawal")
+    assert c._native_parent_stage_id(withdrawn)=="contact"
+    assert withdrawn.native_receipt["context"]["attached"] is False
+    transitions=[e["ownership_transition"] for e in c.native_semantic_events
+        if e["event"]=="ZERO_MOTION_STATE_CONTINUATION"]
+    assert transitions==["ATTACH",None,"RELEASE"]
+    assert len(c.native_verified)==1
+    terminal=c._native_terminal_state_request(withdrawn)
+    assert terminal["task_id"]==c.native_task_id and terminal["parent_stage_id"]=="contact"
+    assert terminal["q_start"]==withdrawn.tolist() and terminal["attachment"] is None
+    assert not {"q_goal","goal_pose","pipeline_id","planner_id","path","stages"}&terminal.keys()
+    terminal["q_start"][0]=99.
+    assert c._native_terminal_state_request(withdrawn)["q_start"]==withdrawn.tolist()
+    assert c._native_terminal_state_request(contact) is None
+    with pytest.raises(MoveItUnavailable,match="TERMINAL_PROCESS_UNFINISHED"):
+        c._native_terminal_state_request(placed)
+    # The saved contact identity can be selected again after release backtrack.
+    attached_again=c._native_zero_state(contact,[],stage="support-release",attachment=attachment)
+    assert attached_again.native_receipt["context"]["attached"] is True
+
+
+@pytest.mark.parametrize("key,value",[("parent_stage_id","unselected"),("task_id","other-task"),
+                                     ("q_start",[.10000000000000002]*6)])
+def test_terminal_zero_state_cannot_change_selected_parent_or_endpoint(key,value):
+    c=receipt_connector();root=c.native_root_state(np.zeros(6),[])
+    contact=accepted_state(c,root,np.full(6,.1),"contact",stage="contact")
+    attached=c._native_zero_state(contact,[],stage="support-release",attachment=object())
+    placed=c._native_zero_state(attached,[],stage="place",attachment=object())
+    withdrawn=c._native_zero_state(placed,[],stage="withdrawal")
+    c._native_zero_state_requests[withdrawn._native_receipt.receipt_id][key]=value
+    with pytest.raises(MoveItUnavailable,match="TERMINAL_STATE_IDENTITY_CHANGED"):
+        c._native_terminal_state_request(withdrawn)
+
+
+def test_checked_departure_wait_registers_release_at_the_selected_native_state(monkeypatch):
+    from unloading_sim.layout_trajectory import LayoutTrajectoryConnector
+    c=receipt_connector();root=c.native_root_state(np.zeros(6),[])
+    contact=accepted_state(c,root,np.full(6,.1),"contact",stage="contact")
+    attached=c._native_zero_state(contact,[],stage="support-release",attachment=object())
+    placed=c._native_zero_state(attached,[],stage="place",attachment=object())
+    monkeypatch.setattr(LayoutTrajectoryConnector,"_departure",
+        lambda self,start,*args,**kwargs:([start.copy()],None,{"model":"checked-wait-test-double"}))
+    target=deepcopy(placed.native_receipt["context"]["target"])
+    path,failure,_=c._departure(placed,target,[],np.array([0.,-1.,0.]),seed=1)
+    assert failure is None and len(path)==1 and len(c.native_verified)==1
+    assert c._native_parent_stage_id(path[-1])=="contact"
+    terminal=c._native_terminal_state_request(path[-1])
+    assert terminal["stage"]=="withdrawal" and terminal["attachment"] is None
+
+
+@pytest.mark.parametrize("entry",["transit","cartesian"])
+def test_zero_motion_entry_keeps_explicit_stage_identity(entry):
+    c=receipt_connector();root=c.native_root_state(np.zeros(6),[])
+    state=accepted_state(c,root,np.full(6,.1),"selected")
+    if entry=="transit":
+        path,failure,_=c._transit(state,state.copy(),[],purpose=MotionPurpose.FREE_APPROACH,
+            seed=1,iteration_budget=1,stage="pregrasp")
+    else:
+        path,failure,_=c._cartesian(state,np.eye(4),[],purpose=MotionPurpose.FREE_APPROACH,
+            seed=1,stage="pregrasp")
+    assert failure is None and len(path)==1
+    assert c._native_parent_stage_id(path[-1])=="selected"
+    assert len(c.native_verified)==1
+
+
+@pytest.mark.parametrize("mutate,reason",[
+    (lambda c,q:np.asarray(q),"IDENTITY_MISSING"),
+    (lambda c,q:q+.001,"ENDPOINT_CHANGED"),
+    (lambda c,q:q[:3],"ENDPOINT_CHANGED"),
+    (lambda c,q:NativeStageState(q,replace(q._native_receipt,task_id="different-task")),"TASK_MISMATCH"),
+    (lambda c,q:NativeStageState(q,replace(q._native_receipt,stage_id="different-stage")),"IDENTITY_UNISSUED"),
+])
+def test_missing_modified_or_forged_parent_identity_fails_closed(mutate,reason):
+    c=receipt_connector();root=c.native_root_state(np.zeros(6),[])
+    state=accepted_state(c,root,np.full(6,.1),"A")
+    with pytest.raises(MoveItUnavailable,match=reason):
+        c._native_parent_stage_id(mutate(c,state))
+
+
+def test_parent_identity_rejects_stale_model_scene_source_and_new_task():
+    for mutation,reason in (
+        (lambda c:c.native_identity.update(model="changed"),"MODEL_CONTEXT_CHANGED"),
+        (lambda c:c.native_scene.snapshot.update(changed=True),"FROZEN_SCENE_CHANGED"),
+        (lambda c:c.native_verified[0].update(authoritative_status="REJECTED"),"SOURCE_MISMATCH"),
+        (lambda c:setattr(c,"native_task_id","new-task"),"TASK_MISMATCH")):
+        c=receipt_connector();root=c.native_root_state(np.zeros(6),[])
+        state=accepted_state(c,root,np.full(6,.1),"A")
+        mutation(c)
+        with pytest.raises(MoveItUnavailable,match=reason):
+            c._native_parent_stage_id(state)
+
+
+def test_parent_context_rejects_wrong_target_world_pose_and_ownership():
+    c=receipt_connector();root=c.native_root_state(np.zeros(6),[])
+    state=accepted_state(c,root,np.full(6,.1),"A")
+    request=c._build_native_request(state,state,[],stage="pregrasp")
+    variants=[]
+    changed=deepcopy(request);changed["process_policy"]["target"]["pose"][0][3]=.01
+    variants.append((changed,"TARGET_POSE_CHANGED"))
+    changed=deepcopy(request);changed["world"].append(dict(id="unknown-object"))
+    variants.append((changed,"CONTEXT_CHANGED:other_world"))
+    changed=deepcopy(request);changed["attachment"]={"id":"target"}
+    variants.append((changed,"OWNERSHIP_TRANSITION_INVALID"))
+    changed=deepcopy(request);changed["process_policy"]["target_id"]="other"
+    changed["process_policy"]["target"]["id"]="other"
+    variants.append((changed,"CONTEXT_CHANGED:target_id"))
+    for changed,reason in variants:
+        with pytest.raises(MoveItUnavailable,match=reason):
+            c._native_parent_for_request(state,changed)
+
+
+def test_root_registration_is_frozen_and_cannot_reset_a_selected_branch():
+    c=receipt_connector();root=c.native_root_state(np.zeros(6),[])
+    accepted_state(c,root,np.full(6,.1),"A")
+    assert c.native_root_state(np.zeros(6),[]).native_receipt==root.native_receipt
+    for q,kwargs,reason in ((np.full(6,.1),{},"NOT_FROZEN_INITIAL"),
+            (np.zeros(6),{"attachment":object()},"ROOT_ATTACHED")):
+        with pytest.raises(MoveItUnavailable,match=reason):
+            c.native_root_state(q,[],**kwargs)
+
+
+@pytest.mark.parametrize("exceptional",[False,True])
+def test_speculative_contact_context_restores_native_and_core_nested_masks(exceptional):
+    c=receipt_connector()
+    c._native_contact_context=dict(face="front",selection=dict(commanded_active_mask=[True,False]))
+    c.robot_state_validator=SimpleNamespace(commanded_cup_mask=(True,False),
+        contact_target_name="selected-target",stack_carton_names={"selected-target","neighbor"})
+    c.stack_carton_names={"selected-target","neighbor"}
+    baseline=deepcopy(c._native_contact_context)
+    def speculative():
+        with c._contact_context():
+            c._native_contact_context["face"]="side"
+            c._native_contact_context["selection"]["commanded_active_mask"][0]=False
+            c.robot_state_validator.commanded_cup_mask=(False,False)
+            c.robot_state_validator.contact_target_name="candidate-target"
+            c.stack_carton_names.add("candidate-target")
+            with c._contact_context():
+                c._native_contact_context["face"]="top"
+                c._native_contact_context["selection"]["commanded_active_mask"][1]=True
+                c.robot_state_validator.commanded_cup_mask=(False,True)
+            assert c._native_contact_context==dict(face="side",selection=dict(commanded_active_mask=[False,False]))
+            assert c.robot_state_validator.commanded_cup_mask==(False,False)
+            if exceptional:
+                raise RuntimeError("candidate rejected")
+    if exceptional:
+        with pytest.raises(RuntimeError,match="candidate rejected"):
+            speculative()
+    else:
+        speculative()
+    assert c._native_contact_context==baseline
+    assert c.robot_state_validator.commanded_cup_mask==(True,False)
+    assert c.robot_state_validator.contact_target_name=="selected-target"
+    assert c.stack_carton_names=={"selected-target","neighbor"}

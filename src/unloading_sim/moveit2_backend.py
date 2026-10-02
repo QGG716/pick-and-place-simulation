@@ -6,6 +6,8 @@ remain authoritative, including pair gaps and bounded contact semantics.
 from __future__ import annotations
 
 from copy import deepcopy
+from contextlib import contextmanager
+from dataclasses import dataclass
 import hashlib
 import atexit
 import itertools
@@ -42,6 +44,39 @@ def box_message(box, pose=None):
 
 class MoveItUnavailable(RuntimeError):
     pass
+
+
+@dataclass(frozen=True)
+class NativeStateReceipt:
+    """Identity of an accepted subsolution, independent of its joint values."""
+    receipt_id: str
+    task_id: str
+    stage_id: str
+    q_rad: tuple
+    context_json: str
+
+    def evidence(self):
+        return dict(receipt_id=self.receipt_id,task_id=self.task_id,stage_id=self.stage_id,
+            q_rad=list(self.q_rad),context=json.loads(self.context_json))
+
+
+class NativeStageState(np.ndarray):
+    """Keep explicit lineage through the core's selected-path copies.
+
+    NumPy arithmetic/slicing can propagate metadata, so a receipt is never
+    trusted without checking its complete six-joint value and issuer registry.
+    """
+    def __new__(cls, q, receipt):
+        value=np.asarray(q,dtype=float).copy().view(cls)
+        value._native_receipt=receipt
+        return value
+
+    def __array_finalize__(self, source):
+        self._native_receipt=getattr(source,"_native_receipt",None)
+
+    @property
+    def native_receipt(self):
+        return None if self._native_receipt is None else self._native_receipt.evidence()
 
 
 def native_rest_start_contract(snapshot):
@@ -458,6 +493,10 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             legacy_motion_generator_calls=0, forbidden_entry_attempts=0)
         self.native_ik_evidence = []
         self.native_semantic_events = []
+        self._native_receipts = {}
+        self._native_zero_state_requests = {}
+        self._native_root_receipt = None
+        self._native_final_selection = None
         self._native_contact_context = None
         self.native_rest_start=native_rest_start_contract(scene.snapshot)
         self.native = native_client or ResidentMoveItClient(command or os.environ.get("M710_MOVEIT_COMMAND"),
@@ -498,6 +537,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             self._native_task_started=None
             self.native_evidence.clear();self.native_verified.clear();self.native_ik_evidence.clear()
             self.native_semantic_events.clear();self._native_contact_context=None
+            self._native_receipts.clear();self._native_zero_state_requests.clear()
+            self._native_root_receipt=None;self._native_final_selection=None
             self._cold_counters=dict(history_enabled=not self.native_cold,history_inputs_read=0,
                 legacy_motion_generator_calls=0,forbidden_entry_attempts=0)
 
@@ -544,15 +585,179 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         # a numerically distinct, already checked endpoint. Carry that actual
         # sample into the next stage, without modifying either native path or
         # relaxing the exact source/parent match.
-        endpoint=np.asarray(path[-1],dtype=float).copy()
+        self._native_state_receipt(path[-1])
+        endpoint=path[-1].copy()
         evidence={**evidence,"returned_endpoint":dict(source="NATIVE_PATH_FINAL_SAMPLE",
             ik_goal_q_rad=np.asarray(selected).tolist(),q_rad=endpoint.tolist(),
+            parent_state_receipt=endpoint.native_receipt,
             differs_from_ik_goal=not np.array_equal(endpoint,np.asarray(selected)))}
         return endpoint,path,failure,evidence
 
     def _native_parent_stage_id(self,start):
-        return next((record["stage_id"] for record in reversed(self.native_verified)
-            if np.array_equal(np.asarray(record["points"][-1]["q"]),start)), "")
+        return self._native_state_receipt(start).stage_id
+
+    def _native_state_receipt(self, state):
+        receipt=getattr(state,"_native_receipt",None)
+        if not isinstance(receipt,NativeStateReceipt):
+            raise MoveItUnavailable("NATIVE_PARENT_IDENTITY_MISSING")
+        if receipt.task_id != self.native_task_id:
+            raise MoveItUnavailable("NATIVE_PARENT_TASK_MISMATCH")
+        if getattr(self,"_native_receipts",{}).get(receipt.receipt_id) != receipt:
+            raise MoveItUnavailable("NATIVE_PARENT_IDENTITY_UNISSUED")
+        q=np.asarray(state)
+        if q.shape!=(6,) or not np.array_equal(q,np.asarray(receipt.q_rad)):
+            raise MoveItUnavailable("NATIVE_PARENT_ENDPOINT_CHANGED")
+        context=json.loads(receipt.context_json)
+        if context["identity_sha256"] != digest(self.native_identity):
+            raise MoveItUnavailable("NATIVE_PARENT_MODEL_CONTEXT_CHANGED")
+        if context["frozen_scene_sha256"] != digest(self.native_scene.snapshot):
+            raise MoveItUnavailable("NATIVE_PARENT_FROZEN_SCENE_CHANGED")
+        if receipt.stage_id:
+            sources=[r for r in self.native_verified if r.get("stage_id")==receipt.stage_id]
+            if (len(sources)!=1 or sources[0].get("task_id")!=receipt.task_id or
+                    sources[0].get("authoritative_status")!="PASS" or
+                    not np.array_equal(sources[0]["points"][-1]["q"],q)):
+                raise MoveItUnavailable("NATIVE_PARENT_SOURCE_MISMATCH")
+        elif receipt != self._native_root_receipt:
+            # Zero-motion semantics may keep the root stage but must descend
+            # from the explicitly registered initial state.
+            if not self._native_root_receipt or receipt.q_rad!=self._native_root_receipt.q_rad:
+                raise MoveItUnavailable("NATIVE_ROOT_IDENTITY_MISMATCH")
+        return receipt
+
+    def _native_state_context(self, request, *, endpoint=None, attachment=None):
+        process=request["process_policy"]
+        target=deepcopy(process["target"])
+        if not target or target.get("id")!=process.get("target_id"):
+            raise MoveItUnavailable("NATIVE_PARENT_TARGET_CONTEXT_MISSING")
+        if endpoint is not None and attachment is not None:
+            target=box_message(attachment.box_at(endpoint))
+        return dict(identity_sha256=digest(self.native_identity),
+            frozen_scene_sha256=digest(self.native_scene.snapshot),target_id=target["id"],
+            target=target,attached=request.get("attachment") is not None,stage=request["stage"],
+            other_world=sorted((deepcopy(b) for b in request["world"] if b["id"]!=target["id"]),
+                key=lambda b:b["id"]))
+
+    def _native_issue_state(self, q, stage_id, context):
+        receipt=NativeStateReceipt(uuid.uuid4().hex,self.native_task_id,stage_id,
+            tuple(float(v) for v in q),json.dumps(context,sort_keys=True,separators=(",",":"),allow_nan=False))
+        self._native_receipts[receipt.receipt_id]=receipt
+        return NativeStageState(q,receipt)
+
+    def native_root_state(self,q,obstacles,*,stage="pregrasp",attachment=None,
+                          target_contact=None,support_names=()):
+        """Explicitly bind the frozen initial state; never infer a root from q."""
+        if attachment is not None:
+            raise MoveItUnavailable("NATIVE_ROOT_ATTACHED")
+        frozen_q=self.native_scene.snapshot["robot"]["q_rad"]
+        if not np.array_equal(np.asarray(q),np.asarray(frozen_q)):
+            raise MoveItUnavailable("NATIVE_ROOT_STATE_NOT_FROZEN_INITIAL")
+        expected=sorted((box_message(b) for b in self.native_scene.all_obstacles),key=lambda b:b["id"])
+        if sorted((box_message(b) for b in obstacles),key=lambda b:b["id"])!=expected:
+            raise MoveItUnavailable("NATIVE_ROOT_WORLD_NOT_FROZEN_INITIAL")
+        request=self._build_native_request(q,q,obstacles,seed=0,stage=stage,
+            target_contact=target_contact,support_names=support_names)
+        context=self._native_state_context(request)
+        previous=getattr(self,"_native_root_receipt",None)
+        if previous is not None:
+            state=NativeStageState(q,previous)
+            self._native_parent_for_request(state,request)
+            return state
+        if getattr(self,"native_verified",[]):
+            raise MoveItUnavailable("NATIVE_ROOT_REGISTRATION_AFTER_GENERATION")
+        state=self._native_issue_state(q,"",context)
+        self._native_root_receipt=state._native_receipt
+        return state
+
+    def _native_parent_for_request(self,start,request):
+        receipt=self._native_state_receipt(start)
+        before=json.loads(receipt.context_json)
+        after=self._native_state_context(request)
+        for key in ("identity_sha256","frozen_scene_sha256","target_id","other_world"):
+            if before[key]!=after[key]:
+                raise MoveItUnavailable("NATIVE_PARENT_CONTEXT_CHANGED:"+key)
+        a,b=before["target"],after["target"]
+        if any(a.get(key)!=b.get(key) for key in ("id","size")):
+            raise MoveItUnavailable("NATIVE_PARENT_TARGET_GEOMETRY_CHANGED")
+        if (a.get("category")!=b.get("category") and not (
+                before["attached"]!=after["attached"] and
+                {a.get("category"),b.get("category")}=={"carton","payload"})):
+            raise MoveItUnavailable("NATIVE_PARENT_TARGET_CATEGORY_CHANGED")
+        # Same tolerance as the resident worker's existing object-ownership
+        # transition gate. Joint-state/source continuity remains exact.
+        if not np.allclose(a["pose"],b["pose"],atol=1e-7,rtol=0.):
+            raise MoveItUnavailable("NATIVE_PARENT_TARGET_POSE_CHANGED")
+        transition=None
+        if before["attached"]!=after["attached"]:
+            if (not before["attached"] and after["attached"] and
+                    before["stage"] in {"contact","contact_endpoint"} and
+                    after["stage"] in {"support-release","extraction"}):
+                transition="ATTACH"
+            elif (before["attached"] and not after["attached"] and
+                    before["stage"]=="place" and after["stage"]=="withdrawal"):
+                transition="RELEASE"
+            else:
+                raise MoveItUnavailable("NATIVE_PARENT_OWNERSHIP_TRANSITION_INVALID")
+        return receipt,after,transition
+
+    def _native_zero_state(self,start,obstacles,*,stage,attachment=None,
+                           target_contact=None,support_names=(),initial_proximity=None,**unused):
+        request=self._build_native_request(start,start,obstacles,seed=0,stage=stage,
+            attachment=attachment,target_contact=target_contact,support_names=support_names,
+            initial_proximity=initial_proximity)
+        receipt,context,transition=self._native_parent_for_request(start,request)
+        state=self._native_issue_state(start,receipt.stage_id,context)
+        terminal={k:deepcopy(v) for k,v in request.items()
+            if k not in {"q_goal","goal_pose","pipeline_id","planner_id"}}
+        terminal.update(task_id=self.native_task_id,parent_stage_id=receipt.stage_id,
+            parent_state_receipt=state.native_receipt)
+        self._native_zero_state_requests[state._native_receipt.receipt_id]=terminal
+        self.native_semantic_events.append(dict(event="ZERO_MOTION_STATE_CONTINUATION",stage=stage,
+            ownership_transition=transition,parent_state_receipt=receipt.evidence(),
+            selected_state_receipt=state.native_receipt))
+        return state
+
+    def _approach(self,start,*args,**kwargs):
+        if getattr(self,"require_native_motion",False):
+            # The core normalizes home_q before branch selection. This is its
+            # sole root entry; all generated continuations require receipts.
+            obstacles=args[2] if len(args)>2 else kwargs["obstacles"]
+            start=self.native_root_state(start,obstacles)
+        return super()._approach(start,*args,**kwargs)
+
+    def _native_selected_records(self,state):
+        stage_id=self._native_state_receipt(state).stage_id
+        records={r["stage_id"]:r for r in self.native_verified}
+        if len(records)!=len(self.native_verified):
+            raise MoveItUnavailable("NATIVE_SELECTED_DUPLICATE_STAGE_ID")
+        selected=[];seen=set()
+        while stage_id:
+            if stage_id in seen or stage_id not in records:
+                raise MoveItUnavailable("NATIVE_SELECTED_PARENT_CHAIN_INVALID")
+            seen.add(stage_id);record=records[stage_id]
+            if record.get("task_id")!=self.native_task_id or record.get("authoritative_status")!="PASS":
+                raise MoveItUnavailable("NATIVE_SELECTED_PARENT_CHAIN_INVALID")
+            selected.append(record);stage_id=record["parent_stage_id"]
+        return list(reversed(selected))
+
+    def _native_terminal_state_request(self,state):
+        receipt=self._native_state_receipt(state)
+        request=self._native_zero_state_requests.get(receipt.receipt_id)
+        if request is None:
+            return None
+        if (request.get("task_id")!=receipt.task_id or request.get("parent_stage_id")!=receipt.stage_id or
+                not np.array_equal(request.get("q_start"),np.asarray(state))):
+            raise MoveItUnavailable("NATIVE_TERMINAL_STATE_IDENTITY_CHANGED")
+        if request.get("stage") not in {"withdrawal","residence"} or request.get("attachment") is not None:
+            raise MoveItUnavailable("NATIVE_TERMINAL_PROCESS_UNFINISHED")
+        self._native_parent_for_request(state,request)
+        return deepcopy(request)
+
+    def _append_stage(self,full,stages,name,path):
+        super()._append_stage(full,stages,name,path)
+        if getattr(self,"require_native_motion",False):
+            self._native_state_receipt(path[-1])
+            self._native_final_selection=(path[-1].copy(),digest([q.tolist() for q in full]))
 
     def _rrt_transit(self, *args, **kwargs):
         self._forbid_legacy("core_rrt")
@@ -583,11 +788,33 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             selection=deepcopy(selection))
         return selection
 
-    def _support_release(self,*args,**kwargs):
-        path,failure,evidence=super()._support_release(*args,**kwargs)
+    @contextmanager
+    def _contact_context(self):
+        # Speculative IK/next-contact selection must restore the same cup
+        # context in both validators. Actual contact recomputation outside
+        # this scope remains authoritative and may legitimately change masks.
+        saved=deepcopy(getattr(self,"_native_contact_context",None))
+        try:
+            with super()._contact_context():
+                yield
+        finally:
+            self._native_contact_context=saved
+
+    def _support_release(self,start,attachment,obstacles,support_names,tracker,**kwargs):
+        path,failure,evidence=super()._support_release(start,attachment,obstacles,support_names,tracker,**kwargs)
         if getattr(self,"require_native_motion",False) and failure is None and len(path)==1:
+            path=[self._native_zero_state(start,obstacles,stage="support-release",attachment=attachment,
+                support_names=support_names,initial_proximity=tracker)]
             self.native_semantic_events.append(dict(stage="support-release",event="CONDITIONAL_ZERO_MOTION_SUPPORT_RELEASE",
                 q_rad=np.asarray(path[0]).tolist(),evidence=deepcopy(evidence)))
+        return path,failure,evidence
+
+    def _departure(self,start,placed,obstacles,direction,**kwargs):
+        path,failure,evidence=super()._departure(start,placed,obstacles,direction,**kwargs)
+        if getattr(self,"require_native_motion",False) and failure is None and len(path)==1:
+            # The core's checked wait fallback returns the placed state copy;
+            # retain its native parent and explicitly register actual release.
+            path=[self._native_zero_state(start,[*obstacles,placed],stage="withdrawal",target_contact=placed)]
         return path,failure,evidence
 
     def native_cold_evidence(self):
@@ -728,7 +955,10 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             support_names=support_names,target_contact=target_contact,initial_proximity=initial_proximity,
             stage=stage,goal_pose=goal_pose)
         if strict:
-            request["parent_stage_id"] = self._native_parent_stage_id(start)
+            parent,_,transition=self._native_parent_for_request(start,request)
+            request["parent_stage_id"] = parent.stage_id
+            request["parent_state_receipt"] = parent.evidence()
+            request["ownership_transition"] = transition
             request["purpose"] = getattr(purpose, "value", purpose)
         endpoint_started=perf_counter();endpoints=[]
         for name,q in (("start",start),("goal",goal)):
@@ -831,6 +1061,9 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 continue
             attempt["end_to_end_s"]=perf_counter()-started
             self.native_evidence.extend(attempts);self.native_verified.append(deepcopy(attempt))
+            if strict:
+                context=self._native_state_context(submitted,endpoint=path[-1],attachment=attachment)
+                path[-1]=self._native_issue_state(path[-1],submitted["stage_id"],context)
             return path,None,dict(backend="moveit2",success=True,validation_level="B_STRICT_LOCAL_CONNECTION",attempts=attempts)
         self.native_evidence.extend(attempts)
         reason=attempts[-1]["status"] if attempts and (goal_pose is not None or attempts[-1]["status"].startswith(("INVALID_START","INVALID_GOAL"))) else "MOVEIT2_SEARCH_EXHAUSTED"
@@ -912,10 +1145,13 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         if (purpose==MotionPurpose.FREE_LOADED_TRANSFER)!=(attachment is not None):
             raise ValueError("motion purpose and attachment disagree")
         if getattr(self,"require_native_motion",False) and np.array_equal(np.asarray(start),np.asarray(goal)):
+            self._native_state_receipt(start)
             failure=self._path_failure([start],obstacles,attachment=attachment,stage=stage)
+            continued=(self._native_zero_state(start,obstacles,stage=stage,attachment=attachment)
+                if failure is None else start.copy())
             event=dict(stage=stage,purpose=purpose.value,q_rad=np.asarray(start).tolist(),event="ZERO_MOTION_CONNECTION")
             self.native_semantic_events.append(event)
-            return [np.asarray(start).copy()],failure,dict(generator="zero_motion_semantic_event",**event,
+            return [continued],failure,dict(generator="zero_motion_semantic_event",**event,
                 rrt_called=False,rrt_constructed=False,rrt_expanded=False,planning_iterations_consumed=0,
                 selected_method=GenerationMethod.JOINT_DIRECT.value,validation_completed=failure is None)
         options=dict(seed=seed,attachment=attachment,stage=stage,purpose=purpose)
@@ -939,7 +1175,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                     candidate_failure=dict(reason="NATIVE_CANDIDATE_ENDPOINT_MISMATCH",stage=stage)
                 elif getattr(self,"require_native_motion",False):
                     from .moveit2_native_cold import audit_native_motion_coverage
-                    coverage=audit_native_motion_coverage(candidate,self.native_verified,task_id=self.native_task_id)
+                    coverage=audit_native_motion_coverage(candidate,self._native_selected_records(candidate[-1]),
+                        task_id=self.native_task_id)
                     if not coverage["passed"]:
                         candidate_failure=dict(reason="NATIVE_CANDIDATE_SOURCE_GAP",stage=stage,coverage=coverage)
                 if candidate_failure is None:
@@ -966,11 +1203,13 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         if strict:
             origin=self.robot.fk(start)
             if np.array_equal(origin,np.asarray(destination)):
+                self._native_state_receipt(start)
                 failure=self._path_failure([start],obstacles,**{key:value for key,value in kwargs.items() if key!="seed"})
+                continued=self._native_zero_state(start,obstacles,**kwargs) if failure is None else start.copy()
                 event=dict(stage=kwargs["stage"],purpose=purpose.value,q_rad=np.asarray(start).tolist(),
                     event="ZERO_MOTION_PROCESS",failure=failure)
                 self.native_semantic_events.append(event)
-                return [np.asarray(start).copy()],failure,dict(generator="zero_motion_semantic_event",**event,
+                return [continued],failure,dict(generator="zero_motion_semantic_event",**event,
                     cartesian_samples=0,along_path_ik_calls=0,planning_iterations_consumed=0,
                     selected_method=GenerationMethod.PROCESS_WAYPOINT_CANDIDATE.value,
                     rrt_called=False,rrt_constructed=False,rrt_expanded=False,validation_completed=failure is None)
@@ -997,7 +1236,13 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
     def _finalize_task_checked(self,segment,obstacles,target):
         from .moveit2_timing import native_timing_floor
         from .layout_trajectory import TRAJECTORY_STAGES
-        floors, records = native_timing_floor(segment["path"], self.native_verified)
+        sources=self.native_verified
+        if getattr(self,"require_native_motion",False):
+            selection=getattr(self,"_native_final_selection",None)
+            if selection is None or selection[1]!=digest(segment["path"]):
+                return dict(reason="NATIVE_SELECTED_TASK_IDENTITY_MISSING",stage="final_validation")
+            sources=self._native_selected_records(selection[0])
+        floors, records = native_timing_floor(segment["path"], sources)
         if not records:
             return {"reason":"NO_NATIVE_STAGE_IN_COMPLETE_TASK","stage":"final_validation"}
         segment["native_backend"]={"schema":SCHEMA,"name":"moveit2", "startup":self.native_startup,
@@ -1018,12 +1263,16 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 for name,(a,b) in segment["stage_ranges"].items() if a==b)
             cold_audit["zero_length_semantic_events"].extend(deepcopy(segment["events"]))
             _,timeout=self._native_limits()
-            task=self.native.request(dict(op="task_audit",identity=self.native_identity,
+            task_request=dict(op="task_audit",identity=self.native_identity,
                 task_id=self.native_task_id,stage_ids=[r["stage_id"] for r in coverage["records"]],
-                events=segment["events"],stage_ranges=segment["stage_ranges"],target_id=target.name),
-                timeout=timeout,cancelled=self._native_cancelled)
+                events=segment["events"],stage_ranges=segment["stage_ranges"],target_id=target.name)
+            terminal=self._native_terminal_state_request(selection[0])
+            if terminal is not None:
+                task_request["terminal_state_request"]=deepcopy(terminal)
+            task=self.native.request(task_request,timeout=timeout,cancelled=self._native_cancelled)
             segment["native_backend"].update(native_cold=True,require_native_motion=True,
                 task_id=self.native_task_id,cold_audit=cold_audit,source_coverage=coverage,
+                selected_final_state_receipt=selection[0].native_receipt,
                 mtc_task_audit=task,stages=coverage["records"])
             failure=verify_native_cold_segment(segment)
             if failure is not None:
