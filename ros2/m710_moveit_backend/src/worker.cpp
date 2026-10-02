@@ -157,6 +157,7 @@ class Worker {
   uint32_t seed=0; size_t requests=0; std::map<std::string,size_t> calls;
   std::map<std::string,std::unique_ptr<NativeTaskSession>> tasks;
   size_t ik_calls=0;
+  bool planning_only=false;  // Bound at process initialization, never per-stage downgrade.
   static bool samePose(const Eigen::Isometry3d& a,const Eigen::Isometry3d& b) {return (a.matrix()-b.matrix()).cwiseAbs().maxCoeff()<=1e-7;}
   // Between adjacent motions only the selected target may change ownership.
   // Its actual pose must be identical on both sides of attach/release.
@@ -293,16 +294,24 @@ class Worker {
       if(msg.joint_trajectory.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
       J points=J::array(),path=J::array();
       for(const auto& p:msg.joint_trajectory.points) {points.push_back({{"q",p.positions},{"v",p.velocities},{"a",p.accelerations},{"t",p.time_from_start.sec+p.time_from_start.nanosec*1e-9}});path.push_back(p.positions);}
-      const auto checking=Clock::now();r.clearance->phase="output";const double resolution=req.at("clearance_policy").at("edge_resolution_rad");
-      J failure=r.clearance->checkPath(r.start->getCurrentState(),path,resolution);
-      if(failure.is_null() && r.process) failure=r.process->checkPath(r.start->getCurrentState(),path,resolution);
-      r.result["native_output_check_s"]=seconds(checking);r.result["clearance"]=r.clearance->evidence();
+      J failure=nullptr;
+      if(!planning_only) {
+        const auto checking=Clock::now();r.clearance->phase="output";const double resolution=req.at("clearance_policy").at("edge_resolution_rad");
+        failure=r.clearance->checkPath(r.start->getCurrentState(),path,resolution);
+        if(failure.is_null() && r.process) failure=r.process->checkPath(r.start->getCurrentState(),path,resolution);
+        r.result["native_output_check_s"]=seconds(checking);
+      } else {
+        r.result["native_output_check_s"]=nullptr;
+        r.result["planning_only_status"]="PLANNING_ONLY_NOT_EXECUTABLE";
+      }
+      r.result["clearance"]=r.clearance->evidence();
       if(r.process) r.result["process_policy"]=r.process->evidence();
       r.result["points"]=points;r.result["joint_names"]=names;
       if(!failure.is_null()) {r.result["status"]="NATIVE_PATH_REJECTED";r.result["failure"]=failure;return;}
       r.trajectory=trajectory;r.end=r.start->diff();r.end->decoupleParent();r.end->setCurrentState(trajectory->getLastWayPoint());
-      r.result["status"]="SUCCESS";r.result["native_output_status"]="PASS";
-      r.result["process_semantics_checked"]=bool(r.process);
+      r.result["status"]="SUCCESS";r.result["native_output_status"]=planning_only?"SKIPPED_PLANNING_ONLY":"PASS";
+      r.result["process_semantics_checked"]=!planning_only && bool(r.process);
+      r.result["planner_internal_process_checks"]=bool(r.process);
       r.result["time_parameterization"]=pipeline=="ompl"?"IPTP_preserves_waypoints":"Pilz_original";
       r.result["task_tcp_identity"]=identity.at("task_tcp_fingerprint");r.result["interpolated_link"]=req.contains("goal_pose")?identity.at("task_tcp_link"):J(nullptr);
     };
@@ -328,6 +337,7 @@ public:
     auto begin=Clock::now(); auto op=req.at("op").get<std::string>();
     if(op=="init") {
       if(model) throw std::runtime_error("ALREADY_INITIALIZED");
+      planning_only=req.value("planning_only",false);
       seed=req.at("seed");
       static bool seeded=false;static uint32_t process_seed=0;
       if(!seeded) {ompl::RNG::setSeed(seed);process_seed=seed;seeded=true;}
@@ -365,13 +375,19 @@ public:
       bound_compliant=req.value("compliant_tool_links",J::array());bound_process_geometry=req.value("process_geometry",J(nullptr));
       base=std::make_shared<planning_scene::PlanningScene>(model);
       identity=req.at("identity");
-      return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},
+      return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"native_ik",true},{"native_task_session",true},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
                 {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
+    if((op=="plan" || op=="ik") && req.value("planning_only",false)!=planning_only)
+      throw std::runtime_error("PLANNING_ONLY_MODE_MISMATCH");
+    if(planning_only && (op=="task_audit" || op=="compose" || op=="validate"))
+      throw std::runtime_error("PLANNING_ONLY_NOT_EXECUTABLE");
+    if(planning_only && op=="plan" && !req.value("require_native_motion",false))
+      throw std::runtime_error("PLANNING_ONLY_REQUIRES_NATIVE_TASK");
     if(op!="fk" && op!="ik" && op!="task_audit" && op!="plan" && op!="compose" && op!="inspect" && op!="validate") throw std::runtime_error("UNKNOWN_OPERATION");
     if(req.at("identity")!=identity) throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
     if(op=="task_audit") {

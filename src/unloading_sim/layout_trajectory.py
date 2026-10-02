@@ -3833,7 +3833,7 @@ class LayoutTrajectoryConnector:
             "post_release_safe_residence": escape_audit,
             "validation": {
                 "validator_identity": self.validator_identity,
-                "execution_qualified": True,
+                "execution_qualified": self.execution_qualified,
                 "collision_margin_per_body_m": self.collision_margin_m,
                 "contact_tolerance_m": self.contact_tolerance_m,
                 "initial_proximity": released_tracker.evidence(),

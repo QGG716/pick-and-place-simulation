@@ -233,12 +233,15 @@ class NativeIKCandidateStream:
                 if failure is None:
                     failure = c._state_failure(q, self.obstacles, stage=endpoint_stage, **self.options)
             record["authority_failure"] = failure
+            if c.planning_only:
+                record["endpoint_validation_status"] = "SKIPPED_PLANNING_ONLY"
             if self.endpoint_checks is not None:
                 self.endpoint_checks.append(dict(requested_stage=self.stage, endpoint_stage=endpoint_stage,
                     q_rad=q.tolist(), failure=failure, native_request_id=raw.get("request_id"),
                     commanded_active_mask=None if cups is None else cups["commanded_active_mask"]))
             result = IKResult(failure is None, q, 0, float(position), float(angle),
-                "native MoveIt IK with independent endpoint validation", {**self.evidence(),
+                ("native MoveIt IK; independent endpoint validation skipped" if c.planning_only else
+                 "native MoveIt IK with independent endpoint validation"), {**self.evidence(),
                     "candidate_id": "native-ik-"+digest([request, raw.get("request_id"), q.tolist()]),
                     "native_request_id": raw.get("request_id"), "native_solver": raw.get("solver")})
             if failure is not None:
@@ -426,7 +429,9 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
         policy_fingerprint=scene.policy.policy_fingerprint, validator_identity=connector.validator_identity,
         model_tool_fingerprint=digest(params), task_tcp_link=TASK_TCP_LINK, flange_from_task_tcp=tcp.tolist(),
         task_tcp_fingerprint=digest(tcp.tolist()),
-        policy_scope=("native_POC_stage_scoped_process_with_ordered_checks_plus_independent_authority"
+        policy_scope=("PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+                      if getattr(connector,"planning_only",False) else
+                      "native_POC_stage_scoped_process_with_ordered_checks_plus_independent_authority"
                       if getattr(connector,"native_cold",False) else
                       "native_POC_free_pair_clearance_search_and_edges_plus_existing_authority"))
     return dict(op="init", parameters=params, identity=identity, joint_names=names, seed=seed,
@@ -479,6 +484,8 @@ def linear_capability(origin, destination, flange_from_task_tcp, *, stage, locat
 
 
 class MoveItLayoutConnector(LayoutTrajectoryConnector):
+    planning_only = False
+
     @classmethod
     def from_existing(cls, connector, scene, command=None, *, native_client=None,
                       native_cold=False, require_native_motion=None, native_budget=None):
@@ -503,6 +510,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             log_path=os.environ.get("M710_MOVEIT_LOG"))
         init, self.native_tools, self.native_compliant = model_request(self, scene,
             asset_root=os.environ.get("M710_MOVEIT_ASSET_ROOT"), seed=int(os.environ.get("M710_MOVEIT_SEED", "71070")))
+        init["planning_only"] = self.planning_only
         self.native_identity=init["identity"]; self.native_joint_names=init["joint_names"]
         limits = native_budget or {}
         self.native_stage_seconds=float(limits.get("stage_wall_time_s", os.environ.get("M710_MOVEIT_STAGE_SECONDS", "60")))
@@ -515,6 +523,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 not np.isfinite(self.native_ik_seconds) or self.native_ik_seconds<=0):
             self.native.close(); raise ValueError("invalid native stage time budget")
         self.native_scene=scene; self.native_evidence=[]; self.native_verified=[]; self.capability_evidence=[]; self.authority_path_evidence=[]
+        self.native_generated = []  # Experimental lineage never grants validation permission.
         try:
             started = perf_counter()
             self.native_startup=self.native.request(init)
@@ -536,6 +545,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             self._native_stage_ids=itertools.count(1)
             self._native_task_started=None
             self.native_evidence.clear();self.native_verified.clear();self.native_ik_evidence.clear()
+            self.native_generated.clear()
             self.native_semantic_events.clear();self._native_contact_context=None
             self._native_receipts.clear();self._native_zero_state_requests.clear()
             self._native_root_receipt=None;self._native_final_selection=None
@@ -596,6 +606,15 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
     def _native_parent_stage_id(self,start):
         return self._native_state_receipt(start).stage_id
 
+    def _native_lineage_records(self):
+        return self.native_generated if self.planning_only else self.native_verified
+
+    def _native_lineage_accepted(self, record):
+        if self.planning_only:
+            return (record.get("planning_only_status") == "PLANNING_ONLY_NOT_EXECUTABLE"
+                and record.get("authoritative_status") == "SKIPPED_PLANNING_ONLY")
+        return record.get("authoritative_status") == "PASS"
+
     def _native_state_receipt(self, state):
         receipt=getattr(state,"_native_receipt",None)
         if not isinstance(receipt,NativeStateReceipt):
@@ -613,9 +632,9 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         if context["frozen_scene_sha256"] != digest(self.native_scene.snapshot):
             raise MoveItUnavailable("NATIVE_PARENT_FROZEN_SCENE_CHANGED")
         if receipt.stage_id:
-            sources=[r for r in self.native_verified if r.get("stage_id")==receipt.stage_id]
+            sources=[r for r in self._native_lineage_records() if r.get("stage_id")==receipt.stage_id]
             if (len(sources)!=1 or sources[0].get("task_id")!=receipt.task_id or
-                    sources[0].get("authoritative_status")!="PASS" or
+                    not self._native_lineage_accepted(sources[0]) or
                     not np.array_equal(sources[0]["points"][-1]["q"],q)):
                 raise MoveItUnavailable("NATIVE_PARENT_SOURCE_MISMATCH")
         elif receipt != self._native_root_receipt:
@@ -663,7 +682,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             state=NativeStageState(q,previous)
             self._native_parent_for_request(state,request)
             return state
-        if getattr(self,"native_verified",[]):
+        if self._native_lineage_records():
             raise MoveItUnavailable("NATIVE_ROOT_REGISTRATION_AFTER_GENERATION")
         state=self._native_issue_state(q,"",context)
         self._native_root_receipt=state._native_receipt
@@ -727,15 +746,15 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
 
     def _native_selected_records(self,state):
         stage_id=self._native_state_receipt(state).stage_id
-        records={r["stage_id"]:r for r in self.native_verified}
-        if len(records)!=len(self.native_verified):
+        records={r["stage_id"]:r for r in self._native_lineage_records()}
+        if len(records)!=len(self._native_lineage_records()):
             raise MoveItUnavailable("NATIVE_SELECTED_DUPLICATE_STAGE_ID")
         selected=[];seen=set()
         while stage_id:
             if stage_id in seen or stage_id not in records:
                 raise MoveItUnavailable("NATIVE_SELECTED_PARENT_CHAIN_INVALID")
             seen.add(stage_id);record=records[stage_id]
-            if record.get("task_id")!=self.native_task_id or record.get("authoritative_status")!="PASS":
+            if record.get("task_id")!=self.native_task_id or not self._native_lineage_accepted(record):
                 raise MoveItUnavailable("NATIVE_SELECTED_PARENT_CHAIN_INVALID")
             selected.append(record);stage_id=record["parent_stage_id"]
         return list(reversed(selected))
@@ -877,6 +896,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             clearance_mode=os.environ.get("M710_CLEARANCE_MODE","optimized"),
             seed=int(seed),cancelled=False,allowed_planning_time_s=getattr(self,"native_stage_seconds",60.),velocity_scale=.2,acceleration_scale=.2,
             flange_from_task_tcp=self.flange_from_virtual_task_tcp.tolist())
+        request["planning_only"] = self.planning_only
         if goal_pose is None: request["q_goal"]=np.asarray(goal).tolist()
         else: request["goal_pose"]=np.asarray(goal_pose).tolist()
         request["clearance_policy"]=dict(schema="m710_native_free_clearance_v1",stage=stage,
@@ -999,7 +1019,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                     if k not in {"q_start","request_id"}})}
             if strict:
                 attempt["submitted_request"]=deepcopy(submitted)
-            if goal_pose is not None:
+            if goal_pose is not None and not self.planning_only:
                 from .m710_execution_tcp import make_lin_contract
                 attempt['lin_contract']=make_lin_contract(submitted,self.robot.fk(start),
                     position_tolerance=self.ik['position_tolerance_m'],orientation_tolerance=self.ik['orientation_tolerance_rad'],
@@ -1013,7 +1033,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             if strict and (any(raw.get(key) != submitted.get(key) for key in ("task_id", "stage_id", "parent_stage_id"))
                     or raw.get("mtc_generation") is not True
                     or sum(raw.get("native_solver_calls", {}).values()) < 1
-                    or (constrained and raw.get("process_semantics_checked") is not True)):
+                    or (constrained and not self.planning_only and raw.get("process_semantics_checked") is not True)
+                    or (self.planning_only and raw.get("planning_only_status") != "PLANNING_ONLY_NOT_EXECUTABLE")):
                 attempt["authoritative_status"]="PROTOCOL_REJECTED"
                 attempt["failure"]={"reason":"NATIVE_GENERATION_EVIDENCE_MISSING","stage":stage}
                 self.native_evidence.extend(attempts)
@@ -1025,6 +1046,9 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 attempt["failure"]={"reason":str(exc),"stage":stage,"requested_q_goal":request.get("q_goal")}
                 self.native_evidence.extend(attempts)
                 return [],attempt["failure"],dict(backend="moveit2",success=False,attempts=attempts)
+            if self.planning_only:
+                return self._accept_generated_stage(path, attempt, attempts, submitted,
+                    attachment=attachment, initial_proximity=initial_proximity, started=started)
             path_id=digest([q.tolist() for q in path]);attempt["path_sha256"]=path_id
             if path_id in seen:
                 attempt["authoritative_status"]="DUPLICATE_REJECTED_PATH"; continue
@@ -1175,7 +1199,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             if candidate_failure is None and candidate:
                 if not (np.array_equal(np.asarray(candidate[0]),start) and np.array_equal(np.asarray(candidate[-1]),goal)):
                     candidate_failure=dict(reason="NATIVE_CANDIDATE_ENDPOINT_MISMATCH",stage=stage)
-                elif getattr(self,"require_native_motion",False):
+                elif getattr(self,"require_native_motion",False) and not self.planning_only:
                     from .moveit2_native_cold import audit_native_motion_coverage
                     coverage=audit_native_motion_coverage(candidate,self._native_selected_records(candidate[-1]),
                         task_id=self.native_task_id)
