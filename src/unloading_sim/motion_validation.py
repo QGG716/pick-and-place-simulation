@@ -211,6 +211,7 @@ class MotionValidator:
             certified_intervals=0, pair_certificates=0, state_seconds=0., edge_seconds=0.,
             repeated_failed_edges=0, batch_calls=0, skipped_suffix_states=0,
             state_cache_reuses=0)
+        self._path_visits = None
 
     def _result(self, status, failure=None, **kwargs):
         if failure is not None and 'type' not in failure:
@@ -302,8 +303,12 @@ class MotionValidator:
                     results[i] = result
                     if self.cache_states and result.status in {Status.VALID, Status.INVALID}:
                         self.states.put(key, result)
-            for result in results:
+            for q, result in zip(chunk, results):
+                observed = result is not None
                 result = result or self._result(Status.INDETERMINATE, dict(reason="VALIDATION_WORK_BUDGET"))
+                if self._path_visits is not None and observed:
+                    self._path_visits[0] += 1
+                    self._path_visits[1].add(np.asarray(q, float).tobytes())
                 self.statistics['state_cache_reuses'] += int(result.cache_hit)
                 output.append(result)
                 if stop_on_failure and not result.valid: break
@@ -389,6 +394,21 @@ class MotionValidator:
         return result
 
     def check_path(self, path, budget=None):
+        """Retain exact per-call visits without keeping a cross-path state census."""
+        before = dict(self.statistics)
+        caches = (self.states.hits, self.edges.hits)
+        previous = self._path_visits
+        self._path_visits = [0, set()]
+        try:
+            result = self._check_path(path, budget)
+            stats = {key: value - before[key] for key, value in self.statistics.items()}
+            stats.update(state_visits=self._path_visits[0], unique_state_visits=len(self._path_visits[1]),
+                         state_cache_hits=self.states.hits-caches[0], edge_cache_hits=self.edges.hits-caches[1])
+            return replace(result, statistics=stats)
+        finally:
+            self._path_visits = previous
+
+    def _check_path(self, path, budget=None):
         budget = budget or RequestBudget()
         if not len(path): return self._result(Status.INVALID, dict(reason='EMPTY_PATH'))
         if len(path) == 1: return self.check_states(path,budget)[0]

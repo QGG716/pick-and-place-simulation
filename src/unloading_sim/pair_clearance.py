@@ -1,6 +1,26 @@
 """Uninflated surface queries and shared POC acceptance (no simulator import)."""
 from itertools import product
 import numpy as np
+from .validation_metrics import count
+
+
+def obb_aabb_distance_lower(first, second):
+    """Outward-rounded AABB separation; a bound, never a new acceptance gap."""
+    a = np.abs(first.rotation) @ first.half_extents
+    b = np.abs(second.rotation) @ second.half_extents
+    pad = 32 * np.finfo(float).eps * (1 + np.max(np.abs(first.center))
+        + np.max(np.abs(second.center)) + np.max(a) + np.max(b))
+    gaps = np.maximum(np.abs(first.center - second.center) - a - b - pad, 0.)
+    return max(0., float(np.linalg.norm(gaps)) - pad)
+
+
+def obb_distance_at_least(first, second, required):
+    """Same exact predicate, skipping its query only with a conservative bound."""
+    count('obb_lower_bound_tests')
+    if obb_aabb_distance_lower(first, second) > required + 1e-9:
+        count('obb_lower_bound_skips')
+        return True
+    return obb_surface_distance(first, second) >= required
 
 
 def obb_surface_distance(first, second):
@@ -9,6 +29,7 @@ def obb_surface_distance(first, second):
     SAT is used only for intersection, never as Euclidean separation. No
     penetration depth is inferred from overlapping proxy boxes.
     """
+    count('obb_surface_queries')
     if first.signed_distance_obb(second) <= 0.:
         return 0.
     vertices = [b.corners() for b in (first, second)]
@@ -80,12 +101,14 @@ def obb_pair_evidence(first, second, policy, margin=0., *, stage="unspecified", 
 
 
 def obb_pair_failure(first, second, policy, margin, *, stage="unspecified", proxy=False, reason="PAIR_CLEARANCE"):
+    count('obb_pair_visits')
     if not policy.poc_pair_clearance:
         return {"reason": reason, "pair": [first.name, second.name]} if first.intersects_obb(second, margin=margin) else None
     required = policy.pair_clearance("external", margin)
     # AABB axis separation is a safe lower bound, only used to skip distant pairs.
     a = np.abs(first.rotation)@first.half_extents; b = np.abs(second.rotation)@second.half_extents
     if np.any(np.abs(first.center-second.center)-a-b > required+1e-9):
+        count('obb_pair_aabb_skips')
         return None
     evidence = obb_pair_evidence(first, second, policy, margin, stage=stage, proxy=proxy)
     return None if evidence["accepted"] else {"reason": reason, **evidence}

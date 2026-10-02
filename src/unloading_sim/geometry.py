@@ -219,6 +219,8 @@ class OBB:
         # Batch the same six face and nine edge-cross axes. This removes the
         # per-axis Python loop without dropping axes, changing margins, or
         # substituting SAT separation for Euclidean surface distance.
+        from .validation_metrics import count
+        count('obb_sat_queries')
         first_axes, second_axes = self.rotation.T, other.rotation.T
         crossed = np.cross(first_axes[:, None, :], second_axes[None, :, :]).reshape(-1, 3)
         norms = np.linalg.norm(crossed, axis=1)

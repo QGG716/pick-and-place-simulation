@@ -116,7 +116,9 @@ class PhysicsCheckedStackTracker:
     stack boxes. Transit never consumes this relaxation.
     """
     def __init__(self, target: OBB, neighbors: Sequence[OBB], policy: SimulationCollisionPolicy,
-                 margin_m: float, tolerance_m: float):
+                 margin_m: float, tolerance_m: float, *, optimized=None):
+        from .validation_metrics import validation_mode
+        self.optimized = validation_mode() == 'optimized' if optimized is None else bool(optimized)
         self.target_id = target.name
         self.neighbors = {b.name: b for b in neighbors if b.name != target.name}
         self.policy = policy
@@ -128,13 +130,19 @@ class PhysicsCheckedStackTracker:
 
     def _update_released(self, box):
         self.last_box = box
+        if self.optimized and self.policy.poc_pair_clearance:
+            from .pair_clearance import obb_distance_at_least
+            self.fully_released = self.fully_released or all(
+                obb_distance_at_least(box, other, self.policy.free_space_clearance_m)
+                for other in self.neighbors.values())
+            return
         self.fully_released = self.fully_released or all(
             (obb_surface_distance(box, other) if self.policy.poc_pair_clearance else box.signed_distance_obb(other)) >= self.policy.free_space_clearance_m
             for other in self.neighbors.values())
 
     def clone(self):
         result = PhysicsCheckedStackTracker(self.last_box, tuple(self.neighbors.values()),
-                                           self.policy, self.margin_m, self.tolerance_m)
+                                           self.policy, self.margin_m, self.tolerance_m, optimized=self.optimized)
         result.fully_released = self.fully_released
         return result
 

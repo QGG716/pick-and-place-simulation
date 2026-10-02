@@ -119,6 +119,9 @@ def possible_inflated_obb_pairs(first: Sequence[OBB], second: Sequence[OBB],
     centers_b, extents_b = arrays(second)
     overlap = np.all(np.abs(centers_a[:, None, :] - centers_b[None, :, :]) <=
                      extents_a[:, None, :] + extents_b[None, :, :] + 1e-10, axis=2)
+    from .validation_metrics import count
+    count('tool_world_broadphase_pairs', int(overlap.size))
+    count('tool_world_broadphase_skips', int(overlap.size - np.count_nonzero(overlap)))
     return [tuple(map(int, pair)) for pair in np.argwhere(overlap)]
 
 
@@ -625,6 +628,9 @@ class ExactM710LayoutStateValidator:
         self._geometry_cache = LRU(4096)
         self._static_cache = LRU(4096)
         self._geometry_signature = None
+        self._fixed_tool_payload = LRU(128)
+        from .validation_metrics import validation_mode
+        self.validation_mode = validation_mode()
         self.performance_counters = {}
         self.commanded_cup_mask = None
         self.stack_carton_names = set()
@@ -724,6 +730,8 @@ class ExactM710LayoutStateValidator:
         payload: OBB | None,
         target_contact: OBB | None,
         stage: str,
+        fixed_attachment: PhysicalContactAttachment | None = None,
+        validation_context_id: str | None = None,
     ) -> Mapping[str, Any] | None:
         q = np.asarray(q, dtype=float)
         names = [box.name for box in obstacles]
@@ -740,6 +748,7 @@ class ExactM710LayoutStateValidator:
             self.nominal_cup_compression_m)
         if signature != self._geometry_signature:
             self._geometry_cache.clear(); self._static_cache.clear()
+            self._fixed_tool_payload.clear()
             self._geometry_signature = signature
         q_key = q.tobytes()
         if q_key not in self._geometry_cache:
@@ -793,12 +802,65 @@ class ExactM710LayoutStateValidator:
         failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
         if failure is not None:
             return failure
-        # Conservative broad phase around the *locally inflated* OBBs.  It
-        # only skips disjoint world AABBs; the unchanged SAT remains final.
+        fixed_pairs = self._profile_call('fixed_relation_context', self._fixed_pair_context,
+            q, payload, fixed_attachment, validation_context_id, stage, signature)
+        failure = self._profile_call('tool_dynamic_including_attachment', self._tool_dynamic_failure,
+            tool_boxes, dynamic, compliant_names, compliant_indices, payload, target_contact, stage, fixed_pairs)
+        if failure is not None:
+            return failure
+
+        if payload is not None:
+            lower, upper = payload.corners().min(axis=0), payload.corners().max(axis=0)
+            floor_margin = (-0.0002 if self.collision_policy.allows_stack_planning_contact(stage) else
+                self.collision_policy.pair_clearance("external", self.collision_margin_m) if self.collision_policy.poc_pair_clearance else self.collision_margin_m)
+            if lower[2] < self.floor_z_m + floor_margin:
+                return {"reason": "FLOOR_CLEARANCE", "body": payload.name}
+            if not self.collision_policy.poc_pair_clearance and (lower[1] < self.right_wall_y_m + self.collision_margin_m or upper[1] > self.left_wall_y_m - self.collision_margin_m):
+                return {"reason": "TRAILER_SIDE_CLEARANCE", "body": payload.name}
+        return None
+
+    def _fixed_pair_context(self, q, payload, attachment, context_id, stage, signature):
+        """Only tool/payload geometry under the declared exact rigid relation.
+
+        Every motion-state mesh/payload/environment, ordered tracker, receiver,
+        singularity and joint check still runs. Ambiguous boundary pairs are
+        queried again. No native PASS or joint-angle quantization is involved.
+        """
+        if (self.validation_mode != 'optimized' or not self.collision_policy.poc_pair_clearance
+                or context_id is None or payload is None
+                or not isinstance(attachment, PhysicalContactAttachment)
+                or attachment.robot is not self.mesh_robot):
+            return None
+        expected = attachment.box_at(q)
+        if (payload.name != expected.name or not np.array_equal(payload.half_extents, expected.half_extents)
+                or not np.array_equal(payload.world_from_local, expected.world_from_local)):
+            return None
+        key = (context_id, stage, signature, payload.name, payload.half_extents.tobytes(),
+            attachment.rigid.tcp_from_box.tobytes(), attachment.flange_from_virtual_task_tcp.tobytes(),
+            attachment.flange_from_physical_contact.tobytes(), repr(self.collision_policy),
+            self.collision_margin_m, None if self.commanded_cup_mask is None else tuple(self.commanded_cup_mask))
+        from .validation_metrics import count
+        hit, pairs = self._fixed_tool_payload.lookup(key)
+        count('fixed_relation_context_hits' if hit else 'fixed_relation_context_builds')
+        if not hit:
+            pairs = set()
+            self._fixed_tool_payload.put(key, pairs)
+        return pairs
+
+    def _tool_dynamic_failure(self, tool_boxes, dynamic, compliant_names, compliant_indices,
+                              payload, target_contact, stage, fixed_pairs):
+        from .validation_metrics import count
+        from .pair_clearance import obb_distance_at_least
+        # Keep original world broad phase and failure ordering. Reuse only an
+        # individually checked tool/attached-payload pair, never an environment pair.
         for tool_index, obstacle_index in self._profile_call("tool_dynamic_broadphase", possible_inflated_obb_pairs,
             tool_boxes, dynamic, self.collision_margin_m
         ):
             tool, obstacle = tool_boxes[tool_index], dynamic[obstacle_index]
+            fixed = fixed_pairs is not None and payload is not None and obstacle is payload
+            if fixed and tool.name in fixed_pairs:
+                count('fixed_tool_payload_pair_reuses')
+                continue
             if ('obb',tool.name,obstacle.name) in getattr(self,'_interval_pairs',()):
                 continue
             if tool.name in compliant_names:
@@ -818,22 +880,22 @@ class ExactM710LayoutStateValidator:
                     and self.collision_policy.inactive_compliant_cup_stack_contact_mode == "physical_contact_within_compression"
                     and (stage in {"contact", "contact_endpoint", "next_contact"}
                          or payload is not None and self.collision_policy.allows_stack_planning_contact(stage)))
-                if (current_target or stack_contact) and tool.signed_distance_obb(obstacle) >= (
-                    -self.collision_policy.maximum_compliant_cup_additional_compression_m):
-                    continue
+                if current_target or stack_contact:
+                    separation = tool.signed_distance_obb(obstacle)
+                    limit = -self.collision_policy.maximum_compliant_cup_additional_compression_m
+                    if separation >= limit:
+                        if fixed and separation > limit + 1e-9:
+                            fixed_pairs.add(tool.name)
+                            count('fixed_tool_payload_pairs_checked')
+                        continue
             failure = obb_pair_failure(tool, obstacle, self.collision_policy, self.collision_margin_m,
                                        stage=stage, proxy=True, reason="RIGID_TOOL_COLLISION")
             if failure is not None:
                 return failure
-
-        if payload is not None:
-            lower, upper = payload.corners().min(axis=0), payload.corners().max(axis=0)
-            floor_margin = (-0.0002 if self.collision_policy.allows_stack_planning_contact(stage) else
-                self.collision_policy.pair_clearance("external", self.collision_margin_m) if self.collision_policy.poc_pair_clearance else self.collision_margin_m)
-            if lower[2] < self.floor_z_m + floor_margin:
-                return {"reason": "FLOOR_CLEARANCE", "body": payload.name}
-            if not self.collision_policy.poc_pair_clearance and (lower[1] < self.right_wall_y_m + self.collision_margin_m or upper[1] > self.left_wall_y_m - self.collision_margin_m):
-                return {"reason": "TRAILER_SIDE_CLEARANCE", "body": payload.name}
+            if fixed and self.collision_policy.poc_pair_clearance and obb_distance_at_least(
+                    tool, obstacle, self.collision_policy.pair_clearance('external', self.collision_margin_m) + 1e-9):
+                fixed_pairs.add(tool.name)
+                count('fixed_tool_payload_pairs_checked')
         return None
 
 
@@ -960,7 +1022,10 @@ class LayoutTrajectoryConnector:
                                        min(15., .05*self.budget.planning_wall_time_s))
         self._deadline_monotonic = (None if self._request_deadline_monotonic is None else
                                     self._request_deadline_monotonic-self._final_export_reserve_s)
-        self._state_cache.clear()
+        self._invalidate_validation_work()
+        motion_cache = getattr(self.robot, '_clearance_motion_cache', None)
+        if motion_cache is not None:
+            motion_cache.clear()
         self._motion_validators = LRU(128)
         self.validation_budget = RequestBudget(deadline=self._request_deadline_monotonic,
             cancelled=lambda: bool(getattr(self, 'cancel_requested', False)))
@@ -1007,7 +1072,9 @@ class LayoutTrajectoryConnector:
             return None if value is None else (value.name, value.category,
                 value.world_from_local.tolist(), value.half_extents.tolist())
         v = self.robot_state_validator
+        from .validation_metrics import STRATEGY_VERSION
         values = (self.validator_identity,
+            STRATEGY_VERSION, getattr(v, 'validation_mode', 'reference'),
             self.collision_policy.to_mapping(), self.budget.proof_of_concept, self.post_landing_transport,
             self.budget.execution_reserves(), self.budget.release_policy().to_mapping(),
             self.collision_margin_m, self.contact_tolerance_m, self.joint_margin_rad,
@@ -1071,7 +1138,7 @@ class LayoutTrajectoryConnector:
         readers.extend(lambda name=name: getattr(self.robot_state_validator,name,None) for name in (
             'floor_z_m','right_wall_y_m','left_wall_y_m','base_support_obstacle_name',
             'tool_mount_link_name','nominal_cup_compression_m','commanded_cup_mask',
-            'contact_target_name','stack_carton_names','collision_policy','collision_margin_m'))
+            'contact_target_name','stack_carton_names','collision_policy','collision_margin_m','validation_mode'))
         def box(b):
             return None if b is None else (b.name,b.category,b.center,b.rotation,b.half_extents)
         readers.append(lambda: tuple(box(b) for b in obstacles))
@@ -1092,7 +1159,7 @@ class LayoutTrajectoryConnector:
         for name in ('_kinematics_key','_geometry_key'):
             if hasattr(self.robot,name): setattr(self.robot,name,None)
         v=self.robot_state_validator
-        for name in ('_geometry_cache','_static_cache'):
+        for name in ('_geometry_cache','_static_cache','_fixed_tool_payload'):
             if hasattr(v,name): getattr(v,name).clear()
         kernel=getattr(self,'validation_kernel',None)
         if kernel is not None: kernel.cache.clear()
@@ -1517,12 +1584,15 @@ class LayoutTrajectoryConnector:
 
         self._statistics["kinematics_and_joint_checks_wall_seconds"] += perf_counter()-validation_started
         payload = None if attachment is None else attachment.box_at(q_array)
+        fixed_options = (dict(fixed_attachment=attachment, validation_context_id=validation_context_id)
+            if isinstance(self.robot_state_validator, ExactM710LayoutStateValidator) else {})
         backend_failure = self.robot_state_validator(
             q_array,
             tuple(obstacles),
             payload=payload,
             target_contact=target_contact,
             stage=stage,
+            **fixed_options,
         )
         if backend_failure is not None:
             return finish({**dict(backend_failure), "stage": stage})
@@ -1540,8 +1610,16 @@ class LayoutTrajectoryConnector:
         for first, second, reserve in reserve_pairs:
             if reserve <= 0:
                 continue
-            distance = obb_surface_distance(first, second)
             required = self.collision_policy.pair_clearance("external", self.collision_margin_m) + reserve
+            if (self.collision_policy.poc_pair_clearance and
+                    getattr(self.robot_state_validator, 'validation_mode', 'reference') == 'optimized'):
+                from .pair_clearance import obb_aabb_distance_lower
+                from .validation_metrics import count
+                count('receiver_reserve_lower_bound_tests')
+                if obb_aabb_distance_lower(first, second) > required + 1e-9:
+                    count('receiver_reserve_lower_bound_skips')
+                    continue
+            distance = obb_surface_distance(first, second)
             if distance + 1e-9 < required:
                 return finish(dict(reason="PLANNING_EXECUTION_RESERVE", classification="PLANNING_RESERVE_INSUFFICIENT",
                     stage=stage, pair=[first.name, second.name], surface_distance_m=distance,
@@ -1585,13 +1663,32 @@ class LayoutTrajectoryConnector:
         stage: str,
         diagnostic_origin: str = "full_edge_recheck",
     ) -> Mapping[str, Any] | None:
+        from .validation_metrics import STRATEGY_VERSION, work_counts
+        def counters():
+            return dict(connector=dict(self._statistics), context=dict(self._context_statistics()),
+                kernel=dict(getattr(getattr(self, 'validation_kernel', None), 'statistics', {})),
+                validator=dict(getattr(self.robot_state_validator, 'performance_counters', {})),
+                mesh=dict(getattr(getattr(self.robot_state_validator, 'mesh_robot', None), 'performance_counters', {})))
+        began = perf_counter()
+        previous = counters()
         self._statistics["edge_validation_calls"] += 1
-        validator = self._motion_validator(obstacles, attachment=attachment,
-            support_names=support_names, target_contact=target_contact,
-            initial_proximity=initial_proximity, stage=stage)
-        before = validator.statistics['state_samples']
-        result = validator.check_path(path, self._validation_request())
-        self._statistics['edge_state_samples'] += validator.statistics['state_samples']-before
+        with work_counts() as counts:
+            validator = self._motion_validator(obstacles, attachment=attachment,
+                support_names=support_names, target_contact=target_contact,
+                initial_proximity=initial_proximity, stage=stage)
+            before = validator.statistics['state_samples']
+            result = validator.check_path(path, self._validation_request())
+            self._statistics['edge_state_samples'] += validator.statistics['state_samples']-before
+        current = counters()
+        self.last_stage_validation_profile = dict(
+            strategy_version=STRATEGY_VERSION, guarantee=validator.context.guarantee,
+            mode=getattr(self.robot_state_validator, 'validation_mode', 'reference'),
+            stage=stage, path_edges=max(0, len(path)-1), wall_seconds=perf_counter()-began,
+            context_id=validator.context.context_id, query_counts=dict(counts),
+            components={group: {k: v - previous[group].get(k, 0) for k, v in values.items()}
+                        for group, values in current.items()},
+            motion=dict(result.statistics),
+            timing_semantics='wall contains context, kernel, predicate, guard and evidence; component timers may be nested; query families must not be added')
         self.last_motion_validation = result.evidence()
         if result.valid:
             return None

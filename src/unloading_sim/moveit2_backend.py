@@ -1049,6 +1049,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             if self._context_identity(obstacles,attachment=attachment,support_names=support_names,target_contact=target_contact,stage=stage)!=context:
                 raise MoveItUnavailable("VALIDATION_CONTEXT_CHANGED")
             attempt["authoritative_s"]=perf_counter()-checked
+            attempt["authoritative_profile"]=deepcopy(getattr(self, 'last_stage_validation_profile', {}))
             attempt["authoritative_status"]="REJECTED" if failure else "PASS";attempt["failure"]=failure
             if failure:
                 if raw.get("native_output_status")=="PASS":
@@ -1127,6 +1128,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         row=dict(stage=kwargs.get("stage"),path_nodes=len(path),seconds=perf_counter()-started,
             reason=None if failure is None else failure.get("reason"),
             diagnostic_origin=kwargs.get("diagnostic_origin"),attached=kwargs.get("attachment") is not None)
+        row['profile'] = deepcopy(getattr(self, 'last_stage_validation_profile', {}))
         self.authority_path_evidence.append(row)
         trace=os.environ.get("M710_AUTHORITY_TRACE")
         if trace:

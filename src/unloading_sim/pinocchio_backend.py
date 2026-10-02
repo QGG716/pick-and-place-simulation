@@ -313,13 +313,16 @@ class PinocchioHppFclBackend:
         self.geometry_data = self.pin.GeometryData(self.geometry_model)
 
     def _update_geometry(self, q):
+        from .validation_metrics import count
         kernel = getattr(self, 'validation_kernel', None)
         state = None if kernel is None else kernel.get(q)
         self._collision_kinematic_state = state
         key = (np.asarray(q, float).tobytes(), self.base_transform.tobytes(),
                getattr(self, "geometry_revision", 0))
         if getattr(self, "_geometry_key", None) == key:
+            count('mesh_geometry_update_reuses')
             return
+        count('mesh_geometry_updates')
         if state is not None:
             local = np.linalg.inv(self.base_transform) @ state.geometry
             for i,pose in enumerate(local):
@@ -419,6 +422,8 @@ class PinocchioHppFclBackend:
         return float(np.degrees(np.arctan2(vector[2], np.linalg.norm(vector[:2]))))
 
     def _distance(self, first_geometry, first_tf, second_geometry, second_tf) -> float:
+        from .validation_metrics import count
+        count('coal_distance_queries')
         request = self.coal.DistanceRequest()
         result = self.coal.DistanceResult()
         value = self.coal.distance(
@@ -451,6 +456,8 @@ class PinocchioHppFclBackend:
                 counters["rigid_motion_clearance_certificates"] = counters.get("rigid_motion_clearance_certificates", 0) + 1
                 return CollisionResult(False)
         try:
+            from .validation_metrics import count
+            count('coal_intersection_queries')
             contact = self.coal.CollisionResult()
             self.coal.collide(first, first_tf, second, second_tf, self.coal.CollisionRequest(), contact)
             intersects = bool(contact.isCollision())
@@ -536,6 +543,9 @@ class PinocchioHppFclBackend:
                         [active_obstacles[i] for i in near_indices], minimum_distance)
                     near_indices = near_indices[~distant]
             robot_tf = _transform(self.coal, placement[:3, :3], placement[:3, 3])
+            from .validation_metrics import count
+            count('mesh_broadphase_pairs', len(active_obstacles))
+            count('mesh_broadphase_skips', len(active_obstacles) - len(near_indices))
             for obstacle_index in near_indices:
                 obstacle = active_obstacles[obstacle_index]
                 if ('mesh',str(geometry_object.name),obstacle.name) in getattr(self,'_interval_pairs',()):
