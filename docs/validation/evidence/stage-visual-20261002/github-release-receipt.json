@@ -1,0 +1,57 @@
+{
+  "url": "https://github.com/QGG716/pick-and-place-simulation/releases/tag/perception-stage-20261002",
+  "source_commit": "4e0c9eec0342ef999a5095f91bb80252eee91c7d",
+  "published_at": "2026-10-02T07:33:34Z",
+  "public_metadata_verified_without_credentials": true,
+  "total_bytes": 285193884,
+  "assets": [
+    {
+      "name": "algorithm-review.mp4",
+      "size": 2053953,
+      "digest": "sha256:d4adaa4d6c068209da67acc7d3efa14e0cabbbbcef934ed0bd957e87986a67a8",
+      "browser_download_url": "https://github.com/QGG716/pick-and-place-simulation/releases/download/perception-stage-20261002/algorithm-review.mp4"
+    },
+    {
+      "name": "full-results-manifest.json",
+      "size": 158309,
+      "digest": "sha256:b4eaa0f8cd9c72fc1d52dc86a4ca0cb6d8e6246c839edf3cd9fd256cb2b5009f",
+      "browser_download_url": "https://github.com/QGG716/pick-and-place-simulation/releases/download/perception-stage-20261002/full-results-manifest.json"
+    },
+    {
+      "name": "historical-development-viewer.zip",
+      "size": 63633561,
+      "digest": "sha256:9c93aebc970a4c49e6fae59b707182d4120147d09999958d316b713808a8497b",
+      "browser_download_url": "https://github.com/QGG716/pick-and-place-simulation/releases/download/perception-stage-20261002/historical-development-viewer.zip"
+    },
+    {
+      "name": "perception-stage-full-results.tar.gz",
+      "size": 123509590,
+      "digest": "sha256:6aed1b592390c2d472812e7634f61a78354d103d04782fa896ea11a59787bc5c",
+      "browser_download_url": "https://github.com/QGG716/pick-and-place-simulation/releases/download/perception-stage-20261002/perception-stage-full-results.tar.gz"
+    },
+    {
+      "name": "perception-stage-viewer.zip",
+      "size": 94231114,
+      "digest": "sha256:eb83a49cd105e99305de406a6f42679d87f84f4b13dc5cbf4eafdb6409b8d1aa",
+      "browser_download_url": "https://github.com/QGG716/pick-and-place-simulation/releases/download/perception-stage-20261002/perception-stage-viewer.zip"
+    },
+    {
+      "name": "release-manifest.json",
+      "size": 1285,
+      "digest": "sha256:a83762ca82ee9f14a6aaa1d1ccff4340db51d8a42779cf5edd5fb78223051be7",
+      "browser_download_url": "https://github.com/QGG716/pick-and-place-simulation/releases/download/perception-stage-20261002/release-manifest.json"
+    },
+    {
+      "name": "ros-rviz.mp4",
+      "size": 1605421,
+      "digest": "sha256:b20ec7cece634fde7982780ec391f51df86920bbce3bc152d1a5570502ad6a99",
+      "browser_download_url": "https://github.com/QGG716/pick-and-place-simulation/releases/download/perception-stage-20261002/ros-rviz.mp4"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 651,
+      "digest": "sha256:7508f77eae5d23240e8736e989b6a8eaa768ecae1e2cd7bd9eca1b1319709704",
+      "browser_download_url": "https://github.com/QGG716/pick-and-place-simulation/releases/download/perception-stage-20261002/SHA256SUMS.txt"
+    }
+  ]
+}

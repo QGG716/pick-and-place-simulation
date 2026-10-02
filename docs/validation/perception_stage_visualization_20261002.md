@@ -2,6 +2,14 @@
 
 ## 打开结果
 
+GitHub 下载：[本轮完整结果 Release](https://github.com/QGG716/pick-and-place-simulation/releases/tag/perception-stage-20261002)。
+优先下载 `perception-stage-viewer.zip` 后解压打开。Release 同时提供两段独立 MP4、
+`perception-stage-full-results.tar.gz`（772个新运行结果文件，包括阶段数组、完整接触候选、
+ROS回执、日志和固定计划）、明确标为历史开发回看的包，以及逐文件/逐附件 SHA256 清单。
+源码对应 `4e0c9eec0342ef999a5095f91bb80252eee91c7d`；大附件放在 Release，不写入 Git 历史。
+不分发模型权重、临时中文字体、私有源资产或重复代码检出；原录像全集不在结果附件内，
+保留原输入绑定与哈希引用。附件索引见 [release-manifest.json](evidence/stage-visual-20261002/release-manifest.json)。
+
 本地交付目录为 `outputs/stage-visual-20261002/viewer/`。Windows 双击其中的
 `打开查看器.cmd` 或 `index.html`；不需要网络、CDN、Python 服务或再次推理。
 选择 frame32 / frame602、上下模组、SAM 实例、融合对象和接触候选；左右切换阶段，

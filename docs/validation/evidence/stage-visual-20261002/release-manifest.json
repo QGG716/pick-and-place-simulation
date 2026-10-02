@@ -1,0 +1,38 @@
+{
+  "source_commit": "4e0c9eec0342ef999a5095f91bb80252eee91c7d",
+  "release": "https://github.com/QGG716/pick-and-place-simulation/releases/tag/perception-stage-20261002",
+  "full_result_files_verified": 772,
+  "viewer_resources_verified": 802,
+  "assets": [
+    {
+      "name": "perception-stage-viewer.zip",
+      "bytes": 94231114,
+      "sha256": "eb83a49cd105e99305de406a6f42679d87f84f4b13dc5cbf4eafdb6409b8d1aa"
+    },
+    {
+      "name": "perception-stage-full-results.tar.gz",
+      "bytes": 123509590,
+      "sha256": "6aed1b592390c2d472812e7634f61a78354d103d04782fa896ea11a59787bc5c"
+    },
+    {
+      "name": "historical-development-viewer.zip",
+      "bytes": 63633561,
+      "sha256": "9c93aebc970a4c49e6fae59b707182d4120147d09999958d316b713808a8497b"
+    },
+    {
+      "name": "algorithm-review.mp4",
+      "bytes": 2053953,
+      "sha256": "d4adaa4d6c068209da67acc7d3efa14e0cabbbbcef934ed0bd957e87986a67a8"
+    },
+    {
+      "name": "ros-rviz.mp4",
+      "bytes": 1605421,
+      "sha256": "b20ec7cece634fde7982780ec391f51df86920bbce3bc152d1a5570502ad6a99"
+    },
+    {
+      "name": "full-results-manifest.json",
+      "bytes": 158309,
+      "sha256": "b4eaa0f8cd9c72fc1d52dc86a4ca0cb6d8e6246c839edf3cd9fd256cb2b5009f"
+    }
+  ]
+}
