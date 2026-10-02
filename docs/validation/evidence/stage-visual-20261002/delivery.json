@@ -1,0 +1,9 @@
+{
+  "zip_bytes": 94231114,
+  "zip_sha256": "eb83a49cd105e99305de406a6f42679d87f84f4b13dc5cbf4eafdb6409b8d1aa",
+  "resources_verified": 802,
+  "full_video_decode": "PASS: ffmpeg -v error -i VIDEO -f null - (both files)",
+  "local_browser_interaction": "NOT_VERIFIED: Computer Use URL guard stopped; no connector browsers",
+  "viewer": "outputs/stage-visual-20261002/viewer/index.html",
+  "source_sha256_match": true
+}

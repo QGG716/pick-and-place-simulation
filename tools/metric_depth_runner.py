@@ -1,6 +1,7 @@
 """Registered-depth strategy behind the existing RGB-D adapter boundary."""
 import json
 from pathlib import Path
+from time import perf_counter
 import cv2
 import numpy as np
 
@@ -8,7 +9,7 @@ from unloading_perception.metric_faces import extract_observation_labels, fit_me
 from unloading_perception.final_geometry import project
 
 
-def run_metric_depth(*, source, masks, pointmap, depth, K, metadata, output, vision_root, raw=None, python=None, timeout=None, rgb=None):
+def run_metric_depth(*, source, masks, pointmap, depth, K, metadata, output, vision_root, raw=None, python=None, timeout=None, rgb=None, trace=False):
     """Independent metric faces; raw is ignored for historical caller compatibility.
 
     The pinned extractor is imported and SHA-checked on every invocation. No
@@ -30,14 +31,27 @@ def run_metric_depth(*, source, masks, pointmap, depth, K, metadata, output, vis
     entries=sam.get('instances',[])
     entries={int(v['instance_id']):v for v in entries}
     records=[]
+    observer = None
+    if trace:
+        from perception_stage_trace import StageTrace
+        observer = StageTrace(output/'stage_trace', source=source, masks=masks, metadata=metadata, config=config)
     with np.load(masks,allow_pickle=False) as archive:
         for identity,mask in zip(archive['mask_ids'],archive['masks']):
+            started = perf_counter()
             labels,seeds,audit=extract_observation_labels(depth,mask,K,extractor,config)
+            extracted_seconds = perf_counter()-started
+            if observer:
+                observer.extracted(int(identity), labels, seeds, audit, extracted_seconds)
             entry=entries.get(int(identity),{})
             ambiguous=bool(entry.get('supporting_proposal_ids',[]))
+            started = perf_counter()
             record=fit_metric_faces(depth,mask,K,labels,seeds,mask_id=int(identity),config=config,source_ambiguous=ambiguous)
+            if observer:
+                observer.fitted(int(identity), record, perf_counter()-started)
             record['observation_segmentation']=audit
             records.append(record)
+    if observer:
+        observer.complete([int(r['mask_id']) for r in records])
     result={'instances':records,'pointmap_source':'REGISTERED_METRIC_DEPTH','strategy':'DEPTH_CONSTRAINED_METRIC_FACES_V1',
             'legacy_comparison':'tools/metric_v4_runner.py','source':str(source)}
     path=output/'validated_geometry.json'; path.write_text(json.dumps(result,indent=2), encoding='utf-8')

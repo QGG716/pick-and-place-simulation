@@ -203,7 +203,8 @@ def dispatch_geometry(*, backend='inline', blas_threads=None, geometry_python=No
         'source_directory': str(payload.source_directory), 'input_directory': str(source),
         'output_directory': str(folder), 'task_directory': str(task),
         'scene': kwargs['scene'], 'vision_root': str(kwargs['vision_root']),
-        'timeout': kwargs['timeout'], 'config': config, 'config_identity': canonical_fingerprint(config)}
+        'timeout': kwargs['timeout'], 'config': config, 'config_identity': canonical_fingerprint(config),
+        'stage_trace': bool(kwargs.get('stage_trace', False))}
     path = task/'request.json'
     _write_json(path, request)
     request_ref = reference(path)
@@ -288,7 +289,8 @@ def child_main(argv=None):
         result = _run_secondary_module(scene=request['scene'], module_dir=source, manifest=manifest,
             artifacts=artifacts, config=request['config'], vision_root=Path(request['vision_root']),
             upstream_python=Path(sys.executable), timeout=request['timeout'], payload=payload,
-            output_directory=folder if replay else None)
+            output_directory=folder if replay else None,
+            **({'stage_trace': True} if request.get('stage_trace', False) else {}))
         computed = time.perf_counter()
         stage = 'result_publication'
         report['after_geometry'] = snapshot()

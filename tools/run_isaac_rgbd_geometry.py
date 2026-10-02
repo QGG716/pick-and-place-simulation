@@ -424,7 +424,7 @@ def _legacy_cuboid_diagnostic(command, *, directory, vision_root, timeout, enabl
 def _run_secondary_module(
     *, scene: str, module_dir: Path, manifest: IsaacSceneManifest, artifacts: dict,
     config: dict, vision_root: Path, upstream_python: Path, timeout: float,
-    payload=None, output_directory=None,
+    payload=None, output_directory=None, stage_trace=False,
 ) -> dict:
     module_started = perf_counter()
     expected_module = module_dir.name if module_dir.name in {c['module_id'] for c in manifest.cameras} else manifest.cameras[0]['module_id']
@@ -492,6 +492,7 @@ def _run_secondary_module(
         depth=payload.depth, rgb=payload.rgb,
         K=camera["K"], metadata=metadata, output=module_dir / "v4_validation",
         vision_root=vision_root, python=upstream_python, timeout=timeout,
+        **({'trace': True} if stage_trace else {}),
     )
     final_metric_seconds = perf_counter() - final_started
     elapsed = perf_counter() - started

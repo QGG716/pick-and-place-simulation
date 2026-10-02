@@ -1,0 +1,53 @@
+{
+  "checks": [
+    {
+      "group": "frame32",
+      "module": "module_0_upper",
+      "masks": 16,
+      "mask_ids_exact_equal": true,
+      "masks_exact_equal": true,
+      "complete_geometry_records_exact_equal": true,
+      "new_geometry_fingerprint": "23774103fcf6eae500e7d8766923bc1d620b236c1c038d628791408e587919f5",
+      "historical_geometry_fingerprint": "23774103fcf6eae500e7d8766923bc1d620b236c1c038d628791408e587919f5",
+      "geometry_different_mask_ids": [],
+      "original_rgb_equal": "see input_provenance hashes"
+    },
+    {
+      "group": "frame32",
+      "module": "module_1_lower",
+      "masks": 31,
+      "mask_ids_exact_equal": true,
+      "masks_exact_equal": true,
+      "complete_geometry_records_exact_equal": true,
+      "new_geometry_fingerprint": "31668a81cf07488295161008c1f0381b686b77b64c374865a568a034cdfd5543",
+      "historical_geometry_fingerprint": "31668a81cf07488295161008c1f0381b686b77b64c374865a568a034cdfd5543",
+      "geometry_different_mask_ids": [],
+      "original_rgb_equal": "see input_provenance hashes"
+    },
+    {
+      "group": "frame602",
+      "module": "module_0_upper",
+      "masks": 12,
+      "mask_ids_exact_equal": true,
+      "masks_exact_equal": true,
+      "complete_geometry_records_exact_equal": true,
+      "new_geometry_fingerprint": "44cc1a9bdb7ee37a5f03bd81454c04be37a706a2a4898d6c165bbdf7cb940b5f",
+      "historical_geometry_fingerprint": "44cc1a9bdb7ee37a5f03bd81454c04be37a706a2a4898d6c165bbdf7cb940b5f",
+      "geometry_different_mask_ids": [],
+      "original_rgb_equal": "see input_provenance hashes"
+    },
+    {
+      "group": "frame602",
+      "module": "module_1_lower",
+      "masks": 24,
+      "mask_ids_exact_equal": true,
+      "masks_exact_equal": true,
+      "complete_geometry_records_exact_equal": true,
+      "new_geometry_fingerprint": "dea8a95f6c214b2243e1e410cfc6b8112e768e75209a8086851c94ae5d48d759",
+      "historical_geometry_fingerprint": "dea8a95f6c214b2243e1e410cfc6b8112e768e75209a8086851c94ae5d48d759",
+      "geometry_different_mask_ids": [],
+      "original_rgb_equal": "see input_provenance hashes"
+    }
+  ],
+  "normalization": "Only compare instance records; no geometry fields ignored. Capture/output run paths are outside these records."
+}

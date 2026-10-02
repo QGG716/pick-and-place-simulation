@@ -1,0 +1,45 @@
+{
+  "groups": [
+    {
+      "name": "frame32",
+      "status": "COMPLETED",
+      "capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000",
+      "artifact": {
+        "path": "/root/autodl-tmp/v05-acceptance/stage-visual-20261002/new-run/frame32/algorithm/algorithm_artifact.json",
+        "sha256": "64da1a1bf7678378cb4dfc7845ecb980571308c2c4f6ce4b85cd9f35beae19c9"
+      },
+      "counts": {
+        "objects": 37,
+        "raw_surfaces": 68,
+        "representatives": 67,
+        "conflicts": 0,
+        "unknown_regions": 84
+      },
+      "run_id": "ffcec9a460f24a9ab528cec06b6afef6",
+      "resident_model_loads": 1,
+      "sam_object_id": 140242747061824,
+      "algorithm_with_trace_wall_seconds": 154.5479440689087
+    },
+    {
+      "name": "frame602",
+      "status": "COMPLETED",
+      "capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095",
+      "artifact": {
+        "path": "/root/autodl-tmp/v05-acceptance/stage-visual-20261002/new-run/frame602/algorithm/algorithm_artifact.json",
+        "sha256": "0e53ca723e5a4fffbea2c758a52be3ad8170bfb7f12aca9e23b63d245c6ae223"
+      },
+      "counts": {
+        "objects": 28,
+        "raw_surfaces": 60,
+        "representatives": 60,
+        "conflicts": 0,
+        "unknown_regions": 64
+      },
+      "run_id": "d876212cf81e460d963fb7bbfb4074f9",
+      "resident_model_loads": 1,
+      "sam_object_id": 140242747061824,
+      "algorithm_with_trace_wall_seconds": 118.78181250952184
+    }
+  ],
+  "status": "COMPLETED"
+}

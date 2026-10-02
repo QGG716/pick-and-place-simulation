@@ -1,0 +1,32 @@
+{
+  "results": [
+    {
+      "group": "frame32",
+      "objects": 37,
+      "candidates": 2412,
+      "exact_equal": true,
+      "differences": []
+    },
+    {
+      "group": "frame602",
+      "objects": 28,
+      "candidates": 2160,
+      "exact_equal": true,
+      "differences": []
+    }
+  ],
+  "compared_fields": [
+    "candidate",
+    "cups",
+    "support_status",
+    "required_cups",
+    "contact_reference_pose",
+    "flange_pose",
+    "mechanical_tcp_pose",
+    "remaining",
+    "support_audit",
+    "capture_time",
+    "clock_domain"
+  ],
+  "excluded": "Only new identity and artifact/config path provenance; never geometric values or order"
+}

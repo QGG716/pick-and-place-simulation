@@ -1,0 +1,1171 @@
+{
+  "plan": {
+    "baseline": "27a541a1befb53e9dd374c78f86daffc8c14747a",
+    "index": {
+      "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/sequence-prefix.json",
+      "sha256": "1e2ade756e33b88d39c95e4e2f2374e7e590a59c011db19675425909f2239cfc"
+    },
+    "source_warning": "Acquisition interrupted: 000096: CapturePayloadError: BINDING_MISSING file=capture_binding.json module=unknown capture=module_0_upper ",
+    "groups": [
+      {
+        "name": "frame32",
+        "capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000",
+        "frame": 32,
+        "source_time": 0.5333333611488342,
+        "verified_inputs": {
+          "module_0_upper": {
+            "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper",
+            "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper",
+            "capture_id": "carton-assets-recording-01:module_0_upper:32",
+            "module_id": "module_0_upper",
+            "sensor_epoch": "carton-assets-recording-01",
+            "frame_sequence": 32,
+            "original_binding": {
+              "module_id": "module_0_upper",
+              "instance_masks_sha256": "33626d7bd54608eb7459c96cf3167639f5ccf37e33a088c6c3dfb3d09e053040",
+              "robot_state": {
+                "schema_version": "isaac_robot_state_v1",
+                "source": "KINEMATIC_HOLD_READBACK",
+                "synthetic_fixture": false,
+                "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+                "robot_model_identity": "fanuc_m710id_70",
+                "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+                "simulation_epoch": "carton-assets-recording-01",
+                "frame_sequence": 32,
+                "sample_time": 0.5333333611488342,
+                "clock_domain": "ros_sim_time",
+                "joint_names": [
+                  "J1",
+                  "J2",
+                  "J3",
+                  "J4",
+                  "J5",
+                  "J6"
+                ],
+                "position_rad": [
+                  -1.5707963705062866,
+                  0.785456657409668,
+                  0.649621844291687,
+                  0.06722349673509598,
+                  -1.2117502689361572,
+                  -1.9415185451507568
+                ],
+                "velocity_rad_s": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "kinematic_hold": {
+                  "render_without_physics_step": true,
+                  "position_command_rad": [
+                    -1.5707963705062866,
+                    0.785456657409668,
+                    0.649621844291687,
+                    0.06722349673509598,
+                    -1.2117502689361572,
+                    -1.9415185451507568
+                  ],
+                  "velocity_command_rad_s": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+              "capture_id": "carton-assets-recording-01:module_0_upper:32",
+              "clock_domain": "ros_sim_time",
+              "metric_depth_dtype": "float32",
+              "metric_depth_unit": "m",
+              "metric_depth_semantics": "optical_z_m",
+              "metric_depth_sha256": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+              "capture_metadata_sha256": "d797fc4c4ffb3b5caf037edb794e506056e0498ac7db96bc0a74f4622f9ba335",
+              "schema_version": "isaac_capture_binding_v1",
+              "simulation_epoch": "carton-assets-recording-01",
+              "frame_sequence": 32,
+              "simulation_time": 0.5333333611488342,
+              "rgb_sha256": "961faed9467a4b727f03828b1d06c31e1cd24ac966df809930cf7b2e6bb4897a",
+              "camera_calibration_identity": "372d53029e85bd0e617ee1a2e523319c0d818ee4f47bc60f0d06f637ec7fe3b0",
+              "gt_snapshot_sha256": "a3718c71a45aab77b7fa82a8a7d12c95d6b1735a584dc7a5ff69339830ed394a"
+            },
+            "consumed_files": {
+              "capture_binding.json": {
+                "sha256": "b60bb353b4418ad58694d03b905b559641dbb3496401c3e2343243ccd7d9ef45",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/capture_binding.json"
+              },
+              "capture_metadata.json": {
+                "sha256": "d797fc4c4ffb3b5caf037edb794e506056e0498ac7db96bc0a74f4622f9ba335",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/capture_metadata.json"
+              },
+              "gt_annotations.json": {
+                "sha256": "a3718c71a45aab77b7fa82a8a7d12c95d6b1735a584dc7a5ff69339830ed394a",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/gt_annotations.json"
+              },
+              "camera_info.json": {
+                "sha256": "06fa09c365c92a4a3e0fa19ca62b0d70270c76f5bea9fbf750376376bc92f44f",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/camera_info.json"
+              },
+              "sensor_rgb.png": {
+                "sha256": "961faed9467a4b727f03828b1d06c31e1cd24ac966df809930cf7b2e6bb4897a",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.png"
+              },
+              "metric_depth_m.npy": {
+                "sha256": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/metric_depth_m.npy"
+              },
+              "gt_instance_masks.npz": {
+                "sha256": "33626d7bd54608eb7459c96cf3167639f5ccf37e33a088c6c3dfb3d09e053040",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/gt_instance_masks.npz"
+              }
+            },
+            "rgb_authority": "VERIFIED_PNG",
+            "original_rgb_npy_consumed": false,
+            "derived_inputs": {}
+          },
+          "module_1_lower": {
+            "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower",
+            "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower",
+            "capture_id": "carton-assets-recording-01:module_1_lower:32",
+            "module_id": "module_1_lower",
+            "sensor_epoch": "carton-assets-recording-01",
+            "frame_sequence": 32,
+            "original_binding": {
+              "module_id": "module_1_lower",
+              "instance_masks_sha256": "8e9918627af58b3146d35072b0020f63f009909ecedcce46de7ba96ffbfc00ff",
+              "robot_state": {
+                "schema_version": "isaac_robot_state_v1",
+                "source": "KINEMATIC_HOLD_READBACK",
+                "synthetic_fixture": false,
+                "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+                "robot_model_identity": "fanuc_m710id_70",
+                "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+                "simulation_epoch": "carton-assets-recording-01",
+                "frame_sequence": 32,
+                "sample_time": 0.5333333611488342,
+                "clock_domain": "ros_sim_time",
+                "joint_names": [
+                  "J1",
+                  "J2",
+                  "J3",
+                  "J4",
+                  "J5",
+                  "J6"
+                ],
+                "position_rad": [
+                  -1.5707963705062866,
+                  0.785456657409668,
+                  0.649621844291687,
+                  0.06722349673509598,
+                  -1.2117502689361572,
+                  -1.9415185451507568
+                ],
+                "velocity_rad_s": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "kinematic_hold": {
+                  "render_without_physics_step": true,
+                  "position_command_rad": [
+                    -1.5707963705062866,
+                    0.785456657409668,
+                    0.649621844291687,
+                    0.06722349673509598,
+                    -1.2117502689361572,
+                    -1.9415185451507568
+                  ],
+                  "velocity_command_rad_s": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+              "capture_id": "carton-assets-recording-01:module_1_lower:32",
+              "clock_domain": "ros_sim_time",
+              "metric_depth_dtype": "float32",
+              "metric_depth_unit": "m",
+              "metric_depth_semantics": "optical_z_m",
+              "metric_depth_sha256": "67aec15192dfb1138c6b6016c54f0d8d28069a68012b813f369098d063cb60f4",
+              "capture_metadata_sha256": "37e440351a2c3e13126d19cb3860b1e9b0df0979cc626080886f43e0d66f3467",
+              "schema_version": "isaac_capture_binding_v1",
+              "simulation_epoch": "carton-assets-recording-01",
+              "frame_sequence": 32,
+              "simulation_time": 0.5333333611488342,
+              "rgb_sha256": "ff4c6c51be77292752d3afb4799e328fb09d255654fd5218e84f785414daa6fa",
+              "camera_calibration_identity": "e6318d1f0cd52b9c8a12ca8df80192da9f5a4cdf7602fcc7b5d0473cd5bf180b",
+              "gt_snapshot_sha256": "fc374aab3cb1f675b584ed6a1c34500b4f31ff72b8ca203b757c1387784dc8cd"
+            },
+            "consumed_files": {
+              "capture_binding.json": {
+                "sha256": "fec3816c8d3b587467e104319d8312454bf66fae4fef60acf6271d8890d98bde",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/capture_binding.json"
+              },
+              "capture_metadata.json": {
+                "sha256": "37e440351a2c3e13126d19cb3860b1e9b0df0979cc626080886f43e0d66f3467",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/capture_metadata.json"
+              },
+              "gt_annotations.json": {
+                "sha256": "fc374aab3cb1f675b584ed6a1c34500b4f31ff72b8ca203b757c1387784dc8cd",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/gt_annotations.json"
+              },
+              "camera_info.json": {
+                "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/camera_info.json"
+              },
+              "sensor_rgb.png": {
+                "sha256": "ff4c6c51be77292752d3afb4799e328fb09d255654fd5218e84f785414daa6fa",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.png"
+              },
+              "metric_depth_m.npy": {
+                "sha256": "67aec15192dfb1138c6b6016c54f0d8d28069a68012b813f369098d063cb60f4",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy"
+              },
+              "gt_instance_masks.npz": {
+                "sha256": "8e9918627af58b3146d35072b0020f63f009909ecedcce46de7ba96ffbfc00ff",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/gt_instance_masks.npz"
+              }
+            },
+            "rgb_authority": "VERIFIED_PNG",
+            "original_rgb_npy_consumed": false,
+            "derived_inputs": {}
+          }
+        }
+      },
+      {
+        "name": "frame602",
+        "capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095",
+        "frame": 602,
+        "source_time": 10.033333856612444,
+        "verified_inputs": {
+          "module_0_upper": {
+            "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper",
+            "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper",
+            "capture_id": "carton-assets-recording-01:module_0_upper:602",
+            "module_id": "module_0_upper",
+            "sensor_epoch": "carton-assets-recording-01",
+            "frame_sequence": 602,
+            "original_binding": {
+              "module_id": "module_0_upper",
+              "instance_masks_sha256": "2de01d90d08139957418eadb7b3ba08f652630eecb7c596ae3b8dff7283b3860",
+              "robot_state": {
+                "schema_version": "isaac_robot_state_v1",
+                "source": "KINEMATIC_HOLD_READBACK",
+                "synthetic_fixture": false,
+                "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+                "robot_model_identity": "fanuc_m710id_70",
+                "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+                "simulation_epoch": "carton-assets-recording-01",
+                "frame_sequence": 602,
+                "sample_time": 10.033333856612444,
+                "clock_domain": "ros_sim_time",
+                "joint_names": [
+                  "J1",
+                  "J2",
+                  "J3",
+                  "J4",
+                  "J5",
+                  "J6"
+                ],
+                "position_rad": [
+                  -1.5707963705062866,
+                  0.785456657409668,
+                  0.649621844291687,
+                  0.06722349673509598,
+                  -1.2117502689361572,
+                  -1.9415185451507568
+                ],
+                "velocity_rad_s": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "kinematic_hold": {
+                  "render_without_physics_step": true,
+                  "position_command_rad": [
+                    -1.5707963705062866,
+                    0.785456657409668,
+                    0.649621844291687,
+                    0.06722349673509598,
+                    -1.2117502689361572,
+                    -1.9415185451507568
+                  ],
+                  "velocity_command_rad_s": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+              "capture_id": "carton-assets-recording-01:module_0_upper:602",
+              "clock_domain": "ros_sim_time",
+              "metric_depth_dtype": "float32",
+              "metric_depth_unit": "m",
+              "metric_depth_semantics": "optical_z_m",
+              "metric_depth_sha256": "bfc49ab1579c425ce7088e4ec68083d5a2c3b6e559ba9b2243d13955b0879c33",
+              "capture_metadata_sha256": "95fec3fa30e0f8a334a5da1e15b7a92088b4773143a78ab9965e0b52437d0f47",
+              "schema_version": "isaac_capture_binding_v1",
+              "simulation_epoch": "carton-assets-recording-01",
+              "frame_sequence": 602,
+              "simulation_time": 10.033333856612444,
+              "rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+              "camera_calibration_identity": "181d0e2399fe7bd821eb19ce5b172e801fa903b8d3c471d4c57f56be4ff10146",
+              "gt_snapshot_sha256": "d50cd1ac9b8e3cff1946db0a6c8ecf5c6d7f78d3ccf89a81eddd4ffe869d5475"
+            },
+            "consumed_files": {
+              "capture_binding.json": {
+                "sha256": "b43073f82cb33c5afc88725e1ddfb3b91509e1764cdc92a8d446fbbe4c9213ed",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/capture_binding.json"
+              },
+              "capture_metadata.json": {
+                "sha256": "95fec3fa30e0f8a334a5da1e15b7a92088b4773143a78ab9965e0b52437d0f47",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/capture_metadata.json"
+              },
+              "gt_annotations.json": {
+                "sha256": "d50cd1ac9b8e3cff1946db0a6c8ecf5c6d7f78d3ccf89a81eddd4ffe869d5475",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/gt_annotations.json"
+              },
+              "camera_info.json": {
+                "sha256": "f436a620874f9ffbbf62fd0b8ac8dc18cdf503cf6fff4d379aeecd51aec8c0e5",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/camera_info.json"
+              },
+              "sensor_rgb.png": {
+                "sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.png"
+              },
+              "metric_depth_m.npy": {
+                "sha256": "bfc49ab1579c425ce7088e4ec68083d5a2c3b6e559ba9b2243d13955b0879c33",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/metric_depth_m.npy"
+              },
+              "gt_instance_masks.npz": {
+                "sha256": "2de01d90d08139957418eadb7b3ba08f652630eecb7c596ae3b8dff7283b3860",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/gt_instance_masks.npz"
+              }
+            },
+            "rgb_authority": "VERIFIED_PNG",
+            "original_rgb_npy_consumed": false,
+            "derived_inputs": {}
+          },
+          "module_1_lower": {
+            "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower",
+            "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower",
+            "capture_id": "carton-assets-recording-01:module_1_lower:602",
+            "module_id": "module_1_lower",
+            "sensor_epoch": "carton-assets-recording-01",
+            "frame_sequence": 602,
+            "original_binding": {
+              "module_id": "module_1_lower",
+              "instance_masks_sha256": "6fe1886d8924cc2add82d3fb2cd35434b5fd6cd12fe31027c37a1a950edf5139",
+              "robot_state": {
+                "schema_version": "isaac_robot_state_v1",
+                "source": "KINEMATIC_HOLD_READBACK",
+                "synthetic_fixture": false,
+                "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+                "robot_model_identity": "fanuc_m710id_70",
+                "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+                "simulation_epoch": "carton-assets-recording-01",
+                "frame_sequence": 602,
+                "sample_time": 10.033333856612444,
+                "clock_domain": "ros_sim_time",
+                "joint_names": [
+                  "J1",
+                  "J2",
+                  "J3",
+                  "J4",
+                  "J5",
+                  "J6"
+                ],
+                "position_rad": [
+                  -1.5707963705062866,
+                  0.785456657409668,
+                  0.649621844291687,
+                  0.06722349673509598,
+                  -1.2117502689361572,
+                  -1.9415185451507568
+                ],
+                "velocity_rad_s": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "kinematic_hold": {
+                  "render_without_physics_step": true,
+                  "position_command_rad": [
+                    -1.5707963705062866,
+                    0.785456657409668,
+                    0.649621844291687,
+                    0.06722349673509598,
+                    -1.2117502689361572,
+                    -1.9415185451507568
+                  ],
+                  "velocity_command_rad_s": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+              "capture_id": "carton-assets-recording-01:module_1_lower:602",
+              "clock_domain": "ros_sim_time",
+              "metric_depth_dtype": "float32",
+              "metric_depth_unit": "m",
+              "metric_depth_semantics": "optical_z_m",
+              "metric_depth_sha256": "fc2cfaeeb0ce162b1a468807ed8270fa4260275e1f3eae10c26954eb32d8fd27",
+              "capture_metadata_sha256": "7a302fc8a452e761b0f6b4bbaf7fc44353f2cf6dd7d7593484ce0dd49fffa91e",
+              "schema_version": "isaac_capture_binding_v1",
+              "simulation_epoch": "carton-assets-recording-01",
+              "frame_sequence": 602,
+              "simulation_time": 10.033333856612444,
+              "rgb_sha256": "01524015b8c3687664e4db7eca0e93fd2ebba690e428f3886e55055d43bf1501",
+              "camera_calibration_identity": "0c7fd06ae7cca85f729058fa518bdcad4176a19c60e787737462c3f31cd69057",
+              "gt_snapshot_sha256": "3d309846c14fda9c2c4c34ee7eb623ff36d5c8df20f49b7f1cfaea6ab572ee16"
+            },
+            "consumed_files": {
+              "capture_binding.json": {
+                "sha256": "89e64b0c6be622f8d0840543f783baa4abfd5698c4b3babd803340e66711a6b9",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/capture_binding.json"
+              },
+              "capture_metadata.json": {
+                "sha256": "7a302fc8a452e761b0f6b4bbaf7fc44353f2cf6dd7d7593484ce0dd49fffa91e",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/capture_metadata.json"
+              },
+              "gt_annotations.json": {
+                "sha256": "3d309846c14fda9c2c4c34ee7eb623ff36d5c8df20f49b7f1cfaea6ab572ee16",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/gt_annotations.json"
+              },
+              "camera_info.json": {
+                "sha256": "a64d1fcd0be239285ca5a49f099e64ac9d285f5ace1bb58f27dc677f444f85f0",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/camera_info.json"
+              },
+              "sensor_rgb.png": {
+                "sha256": "01524015b8c3687664e4db7eca0e93fd2ebba690e428f3886e55055d43bf1501",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.png"
+              },
+              "metric_depth_m.npy": {
+                "sha256": "fc2cfaeeb0ce162b1a468807ed8270fa4260275e1f3eae10c26954eb32d8fd27",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy"
+              },
+              "gt_instance_masks.npz": {
+                "sha256": "6fe1886d8924cc2add82d3fb2cd35434b5fd6cd12fe31027c37a1a950edf5139",
+                "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/gt_instance_masks.npz"
+              }
+            },
+            "rgb_authority": "VERIFIED_PNG",
+            "original_rgb_npy_consumed": false,
+            "derived_inputs": {}
+          }
+        }
+      }
+    ],
+    "selection": "Fixed original frames 32 then 602, all original modules and masks; no latest-wins",
+    "source_files": {
+      "tools/complete_metric_stage_evidence.py": "44467c1d45fa6c75a98a2793729a44d193ee970a95429add01e680f425581f18",
+      "tools/build_perception_stage_viewer.py": "9803e9fc854c3ace786a6beb740cf0ec560a0b0afb22c800a25b968697e06289",
+      "tools/perception_stage_trace.py": "3dba39ab9160dd36e2ab3c2feca50d1955f5ecfcef884b7b7b5bb122c71705d4",
+      "tools/perception_stage_viewer.html": "b003e6c0337553ab543bbcc46b31c01532057092c85fefa2738798e2ef69ba20",
+      "tools/run_perception_stage_capture.py": "2af54112f4b08a138a4bf353d309127676d8868ebf0e0fa61ff557adb04537d9"
+    }
+  },
+  "inputs": {
+    "frame32": {
+      "module_0_upper": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper",
+        "capture_id": "carton-assets-recording-01:module_0_upper:32",
+        "module_id": "module_0_upper",
+        "sensor_epoch": "carton-assets-recording-01",
+        "frame_sequence": 32,
+        "original_binding": {
+          "module_id": "module_0_upper",
+          "instance_masks_sha256": "33626d7bd54608eb7459c96cf3167639f5ccf37e33a088c6c3dfb3d09e053040",
+          "robot_state": {
+            "schema_version": "isaac_robot_state_v1",
+            "source": "KINEMATIC_HOLD_READBACK",
+            "synthetic_fixture": false,
+            "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+            "robot_model_identity": "fanuc_m710id_70",
+            "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+            "simulation_epoch": "carton-assets-recording-01",
+            "frame_sequence": 32,
+            "sample_time": 0.5333333611488342,
+            "clock_domain": "ros_sim_time",
+            "joint_names": [
+              "J1",
+              "J2",
+              "J3",
+              "J4",
+              "J5",
+              "J6"
+            ],
+            "position_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kinematic_hold": {
+              "render_without_physics_step": true,
+              "position_command_rad": [
+                -1.5707963705062866,
+                0.785456657409668,
+                0.649621844291687,
+                0.06722349673509598,
+                -1.2117502689361572,
+                -1.9415185451507568
+              ],
+              "velocity_command_rad_s": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+          "capture_id": "carton-assets-recording-01:module_0_upper:32",
+          "clock_domain": "ros_sim_time",
+          "metric_depth_dtype": "float32",
+          "metric_depth_unit": "m",
+          "metric_depth_semantics": "optical_z_m",
+          "metric_depth_sha256": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+          "capture_metadata_sha256": "d797fc4c4ffb3b5caf037edb794e506056e0498ac7db96bc0a74f4622f9ba335",
+          "schema_version": "isaac_capture_binding_v1",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 32,
+          "simulation_time": 0.5333333611488342,
+          "rgb_sha256": "961faed9467a4b727f03828b1d06c31e1cd24ac966df809930cf7b2e6bb4897a",
+          "camera_calibration_identity": "372d53029e85bd0e617ee1a2e523319c0d818ee4f47bc60f0d06f637ec7fe3b0",
+          "gt_snapshot_sha256": "a3718c71a45aab77b7fa82a8a7d12c95d6b1735a584dc7a5ff69339830ed394a"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "b60bb353b4418ad58694d03b905b559641dbb3496401c3e2343243ccd7d9ef45",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "d797fc4c4ffb3b5caf037edb794e506056e0498ac7db96bc0a74f4622f9ba335",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "a3718c71a45aab77b7fa82a8a7d12c95d6b1735a584dc7a5ff69339830ed394a",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "06fa09c365c92a4a3e0fa19ca62b0d70270c76f5bea9fbf750376376bc92f44f",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "961faed9467a4b727f03828b1d06c31e1cd24ac966df809930cf7b2e6bb4897a",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "8ecf47909700a8d2474ae72dd806f7c6496eb1b4eba9e8306111c3e99c9412d9",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "33626d7bd54608eb7459c96cf3167639f5ccf37e33a088c6c3dfb3d09e053040",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_0_upper/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      },
+      "module_1_lower": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower",
+        "capture_id": "carton-assets-recording-01:module_1_lower:32",
+        "module_id": "module_1_lower",
+        "sensor_epoch": "carton-assets-recording-01",
+        "frame_sequence": 32,
+        "original_binding": {
+          "module_id": "module_1_lower",
+          "instance_masks_sha256": "8e9918627af58b3146d35072b0020f63f009909ecedcce46de7ba96ffbfc00ff",
+          "robot_state": {
+            "schema_version": "isaac_robot_state_v1",
+            "source": "KINEMATIC_HOLD_READBACK",
+            "synthetic_fixture": false,
+            "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+            "robot_model_identity": "fanuc_m710id_70",
+            "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+            "simulation_epoch": "carton-assets-recording-01",
+            "frame_sequence": 32,
+            "sample_time": 0.5333333611488342,
+            "clock_domain": "ros_sim_time",
+            "joint_names": [
+              "J1",
+              "J2",
+              "J3",
+              "J4",
+              "J5",
+              "J6"
+            ],
+            "position_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kinematic_hold": {
+              "render_without_physics_step": true,
+              "position_command_rad": [
+                -1.5707963705062866,
+                0.785456657409668,
+                0.649621844291687,
+                0.06722349673509598,
+                -1.2117502689361572,
+                -1.9415185451507568
+              ],
+              "velocity_command_rad_s": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "manifest_fingerprint": "9a12309ffa0d1336ab0b5572e2f8af32375462d55aba7cf30f180780b0453fe2",
+          "capture_id": "carton-assets-recording-01:module_1_lower:32",
+          "clock_domain": "ros_sim_time",
+          "metric_depth_dtype": "float32",
+          "metric_depth_unit": "m",
+          "metric_depth_semantics": "optical_z_m",
+          "metric_depth_sha256": "67aec15192dfb1138c6b6016c54f0d8d28069a68012b813f369098d063cb60f4",
+          "capture_metadata_sha256": "37e440351a2c3e13126d19cb3860b1e9b0df0979cc626080886f43e0d66f3467",
+          "schema_version": "isaac_capture_binding_v1",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 32,
+          "simulation_time": 0.5333333611488342,
+          "rgb_sha256": "ff4c6c51be77292752d3afb4799e328fb09d255654fd5218e84f785414daa6fa",
+          "camera_calibration_identity": "e6318d1f0cd52b9c8a12ca8df80192da9f5a4cdf7602fcc7b5d0473cd5bf180b",
+          "gt_snapshot_sha256": "fc374aab3cb1f675b584ed6a1c34500b4f31ff72b8ca203b757c1387784dc8cd"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "fec3816c8d3b587467e104319d8312454bf66fae4fef60acf6271d8890d98bde",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "37e440351a2c3e13126d19cb3860b1e9b0df0979cc626080886f43e0d66f3467",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "fc374aab3cb1f675b584ed6a1c34500b4f31ff72b8ca203b757c1387784dc8cd",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "ff4c6c51be77292752d3afb4799e328fb09d255654fd5218e84f785414daa6fa",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "67aec15192dfb1138c6b6016c54f0d8d28069a68012b813f369098d063cb60f4",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "8e9918627af58b3146d35072b0020f63f009909ecedcce46de7ba96ffbfc00ff",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000000/FULL_STACK_NOMINAL/modules/module_1_lower/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      }
+    },
+    "frame602": {
+      "module_0_upper": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper",
+        "capture_id": "carton-assets-recording-01:module_0_upper:602",
+        "module_id": "module_0_upper",
+        "sensor_epoch": "carton-assets-recording-01",
+        "frame_sequence": 602,
+        "original_binding": {
+          "module_id": "module_0_upper",
+          "instance_masks_sha256": "2de01d90d08139957418eadb7b3ba08f652630eecb7c596ae3b8dff7283b3860",
+          "robot_state": {
+            "schema_version": "isaac_robot_state_v1",
+            "source": "KINEMATIC_HOLD_READBACK",
+            "synthetic_fixture": false,
+            "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+            "robot_model_identity": "fanuc_m710id_70",
+            "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+            "simulation_epoch": "carton-assets-recording-01",
+            "frame_sequence": 602,
+            "sample_time": 10.033333856612444,
+            "clock_domain": "ros_sim_time",
+            "joint_names": [
+              "J1",
+              "J2",
+              "J3",
+              "J4",
+              "J5",
+              "J6"
+            ],
+            "position_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kinematic_hold": {
+              "render_without_physics_step": true,
+              "position_command_rad": [
+                -1.5707963705062866,
+                0.785456657409668,
+                0.649621844291687,
+                0.06722349673509598,
+                -1.2117502689361572,
+                -1.9415185451507568
+              ],
+              "velocity_command_rad_s": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+          "capture_id": "carton-assets-recording-01:module_0_upper:602",
+          "clock_domain": "ros_sim_time",
+          "metric_depth_dtype": "float32",
+          "metric_depth_unit": "m",
+          "metric_depth_semantics": "optical_z_m",
+          "metric_depth_sha256": "bfc49ab1579c425ce7088e4ec68083d5a2c3b6e559ba9b2243d13955b0879c33",
+          "capture_metadata_sha256": "95fec3fa30e0f8a334a5da1e15b7a92088b4773143a78ab9965e0b52437d0f47",
+          "schema_version": "isaac_capture_binding_v1",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 602,
+          "simulation_time": 10.033333856612444,
+          "rgb_sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+          "camera_calibration_identity": "181d0e2399fe7bd821eb19ce5b172e801fa903b8d3c471d4c57f56be4ff10146",
+          "gt_snapshot_sha256": "d50cd1ac9b8e3cff1946db0a6c8ecf5c6d7f78d3ccf89a81eddd4ffe869d5475"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "b43073f82cb33c5afc88725e1ddfb3b91509e1764cdc92a8d446fbbe4c9213ed",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "95fec3fa30e0f8a334a5da1e15b7a92088b4773143a78ab9965e0b52437d0f47",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "d50cd1ac9b8e3cff1946db0a6c8ecf5c6d7f78d3ccf89a81eddd4ffe869d5475",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "f436a620874f9ffbbf62fd0b8ac8dc18cdf503cf6fff4d379aeecd51aec8c0e5",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "cb5b3432ca862ba39417a2032c1958636cfe03c3d5d48786ffa6c4f2852d5bcf",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "bfc49ab1579c425ce7088e4ec68083d5a2c3b6e559ba9b2243d13955b0879c33",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "2de01d90d08139957418eadb7b3ba08f652630eecb7c596ae3b8dff7283b3860",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_0_upper/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      },
+      "module_1_lower": {
+        "source_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower",
+        "input_directory": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower",
+        "capture_id": "carton-assets-recording-01:module_1_lower:602",
+        "module_id": "module_1_lower",
+        "sensor_epoch": "carton-assets-recording-01",
+        "frame_sequence": 602,
+        "original_binding": {
+          "module_id": "module_1_lower",
+          "instance_masks_sha256": "6fe1886d8924cc2add82d3fb2cd35434b5fd6cd12fe31027c37a1a950edf5139",
+          "robot_state": {
+            "schema_version": "isaac_robot_state_v1",
+            "source": "KINEMATIC_HOLD_READBACK",
+            "synthetic_fixture": false,
+            "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+            "robot_model_identity": "fanuc_m710id_70",
+            "robot_asset_hash": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+            "simulation_epoch": "carton-assets-recording-01",
+            "frame_sequence": 602,
+            "sample_time": 10.033333856612444,
+            "clock_domain": "ros_sim_time",
+            "joint_names": [
+              "J1",
+              "J2",
+              "J3",
+              "J4",
+              "J5",
+              "J6"
+            ],
+            "position_rad": [
+              -1.5707963705062866,
+              0.785456657409668,
+              0.649621844291687,
+              0.06722349673509598,
+              -1.2117502689361572,
+              -1.9415185451507568
+            ],
+            "velocity_rad_s": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kinematic_hold": {
+              "render_without_physics_step": true,
+              "position_command_rad": [
+                -1.5707963705062866,
+                0.785456657409668,
+                0.649621844291687,
+                0.06722349673509598,
+                -1.2117502689361572,
+                -1.9415185451507568
+              ],
+              "velocity_command_rad_s": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "manifest_fingerprint": "78e9a986e6e68018855d81ae84a867ea5b008d4514e8fcbcc72f25691d79b894",
+          "capture_id": "carton-assets-recording-01:module_1_lower:602",
+          "clock_domain": "ros_sim_time",
+          "metric_depth_dtype": "float32",
+          "metric_depth_unit": "m",
+          "metric_depth_semantics": "optical_z_m",
+          "metric_depth_sha256": "fc2cfaeeb0ce162b1a468807ed8270fa4260275e1f3eae10c26954eb32d8fd27",
+          "capture_metadata_sha256": "7a302fc8a452e761b0f6b4bbaf7fc44353f2cf6dd7d7593484ce0dd49fffa91e",
+          "schema_version": "isaac_capture_binding_v1",
+          "simulation_epoch": "carton-assets-recording-01",
+          "frame_sequence": 602,
+          "simulation_time": 10.033333856612444,
+          "rgb_sha256": "01524015b8c3687664e4db7eca0e93fd2ebba690e428f3886e55055d43bf1501",
+          "camera_calibration_identity": "0c7fd06ae7cca85f729058fa518bdcad4176a19c60e787737462c3f31cd69057",
+          "gt_snapshot_sha256": "3d309846c14fda9c2c4c34ee7eb623ff36d5c8df20f49b7f1cfaea6ab572ee16"
+        },
+        "consumed_files": {
+          "capture_binding.json": {
+            "sha256": "89e64b0c6be622f8d0840543f783baa4abfd5698c4b3babd803340e66711a6b9",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/capture_binding.json"
+          },
+          "capture_metadata.json": {
+            "sha256": "7a302fc8a452e761b0f6b4bbaf7fc44353f2cf6dd7d7593484ce0dd49fffa91e",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/capture_metadata.json"
+          },
+          "gt_annotations.json": {
+            "sha256": "3d309846c14fda9c2c4c34ee7eb623ff36d5c8df20f49b7f1cfaea6ab572ee16",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/gt_annotations.json"
+          },
+          "camera_info.json": {
+            "sha256": "a64d1fcd0be239285ca5a49f099e64ac9d285f5ace1bb58f27dc677f444f85f0",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/camera_info.json"
+          },
+          "sensor_rgb.png": {
+            "sha256": "01524015b8c3687664e4db7eca0e93fd2ebba690e428f3886e55055d43bf1501",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/sensor_rgb.png"
+          },
+          "metric_depth_m.npy": {
+            "sha256": "fc2cfaeeb0ce162b1a468807ed8270fa4260275e1f3eae10c26954eb32d8fd27",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/metric_depth_m.npy"
+          },
+          "gt_instance_masks.npz": {
+            "sha256": "6fe1886d8924cc2add82d3fb2cd35434b5fd6cd12fe31027c37a1a950edf5139",
+            "path": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000095/FULL_STACK_NOMINAL/modules/module_1_lower/gt_instance_masks.npz"
+          }
+        },
+        "rgb_authority": "VERIFIED_PNG",
+        "original_rgb_npy_consumed": false,
+        "derived_inputs": {}
+      }
+    }
+  },
+  "models": {
+    "manifest_version": 1,
+    "moge": {
+      "files": {
+        "model.pt": "79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc"
+      },
+      "model_path": "/root/autodl-tmp/huggingface/models--Ruicheng--moge-2-vits-normal/blobs/79a16621928c2bf0ed04659218c55c01075e950507f40bb3332fb4c873d3e1dc",
+      "repository": "Ruicheng/moge-2-vits-normal",
+      "revision": "26b477f41595707c5db6770294c0d1721e8ed4ed"
+    },
+    "sam": {
+      "files": {
+        "config.json": "5ebd0d8643b486f3a716bf17c2a15531eb818b2b96ff0c6c5dcc88fa015161af",
+        "model.safetensors": "892c410e496344e527255ccdcb2cb7244a609acb5389c7c4fdba1288f861c579",
+        "preprocessor_config.json": "225545a743c654e3c495ec6f545a0eaba57c8ba3fbbd8483b3cb1c0fc58db517"
+      },
+      "repository": "facebook/sam-vit-base",
+      "revision": "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+      "snapshot_path": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base/snapshots/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f"
+    }
+  },
+  "effective_config": {
+    "schema_version": "isaac_perception_validation_v2",
+    "rig_id": "m710id70_j1_perception_mast_v5",
+    "effective_scene_config": "configs/isaac/workcell_v2.yaml",
+    "vision_rig_config": "configs/isaac/perception_sensing_pose.yaml",
+    "modes": [
+      "ISAAC_GT",
+      "STAGED_RGBD",
+      "STAGED_MONOCULAR_MOGE"
+    ],
+    "primary_mode": "STAGED_RGBD",
+    "comparison_mode": "STAGED_MONOCULAR_MOGE",
+    "raw_image_automatic": false,
+    "proposal_source": "ISAAC_GT_ORACLE_PROPOSAL",
+    "detector_metrics": "NOT_EVALUATED",
+    "layout_bundle": {
+      "snapshot": "integration/isaac_scene_contract/m710id70_layout_v1/scene_snapshot.json",
+      "isaac_contract": "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json",
+      "archived_snapshot_reference_commit": "f84578a3c9a91364b747560b994f2e6e9b5d65a2",
+      "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+      "robot_base_xyz_A_m": [
+        0.625,
+        0.0,
+        0.6
+      ],
+      "latest_layout_binding_status": "READ_ONLY_COMPATIBILITY_REFERENCE",
+      "official_robot_asset": {
+        "repository_path": "assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+        "sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+        "source_status": "LATEST_FEASIBILITY_OFFICIAL_URDF"
+      }
+    },
+    "historical_cameras": [
+      {
+        "camera_id": "front_validation_camera",
+        "status": "SUPERSEDED_BY_J1_MOUNTED_PERCEPTION_MAST_V2",
+        "resolution_px": [
+          640,
+          480
+        ],
+        "publish_rate_hz": 10.0,
+        "acceptance_eligible": false
+      }
+    ],
+    "scenes": [
+      "MECHANICAL_TOP_VIEW",
+      "J1_ROTATION_SWEEP",
+      "FULL_STACK_NOMINAL",
+      "DARK_LIGHT_OFF",
+      "DARK_LIGHT_ON",
+      "RGBD_CALIBRATION_BOX",
+      "PARTIAL_OCCLUSION",
+      "MOTION_TIMESTAMP_TEST"
+    ],
+    "target_selection": {
+      "strategy": "manifest_stable_id",
+      "simulation_object_id": "carton_l07_c02"
+    },
+    "perturbations": {
+      "known_translation_m": [
+        0.05,
+        0.0,
+        0.0
+      ],
+      "known_rotation_rpy_rad": [
+        0.0,
+        0.0,
+        0.17453292519943295
+      ],
+      "occluder_size_xyz_m": [
+        0.18,
+        0.7,
+        0.9
+      ]
+    },
+    "rendering": {
+      "sensor_target_highlight": false,
+      "carton_asset_config": "configs/isaac/carton_assets.json",
+      "carton_asset_entry": "scripts/isaacsim_perception_capture.py --carton-assets configs/isaac/carton_assets.json --asset-cache CACHE",
+      "carton_asset_review_policy": "RAW_IMAGES_FIRST_THEN_ONE_EXISTING_PIPELINE_RUN_PER_MODULE",
+      "appearance_ab_entry": "scripts/isaacsim_perception_capture.py --appearance-ab",
+      "appearance_ab_scope": "FULL_STACK_NOMINAL_SAME_GEOMETRY_A_PLAIN_B_SHARED_PAPER_ATLAS",
+      "physics_hz": 60,
+      "sensor_acquisition_hz": 30,
+      "capture_trigger_hz": 2,
+      "vision_processing_hz": 2,
+      "smoke_frames": 18,
+      "renderer": "RaytracedLighting",
+      "full_resolution_px": [
+        2592,
+        1944
+      ],
+      "visual_demo_resolution_px": [
+        1280,
+        720
+      ],
+      "visual_demo_fps": 20,
+      "visual_demo_seconds": 12
+    },
+    "vision": {
+      "keyframes": [
+        0,
+        50,
+        100
+      ],
+      "resident_worker_timeout_s": 90.0,
+      "registered_depth_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
+      "depth_unavailable_fallback": "DEPTH_UNAVAILABLE_MOGE",
+      "fallback_scale_status": "MONOCULAR_SCALE_UNVERIFIED",
+      "legacy_cuboid_diagnostic": false,
+      "pointcloud_filter": {
+        "boundary_erosion_px": 2,
+        "depth_percentile_low": 1.0,
+        "depth_percentile_high": 99.0,
+        "discontinuity_mad_scale": 6.0,
+        "discontinuity_floor_m": 0.02,
+        "local_depth_component_selection": true,
+        "retain_multiple_depth_components": true,
+        "minimum_component_points": 8,
+        "minimum_points": 50
+      },
+      "calibration_gate": {
+        "max_center_translation_error_m": 0.1,
+        "max_orientation_error_deg": 20.0,
+        "max_full_dimension_abs_error_m": 0.15
+      }
+    },
+    "illumination": {
+      "geometry_status": "SIMULATION_LIGHT_PROXY",
+      "comparison_modes": [
+        "LIGHT_OFF",
+        "LIGHT_ON_NOMINAL"
+      ],
+      "controlled_variables": [
+        "scene",
+        "camera_pose",
+        "exposure",
+        "proposal",
+        "depth"
+      ]
+    },
+    "ros": {
+      "use_sim_time": true,
+      "topics": {
+        "clock": "/clock",
+        "modules": {
+          "module_0_upper": {
+            "rgb": "/isaac/vision_mast/module_0_upper/rgb",
+            "depth": "/isaac/vision_mast/module_0_upper/depth",
+            "camera_info": "/isaac/vision_mast/module_0_upper/camera_info",
+            "capture_metadata": "/isaac/vision_mast/module_0_upper/capture_metadata",
+            "pointcloud": "/isaac/vision_mast/module_0_upper/pointcloud_on_demand"
+          },
+          "module_1_lower": {
+            "rgb": "/isaac/vision_mast/module_1_lower/rgb",
+            "depth": "/isaac/vision_mast/module_1_lower/depth",
+            "camera_info": "/isaac/vision_mast/module_1_lower/camera_info",
+            "capture_metadata": "/isaac/vision_mast/module_1_lower/capture_metadata",
+            "pointcloud": "/isaac/vision_mast/module_1_lower/pointcloud_on_demand"
+          }
+        },
+        "tf": "/tf",
+        "tf_static": "/tf_static",
+        "joint_states": "/joint_states",
+        "gt_2d": "/isaac/ground_truth/detections_2d",
+        "gt_3d": "/isaac/ground_truth/detections_3d"
+      }
+    },
+    "metric_runtime_policy": {
+      "schema_version": "metric_blas_policy_v1",
+      "requested_blas_threads": 1,
+      "scope": "standalone_metric_geometry_process",
+      "targets": [
+        "numpy",
+        "scipy"
+      ],
+      "mechanism": "native_openblas_runtime_api",
+      "non_target_thread_settings": "unchanged"
+    },
+    "geometry_runtime": {
+      "backend": "subprocess",
+      "protocol": "workcell_geometry_v1"
+    }
+  },
+  "selection": "Both original fixed groups, all modules and instances, serial, no retries",
+  "visual_selection": "First fused object, best candidate by existing rank even if rejected",
+  "policy": "SIMULATION_CAPTURE / NEW_ALGORITHM_RUN / ORACLE_PROPOSAL / READ_ONLY",
+  "enable_hardware": false
+}

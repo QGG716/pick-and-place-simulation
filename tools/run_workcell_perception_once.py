@@ -163,6 +163,7 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
     from workcell_geometry_process import add_arguments, validate_arguments, effective_config, dispatch_geometry
     p=argparse.ArgumentParser(description=__doc__)
     add_arguments(p)
+    p.add_argument('--stage-trace', action='store_true', help='save read-only stage snapshots; no algorithm changes')
     p.add_argument('--legacy-cuboid-diagnostic', action=argparse.BooleanOptionalAction, default=None)
     p.add_argument('--capture',type=Path,required=True);p.add_argument('--vision',type=Path,required=True)
     p.add_argument('--models',type=Path,required=True)
@@ -321,7 +322,7 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
                         geometry_python=a.geometry_python, run_id=summary['run_id'], stop_requested=geometry_stop_requested,
                         scene='FULL_STACK_NOMINAL', module_dir=folder, manifest=manifest,
                         artifacts=artifacts, config=config, vision_root=a.vision, upstream_python=Path(sys.executable), timeout=a.geometry_timeout,
-                        payload=payload)
+                        payload=payload, **({'stage_trace': True} if a.stage_trace else {}))
                     _check_technical_status(result, 'geometry')
                     row['legacy_cuboid_diagnostic'] = result.get('legacy_cuboid_diagnostic')
                     row['geometry_timing_seconds'] = result.get('timing_seconds')
