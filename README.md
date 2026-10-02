@@ -1,3 +1,13 @@
+# 当前状态：native-cold 单箱流程完成（2026-10-02）
+
+本轮在 `feat/v0.5-moveit2-native-single-carton`、源码 `f94a1ca4c48b4b4bf5805466549c941ed07dd830` 上完成了一次新世界、一次无历史完整规划和一次 Isaac 单箱运动。显式父阶段身份及 MoveIt 世界坐标修补通过 101 项定向 Python 回归和真实 worker 的 17 项衔接检查；完整路径 **436/436 条非零边**具有本次原生来源，执行前检查、标准导出和最终包加载均通过。
+
+目标 `carton_l07_c02` 在完整 40 箱场景中实际抓取、搬运、释放和撤离完成；理想接收 **1**、理想出料 **1**。这是 `proof_of_concept` 假设下的单箱流程完成：真实物理接收未评估，实际驱动力矩资格为 **NOT_EVALUATED**，不是机器或完整物理资格通过。
+
+详见[本轮报告与分层验收](docs/m710_native_cold_parent_chain_20261002.md)、[原始单次 1× 视频（640×360 / 5 fps）](docs/validation/evidence/m710_native_cold_20261002/formal/physics/replay.mp4)和[完整证据目录](docs/validation/evidence/m710_native_cold_20261002/README.md)。[10 月 1 日的正式失败](docs/m710_native_cold_integration_20261001.md)及原始证据保持不变。以下为先前阶段记录。
+
+---
+
 # Optional MoveIt 2 backend experiment
 
 2026-09-28 正式执行检查收口：最终关节参考的 LIN/TCP 合同现在由标准导出入口和 Isaac 监督入口强制验证，不依赖旁路请求日志或外部 PASS 文件。标准导出已经包含自检：

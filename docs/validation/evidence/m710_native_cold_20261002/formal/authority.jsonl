@@ -1,0 +1,7 @@
+{"stage": "pregrasp", "path_nodes": 78, "seconds": 45.930888909846544, "reason": null, "diagnostic_origin": "moveit2_final_edge_recheck", "attached": false}
+{"stage": "contact", "path_nodes": 15, "seconds": 3.2915007900446653, "reason": null, "diagnostic_origin": "moveit2_final_edge_recheck", "attached": false}
+{"stage": "extraction", "path_nodes": 159, "seconds": 158.4108422473073, "reason": null, "diagnostic_origin": "moveit2_final_edge_recheck", "attached": true}
+{"stage": "transit", "path_nodes": 84, "seconds": 533.0197658762336, "reason": null, "diagnostic_origin": "moveit2_final_edge_recheck", "attached": true}
+{"stage": "place", "path_nodes": 2, "seconds": 0.006372712552547455, "reason": null, "diagnostic_origin": "moveit2_final_edge_recheck", "attached": true}
+{"stage": "withdrawal", "path_nodes": 107, "seconds": 22.28094193339348, "reason": null, "diagnostic_origin": "moveit2_final_edge_recheck", "attached": false}
+{"stage": "withdrawal", "path_nodes": 107, "seconds": 7.642320418730378, "reason": null, "diagnostic_origin": null, "attached": false}

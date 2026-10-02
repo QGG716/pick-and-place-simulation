@@ -1,0 +1,1233 @@
+{
+  "schema": "m710_native_cold_final_delivery_summary_v1",
+  "scope": "Read-only derivation from this formal run and pre-formal directed verification; raw evidence unchanged.",
+  "formal_directory": "/root/autodl-tmp/m710-native-cold-20261002/repo/outputs/native-cold-20261002-once",
+  "status": "ISAAC_WORKFLOW_COMPLETED_UNDER_DECLARED_ASSUMPTIONS",
+  "identity": {
+    "run_id": "native-cold-c66166b61f2548bfabe896a5010fa444",
+    "world_session_id": "1790909283.6163392",
+    "source_commit": "f94a1ca4c48b4b4bf5805466549c941ed07dd830",
+    "worker_sha256": "e933e868ac5c50879847dc1161046b6b9ad081adf23fe4f6359338bc9caf723c",
+    "target": "carton_l07_c02",
+    "carton_count": 40,
+    "random_seed": 71070,
+    "native_task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+    "layout_id": "m710id70_unloading_layout_v1",
+    "bootstrap_contract_sha256": "38c3695022c15b97f9dfdc13ceb35a80084b0cc120051c20a49626a8c3fb06ad",
+    "actual_initial_state_sha256": "2e4714fd9552a7f81bbc7d9c76a4d2c9ebc02dcc82765fd0e6e8cdfeaf4fbeba"
+  },
+  "counts": {
+    "world_launches": 1,
+    "planning_requests": 1,
+    "execution_requests": 1
+  },
+  "failure": {
+    "supervisor": null,
+    "planning_exception": null,
+    "planning_failure": null,
+    "complete_trajectory_failure_reason": null
+  },
+  "history": {
+    "history_enabled": false,
+    "history_inputs_read": 0,
+    "legacy_motion_generator_calls": 0,
+    "forbidden_entry_attempts": 0,
+    "guard_implementation": "Frozen source src/unloading_sim/moveit2_native_cold.py; actual guarded counters from motion.native_cold_audit."
+  },
+  "native_evidence_source": "motion.native_backend_evidence",
+  "actual_native_calls": {
+    "returned_record_totals": {
+      "PTP": 5,
+      "LIN": 5,
+      "OMPL": 2
+    },
+    "native_ik": 17,
+    "per_stage": {
+      "pregrasp": {
+        "PTP": 1,
+        "LIN": 0,
+        "OMPL": 0,
+        "native_ik": 1
+      },
+      "contact": {
+        "PTP": 0,
+        "LIN": 1,
+        "OMPL": 0,
+        "native_ik": 0
+      },
+      "extraction": {
+        "PTP": 0,
+        "LIN": 1,
+        "OMPL": 0,
+        "native_ik": 0
+      },
+      "transit": {
+        "PTP": 4,
+        "LIN": 1,
+        "OMPL": 2,
+        "native_ik": 9
+      },
+      "place": {
+        "PTP": 0,
+        "LIN": 1,
+        "OMPL": 0,
+        "native_ik": 0
+      },
+      "withdrawal": {
+        "PTP": 0,
+        "LIN": 1,
+        "OMPL": 0,
+        "native_ik": 0
+      },
+      "contact_endpoint": {
+        "PTP": 0,
+        "LIN": 0,
+        "OMPL": 0,
+        "native_ik": 7
+      }
+    },
+    "stage_records": 12,
+    "stage_records_with_counters": 12,
+    "ik_records": 17,
+    "ik_records_with_counters": 17,
+    "note": "Only returned native_solver_calls/native_ik_calls are summed; requests are not solver calls."
+  },
+  "request_log": {
+    "submitted_records": 12,
+    "by_stage_and_requested_planner": {
+      "pregrasp:PTP": 1,
+      "contact:LIN": 1,
+      "extraction:LIN": 1,
+      "transit:PTP": 4,
+      "transit:LIN": 1,
+      "transit:RRTConnectkConfigDefault": 2,
+      "place:LIN": 1,
+      "withdrawal:LIN": 1
+    },
+    "note": "Submission evidence only; an unanswered/rejected request cannot establish invocation."
+  },
+  "raw_stage_summary": [
+    {
+      "request_id": "13",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:1",
+      "parent_stage_id": "",
+      "stage": "pregrasp",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.09755709,
+      "native_output_check_s": 3.264763538,
+      "authoritative_s": 45.93390555679798,
+      "failure": null,
+      "path_sha256": "f39cdd4ad172b158fb405c7c8dfc7ea51819ba1712a28afbcd5d57d586f5c597",
+      "native_points": 78
+    },
+    {
+      "request_id": "14",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:1",
+      "stage": "contact",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.024259789,
+      "native_output_check_s": 0.257570163,
+      "authoritative_s": 3.294373169541359,
+      "failure": null,
+      "path_sha256": "91803b06a413bc01a683c5e8c89eabdddbc531a034dc24ddbf6fc4270bbc0695",
+      "native_points": 15
+    },
+    {
+      "request_id": "15",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2",
+      "stage": "extraction",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.232066251,
+      "native_output_check_s": 4.501423348,
+      "authoritative_s": 158.4136653356254,
+      "failure": null,
+      "path_sha256": "3d215a88c8bf9d477abc6d2ca29d1e5c4a03f775827b32968fae579a53edab45",
+      "native_points": 159
+    },
+    {
+      "request_id": "17",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:4",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.113261907,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "21",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:5",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.219407665,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "27",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:6",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.23184344,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "28",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:7",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.115092762,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "29",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:8",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.242051677,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "30",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:9",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "ompl/RRTConnectkConfigDefault",
+      "status": "NATIVE_PATH_REJECTED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "OMPL": 1
+      },
+      "mtc_plan_s": 6.634421929,
+      "native_output_check_s": 1.544631058,
+      "authoritative_s": null,
+      "failure": {
+        "edge": 20,
+        "fraction": 0.3828125,
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "carton_l07_c02",
+          "carton_l06_c02"
+        ],
+        "q_rad": [
+          -0.8510217604706287,
+          -0.7070041806130142,
+          -0.3711028416823697,
+          2.414338315708688,
+          0.8500092070937121,
+          -5.184302834864068
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.004986852246589828
+      },
+      "path_sha256": null,
+      "native_points": 74
+    },
+    {
+      "request_id": "31",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:10",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "ompl/RRTConnectkConfigDefault",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "OMPL": 1
+      },
+      "mtc_plan_s": 4.686924235,
+      "native_output_check_s": 7.664313044,
+      "authoritative_s": 533.0230213683099,
+      "failure": null,
+      "path_sha256": "f77823b909f0317f368abbb9217368dc2dc91320d287c723b1adcd0b9fec0472",
+      "native_points": 84
+    },
+    {
+      "request_id": "32",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:10",
+      "stage": "place",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.005956193,
+      "native_output_check_s": 0.002443263,
+      "authoritative_s": 0.009053720161318779,
+      "failure": null,
+      "path_sha256": "dc47b8d1be4d170ef43455596c0a5d624887ac9d602ab0c2efb91f5d6af1f357",
+      "native_points": 2
+    },
+    {
+      "request_id": "33",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:12",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11",
+      "stage": "withdrawal",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.205712976,
+      "native_output_check_s": 1.970233515,
+      "authoritative_s": 22.290980828925967,
+      "failure": null,
+      "path_sha256": "840fab4ed42978ca11bea2470a742b68dbfe5bec493fc41ceb3c4def6de62d30",
+      "native_points": 107
+    }
+  ],
+  "recorded_cold_audit_counts": {
+    "pregrasp": {
+      "PTP": 1,
+      "LIN": 0,
+      "OMPL": 0,
+      "native_ik": 1
+    },
+    "contact": {
+      "PTP": 0,
+      "LIN": 1,
+      "OMPL": 0,
+      "native_ik": 0
+    },
+    "extraction": {
+      "PTP": 0,
+      "LIN": 1,
+      "OMPL": 0,
+      "native_ik": 0
+    },
+    "transit": {
+      "PTP": 4,
+      "LIN": 1,
+      "OMPL": 2,
+      "native_ik": 9
+    },
+    "place": {
+      "PTP": 0,
+      "LIN": 1,
+      "OMPL": 0,
+      "native_ik": 0
+    },
+    "withdrawal": {
+      "PTP": 0,
+      "LIN": 1,
+      "OMPL": 0,
+      "native_ik": 0
+    },
+    "contact_endpoint": {
+      "PTP": 0,
+      "LIN": 0,
+      "OMPL": 0,
+      "native_ik": 7
+    }
+  },
+  "gates": {
+    "complete_native_geometry": {
+      "status": "PASS",
+      "planning_success": true
+    },
+    "complete_path_source_coverage": {
+      "status": "PASS",
+      "result": {
+        "passed": true,
+        "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+        "nonzero_edge_count": 436,
+        "covered_nonzero_edge_count": 436,
+        "uncovered_edges": []
+      }
+    },
+    "native_task_audit": {
+      "status": "SUCCESS",
+      "result": {
+        "attach_transitions": 1,
+        "complete_task": true,
+        "external_path_imports": 0,
+        "generated_during_task": true,
+        "nonzero_native_motion_edges": 436,
+        "release_transitions": 1,
+        "request_id": "34",
+        "stage_ids": [
+          "native-cold-1c240bb2901b431a91c624133df99eca:1",
+          "native-cold-1c240bb2901b431a91c624133df99eca:2",
+          "native-cold-1c240bb2901b431a91c624133df99eca:3",
+          "native-cold-1c240bb2901b431a91c624133df99eca:10",
+          "native-cold-1c240bb2901b431a91c624133df99eca:11",
+          "native-cold-1c240bb2901b431a91c624133df99eca:12"
+        ],
+        "stage_sources": [
+          {
+            "native_cache_reuses": 11,
+            "native_solver_calls": {
+              "PTP": 1
+            },
+            "nonzero_motion_edges": 77,
+            "parent_stage_id": "",
+            "request_id": "13",
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:1"
+          },
+          {
+            "native_cache_reuses": 10,
+            "native_solver_calls": {
+              "LIN": 1
+            },
+            "nonzero_motion_edges": 14,
+            "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:1",
+            "request_id": "14",
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2"
+          },
+          {
+            "native_cache_reuses": 9,
+            "native_solver_calls": {
+              "LIN": 1
+            },
+            "nonzero_motion_edges": 157,
+            "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2",
+            "request_id": "15",
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3"
+          },
+          {
+            "native_cache_reuses": 2,
+            "native_solver_calls": {
+              "OMPL": 1
+            },
+            "nonzero_motion_edges": 83,
+            "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+            "request_id": "31",
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:10"
+          },
+          {
+            "native_cache_reuses": 1,
+            "native_solver_calls": {
+              "LIN": 1
+            },
+            "nonzero_motion_edges": 0,
+            "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:10",
+            "request_id": "32",
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11"
+          },
+          {
+            "native_cache_reuses": 0,
+            "native_solver_calls": {
+              "LIN": 1
+            },
+            "nonzero_motion_edges": 105,
+            "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11",
+            "request_id": "33",
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:12"
+          }
+        ],
+        "status": "SUCCESS",
+        "task_backtracks": 6,
+        "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+        "task_solve_calls": 12,
+        "terminal_transition": null,
+        "transport_and_worker_s": 0.00285189226269722
+      }
+    },
+    "complete_path_final_check": {
+      "status": "PASS",
+      "result": {
+        "reported_complete_status": "PASS"
+      }
+    },
+    "execution_preflight": {
+      "status": "READY",
+      "simulation_execution_ready": true
+    },
+    "bundle_export_and_readback": {
+      "status": "PASS",
+      "bundle_path": "/root/autodl-tmp/m710-native-cold-20261002/repo/outputs/native-cold-20261002-once/plan/replay_bundle.json",
+      "readback": {
+        "status": "PASS",
+        "bundle_payload_sha256": "c88118f5104389982ae96382366051d7b86bfdb6d83ac7952b98a289f321ceed",
+        "source_preflight_fingerprint": "61dd7c683f618a555255474bd8b89e7aeb2a8b9558589d191be5fb2408b73a44",
+        "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE",
+        "final_reference_tcp_audit": {
+          "status": "PASS",
+          "binding_sha256": "17e6987b85d335633b478eac43bda01f93b34471394ca85c7ddc82cd02afd8c3",
+          "audit_version": "m710_final_reference_tcp_v1",
+          "checked_object": "FINAL_EXECUTOR_JOINT_REFERENCE",
+          "audits": [
+            {
+              "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2",
+              "reference_range": [
+                1,
+                15
+              ],
+              "audit": {
+                "passed": true,
+                "reason": null,
+                "maximum_line_error_m": 9.695014095046905e-06,
+                "maximum_orientation_error_rad": 2.9021696026337073e-06,
+                "maximum_translation_rotation_progress_difference": 54.63790305245799,
+                "endpoint_errors": [
+                  {
+                    "position_m": 4.58948077140301e-16,
+                    "orientation_rad": 1.6473494050669343e-16
+                  },
+                  {
+                    "position_m": 3.1062190853874206e-08,
+                    "orientation_rad": 1.6159954925467935e-07
+                  }
+                ],
+                "first_failure": null,
+                "samples": 405,
+                "progress_semantics": "line_projection",
+                "sampling": "existing_conservative_joint_edge_grid_2x_max_joint_and_4m_sweep",
+                "continuous_sweep_proof": false,
+                "position_tolerance_m": 0.0001,
+                "orientation_tolerance_rad": 0.0002
+              }
+            },
+            {
+              "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+              "reference_range": [
+                17,
+                174
+              ],
+              "audit": {
+                "passed": true,
+                "reason": null,
+                "maximum_line_error_m": 9.719776658950676e-06,
+                "maximum_orientation_error_rad": 2.97028206797369e-06,
+                "maximum_translation_rotation_progress_difference": 0.0,
+                "endpoint_errors": [
+                  {
+                    "position_m": 4.452177359341998e-16,
+                    "orientation_rad": 1.5713641789682398e-16
+                  },
+                  {
+                    "position_m": 9.480525630791768e-06,
+                    "orientation_rad": 1.3678828416446134e-07
+                  }
+                ],
+                "first_failure": null,
+                "samples": 7581,
+                "progress_semantics": "line_projection",
+                "sampling": "existing_conservative_joint_edge_grid_2x_max_joint_and_4m_sweep",
+                "continuous_sweep_proof": false,
+                "position_tolerance_m": 0.0001,
+                "orientation_tolerance_rad": 0.0002
+              }
+            },
+            {
+              "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11",
+              "reference_range": [
+                180,
+                181
+              ],
+              "audit": {
+                "passed": true,
+                "reason": null,
+                "maximum_line_error_m": 2.7194799110210365e-16,
+                "maximum_orientation_error_rad": 1.6399550157835573e-16,
+                "maximum_translation_rotation_progress_difference": 4.227106246054447e-11,
+                "endpoint_errors": [
+                  {
+                    "position_m": 2.7194799110210365e-16,
+                    "orientation_rad": 1.6399550157835573e-16
+                  },
+                  {
+                    "position_m": 9.683721461873096e-06,
+                    "orientation_rad": 4.120956661971714e-06
+                  }
+                ],
+                "first_failure": null,
+                "samples": 3,
+                "progress_semantics": "line_projection",
+                "sampling": "existing_conservative_joint_edge_grid_2x_max_joint_and_4m_sweep",
+                "continuous_sweep_proof": false,
+                "position_tolerance_m": 0.0001,
+                "orientation_tolerance_rad": 0.0002
+              }
+            },
+            {
+              "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:12",
+              "reference_range": [
+                182,
+                287
+              ],
+              "audit": {
+                "passed": true,
+                "reason": null,
+                "maximum_line_error_m": 6.720525264693034e-06,
+                "maximum_orientation_error_rad": 1.742656048089422e-08,
+                "maximum_translation_rotation_progress_difference": 0.0,
+                "endpoint_errors": [
+                  {
+                    "position_m": 2.7194799110210365e-16,
+                    "orientation_rad": 1.6399550157835573e-16
+                  },
+                  {
+                    "position_m": 7.868836586280063e-08,
+                    "orientation_rad": 1.742656048089422e-08
+                  }
+                ],
+                "first_failure": null,
+                "samples": 3111,
+                "progress_semantics": "line_projection",
+                "sampling": "existing_conservative_joint_edge_grid_2x_max_joint_and_4m_sweep",
+                "continuous_sweep_proof": false,
+                "position_tolerance_m": 0.0001,
+                "orientation_tolerance_rad": 0.0002
+              }
+            }
+          ],
+          "continuous_sweep_proof": false,
+          "report_reuse": false
+        }
+      }
+    },
+    "isaac_result": {
+      "status": "PASS_UNDER_DECLARED_ASSUMPTIONS",
+      "workflow_cycle_completed": true,
+      "physical_cycle_completed": false,
+      "qualification_passed": false,
+      "runtime_stop_reason": null,
+      "execution_counts": {
+        "actual_reception": 0,
+        "ideal_reception": 1,
+        "ideal_outfeed": 1,
+        "workflow_processed": 1,
+        "downstream_physical_qualification_claimed": false,
+        "actual_grasp": 1,
+        "actual_release": 1
+      },
+      "actual_reception_succeeded": false,
+      "simulation_profile": {
+        "name": "proof_of_concept",
+        "ideal_suction": true,
+        "ideal_reception": true,
+        "ideal_outfeed": true,
+        "physical_execution_scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+        "machine_qualification_claimed": false
+      },
+      "raw_result": "formal/physics/result.json"
+    },
+    "final_execution_package_load": {
+      "status": "PASS",
+      "bundle_payload_sha256": "c88118f5104389982ae96382366051d7b86bfdb6d83ac7952b98a289f321ceed",
+      "source_preflight_fingerprint": "61dd7c683f618a555255474bd8b89e7aeb2a8b9558589d191be5fb2408b73a44",
+      "integrity_scope": "CONTENT_AND_STALENESS_ONLY_NOT_AUTHORIZATION_OR_SIGNATURE",
+      "final_reference_tcp_audit": {
+        "status": "PASS",
+        "binding_sha256": "17e6987b85d335633b478eac43bda01f93b34471394ca85c7ddc82cd02afd8c3",
+        "audit_version": "m710_final_reference_tcp_v1",
+        "checked_object": "FINAL_EXECUTOR_JOINT_REFERENCE",
+        "audits": [
+          {
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2",
+            "reference_range": [
+              1,
+              15
+            ],
+            "audit": {
+              "passed": true,
+              "reason": null,
+              "maximum_line_error_m": 9.695014095046905e-06,
+              "maximum_orientation_error_rad": 2.9021696026337073e-06,
+              "maximum_translation_rotation_progress_difference": 54.63790305245799,
+              "endpoint_errors": [
+                {
+                  "position_m": 4.58948077140301e-16,
+                  "orientation_rad": 1.6473494050669343e-16
+                },
+                {
+                  "position_m": 3.1062190853874206e-08,
+                  "orientation_rad": 1.6159954925467935e-07
+                }
+              ],
+              "first_failure": null,
+              "samples": 405,
+              "progress_semantics": "line_projection",
+              "sampling": "existing_conservative_joint_edge_grid_2x_max_joint_and_4m_sweep",
+              "continuous_sweep_proof": false,
+              "position_tolerance_m": 0.0001,
+              "orientation_tolerance_rad": 0.0002
+            }
+          },
+          {
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+            "reference_range": [
+              17,
+              174
+            ],
+            "audit": {
+              "passed": true,
+              "reason": null,
+              "maximum_line_error_m": 9.719776658950676e-06,
+              "maximum_orientation_error_rad": 2.97028206797369e-06,
+              "maximum_translation_rotation_progress_difference": 0.0,
+              "endpoint_errors": [
+                {
+                  "position_m": 4.452177359341998e-16,
+                  "orientation_rad": 1.5713641789682398e-16
+                },
+                {
+                  "position_m": 9.480525630791768e-06,
+                  "orientation_rad": 1.3678828416446134e-07
+                }
+              ],
+              "first_failure": null,
+              "samples": 7581,
+              "progress_semantics": "line_projection",
+              "sampling": "existing_conservative_joint_edge_grid_2x_max_joint_and_4m_sweep",
+              "continuous_sweep_proof": false,
+              "position_tolerance_m": 0.0001,
+              "orientation_tolerance_rad": 0.0002
+            }
+          },
+          {
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11",
+            "reference_range": [
+              180,
+              181
+            ],
+            "audit": {
+              "passed": true,
+              "reason": null,
+              "maximum_line_error_m": 2.7194799110210365e-16,
+              "maximum_orientation_error_rad": 1.6399550157835573e-16,
+              "maximum_translation_rotation_progress_difference": 4.227106246054447e-11,
+              "endpoint_errors": [
+                {
+                  "position_m": 2.7194799110210365e-16,
+                  "orientation_rad": 1.6399550157835573e-16
+                },
+                {
+                  "position_m": 9.683721461873096e-06,
+                  "orientation_rad": 4.120956661971714e-06
+                }
+              ],
+              "first_failure": null,
+              "samples": 3,
+              "progress_semantics": "line_projection",
+              "sampling": "existing_conservative_joint_edge_grid_2x_max_joint_and_4m_sweep",
+              "continuous_sweep_proof": false,
+              "position_tolerance_m": 0.0001,
+              "orientation_tolerance_rad": 0.0002
+            }
+          },
+          {
+            "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:12",
+            "reference_range": [
+              182,
+              287
+            ],
+            "audit": {
+              "passed": true,
+              "reason": null,
+              "maximum_line_error_m": 6.720525264693034e-06,
+              "maximum_orientation_error_rad": 1.742656048089422e-08,
+              "maximum_translation_rotation_progress_difference": 0.0,
+              "endpoint_errors": [
+                {
+                  "position_m": 2.7194799110210365e-16,
+                  "orientation_rad": 1.6399550157835573e-16
+                },
+                {
+                  "position_m": 7.868836586280063e-08,
+                  "orientation_rad": 1.742656048089422e-08
+                }
+              ],
+              "first_failure": null,
+              "samples": 3111,
+              "progress_semantics": "line_projection",
+              "sampling": "existing_conservative_joint_edge_grid_2x_max_joint_and_4m_sweep",
+              "continuous_sweep_proof": false,
+              "position_tolerance_m": 0.0001,
+              "orientation_tolerance_rad": 0.0002
+            }
+          }
+        ],
+        "continuous_sweep_proof": false,
+        "report_reuse": false
+      }
+    }
+  },
+  "physics_process_status": {
+    "status": "complete",
+    "primary_runtime_stop_reason": null,
+    "started_unix_s": 1790909283.6163392,
+    "completed_unix_s": 1790911359.4454033,
+    "result_sha256": "a35200f64921cdfbf7533e8346aa0396bd1dea5cf89d1dddbedafc5bd577ade3",
+    "result_format": "isaacsim_fanuc_replay_result_v2"
+  },
+  "timings_seconds": {
+    "supervisor_phase_wall": {
+      "initialization_wall_s": 23.00392679311335,
+      "planning_and_delivery_wall_s": 828.5080958101898,
+      "isaac_execution_wall_s": 1225.2009042613208
+    },
+    "supervisor_wall": 2077.769818400964,
+    "model_warmup": 0.2819288857281208,
+    "native_ik_compute_sum": {
+      "seconds": 0.005574045,
+      "records_with_measurement": 17,
+      "records_total": 17
+    },
+    "native_ik_inclusive_sum": {
+      "seconds": 0.489817563444376,
+      "records_with_measurement": 17,
+      "records_total": 17
+    },
+    "native_mtc_plan_sum": {
+      "seconds": 12.808555913999998,
+      "records_with_measurement": 12,
+      "records_total": 12
+    },
+    "native_output_check_sum": {
+      "seconds": 19.205377929,
+      "records_with_measurement": 7,
+      "records_total": 12
+    },
+    "independent_stage_check_sum": {
+      "seconds": 762.9649999793619,
+      "records_with_measurement": 6,
+      "records_total": 12
+    },
+    "complete_path_final_check": 0.20311796478927135,
+    "preflight": 2.350541068241,
+    "export": 11.37045837379992,
+    "bundle_readback": 5.192789699882269,
+    "isaac_motion_physical": 123.13333333333333,
+    "isaac_replay_wall": 1211.3448588997126,
+    "ordinary_planning_performance": {
+      "schema": "first_carton_planning_wall_timing_v1",
+      "planning_total_wall_seconds": 807.4139899127185,
+      "model_load_and_initialization_seconds": 0.7011479176580906,
+      "candidate_generation_seconds": 0.04620580933988094,
+      "grasp_candidate_generation_seconds": 0.013920184224843979,
+      "placement_candidate_generation_seconds": 0.032285625115036964,
+      "grasp_ik_seconds_inclusive_of_endpoint_validation": 0.32137122191488743,
+      "trajectory_search_seconds_inclusive": 805.9966943114996,
+      "trajectory_ik_seconds": 0.6702204756438732,
+      "collision_validation_seconds_nested": 735.3613347541541,
+      "final_recheck_seconds": 0.20311796478927135,
+      "time_parameterization_seconds": null,
+      "trajectory_physical_execution_seconds": null,
+      "isaac_replay_wall_seconds": null,
+      "nesting": {
+        "trajectory_search_seconds_inclusive": [
+          "trajectory_ik_seconds",
+          "path_connection_seconds_inclusive_of_collision",
+          "collision_validation_seconds_nested",
+          "final_recheck_seconds"
+        ],
+        "path_connection_seconds_inclusive_of_collision": [
+          "collision_validation_seconds_nested"
+        ]
+      },
+      "unmeasured_value": null,
+      "path_connection_seconds_inclusive_of_collision": null
+    },
+    "note": "Nested/inclusive intervals must not be added; null means not reached or unmeasured, never zero cost.",
+    "legacy_generic_connection_timer": {
+      "seconds": null,
+      "status": "NOT_INSTRUMENTED_FOR_NATIVE",
+      "raw_reported_value": 0.0
+    }
+  },
+  "inputs": {
+    "run.json": {
+      "present": true,
+      "sha256": "4f18b51cdd1d46f625e226bfa40114bff0e6b3c4407c71486994bb66a85dce70",
+      "bytes": 1148185
+    },
+    "plan/motion.json": {
+      "present": true,
+      "sha256": "58bdcbc40ab83b23c27e61f24079990d925b79ece15a0d89bc2499b24bd121da",
+      "bytes": 70691084
+    },
+    "plan/delivery.json": {
+      "present": true,
+      "sha256": "70fa9458a065354216e3f5192c1549a55cc4411ebff37b704b69f9c469ffa1de",
+      "bytes": 6398
+    },
+    "plan/preflight.json": {
+      "present": true,
+      "sha256": "66f3e46107c51c9c4e3d992b1697a7801bb882ab637d6380c36834f25ad1ad1e",
+      "bytes": 23926134
+    },
+    "physics/result.json": {
+      "present": true,
+      "sha256": "a35200f64921cdfbf7533e8346aa0396bd1dea5cf89d1dddbedafc5bd577ade3",
+      "bytes": 1086586
+    },
+    "physics/run_status.json": {
+      "present": true,
+      "sha256": "8bb65d1bd2e6d8d1163cbf475216deb0d42d2a50024a39e80544e05b47938fcc",
+      "bytes": 288
+    },
+    "native-requests.jsonl": {
+      "present": true,
+      "sha256": "50942f5eb1e186abac616f2f51f9df8f6a5b0fc1899a9a52fdee0d68782a0a1b",
+      "bytes": 4357865
+    }
+  },
+  "warnings": [],
+  "effective_budgets_s": {
+    "shared_task": 3600.0,
+    "native_stage": 300.0,
+    "ipc_watchdog": 360.0,
+    "initialization": 1200.0,
+    "planner_process": 4200.0,
+    "paused_world": 4500.0,
+    "execution_process": 3600.0,
+    "native_ik": 0.25
+  },
+  "real_machine_commands": false,
+  "same_world": {
+    "accepted": true,
+    "retained_carton_count": 40,
+    "recording_output_changed": false,
+    "world_session_id": "1790909283.6163392",
+    "scene_restored_or_teleported": false,
+    "scope": "Initial bundle binding before motion; later declared bounded ideal handoff is recorded separately."
+  },
+  "ideal_reception_handoff": {
+    "accepted": true,
+    "reason": "LEGAL_RELEASE_TO_IDEAL_TAKEOVER",
+    "time_s": 91.45833338592202,
+    "elapsed_s": 0.020833333333342807,
+    "actual_release_height_m": 0.02491789477926898,
+    "position_error_m": 0.00042358922640678046,
+    "position_limit_m": 0.00271927083333366,
+    "velocity_error_m_s": 0.0009615851383780262,
+    "first_takeover_height_m": 0.02281664880854528,
+    "reception_region": {
+      "accepted": true,
+      "reason": "VALIDATED_POST_RELEASE_TRANSITION",
+      "gap_m": 0.02281664880854528,
+      "vertical_correction_m": -0.02281664880854528,
+      "physical_landing_qualified": false,
+      "actual_top_contact_observed": false
+    },
+    "raw_evidence": "formal/physics/result.json:ideal_release_handoff"
+  },
+  "physical_qualification": {
+    "physical_reception": {
+      "status": "NOT_EVALUATED",
+      "actual_reception_count": 0,
+      "reason": "Declared bounded ideal reception; no measured physical top-contact reception claimed."
+    },
+    "actual_drive_torque": {
+      "status": "NOT_EVALUATED",
+      "reason": "joint effort ratios are unavailable"
+    },
+    "qualification_passed": false,
+    "qualification_failures": [
+      "joint_efforts_within_limit"
+    ],
+    "interpretation": "Unavailable effort measurements do not establish torque exceedance or a measured effort-limit pass."
+  },
+  "acceptance_levels": {
+    "stage_identity_and_directed_regressions": {
+      "status": "PASS",
+      "python_passed": 101,
+      "native_process_policy_cases": 11,
+      "evidence": "development/pytest-source-final.log"
+    },
+    "real_worker_ptp_to_lin": {
+      "status": "PASS",
+      "checks_passed": 17,
+      "wall_seconds": 16.227631263434887,
+      "evidence": "development/parent-probe-summary.json",
+      "scope": "configured-home development probes; no measured initial state or complete-cycle acceptance"
+    },
+    "four_components_and_actual_calls": {
+      "status": "PASS",
+      "components": [
+        "MoveIt 2 planning scene",
+        "MTC Task/stages",
+        "Pilz PTP/LIN",
+        "OMPL"
+      ],
+      "actual_calls": {
+        "PTP": 5,
+        "LIN": 5,
+        "OMPL": 2
+      },
+      "native_ik_calls": 17
+    },
+    "formal_native_cold_complete_geometry": {
+      "status": "PASS"
+    },
+    "complete_nonzero_motion_native_provenance": {
+      "status": "PASS",
+      "result": {
+        "passed": true,
+        "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+        "nonzero_edge_count": 436,
+        "covered_nonzero_edge_count": 436,
+        "uncovered_edges": []
+      }
+    },
+    "preflight_export_final_package_load": {
+      "status": "PASS",
+      "preflight": "READY",
+      "export_and_readback": "PASS",
+      "final_executor_integrity_and_tcp": "PASS"
+    },
+    "isaac_single_carton_motion": {
+      "status": "PASS_UNDER_DECLARED_ASSUMPTIONS",
+      "scope": "actual_grasp_transport_constraint_removal_and_robot_departure",
+      "actual_grasp": 1,
+      "actual_release": 1,
+      "full_schedule_replayed": {
+        "status": "PASS",
+        "reason": "complete command schedule replayed"
+      }
+    },
+    "ideal_reception_and_outfeed": {
+      "status": "PASS",
+      "ideal_reception": 1,
+      "ideal_outfeed": 1,
+      "reception_source": "RECEPTION_ASSUMED",
+      "physical_downstream_qualification_claimed": false
+    },
+    "physical_reception_and_actual_drive_torque_qualification": {
+      "status": "NOT_EVALUATED",
+      "physical_reception": "NOT_EVALUATED",
+      "actual_drive_torque": "NOT_EVALUATED",
+      "physical_cycle_completed": false,
+      "qualification_passed": false
+    }
+  },
+  "video": {
+    "path": "formal/physics/replay.mp4",
+    "sha256": "502b3dff83fe656e3b859746993cffa7f3707b6361a7b1ff1dd2a2c502de4018",
+    "probe": {
+      "codec_name": "mpeg4",
+      "width": 640,
+      "height": 360,
+      "r_frame_rate": "5/1",
+      "duration": "123.000000",
+      "nb_frames": "615"
+    },
+    "decode": {
+      "exit_code": 0,
+      "stderr": "",
+      "scope": "full original video decode; no re-encode",
+      "recorded_speed": 1.0
+    },
+    "physical_time_scale": 1.0,
+    "physics_hz": 240.0,
+    "physics_steps": 29552,
+    "scope": "Original one-run video; no re-encode, splice, restart, or initialization-only substitute."
+  },
+  "event_summary": [
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "actual_attachment_capture",
+      "simulation_time_s": 12.520833333333334,
+      "trajectory_time_s": 12.416666666666282,
+      "target": "carton_l07_c02",
+      "sample_source": "SAME_ATTACHMENT_STATE_NO_INTERVENING_PHYSICS_STEP"
+    },
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "grasp_contact_attempt",
+      "simulation_time_s": 12.520833333333334,
+      "trajectory_time_s": 12.416666666666282,
+      "accepted": true,
+      "target": "carton_l07_c02",
+      "actual_contact_count": 48
+    },
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "actual_stack_geometry_free_space_entered",
+      "step": 17942,
+      "time_s": 74.7625,
+      "from_free": false,
+      "to_free": true,
+      "clearance_m": 0.0052172084756771115,
+      "nearest_neighbor": "carton_l06_c02",
+      "shape_fingerprint": "e81a91d3432f74b9b26571542d222e02557623d2665d20e3bd0eb2aacd2c0666",
+      "policy_fingerprint": "91e8bebb851170e3620b5e2fc1bda49b5a72d1e62c8b3a3cd0dbed3c05d928e5",
+      "contact_evidence_status": "RESOLVED",
+      "basis": "POST_STEP_VERIFIED_BOX_GEOMETRY"
+    },
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "actual_free_transit_gate_passed",
+      "time_s": 75.55416666666666,
+      "wait_elapsed_s": 0.0
+    },
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "ideal_release_actual_height_check",
+      "simulation_time_s": 90.42916666666666,
+      "trajectory_time_s": 90.32414449174551,
+      "target": "carton_l07_c02",
+      "accepted": true,
+      "height_m": 0.02491789477926898,
+      "reason": "IDEAL_RECEPTION_REGION_ACCEPTED"
+    },
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "actual_constraint_removed",
+      "simulation_time_s": 90.42916666666666,
+      "trajectory_time_s": 90.32414449174551,
+      "target": "carton_l07_c02",
+      "height_m": 0.02491789477926898,
+      "height_sample_source": "SAME_PRE_REMOVAL_STATE_NO_INTERVENING_PHYSICS_STEP"
+    },
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "release_region_attempt",
+      "release_mode": "IDEAL_RECEPTION_RELEASE",
+      "simulation_time_s": 90.42916666666666,
+      "trajectory_time_s": 90.32414449174551,
+      "support": "conveyor_longitudinal",
+      "support_geometry_accepted": false,
+      "support_contact_report_observed": false,
+      "support_release_accepted": true,
+      "support_reason": "PAYLOAD_NOT_IN_SUPPORT_CONTACT",
+      "release_executed": false
+    },
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "target_cup_release_clearance_started",
+      "time_s": 90.42916666666666,
+      "maximum_wait_s": 1.0
+    },
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "release_constraint_removal_confirmed",
+      "simulation_time_s": 90.45,
+      "request_time_s": 90.42916666666666,
+      "relative_position_delta_m": 0.0021243924672446,
+      "relative_rotation_delta_rad": 6.696736354869062e-05,
+      "support_contact_still_active": false
+    },
+    {
+      "source": "RECEPTION_ASSUMED",
+      "event": "IDEAL_RECEPTION_ACCEPTED",
+      "carton_id": "carton_l07_c02",
+      "time_s": 91.45833338592202,
+      "release_height_m": 0.02491789477926898,
+      "release_height_semantics": "ACTUAL_PRE_REMOVAL_LOWEST_CORNER_HEIGHT",
+      "actual_release_height_m": 0.02491789477926898,
+      "first_takeover_height_m": 0.02281664880854528,
+      "model": "SAME_BODY_BOUNDED_IDEAL_RECEPTION"
+    },
+    {
+      "source": "formal/physics/execution_events.json",
+      "event": "target_cup_clearance_ended_by_assumed_reception",
+      "time_s": 90.45,
+      "physical_clearance_certified": false
+    },
+    {
+      "source": "RECEPTION_ASSUMED",
+      "event": "IDEAL_RECEPTION_ACCEPTED",
+      "carton_id": "carton_l07_c02",
+      "time_s": 91.45833338592202,
+      "release_height_m": 0.02491789477926898,
+      "release_height_semantics": "ACTUAL_PRE_REMOVAL_LOWEST_CORNER_HEIGHT",
+      "actual_release_height_m": 0.02491789477926898,
+      "first_takeover_height_m": 0.02281664880854528,
+      "model": "SAME_BODY_BOUNDED_IDEAL_RECEPTION"
+    },
+    {
+      "source": "IDEAL_DOWNSTREAM_FULL_ENVELOPE_CROSSING",
+      "event": "OUTFED_ASSUMED",
+      "carton_id": "carton_l07_c02",
+      "time_s": 101.51250005257954,
+      "full_envelope_max_x_m": -3.20089360576363,
+      "actual_full_envelope_max_x_m": -3.200893643043603
+    }
+  ]
+}

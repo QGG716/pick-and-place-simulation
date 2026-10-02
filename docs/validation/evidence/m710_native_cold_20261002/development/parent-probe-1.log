@@ -1,0 +1,17 @@
+independent_configured_home PASS
+ordinary_connect_pose_natural_native_endpoint PASS
+distinct_native_parents_with_same_numeric_endpoint PASS
+selected_earlier_parent_native_lin_backtrack PASS
+ownership_current_synthetic_contact PASS
+ownership_native_world_to_attached FAIL
+Traceback (most recent call last):
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/tools/check_m710_native_cold.py", line 96, in main
+    run_parent_chain_probe(c,scene,q,policy,add,report)
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/tools/m710_native_parent_probe.py", line 109, in run_parent_chain_probe
+    _ownership_probe(c, scene, q, policy, add, report, first["submitted_request"])
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/tools/m710_native_parent_probe.py", line 160, in _ownership_probe
+    _require(add, "ownership_native_world_to_attached", failure is None, failure=failure, evidence=evidence)
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/tools/m710_native_parent_probe.py", line 34, in _require
+    raise RuntimeError("NATIVE_PARENT_PROBE_FAILED:" + name)
+RuntimeError: NATIVE_PARENT_PROBE_FAILED:ownership_native_world_to_attached
+

@@ -1,0 +1,58 @@
+{
+  "source_commit": "f94a1ca4c48b4b4bf5805466549c941ed07dd830",
+  "transferred_files": 335,
+  "remote_manifest_mismatches": [],
+  "modified_implementation_git_blob_mismatches": [],
+  "unchanged_checkout_newline_variants": [
+    {
+      "path": "tools/verify_m710_local_delivery.ps1",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    },
+    {
+      "path": "scripts/run_demo.sh",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    },
+    {
+      "path": "tests/fixtures/moveit2/clearance_rejections.json",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    },
+    {
+      "path": "tests/fixtures/moveit2/frozen_candidate.json",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    },
+    {
+      "path": "configs/isaac/carton_assets.json",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    },
+    {
+      "path": "configs/isaac/conveyor_assets.json",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    },
+    {
+      "path": "configs/isaac/m710_visual_assets.json",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    },
+    {
+      "path": "AGENTS.md",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    },
+    {
+      "path": "pyproject.toml",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    },
+    {
+      "path": ".gitattributes",
+      "difference": "CRLF_WORKTREE_LF_GIT",
+      "normalized_equal": true
+    }
+  ]
+}

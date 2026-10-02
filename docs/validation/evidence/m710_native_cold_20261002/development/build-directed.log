@@ -1,0 +1,284 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+-- Found moveit_task_constructor_core: 0.1.3 (/opt/ros/humble/share/moveit_task_constructor_core/cmake)
+-- Found rosidl_generator_c: 3.1.9 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.9 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.9 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: chrono date_time filesystem iostreams program_options regex serialization system thread 
+-- Found rclcpp: 16.0.21 (/opt/ros/humble/share/rclcpp/cmake)
+-- Found rmw_implementation_cmake: 6.1.4 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.10 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+-- Found FastRTPS: /opt/ros/humble/include  
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found Threads: TRUE  
+-- Found tcb_span: 1.3.2 (/opt/ros/humble/share/tcb_span/cmake)
+-- Found rclcpp_lifecycle: 16.0.21 (/opt/ros/humble/share/rclcpp_lifecycle/cmake)
+-- Found parameter_traits: 0.7.6 (/opt/ros/humble/share/parameter_traits/cmake)
+-- library: /usr/lib/x86_64-linux-gnu/libcurl.so
+-- Found Eigen3: TRUE (found version "3.4.0") 
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: system filesystem date_time program_options thread chrono 
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: date_time filesystem program_options system thread 
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: thread system filesystem regex date_time program_options 
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: system filesystem date_time program_options thread 
+-- Found moveit_planners_ompl: 2.5.10 (/opt/ros/humble/share/moveit_planners_ompl/cmake)
+-- Found nlohmann_json: /usr/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake (found version "3.10.5") 
+-- Found pilz_industrial_motion_planner: 2.5.10 (/opt/ros/humble/share/pilz_industrial_motion_planner/cmake)
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /work-native-cold-20261002/build
+[ 12%] Building CXX object CMakeFiles/m710_clearance_test.dir/src/clearance_test.cpp.o
+[ 25%] Building CXX object CMakeFiles/m710_moveit_worker.dir/src/worker.cpp.o
+[ 37%] Linking CXX executable m710_clearance_test
+[ 37%] Built target m710_clearance_test
+[ 50%] Building CXX object CMakeFiles/m710_process_geometry_test.dir/src/process_geometry_test.cpp.o
+[ 62%] Linking CXX executable m710_process_geometry_test
+[ 62%] Built target m710_process_geometry_test
+[ 75%] Building CXX object CMakeFiles/m710_process_policy_test.dir/src/process_policy_test.cpp.o
+[ 87%] Linking CXX executable m710_moveit_worker
+[ 87%] Built target m710_moveit_worker
+[100%] Linking CXX executable m710_process_policy_test
+[100%] Built target m710_process_policy_test
+{"cases":15,"scope":"synthetic_process_geometry_only","status":"PASS"}
+[INFO] [1790907865.606726890] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.606782670] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.609509486] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.609514570] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.609798644] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.609803783] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.609945901] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.609948846] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+{"cases":7,"scope":"synthetic_native_process_policy_only","status":"PASS"}
+[INFO] [1790907865.628072727] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.628118507] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.628346907] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.628350362] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.628419819] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.628422204] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.628473351] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.628475648] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.628521790] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.628523954] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.628568109] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.628570199] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.628613353] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.628615506] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.628712160] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.628714462] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.628810444] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.628812831] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790907865.629099637] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1790907865.629102063] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+{
+  "attached_failure": {
+    "numerical_gap_tolerance_m": 1e-09,
+    "pair": [
+      "payload",
+      "neighbor"
+    ],
+    "query_range_m": 0.006,
+    "query_scope": "robot_tool_payload_to_world",
+    "reason": "CLEARANCE_INSUFFICIENT",
+    "required_pair_clearance_m": 0.005,
+    "surface_distance_m": 0.001999999999999988
+  },
+  "cup_permission_not_rigid": "PASS",
+  "edge_counts": {
+    "continuous_swept_proof": false,
+    "counts": {
+      "endpoint": {
+        "bookkeeping_s": 2.8999999999999998e-08,
+        "clearance_rejected": 0,
+        "distance_api_calls": 0,
+        "legacy_witness_checks": 0,
+        "legacy_witness_s": 0.0,
+        "queries": 2,
+        "rejected": 0,
+        "seconds": 1.2980000000000001e-06,
+        "valid": 2
+      },
+      "output": {
+        "bookkeeping_s": 7.570000000000025e-06,
+        "clearance_rejected": 1,
+        "distance_api_calls": 0,
+        "legacy_witness_checks": 0,
+        "legacy_witness_s": 0.0,
+        "queries": 402,
+        "rejected": 1,
+        "seconds": 0.00015524999999999995,
+        "valid": 401
+      }
+    },
+    "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+    "evidence_materialization_s": 2.4228e-05,
+    "mode": "optimized",
+    "policy": {
+      "conveyor_ids": [],
+      "numerical_gap_tolerance_m": 1e-09,
+      "payload_id": "",
+      "receiver_reserve_m": 0.0,
+      "schema": "m710_native_free_clearance_v1",
+      "source_policy": {
+        "required_pair_clearance_m": 0.005,
+        "schema": "m710_poc_pair_collision_policy_v4",
+        "self_collision_clearance_m": 0.0
+      },
+      "stage": "transit",
+      "tool_links": [
+        "tool"
+      ]
+    },
+    "profile": {
+      "state_copy_update_s": 2.0689000000000018e-05,
+      "workspace_allocation_s": 3.057e-06
+    },
+    "query_range_m": 0.006,
+    "rejected_examples": [
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "tool",
+          "wall"
+        ],
+        "phase": "output",
+        "q_rad": [
+          0.025312500000000016
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.00468749999999999
+      }
+    ],
+    "search_gap_witness": null,
+    "workspace": {
+      "eligible_pairs": 3,
+      "exempt_pairs": 0,
+      "geometry_prepare_s": 1.931e-06,
+      "pair_filter_s": 2.4e-07,
+      "phases": {
+        "endpoint": {
+          "aabb_skips": 6,
+          "aabb_tests": 6,
+          "broad_phase_s": 2.11e-07,
+          "narrow_calls": 0,
+          "narrow_s": 0.0,
+          "queries": 2,
+          "self_narrow": 0,
+          "self_narrow_s": 0.0,
+          "transform_aabb_update_s": 1.28e-07,
+          "world_narrow": 0,
+          "world_narrow_s": 0.0
+        },
+        "output": {
+          "aabb_skips": 1201,
+          "aabb_tests": 1206,
+          "broad_phase_s": 2.976999999999987e-05,
+          "narrow_calls": 5,
+          "narrow_s": 1.3290000000000001e-06,
+          "queries": 402,
+          "self_narrow": 0,
+          "self_narrow_s": 0.0,
+          "transform_aabb_update_s": 1.9079999999999997e-05,
+          "world_narrow": 5,
+          "world_narrow_s": 1.3290000000000001e-06
+        }
+      },
+      "prepare_s": 2.212e-06,
+      "prepared_objects": 3
+    }
+  },
+  "mode": "optimized",
+  "payload_receiver_stage_thresholds": "PASS",
+  "scope": "synthetic implementation checks only",
+  "self_tool_and_diff": "PASS",
+  "stale_attachment_fail_closed": "PASS",
+  "status": "PASS",
+  "threshold_cases": [
+    {
+      "failure": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "robot",
+          "tool"
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.004000000000000001
+      },
+      "gap": 0.004,
+      "valid": false
+    },
+    {
+      "failure": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "robot",
+          "tool"
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.004999997999999999
+      },
+      "gap": 0.004999998,
+      "valid": false
+    },
+    {
+      "failure": null,
+      "gap": 0.0049999995,
+      "valid": true
+    },
+    {
+      "failure": null,
+      "gap": 0.005,
+      "valid": true
+    },
+    {
+      "failure": null,
+      "gap": 0.0050000005,
+      "valid": true
+    },
+    {
+      "failure": null,
+      "gap": 0.006,
+      "valid": true
+    }
+  ],
+  "valid_endpoints_invalid_edge": {
+    "edge": 0,
+    "fraction": 0.6265625,
+    "numerical_gap_tolerance_m": 1e-09,
+    "pair": [
+      "tool",
+      "wall"
+    ],
+    "q_rad": [
+      0.025312500000000016
+    ],
+    "query_range_m": 0.006,
+    "query_scope": "robot_tool_payload_to_world",
+    "reason": "CLEARANCE_INSUFFICIENT",
+    "required_pair_clearance_m": 0.005,
+    "surface_distance_m": 0.00468749999999999
+  }
+}

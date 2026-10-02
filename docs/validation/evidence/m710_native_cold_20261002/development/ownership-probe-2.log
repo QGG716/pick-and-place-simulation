@@ -1,0 +1,20 @@
+independent_configured_home PASS
+ownership_current_synthetic_contact PASS
+Traceback (most recent call last):
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/tools/check_m710_native_cold.py", line 100, in main
+    run_probe(c,scene,q,policy,add,report)
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/tools/m710_native_parent_probe.py", line 128, in run_ownership_only_probe
+    _ownership_probe(c, scene, q, policy, add, report, free_request)
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/tools/m710_native_parent_probe.py", line 194, in _ownership_probe
+    attached, failure, evidence = c._cartesian(actual_contact, destination, obstacles,
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/src/unloading_sim/moveit2_backend.py", line 1216, in _cartesian
+    path,failure,evidence=self._native_plan(start,None,obstacles,goal_pose=destination,
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/src/unloading_sim/moveit2_backend.py", line 992, in _native_plan
+    raw=self.native.request(submitted,timeout=timeout,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/autodl-tmp/m710-native-cold-20261002/repo/src/unloading_sim/moveit2_backend.py", line 316, in request
+    raise MoveItUnavailable(result.get("detail", "MOVEIT2_ERROR"))
+unloading_sim.moveit2_backend.MoveItUnavailable: NATIVE_TASK_ATTACHMENT_TELEPORT
+

@@ -58,3 +58,6 @@ docs/validation/evidence/m710_execution_gate_20260928/** -text -whitespace
 
 # Keep this formal failed run and its source/actual-state identities byte-exact.
 docs/validation/evidence/m710_native_cold_20261001/** -text -whitespace
+
+# Preserve the second formal native-cold run, its worker and raw evidence.
+docs/validation/evidence/m710_native_cold_20261002/** -text -whitespace

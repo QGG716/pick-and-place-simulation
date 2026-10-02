@@ -1,0 +1,119 @@
+{
+  "schema": "m710_native_cold_development_probe_v1",
+  "status": "PASS",
+  "scope": "configured-home development probes; no measured initial state or complete-cycle acceptance",
+  "wall_seconds": 16.227631263434887,
+  "history_enabled": false,
+  "history_inputs_read": 0,
+  "isaac": "NOT_RUN",
+  "physical_success_count": 0,
+  "checks": [
+    {
+      "name": "independent_configured_home",
+      "passed": true,
+      "scope": null,
+      "observed_rejection": null
+    },
+    {
+      "name": "ordinary_connect_pose_natural_native_endpoint",
+      "passed": true,
+      "scope": "real current native IK/PTP; no fabricated endpoint perturbation",
+      "observed_rejection": null
+    },
+    {
+      "name": "distinct_native_parents_with_same_numeric_endpoint",
+      "passed": true,
+      "scope": "two fresh worker solutions in one Task; identical q cannot select their parent",
+      "observed_rejection": null
+    },
+    {
+      "name": "selected_earlier_parent_native_lin_backtrack",
+      "passed": true,
+      "scope": "ordinary selected endpoint; real native append restores explicitly selected earlier prefix",
+      "observed_rejection": null
+    },
+    {
+      "name": "ownership_current_synthetic_contact",
+      "passed": true,
+      "scope": null,
+      "observed_rejection": null
+    },
+    {
+      "name": "ownership_native_world_to_attached",
+      "passed": true,
+      "scope": null,
+      "observed_rejection": null
+    },
+    {
+      "name": "ownership_zero_motion_place_semantics",
+      "passed": true,
+      "scope": null,
+      "observed_rejection": null
+    },
+    {
+      "name": "ownership_zero_motion_release_selected",
+      "passed": true,
+      "scope": null,
+      "observed_rejection": null
+    },
+    {
+      "name": "selected_zero_terminal_native_task_audit",
+      "passed": true,
+      "scope": "synthetic native scene transition audit; no physical completion or receiving-support claim",
+      "observed_rejection": null
+    },
+    {
+      "name": "native_ownership_readback_and_independent_checks",
+      "passed": true,
+      "scope": "real native Task scene ownership transitions; independent full-edge authority; no physical attachment",
+      "observed_rejection": null
+    },
+    {
+      "name": "changed_zero_terminal_state_rejected",
+      "passed": true,
+      "scope": "real compiled guard rejection; production transport poisons stream; no solver counter fabricated",
+      "observed_rejection": "NATIVE_TASK_TERMINAL_STATE_CHANGED"
+    },
+    {
+      "name": "target_identity_fresh_native_root",
+      "passed": true,
+      "scope": "fresh worker root for identity rejection only; no accepted path imported",
+      "observed_rejection": null
+    },
+    {
+      "name": "target_identity_change",
+      "passed": true,
+      "scope": "real compiled guard rejection; production transport poisons stream; no solver counter fabricated",
+      "observed_rejection": "NATIVE_TASK_TARGET_ID_CHANGED"
+    },
+    {
+      "name": "explicit_parent_required_worker_initialized",
+      "passed": true,
+      "scope": "isolated negative-case worker; no native motion requested by init",
+      "observed_rejection": null
+    },
+    {
+      "name": "explicit_parent_required",
+      "passed": true,
+      "scope": "real compiled guard rejection; production transport poisons stream; no solver counter fabricated",
+      "observed_rejection": "NATIVE_TASK_EXPLICIT_PARENT_REQUIRED"
+    },
+    {
+      "name": "attached_root_forbidden_worker_initialized",
+      "passed": true,
+      "scope": "isolated negative-case worker; no native motion requested by init",
+      "observed_rejection": null
+    },
+    {
+      "name": "attached_root_forbidden",
+      "passed": true,
+      "scope": "real compiled guard rejection; production transport poisons stream; no solver counter fabricated",
+      "observed_rejection": "NATIVE_COLD_INITIAL_ATTACHMENT_FORBIDDEN"
+    }
+  ],
+  "raw_evidence": {
+    "archive": "development-evidence.tar.gz",
+    "member": "evidence/parent-probe-4.json",
+    "sha256": "5884a08620a74dc2a0768a5c6fbd9862fdaff8f1e240daf8f092c5b09c24a562"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "bundle_sha256": "c5532af6d70cca3c215ec75a087fa13f980c9403658bf48f7a151963fc6119d3",
+  "robot_urdf_sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+  "robot_srdf_sha256": "dd859deb310764c70d77c5a5bbe52d2033c959c738171344f17ac903deb29a16",
+  "imported_usd_sha256": "d8239782358f222f55778f9c80025e688b9b1e864ee5b1dd872172c5f2bfabbe",
+  "replay_adapter_sha256": "c9521291179d887b2cdc6d8ce32b6c7fb53277e26fba57ec20bfd44c1324a753",
+  "source_plan_sha256": "a955eb3a4141442327bc8396afbad427188b166b074bd6114c2ff84a4d8106fd",
+  "merged_configuration_sha256": "2d41941bd32a89f04ba536cbaeb9d456dbbb8ee6bebb485237473392f770f632",
+  "isaacsim_package_version": "6.0.1.0",
+  "git": {
+    "commit": null,
+    "dirty": null,
+    "changed_path_count": null
+  },
+  "physics": {
+    "physics_hz": 240.0,
+    "render_every_physics_steps": 48,
+    "post_release_seconds": 3.0,
+    "conveyor_contact_model": "physx_surface_velocity_dynamic_payload",
+    "conveyor_speed_command_m_s": 0.3,
+    "surface_gripper_force_distribution": "sealed_cup_wrench_aggregated_at_single_same_body_fixed_constraint_after_actual_contact;_not_a_compliant_per_cup_load_distribution",
+    "physical_cup_count_is_not_simulation_attachment_point_count": true,
+    "missing_shear_limit_solver_fallback": false
+  },
+  "output_sha256": {
+    "rgb_png": "abb56f6df578b3e06a7c128e01795e48a1c56272f490b37d29f973679b3203fe",
+    "replay_gif": null,
+    "replay_mp4": "502b3dff83fe656e3b859746993cffa7f3707b6361a7b1ff1dd2a2c502de4018",
+    "replay_preview_mp4": null,
+    "depth_m_npy": "46e07bf918e053039998997586952e26a018ee6e1a4eb57918d9ae3ecf3e5647",
+    "joint_tracking_csv": "999608f35b08ccda3364737426ea952df2d88199c436485d134519c1a17387bb",
+    "carton_states_json": "96532d4b762d82e90d6fe88025b681efae3a980a053ff9ff262460fc3e168cac",
+    "execution_events_json": "cfe3ad3aac95f93d1de664dc98738b9873b99f0c461dda8adec31e4af3852bc8"
+  }
+}

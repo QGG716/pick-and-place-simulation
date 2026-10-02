@@ -1,0 +1,45 @@
+[INFO] [1790908424.499347016] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.0256697 seconds
+[INFO] [1790908424.499427600] [moveit_robot_model.robot_model]: Loading robot model 'fanuc_m710id_70'...
+[INFO] [1790908424.499434866] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1790908424.521623246] [moveit.pilz_industrial_motion_planner.joint_limits_aggregator]: Reading limits from namespace robot_description_planning
+[INFO] [1790908424.522122549] [moveit.pilz_industrial_motion_planner]: Available plugins: pilz_industrial_motion_planner/PlanningContextLoaderCIRC pilz_industrial_motion_planner/PlanningContextLoaderLIN pilz_industrial_motion_planner/PlanningContextLoaderPTP 
+[INFO] [1790908424.522129736] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderCIRC
+[INFO] [1790908424.522739111] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [CIRC]
+[INFO] [1790908424.522744717] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderLIN
+[INFO] [1790908424.523168621] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [LIN]
+[INFO] [1790908424.523172398] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderPTP
+[INFO] [1790908424.523565522] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [PTP]
+[INFO] [1790908424.523571254] [moveit.ros_planning.planning_pipeline]: Using planning interface 'Pilz Industrial Motion Planner'
+[INFO] [1790908424.529967159] [moveit.ros_planning.planning_pipeline]: Using planning interface 'OMPL'
+[ERROR] [1790908424.728195912] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908424.728230572] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908424.728233788] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908424.728236387] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[INFO] [1790908424.728557910] [moveit.pilz_industrial_motion_planner.trajectory_generator_ptp]: Initialized Point-to-Point Trajectory Generator.
+[INFO] [1790908424.728580117] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Generating PTP trajectory...
+[ERROR] [1790908425.201878260] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.201927306] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.201930771] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.201933767] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[INFO] [1790908425.202222600] [moveit.pilz_industrial_motion_planner.trajectory_generator_ptp]: Initialized Point-to-Point Trajectory Generator.
+[INFO] [1790908425.202236663] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Generating PTP trajectory...
+[ERROR] [1790908425.391413251] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.391452706] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.391455652] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.391458197] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.393714130] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.393728579] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.393731410] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.393734042] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.393762155] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.393764738] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.393774473] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.393776833] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[INFO] [1790908425.393880467] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Generating LIN trajectory...
+[ERROR] [1790908425.828353616] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.828395791] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.828398834] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[ERROR] [1790908425.828401487] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[INFO] [1790908425.828463169] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Generating LIN trajectory...
+[ERROR] [1790908426.122632818] [moveit_robot_state.robot_state]: Attached body 'carton_l07_c02' not found
+[INFO] [1790908426.313984570] [rclcpp]: signal_handler(SIGINT/SIGTERM)

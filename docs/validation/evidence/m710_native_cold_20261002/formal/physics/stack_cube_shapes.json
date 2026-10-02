@@ -1,0 +1,1522 @@
+{
+  "carton_l00_c00": {
+    "name": "carton_l00_c00",
+    "actor": "/Validation/Scene/carton_l00_c00",
+    "collider": "/Validation/Scene/carton_l00_c00",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l00_c01": {
+    "name": "carton_l00_c01",
+    "actor": "/Validation/Scene/carton_l00_c01",
+    "collider": "/Validation/Scene/carton_l00_c01",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l00_c02": {
+    "name": "carton_l00_c02",
+    "actor": "/Validation/Scene/carton_l00_c02",
+    "collider": "/Validation/Scene/carton_l00_c02",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l00_c03": {
+    "name": "carton_l00_c03",
+    "actor": "/Validation/Scene/carton_l00_c03",
+    "collider": "/Validation/Scene/carton_l00_c03",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l00_c04": {
+    "name": "carton_l00_c04",
+    "actor": "/Validation/Scene/carton_l00_c04",
+    "collider": "/Validation/Scene/carton_l00_c04",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l01_c00": {
+    "name": "carton_l01_c00",
+    "actor": "/Validation/Scene/carton_l01_c00",
+    "collider": "/Validation/Scene/carton_l01_c00",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l01_c01": {
+    "name": "carton_l01_c01",
+    "actor": "/Validation/Scene/carton_l01_c01",
+    "collider": "/Validation/Scene/carton_l01_c01",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l01_c02": {
+    "name": "carton_l01_c02",
+    "actor": "/Validation/Scene/carton_l01_c02",
+    "collider": "/Validation/Scene/carton_l01_c02",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l01_c03": {
+    "name": "carton_l01_c03",
+    "actor": "/Validation/Scene/carton_l01_c03",
+    "collider": "/Validation/Scene/carton_l01_c03",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l01_c04": {
+    "name": "carton_l01_c04",
+    "actor": "/Validation/Scene/carton_l01_c04",
+    "collider": "/Validation/Scene/carton_l01_c04",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l02_c00": {
+    "name": "carton_l02_c00",
+    "actor": "/Validation/Scene/carton_l02_c00",
+    "collider": "/Validation/Scene/carton_l02_c00",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l02_c01": {
+    "name": "carton_l02_c01",
+    "actor": "/Validation/Scene/carton_l02_c01",
+    "collider": "/Validation/Scene/carton_l02_c01",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l02_c02": {
+    "name": "carton_l02_c02",
+    "actor": "/Validation/Scene/carton_l02_c02",
+    "collider": "/Validation/Scene/carton_l02_c02",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l02_c03": {
+    "name": "carton_l02_c03",
+    "actor": "/Validation/Scene/carton_l02_c03",
+    "collider": "/Validation/Scene/carton_l02_c03",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l02_c04": {
+    "name": "carton_l02_c04",
+    "actor": "/Validation/Scene/carton_l02_c04",
+    "collider": "/Validation/Scene/carton_l02_c04",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l03_c00": {
+    "name": "carton_l03_c00",
+    "actor": "/Validation/Scene/carton_l03_c00",
+    "collider": "/Validation/Scene/carton_l03_c00",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l03_c01": {
+    "name": "carton_l03_c01",
+    "actor": "/Validation/Scene/carton_l03_c01",
+    "collider": "/Validation/Scene/carton_l03_c01",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l03_c02": {
+    "name": "carton_l03_c02",
+    "actor": "/Validation/Scene/carton_l03_c02",
+    "collider": "/Validation/Scene/carton_l03_c02",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l03_c03": {
+    "name": "carton_l03_c03",
+    "actor": "/Validation/Scene/carton_l03_c03",
+    "collider": "/Validation/Scene/carton_l03_c03",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l03_c04": {
+    "name": "carton_l03_c04",
+    "actor": "/Validation/Scene/carton_l03_c04",
+    "collider": "/Validation/Scene/carton_l03_c04",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l04_c00": {
+    "name": "carton_l04_c00",
+    "actor": "/Validation/Scene/carton_l04_c00",
+    "collider": "/Validation/Scene/carton_l04_c00",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l04_c01": {
+    "name": "carton_l04_c01",
+    "actor": "/Validation/Scene/carton_l04_c01",
+    "collider": "/Validation/Scene/carton_l04_c01",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l04_c02": {
+    "name": "carton_l04_c02",
+    "actor": "/Validation/Scene/carton_l04_c02",
+    "collider": "/Validation/Scene/carton_l04_c02",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l04_c03": {
+    "name": "carton_l04_c03",
+    "actor": "/Validation/Scene/carton_l04_c03",
+    "collider": "/Validation/Scene/carton_l04_c03",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l04_c04": {
+    "name": "carton_l04_c04",
+    "actor": "/Validation/Scene/carton_l04_c04",
+    "collider": "/Validation/Scene/carton_l04_c04",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l05_c00": {
+    "name": "carton_l05_c00",
+    "actor": "/Validation/Scene/carton_l05_c00",
+    "collider": "/Validation/Scene/carton_l05_c00",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l05_c01": {
+    "name": "carton_l05_c01",
+    "actor": "/Validation/Scene/carton_l05_c01",
+    "collider": "/Validation/Scene/carton_l05_c01",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l05_c02": {
+    "name": "carton_l05_c02",
+    "actor": "/Validation/Scene/carton_l05_c02",
+    "collider": "/Validation/Scene/carton_l05_c02",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l05_c03": {
+    "name": "carton_l05_c03",
+    "actor": "/Validation/Scene/carton_l05_c03",
+    "collider": "/Validation/Scene/carton_l05_c03",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l05_c04": {
+    "name": "carton_l05_c04",
+    "actor": "/Validation/Scene/carton_l05_c04",
+    "collider": "/Validation/Scene/carton_l05_c04",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l06_c00": {
+    "name": "carton_l06_c00",
+    "actor": "/Validation/Scene/carton_l06_c00",
+    "collider": "/Validation/Scene/carton_l06_c00",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l06_c01": {
+    "name": "carton_l06_c01",
+    "actor": "/Validation/Scene/carton_l06_c01",
+    "collider": "/Validation/Scene/carton_l06_c01",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l06_c02": {
+    "name": "carton_l06_c02",
+    "actor": "/Validation/Scene/carton_l06_c02",
+    "collider": "/Validation/Scene/carton_l06_c02",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l06_c03": {
+    "name": "carton_l06_c03",
+    "actor": "/Validation/Scene/carton_l06_c03",
+    "collider": "/Validation/Scene/carton_l06_c03",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l06_c04": {
+    "name": "carton_l06_c04",
+    "actor": "/Validation/Scene/carton_l06_c04",
+    "collider": "/Validation/Scene/carton_l06_c04",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l07_c00": {
+    "name": "carton_l07_c00",
+    "actor": "/Validation/Scene/carton_l07_c00",
+    "collider": "/Validation/Scene/carton_l07_c00",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l07_c01": {
+    "name": "carton_l07_c01",
+    "actor": "/Validation/Scene/carton_l07_c01",
+    "collider": "/Validation/Scene/carton_l07_c01",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l07_c02": {
+    "name": "carton_l07_c02",
+    "actor": "/Validation/Scene/carton_l07_c02",
+    "collider": "/Validation/Scene/carton_l07_c02",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l07_c03": {
+    "name": "carton_l07_c03",
+    "actor": "/Validation/Scene/carton_l07_c03",
+    "collider": "/Validation/Scene/carton_l07_c03",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  },
+  "carton_l07_c04": {
+    "name": "carton_l07_c04",
+    "actor": "/Validation/Scene/carton_l07_c04",
+    "collider": "/Validation/Scene/carton_l07_c04",
+    "source": "VERIFIED_NATIVE_PHYSX_CUBE",
+    "half_extents_m": [
+      0.30000001192092896,
+      0.20000000298023224,
+      0.15000000596046448
+    ],
+    "local_center_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "meters_per_unit": 1.0,
+    "contact_offset_in_geometry": false,
+    "contact_generation_offset_m": 0.009999999776482582,
+    "pose_source": "CURRENT_PHYSX_RIGID_BODY_TENSOR",
+    "backend_shapes_per_actor": 1
+  }
+}

@@ -1,0 +1,15 @@
+{
+    "programs": [
+
+    ],
+    "streams": [
+        {
+            "codec_name": "mpeg4",
+            "width": 640,
+            "height": 360,
+            "r_frame_rate": "5/1",
+            "duration": "123.000000",
+            "nb_frames": "615"
+        }
+    ]
+}

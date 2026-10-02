@@ -1,0 +1,441 @@
+{
+  "scope": "Read-only extraction from current formal motion; not a future planning input.",
+  "identity": {
+    "run_id": "native-cold-c66166b61f2548bfabe896a5010fa444",
+    "world_session_id": "1790909283.6163392",
+    "source_commit": "f94a1ca4c48b4b4bf5805466549c941ed07dd830",
+    "worker_sha256": "e933e868ac5c50879847dc1161046b6b9ad081adf23fe4f6359338bc9caf723c",
+    "target": "carton_l07_c02",
+    "carton_count": 40,
+    "random_seed": 71070,
+    "native_task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+    "layout_id": "m710id70_unloading_layout_v1",
+    "bootstrap_contract_sha256": "38c3695022c15b97f9dfdc13ceb35a80084b0cc120051c20a49626a8c3fb06ad",
+    "actual_initial_state_sha256": "2e4714fd9552a7f81bbc7d9c76a4d2c9ebc02dcc82765fd0e6e8cdfeaf4fbeba"
+  },
+  "history": {
+    "history_enabled": false,
+    "history_inputs_read": 0,
+    "legacy_motion_generator_calls": 0,
+    "forbidden_entry_attempts": 0,
+    "guard_implementation": "Frozen source src/unloading_sim/moveit2_native_cold.py; actual guarded counters from motion.native_cold_audit."
+  },
+  "complete_path_source_coverage": {
+    "status": "PASS",
+    "result": {
+      "passed": true,
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "nonzero_edge_count": 436,
+      "covered_nonzero_edge_count": 436,
+      "uncovered_edges": []
+    }
+  },
+  "native_task_audit": {
+    "status": "SUCCESS",
+    "result": {
+      "attach_transitions": 1,
+      "complete_task": true,
+      "external_path_imports": 0,
+      "generated_during_task": true,
+      "nonzero_native_motion_edges": 436,
+      "release_transitions": 1,
+      "request_id": "34",
+      "stage_ids": [
+        "native-cold-1c240bb2901b431a91c624133df99eca:1",
+        "native-cold-1c240bb2901b431a91c624133df99eca:2",
+        "native-cold-1c240bb2901b431a91c624133df99eca:3",
+        "native-cold-1c240bb2901b431a91c624133df99eca:10",
+        "native-cold-1c240bb2901b431a91c624133df99eca:11",
+        "native-cold-1c240bb2901b431a91c624133df99eca:12"
+      ],
+      "stage_sources": [
+        {
+          "native_cache_reuses": 11,
+          "native_solver_calls": {
+            "PTP": 1
+          },
+          "nonzero_motion_edges": 77,
+          "parent_stage_id": "",
+          "request_id": "13",
+          "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:1"
+        },
+        {
+          "native_cache_reuses": 10,
+          "native_solver_calls": {
+            "LIN": 1
+          },
+          "nonzero_motion_edges": 14,
+          "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:1",
+          "request_id": "14",
+          "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2"
+        },
+        {
+          "native_cache_reuses": 9,
+          "native_solver_calls": {
+            "LIN": 1
+          },
+          "nonzero_motion_edges": 157,
+          "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2",
+          "request_id": "15",
+          "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3"
+        },
+        {
+          "native_cache_reuses": 2,
+          "native_solver_calls": {
+            "OMPL": 1
+          },
+          "nonzero_motion_edges": 83,
+          "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+          "request_id": "31",
+          "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:10"
+        },
+        {
+          "native_cache_reuses": 1,
+          "native_solver_calls": {
+            "LIN": 1
+          },
+          "nonzero_motion_edges": 0,
+          "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:10",
+          "request_id": "32",
+          "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11"
+        },
+        {
+          "native_cache_reuses": 0,
+          "native_solver_calls": {
+            "LIN": 1
+          },
+          "nonzero_motion_edges": 105,
+          "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11",
+          "request_id": "33",
+          "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:12"
+        }
+      ],
+      "status": "SUCCESS",
+      "task_backtracks": 6,
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "task_solve_calls": 12,
+      "terminal_transition": null,
+      "transport_and_worker_s": 0.00285189226269722
+    }
+  },
+  "actual_native_calls": {
+    "returned_record_totals": {
+      "PTP": 5,
+      "LIN": 5,
+      "OMPL": 2
+    },
+    "native_ik": 17,
+    "per_stage": {
+      "pregrasp": {
+        "PTP": 1,
+        "LIN": 0,
+        "OMPL": 0,
+        "native_ik": 1
+      },
+      "contact": {
+        "PTP": 0,
+        "LIN": 1,
+        "OMPL": 0,
+        "native_ik": 0
+      },
+      "extraction": {
+        "PTP": 0,
+        "LIN": 1,
+        "OMPL": 0,
+        "native_ik": 0
+      },
+      "transit": {
+        "PTP": 4,
+        "LIN": 1,
+        "OMPL": 2,
+        "native_ik": 9
+      },
+      "place": {
+        "PTP": 0,
+        "LIN": 1,
+        "OMPL": 0,
+        "native_ik": 0
+      },
+      "withdrawal": {
+        "PTP": 0,
+        "LIN": 1,
+        "OMPL": 0,
+        "native_ik": 0
+      },
+      "contact_endpoint": {
+        "PTP": 0,
+        "LIN": 0,
+        "OMPL": 0,
+        "native_ik": 7
+      }
+    },
+    "stage_records": 12,
+    "stage_records_with_counters": 12,
+    "ik_records": 17,
+    "ik_records_with_counters": 17,
+    "note": "Only returned native_solver_calls/native_ik_calls are summed; requests are not solver calls."
+  },
+  "all_returned_stage_records": [
+    {
+      "request_id": "13",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:1",
+      "parent_stage_id": "",
+      "stage": "pregrasp",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.09755709,
+      "native_output_check_s": 3.264763538,
+      "authoritative_s": 45.93390555679798,
+      "failure": null,
+      "path_sha256": "f39cdd4ad172b158fb405c7c8dfc7ea51819ba1712a28afbcd5d57d586f5c597",
+      "native_points": 78
+    },
+    {
+      "request_id": "14",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:1",
+      "stage": "contact",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.024259789,
+      "native_output_check_s": 0.257570163,
+      "authoritative_s": 3.294373169541359,
+      "failure": null,
+      "path_sha256": "91803b06a413bc01a683c5e8c89eabdddbc531a034dc24ddbf6fc4270bbc0695",
+      "native_points": 15
+    },
+    {
+      "request_id": "15",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:2",
+      "stage": "extraction",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.232066251,
+      "native_output_check_s": 4.501423348,
+      "authoritative_s": 158.4136653356254,
+      "failure": null,
+      "path_sha256": "3d215a88c8bf9d477abc6d2ca29d1e5c4a03f775827b32968fae579a53edab45",
+      "native_points": 159
+    },
+    {
+      "request_id": "17",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:4",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.113261907,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "21",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:5",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.219407665,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "27",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:6",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.23184344,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "28",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:7",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/PTP",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "PTP": 1
+      },
+      "mtc_plan_s": 0.115092762,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "29",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:8",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "NATIVE_PLANNING_FAILED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.242051677,
+      "native_output_check_s": null,
+      "authoritative_s": null,
+      "failure": null,
+      "path_sha256": null,
+      "native_points": null
+    },
+    {
+      "request_id": "30",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:9",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "ompl/RRTConnectkConfigDefault",
+      "status": "NATIVE_PATH_REJECTED",
+      "native_output_status": null,
+      "authoritative_status": null,
+      "native_solver_calls": {
+        "OMPL": 1
+      },
+      "mtc_plan_s": 6.634421929,
+      "native_output_check_s": 1.544631058,
+      "authoritative_s": null,
+      "failure": {
+        "edge": 20,
+        "fraction": 0.3828125,
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "carton_l07_c02",
+          "carton_l06_c02"
+        ],
+        "q_rad": [
+          -0.8510217604706287,
+          -0.7070041806130142,
+          -0.3711028416823697,
+          2.414338315708688,
+          0.8500092070937121,
+          -5.184302834864068
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.004986852246589828
+      },
+      "path_sha256": null,
+      "native_points": 74
+    },
+    {
+      "request_id": "31",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:10",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:3",
+      "stage": "transit",
+      "solver": "ompl/RRTConnectkConfigDefault",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "OMPL": 1
+      },
+      "mtc_plan_s": 4.686924235,
+      "native_output_check_s": 7.664313044,
+      "authoritative_s": 533.0230213683099,
+      "failure": null,
+      "path_sha256": "f77823b909f0317f368abbb9217368dc2dc91320d287c723b1adcd0b9fec0472",
+      "native_points": 84
+    },
+    {
+      "request_id": "32",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:10",
+      "stage": "place",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.005956193,
+      "native_output_check_s": 0.002443263,
+      "authoritative_s": 0.009053720161318779,
+      "failure": null,
+      "path_sha256": "dc47b8d1be4d170ef43455596c0a5d624887ac9d602ab0c2efb91f5d6af1f357",
+      "native_points": 2
+    },
+    {
+      "request_id": "33",
+      "task_id": "native-cold-1c240bb2901b431a91c624133df99eca",
+      "stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:12",
+      "parent_stage_id": "native-cold-1c240bb2901b431a91c624133df99eca:11",
+      "stage": "withdrawal",
+      "solver": "pilz_industrial_motion_planner/LIN",
+      "status": "SUCCESS",
+      "native_output_status": "PASS",
+      "authoritative_status": "PASS",
+      "native_solver_calls": {
+        "LIN": 1
+      },
+      "mtc_plan_s": 0.205712976,
+      "native_output_check_s": 1.970233515,
+      "authoritative_s": 22.290980828925967,
+      "failure": null,
+      "path_sha256": "840fab4ed42978ca11bea2470a742b68dbfe5bec493fc41ceb3c4def6de62d30",
+      "native_points": 107
+    }
+  ]
+}

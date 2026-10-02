@@ -1,0 +1,5 @@
+{"output": "/root/autodl-tmp/m710-native-cold-20261002/repo/outputs/native-cold-20261002-once/bootstrap.json", "contract_sha256": "38c3695022c15b97f9dfdc13ceb35a80084b0cc120051c20a49626a8c3fb06ad", "motion_execution_permitted": false}
+{"run_id": "native-cold-c66166b61f2548bfabe896a5010fa444", "status": "INITIALIZING_ONE_WORLD", "world_pid": 3410}
+{"run_id": "native-cold-c66166b61f2548bfabe896a5010fa444", "status": "PLANNING_NATIVE_COLD", "world_session_id": "1790909283.6163392"}
+{"run_id": "native-cold-c66166b61f2548bfabe896a5010fa444", "status": "EXECUTING_ONE_GATED_SEGMENT"}
+{"run_id": "native-cold-c66166b61f2548bfabe896a5010fa444", "status": "ISAAC_WORKFLOW_COMPLETED_UNDER_DECLARED_ASSUMPTIONS", "isaac_exit_code": 0, "physical_qualification_passed": false}
