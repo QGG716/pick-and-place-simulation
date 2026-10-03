@@ -1,0 +1,4 @@
+{
+  "reason": "First local fix incorrectly required zero native singleton timestamp; actual Pilz stationary point has nonzero time. Stopped before further redundant downstream retries. Not a successful comparison and not the formal five-box run.",
+  "utc": "2026-10-03T11:31:38.022011+00:00"
+}

@@ -1,0 +1,6 @@
+{
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "result_file_write_s": 0.045663442462682724,
+  "excluded": "write_timing.json and stdout"
+}

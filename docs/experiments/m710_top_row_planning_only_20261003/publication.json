@@ -1,0 +1,34 @@
+{
+  "method": "Authorized GitHub connector publishes exact server Git trees; commit metadata differs because API supplies author/time",
+  "branch": "feat/v0.5-moveit2-native-single-carton",
+  "source_edit_location": "server only",
+  "code_commit_mapping": [
+    {
+      "server_commit": "26658f2b426d2d827d2429f6c2d7e47d152bb1e8",
+      "published_commit": "b22667abebc4a28431b772226a837b684041d537",
+      "tree_sha": "a10a7a643ca05f127bd686d1df84a96c10f112a9",
+      "tree_identity": "EXACT_MATCH"
+    },
+    {
+      "server_commit": "ea26ffca237defcbcbad2caf1e0bc096c8f9a468",
+      "published_commit": "d8194ec3f02d3dfc109b24608c42b94484339899",
+      "tree_sha": "9a27185d2510c57c6a45d267d2b6bfac0df91917",
+      "tree_identity": "EXACT_MATCH"
+    },
+    {
+      "server_commit": "92bc73fa33c446625e4b78bed2c2c18a94a4a67f",
+      "published_commit": "00e2d17a5a3d735038d52de446545f0d4d9766ea",
+      "tree_sha": "74598d98b75da44b7b84d9cc747338d4184976a1",
+      "tree_identity": "EXACT_MATCH"
+    },
+    {
+      "server_commit": "755c01744d6ecd8ed41e604604aed2ae8594f468",
+      "published_commit": "5c5fcf37eb05ef194be5b190dbec60da8a64d3de",
+      "tree_sha": "9dfbe42cbbf20507e457f742a83a88290c2a4113",
+      "tree_identity": "EXACT_MATCH"
+    }
+  ],
+  "formal_source_published_commit": "5c5fcf37eb05ef194be5b190dbec60da8a64d3de",
+  "original_server_history": "server-source-commits.bundle",
+  "regular_push_failure": "Server had no HTTPS credential; Windows Git network attempts failed and credential manager was unavailable"
+}

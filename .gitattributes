@@ -67,3 +67,6 @@ docs/validation/evidence/m710_validation_optimization_20261002/** -text -whitesp
 
 # Preserve the planning-only experiment measurements and generated trajectories.
 docs/experiments/m710_top_row_planning_only_20261002/** -text -whitespace
+
+# Preserve this planning-only experiment without text conversion.
+docs/experiments/m710_top_row_planning_only_20261003/** -text -whitespace

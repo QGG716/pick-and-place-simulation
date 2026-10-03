@@ -1,0 +1,61 @@
+{
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "comparisons": [
+    {
+      "target": "carton_l07_c00",
+      "baseline_plan_s": 462.27624959871173,
+      "optimized_plan_s": 10.764706777408719,
+      "reduction_percent": 97.67136927610855,
+      "observed_ratio": 42.94369174726289,
+      "baseline_counts": {
+        "PTP": 77,
+        "LIN": 39,
+        "OMPL": 19,
+        "IK": 263
+      },
+      "optimized_counts": {
+        "PTP": 10,
+        "LIN": 5,
+        "OMPL": 1,
+        "IK": 36
+      },
+      "baseline_place_failures": 18,
+      "optimized_place_failures": 0,
+      "baseline_run_id": "planning-only-53325838c7c648638b985336a7543acf",
+      "optimized_run_id": "planning-only-ea22b5ec5c6a48f184667be38821438f",
+      "baseline_source_commit": "26658f2b426d2d827d2429f6c2d7e47d152bb1e8",
+      "optimized_source_commit": "92bc73fa33c446625e4b78bed2c2c18a94a4a67f",
+      "diagnostic_input_sha256": "3c3e9e8b827602fe09eb30d5617880fc6ab1d6e17fbcab3b6f68f65362fa36ed"
+    },
+    {
+      "target": "carton_l07_c04",
+      "baseline_plan_s": 202.40534021891654,
+      "optimized_plan_s": 31.425725746899843,
+      "reduction_percent": 84.4738653076492,
+      "observed_ratio": 6.440753090288897,
+      "baseline_counts": {
+        "PTP": 42,
+        "LIN": 18,
+        "OMPL": 8,
+        "IK": 90
+      },
+      "optimized_counts": {
+        "PTP": 18,
+        "LIN": 6,
+        "OMPL": 2,
+        "IK": 34
+      },
+      "baseline_place_failures": 6,
+      "optimized_place_failures": 0,
+      "baseline_run_id": "planning-only-864630a030e24e40a4662a2d4e7339dc",
+      "optimized_run_id": "planning-only-b6a50ec09aea4dd998fbbf8df8f8e618",
+      "baseline_source_commit": "26658f2b426d2d827d2429f6c2d7e47d152bb1e8",
+      "optimized_source_commit": "755c01744d6ecd8ed41e604604aed2ae8594f468",
+      "diagnostic_input_sha256": "8992ad856de48dd05c18c0ec5a7817f6f7fab222b0a2d2a0b4adaf1d3c7f1040"
+    }
+  ],
+  "repeats_per_side": 1,
+  "development_attempt": "optimized-c00 interrupted after timestamp contract mismatch; retained; excluded from successful comparison",
+  "scope": "same-server same-env fixed-input diagnostics; not five-box runtime speedup; stochastic OMPL timing varies"
+}

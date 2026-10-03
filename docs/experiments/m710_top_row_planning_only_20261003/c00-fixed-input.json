@@ -1,0 +1,18 @@
+{
+  "target": "carton_l07_c00",
+  "start_q_rad": [
+    -0.7828015607555275,
+    0.25833891159144756,
+    -0.28465005080354394,
+    -1.1912329863934736e-06,
+    -1.0278069535444716,
+    -2.3587897823365487
+  ],
+  "removed_targets": [
+    "carton_l07_c02",
+    "carton_l07_c01",
+    "carton_l07_c03"
+  ],
+  "seed_offset": 3,
+  "source": "Historical starting state and scene only; no historical solution or suffix"
+}

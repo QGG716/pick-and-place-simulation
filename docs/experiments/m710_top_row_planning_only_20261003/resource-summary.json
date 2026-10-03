@@ -1,0 +1,17 @@
+{
+  "sample_interval_s": 10,
+  "record_count": 438,
+  "worker_sampled_max_VmHWM_KiB": 1811388,
+  "worker_observed_threads": [
+    2,
+    4,
+    11
+  ],
+  "cpu_affinity": [
+    "0-21"
+  ],
+  "coverage": "baseline c04 / optimized c04 / formal batch; baseline c00 peak not captured",
+  "gpu_used_MiB": 0,
+  "gpu_utilization_percent": 0,
+  "worker_cpu_observation": "single process mostly one busy solver CPU; up to 11 OS threads including ROS/DDS; affinity 0-21 is a limit, not a claim of 22-way solver parallelism"
+}

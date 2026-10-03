@@ -1,0 +1,1047 @@
+[
+  {
+    "path": "AGENTS.md",
+    "git_blob": "41742ca6f43a7660c86ac0629f00d5163221150c",
+    "sha256": "dab47034865abb101b453dab6320dc030832da6d521b43f42785ae3ec881a8ca"
+  },
+  {
+    "path": "config/common_unloading.yaml",
+    "git_blob": "61aec9e8b0aac6cc993bd906a62f30b8f02abf3d",
+    "sha256": "348d69a6cacd522b7c16e0b856611f7e961e0856b9fdf03f413133855e6af06b"
+  },
+  {
+    "path": "config/demo.yaml",
+    "git_blob": "eed22171aad7b2841423b8c0b1d63c91c470c253",
+    "sha256": "60743f8b073bcd49840b16de041597bd263b7fa2e717d94169b44ee4317da397"
+  },
+  {
+    "path": "config/fanuc_m20id35.yaml",
+    "git_blob": "d0a0594ab7ae06deecc2c783dc8ee0abd934a5e2",
+    "sha256": "5ac02c565cf27c724255133ce419886d530548f4cbd9368b75f4a8e0d9ca1d8d"
+  },
+  {
+    "path": "config/fanuc_m20id35_isaac_full_replay.yaml",
+    "git_blob": "e0002dbaddf761052ea9385d55ca7eb5f4076d9b",
+    "sha256": "e86c6565b1642f87b1d2114c1f621b1b72cb53a01c75496f4a32820ea49d70b3"
+  },
+  {
+    "path": "config/fanuc_m20id35_validation.yaml",
+    "git_blob": "d7c75812250a0fc89866e1b47d595e33bbd457dc",
+    "sha256": "8cae81f7c378ec96d439df1436d604a6ffb14ce38deeb721fdc83d409834958a"
+  },
+  {
+    "path": "config/fanuc_m20id35_wantai_task_space.yaml",
+    "git_blob": "c468df223b3ff2d112ac2fcaed964ab862145b8c",
+    "sha256": "34f2ead584433ceac1032857c2623e3c51eed6b205fe1a6547fc08cb5ba14023"
+  },
+  {
+    "path": "config/fanuc_m710id_70.yaml",
+    "git_blob": "8f28c179d0b0860b545bc832d1f80cf252a135c8",
+    "sha256": "ee8acbfe11be505ef8cbc1d1bf116344ccf4eb5d83751d6cdd44eadde6d3ee47"
+  },
+  {
+    "path": "config/kuka_kr50.yaml",
+    "git_blob": "ccdd36403da798016c33712bb0889bff0eda0312",
+    "sha256": "03bd47dda5efc2a661b7ff37aa10a3c823f4da270808fcbbbf0d81350081c01a"
+  },
+  {
+    "path": "configs/cycle/unloading_900pph.yaml",
+    "git_blob": "d4819264b2d31afc3f2e93736a61b99b058c866e",
+    "sha256": "b6093d9dfda78b2fd0ca68e218672b90e96a347c3dd8ef4bedd476ec4ce1e484"
+  },
+  {
+    "path": "configs/isaac/carton_assets.json",
+    "git_blob": "f0eff489c313ba916a9d515980a2d9662646cb9a",
+    "sha256": "2666d089c0330f8f8e0b949920d5757120c918c8fe5a079130b840d47b988613"
+  },
+  {
+    "path": "configs/isaac/conveyor_assets.json",
+    "git_blob": "21e35ad884fcf8f93cd807ce7ab1ed66bea62f10",
+    "sha256": "b3c364551e6cb12cfe4b3c838cb7048087270fa48d1a1b82b33e33d3c4b2c693"
+  },
+  {
+    "path": "configs/isaac/m710_visual_assets.json",
+    "git_blob": "fd0992b9b7107ba925d2546287a7ea5048cc9972",
+    "sha256": "b8e355ac6afa5ed7f2c0492b2c9f1c462a4601540fccb75842a85d628690f524"
+  },
+  {
+    "path": "configs/qualification/fanuc_m20id35_25kg_front.yaml",
+    "git_blob": "f3d910097b192af5ac7e695d6aef3b6a546e2c9b",
+    "sha256": "f1cee78ac57924e2dff71bec95aa5e14ddff9c8d6d2195c19a0545c42a818762"
+  },
+  {
+    "path": "configs/qualification/fanuc_m710id_70_42p5kg.yaml",
+    "git_blob": "e81fd25e7ee77cf4480a1f6357cf36d9029016a8",
+    "sha256": "d27cc7da50fab06fe70c24cd592d734de31b8a5a90761e729827a786eac8d53b"
+  },
+  {
+    "path": "configs/robots/fanuc_m20id_35.yaml",
+    "git_blob": "5922e77572c9abfb4f693b793f3c447958ab9fac",
+    "sha256": "a2ef4b0a357c2386c80465e69d8c70af9ae2c963fcc2ba551723b4d6ada5e6ec"
+  },
+  {
+    "path": "configs/robots/fanuc_m710id_70.yaml",
+    "git_blob": "bd2bc728a0ec2a2d88418f48f62072b116dc3e57",
+    "sha256": "a54328805626f55df25f085faf764e436bc508b59b87bea494710f30fb0d7373"
+  },
+  {
+    "path": "configs/simulation/m710id70_dynamic_execution_v1.yaml",
+    "git_blob": "dfd2ac779c9aca71e1b270df61a81d7da5e598b1",
+    "sha256": "bba93a25adcd6b27c53993d3de52ee9854bc67f843cca175385b2e145c6aced8"
+  },
+  {
+    "path": "configs/simulation/m710id70_engineering_dynamics_v1.yaml",
+    "git_blob": "3334b9e86f28f2b51cca30b80581861d01a9da4c",
+    "sha256": "8d773bfc930681587053995bd197b17d37217130dd9010087a4832955799f2c3"
+  },
+  {
+    "path": "configs/simulation/m710id70_first_row_recording_v1.yaml",
+    "git_blob": "75e92a6683465dd5c3a38fb2f10e7b760b156e71",
+    "sha256": "fa9ebf16518d98ce5281f6a1ce873937b8db622136c0cf06e6c6c72e2fab324b"
+  },
+  {
+    "path": "configs/simulation/m710id70_handoff_continuation.yaml",
+    "git_blob": "9523ad8e8e1c6bfdfb4deefcbca831c12cb7a90d",
+    "sha256": "bd417cca10660994cbe6a7a1b8955a53116bc0c435a75f54a8e3f8ddab115a1c"
+  },
+  {
+    "path": "configs/simulation/m710id70_official_dynamics_v2.yaml",
+    "git_blob": "180a415354333778b46d0e46e3ae09a58c8a31f6",
+    "sha256": "5a96bc79d2f4370b78f1a6d76346e54ce6480d3545ae36c2f4e80b149173c418"
+  },
+  {
+    "path": "configs/simulation/m710id70_proof_of_concept.yaml",
+    "git_blob": "9a3565ee8dd7cdf97bc36c80419b023035b125ab",
+    "sha256": "a6b9c9c71f6e7ee55e61bb63d46710e6168648a6bd97eec208fa5f1116e2f7d0"
+  },
+  {
+    "path": "configs/tools/unloading_gripper.yaml",
+    "git_blob": "f8f636d1637e7c26234fc8fe715626cb07c2cb0c",
+    "sha256": "14a59bcc7d554d66e8e619be4bda737b1e23b0e873314b84d8eb5cd618a1024c"
+  },
+  {
+    "path": "configs/tools/unloading_gripper_10kg.yaml",
+    "git_blob": "224a97dab5e055fcc80ef154848a121f3feca3c9",
+    "sha256": "d4788f5f81db7cf85775b9e574874d17347c4a902b8a8b02ec8d141796191a87"
+  },
+  {
+    "path": "configs/tools/unloading_gripper_20kg.yaml",
+    "git_blob": "34c9dfc4595f34e2cd5d79371b8844c7fa9c3181",
+    "sha256": "c6c4295f8d644d226c4dacf343e5d2196900bf00a43cd25ed24f4dafad84af5f"
+  },
+  {
+    "path": "configs/tools/unloading_gripper_5kg.yaml",
+    "git_blob": "b534eb629a06d8c146fa0cbebe9de79bafbb5ade",
+    "sha256": "c1d83342c49c5e3056ceeac3dd10656609d3a0b029c419656dc6b4d5232b52a3"
+  },
+  {
+    "path": "configs/tools/unloading_gripper_6kg.yaml",
+    "git_blob": "a17635895cbae6d68975a307519d4b293994b787",
+    "sha256": "fb7277913a4cead1d29df3d01be630d7df46f21bd275467a66c17530b9c77d9b"
+  },
+  {
+    "path": "configs/tools/unloading_gripper_7kg.yaml",
+    "git_blob": "13df5bcdb4cd74c04363f1091089e27a93e62172",
+    "sha256": "04e29bc2faae2626d5f4011192326b9b4e733d200fd10b63d3483a62baa438f3"
+  },
+  {
+    "path": "configs/tools/unloading_gripper_8kg.yaml",
+    "git_blob": "775d4030891c61fa3fdd73e831a9fe5aa9db99e7",
+    "sha256": "c1e5c42ef8e86e28f2d86afd281b4ee7e223c6390f4a63b3996619c98204d9d4"
+  },
+  {
+    "path": "configs/trucks/2p3x2p7.yaml",
+    "git_blob": "df74753f2cafa6039ce8c4af4ab7567e8f8f3e30",
+    "sha256": "bc01e344bd4c29c4e45c53a739ace64c729363d4f74f1bd63058530827d7ec6c"
+  },
+  {
+    "path": "configs/trucks/2p3x2p7_m710id70.yaml",
+    "git_blob": "ff070e2fc87989ead2c5aa07a6ee24752b31ed4a",
+    "sha256": "6e6ca87f27100cbef5698530ec458994e841507b2af41e95d47f67eb0263f61a"
+  },
+  {
+    "path": "configs/validation/m710id70_handoff_continuation.yaml",
+    "git_blob": "a3d3d1274a1f437f1b16217995d09ba0ae963aa9",
+    "sha256": "2c163170e8492d5e96a3ff498343dd0357baeadc0bb22acf628316f36f9f2f71"
+  },
+  {
+    "path": "configs/validation/m710id70_layout_poc_pair_clearance.yaml",
+    "git_blob": "8e837269f5b59456af3098b23ca9ac010cac8a56",
+    "sha256": "4419763b556e491242e2d1696ebf38405e2835a75640a2572478e40156772abd"
+  },
+  {
+    "path": "configs/validation/m710id70_layout_v1.yaml",
+    "git_blob": "87cd07594185b8ec282a0dcfa2728ebd3a4ef85e",
+    "sha256": "080c321debee24172d6df49ea51496ae30d3802d1083097f4d792fabf4d934a5"
+  },
+  {
+    "path": "configs/validation/m710id70_layout_v1_single_carton.yaml",
+    "git_blob": "8bd255bd50b3cd214cc0d0381b8cbc2021350c13",
+    "sha256": "c7272e86cda9d208143ca20ec603b5ea12faaba0768fac91ccb7bd9f963e63a2"
+  },
+  {
+    "path": "configs/validation/m710id70_proof_of_concept.yaml",
+    "git_blob": "a3cf70adcb0237abc34c65a2058068baf89f14ad",
+    "sha256": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0"
+  },
+  {
+    "path": "configs/validation/m710id70_v3.yaml",
+    "git_blob": "5e0b229fc5818965e7483d916244c1044959060e",
+    "sha256": "9dd0c4f4e3dff4b47005e19cd6f97ff1dcbc15afa775e3fd6d8a36e0b4a85cf4"
+  },
+  {
+    "path": "configs/vendor/fanuc_m20id35_wrist_load.yaml",
+    "git_blob": "ce8b01aed52ccae090b43b0d023475b0353a99c2",
+    "sha256": "ff71094981b8e551cee8b38a6fad9a3393f8c343a602d53187423c2d3c86cf94"
+  },
+  {
+    "path": "configs/vendor/fanuc_m710id_70_load_evidence.yaml",
+    "git_blob": "f549771b9f3d7d4724e6e62c91e08333f1eae98e",
+    "sha256": "9d862938d71f6ba61e57beedecefa1f8a4b871f496d8d66eae44eb87b56f765f"
+  },
+  {
+    "path": "configs/workcells/m710id70_unloading_layout_v1.yaml",
+    "git_blob": "b3273982a450e25b82db97505d005d9a29501eee",
+    "sha256": "48ffb67e43112921311a2f332a2ec8b3084930c84f21a062e74c8206900185d0"
+  },
+  {
+    "path": "pyproject.toml",
+    "git_blob": "eb4605cfb1fe7d51b68ff224769cee1acbbd369d",
+    "sha256": "65aca8bf0a25e9a599f7dabd87d93f95ea2c603d8f3c761963488b2c27358279"
+  },
+  {
+    "path": "scripts/analyze_gripper_step.py",
+    "git_blob": "92559bf9b7b7b7efcd6081a234ec36dc70ef0405",
+    "sha256": "e99c41c7d8be8d197fc4a4d8f925e30e2d2b4869d2106711d5c500d9d9818e4c"
+  },
+  {
+    "path": "scripts/cache_m710_visual_assets.py",
+    "git_blob": "78e5bd80e6df2344cab84b9289f80eef4260ee24",
+    "sha256": "7a2774b22604f2c0ad8cbf7bb698ab31be339fc1c25e48733c657b1c6b9b6477"
+  },
+  {
+    "path": "scripts/carton_appearance.py",
+    "git_blob": "ca16c8b27854c7f1a532b805e0605a6e888542fa",
+    "sha256": "615a0568cea07acc71ee6598bf041162a2e8b5273e8b89a3ee2ff79a5a1dd1bb"
+  },
+  {
+    "path": "scripts/compare_fanuc_collision_models.py",
+    "git_blob": "ad17050b04bd856c8871f09269909c237f6aabef",
+    "sha256": "4e4d53a3dea3ef26111a9667188ca1c2f9c758ce1046146758121131b25eb5bd"
+  },
+  {
+    "path": "scripts/expand_official_m710id70_urdf.py",
+    "git_blob": "1231d3fa91fc4f2b9662216d708962299c01c0e9",
+    "sha256": "efb826490eb04727745708ce88824446d0f9ec1fae66519231943a3bd392e7e5"
+  },
+  {
+    "path": "scripts/export_isaac_fanuc_replay.py",
+    "git_blob": "1cf618c781eeef534d3e3a11de39c0a00e4f6051",
+    "sha256": "6128f53594fc0f5f1482741c001e2d5b26dcf60ede50ec4ce96ad1906fea4dc9"
+  },
+  {
+    "path": "scripts/isaacsim_fanuc_replay.py",
+    "git_blob": "2d5adab574044eb37782ec2fad591d892bc31052",
+    "sha256": "c9521291179d887b2cdc6d8ce32b6c7fb53277e26fba57ec20bfd44c1324a753"
+  },
+  {
+    "path": "scripts/isaacsim_m710_initialization_smoke.py",
+    "git_blob": "cc8b6e9e0b12ecaaf6d65804f189a7e7d2d32061",
+    "sha256": "63c1d70290c78037d9ab557ade9338a3dfb44d10c3e4bf4a9d7c48606d10fb06"
+  },
+  {
+    "path": "scripts/isaacsim_m710_layout_replay.py",
+    "git_blob": "ddc1a1afb0e2ac9946221720d69da0b7ac8aaf29",
+    "sha256": "4c4e0dc0578e61f79460e112531af5ca902c6f13cddc3ff95383e19083fdb23b"
+  },
+  {
+    "path": "scripts/isaacsim_smoke.py",
+    "git_blob": "340d784c8d86cd6689749b54144f90fb172b3bc3",
+    "sha256": "e2dc69677cd23ec4bf7acc1e36d070b29685ea8645beb8e067d61a60f62058b9"
+  },
+  {
+    "path": "scripts/isaacsim_stack_slide_probe.py",
+    "git_blob": "433462861e5235d6e0974cd47f318736e31722a5",
+    "sha256": "6f855e3f82e9b511efa9a2d1a7791dd83cd08ed9e09fa4551945f2a1172cb7cb"
+  },
+  {
+    "path": "scripts/m710_belt_visual.py",
+    "git_blob": "5ae870c5952796d4e803f2cef673d0a847649752",
+    "sha256": "2959a9e923295189d16a4af19d61966ab7f9aab75346cd7491bc50db07c3cbd2"
+  },
+  {
+    "path": "scripts/m710_visual_assets.py",
+    "git_blob": "30516647630b9e20f8d9ba99d3cc349025049368",
+    "sha256": "30adf95dc159c13ee749e0d2ba14b563e6a6b92e7df33164b47abff3e98628f5"
+  },
+  {
+    "path": "scripts/m710_visual_review.py",
+    "git_blob": "ef350eed81384ae8886db9784c94cfd10cc7bd05",
+    "sha256": "b9b12277dce6e4b81a5743d0faa4435275daccb5b148a8345573dfc3aace4b14"
+  },
+  {
+    "path": "scripts/render_m710_recorded_states.py",
+    "git_blob": "848ea6d055b0d55ae735ae56182c8f0775b94776",
+    "sha256": "9d30e7f1210b3ad68aef2b52958d6e46237c52c58ab49a43ac1286cb7e63624f"
+  },
+  {
+    "path": "scripts/run_demo.sh",
+    "git_blob": "dd43d930a0825f12727dd958e5910977c574512c",
+    "sha256": "28c68115fda491c71649b6e5ed2a90292c994e039de3ecf18c989d8b5a801f92"
+  },
+  {
+    "path": "scripts/run_isaac_full_unload.py",
+    "git_blob": "ffb35249a8a843ade3373061fca62c1da3ff1c3a",
+    "sha256": "770de3fadf99ad77fcaa37564a736e255d2c512c1939081d3bae957818c1ef04"
+  },
+  {
+    "path": "scripts/workcell_visuals.py",
+    "git_blob": "9c86226e1bd90ff5176be3a8f14ea0a45d8d9ce6",
+    "sha256": "15cd0f02ac31ea905d2123346003eaa8fa9d8b0b8ff1846fde39ebca843ac6f5"
+  },
+  {
+    "path": "src/unloading_sim/__init__.py",
+    "git_blob": "092b6fab3ccd5b1feb0115cbd1bb69a60495ac4d",
+    "sha256": "033630bfe9b686f61e75a1fdb6a62a56e87b962b3498e9eeec2c181820a59c34"
+  },
+  {
+    "path": "src/unloading_sim/asset_audit.py",
+    "git_blob": "1367220c99f14473ba1c881dd23b0424d8108dcc",
+    "sha256": "e3b31fab64ae9022cfb853d9dcddc22791bfc07af3151590140459d6ec85ed9e"
+  },
+  {
+    "path": "src/unloading_sim/base_optimization.py",
+    "git_blob": "4b739f90793aa045acd1f9c47ede8b15ca2495b6",
+    "sha256": "dc3b5ea0570513e7d8340dddb212c127bf6be19fd4a882d7140f850548278416"
+  },
+  {
+    "path": "src/unloading_sim/benchmark.py",
+    "git_blob": "82a0b77984778f21fb531792c847eb3cefb63716",
+    "sha256": "2e249b67cbafebcc994efe2ebe0f289aaaf54695ed7d36c1c5a9adce28f85e32"
+  },
+  {
+    "path": "src/unloading_sim/calibration.py",
+    "git_blob": "e728d79f75bb4e3ed0d645c3fe9e5237019d04e9",
+    "sha256": "d84786579ceb3fab779807f16d5d6f0dadeeb068f5613a342ec037158fad97d6"
+  },
+  {
+    "path": "src/unloading_sim/collision_backend.py",
+    "git_blob": "f321b502bbef58a990231b7bb870cec3912b7d53",
+    "sha256": "46bc97fb7ac9cfd4bdd7e9da81f307e6099796fb127d6c40c6306b84d457db76"
+  },
+  {
+    "path": "src/unloading_sim/collision_policy.py",
+    "git_blob": "0f6416d5184adca534627547a1c6ea9f89fafe3f",
+    "sha256": "31eee381fe3949cc347214f99a5d20a341a9f253954274099079ebf4085d98b1"
+  },
+  {
+    "path": "src/unloading_sim/contact_scheduler.py",
+    "git_blob": "b3a167a621341c9e139441a7886c9b0f2f7f4dfa",
+    "sha256": "7ab9a8bf8e6e9d961d599846ab00d87b30c1bc2c0d5079ed090c3caee270a427"
+  },
+  {
+    "path": "src/unloading_sim/conveyor_placement.py",
+    "git_blob": "413cfbaf410db4a341ec54562a436a4f50f1413c",
+    "sha256": "84f3218290fc62479344bcc764cec7f80d3fc4755ef0db4eb48f002d02d16503"
+  },
+  {
+    "path": "src/unloading_sim/cycle.py",
+    "git_blob": "ad7a44357fdd8c20a31d8e534306f440e314b305",
+    "sha256": "6fcff97449429954f447e24649c300cc489c991d77300b8ac92a73650ff2ac44"
+  },
+  {
+    "path": "src/unloading_sim/demo.py",
+    "git_blob": "5c2fa7810108e6c8c333a6c34579689f268df972",
+    "sha256": "057a15ca21370b8eb65f701736737a289e51fd16ffe877e31661bc192fd54a2a"
+  },
+  {
+    "path": "src/unloading_sim/depalletizing.py",
+    "git_blob": "4aa59ac0e665eb8b6b6399faeceb432be009c242",
+    "sha256": "aef4ff69219ca4ff27d1da9cd3b7f7567b5de5c4b0f59310b44b821f070f59e3"
+  },
+  {
+    "path": "src/unloading_sim/dynamics.py",
+    "git_blob": "1caf4ae1a9087f39fa3b86dfbab6f984f1c9cc4b",
+    "sha256": "d17c78a34d83eeb409b7ead17e2c90027c5736b09bfbd28bffc349b3208a8533"
+  },
+  {
+    "path": "src/unloading_sim/fanuc_m710id70.py",
+    "git_blob": "a5c405922b7a620945866e1e1a9a7cf6ccf178c0",
+    "sha256": "f60871dccd361c6d6a6da32ef55b0f67f02f1a76f9f18268fe4783bae8b7eff3"
+  },
+  {
+    "path": "src/unloading_sim/geometry.py",
+    "git_blob": "b93ca668a7cbe6cd8e32bfbd1c1698c3b0f0fa21",
+    "sha256": "165ee11aefd7ce9feb0c5a222ae11df03fa0a01ff032e26efe892f6e53095bef"
+  },
+  {
+    "path": "src/unloading_sim/grasp.py",
+    "git_blob": "adef5a4ae6cca611a3ced8811ddea416bee0b1be",
+    "sha256": "4f5856d1c36f78ad8c58c0df7f23e7c280a83a7c84bdefe2a6a3461026b50a60"
+  },
+  {
+    "path": "src/unloading_sim/history_adaptation.py",
+    "git_blob": "cbd0ad8d73bf0ccfcdca4fca29f4c35599871032",
+    "sha256": "ffdb679d780bcaa74b3b5635e4e97d390d090d834295b57df189eb0f6f4d26f1"
+  },
+  {
+    "path": "src/unloading_sim/history_candidates.py",
+    "git_blob": "890cfb592a5594ae56dc77c9d5695cb34e4da76c",
+    "sha256": "b801bb46c2128bcb681c079f37dc46f7674dc373f948f0d4e7aca364068f311a"
+  },
+  {
+    "path": "src/unloading_sim/identity.py",
+    "git_blob": "b6c5b8fa3a29977fcc12bffba6dd3c10ea848b7b",
+    "sha256": "f16a2d8f9668dbb6e8e4e649713754e3e08cf57089856cec1f9488a884ed198d"
+  },
+  {
+    "path": "src/unloading_sim/ik.py",
+    "git_blob": "a86949b926eced99528dada171d34bc55d95ffe1",
+    "sha256": "c483b45bf37a013a0f8ad09e24fdd63576f488f738af609c70588c5303792cc5"
+  },
+  {
+    "path": "src/unloading_sim/independent_cups.py",
+    "git_blob": "d14b7f8b3d76935d112e3bd24e640e93225f007b",
+    "sha256": "6448262a77a85357b456fbe63064c6bd54a515391dc578072e3744276374514d"
+  },
+  {
+    "path": "src/unloading_sim/isaac_bridge.py",
+    "git_blob": "9227b44317b7424511e1c165c8a47e712c819eaf",
+    "sha256": "8bd82ae124a4534df40cd10428914be322f77420cab1b61e59e275da5cc0d26d"
+  },
+  {
+    "path": "src/unloading_sim/isaac_collision_policy.py",
+    "git_blob": "86028f3ac89bc8ef4cb39bdeb4bddc506a20c21a",
+    "sha256": "6433e4ac679ca3a161010a4a4a8c62865b5816f1195829b468e627b4ffe64359"
+  },
+  {
+    "path": "src/unloading_sim/isaac_layout_replay.py",
+    "git_blob": "6359cac87332ea3419db0224f97da3b8f10947f4",
+    "sha256": "aa1f2d22b0c65a28f3bcb48dbd32c41841a25bb32751fbf66c8943e71f522ec7"
+  },
+  {
+    "path": "src/unloading_sim/isaac_usd_cache.py",
+    "git_blob": "6541ce1763fc4e24b77fc65721d9816ed99abe3a",
+    "sha256": "28218069feb490a75fdc96271fca416c6dc0a00e34e2f9136e6f460e28dd0d5f"
+  },
+  {
+    "path": "src/unloading_sim/layout_single_carton.py",
+    "git_blob": "a2a6d0a95f47045f6f5678255d5e867d2d10a675",
+    "sha256": "e856ff76b8262bd385e3e69ea466a8202bbc7ce083376ac520e7ae7cb772845c"
+  },
+  {
+    "path": "src/unloading_sim/layout_trajectory.py",
+    "git_blob": "8a55a1c24a86755a54d0438dc4b31913fb1c612d",
+    "sha256": "b7c041fab4cc3e56b0cd81e9a92b56ada820badbacfc6572161213b7ee366043"
+  },
+  {
+    "path": "src/unloading_sim/m710_bootstrap.py",
+    "git_blob": "22475452b7a070bf01cd0eefcc809c305fed68a2",
+    "sha256": "88057fe5d6b1a9b925230fcf8a2a35cba09c42054e36c6b389607e786cd06406"
+  },
+  {
+    "path": "src/unloading_sim/m710_dynamics.py",
+    "git_blob": "fb95d67c341823b34d1b0129667ed762c3f86803",
+    "sha256": "33dea4bfa760bd9ba1c98c3c5ccbcfb37f75424640ab51056a86b806a2ae98f6"
+  },
+  {
+    "path": "src/unloading_sim/m710_execution.py",
+    "git_blob": "766c40268179c8ab9b9b814e177f06e290ad16e0",
+    "sha256": "6cb90fef6215f0edf5ce3aafddf963ce244fced939a7aeb52cf3d8c0171f3e2d"
+  },
+  {
+    "path": "src/unloading_sim/m710_execution_tcp.py",
+    "git_blob": "0e4ad7bd773c2ac6f7b28c57dd8f7f2ad2f901ca",
+    "sha256": "870e79bc03f351b3b74ba9a8e12aa9113ebd7ab383e7590303953e3489171288"
+  },
+  {
+    "path": "src/unloading_sim/m710_initialization_diagnostic.py",
+    "git_blob": "fd916a18fd4e99a2be27f2ffe55d618b819e37a4",
+    "sha256": "eafae77e5b40d8dd6be4db11c467b8101fa691309405fcf335b3a2951dc9ba65"
+  },
+  {
+    "path": "src/unloading_sim/m710_official_dynamics.py",
+    "git_blob": "ff8e31283d2abccf5d902a123c10a826e4c32f69",
+    "sha256": "f6b85afca8363821e0de7506652a9f3ff46fc74868007076e18718f7cf519c15"
+  },
+  {
+    "path": "src/unloading_sim/m710_replay_contract.py",
+    "git_blob": "476c650538eebab79294a18d2a4d04ac692990e0",
+    "sha256": "f90846ef8040378b18f392563534b542b94b5a8594dedea8eb39e25e235dd48f"
+  },
+  {
+    "path": "src/unloading_sim/m710_replay_physics.py",
+    "git_blob": "37161caef307264a3d543268daa5efd402b417f6",
+    "sha256": "f5e49444cb41d5318e018aa912e8641dfb9f197e47ae2d1e5e6a152bfdbf7bbd"
+  },
+  {
+    "path": "src/unloading_sim/motion_quality.py",
+    "git_blob": "66b0d28180ef83fa737300589dc24f321c1a853a",
+    "sha256": "cb8ab84a9b747b3dd0709d1e0a3ad5a8e2a42e1d78e6816d82c90f01ec7e0d82"
+  },
+  {
+    "path": "src/unloading_sim/motion_validation.py",
+    "git_blob": "6eb7a1262b2d0d214790bf9df78732f0d58d0645",
+    "sha256": "4d2623f52e16e2763d2bfff03a6aaf991461042588c35b3021ef72db80a565c5"
+  },
+  {
+    "path": "src/unloading_sim/moveit2_backend.py",
+    "git_blob": "922e24e0edd6f0c176d1e80429c4137866ce91d5",
+    "sha256": "2c97f2461f1d931af1d64ed5a023242584461f772daee8289c603f70e436f293"
+  },
+  {
+    "path": "src/unloading_sim/moveit2_native_cold.py",
+    "git_blob": "c0519d0e89075b46e58de0d6fdccef29a0c069b4",
+    "sha256": "acab1f3de06bd95593acbacb9ad4d8cb0ecfc67d3a0d9ed7f080e1d655201ade"
+  },
+  {
+    "path": "src/unloading_sim/moveit2_tcp.py",
+    "git_blob": "1d47d37e3661c8fe371b1569d337f6b92709285f",
+    "sha256": "cdfa206487db529cda9cee581ba78e6ae5c2cefdee9f5416783249f5639f99dc"
+  },
+  {
+    "path": "src/unloading_sim/moveit2_timing.py",
+    "git_blob": "0c91ea13069618ee3457fe5e264094d1d376e5bf",
+    "sha256": "82df86e15cb090f2d201667c084216095ab90aba53b83ecbbfcfc22d6cdfc5c3"
+  },
+  {
+    "path": "src/unloading_sim/native_cold_entry.py",
+    "git_blob": "cab775479753be11b12a4f50a7897c876ccdd995",
+    "sha256": "d8379db5b8e7f01ed7c659ed669d180227df28576b155d3970845e685f5dacf1"
+  },
+  {
+    "path": "src/unloading_sim/online_unload.py",
+    "git_blob": "c241210cb66e869128767eabe4cec42183c914ab",
+    "sha256": "c9ad7f4ca02ce360819b4a2246ae410a4e9d6c7f343adaced8e8b2845a4e18be"
+  },
+  {
+    "path": "src/unloading_sim/online_unload_fanuc.py",
+    "git_blob": "7a65b0fe1235d1157f177a88b82b565d026af8f7",
+    "sha256": "28857ae5c834c6288bf5578976045628bc9734355c4de7d378476c89ee69d5e7"
+  },
+  {
+    "path": "src/unloading_sim/pair_clearance.py",
+    "git_blob": "5a054777b64071a66434ff881d5c53db2ac18489",
+    "sha256": "515836c62b29276f67f5e89abe705f47d91ca9fca4605341dc7112f3ee1abfa7"
+  },
+  {
+    "path": "src/unloading_sim/perception.py",
+    "git_blob": "c7d714865ff850e9f21eec31a756636e9e9be975",
+    "sha256": "fa1c4e22e6a4d4f9aaec9e59de3a2a593f20a4c2689aae0dc860f1c228f82cb5"
+  },
+  {
+    "path": "src/unloading_sim/pinocchio_backend.py",
+    "git_blob": "5bbdf66d6782bc1cc2c2421da470d1e30d0c09b0",
+    "sha256": "63799ec35baa3b38f0c1ecd942e7ff31e3b18f162b0f1deba0b7e5b8ba9348bb"
+  },
+  {
+    "path": "src/unloading_sim/planner.py",
+    "git_blob": "7673bd6d30474966ee5045d4e0a0dadfe9e97249",
+    "sha256": "02b67186376a2b45e236baf3c5f43f0a81623a79edce68536e72ac05aed95a9b"
+  },
+  {
+    "path": "src/unloading_sim/planning_only.py",
+    "git_blob": "199b7617e3f425b4b3d18e2b7a7e3350dff8acf1",
+    "sha256": "7a7d0432b82513a1074c38fa4c7e211ee424a25c926673ae04c1cf7190db9b36"
+  },
+  {
+    "path": "src/unloading_sim/planning_profile.py",
+    "git_blob": "35a78c6061167d56aa3e1a706d576de9735e48cd",
+    "sha256": "12050c68b5a5f3eeed6135cc9cfcbbfdcea976a23aff4463fdf9e4e3101ae7ee"
+  },
+  {
+    "path": "src/unloading_sim/post_landing_transport.py",
+    "git_blob": "490f4313835fba31e7ec4b995152c1ce49acaf40",
+    "sha256": "1db1de76dcbcae6e0f45c811707f245f7fe9d21f662526270ff6210e8ace1223"
+  },
+  {
+    "path": "src/unloading_sim/pybullet_kuka_kr50.py",
+    "git_blob": "54f287a585d69c4cad4030468d6547d62ad4c3fe",
+    "sha256": "e116d6c5a32fa8bb9b5a8634c6267df3eafd8c674e3f770b70dfb41710d532df"
+  },
+  {
+    "path": "src/unloading_sim/pybullet_online_fanuc.py",
+    "git_blob": "af8c31116f98540314f8e443d65f8eac8a4a162c",
+    "sha256": "48607914f4ee323bab922568486a399956a1a333368488a3ade0e54923426244"
+  },
+  {
+    "path": "src/unloading_sim/pybullet_online_kuka.py",
+    "git_blob": "e241899e9b4bae2b4e6f73e474a131a83ad1a677",
+    "sha256": "018de4962a62e3fc4b391d9f9ce4a87073418bb508a9d7a4ee76169ac30e567e"
+  },
+  {
+    "path": "src/unloading_sim/pybullet_rm65.py",
+    "git_blob": "1b245f9b8324ecd30555a2a309be6dcdc6953e3d",
+    "sha256": "a0b4b1e404b76c23ebea0ccd6da62224c36816b91b05bea0910834198caec4d6"
+  },
+  {
+    "path": "src/unloading_sim/pybullet_sim.py",
+    "git_blob": "1147a2eb8bd7ecda6c0066dcbab8d781a0d10b16",
+    "sha256": "fc3ed4fad3fd58e786331b44d6b67ec6b71ca890162032df753ed19a5ee1d0bf"
+  },
+  {
+    "path": "src/unloading_sim/qualification.py",
+    "git_blob": "3b04c108345c425e991198b65d5343734a1c690d",
+    "sha256": "c6049ceb5e0e99ecfd41b5831100087b3aaf9c39ee4663c6d4fccd0656313bf4"
+  },
+  {
+    "path": "src/unloading_sim/reachability.py",
+    "git_blob": "bc93eefd3683e46ec15d1581d8ca333ca6a90244",
+    "sha256": "0f96a7fe3f31f3ea4564307dc86e7a2861ad561c59555d2c25fe712abb4b5911"
+  },
+  {
+    "path": "src/unloading_sim/realtime_planner.py",
+    "git_blob": "29072744daf7a4bcb00a05a6b1c220fc882cd653",
+    "sha256": "104369c55ce2e6dce4f039cead42912f367606e86ff6ffb0c30d11ff59ae2448"
+  },
+  {
+    "path": "src/unloading_sim/release_motion.py",
+    "git_blob": "943555905418927e1f421e9b778e9e0927975b99",
+    "sha256": "d714fa20c533fdc9c1c919fd1bb059c03527f35f7fbe4e6d19c776f425042422"
+  },
+  {
+    "path": "src/unloading_sim/reporting.py",
+    "git_blob": "b50c9d7ca8ee228250accc06c1188ff2fcee425b",
+    "sha256": "702212a9b9d93f8972caeed592eaecdbe6647bc3b64cefa16a7de253aad59676"
+  },
+  {
+    "path": "src/unloading_sim/robot.py",
+    "git_blob": "15938add638c257472e3cf6052bc2cb3a990474c",
+    "sha256": "5069f0064bebda6b02ad772b3fd5d9e8db15c9b68146123ef32e75268c0d03d6"
+  },
+  {
+    "path": "src/unloading_sim/robot_load/__init__.py",
+    "git_blob": "91f6a9ac44003351dd177e7743e4b1b196632bfd",
+    "sha256": "177820cad0717e8e8f73ad73474a283f453caf82ac58146764d45458769d4b0b"
+  },
+  {
+    "path": "src/unloading_sim/robot_load/model.py",
+    "git_blob": "90c8d51f63257dd4238007427e6ec4cef6a583a7",
+    "sha256": "6fd02fe472b4c142689f12420b145e7a41ea837ebe449d2bcee00e87379f8979"
+  },
+  {
+    "path": "src/unloading_sim/robot_load/spatial.py",
+    "git_blob": "9c112ca27d861ba947336de39f56ab100e1d5cc5",
+    "sha256": "2d56858234b59e5ef239a39b8fd7d924e4c4148f4b72d17d582819306a10d363"
+  },
+  {
+    "path": "src/unloading_sim/robot_load/task.py",
+    "git_blob": "c60f9d520c068086783ba393178bf00fcd378657",
+    "sha256": "6ca40eb357be668ece73fbdf5540ee9efb5c364df60cf53f79c9c62e331df363"
+  },
+  {
+    "path": "src/unloading_sim/robot_load/vendor/__init__.py",
+    "git_blob": "c341db4dd931bbbd041b5f41563c6419b8486260",
+    "sha256": "9f374546b75551186e1049e0d963be3294babb6f6cacc28dc294b3b3f4047ae0"
+  },
+  {
+    "path": "src/unloading_sim/robot_load/vendor/fanuc_wrist_load.py",
+    "git_blob": "c0587ba19b5d72d78abc42ef43f0f79bbd7c4570",
+    "sha256": "8fe915961101958abe98848d8b10ff31357e3cd959888a08fcda5bd340b8c230"
+  },
+  {
+    "path": "src/unloading_sim/robustness.py",
+    "git_blob": "44f0b3b2a3049129d4db9070c7386ae4917b07e5",
+    "sha256": "d4b65bb719622187daf3707c22eeef9effe9f7f423efdc1d5f572cc0bef2fa4d"
+  },
+  {
+    "path": "src/unloading_sim/scene.py",
+    "git_blob": "ead864b4c0e0d8f9e1cfb58b5e70c2037e060643",
+    "sha256": "6178c10ab83b561613399d5fd710a165cfe49762550b769780b249578e91017a"
+  },
+  {
+    "path": "src/unloading_sim/search_diagnostics.py",
+    "git_blob": "11bceec87589fcd2bed935b16d606648ba493ba9",
+    "sha256": "4ecb355246a00c4caf67c6f2800124024ccc5cc890773f88b21b4abc8d84b5d3"
+  },
+  {
+    "path": "src/unloading_sim/serial_unloading.py",
+    "git_blob": "87cfc33dfc292340a539cc761ae6fcfd32e3e6e2",
+    "sha256": "ca7a7141283e2d7be149e3d6732dcc2936c1b0ff13c0591d39e0d21f2f959c66"
+  },
+  {
+    "path": "src/unloading_sim/stability.py",
+    "git_blob": "082f61488a6b1e70dd32eed19ea2e1cf05ac429e",
+    "sha256": "2c1211af93c6e368c9d57120ee312b2687123fef31614ff47571e1e4ecfdd8c7"
+  },
+  {
+    "path": "src/unloading_sim/stack_clearance.py",
+    "git_blob": "11d7b11c62a8fab47d40fcc8e6dd9f8507d39b1e",
+    "sha256": "61c19187eed4468f7e15a3802a19e85c880c2d87feb41b2a1f3ef05bbf0851e5"
+  },
+  {
+    "path": "src/unloading_sim/stage_motion_policy.py",
+    "git_blob": "af6b07eb8294627107f3f0d558709e6ff5b32c04",
+    "sha256": "ec2df9bf973d181d36b04eef0e6374b704feb601c287f3aa4f04d00ac8b256e0"
+  },
+  {
+    "path": "src/unloading_sim/support.py",
+    "git_blob": "2f762c97bb95f5ee233067b4b9a7c7df06d8593f",
+    "sha256": "c752893bb3f94a620d2921b6c2a93d1bb34c1102f1521cdba8d1b72e703ae4cf"
+  },
+  {
+    "path": "src/unloading_sim/timing.py",
+    "git_blob": "c60994208b987b7c6c892c9e2acd7761fb408e13",
+    "sha256": "9e8951093f357b2eba05d8670bbf21b93be1f17016d08e4a4bc889eafebc13a9"
+  },
+  {
+    "path": "src/unloading_sim/tool_geometry.py",
+    "git_blob": "86dec6c88c030f39d5e9724409a19b1b00e54aab",
+    "sha256": "fb609674c0e9a578ba09babfe208cff2a452955d1846edc9a2c4fd99fc78962d"
+  },
+  {
+    "path": "src/unloading_sim/trajectory.py",
+    "git_blob": "482f4c49c598bdf5a5a363f47d10fb32dbcb9e2c",
+    "sha256": "73eee06bf3dac43f2893f6f7a1ca96ea42499f5a31504ee7b04f95de6cb9b650"
+  },
+  {
+    "path": "src/unloading_sim/trajectory_cache.py",
+    "git_blob": "feab564e8e57a3abf6c1f78662d22b6188032779",
+    "sha256": "135d8bcc4ecbd0d620f939f349245323d1b431a4f3d6e30ec68c9dc989e8956a"
+  },
+  {
+    "path": "src/unloading_sim/unloading_sequence.py",
+    "git_blob": "065831bd38014faf8966a207755fed2e7d524684",
+    "sha256": "1881b114d280286ffaaf22d9ad306040bcf435dd64efad0a4d3b41fcee6ae915"
+  },
+  {
+    "path": "src/unloading_sim/validation_config.py",
+    "git_blob": "921316136e10a1c35541617eb8672cb404710f18",
+    "sha256": "e8919bd3490f8d0a05a7a8ff738043d60ce031f24420919a34f0769076958915"
+  },
+  {
+    "path": "src/unloading_sim/validation_kernel.py",
+    "git_blob": "a3f4c1f0da863ae8a9a1076da30ee98a9b30d736",
+    "sha256": "f3c6de1746dd352050d0a024608f5274413afff184b2ce62fc3b5d2fa8041202"
+  },
+  {
+    "path": "src/unloading_sim/validation_metrics.py",
+    "git_blob": "ab3d81331c9f01950e6f1f2c21df2e7f53416e6d",
+    "sha256": "23e9e0fa034c5d3addb18db12aa3b3248b17d17d1d2d616f80df2f5973f2d24b"
+  },
+  {
+    "path": "src/unloading_sim/validation_motion.py",
+    "git_blob": "f8b1c71a101f2baafcd3019b67cc71140ab4763e",
+    "sha256": "5d79a2a7ee8897249db52ede23f48529356a89ddaacf1539003944c382d52d0e"
+  },
+  {
+    "path": "src/unloading_sim/validation_physics.py",
+    "git_blob": "f8f26bf6fc5d072986908f32f62e4086f597c620",
+    "sha256": "770cbc4acc32d58eb8fc4f422d18d03b56c3a4eb54f4f1cae380d4e8939e7ab8"
+  },
+  {
+    "path": "src/unloading_sim/validation_receiver.py",
+    "git_blob": "6b2ebb79882bd45632c9761bab2d6c62d17461a6",
+    "sha256": "d489384f51d48ac5584ca5251db02c6bad28f07cc08462eeaa8d0a734e7b7c1f"
+  },
+  {
+    "path": "src/unloading_sim/validation_scenes.py",
+    "git_blob": "65bd0700fd626a68ef7de4b0e15c79fbf4421ac6",
+    "sha256": "211e7dd8ced2470c089d738fc78fb7174dcb85b39abf2982ea8501d009d27822"
+  },
+  {
+    "path": "src/unloading_sim/visualization.py",
+    "git_blob": "473f2ee58e3d7a1a3dfbecb63e6ffffd4c3653f6",
+    "sha256": "519360c22700ac9a6254264555aa4dfc8be80d6462f2296d1aa79a98946faac4"
+  },
+  {
+    "path": "src/unloading_sim/workcell_layout.py",
+    "git_blob": "253741d2c34ba429c58c8e3e3ae4942c724615d1",
+    "sha256": "ffdeabbe92e4fd870267b239b7d76635cb7928980e5b771f17ac6e13ecde9ff2"
+  },
+  {
+    "path": "src/unloading_sim/wrist_transfer.py",
+    "git_blob": "74c83c949867e7df8a96164b8d9ea7f2ba58de2f",
+    "sha256": "325ca2f61f220c68f26fc9d4cbaafdb2bc6d3d6075a600f4c8e378dd25c30c69"
+  },
+  {
+    "path": "tools/analyze_m710_transition.py",
+    "git_blob": "bd274c6a3ffa0b692191f9c02b0377ea923fc8ea",
+    "sha256": "38e89ea7a0b46f2702fb8b1e7f1ccb1cd1c5a485771e2446b354d726cc3723b6"
+  },
+  {
+    "path": "tools/analyze_payload_envelope.py",
+    "git_blob": "951088b0ae9c78b12363282ec3fb8029c18a43a4",
+    "sha256": "61bc6df38eba1ec14d030884814c632e34e725a58f72ba110216f4869b0cd268"
+  },
+  {
+    "path": "tools/archive_m710id70_dynamic_execution_evidence.py",
+    "git_blob": "60fa36b3e57dd0a002588f7776136f8a8ac80f6e",
+    "sha256": "cec59bf30e1eb56fbc2658902f1d3e7911c67208234e30b44d974399f1e013d2"
+  },
+  {
+    "path": "tools/archive_m710id70_layout_evidence.py",
+    "git_blob": "ee66e499fe60b043e24c913207ca2a6877940102",
+    "sha256": "70ae956b0499c02465ee0a09ca257d5830fdaf7196b7277a18f14a877f1060eb"
+  },
+  {
+    "path": "tools/archive_m710id70_v3_baseline.py",
+    "git_blob": "120dc2c792a0d7728a3a54895d85d5fae67262b1",
+    "sha256": "4bfee2455d7fff50e8e474bf68b39bb8a73983f5e257722dcc2f0dc07f300755"
+  },
+  {
+    "path": "tools/archive_m710id70_v3_stage_ik_round.py",
+    "git_blob": "2f296a573224efcf1eae11ba2410bf81a5257e4b",
+    "sha256": "fd137b96d0d2a261aac9844253c0d18a00d34cf65d513b54776aa14764fd98fd"
+  },
+  {
+    "path": "tools/audit_m710_v3.py",
+    "git_blob": "a7a31495fe829dbbe575844b8daf5994bdc88746",
+    "sha256": "8ddda5284fcfd4c2b61ca5f13d6a15cc6aafd95877910bf27eafef86b36e524e"
+  },
+  {
+    "path": "tools/benchmark_m710_stage_validation.py",
+    "git_blob": "839b65b6fdba201503a1a83581bea68948a56db6",
+    "sha256": "d0b5eb62166744c348bf2894248c13699f9a5f6a14a6f16e8f3611708a2a6cb3"
+  },
+  {
+    "path": "tools/benchmark_stage_motion.py",
+    "git_blob": "50c353364d450c6b383b455eaef7f25480d37fc9",
+    "sha256": "aac3c4bb3ac6bbfde4c70a03809213494e40ad22d6494bcb2a17f252d7925e74"
+  },
+  {
+    "path": "tools/benchmark_validation_contract.py",
+    "git_blob": "30881276722cc232fb78045c22ca3988cd000e62",
+    "sha256": "80d47d9c7dcd37e93091c9c3d417e1c115271a825c14cbdc1653d4570f6a4df7"
+  },
+  {
+    "path": "tools/benchmark_validation_finish.py",
+    "git_blob": "b33075613319f37520928e292debc347b23d2d50",
+    "sha256": "6e639d551063b29264795506461212513f612dbc0289f3cbcf3628c1a3cfc2fd"
+  },
+  {
+    "path": "tools/build_m710_accelerated_montage.py",
+    "git_blob": "adfaf093c394efed170516fe7035ef7adceecb23",
+    "sha256": "cfd20e43c0721500d9bf79d108d0f1ea7a7238638e7892ef66aa46b5abb5dca3"
+  },
+  {
+    "path": "tools/build_m710_media_delivery.py",
+    "git_blob": "38b1fe1910f5a1201ae9c57440cbd3ffef8dddc4",
+    "sha256": "b5c32e1a9809b10fe852e5a13227abaf49146f26429e05da475123d02c9e3058"
+  },
+  {
+    "path": "tools/build_m710_success_montage.py",
+    "git_blob": "66509cbae3976ef84dcfb5df6695897a038914e2",
+    "sha256": "275ea08628bd0e9891a78d420a2cf9f32e0dc758fc2e57ebd2e5ab3d53be5253"
+  },
+  {
+    "path": "tools/capture_m710_evidence.py",
+    "git_blob": "3954ac8ce22357b5e8fa6563b0532c04605b6735",
+    "sha256": "d225456321d8e61f7880ba5a524bea890bf971bc35c084c8070e483fe786126b"
+  },
+  {
+    "path": "tools/check_m710_loaded_timing.py",
+    "git_blob": "0d2ae2f1b5c649976d7928193e168024f156f7aa",
+    "sha256": "84b5f6aef14d15ccc7b661a4567c482d5017e604ae028275e1640d08b3d14c7c"
+  },
+  {
+    "path": "tools/check_m710_moveit_clearance.py",
+    "git_blob": "661995a67cc557453d427b68c88a433bce86e2d9",
+    "sha256": "515e559e6deaf1bcf7d5c3dfeec1033114b3625e34528f6179e8a7e19e699c67"
+  },
+  {
+    "path": "tools/check_m710_moveit_contracts.py",
+    "git_blob": "18cadee492183da1c3931eb281e8fa3f70b1aa7d",
+    "sha256": "339b596504e4e40fae608a9670b3cd2868a70e97d429f1c2d6fc5afae121d0d2"
+  },
+  {
+    "path": "tools/check_m710_moveit_execution_tcp.py",
+    "git_blob": "d431153a26160a51e482906fd048178e07763497",
+    "sha256": "7031188b86309f7472cd1a58e14da4e562ab656f0c9c21b31f2f9268b06e4f83"
+  },
+  {
+    "path": "tools/check_m710_native_cold.py",
+    "git_blob": "b7a2ea4c38d1352e4e8403ba2d87133686e27719",
+    "sha256": "6561f76ae868ebc43dd2b4950c1b634b3d627dfee24eddc90c502329db1b77d5"
+  },
+  {
+    "path": "tools/check_m710_rotating_tcp.py",
+    "git_blob": "8c2c22547157e5f38f29ce7e02fadcf3a003fccb",
+    "sha256": "5335fd213fa69b4db480fcb6e07a65d931e37ea7b28035fc3fdb37419d3f2cf0"
+  },
+  {
+    "path": "tools/check_m710_v3_reproducibility.py",
+    "git_blob": "f7d13cccc12ccf1d143594dc1e89c72037232304",
+    "sha256": "093f9c4e8d201b003b3252922f2c8992615961d6c774dca010c65782e98cd3fa"
+  },
+  {
+    "path": "tools/continue_m710_contact_unloading.py",
+    "git_blob": "4f8a15a43ff7129c1748a95337b1785b5138cc5a",
+    "sha256": "700468705b2ac74f074cff5bcef68fd9195d8a90d669cdd9b9eae6a2282f8b36"
+  },
+  {
+    "path": "tools/export_m710id70_isaac_layout.py",
+    "git_blob": "07077d9a40527522d7afccc7469dda8aaeec148d",
+    "sha256": "d4308ea0c46c6b9f5c1276a35564d3f19b81b6f0b3314665470718beb47d7042"
+  },
+  {
+    "path": "tools/find_m710_contact_home.py",
+    "git_blob": "5d50487d948a66230a00af3df4aaa2b25f005a97",
+    "sha256": "685d642b66a9ad074d612bc7161322b0297fef82f6a62f454c5e7a39501becf8"
+  },
+  {
+    "path": "tools/m710_native_parent_probe.py",
+    "git_blob": "562085522204c84f837a6b8eda16bf2288057e2f",
+    "sha256": "5a05cbc7ee3ce62d78741bb573ba5421a77c6550046eaf2d597b1ca00d1a847a"
+  },
+  {
+    "path": "tools/plan_m710_top_row_only.py",
+    "git_blob": "cd8b6762426b889a429fe4cb5cd0bef6dee6d0b5",
+    "sha256": "16651e50f1fb4e0f366b4afd29acc42a5e7dc4be4d7f2b5b6eeb0ad6030a077a"
+  },
+  {
+    "path": "tools/prepare_m710_initialization_smoke.py",
+    "git_blob": "7ed1a431b6ab9158d18dbd25c2e8225775cf9ca9",
+    "sha256": "189a8368d0b9aee818fd20c47056f3c6fae1fd4d75f30f8599462c243ddd6325"
+  },
+  {
+    "path": "tools/prepare_m710_native_bootstrap.py",
+    "git_blob": "ee16f52a14a35a574dbbe085ee0f33afeecac0fe",
+    "sha256": "d806448f35f47200b7be45c7567ce9f055a7a6de897355293f4918614560d313"
+  },
+  {
+    "path": "tools/prepare_m710id70_dynamic_execution.py",
+    "git_blob": "9bce7403e7e9d622a347735a59824ce2c535dd99",
+    "sha256": "bed4fd0029f845d5857e73d0353e148acad41217945e6f13e213cc7644d51da2"
+  },
+  {
+    "path": "tools/probe_m710_actual_place_branches.py",
+    "git_blob": "804f4cac0d5aff90863331d9b9465264f8ca8ec2",
+    "sha256": "ed5ef71561c49c54b9872f15f5bdc35536391362ecb6c588844f5a0214839191"
+  },
+  {
+    "path": "tools/probe_m710_free_approach.py",
+    "git_blob": "564f46895eec082280dab47e1617855b9391a652",
+    "sha256": "032c01072bf7e47dd149d73a806bc1d64be8288a1c5424bdeef4a5aa593ebea5"
+  },
+  {
+    "path": "tools/probe_m710_layout_initial_state.py",
+    "git_blob": "d257963bd40d9b92732952eaadaeeaf75ffa7cb6",
+    "sha256": "224b1968935b9ebcb34ae40beb6d4c6e6801025c07a19552406011b3aab8baaf"
+  },
+  {
+    "path": "tools/probe_m710_loaded_transit.py",
+    "git_blob": "3dc73c419db47a4b42826b019ce45cee48bfd543",
+    "sha256": "a560eff603bd423338086a0243d5a6a8d197a556dd5bb355d8f197caf7d918fb"
+  },
+  {
+    "path": "tools/probe_m710_v3_home.py",
+    "git_blob": "d5d129b0e6fae0812f4bc39f0092d1639194a76a",
+    "sha256": "79c60279e015fd116a0b503467fa13c1b42ee7cc00bc631f5fa88c27ff3aed6c"
+  },
+  {
+    "path": "tools/probe_wantai_part_clearance.py",
+    "git_blob": "7a3b53788637a8026c44bdedd36a0932a8a37203",
+    "sha256": "be252fb9d33ff30a309c6f48474bcb539079cdc0d4ff1e6f91057f660afcedd4"
+  },
+  {
+    "path": "tools/profile_m710_clearance.py",
+    "git_blob": "3d24223587e3624a1706ecd4e987d63d0492f4aa",
+    "sha256": "3bc0d768136e7d4645f7895880e516ab8c186d311f0ba73ca1e87c7797f7764b"
+  },
+  {
+    "path": "tools/render_m710id70_layout.py",
+    "git_blob": "2083b29cbddd9d94a15a882243f47b112918348f",
+    "sha256": "e1558522d20347aa98798017d046714072d13b6783a301496b7d3912b1d5d133"
+  },
+  {
+    "path": "tools/replay_m710_search_rejections.py",
+    "git_blob": "a43dca9a47e64d91b9965c74dfd797b3a30c3787",
+    "sha256": "3e9b553b53844c1e5f276cdfe55e76b3e1f6f7ea0e372f5c0ea8794db692118f"
+  },
+  {
+    "path": "tools/report_m710_v3.py",
+    "git_blob": "946cc788d05831702e27c60244335404797e464a",
+    "sha256": "bde3f985fae0a659fa4e71628758a192b3c5135434a95720c749b3925a349214"
+  },
+  {
+    "path": "tools/reproduce_m710_v2.py",
+    "git_blob": "01958dbbeb6f7f5f9805585e138e92d7afaa8937",
+    "sha256": "1b0c53c615a73c8c45dc4f8f38f9eb82f74e322fb3d2f302e55e6b6fad9ec13c"
+  },
+  {
+    "path": "tools/reuse_m710_motion.py",
+    "git_blob": "4af28d293ec99e87aed7b5e311ac59f11a400084",
+    "sha256": "cf17e98452b50065d08c934faff5060b84ff8b5262bae79898e9c9f5682cc479"
+  },
+  {
+    "path": "tools/run_cycle_simulation.py",
+    "git_blob": "c9950505696481a1a7d7807cf07f0aebcc3134e1",
+    "sha256": "ee290e28dd1600b040b0394646f36710b621d3dae1e8a93bdb015ca30ace5b96"
+  },
+  {
+    "path": "tools/run_m710_contact_unloading.py",
+    "git_blob": "1593feb49b4e929abdd10c1c371069e8dbbbf584",
+    "sha256": "fe33f6f3487aa30bd8a170b94e9358d332e465b223a5a5d9017568c9025efb83"
+  },
+  {
+    "path": "tools/run_m710_moveit_integration.py",
+    "git_blob": "a93acd6dc1c3c191727058b05f2853b1c34e5e37",
+    "sha256": "280e6663ee02b3f8a0473bccac98a4ff178d15cc9a8be0d1b03bdc3837a45763"
+  },
+  {
+    "path": "tools/run_m710_native_cold_once.py",
+    "git_blob": "fc0b541e694d59857f9369369b0ff0309e446d3b",
+    "sha256": "94cd2f227a6904ac465ed717c688c0a58bed53123ae7fe32cc7c3d378475423c"
+  },
+  {
+    "path": "tools/run_m710id70_acceptance.py",
+    "git_blob": "6eb295787dedd78c74cf15c165fe1d44dd75b4ae",
+    "sha256": "1dda74af6a0efb42e424e95ca2a3575ff2d9861128aeeed3eaefb614c11ca217"
+  },
+  {
+    "path": "tools/run_m710id70_layout_cpu_rollout.py",
+    "git_blob": "99086acca38a5fb04a19ce496c9f360ea9f54fef",
+    "sha256": "0b23f980c228748d4859647abc42d46e2a5f96e3882b98b4a97487b443e871b3"
+  },
+  {
+    "path": "tools/run_m710id70_layout_single_carton.py",
+    "git_blob": "a42ac42b4128e67b0d072712e918336dd212ae92",
+    "sha256": "aa07e17b443779011d4924d2540d7078b4d776d9759e03ea88c3651530824690"
+  },
+  {
+    "path": "tools/run_m710id70_v3.py",
+    "git_blob": "9eb36e62eb2de7aa70104aa8e54d5bc5541b0919",
+    "sha256": "3bff14566c03a8419ea7dbd32e8b9dfd23eda2b7d4edc559aecc7cadc471d976"
+  },
+  {
+    "path": "tools/run_m710id70_v3_stage_ablation.py",
+    "git_blob": "68b59da726fc9a1c0f946f38b01946b8078cf3d1",
+    "sha256": "d12db9c2fdb0b7f7ca584d7c10b27208c9bab881a345190f7f7e7a5aea27568c"
+  },
+  {
+    "path": "tools/run_qualification_suite.py",
+    "git_blob": "8cab39170ba9ecfe24adab8366c89bfe18041a75",
+    "sha256": "0fd5c9a3afef8b29abce5921a9de2bc100f0ebcf8edf7c4223f20cd240753945"
+  },
+  {
+    "path": "tools/run_reachability_study.py",
+    "git_blob": "d013c1801b7a8e6ab41ccfd7562e1fcfea8685f1",
+    "sha256": "7b7dcb603e7c9abece624221a5a5f2652ffc0968ee61dae54dc7d33e9d9b933d"
+  },
+  {
+    "path": "tools/validate_m710_bottom_alternative.py",
+    "git_blob": "1efed66a5f9620a8cef56a37e3d6c1d365c215d3",
+    "sha256": "b3231f3342a4ae29771007d59b1c8696e965c6688fa790e5b127b655d922c6e9"
+  },
+  {
+    "path": "tools/validate_m710id70_layout.py",
+    "git_blob": "535afa81b37a138e1dcb72b9613d6c9d4748becb",
+    "sha256": "3b29856e130360c518a73d037f841bc9cfadcbcd8bbfb1100e6b56c77c0a5681"
+  },
+  {
+    "path": "tools/validate_stage_motion_single_carton.py",
+    "git_blob": "e3dc937e1b95dcc5c1c6b23007b2ce9d381b4e4c",
+    "sha256": "5a47c8240ffa8a5ee64862b2eefbcfc57223d1b93764ea3a3d1868a73b145db6"
+  },
+  {
+    "path": "tools/verify_m710_local_delivery.ps1",
+    "git_blob": "c5bec4d8b05a6d180562d8617e03d3057539191c",
+    "sha256": "dbfb7d0c077542f2c3c0268976ed52496a0857e4fdb863ae40c263eda7aec658"
+  },
+  {
+    "path": "tools/verify_wantai_geometry.py",
+    "git_blob": "d9e1c6ee658630e3777b92c6d3a26c1c9bd0fd61",
+    "sha256": "7b0a97b82edac6b4dc930c21c39c5d33bb098b6ee2e1eb97747e4dbba752018f"
+  }
+]

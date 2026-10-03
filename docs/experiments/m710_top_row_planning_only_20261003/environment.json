@@ -1,0 +1,62 @@
+{
+  "utc": "2026-10-03T11:33:34.348612+00:00",
+  "hostname": "autodl-container-3thhhs3jx0-8e323128",
+  "os": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+  "cpu": "Architecture:                    x86_64\nCPU op-mode(s):                  32-bit, 64-bit\nAddress sizes:                   52 bits physical, 57 bits virtual\nByte Order:                      Little Endian\nCPU(s):                          208\nOn-line CPU(s) list:             0-207\nVendor ID:                       GenuineIntel\nModel name:                      Intel(R) Xeon(R) Platinum 8470Q\nCPU family:                      6\nModel:                           143\nThread(s) per core:              2\nCore(s) per socket:              52\nSocket(s):                       2\nStepping:                        8\nCPU max MHz:                     3800.0000\nCPU min MHz:                     800.0000\nBogoMIPS:                        4200.00\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 invpcid_single intel_ppin cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hwp hwp_act_window hwp_epp hwp_pkg_req avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize tsxldtrk pconfig arch_lbr amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities\nVirtualization:                  VT-x\nL1d cache:                       4.9 MiB (104 instances)\nL1i cache:                       3.3 MiB (104 instances)\nL2 cache:                        208 MiB (104 instances)\nL3 cache:                        210 MiB (2 instances)\nNUMA node(s):                    2\nNUMA node0 CPU(s):               0-51,104-155\nNUMA node1 CPU(s):               52-103,156-207\nVulnerability Itlb multihit:     Not affected\nVulnerability L1tf:              Not affected\nVulnerability Mds:               Not affected\nVulnerability Meltdown:          Not affected\nVulnerability Mmio stale data:   Not affected\nVulnerability Retbleed:          Not affected\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\nVulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:        Mitigation; Enhanced IBRS, IBPB conditional, RSB filling, PBRSB-eIBRS SW sequence\nVulnerability Srbds:             Not affected\nVulnerability Tsx async abort:   Not affected",
+  "memory": "total        used        free      shared  buff/cache   available\nMem:     1081796993024 45878702080 277043105792  5022547968 758875185152 1024563519488\nSwap:              0           0           0",
+  "disk": "Filesystem        1B-blocks         Used   Available Use% Mounted on\noverlay         32212254720  27788951552  4423303168  87% /\n/dev/md0       150323855360 127214145536 23109709824  85% /root/autodl-tmp",
+  "gpu": "name, driver_version, memory.total [MiB], memory.used [MiB], utilization.gpu [%]\nNVIDIA RTX PRO 6000 Blackwell Server Edition, 595.71.05, 97887 MiB, 0 MiB, 0 %",
+  "load": "5.31 6.21 6.49 7/7264 2041",
+  "cgroup": {
+    "cpu.max": "2200000 100000",
+    "cpuset.cpus.effective": "0-207",
+    "memory.max": "118111600640"
+  },
+  "runtime": "Existing Ubuntu 22.04 rootfs chroot; Python and persistent worker run inside it",
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "cpu_affinity": "0-21",
+  "build": "Release, -j2",
+  "versions": "cmake version 3.22.1\ng++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nros-humble-moveit-core\t2.5.10-1jammy.20260908.071525\nros-humble-moveit-task-constructor-core\t0.1.3-1jammy.20260908.101449\nros-humble-ompl\t1.7.0-4jammy.20260226.011457\nros-humble-pilz-industrial-motion-planner\t2.5.10-1jammy.20260908.093641",
+  "config_sha256": {
+    "configs/cycle/unloading_900pph.yaml": "b6093d9dfda78b2fd0ca68e218672b90e96a347c3dd8ef4bedd476ec4ce1e484",
+    "configs/isaac/carton_assets.json": "2666d089c0330f8f8e0b949920d5757120c918c8fe5a079130b840d47b988613",
+    "configs/isaac/conveyor_assets.json": "b3c364551e6cb12cfe4b3c838cb7048087270fa48d1a1b82b33e33d3c4b2c693",
+    "configs/isaac/m710_visual_assets.json": "b8e355ac6afa5ed7f2c0492b2c9f1c462a4601540fccb75842a85d628690f524",
+    "configs/qualification/fanuc_m20id35_25kg_front.yaml": "f1cee78ac57924e2dff71bec95aa5e14ddff9c8d6d2195c19a0545c42a818762",
+    "configs/qualification/fanuc_m710id_70_42p5kg.yaml": "d27cc7da50fab06fe70c24cd592d734de31b8a5a90761e729827a786eac8d53b",
+    "configs/robots/fanuc_m20id_35.yaml": "a2ef4b0a357c2386c80465e69d8c70af9ae2c963fcc2ba551723b4d6ada5e6ec",
+    "configs/robots/fanuc_m710id_70.yaml": "a54328805626f55df25f085faf764e436bc508b59b87bea494710f30fb0d7373",
+    "configs/simulation/m710id70_dynamic_execution_v1.yaml": "bba93a25adcd6b27c53993d3de52ee9854bc67f843cca175385b2e145c6aced8",
+    "configs/simulation/m710id70_engineering_dynamics_v1.yaml": "8d773bfc930681587053995bd197b17d37217130dd9010087a4832955799f2c3",
+    "configs/simulation/m710id70_first_row_recording_v1.yaml": "fa9ebf16518d98ce5281f6a1ce873937b8db622136c0cf06e6c6c72e2fab324b",
+    "configs/simulation/m710id70_handoff_continuation.yaml": "bd417cca10660994cbe6a7a1b8955a53116bc0c435a75f54a8e3f8ddab115a1c",
+    "configs/simulation/m710id70_official_dynamics_v2.yaml": "5a96bc79d2f4370b78f1a6d76346e54ce6480d3545ae36c2f4e80b149173c418",
+    "configs/simulation/m710id70_proof_of_concept.yaml": "a6b9c9c71f6e7ee55e61bb63d46710e6168648a6bd97eec208fa5f1116e2f7d0",
+    "configs/tools/unloading_gripper.yaml": "14a59bcc7d554d66e8e619be4bda737b1e23b0e873314b84d8eb5cd618a1024c",
+    "configs/tools/unloading_gripper_10kg.yaml": "d4788f5f81db7cf85775b9e574874d17347c4a902b8a8b02ec8d141796191a87",
+    "configs/tools/unloading_gripper_20kg.yaml": "c6c4295f8d644d226c4dacf343e5d2196900bf00a43cd25ed24f4dafad84af5f",
+    "configs/tools/unloading_gripper_5kg.yaml": "c1d83342c49c5e3056ceeac3dd10656609d3a0b029c419656dc6b4d5232b52a3",
+    "configs/tools/unloading_gripper_6kg.yaml": "fb7277913a4cead1d29df3d01be630d7df46f21bd275467a66c17530b9c77d9b",
+    "configs/tools/unloading_gripper_7kg.yaml": "04e29bc2faae2626d5f4011192326b9b4e733d200fd10b63d3483a62baa438f3",
+    "configs/tools/unloading_gripper_8kg.yaml": "c1e5c42ef8e86e28f2d86afd281b4ee7e223c6390f4a63b3996619c98204d9d4",
+    "configs/trucks/2p3x2p7.yaml": "bc01e344bd4c29c4e45c53a739ace64c729363d4f74f1bd63058530827d7ec6c",
+    "configs/trucks/2p3x2p7_m710id70.yaml": "6e6ca87f27100cbef5698530ec458994e841507b2af41e95d47f67eb0263f61a",
+    "configs/validation/m710id70_handoff_continuation.yaml": "2c163170e8492d5e96a3ff498343dd0357baeadc0bb22acf628316f36f9f2f71",
+    "configs/validation/m710id70_layout_poc_pair_clearance.yaml": "4419763b556e491242e2d1696ebf38405e2835a75640a2572478e40156772abd",
+    "configs/validation/m710id70_layout_v1.yaml": "080c321debee24172d6df49ea51496ae30d3802d1083097f4d792fabf4d934a5",
+    "configs/validation/m710id70_layout_v1_single_carton.yaml": "c7272e86cda9d208143ca20ec603b5ea12faaba0768fac91ccb7bd9f963e63a2",
+    "configs/validation/m710id70_proof_of_concept.yaml": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0",
+    "configs/validation/m710id70_v3.yaml": "9dd0c4f4e3dff4b47005e19cd6f97ff1dcbc15afa775e3fd6d8a36e0b4a85cf4",
+    "configs/vendor/fanuc_m20id35_wrist_load.yaml": "ff71094981b8e551cee8b38a6fad9a3393f8c343a602d53187423c2d3c86cf94",
+    "configs/vendor/fanuc_m710id_70_load_evidence.yaml": "9d862938d71f6ba61e57beedecefa1f8a4b871f496d8d66eae44eb87b56f765f",
+    "configs/workcells/m710id70_unloading_layout_v1.yaml": "48ffb67e43112921311a2f332a2ec8b3084930c84f21a062e74c8206900185d0"
+  },
+  "binary_sha256": {
+    "build-baseline": "c9bb92f887ae35bf15bc53bef83d0724e5fd3740acfb1156b4f93d7317c40611",
+    "build-optimized": "5126aa3275288827554ab8e14db98d1e3eca8b5191645cb3430892a35e049d09"
+  }
+}

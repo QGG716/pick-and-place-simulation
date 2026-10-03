@@ -1,0 +1,6 @@
+{"target": "carton_l07_c02", "complete": true, "plan_s": 8.433217540383339, "cumulative_plan_s": 8.433217540383339, "progress": "1/5"}
+{"target": "carton_l07_c01", "complete": true, "plan_s": 9.845885587856174, "cumulative_plan_s": 18.279103128239512, "progress": "2/5"}
+{"target": "carton_l07_c03", "complete": true, "plan_s": 60.6333635058254, "cumulative_plan_s": 78.91246663406491, "progress": "3/5"}
+{"target": "carton_l07_c00", "complete": true, "plan_s": 9.417096180841327, "cumulative_plan_s": 88.32956281490624, "progress": "4/5"}
+{"target": "carton_l07_c04", "complete": true, "plan_s": 40.711788438260555, "cumulative_plan_s": 129.0413512531668, "progress": "5/5"}
+{"result": "COMPLETE_5_OF_5", "completed_count": 5, "T_plan_5_s": 129.0413512531668, "cumulative_attempted_plan_s": 129.0413512531668, "initialization_s": 0.8877237401902676, "scene_update_s": 0.42844953015446663, "batch_wall_s": 129.47085968963802}
