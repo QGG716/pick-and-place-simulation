@@ -461,12 +461,13 @@ def validate_native_result(result, start, goal, names, *, allow_stationary_place
                 or any(not result.get(k) or event.get(k) != result.get(k)
                        for k in ("task_id", "stage_id", "parent_stage_id"))):
             raise ValueError("INVALID_NATIVE_STATIONARY_EVENT")
-        if (not np.array_equal(path[0], np.asarray(start)) or times[0] != 0.
+        if (not np.array_equal(path[0], np.asarray(start)) or times[0] < 0.
+                or event.get("native_duration_s") != times[0]
                 or any(np.any(np.asarray(points[0].get(k)) != 0.) for k in ("v", "a"))):
             raise ValueError("NATIVE_STATIONARY_EVENT_CHANGED_STATE")
     elif event is not None:
         raise ValueError("INVALID_NATIVE_STATIONARY_EVENT")
-    if not np.isfinite(times).all() or abs(times[0])>1e-9 or np.any(np.diff(times)<=0):
+    if not np.isfinite(times).all() or (len(path)>1 and abs(times[0])>1e-9) or np.any(np.diff(times)<=0):
         raise ValueError("INVALID_NATIVE_TIMES")
     if not np.allclose(path[0], start, atol=1e-9, rtol=0): raise ValueError("START_CHANGED")
     if goal is not None and not np.allclose(path[-1], goal, atol=1e-9, rtol=0): raise ValueError("GOAL_CHANGED")

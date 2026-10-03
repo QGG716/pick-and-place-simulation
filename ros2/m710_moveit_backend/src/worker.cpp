@@ -347,6 +347,7 @@ class Worker {
           r.result["status"]="NATIVE_SINGLETON_PROCESS_REJECTED";return;
         }
         r.result["zero_motion_event"]={{"type","NATIVE_STATIONARY_PLACE"},{"goal_constraints_satisfied",true},
+          {"native_duration_s",msg.joint_trajectory.points.front().time_from_start.sec+msg.joint_trajectory.points.front().time_from_start.nanosec*1e-9},
           {"start_unchanged",true},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},{"parent_stage_id",r.parent}};
       }
       J points=J::array(),path=J::array();

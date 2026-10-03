@@ -13,7 +13,9 @@ int main() {
   require(!m710::stationaryPointFailure(original,start,false).empty());
   auto x=original;x.points[0].positions[0]+=1e-12;
   require(!m710::stationaryPointFailure(x,start,true).empty());
-  x=original;x.points[0].time_from_start.nanosec=1;
+  x=original;x.points[0].time_from_start.nanosec=100000000;
+  require(m710::stationaryPointFailure(x,start,true).empty());
+  x=original;x.points[0].time_from_start.sec=-1;
   require(!m710::stationaryPointFailure(x,start,true).empty());
   x=original;x.points[0].velocities[1]=1e-12;
   require(!m710::stationaryPointFailure(x,start,true).empty());
@@ -25,5 +27,5 @@ int main() {
   require(!m710::stationaryPointFailure(x,start,true).empty());
   x=original;x.points.push_back(point);
   require(!m710::stationaryPointFailure(x,start,true).empty());
-  std::cout << "PASS: 9 stationary native point cases; no planning evidence\n";
+  std::cout << "PASS: 10 stationary native point cases; no planning evidence\n";
 }
