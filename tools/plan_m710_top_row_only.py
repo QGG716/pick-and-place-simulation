@@ -134,6 +134,8 @@ def call_summary(c):
     for record in c.native_evidence:
         keep = {k: record[k] for k in ("stage", "status", "stage_id", "parent_stage_id",
             "pipeline_id", "planner_id", "native_solver_calls", "mtc_plan_s", "native_output_check_s",
+            "solver_returned_success", "solver_message", "moveit_error_code", "returned_waypoint_count",
+            "processing_branch", "goal_translation_delta_m", "goal_rotation_delta_rad", "candidate_id",
             "native_output_status", "authoritative_status", "failure", "clearance", "process_policy") if k in record}
         # Each reply repeats the full tool/ACM policy (up to 146 KB). Its
         # identity is already retained at batch level; save counters/witnesses
@@ -165,7 +167,14 @@ def main():
     parser.add_argument("--batch-budget-s", type=float, default=7200.)
     parser.add_argument("--ipc-timeout-s", type=float, default=360.)
     parser.add_argument("--prepare-only", action="store_true", help="Development preload only; no IK or motion solve")
+    parser.add_argument("--diagnostic-input", type=Path,
+        help="Fixed-input single-box diagnostic only; JSON with target, start_q_rad, removed_targets, seed_offset")
     args = parser.parse_args()
+    diagnostic = json.loads(args.diagnostic_input.read_text()) if args.diagnostic_input else None
+    if diagnostic is not None:
+        q_input = np.asarray(diagnostic["start_q_rad"], dtype=float)
+        if q_input.shape != (6,) or not np.isfinite(q_input).all():
+            parser.error("invalid diagnostic starting state")
     budgets = {k: getattr(args, k) for k in ("stage_budget_s", "box_budget_s", "batch_budget_s", "ipc_timeout_s")}
     if any(not np.isfinite(v) or v <= 0 for v in budgets.values()) or args.ipc_timeout_s <= args.stage_budget_s:
         parser.error("positive finite budgets and IPC > stage required")
@@ -174,6 +183,7 @@ def main():
     # Per-request full payload logging is unnecessary for this experiment.
     os.environ.pop("M710_MOVEIT_REQUEST_LOG", None)
     os.environ["M710_MOVEIT_LOG"] = str(args.output / "worker.log")
+    os.environ["M710_MOVEIT_DIAGNOSTICS"] = str(args.output / "requests.jsonl")
     initialized = perf_counter()
     policy = load_layout_motion_policy(ROOT / "configs/validation/m710id70_proof_of_concept.yaml")
     scene = build_verified_motion_input(policy, ROOT)
@@ -207,6 +217,12 @@ def main():
         expected = {f"carton_l07_c{i:02d}" for i in range(5)}
         if len(scene.cartons) != 40 or top_ids != expected:
             raise ValueError("CONFIGURED_GEOMETRIC_TOP_ROW_NOT_EXPECTED_FIVE")
+        initial_removed = diagnostic["removed_targets"] if diagnostic else []
+        if diagnostic:
+            if (diagnostic["target"] not in top_ids or set(initial_removed) - top_ids
+                    or diagnostic["target"] in initial_removed):
+                raise ValueError("INVALID_DIAGNOSTIC_TARGET_CONTEXT")
+            q = q_input.copy()
         first_target = selected_row.candidates[0].carton
         c.stack_carton_names = set(b.name for b in scene.cartons)
         c.robot_state_validator.contact_target_name = first_target.name
@@ -231,11 +247,13 @@ def main():
         trajectories, completed = [], []
         batch_start = perf_counter()
         if not args.prepare_only:
-            for index in range(5):
+            for index in ([int(diagnostic["seed_offset"])] if diagnostic else range(5)):
                 scene_started = perf_counter()
-                current = next_scene(scene, completed, q, c.robot)
+                current = next_scene(scene, initial_removed + completed, q, c.robot)
                 selection = rank(current, sequence, c, q)
                 target = selection.candidates[0].carton
+                if diagnostic and target.name != diagnostic["target"]:
+                    raise ValueError("DIAGNOSTIC_TARGET_ORDER_CHANGED")
                 if target.name not in top_ids - set(completed):
                     raise ValueError("TOP_ROW_SELECTION_CHANGED")
                 c.native_scene = current
@@ -277,17 +295,21 @@ def main():
                     completed.append(target.name)
                 summary["boxes"].append(row)
                 print(json.dumps(dict(target=target.name, complete=row["complete"], plan_s=elapsed,
-                    cumulative_plan_s=row["cumulative_plan_s"], progress=f"{len(completed)}/5")), flush=True)
+                    cumulative_plan_s=row["cumulative_plan_s"], progress=f"{len(completed)}/{1 if diagnostic else 5}")), flush=True)
                 if trajectory is None:
                     break
+        if diagnostic:
+            summary.update(diagnostic_input=diagnostic, diagnostic_input_sha256=hashlib.sha256(
+                args.diagnostic_input.read_bytes()).hexdigest(), fresh_five_box_batch=False)
         summary.update(batch_wall_s=perf_counter()-batch_start, completed_count=len(completed),
             completed_targets=completed, missing_targets=sorted(top_ids-set(completed)),
             cumulative_attempted_plan_s=sum(b["plan_s"] for b in summary["boxes"]),
+            T_plan_diagnostic_s=sum(b["plan_s"] for b in summary["boxes"]) if diagnostic else None,
             T_plan_5_s=sum(b["plan_s"] for b in summary["boxes"]) if len(completed)==5 else None,
             scene_update_s=sum(b["scene_update_s"] for b in summary["boxes"]),
             first_box_scene_preparation_s=summary["boxes"][0]["scene_update_s"] if summary["boxes"] else None,
             inter_box_scene_update_s=sum(b["scene_update_s"] for b in summary["boxes"][1:]),
-            result="COMPLETE_5_OF_5" if len(completed)==5 else "DEVELOPMENT_PRELOAD_ONLY" if args.prepare_only else "INCOMPLETE")
+            result="DIAGNOSTIC_COMPLETE" if diagnostic and len(completed)==1 else "COMPLETE_5_OF_5" if len(completed)==5 else "DEVELOPMENT_PRELOAD_ONLY" if args.prepare_only else "INCOMPLETE")
         (args.output / "timing.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False, allow_nan=False), encoding="utf-8")
         (args.output / "trajectories.json").write_text(json.dumps(dict(status=MARKER,
             execution_ready=False, run_id=summary["run_id"], trajectories=trajectories), allow_nan=False), encoding="utf-8")

@@ -9,6 +9,7 @@
 #include <moveit/task_constructor/solvers/pipeline_planner.h>
 #include <moveit/trajectory_processing/iterative_time_parameterization.h>
 #include <moveit/robot_state/conversions.h>
+#include <moveit/utils/moveit_error_code.h>
 #include <ompl/util/RandomNumbers.h>
 #include <nlohmann/json.hpp>
 #include <chrono>
@@ -287,9 +288,34 @@ class Worker {
       r.result={{"status","NATIVE_PLANNING_FAILED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_plan_s",seconds(begin)},
         {"mtc_generation",true},{"generated_during_task",true},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
         {"parent_stage_id",r.parent},{"native_solver_calls",{{pipeline=="ompl"?"OMPL":planner,1}}},{"pipeline_calls",calls},{"request_id",req.at("request_id")}};
+      r.result["solver_returned_success"]=result.success;
+      r.result["solver_message"]=result.message;
+      // MTC exposes the original error name on failure, but drops the numeric
+      // response and the successful response message. Never invent that code.
+      r.result["moveit_error_code"]=nullptr;
+      r.result["moveit_error_code_source"]="MTC_result_message_only";
+      if(!result.success) for(int code : {-1,-2,-3,-4,-5,-6,-7,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31,99999}) {
+        if(result.message==moveit::core::error_code_to_string(code)) {
+          r.result["moveit_error_code"]=code;
+          r.result["moveit_error_code_source"]="recovered_from_original_MoveIt_error_name";
+          break;
+        }
+      }
+      r.result["returned_waypoint_count"]=trajectory?trajectory->getWayPointCount():0;
+      r.result["trajectory_present"]=bool(trajectory);
+      r.result["processing_branch"]=!result?"SOLVER_RETURNED_FAILURE":!trajectory?
+          "NULL_TRAJECTORY":trajectory->getWayPointCount()<2?"INSUFFICIENT_WAYPOINTS":"TRAJECTORY_CONVERSION";
+      if(req.contains("goal_pose")) {
+        const auto start_pose=r.start->getCurrentState().getGlobalLinkTransform(identity.at("task_tcp_link").get<std::string>());
+        const auto goal_pose=matrix(req.at("goal_pose"));
+        r.result["goal_translation_delta_m"]=(start_pose.translation()-goal_pose.translation()).norm();
+        r.result["goal_rotation_delta_rad"]=Eigen::AngleAxisd(start_pose.linear().transpose()*goal_pose.linear()).angle();
+      }
       if(!result || !trajectory || trajectory->getWayPointCount()<2) return;
-      if(pipeline=="ompl") {trajectory_processing::IterativeParabolicTimeParameterization iptp;
+      try {
+      if(pipeline=="ompl") {r.result["processing_branch"]="TIME_PARAMETERIZATION";trajectory_processing::IterativeParabolicTimeParameterization iptp;
         if(!iptp.computeTimeStamps(*trajectory,req.at("velocity_scale").get<double>(),req.at("acceleration_scale").get<double>())) throw std::runtime_error("TIME_PARAMETERIZATION_FAILED");}
+      r.result["processing_branch"]="TRAJECTORY_CONVERSION";
       moveit_msgs::msg::RobotTrajectory msg;trajectory->getRobotTrajectoryMsg(msg);
       if(msg.joint_trajectory.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
       J points=J::array(),path=J::array();
@@ -314,6 +340,12 @@ class Worker {
       r.result["planner_internal_process_checks"]=bool(r.process);
       r.result["time_parameterization"]=pipeline=="ompl"?"IPTP_preserves_waypoints":"Pilz_original";
       r.result["task_tcp_identity"]=identity.at("task_tcp_fingerprint");r.result["interpolated_link"]=req.contains("goal_pose")?identity.at("task_tcp_link"):J(nullptr);
+      r.result["processing_branch"]="ACCEPTED";
+      } catch(const std::exception& e) {
+        r.result["status"]="NATIVE_PROCESSING_FAILED";
+        r.result["failure"]={{"reason",e.what()},{"branch",r.result.at("processing_branch")}};
+        r.trajectory.reset();r.end.reset();
+      }
     };
     auto verify_scene=[this](const planning_scene::PlanningSceneConstPtr& before,const planning_scene::PlanningSceneConstPtr& after,const J& request) {
       checkTransition(before,after,request);

@@ -1026,6 +1026,21 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                     edge_resolution=self.budget.edge_resolution_rad,root=Path(__file__).resolve().parents[2])
                 if not strict:
                     attempt['stage_id']='lin-'+digest([attempt['request_fingerprint'],len(self.native_verified)])
+            attempt["candidate_id"] = getattr(self, "_candidate_identity", None)
+            diagnostic = {k: attempt.get(k) for k in (
+                "task_id", "stage_id", "parent_stage_id", "stage", "candidate_id", "seed",
+                "status", "pipeline_id", "planner_id", "solver_returned_success", "solver_message",
+                "moveit_error_code", "moveit_error_code_source", "returned_waypoint_count",
+                "trajectory_present", "processing_branch", "goal_translation_delta_m", "goal_rotation_delta_rad",
+                "mtc_plan_s", "task_backtracks", "failure")}
+            diagnostic.update(request_id=submitted.get("request_id"),
+                q_start=submitted["q_start"], q_goal=submitted.get("q_goal"),
+                goal_pose=submitted.get("goal_pose"), elapsed_s=perf_counter()-started,
+                fallback_parent_stage_id=submitted.get("parent_stage_id"))
+            diagnostic_path = os.environ.get("M710_MOVEIT_DIAGNOSTICS")
+            if diagnostic_path:
+                with open(diagnostic_path, "a", encoding="utf-8") as stream:
+                    stream.write(json.dumps(diagnostic, allow_nan=False)+"\n")
             attempts.append(attempt)
             if raw["status"]!="SUCCESS":
                 if raw["status"].startswith(("INVALID_START","INVALID_GOAL")): break
