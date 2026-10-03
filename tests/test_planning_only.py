@@ -93,3 +93,44 @@ def test_next_scene_uses_previous_generated_endpoint_and_only_removes_completed(
     assert len(scene.cartons) == 3 and scene.snapshot == snapshot
     assert all(np.array_equal(b.world_from_local, boxes[i].world_from_local)
                for b, i in zip(changed.cartons, [0, 2]))
+
+
+def stationary_result():
+    from unloading_sim.moveit2_backend import JOINT_NAMES
+    binding = dict(task_id="task", stage_id="place", parent_stage_id="transit")
+    return dict(status="SUCCESS", joint_names=JOINT_NAMES.copy(), **binding,
+        solver_returned_success=True, returned_waypoint_count=1,
+        points=[dict(q=[0.]*6, v=[0.]*6, a=[0.]*6, t=0.)],
+        zero_motion_event=dict(type="NATIVE_STATIONARY_PLACE", **binding,
+            goal_constraints_satisfied=True, start_unchanged=True))
+
+
+def test_stationary_native_place_preserves_single_point_and_requires_opt_in():
+    from unloading_sim.moveit2_backend import validate_native_result, JOINT_NAMES
+    result = stationary_result()
+    with pytest.raises(ValueError, match="STATIONARY_EVENT"):
+        validate_native_result(result, np.zeros(6), None, JOINT_NAMES)
+    path = validate_native_result(result, np.zeros(6), None, JOINT_NAMES,
+        allow_stationary_place=True)
+    assert len(path) == 1 and np.array_equal(path[0], np.zeros(6))
+    assert len(result["points"]) == 1 and result["points"][0]["t"] == 0.
+
+
+@pytest.mark.parametrize("kind", ["task", "parent", "stage", "goal", "solver", "missing",
+    "moved", "time", "velocity", "acceleration", "nan", "two_points"])
+def test_stationary_event_rejects_changed_state_goal_and_lineage(kind):
+    from unloading_sim.moveit2_backend import validate_native_result, JOINT_NAMES
+    result = stationary_result()
+    if kind in {"task", "parent", "stage"}:
+        result["zero_motion_event"][{"task":"task_id", "parent":"parent_stage_id", "stage":"stage_id"}[kind]] = "other"
+    elif kind == "goal": result["zero_motion_event"]["goal_constraints_satisfied"] = False
+    elif kind == "solver": result["solver_returned_success"] = False
+    elif kind == "missing": result.pop("zero_motion_event")
+    elif kind == "moved": result["points"][0]["q"][0] = 1e-12
+    elif kind == "time": result["points"][0]["t"] = 1e-12
+    elif kind == "velocity": result["points"][0]["v"][0] = 1e-12
+    elif kind == "acceleration": result["points"][0]["a"][0] = 1e-12
+    elif kind == "nan": result["points"][0]["q"][0] = float("nan")
+    elif kind == "two_points": result["points"].append(deepcopy(result["points"][0]))
+    with pytest.raises(ValueError):
+        validate_native_result(result, np.zeros(6), None, JOINT_NAMES, allow_stationary_place=True)

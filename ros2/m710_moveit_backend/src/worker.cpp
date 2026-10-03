@@ -19,6 +19,9 @@
 #include "clearance.h"
 #include "process_policy.h"
 #include "scene_geometry.h"
+#include "native_zero_motion.h"
+#include <moveit/kinematic_constraints/kinematic_constraint.h>
+#include <moveit/kinematic_constraints/utils.h>
 
 using J = nlohmann::json;
 namespace mtc = moveit::task_constructor;
@@ -295,7 +298,7 @@ class Worker {
       r.result["moveit_error_code"]=nullptr;
       r.result["moveit_error_code_source"]="MTC_result_message_only";
       if(!result.success) for(int code : {-1,-2,-3,-4,-5,-6,-7,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31,99999}) {
-        if(result.message==moveit::core::error_code_to_string(code)) {
+        if(result.message!=moveit::core::error_code_to_string(0) && result.message==moveit::core::error_code_to_string(code)) {
           r.result["moveit_error_code"]=code;
           r.result["moveit_error_code_source"]="recovered_from_original_MoveIt_error_name";
           break;
@@ -311,13 +314,41 @@ class Worker {
         r.result["goal_translation_delta_m"]=(start_pose.translation()-goal_pose.translation()).norm();
         r.result["goal_rotation_delta_rad"]=Eigen::AngleAxisd(start_pose.linear().transpose()*goal_pose.linear()).angle();
       }
-      if(!result || !trajectory || trajectory->getWayPointCount()<2) return;
+      if(!result || !trajectory || trajectory->getWayPointCount()==0) return;
+      const bool singleton=trajectory->getWayPointCount()==1;
+      // Only this experimental place event accepts one native point. The Task
+      // still creates its own stage and uses the real predecessor and scene.
+      if(singleton && !(planning_only && stage=="place" && pipeline=="pilz_industrial_motion_planner" &&
+          planner=="LIN" && req.contains("goal_pose") && !req.at("attachment").is_null())) return;
       try {
       if(pipeline=="ompl") {r.result["processing_branch"]="TIME_PARAMETERIZATION";trajectory_processing::IterativeParabolicTimeParameterization iptp;
         if(!iptp.computeTimeStamps(*trajectory,req.at("velocity_scale").get<double>(),req.at("acceleration_scale").get<double>())) throw std::runtime_error("TIME_PARAMETERIZATION_FAILED");}
       r.result["processing_branch"]="TRAJECTORY_CONVERSION";
       moveit_msgs::msg::RobotTrajectory msg;trajectory->getRobotTrajectoryMsg(msg);
       if(msg.joint_trajectory.joint_names!=names) throw std::runtime_error("OUTPUT_JOINT_ORDER_MISMATCH");
+      if(singleton) {
+        r.result["processing_branch"]="SINGLETON_GOAL_AND_STATE_CHECK";
+        geometry_msgs::msg::PoseStamped target;target.header.frame_id=r.start->getPlanningFrame();
+        target.pose=pose(req.at("goal_pose"));
+        const auto constraints=kinematic_constraints::constructGoalConstraints(
+          identity.at("task_tcp_link").get<std::string>(),target,
+          solver->properties().get<double>("goal_position_tolerance"),
+          solver->properties().get<double>("goal_orientation_tolerance"));
+        kinematic_constraints::KinematicConstraintSet goal(model);
+        const bool configured=goal.add(constraints,r.start->getTransforms());
+        const bool satisfied=configured && goal.decide(trajectory->getFirstWayPoint()).satisfied;
+        const auto rejection=m710::stationaryPointFailure(msg.joint_trajectory,
+            req.at("q_start").get<std::vector<double>>(),satisfied);
+        if(!rejection.empty()) throw std::runtime_error(rejection);
+        // Start clearance was already checked under this exact stage context.
+        // Complete the single endpoint's existing process predicates as well.
+        if(!r.process || !r.process->check(trajectory->getFirstWayPoint(),true)) {
+          r.result["failure"]=r.process?r.process->last_failure:J("PROCESS_POLICY_REQUIRED");
+          r.result["status"]="NATIVE_SINGLETON_PROCESS_REJECTED";return;
+        }
+        r.result["zero_motion_event"]={{"type","NATIVE_STATIONARY_PLACE"},{"goal_constraints_satisfied",true},
+          {"start_unchanged",true},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},{"parent_stage_id",r.parent}};
+      }
       J points=J::array(),path=J::array();
       for(const auto& p:msg.joint_trajectory.points) {points.push_back({{"q",p.positions},{"v",p.velocities},{"a",p.accelerations},{"t",p.time_from_start.sec+p.time_from_start.nanosec*1e-9}});path.push_back(p.positions);}
       J failure=nullptr;

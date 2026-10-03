@@ -443,13 +443,29 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
         expected_collision_shapes={link.attrib["name"]:len(link.findall("collision")) for link in urdf.findall("link") if link.findall("collision")}), tool_names, compliant
 
 
-def validate_native_result(result, start, goal, names):
+def validate_native_result(result, start, goal, names, *, allow_stationary_place=False):
     if result.get("joint_names") != names: raise ValueError("OUTPUT_JOINT_ORDER_MISMATCH")
     points = result["points"]
     path = np.asarray([p["q"] for p in points], dtype=float)
     times = np.asarray([p["t"] for p in points], dtype=float)
-    if path.ndim != 2 or path.shape[1] != 6 or len(path) < 2 or not np.isfinite(path).all():
+    if path.ndim != 2 or path.shape[1] != 6 or len(path) < 1 or not np.isfinite(path).all():
         raise ValueError("INVALID_NATIVE_PATH")
+    event = result.get("zero_motion_event")
+    if len(path) == 1:
+        if (not allow_stationary_place or not isinstance(event, dict)
+                or event.get("type") != "NATIVE_STATIONARY_PLACE"
+                or event.get("goal_constraints_satisfied") is not True
+                or event.get("start_unchanged") is not True
+                or result.get("solver_returned_success") is not True
+                or result.get("returned_waypoint_count") != 1
+                or any(not result.get(k) or event.get(k) != result.get(k)
+                       for k in ("task_id", "stage_id", "parent_stage_id"))):
+            raise ValueError("INVALID_NATIVE_STATIONARY_EVENT")
+        if (not np.array_equal(path[0], np.asarray(start)) or times[0] != 0.
+                or any(np.any(np.asarray(points[0].get(k)) != 0.) for k in ("v", "a"))):
+            raise ValueError("NATIVE_STATIONARY_EVENT_CHANGED_STATE")
+    elif event is not None:
+        raise ValueError("INVALID_NATIVE_STATIONARY_EVENT")
     if not np.isfinite(times).all() or abs(times[0])>1e-9 or np.any(np.diff(times)<=0):
         raise ValueError("INVALID_NATIVE_TIMES")
     if not np.allclose(path[0], start, atol=1e-9, rtol=0): raise ValueError("START_CHANGED")
@@ -1031,9 +1047,9 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 "task_id", "stage_id", "parent_stage_id", "stage", "candidate_id", "seed",
                 "status", "pipeline_id", "planner_id", "solver_returned_success", "solver_message",
                 "moveit_error_code", "moveit_error_code_source", "returned_waypoint_count",
-                "trajectory_present", "processing_branch", "goal_translation_delta_m", "goal_rotation_delta_rad",
+                "trajectory_present", "processing_branch", "zero_motion_event", "goal_translation_delta_m", "goal_rotation_delta_rad",
                 "mtc_plan_s", "task_backtracks", "failure")}
-            diagnostic.update(request_id=submitted.get("request_id"),
+            diagnostic.update(request_id=raw.get("request_id"),
                 q_start=submitted["q_start"], q_goal=submitted.get("q_goal"),
                 goal_pose=submitted.get("goal_pose"), elapsed_s=perf_counter()-started,
                 fallback_parent_stage_id=submitted.get("parent_stage_id"))
@@ -1055,7 +1071,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 self.native_evidence.extend(attempts)
                 return [],attempt["failure"],dict(backend="moveit2",success=False,attempts=attempts)
             try:
-                path=validate_native_result(raw,start,goal,self.native_joint_names)
+                path=validate_native_result(raw,start,goal,self.native_joint_names,
+                    allow_stationary_place=self.planning_only and stage=="place")
             except ValueError as exc:
                 attempt["authoritative_status"]="PROTOCOL_REJECTED"
                 attempt["failure"]={"reason":str(exc),"stage":stage,"requested_q_goal":request.get("q_goal")}

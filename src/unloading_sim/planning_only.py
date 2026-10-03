@@ -145,6 +145,7 @@ class PlanningOnlyConnector(MoveItLayoutConnector):
                 "stage", "stage_id", "parent_stage_id", "pipeline_id", "planner_id",
                 "points", "joint_names", "time_parameterization", "authoritative_status",
                 "native_output_status", "planning_only_status")} for r in selected],
+            zero_motion_events=[deepcopy(r["zero_motion_event"]) for r in selected if r.get("zero_motion_event")],
             final_state_receipt=selection[0].native_receipt)
         segment.clear()
         segment.update(keep)
